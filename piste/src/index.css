@@ -18,6 +18,40 @@
 */
 
 @font-face {
+  /*
+    LA POLICE DES CHIFFRES DU COCKPIT.
+
+    C'était Orbitron, une police de science-fiction. Mongazi : « je préfère une
+    police professionnelle ». Il a raison : PISTE vend du travail à des
+    commerçants, pas un jeu. Une police qui fait vaisseau spatial fait douter
+    du sérieux de ce qu'elle affiche, et ici elle affichait de l'argent.
+
+    IBM Plex Mono, c'est ce qu'on trouve sur les vrais écrans de supervision.
+    Elle reste technique sans être costumée, et surtout ses chiffres ont TOUS
+    la même largeur : les montants s'alignent en colonne, et un total ne danse
+    pas quand il change de valeur.
+
+    Elle ne sert QUE dans le cockpit. Le texte courant reste en Bricolage
+    Grotesque : une chasse fixe se lit mal sur un paragraphe entier. Grotesque
+    pour lire, mono pour compter : deux familles vraiment différentes, pas
+    deux presque pareilles.
+  */
+  font-family: 'IBM Plex Mono';
+  src: url('/polices/plexmono-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/polices/plexmono-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Bricolage Grotesque';
   src: url('/polices/bricolage-latin.woff2') format('woff2');
   font-weight: 200 800;
@@ -718,4 +752,480 @@ input[type='range']::-moz-range-thumb {
   .recu th, .recu td { border-color: #999 !important; }
   .recu header, .recu section, .recu footer, .recu tr { border-color: #bbb !important; }
   @page { margin: 16mm; }
+}
+
+/* ══════════════════════════════════════════════════════════ LE DOSSIER ═══
+   LA FICHE DU CARNET · une carte qu'on retourne.
+
+   Le client voyait une belle carte en relief AVANT de payer, dans l'apercu du
+   generateur, et recevait une liste plate APRES avoir paye. C'etait a
+   l'envers : ce qu'on livre doit se tenir mieux que ce qu'on montre.
+
+   L'objet du metier, c'est la fiche cartonnee du demarcheur : on la sort du
+   classeur, on lit le recto, on la RETOURNE pour le dos, on l'annote. D'ou le
+   depliage en 3D plutot qu'un simple accordeon : le dos bascule autour de son
+   bord haut, comme une fiche qu'on ouvre.
+
+   ⚠️ La hauteur ne s'anime pas avec une rotation : sans `grid-template-rows`
+   qui passe de 0fr a 1fr, tout ce qui est en dessous saute d'un coup pendant
+   que le dos tourne joliment dans le vide. Il faut les deux. */
+
+.dossier {
+  perspective: 1200px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dossier-carte {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--color-trait);
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.92), rgba(255, 248, 242, 0.55)),
+    var(--color-creme);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 12px 30px -22px rgba(60, 30, 10, 0.55);
+  transform-style: preserve-3d;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease-out;
+}
+@media (hover: hover) and (min-width: 1024px) {
+  .dossier:hover .dossier-carte {
+    transform: translateY(-2px) rotateX(1.6deg);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.95) inset,
+      0 26px 46px -24px rgba(60, 30, 10, 0.5);
+  }
+}
+/* la carte s'enfonce sous le doigt : c'est ce qui la fait sentir cartonnee */
+.dossier-poignee:active + .dossier-dos,
+.dossier-poignee:active {
+  transform: scale(0.994);
+}
+.dossier[data-ouvert='oui'] .dossier-carte {
+  border-color: var(--color-sable);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 22px 44px -24px rgba(60, 30, 10, 0.55);
+}
+
+/* la trame de securite, comme sur une piece officielle ou une facture */
+.dossier-trame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: repeating-linear-gradient(
+    -38deg,
+    rgba(168, 64, 31, 0.05) 0 1px,
+    transparent 1px 9px
+  );
+}
+
+/* l'en-tete sombre : le bandeau d'un document */
+.dossier-bande {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--color-encre);
+  color: var(--color-sable);
+  font-family: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.63rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dossier-poignee {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.14s ease-out;
+}
+
+.dossier-initiales {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(150deg, var(--color-braise), var(--color-brique));
+  color: var(--color-creme);
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 8px 16px -10px rgba(168, 64, 31, 0.95);
+}
+
+/* ─────────────────────────────────────────────── le dos, qui se deplie ─── */
+.dossier-dos {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dossier-dos > .dossier-dedans {
+  overflow: hidden;
+  transform-origin: top center;
+  transform: rotateX(-86deg);
+  opacity: 0;
+  transition:
+    transform 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.26s ease-out;
+}
+.dossier[data-ouvert='oui'] .dossier-dos { grid-template-rows: 1fr; }
+.dossier[data-ouvert='oui'] .dossier-dos > .dossier-dedans {
+  transform: rotateX(0deg);
+  opacity: 1;
+}
+
+/* le releve : deux colonnes libelle / valeur, comme sur une facture */
+.dossier-releve {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, auto) 1fr;
+  gap: 7px 14px;
+  align-items: baseline;
+}
+.dossier-releve dt {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-sourd);
+}
+.dossier-releve dd {
+  min-width: 0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--color-encre);
+  overflow-wrap: anywhere;
+}
+
+/* le trait perfore : la fiche a un haut et un bas, comme un talon de recu */
+.dossier-perfore {
+  border-top: 1px dashed var(--color-trait);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dossier-carte,
+  .dossier-poignee,
+  .dossier-dos,
+  .dossier-dos > .dossier-dedans {
+    transition: none;
+  }
+  .dossier-dos > .dossier-dedans { transform: none; }
+  .dossier:hover .dossier-carte { transform: none; }
+}
+
+/* ─────────────────────────────────── LE COCKPIT BASCULE EN SOMBRE ───────
+   Tailwind v4 compile `bg-creme` en `background-color: var(--color-creme)`.
+   Redéfinir les jetons sous `.hud` fait donc basculer le cockpit d'un coup,
+   sans réécrire mille lignes de classes.
+
+   ⚠️ MAIS TROIS JETONS SERVENT À DEUX CHOSES À LA FOIS, et les remapper
+   casse la moitié de l'écran :
+       `creme`  = fond des cartes, ET texte clair posé sur les boutons orange
+       `papier` = fond de la page, ET texte clair posé sur les puces sombres
+       `encre`  = texte sombre,    ET fond des bandeaux sombres
+   Les remapper d'autorité a produit des boutons orange PARFAITEMENT VIDES :
+   le libellé était toujours là, peint en blanc à 4 % d'opacité.
+
+   D'où la règle : on ne remappe en jeton QUE ce qui n'a qu'un seul rôle
+   (les textes secondaires, les traits, les couleurs de signal), et on
+   bascule les fonds à double emploi UN PAR UN, sans toucher aux textes. */
+.hud[data-theme='sombre'] {
+  --color-sourd: #a1927f;
+  --color-trait: rgba(240, 133, 79, 0.2);
+  --color-traitsombre: rgba(240, 133, 79, 0.3);
+  --color-brique: #f0854f;
+  --color-laterite: #ff9a63;
+  --color-braise: #ffb37d;
+  --color-vert: #6fd8a4;
+  --color-rouge: #ff8090;
+}
+/* les fonds basculent… */
+.hud[data-theme='sombre'] .bg-papier { background-color: #0a0806; }
+.hud[data-theme='sombre'] .bg-creme { background-color: rgba(255, 248, 242, 0.045); }
+.hud[data-theme='sombre'] .bg-papier2 { background-color: rgba(255, 248, 242, 0.06); }
+/* …et les textes sombres deviennent clairs */
+.hud[data-theme='sombre'] .text-encre { color: #efe6da; }
+.hud[data-theme='sombre'] .hover\:border-encre:hover { border-color: rgba(240, 133, 79, 0.55); }
+/* du texte posé sur de l'orange doit être SOMBRE, pas clair */
+/* ⚠️ LE TEXTE POSÉ SUR LA BRIQUE CHANGE AVEC LE THÈME, ET IL LE FAUT.
+   En clair, la brique est foncée (#a8401f) : le texte doit être clair.
+   En sombre, elle devient orange vif (#f0854f) : le texte doit être foncé.
+   Poser une seule fois `text-[#1a1108]` dans le JSX donnait du sombre sur du
+   sombre en thème clair, à 3,03:1 pour un onglet qu'on lit tout le temps. */
+.hud[data-theme='sombre'] .bg-brique.text-creme,
+.hud[data-theme='sombre'] .bg-brique { color: #1a1108; }
+.hud[data-theme='sombre'] .text-brique { color: var(--color-brique); }
+/* le champ de saisie : sur fond sombre, un placeholder à 60 % est illisible */
+.hud[data-theme='sombre'] input,
+.hud[data-theme='sombre'] textarea {
+  background-color: rgba(255, 248, 242, 0.05);
+  color: #efe6da;
+  border-color: rgba(240, 133, 79, 0.25);
+}
+.hud[data-theme='sombre'] input::placeholder,
+.hud[data-theme='sombre'] textarea::placeholder { color: #8e8171; }
+
+/* ═══════════════════════════════════════════════════════════════ LE HUD ═══
+   LE COCKPIT · un poste de pilotage, pas une page.
+
+   Mongazi : « la typographie des textes et celle des prix doit être ultra
+   gaming, même le cockpit en entier, je dois voir l'impression de jouer ».
+
+   Deux décisions portent tout le reste :
+
+   1. LE COCKPIT PASSE EN SOMBRE. Le reste du site est sur papier ; un poste de
+      pilotage est une salle de contrôle. Ça donne au passage le rythme
+      sombre/clair que la charte demande, sans le fabriquer artificiellement.
+
+   2. LES CHIFFRES ONT LEUR PROPRE POLICE. IBM Plex Mono, celle des vrais
+      écrans de supervision, avec des chiffres tabulaires : un montant ne
+      doit pas danser quand il change.
+      Le texte, lui, reste en Bricolage : une police de jeu sur un paragraphe
+      entier se lit mal, et le cockpit se lit vite ou ne se lit pas.
+
+   ⚠️ Aucune animation infinie sous un `backdrop-filter` : le cockpit n'en
+   utilise aucun, précisément pour que le balayage et les lueurs restent
+   fluides sur un téléphone (leçon latence du 2026-07-21). */
+
+.hud {
+  /* ── LE THÈME CLAIR EST LE DÉFAUT ──────────────────────────────────────
+     Mongazi travaille souvent dehors, en plein jour : un écran sombre au
+     soleil de Cotonou ne se lit pas. Le cockpit s'ouvre donc en clair, et le
+     sombre est à un bouton.
+     ⚠️ Les teintes du HUD ne sont PAS les mêmes dans les deux thèmes : un
+     cyan néon qui brille sur du noir devient illisible sur du papier. Chaque
+     couleur est reprise en version foncée, et le contraste vérifié. */
+  --hud-fond: #f4efe6;
+  --hud-panneau: rgba(255, 255, 255, 0.72);
+  --hud-trait: rgba(168, 64, 31, 0.22);
+  --hud-orange: #a8401f;
+  --hud-vert: #16714a;
+  --hud-cyan: #0d6d85;
+  --hud-violet: #6737c4;
+  --hud-rouge: #a3202f;
+  --hud-texte: #14110e;
+  --hud-sourd: #6b6055;
+  --hud-lueur: 0;
+
+  min-height: 100dvh;
+  background:
+    radial-gradient(90rem 46rem at 50% -12%, rgba(168, 64, 31, 0.07), transparent 62%),
+    var(--hud-fond);
+  color: var(--hud-texte);
+}
+
+.hud[data-theme='sombre'] {
+  --hud-fond: #0a0806;
+  --hud-panneau: rgba(255, 248, 242, 0.035);
+  --hud-trait: rgba(240, 133, 79, 0.22);
+  --hud-orange: #f0854f;
+  --hud-vert: #6fd8a4;
+  --hud-cyan: #56d6ee;
+  --hud-violet: #b48cff;
+  --hud-rouge: #ff8090;
+  --hud-texte: #efe6da;
+  --hud-sourd: #9b8d7e;
+  --hud-lueur: 1;
+  background:
+    radial-gradient(90rem 46rem at 50% -12%, rgba(240, 133, 79, 0.13), transparent 62%),
+    var(--hud-fond);
+}
+/* la grille de fond : c'est elle qui dit « instrument » avant toute animation */
+.hud::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(rgba(168, 64, 31, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 64, 31, 0.055) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(75rem 55rem at 50% 0%, #000 30%, transparent 78%);
+}
+.hud[data-theme='sombre']::before {
+  background-image:
+    linear-gradient(rgba(240, 133, 79, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240, 133, 79, 0.055) 1px, transparent 1px);
+}
+.hud > * { position: relative; z-index: 1; }
+
+.hud-chiffre {
+  font-family: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.hud-titre {
+  font-family: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.hud-etiquette {
+  font-family: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.63rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--hud-sourd);
+}
+
+/* ─────────────────────────────────────────────────────────── les panneaux ── */
+.hud-panneau {
+  position: relative;
+  border-radius: 14px;
+  border: 1px solid var(--hud-trait);
+  background: var(--hud-panneau);
+  padding: 15px 16px;
+}
+/* les équerres d'angle : le signe le plus économique du poste de pilotage */
+.hud-panneau::before,
+.hud-panneau::after {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--hud-orange);
+  opacity: 0.75;
+  pointer-events: none;
+}
+.hud-panneau::before {
+  top: -1px; left: -1px;
+  border-right: 0; border-bottom: 0;
+  border-top-left-radius: 14px;
+}
+.hud-panneau::after {
+  bottom: -1px; right: -1px;
+  border-left: 0; border-top: 0;
+  border-bottom-right-radius: 14px;
+}
+
+/* ⚠️ Une lueur autour d'un chiffre EMPÂTE le texte sur fond clair : elle ne
+   sert que sur du noir, où elle imite un afficheur. Sur papier, on garde la
+   couleur et on jette le halo. */
+.hud-lueur-orange { color: var(--hud-orange); }
+.hud-lueur-vert   { color: var(--hud-vert); }
+.hud-lueur-cyan   { color: var(--hud-cyan); }
+.hud-lueur-violet { color: var(--hud-violet); }
+.hud-lueur-rouge  { color: var(--hud-rouge); }
+.hud[data-theme='sombre'] .hud-lueur-orange { text-shadow: 0 0 22px rgba(240, 133, 79, 0.5); }
+.hud[data-theme='sombre'] .hud-lueur-vert   { text-shadow: 0 0 22px rgba(111, 216, 164, 0.45); }
+.hud[data-theme='sombre'] .hud-lueur-cyan   { text-shadow: 0 0 22px rgba(86, 214, 238, 0.45); }
+.hud[data-theme='sombre'] .hud-lueur-violet { text-shadow: 0 0 22px rgba(180, 140, 255, 0.45); }
+.hud[data-theme='sombre'] .hud-lueur-rouge  { text-shadow: 0 0 22px rgba(255, 128, 144, 0.45); }
+/* pas de lueur : un chiffre a zero ne doit pas briller comme un exploit */
+.hud-lueur-sourd  { color: var(--hud-sourd); }
+
+/* ─────────────────────────────────────────── la barre d'expérience ──────── */
+.hud-jauge {
+  position: relative;
+  height: 7px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(20, 17, 14, 0.1);
+}
+.hud[data-theme='sombre'] .hud-jauge { background: rgba(255, 248, 242, 0.09); }
+.hud-jauge-fond {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--hud-orange), #ffcb8e);
+  box-shadow: 0 0 16px rgba(240, 133, 79, 0.65);
+  transform-origin: left center;
+  animation: hudRemplir 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes hudRemplir { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* le reflet qui balaie : un seul, discret, et il s'arrête tout seul */
+.hud-jauge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.55), transparent 80%);
+  transform: translateX(-100%);
+  animation: hudReflet 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s 2 both;
+}
+@keyframes hudReflet { to { transform: translateX(100%); } }
+
+/* ────────────────────────────────────────────────────── la courbe animée ── */
+.hud-trace {
+  stroke-dasharray: var(--long);
+  stroke-dashoffset: var(--long);
+  animation: hudTracer 1.25s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+@keyframes hudTracer { to { stroke-dashoffset: 0; } }
+.hud-aire { animation: hudMonte 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both; }
+@keyframes hudMonte { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─────────────────────────────────────────────────── l'entrée des blocs ─── */
+.hud-entre { animation: hudEntre 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes hudEntre {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* le point qui bat quand la veille tourne : c'est le seul signe vivant */
+.hud-pouls { position: relative; }
+.hud-pouls::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  opacity: 0;
+  animation: hudPouls 2.2s ease-out infinite;
+}
+@keyframes hudPouls {
+  0%   { opacity: 0.7; transform: scale(0.6); }
+  70%  { opacity: 0; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* les onglets, façon sélecteur de menu */
+.hud-onglet {
+  font-family: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--hud-trait);
+  background: transparent;
+  color: var(--hud-sourd);
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.25s, background 0.2s;
+}
+.hud-onglet[aria-pressed='true'],
+.hud-onglet[data-actif='oui'] {
+  color: #fff8f2;
+  background: var(--hud-orange);
+  border-color: var(--hud-orange);
+  box-shadow: 0 0 24px -4px rgba(168, 64, 31, 0.5);
+}
+.hud[data-theme='sombre'] .hud-onglet[aria-pressed='true'],
+.hud[data-theme='sombre'] .hud-onglet[data-actif='oui'] {
+  color: #1a1108;
+  box-shadow: 0 0 24px -4px rgba(240, 133, 79, 0.75);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-jauge-fond,
+  .hud-jauge::after,
+  .hud-trace,
+  .hud-aire,
+  .hud-entre,
+  .hud-pouls::after {
+    animation: none;
+  }
+  .hud-trace { stroke-dashoffset: 0; }
+  .hud-jauge::after { display: none; }
 }

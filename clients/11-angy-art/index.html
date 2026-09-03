@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Angy Art — Angélique Avocevou, artiste plasticienne à Cotonou</title>
+<meta name="description" content="Angélique Avocevou, artiste plasticienne béninoise. Œuvres contemporaines en relief sur l'identité, la mémoire et le patrimoine africain. Pièces uniques, tableaux personnalisés, œuvres pour hôtels, restaurants et résidences. Atelier à Cotonou.">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="author" content="Angélique Avocevou">
+<link rel="canonical" href="https://angy-art.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="Angy Art">
+<meta property="og:title" content="Angy Art — Angélique Avocevou, artiste plasticienne">
+<meta property="og:description" content="Inspiré d'en haut, enraciné ici. Œuvres contemporaines en relief, atelier à Cotonou.">
+<meta property="og:url" content="https://angy-art.pages.dev/">
+<meta property="og:image" content="https://angy-art.pages.dev/assets/images/og/og.jpg?v=20260826a">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/images/favicon.png?v=20260826a" type="image/png">
+<link rel="apple-touch-icon" href="assets/images/favicon-180.png?v=20260826a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=20260826a">
+<script>document.documentElement.className+=' js';</script>
+</head>
+<body>
+
+<!-- ============ LE RIDEAU D'OUVERTURE ============
+     Un panneau crème porte le nom, un filet se tire dessous, un compteur monte,
+     puis le panneau se retire vers le haut. Il est écrit DANS le HTML et non
+     posé par JavaScript : sans JS il n'apparaît jamais, et la page reste
+     lisible tout de suite. -->
+<div class="rideau" id="rideau" aria-hidden="true">
+  <div class="rideau-in">
+    <img class="rideau-g" src="assets/images/logos/marque.webp?v=20260826a" alt="" width="284" height="220">
+    <p class="rideau-t">Angy <i>·</i> Art</p>
+    <span class="rideau-f"></span>
+  </div>
+  <p class="rideau-n" id="rideauN">00</p>
+</div>
+
+<!-- ============ LE CURSEUR ============ -->
+<div class="cur" id="cur" aria-hidden="true"><span id="curT"></span></div>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="nav" id="nav">
+  <a class="nav-logo" href="#haut" aria-label="Angy Art, retour en haut">
+    <img class="nav-g" src="assets/images/logos/marque.webp?v=20260826a" alt="" width="284" height="220">
+    <span>Angy&nbsp;Art</span>
+  </a>
+  <nav class="nav-c" id="navC" aria-label="Navigation principale">
+    <!-- ⚠️ « ACCUEIL » est dans SA liste, alors il y est. Le logo tenait déjà le
+         rôle, mais une entrée nommée se cherche moins qu'un logo. Mesuré avant
+         de l'ajouter : à 1024 px la barre garde 31 px de marge de chaque côté,
+         101 à 309 px au-delà, et le tiroir du téléphone a la place. Le libellé
+         du sur-mesure reste court (« SUR MESURE ») : sa formule complète,
+         « CRÉATIONS SUR MESURE », déborderait à 1024 px et se lit deux fois
+         plus bas, sur la section et sur le bouton. -->
+    <a href="#haut">ACCUEIL</a>
+    <a href="#demarche">L'ARTISTE</a>
+    <a href="#oeuvres">LA COLLECTION</a>
+    <a href="#atelier">LE JOURNAL</a>
+    <a href="#personnalise">SUR MESURE</a>
+    <a href="#visite">CONTACT</a>
+    <a class="nav-m" href="https://wa.me/2290152006490" data-wa="direct">ÉCRIRE SUR WHATSAPP</a>
+  </nav>
+  <button class="nav-cta" data-modale>DEMANDER UNE VISITE
+    <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+  </button>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="navC" aria-label="Ouvrir le menu">
+    <i></i><i></i>
+  </button>
+</header>
+
+<main id="haut">
+
+<!-- ============ 1. HÉROS ============ -->
+<section class="hero" aria-labelledby="h1">
+  <p class="hero-co hero-co--g">ATELIER <i>·</i> COTONOU</p>
+  <p class="hero-co hero-co--d">6.3703° N <i>/</i> 2.3912° E</p>
+
+  <div class="hero-in">
+    <div class="hero-txt">
+      <h1 class="hero-t" id="h1">
+        <span class="lev"><span>ANGY</span></span>
+        <span class="lev"><span>ART</span></span>
+      </h1>
+      <p class="hero-st lev"><span><em>Inspiré d'en haut, enraciné ici.</em></span></p>
+      <p class="hero-d">Des œuvres contemporaines nées du relief, de la matière brute
+        et de la patience de la main.</p>
+    </div>
+
+    <!-- UNE ŒUVRE, sur fond sombre : c'est le seul de ses cadrages qui se fond
+         dans le noir de la page au lieu d'y poser un rectangle beige.
+         Deux calques du MÊME fichier (un seul téléchargement) : dessous la
+         version « enduit », sans couleur, dessus la version peinte qui monte en
+         opacité. Les masques se peignent sous les yeux du visiteur, comme elle
+         les peint. L'opacité seule s'anime, donc rien ne repeint. -->
+    <div class="hero-img" id="heroImg">
+      <div class="cadre">
+        <div class="scene scene--toile">
+          <img class="scene-p scene-p--enduit" src="assets/images/scenes/hero.webp?v=20260826a" alt=""
+               aria-hidden="true" width="783" height="783" fetchpriority="high" decoding="async">
+          <img class="scene-p scene-p--peint" src="assets/images/scenes/hero.webp?v=20260826a"
+               alt="Deux masques en relief d'Angélique Avocevou, terre et blanc, posés sur des socles dorés devant un mur de noyer."
+               width="783" height="783" fetchpriority="high" decoding="async">
+        </div>
+      </div>
+      <p class="hero-lg">MODELÉ ET PEINT À LA MAIN</p>
+    </div>
+  </div>
+
+  <ul class="hero-mx">
+    <li><b>TECHNIQUE</b><i>·</i><span>MIXTE, RELIEF</span></li>
+    <li><b>PIÈCES</b><i>·</i><span>UNIQUES</span></li>
+    <li><b>ATELIER</b><i>·</i><span>COTONOU</span></li>
+  </ul>
+
+  <!-- ⚠️ LE SOMMAIRE REMPLACE LE BOUTON « DÉCOUVRIR LES ŒUVRES ».
+       Angélique, 2026-08-27 : elle regarde le site SUR TÉLÉPHONE, et là le
+       menu burger ne lui suffit pas — elle veut voir d'un coup d'œil ce que
+       le site contient et y accéder directement. Le nom change parce que ce
+       n'est plus seulement les œuvres.
+       ⚠️ IL EST DANS LE FLUX, pas en position absolue comme l'ancien bouton.
+       Celui-ci se posait SUR la ligne des métriques dès que le héros passait
+       sur une colonne (« DÉCOUVRIR L'ATELIER » barrait « PIÈCES · UNIQUES »
+       à 768 px, corrigé le 2026-08-08). Le héros est une colonne flex : le
+       sommaire y prend sa place, et rien ne peut le recouvrir.
+       ⚠️ « DÉCOUVRIR LES ŒUVRES » reste le libellé de l'entrée qui mène à la
+       collection : c'est sa formule, elle l'a nommée telle quelle. -->
+  <nav class="hero-plan" aria-label="Sommaire du site">
+    <p class="hero-plan-t">SOMMAIRE</p>
+    <ul>
+      <li><a href="#demarche">L'ARTISTE</a></li>
+      <li><a href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a></li>
+      <li><a href="#atelier">LE JOURNAL</a></li>
+      <li><a href="#portfolio">DANS UN LIEU</a></li>
+      <li><a href="#personnalise">CRÉATIONS SUR MESURE</a></li>
+      <li><a href="#visite">CONTACT</a></li>
+    </ul>
+  </nav>
+
+</section>
+
+<!-- ============ 2. LA DÉMARCHE (crème) ============ -->
+<section class="sec sec--creme demarche" id="demarche" aria-labelledby="h2a">
+  <p class="lab">01 <i>—</i> L'ARTISTE <b></b></p>
+
+  <h2 class="grand" id="h2a" data-mots>Je crée avec l'âme, la main, et une mémoire <em>vivante.</em></h2>
+
+  <div class="split">
+    <div class="split-i" data-para>
+      <div class="scene scene--atelier">
+        <img class="scene-p" src="assets/images/scenes/demarche.webp?v=20260826a"
+             alt="Angélique Avocevou, penchée sur sa table, tire un trait blanc au pinceau fin sur un masque orange."
+             width="900" height="1200" loading="lazy" decoding="async">
+        <i class="rai"></i>
+      </div>
+      <p class="split-lg">LA MAIN, AU PLUS PRÈS</p>
+    </div>
+
+    <div class="split-t">
+      <span class="plus" aria-hidden="true">+</span>
+      <p>Angy Art est une ode à la vérité de la matière. Je travaille le pigment, le relief et les
+        matériaux rapportés, je puise dans les scarifications, les symboles et les textiles, et je
+        laisse le geste simple devenir une œuvre qui dure.</p>
+      <p>Mes sources sont les cultures africaines et, de plus en plus, les histoires que mes
+        collectionneurs me confient. Une pièce qui quitte l'atelier doit être plus qu'un objet
+        décoratif&nbsp;: elle doit créer un lien entre un espace, une histoire, et celui qui la regarde.</p>
+      <a class="sous" href="https://wa.me/2290152006490" data-wa="portfolio">MON APPROCHE
+        <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ 4. LES ŒUVRES (papier) ============
+     Les six pièces envoyées par Angélique le 2026-08-21, avec leurs titres,
+     leurs techniques, leurs dimensions, leurs prix et ses textes.
+     ⚠️ RIEN N'EST INVENTÉ : tout vient d'elle, mot pour mot. Ses descriptions
+     sont écrites EN DUR dans la page, pas dans le JavaScript — sans quoi un
+     visiteur sans JS et les moteurs de recherche ne verraient rien de ce qui
+     fait la valeur de ce site.
+     ⚠️ « MISE EN SITUATION » là où le décor est un rendu. Les masques sont
+     bien les siens ; les niches de marbre et les livres ne le sont pas. Même
+     règle que le carrousel, posée le 2026-08-08. -->
+<section class="sec sec--papier oeuvres" id="oeuvres" aria-labelledby="h2o">
+  <p class="lab">02 <i>—</i> COLLECTION ÉNERGIES <b></b></p>
+
+  <h2 class="grand" id="h2o" data-mots>Donner une forme à ce <em>qui ne se voit pas.</em></h2>
+
+  <!-- Ce texte n'invente rien : il n'assemble que les mots de son
+       récapitulatif du 2026-08-21 (forces invisibles, lumière, liens,
+       résilience, puissance intérieure, rayonnement, visages sculptés,
+       couleurs vibrantes, esthétique africaine, symboles chargés de sens), et
+       le titre au-dessus est sa phrase telle quelle. Il tient sa place tant
+       qu'elle n'en écrit pas un autre ; le jour où elle l'envoie, c'est une
+       ligne à remplacer.
+       ⚠️ Elle parle de CINQ œuvres dans ÉNERGIES, elle en a envoyé SIX. On
+       montre les six et on n'annonce AUCUN NOMBRE : en cacher une serait une
+       perte sèche, et se tromper de laquelle serait pire. Le jour où elle dit
+       laquelle est à part, c'est un attribut à poser, pas une refonte. -->
+  <p class="oeu-intro"><b>ÉNERGIES</b> explore les forces invisibles&nbsp;: la lumière,
+    les liens, la résilience, la puissance intérieure et le rayonnement. Visages sculptés,
+    couleurs vibrantes, motifs inspirés de l'esthétique africaine et symboles chargés de
+    sens&nbsp;: chaque pièce donne une forme à ce qui ne se voit pas, mais se ressent.</p>
+
+  <p class="oeu-intro oeu-intro--2">Faites main à Cotonou, en composition sculpturale et
+    peinture. Les dimensions, la technique et le prix sont donnés pour chacune&nbsp;; le
+    texte qui l'accompagne est celui d'Angélique.
+    <b class="oeu-dispo">Chaque pièce est unique&nbsp;: un mot suffit pour savoir si elle est
+    encore disponible.</b></p>
+
+  <div class="oeu-g">
+      <article class="oeu" id="oeu-bonheur-eternel">
+        <figure class="oeu-p" style="--ar:619/1100">
+          <img src="assets/images/oeuvres/bonheur-eternel.webp?v=20260826a" alt="Un grand masque en terre de sienne, couvert de signes blancs : un soleil au front, deux joueurs de tam-tam, un cauri."
+               width="619" height="1100" loading="lazy" decoding="async">
+          
+        </figure>
+        <h3 class="oeu-t">Bonheur éternel</h3>
+        <dl class="oeu-c">
+          <div><dt>TECHNIQUE</dt><dd>Composition sculpturale et peinture acrylique</dd></div>
+          <div><dt>PALETTE</dt><dd>Terre de sienne, brun profond et blanc</dd></div>
+          <div><dt>DIMENSIONS</dt><dd>1 m 20 de hauteur sur 80 cm de largeur</dd></div>
+          <div><dt>PRIX</dt><dd class="oeu-x">Prix sur demande</dd></div>
+        </dl>
+        <details class="oeu-d">
+          <summary>Lire l'histoire de l'œuvre</summary>
+                    <p>Bonheur éternel est une œuvre qui célèbre l&#x27;identité, la transmission, la prospérité et la joie de vivre à travers un langage de formes et de symboles inspirés de l&#x27;héritage africain.</p>
+          <p>Au centre du front, le soleil occupe une place essentielle. Il représente la lumière, la vie, l&#x27;espoir et un bonheur éternel. Tel un astre intérieur, il éclaire le visage et symbolise cette lumière qui accompagne l&#x27;être tout au long de son chemin. Il devient également le lien entre les différents symboles présents dans l&#x27;œuvre.</p>
+          <p>De part et d&#x27;autre du soleil apparaissent les joueurs de tam-tam, gardiens du rythme et de la mémoire. Le tam-tam évoque la célébration, la communication et la transmission : son rythme rassemble, raconte et fait vivre la mémoire collective. Ils semblent ainsi répondre à la lumière du soleil dans une harmonie où la joie et la tradition se rencontrent.</p>
+          <p>Au cœur de cette composition apparaît également le cauri, symbole ancestral associé à la richesse, la prospérité, l&#x27;abondance et la valeur. Sa présence inscrit dans l&#x27;œuvre une dimension de fécondité et de réussite, comme une invitation à accueillir l&#x27;abondance tout en restant connecté à ses racines.</p>
+          <p>Les motifs géométriques, les lignes et les signes qui parcourent le visage évoquent quant à eux un langage ancestral, une mémoire inscrite dans la matière. Chaque tracé devient une trace, chaque symbole une histoire, chaque forme un fragment d&#x27;héritage.</p>
+          <p>Le visage central représente alors bien plus qu&#x27;une figure humaine : il devient le territoire où se rencontrent la lumière, la mémoire, la richesse et la transmission.</p>
+          <p>Une œuvre sur ce qui nous éclaire, ce qui nous rassemble, ce qui nous enrichit et surtout, ce que nous choisissons de transmettre.</p>
+        </details>
+        <a class="sous" href="https://wa.me/2290152006490?text=Bonjour%20Ang%C3%A9lique%2C%20j%27ai%20vu%20%C2%AB%20Bonheur%20%C3%A9ternel%20%C2%BB%20sur%20votre%20site%2C%201%20m%2020%20de%20hauteur%20sur%2080%20cm%20de%20largeur.%20Pouvez-vous%20me%20dire%20comment%20l%27acqu%C3%A9rir%20%3F">
+          ACQUÉRIR CETTE ŒUVRE
+          <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+        </a>
+      </article>
+      <article class="oeu" id="oeu-equilibre-des-ames">
+        <figure class="oeu-p" style="--ar:825/1100">
+          <img src="assets/images/oeuvres/equilibre-des-ames.webp?v=20260826a" alt="Deux visages côte à côte, l&#x27;un bleu outremer, l&#x27;autre jaune solaire, avec des disques de wax au niveau des yeux."
+               width="825" height="1100" loading="lazy" decoding="async">
+          
+        </figure>
+        <h3 class="oeu-t">L&#x27;Équilibre des Âmes</h3>
+        <dl class="oeu-c">
+          <div><dt>TECHNIQUE</dt><dd>Composition sculpturale et peinture acrylique</dd></div>
+          <div><dt>PALETTE</dt><dd>Bleu profond, jaune solaire, noir et blanc, avec intégration de motifs textiles</dd></div>
+          <div><dt>DIMENSIONS</dt><dd>75 cm de hauteur sur 65 cm de largeur</dd></div>
+          <div><dt>PRIX</dt><dd class="oeu-x">250 000 FCFA</dd></div>
+        </dl>
+        <details class="oeu-d">
+          <summary>Lire l'histoire de l'œuvre</summary>
+                    <p>L&#x27;Équilibre des Âmes est une œuvre sur la rencontre, la complémentarité et l&#x27;harmonie des différences.</p>
+          <p>Deux visages se tiennent côte à côte, distincts par leurs couleurs, leurs expressions graphiques et leurs univers, mais réunis dans une même composition. Ils représentent deux individualités qui ne cherchent ni à se dominer ni à se ressembler : elles existent pleinement dans leur différence et trouvent leur force dans leur complémentarité.</p>
+          <p>Le bleu profond évoque la sérénité, la profondeur intérieure et la contemplation. Face à lui, le jaune solaire exprime la lumière, la vitalité, la joie et l&#x27;ouverture. Deux énergies différentes, mais nécessaires l&#x27;une à l&#x27;autre.</p>
+          <p>Au niveau des yeux, les éléments circulaires en tissu wax apportent une dimension particulièrement symbolique. Ils deviennent des fragments d&#x27;identité, comme des mondes intérieurs que chaque être porte en lui. Le regard devient alors une porte : regarder l&#x27;autre, c&#x27;est aussi découvrir un univers différent du sien.</p>
+          <p>La présence d&#x27;une ligne centrale commune renforce cette idée de lien. Elle traverse les deux visages comme un fil invisible : celui des relations, de la famille, de l&#x27;amour, de la fraternité ou de toute rencontre véritable qui nous transforme.</p>
+          <p>L&#x27;œuvre devient ainsi une réflexion sur une vérité essentielle : l&#x27;unité ne signifie pas être identiques. Elle naît lorsque deux différences trouvent leur juste équilibre.</p>
+          <p>Deux êtres. Deux énergies. Deux histoires. Différents dans leur essence, mais plus forts lorsqu&#x27;ils avancent ensemble.</p>
+        </details>
+        <a class="sous" href="https://wa.me/2290152006490?text=Bonjour%20Ang%C3%A9lique%2C%20j%27ai%20vu%20%C2%AB%20L%27%C3%89quilibre%20des%20%C3%82mes%20%C2%BB%20sur%20votre%20site%20%2875%20cm%20de%20hauteur%20sur%2065%20cm%20de%20largeur%2C%20250%E2%80%AF000%E2%80%AFFCFA%29.%20Pouvez-vous%20me%20dire%20comment%20l%27acqu%C3%A9rir%20%3F">
+          ACQUÉRIR CETTE ŒUVRE
+          <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+        </a>
+      </article>
+      <article class="oeu" id="oeu-alliance-solaire">
+        <figure class="oeu-p" style="--ar:892/1100">
+          <img src="assets/images/oeuvres/alliance-solaire.webp?v=20260826a" alt="Deux visages entrelacés, l&#x27;un orange cuivré, l&#x27;autre jaune, surmontés de soleils stylisés."
+               width="892" height="1100" loading="lazy" decoding="async">
+          
+        </figure>
+        <h3 class="oeu-t">Alliance Solaire</h3>
+        <dl class="oeu-c">
+          <div><dt>TECHNIQUE</dt><dd>Composition sculpturale et peinture décorative</dd></div>
+          <div><dt>PALETTE</dt><dd>Orange terre cuivrée, jaune solaire, noir et blanc, avec éléments textiles</dd></div>
+          <div><dt>DIMENSIONS</dt><dd>75 cm de hauteur sur 65 cm de largeur</dd></div>
+          <div><dt>PRIX</dt><dd class="oeu-x">250 000 FCFA</dd></div>
+        </dl>
+        <details class="oeu-d">
+          <summary>Lire l'histoire de l'œuvre</summary>
+                    <p>Alliance Solaire est une œuvre qui célèbre la rencontre de deux énergies, deux identités et deux façons de rayonner.</p>
+          <p>Deux visages se rapprochent et s&#x27;entrelacent dans une composition où leurs formes semblent se répondre. Le premier, habillé d&#x27;un orange vibrant, évoque la chaleur, la vitalité, la créativité et la force intérieure. Le second, baigné de jaune, incarne la lumière, la joie, l&#x27;optimisme et l&#x27;épanouissement.</p>
+          <p>Au-dessus des deux figures apparaissent des soleils stylisés. Ils représentent la lumière qui habite chacun de nous, mais aussi cette énergie commune qui permet aux êtres de grandir et de rayonner ensemble. Ici, la lumière n&#x27;est pas seulement extérieure : elle devient une force intérieure.</p>
+          <p>Les éléments circulaires réalisés dans le tissu wax, placés au niveau des yeux, introduisent une dimension profondément identitaire. Chaque regard semble porter son propre univers, sa propre histoire et ses propres racines.</p>
+          <p>La proximité des deux visages est essentielle : ils ne sont pas fusionnés, mais unis. Chacun conserve son caractère, sa couleur et son identité tout en participant à une même harmonie.</p>
+          <p>Deux lumières. Deux identités. Une même énergie. Quand les différences s&#x27;unissent, elles peuvent créer leur propre étoile, leur propre soleil.</p>
+        </details>
+        <a class="sous" href="https://wa.me/2290152006490?text=Bonjour%20Ang%C3%A9lique%2C%20j%27ai%20vu%20%C2%AB%20Alliance%20Solaire%20%C2%BB%20sur%20votre%20site%20%2875%20cm%20de%20hauteur%20sur%2065%20cm%20de%20largeur%2C%20250%E2%80%AF000%E2%80%AFFCFA%29.%20Pouvez-vous%20me%20dire%20comment%20l%27acqu%C3%A9rir%20%3F">
+          ACQUÉRIR CETTE ŒUVRE
+          <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+        </a>
+      </article>
+      <article class="oeu" id="oeu-ames-soeurs">
+        <figure class="oeu-p" style="--ar:1536/1024">
+          <img src="assets/images/oeuvres/ames-soeurs.webp?v=20260826a" alt="Deux masques en terre cuite aux tracés blancs, posés sur des socles dorés."
+               width="1536" height="1024" loading="lazy" decoding="async">
+          <figcaption class="oeu-situ">MISE EN SITUATION</figcaption>
+        </figure>
+        <h3 class="oeu-t">Âmes Sœurs</h3>
+        <dl class="oeu-c">
+          <div><dt>TECHNIQUE</dt><dd>Compositions sculpturales et peinture acrylique</dd></div>
+          <div><dt>PALETTE</dt><dd>Terre cuite, blanc et touches dorées</dd></div>
+          <div><dt>DIMENSIONS</dt><dd>30 cm de hauteur</dd></div>
+          <div><dt>PRIX</dt><dd class="oeu-x">120 000 FCFA</dd></div>
+        </dl>
+        <details class="oeu-d">
+          <summary>Lire l'histoire de l'œuvre</summary>
+                    <p>Âmes Sœurs célèbre la rencontre de deux êtres liés par une connexion profonde, au-delà des différences, des apparences et des chemins individuels.</p>
+          <p>Les deux visages se tiennent côte à côte comme deux présences qui se reconnaissent. Ils partagent une même matière, un même langage graphique et une même énergie, tout en conservant chacun sa singularité. Cette dualité évoque ces liens rares dans lesquels deux êtres peuvent rester pleinement eux-mêmes tout en formant un ensemble harmonieux.</p>
+          <p>La terre cuite, chaleureuse et profonde, rappelle la terre, les racines et l&#x27;attachement aux origines. Les tracés blancs viennent révéler les formes et composent un langage de signes, de lignes et de motifs géométriques inspirés de l&#x27;esthétique africaine.</p>
+          <p>Les ornements circulaires suspendus au niveau des yeux donnent vie aux deux figures. Ils apportent mouvement et légèreté, comme deux fragments d&#x27;univers qui gravitent autour de leurs regards.</p>
+          <p>Les socles dorés soulignent leur caractère précieux et donnent au duo une présence presque cérémonielle. Ils symbolisent aussi la valeur de ce lien : une relation qui, lorsqu&#x27;elle est véritable, devient elle-même une richesse.</p>
+          <p>Âmes Sœurs ne parle pas uniquement d&#x27;amour. L&#x27;œuvre peut évoquer deux êtres qui se comprennent profondément : des partenaires, des amis, des frères et sœurs, des jumeaux ou simplement deux âmes qui se reconnaissent.</p>
+          <p>Car certaines rencontres ne nous demandent pas de devenir semblables. Elles nous apprennent simplement à avancer ensemble, chacun avec sa propre lumière.</p>
+        </details>
+        <a class="sous" href="https://wa.me/2290152006490?text=Bonjour%20Ang%C3%A9lique%2C%20j%27ai%20vu%20%C2%AB%20%C3%82mes%20S%C5%93urs%20%C2%BB%20sur%20votre%20site%20%2830%20cm%20de%20hauteur%2C%20120%E2%80%AF000%E2%80%AFFCFA%29.%20Pouvez-vous%20me%20dire%20comment%20l%27acqu%C3%A9rir%20%3F">
+          ACQUÉRIR CETTE ŒUVRE
+          <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+        </a>
+      </article>
+      <article class="oeu" id="oeu-force-silencieuse">
+        <figure class="oeu-p" style="--ar:880/1100">
+          <img src="assets/images/oeuvres/force-silencieuse.webp?v=20260826a" alt="Un masque bleu outremer aux motifs blancs et dorés, boucles vertes, porté par une tige en spirale."
+               width="880" height="1100" loading="lazy" decoding="async">
+          <figcaption class="oeu-situ">MISE EN SITUATION</figcaption>
+        </figure>
+        <h3 class="oeu-t">Force Silencieuse</h3>
+        <dl class="oeu-c">
+          <div><dt>TECHNIQUE</dt><dd>Sculpture décorative peinte à la main</dd></div>
+          <div><dt>PALETTE</dt><dd>Bleu profond, vert, blanc et doré</dd></div>
+          <div><dt>DIMENSIONS</dt><dd>30 cm de hauteur</dd></div>
+          <div><dt>PIÈCE UNIQUE · PRIX</dt><dd class="oeu-x">110 000 FCFA</dd></div>
+        </dl>
+        <details class="oeu-d">
+          <summary>Lire l'histoire de l'œuvre</summary>
+                    <p>Force Silencieuse est une œuvre qui célèbre la puissance intérieure, la maîtrise de soi et cette force qui n&#x27;a pas besoin de s&#x27;imposer pour être ressentie.</p>
+          <p>Le bleu profond qui recouvre le visage évoque le calme, la profondeur et la stabilité. Il traduit une présence posée, presque méditative. Derrière cette apparente tranquillité se révèle une force intérieure constante : une énergie qui demeure, même dans le silence.</p>
+          <p>Au centre du front, le symbole solaire représente la lumière intérieure. Il rappelle que la véritable puissance ne vient pas toujours de ce qui se voit, mais de cette lumière que l&#x27;on porte en soi et qui nous permet de rester debout, d&#x27;avancer et de rayonner.</p>
+          <p>Les ornements verts suspendus aux yeux apportent une touche de mouvement et de vie. Le vert évoque le renouveau, l&#x27;équilibre et l&#x27;ancrage dans le vivant.</p>
+          <p>La bouche dorée apporte une note précieuse à l&#x27;ensemble. Elle suggère que la parole possède elle aussi une force : celle de choisir quand parler, mais également celle de savoir préserver son silence.</p>
+          <p>La structure métallique en spirale prolonge le visage vers le bas et donne à l&#x27;œuvre une sensation de mouvement contenu. Elle symbolise le cheminement intérieur : une force qui se construit, se transforme et s&#x27;élève progressivement.</p>
+          <p>Parce que certaines forces ne crient pas. Elles restent debout. Elles rayonnent. Elles s&#x27;imposent par leur présence.</p>
+        </details>
+        <a class="sous" href="https://wa.me/2290152006490?text=Bonjour%20Ang%C3%A9lique%2C%20j%27ai%20vu%20%C2%AB%20Force%20Silencieuse%20%C2%BB%20sur%20votre%20site%20%2830%20cm%20de%20hauteur%2C%20110%E2%80%AF000%E2%80%AFFCFA%29.%20Pouvez-vous%20me%20dire%20comment%20l%27acqu%C3%A9rir%20%3F">
+          ACQUÉRIR CETTE ŒUVRE
+          <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+        </a>
+      </article>
+      <article class="oeu" id="oeu-aura">
+        <figure class="oeu-p" style="--ar:880/1100">
+          <img src="assets/images/oeuvres/aura.webp?v=20260826a" alt="Un masque partagé entre jaune et orange, soleil au front, collier de perles blanches, sur une tige ondulée."
+               width="880" height="1100" loading="lazy" decoding="async">
+          <figcaption class="oeu-situ">MISE EN SITUATION</figcaption>
+        </figure>
+        <h3 class="oeu-t">Aura</h3>
+        <dl class="oeu-c">
+          <div><dt>TECHNIQUE</dt><dd>Sculpture décorative peinte à la main</dd></div>
+          <div><dt>PALETTE</dt><dd>Jaune lumineux, orange terre cuite, noir et blanc</dd></div>
+          <div><dt>DIMENSIONS</dt><dd>30 cm de hauteur</dd></div>
+          <div><dt>PIÈCE UNIQUE · PRIX</dt><dd class="oeu-x">100 000 FCFA</dd></div>
+        </dl>
+        <details class="oeu-d">
+          <summary>Lire l'histoire de l'œuvre</summary>
+                    <p>Aura est une sculpture qui explore l&#x27;énergie intérieure, l&#x27;identité et la lumière qui émane de chaque être.</p>
+          <p>Le visage se construit autour d&#x27;une dualité chromatique entre le jaune lumineux et l&#x27;orange terre cuite. Deux couleurs qui représentent deux forces différentes mais complémentaires : la lumière et la chaleur, la douceur et la vitalité, l&#x27;introspection et l&#x27;expression.</p>
+          <p>Au centre du front, le soleil stylisé devient le point de rayonnement de l&#x27;œuvre. Il symbolise cette lumière intérieure qui nous habite et qui donne à chacun une présence particulière.</p>
+          <p>Les éléments circulaires suspendus au niveau des yeux apportent mouvement et profondeur au regard. Ils donnent à la sculpture une dimension presque vivante, comme si le visage observait le monde à travers son propre univers.</p>
+          <p>Le collier de perles blanches évoque la parure, l&#x27;élégance et la valeur, tout en apportant une touche délicate à la composition.</p>
+          <p>La structure métallique ondulée qui soutient le visage crée un contraste avec la solidité de la sculpture et donne à l&#x27;ensemble une impression de légèreté, comme si le visage était suspendu entre matière et énergie.</p>
+          <p>Une présence. Une énergie. Une lumière qui ne se voit pas toujours, mais qui se ressent.</p>
+        </details>
+        <a class="sous" href="https://wa.me/2290152006490?text=Bonjour%20Ang%C3%A9lique%2C%20j%27ai%20vu%20%C2%AB%20Aura%20%C2%BB%20sur%20votre%20site%20%2830%20cm%20de%20hauteur%2C%20100%E2%80%AF000%E2%80%AFFCFA%29.%20Pouvez-vous%20me%20dire%20comment%20l%27acqu%C3%A9rir%20%3F">
+          ACQUÉRIR CETTE ŒUVRE
+          <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+        </a>
+      </article>
+  </div>
+</section>
+
+<!-- ============ 2. LA MAIN, EN QUATRE TEMPS (papier) ============
+     La chronologie vraie d'une pièce, en photos d'atelier. C'est cette
+     section qui porte l'authenticité du site : on y voit la forme nue,
+     la couleur qu'elle mélange, le trait qu'elle pose, et l'échelle. -->
+<section class="sec sec--papier temps" id="atelier" aria-labelledby="h2c">
+  <div class="temps-tete">
+    <div>
+      <p class="lab">03 <i>—</i> LE JOURNAL <b></b></p>
+      <h2 class="grand" id="h2c" data-mots>Rien ne quitte l'atelier sans être passé
+        <em>par sa main.</em></h2>
+    </div>
+    <p class="temps-d">Chaque pièce traverse les mêmes quatre étapes, à Cotonou.
+      Aucune n'est déléguée, aucune n'est imprimée.</p>
+  </div>
+
+  <ol class="temps-l">
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-1.webp?v=20260826a" width="780" height="927" loading="lazy" decoding="async"
+             alt="Angélique applique l'enduit blanc au pinceau sur une forme découpée, encore sans couleur.">
+      </div>
+      <p class="tp-n">01</p>
+      <h3 class="tp-t">La forme</h3>
+      <p class="tp-s">La découpe reçoit son enduit blanc. Tant que la forme n'est pas juste,
+        la couleur attend.</p>
+    </li>
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-2.webp?v=20260826a" width="780" height="927" loading="lazy" decoding="async"
+             alt="Angélique mélange un orange sur une palette tenue dans un cadre doré, devant la pièce à peindre.">
+      </div>
+      <p class="tp-n">02</p>
+      <h3 class="tp-t">La couleur</h3>
+      <p class="tp-s">Le pigment se mélange à la main, dans un cadre doré qui lui sert
+        de palette.</p>
+    </li>
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-3.webp?v=20260826a" width="780" height="928" loading="lazy" decoding="async"
+             alt="Angélique trace une ligne blanche au pinceau fin sur un masque terracotta posé à plat.">
+      </div>
+      <p class="tp-n">03</p>
+      <h3 class="tp-t">Le trait</h3>
+      <p class="tp-s">Les motifs se posent au pinceau fin, un par un. Aucun gabarit,
+        aucune impression.</p>
+    </li>
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-4.webp?v=20260826a" width="780" height="929" loading="lazy" decoding="async"
+             alt="Angélique, assise sur un tabouret, peint une toile de plus de deux mètres portant deux grands masques.">
+      </div>
+      <p class="tp-n">04</p>
+      <h3 class="tp-t">L'échelle</h3>
+      <p class="tp-s">Certaines pièces dépassent deux mètres. On s'assoit devant,
+        à hauteur de main, et on prend le temps.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============ 3. DANS UN LIEU (noir) — carrousel ============ -->
+<section class="sec sec--noir folio" id="portfolio" aria-labelledby="h2b">
+  <div class="folio-tete">
+    <div>
+      <p class="lab lab--n">04 <i>—</i> DANS UN LIEU <b></b></p>
+      <h2 class="grand grand--n" id="h2b" data-mots>Elle change la pièce <em>où elle entre.</em></h2>
+    </div>
+    <p class="folio-d">Des mises en situation&nbsp;: les pièces sont bien celles de l'atelier,
+      l'intérieur est une présentation. Les photos des œuvres disponibles, avec leurs
+      dimensions, s'envoient sur WhatsApp.</p>
+  </div>
+
+  <div class="cars" id="cars" data-cur="VOIR">
+    <div class="cars-p" id="carsP"><!-- posé par app.js --></div>
+  </div>
+
+  <div class="cars-b">
+    <div class="cars-n">
+      <button class="rond" id="carPrev" aria-label="Œuvre précédente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+      </button>
+      <button class="rond" id="carNext" aria-label="Œuvre suivante">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+      <p class="cars-c" id="carsC" aria-live="polite">01 <i>—</i> 06</p>
+    </div>
+    <a class="pill pill--n" href="https://wa.me/2290152006490" data-wa="portfolio">VOIR TOUT LE PORTFOLIO</a>
+  </div>
+</section>
+
+<!-- ============ 5. POUR UN LIEU (plein écran) ============
+     L'axe le plus commercial de son activité : équiper un hôtel, un
+     restaurant, un hall. Une pièce monumentale tient le mur d'une salle. -->
+<section class="plein lieux" id="lieux" aria-labelledby="h2l">
+  <div class="scene scene--salle">
+    <img class="scene-p scene-p--haut" src="assets/images/scenes/lieu.webp?v=20260826a"
+         alt="Un masque monumental en relief, terre et blanc, occupe le mur de pierre d'un restaurant où dînent des convives."
+         width="768" height="1364" loading="lazy" decoding="async">
+    <i class="rai rai--large"></i>
+  </div>
+
+  <div class="plein-in">
+    <h2 class="grand grand--n plein-t" id="h2l" data-mots>Un mur, et le lieu
+      <em>change de voix.</em></h2>
+  </div>
+
+  <div class="plein-b">
+    <p class="plein-d">Le format se calcule sur la distance de recul, la matière se choisit
+      pour l'éclairage prévu. Quand plusieurs espaces sont à équiper, la série reste cohérente.</p>
+    <ul class="tags">
+      <li>HÔTELS</li><li>RESTAURANTS</li><li>HALLS ET BUREAUX</li><li>RÉSIDENCES</li>
+    </ul>
+    <button class="pill pill--n" data-modale>ÉQUIPER UN LIEU</button>
+  </div>
+</section>
+
+
+<!-- ============ 6. CRÉATIONS PERSONNALISÉES (crème) ============
+     Brief d'Angélique du 2026-08-21, « Une œuvre qui raconte votre histoire ».
+     ⚠️ LA DISTINCTION AVEC LES COLLECTIONS EST DEMANDÉE EXPLICITEMENT : les
+     collections sont les œuvres qu'elle a créées et qui existent déjà ; ici
+     l'œuvre naît de l'histoire du client et n'existe pas encore. Le texte le
+     dit en toutes lettres, et les deux colonnes le montrent.
+     ⚠️ Ce n'est pas un produit décoratif qu'on ajoute au panier : c'est une
+     ŒUVRE D'ART SUR COMMANDE. Le vocabulaire suit (histoire, mémoire,
+     transmission, interprétation), et rien n'annonce de prix. -->
+<section class="sec sec--creme perso" id="personnalise" aria-labelledby="h2p">
+  <p class="lab">05 <i>—</i> CRÉATIONS SUR MESURE <b></b></p>
+
+  <h2 class="grand" id="h2p" data-mots>Une œuvre qui raconte <em>votre histoire.</em></h2>
+
+  <!-- LA SIGNATURE DE CETTE SECTION : l'entaille qui se creuse.
+       « Une œuvre d'Angy, c'est une entaille dans la matière : on marque la
+       surface, et la mémoire y tient. » Ici c'est VOTRE histoire qu'on
+       entaille. Deux traits : l'arête claire au-dessus, le creux sombre en
+       dessous — c'est le décalage qui fait le relief. -->
+  <div class="ent" aria-hidden="true">
+    <svg viewBox="0 0 600 26" preserveAspectRatio="none" focusable="false">
+      <path class="ent-a" d="M3 14C104 8 186 19 300 12s197-7 297 3"/>
+      <path class="ent-b" d="M3 14C104 8 186 19 300 12s197-7 297 3"/>
+    </svg>
+  </div>
+
+  <div class="perso-in">
+    <div class="perso-t">
+      <p class="perso-d">Une histoire familiale que vous souhaitez graver dans une œuvre
+        Angy&nbsp;Art, pour en préserver la mémoire et la transmettre de génération
+        en génération.</p>
+      <p>Chaque création personnalisée naît d'une histoire, d'un lien, d'un souvenir ou d'une
+        identité. À partir de vos récits, de vos photographies et de vos symboles, Angy&nbsp;Art
+        imagine une œuvre unique, pensée spécialement pour vous.</p>
+      <p class="perso-c">Parce que certaines histoires méritent plus qu'une photographie ou un
+        souvenir&nbsp;: elles méritent de <em>devenir une œuvre d'art.</em></p>
+      <p>Une pièce créée pour votre famille, mais aussi pour celles et ceux qui viendront
+        après vous.</p>
+      <!-- ⚠️ LA CHUTE EST UN TRICOLON, ET ELLE SE COMPOSE COMME TEL.
+           « Votre histoire. Votre héritage. Votre œuvre. » — trois membres qui
+           montent. Les couler dans un paragraphe ordinaire les aplatirait : ils
+           prennent leur propre ligne, au corps du titre, et le dernier porte
+           l'italique doré. C'est la phrase qu'on doit retenir en partant. -->
+      <p class="perso-f">Votre histoire. Votre héritage. <em>Votre œuvre.</em></p>
+    </div>
+
+    <ul class="deux">
+      <li>
+        <b>LES COLLECTIONS</b>
+        <span>Les œuvres nées de ses recherches. Elles existent déjà, avec leurs dimensions
+          et leur technique&nbsp;: on les regarde, on en choisit une.</span>
+      </li>
+      <li class="deux--a">
+        <b>UNE CRÉATION PERSONNALISÉE</b>
+        <span>L'œuvre naît de votre histoire. Elle n'existe pas encore&nbsp;: vous la
+          racontez, Angélique l'interprète, et elle se fait à la main en atelier.</span>
+      </li>
+    </ul>
+
+    <div class="perso-go">
+      <button class="pill pill--encre" type="button" data-perso>RACONTER MON HISTOIRE</button>
+      <p class="perso-n">Quinze questions, en trois temps. Aucun paiement, aucun compte à créer&nbsp;:
+        votre projet part sur WhatsApp, et Angélique vous répond elle-même.</p>
+      <a class="sous" href="https://wa.me/2290152006490" data-wa="perso">EN PARLER TOUT DE SUITE
+        <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. LA CITATION (split) ============ -->
+<section class="cit" aria-labelledby="h2d">
+  <div class="cit-i">
+    <div class="scene scene--lin">
+      <img class="scene-p" src="assets/images/scenes/matiere.webp?v=20260826a"
+           alt="Gros plan sur le relief d'un masque : la terre rouge sculptée, les motifs blancs peints à la main."
+           width="594" height="860" loading="lazy" decoding="async">
+      <i class="rai"></i>
+    </div>
+  </div>
+  <div class="cit-t">
+    <p class="lab lab--n">COLLECTIONNER, EN SILENCE <b></b></p>
+    <blockquote id="h2d" class="grand grand--n" data-mots>Une œuvre doit créer un lien durable entre
+      un espace, une histoire, et <em>celui qui la contemple.</em></blockquote>
+    <p class="cit-a">— ANGÉLIQUE AVOCEVOU</p>
+  </div>
+</section>
+
+<!-- ============ 8. LA VISITE (plein écran) ============ -->
+<section class="plein visite" id="visite" aria-labelledby="h2e">
+  <div class="scene scene--soir">
+    <img class="scene-p" src="assets/images/scenes/visite.webp?v=20260826a"
+         alt="Deux masques en terre et blanc, sur socles dorés, posés sur une tablette de marbre devant un mur de noyer."
+         width="1500" height="1000" loading="lazy" decoding="async">
+    <i class="rai rai--chaud"></i>
+  </div>
+
+  <div class="plein-in plein-in--c">
+    <h2 class="grand grand--n plein-t" id="h2e" data-mots>Retrouvons-nous <em>à l'atelier.</em></h2>
+    <p class="plein-d plein-d--c">Les visites se calent une semaine à l'avance. Pour une acquisition,
+      une commande ou l'équipement d'un lieu, écrivez-moi&nbsp;: on en parle avant tout le reste.</p>
+    <button class="pill pill--plein" data-modale>DEMANDER UNE VISITE</button>
+    <!-- « Un bouton en bas de page pour les Créations sur mesure. » Le héros
+         mène aux œuvres, la fin de la page mène au sur-mesure : on découvre,
+         puis on agit. -->
+    <p class="visite-sm">Ou confiez-lui une histoire, et elle deviendra une œuvre.</p>
+    <button class="pill pill--n visite-b" type="button" data-perso>CRÉATIONS SUR MESURE</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ PIED ============ -->
+<footer class="pied">
+  <div class="pied-in">
+    <p class="pied-l">
+      <img class="pied-g" src="assets/images/logos/marque.webp?v=20260826a" alt="" width="284" height="220">
+      <span>Angy&nbsp;Art</span>
+    </p>
+    <div class="pied-c">
+      <p>Atelier à Cotonou, Bénin</p>
+      <p><a href="https://wa.me/2290152006490" data-wa="direct">+229 01 52 00 64 90</a></p>
+      <p><a href="mailto:angyavocevou@gmail.com">angyavocevou@gmail.com</a></p>
+    </div>
+    <nav class="pied-r" aria-label="Réseaux et liens">
+      <a href="https://instagram.com/angy_art_creatif" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://tiktok.com/@angy_art_" target="_blank" rel="noopener">TikTok</a>
+      <button data-modale>Demander une visite</button>
+    </nav>
+  </div>
+  <div class="pied-b">
+    <p>© 2026 Angy Art <i>·</i> Angélique Avocevou. Les œuvres présentées sont sa propriété,
+      toute reproduction est interdite.</p>
+    <p>Site conçu par <a href="https://www.nebula-agency.online" target="_blank" rel="noopener">NEBULA Agency</a>, Cotonou.</p>
+  </div>
+</footer>
+
+<!-- ============ AMBIANCE SONORE ============ -->
+<button class="son" id="fabSon" aria-pressed="false" aria-label="Activer l'ambiance sonore de l'atelier">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/>
+    <path class="o1" d="M16.5 8.5a5 5 0 0 1 0 7"/><path class="o2" d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+</button>
+
+<!-- ============ MODALE : la demande de visite ============ -->
+<dialog class="mod" id="mod" aria-labelledby="modT">
+  <button class="mod-x" id="modX" aria-label="Fermer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>
+  </button>
+  <img class="mod-g" src="assets/images/logos/marque.webp?v=20260826a" alt="" width="284" height="220">
+  <p class="mod-l" id="modT">VOTRE VISITE CHEZ ANGY ART</p>
+  <p class="mod-h">Parlons <em>de votre projet.</em></p>
+
+  <form class="mod-f" id="modF" novalidate>
+    <div class="ch">
+      <label for="chCherche">CE QUE VOUS CHERCHEZ</label>
+      <select id="chCherche" required>
+        <option value="">Choisir</option>
+        <option>Une œuvre originale disponible</option>
+        <option>Un tableau personnalisé, à partir d'une histoire</option>
+        <option>Une œuvre pour un lieu (hôtel, restaurant, bureau)</option>
+        <option>Un atelier créatif</option>
+        <option>Une exposition ou un projet artistique</option>
+      </select>
+    </div>
+    <div class="ch">
+      <label for="chFormat">LE FORMAT OU L'ESPACE</label>
+      <select id="chFormat">
+        <option value="">Choisir</option>
+        <option>Petit format, pour un mur intime</option>
+        <option>Format moyen, pour un salon</option>
+        <option>Grand format, pour une entrée ou un hall</option>
+        <option>Plusieurs pièces, pour un lieu entier</option>
+        <option>Je ne sais pas encore</option>
+      </select>
+    </div>
+    <div class="ch">
+      <label for="chQuand">QUAND</label>
+      <select id="chQuand">
+        <option value="">Choisir</option>
+        <option>Dès que possible</option>
+        <option>Dans le mois</option>
+        <option>Dans les trois mois</option>
+        <option>Je prépare, sans date</option>
+      </select>
+    </div>
+    <p class="err" id="modE" hidden>Choisissez d'abord ce que vous cherchez.</p>
+    <button class="pill pill--plein mod-go" type="submit">OUVRIR LA CONVERSATION</button>
+    <p class="mod-ok" id="modOk" hidden>Parfait. La conversation s'ouvre sur WhatsApp avec votre demande
+      déjà écrite&nbsp;: vous n'avez plus qu'à appuyer sur envoyer.</p>
+    <p class="mod-n">Aucun paiement ici, aucun compte à créer. La demande part sur WhatsApp,
+      au +229&nbsp;01&nbsp;52&nbsp;00&nbsp;64&nbsp;90.</p>
+  </form>
+</dialog>
+
+<!-- ============ MODALE : le projet de création personnalisée ============
+     Les 15 questions du brief, en TROIS TEMPS — « pour éviter une page trop
+     longue », c'est écrit dans le brief.
+     ⚠️ LE SITE EST STATIQUE : il n'y a ni serveur, ni base, ni boîte mail
+     derrière. Le formulaire ne « soumet » donc rien : il RÉDIGE le projet et
+     ouvre la conversation WhatsApp d'Angélique avec le texte déjà écrit.
+     C'est pour ça que la question 11 (téléversement de fichiers) devient
+     « vous les joignez dans la conversation » : sur un site sans serveur,
+     un bouton « Parcourir » qui n'envoie rien est un mensonge, et au Bénin
+     envoyer ses photos sur WhatsApp est de toute façon le geste naturel.
+     Ce qui reste hors de portée du statique est listé dans le CONTEXT.md. -->
+<dialog class="mod mod--per" id="per" aria-labelledby="perT">
+  <button class="mod-x" id="perX" aria-label="Fermer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>
+  </button>
+  <img class="mod-g" src="assets/images/logos/marque.webp?v=20260826a" alt="" width="284" height="220">
+  <p class="mod-l" id="perT">VOTRE CRÉATION PERSONNALISÉE</p>
+  <p class="mod-h">Racontez-moi <em>votre histoire.</em></p>
+
+  <ol class="pas" id="perPas">
+    <li class="pas--on"><b>1</b><span>VOTRE HISTOIRE</span></li>
+    <li><b>2</b><span>VOTRE VISION</span></li>
+    <li><b>3</b><span>VOTRE PROJET</span></li>
+  </ol>
+
+  <form class="mod-f per-f" id="perF" novalidate>
+
+    <!-- ÉTAPE 1 — VOTRE HISTOIRE -->
+    <div class="etp" data-etp="1">
+      <div class="ch">
+        <label for="pType">QUEL TYPE D'ŒUVRE SOUHAITEZ-VOUS&nbsp;?</label>
+        <select id="pType">
+          <option value="">Choisir</option>
+          <option>Un tableau</option>
+          <option>Une sculpture</option>
+          <option>Un duo ou un ensemble</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="ch" id="pTypeAW" hidden>
+        <label for="pTypeA">PRÉCISEZ</label>
+        <input id="pTypeA" type="text" autocomplete="off" placeholder="Ce que vous avez en tête">
+      </div>
+      <div class="ch">
+        <label for="pPour">POUR QUI CETTE ŒUVRE EST-ELLE DESTINÉE&nbsp;?</label>
+        <select id="pPour">
+          <option value="">Choisir</option>
+          <option>Pour moi</option>
+          <option>Pour un couple</option>
+          <option>Pour une famille</option>
+          <option>Pour un proche</option>
+          <option>Pour une entreprise ou un espace professionnel</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="ch">
+        <label for="pHist">QUELLE HISTOIRE SOUHAITEZ-VOUS RACONTER&nbsp;?</label>
+        <textarea id="pHist" rows="4" placeholder="Prenez le temps. C'est de là que naît l'œuvre."></textarea>
+      </div>
+      <div class="ch">
+        <label for="pQui">QUI OU QUOI SOUHAITEZ-VOUS REPRÉSENTER&nbsp;?</label>
+        <textarea id="pQui" rows="2" placeholder="Des personnes, une famille, un couple, un événement, un lieu, un symbole…"></textarea>
+      </div>
+      <div class="ch">
+        <label for="pElem">QUELS ÉLÉMENTS DOIVENT APPARAÎTRE&nbsp;?</label>
+        <textarea id="pElem" rows="2" placeholder="Symboles, objets, tissus, bijoux, motifs, dates, prénoms…"></textarea>
+      </div>
+      <div class="ch">
+        <label for="pSens">Y A-T-IL UNE SIGNIFICATION PARTICULIÈRE À TRANSMETTRE&nbsp;?</label>
+        <textarea id="pSens" rows="2" placeholder="Ce que l'œuvre doit dire, sans le dire."></textarea>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 — VOTRE VISION -->
+    <div class="etp" data-etp="2" hidden>
+      <div class="ch">
+        <label for="pCoul">QUELLES COULEURS PRIVILÉGIER&nbsp;?</label>
+        <input id="pCoul" type="text" autocomplete="off" placeholder="Terre, indigo, or, blanc cassé…">
+      </div>
+      <div class="ch">
+        <label for="pEvit">DES COULEURS OU DES ÉLÉMENTS À ÉVITER&nbsp;? <i>(facultatif)</i></label>
+        <input id="pEvit" type="text" autocomplete="off" placeholder="Ce que vous ne voulez pas voir">
+      </div>
+      <div class="ch">
+        <label for="pLib">QUELLE LIBERTÉ ACCORDEZ-VOUS À L'ARTISTE&nbsp;?</label>
+        <select id="pLib">
+          <option value="">Choisir</option>
+          <option>Une création fidèle à mes indications</option>
+          <option>Je donne mon histoire et quelques éléments, puis je laisse Angélique interpréter</option>
+          <option>Je laisse une grande liberté artistique</option>
+        </select>
+      </div>
+      <div class="ch">
+        <label for="pInsp">UNE ŒUVRE D'ANGY ART QUI VOUS INSPIRE&nbsp;? <i>(facultatif)</i></label>
+        <input id="pInsp" type="text" autocomplete="off" placeholder="Son nom, ou ce dont vous vous souvenez">
+      </div>
+      <div class="ch ch--case">
+        <label><input id="pPh" type="checkbox"> J'ai des photographies ou des références à joindre</label>
+        <p class="ch-n">Vous les enverrez dans la conversation WhatsApp qui s'ouvre&nbsp;: photos,
+          croquis, tissus, documents. Elles arrivent directement à Angélique.</p>
+      </div>
+      <div class="ch">
+        <label for="pDim">QUELLES DIMENSIONS&nbsp;?</label>
+        <select id="pDim">
+          <option value="">Choisir</option>
+          <option>Je ne sais pas encore</option>
+          <option>J'ai une idée des dimensions</option>
+        </select>
+      </div>
+      <div class="ch ch--duo" id="pDimW" hidden>
+        <span>
+          <label for="pDimL">LARGEUR (CM)</label>
+          <input id="pDimL" type="number" min="1" max="900" inputmode="numeric" placeholder="120">
+        </span>
+        <span>
+          <label for="pDimH">HAUTEUR (CM)</label>
+          <input id="pDimH" type="number" min="1" max="900" inputmode="numeric" placeholder="90">
+        </span>
+      </div>
+      <div class="ch">
+        <label for="pLieu">OÙ L'ŒUVRE SERA-T-ELLE EXPOSÉE&nbsp;?</label>
+        <select id="pLieu">
+          <option value="">Choisir</option>
+          <option>Dans un salon</option>
+          <option>Dans une chambre</option>
+          <option>Dans un bureau</option>
+          <option>Dans un commerce, un restaurant ou un hôtel</option>
+          <option>Autre</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 — VOTRE PROJET -->
+    <div class="etp" data-etp="3" hidden>
+      <div class="ch">
+        <label for="pBud">QUEL BUDGET SOUHAITEZ-VOUS Y CONSACRER&nbsp;?</label>
+        <select id="pBud">
+          <option value="">Choisir</option>
+          <option>Moins de 100 000 FCFA</option>
+          <option>100 000 à 200 000 FCFA</option>
+          <option>200 000 à 350 000 FCFA</option>
+          <option>350 000 à 500 000 FCFA</option>
+          <option>Plus de 500 000 FCFA</option>
+          <option>Je souhaite être conseillé(e)</option>
+        </select>
+      </div>
+      <div class="ch ch--duo">
+        <span>
+          <label for="pDate">POUR QUELLE DATE&nbsp;? <i>(souhait)</i></label>
+          <input id="pDate" type="date">
+        </span>
+        <span>
+          <label for="pOcc">UNE OCCASION&nbsp;? <i>(facultatif)</i></label>
+          <input id="pOcc" type="text" autocomplete="off" placeholder="Anniversaire, mariage…">
+        </span>
+      </div>
+
+      <p class="per-sep">VOS COORDONNÉES</p>
+      <div class="ch">
+        <label for="pNom">NOM ET PRÉNOM</label>
+        <input id="pNom" type="text" autocomplete="name" required>
+      </div>
+      <div class="ch ch--duo">
+        <span>
+          <label for="pTel">WHATSAPP OU TÉLÉPHONE</label>
+          <input id="pTel" type="tel" autocomplete="tel" inputmode="tel" placeholder="+229 …">
+        </span>
+        <span>
+          <label for="pMail">ADRESSE E-MAIL</label>
+          <input id="pMail" type="email" autocomplete="email" placeholder="vous@exemple.com">
+        </span>
+      </div>
+      <div class="ch ch--duo">
+        <span>
+          <label for="pVille">VILLE ET PAYS</label>
+          <input id="pVille" type="text" autocomplete="address-level2" placeholder="Cotonou, Bénin">
+        </span>
+        <span>
+          <label for="pPref">COMMENT VOUS RÉPONDRE&nbsp;?</label>
+          <select id="pPref">
+            <option>WhatsApp</option>
+            <option>Téléphone</option>
+            <option>E-mail</option>
+          </select>
+        </span>
+      </div>
+    </div>
+
+    <p class="err" id="perE" hidden></p>
+
+    <div class="per-b">
+      <button class="pill per-prec" type="button" id="perPrec" hidden>RETOUR</button>
+      <button class="pill pill--plein per-suiv" type="button" id="perSuiv">CONTINUER</button>
+      <button class="pill pill--plein per-go" type="submit" id="perGo" hidden>ENVOYER MON PROJET</button>
+    </div>
+
+    <p class="mod-ok" id="perOk" hidden>Votre projet a bien été transmis à Angy&nbsp;Art.
+      Merci de nous confier votre histoire. La conversation s'ouvre avec tout votre brief déjà
+      écrit&nbsp;: vous n'avez plus qu'à appuyer sur envoyer, et à joindre vos photos.</p>
+    <p class="mod-n">Chaque demande est étudiée personnellement. Après réception de votre brief,
+      Angélique vous contactera afin d'échanger sur votre projet et de proposer une création
+      adaptée à votre histoire, vos dimensions et votre budget.</p>
+  </form>
+</dialog>
+
+<!-- ============ VUE EN GRAND ============ -->
+<dialog class="loupe" id="loupe" aria-label="La mise en situation, en grand">
+  <button class="loupe-x" id="loupeX" aria-label="Fermer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>
+  </button>
+  <figure class="loupe-f" id="loupeF">
+    <figcaption id="loupeCap"></figcaption>
+  </figure>
+</dialog>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Person","@id":"https://angy-art.pages.dev/#angelique","name":"Angélique Avocevou","alternateName":"Angy Art","jobTitle":"Artiste plasticienne","description":"Artiste plasticienne béninoise. Œuvres contemporaines en relief sur l'identité, la mémoire et le patrimoine africain.","url":"https://angy-art.pages.dev/","email":"angyavocevou@gmail.com","telephone":"+2290152006490","nationality":"Bénin","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"},"sameAs":["https://instagram.com/angy_art_creatif","https://tiktok.com/@angy_art_"],"knowsAbout":["art contemporain africain","peinture en relief","technique mixte","patrimoine africain"]},
+ {"@type": "VisualArtwork", "name": "Bonheur éternel", "creator": {"@id": "https://angy-art.pages.dev/#angelique"}, "artMedium": "Composition sculpturale et peinture acrylique", "artform": "Sculpture murale", "description": "Bonheur éternel est une œuvre qui célèbre l'identité, la transmission, la prospérité et la joie de vivre à travers un langage de formes et de symboles inspirés de l'héritage africain.", "image": "https://angy-art.pages.dev/assets/images/oeuvres/bonheur-eternel.webp"},
+ {"@type": "VisualArtwork", "name": "L'Équilibre des Âmes", "creator": {"@id": "https://angy-art.pages.dev/#angelique"}, "artMedium": "Composition sculpturale et peinture acrylique", "artform": "Sculpture murale", "description": "L'Équilibre des Âmes est une œuvre sur la rencontre, la complémentarité et l'harmonie des différences.", "image": "https://angy-art.pages.dev/assets/images/oeuvres/equilibre-des-ames.webp", "offers": {"@type": "Offer", "price": 250000, "priceCurrency": "XOF", "availability": "https://schema.org/InStock", "url": "https://angy-art.pages.dev/#oeuvres"}},
+ {"@type": "VisualArtwork", "name": "Alliance Solaire", "creator": {"@id": "https://angy-art.pages.dev/#angelique"}, "artMedium": "Composition sculpturale et peinture décorative", "artform": "Sculpture murale", "description": "Alliance Solaire est une œuvre qui célèbre la rencontre de deux énergies, deux identités et deux façons de rayonner.", "image": "https://angy-art.pages.dev/assets/images/oeuvres/alliance-solaire.webp", "offers": {"@type": "Offer", "price": 250000, "priceCurrency": "XOF", "availability": "https://schema.org/InStock", "url": "https://angy-art.pages.dev/#oeuvres"}},
+ {"@type": "VisualArtwork", "name": "Âmes Sœurs", "creator": {"@id": "https://angy-art.pages.dev/#angelique"}, "artMedium": "Compositions sculpturales et peinture acrylique", "artform": "Sculpture murale", "description": "Âmes Sœurs célèbre la rencontre de deux êtres liés par une connexion profonde, au-delà des différences, des apparences et des chemins individuels.", "image": "https://angy-art.pages.dev/assets/images/oeuvres/ames-soeurs.webp", "offers": {"@type": "Offer", "price": 120000, "priceCurrency": "XOF", "availability": "https://schema.org/InStock", "url": "https://angy-art.pages.dev/#oeuvres"}},
+ {"@type": "VisualArtwork", "name": "Force Silencieuse", "creator": {"@id": "https://angy-art.pages.dev/#angelique"}, "artMedium": "Sculpture décorative peinte à la main", "artform": "Sculpture murale", "description": "Force Silencieuse est une œuvre qui célèbre la puissance intérieure, la maîtrise de soi et cette force qui n'a pas besoin de s'imposer pour être ressentie.", "image": "https://angy-art.pages.dev/assets/images/oeuvres/force-silencieuse.webp", "offers": {"@type": "Offer", "price": 110000, "priceCurrency": "XOF", "availability": "https://schema.org/InStock", "url": "https://angy-art.pages.dev/#oeuvres"}},
+ {"@type": "VisualArtwork", "name": "Aura", "creator": {"@id": "https://angy-art.pages.dev/#angelique"}, "artMedium": "Sculpture décorative peinte à la main", "artform": "Sculpture murale", "description": "Aura est une sculpture qui explore l'énergie intérieure, l'identité et la lumière qui émane de chaque être.", "image": "https://angy-art.pages.dev/assets/images/oeuvres/aura.webp", "offers": {"@type": "Offer", "price": 100000, "priceCurrency": "XOF", "availability": "https://schema.org/InStock", "url": "https://angy-art.pages.dev/#oeuvres"}},
+ {"@type":"WebSite","@id":"https://angy-art.pages.dev/#site","url":"https://angy-art.pages.dev/","name":"Angy Art","inLanguage":"fr-FR","publisher":{"@id":"https://angy-art.pages.dev/#angelique"}},
+ {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Comment voir les œuvres disponibles ?","acceptedAnswer":{"@type":"Answer","text":"Le portfolio complet, avec les pièces disponibles, leurs dimensions et leurs techniques, s'envoie sur WhatsApp au +229 01 52 00 64 90."}},
+  {"@type":"Question","name":"Peut-on commander un tableau personnalisé ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Vous racontez un moment, un nom ou une origine ; l'intention, le format et les matières sont proposés, ajustés ensemble, puis l'œuvre est réalisée à la main en atelier."}},
+  {"@type":"Question","name":"Travaillez-vous avec des hôtels, restaurants et architectes ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Le format est calculé sur la distance de recul, la matière est choisie pour l'éclairage prévu, et une série cohérente peut être produite quand plusieurs espaces sont à équiper."}},
+  {"@type":"Question","name":"Où se trouve l'atelier ?","acceptedAnswer":{"@type":"Answer","text":"À Cotonou, au Bénin. Les échanges se font sur WhatsApp, et les œuvres peuvent être expédiées."}}]}
+]}
+</script>
+
+<script src="assets/app.js?v=20260826a"></script>
+</body>
+</html>

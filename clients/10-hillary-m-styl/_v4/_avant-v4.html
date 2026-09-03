@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HILLARY M. STYL — Maison de couture · pagne, prêt-à-porter &amp; sur-mesure</title>
+<meta name="description" content="HILLARY M. STYL, maison de couture à Cotonou. Pagne, wax et tous tissus. Prêt-à-porter par tailles et sur-mesure aux mesures exactes. Commande en ligne, retrait ou expédition, délai express en 1 à 3 jours.">
+<meta name="theme-color" content="#0c0c0c">
+<meta name="author" content="Hillary M. Styl">
+<link rel="canonical" href="https://hillary-m-styl.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="HILLARY M. STYL">
+<meta property="og:title" content="HILLARY M. STYL — Maison de couture">
+<meta property="og:url" content="https://hillary-m-styl.pages.dev/">
+<meta property="og:description" content="Pagne, prêt-à-porter et sur-mesure. Donnez vos mesures, connaissez le jour exact où votre tenue sera prête.">
+<link rel="icon" href="data:image/png;base64,__FAVICON_B64__">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400;1,6..96,500&family=Archivo:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==================================================================
+   HILLARY M. STYL — V4 « LA COUPE »
+   Une maison de couture, c'est une COUPE : un trait décidé une fois,
+   qui sépare et qui donne la forme. Tout part de là.
+
+   Fusion de trois références (badges flottants · numéro géant derrière
+   le mannequin · lookbook à compteur fixe), aux couleurs d'Hillary.
+   Aucune bibliothèque : Lenis, GSAP, SplitText et Swiper sont réécrits.
+   ================================================================== */
+
+:root{
+  /* les fonds du brief — à l'œil près, ce sont déjà les siens */
+  --papier:#f7f5f0;
+  --papier-2:#e8e4de;
+  --blanc:#ffffff;
+  --encre:#0c0c0c;
+  --encre-2:#1a1a1a;
+
+  /* SA signature. Réf. B « aux couleurs Hillary » : le magenta mène. */
+  --rose:#E6007E;
+  --rose-cl:#FF3FA4;
+  --rose-p:#FFE9F5;
+
+  /* les accents wax — elle fait tout, ils servent aux collections.
+     ⚠️ chacun n'est lisible que sur UN fond : voir BRIEF-V4.md § 2.2 */
+  --terre:#c75b39;      /* papier 3,9 · encre 4,6  — gros corps only */
+  --ocre:#d4a017;       /* papier 2,2 ⛔ · encre 8,2 ✅ */
+  --indigo:#2e1a47;     /* papier 14,2 ✅ · encre 1,3 ⛔ */
+  --vert:#1b4332;       /* papier 10,2 ✅ · encre 1,8 ⛔ */
+
+  /* textes */
+  --tx-c:#4a4740;                     /* sur papier : 8,4 */
+  --tx-n:rgba(255,255,255,.74);       /* sur encre  : 10,6 */
+  --fil-c:rgba(26,26,26,.16);
+  --fil-n:rgba(255,255,255,.16);
+
+  --ff-d:"Bodoni Moda",Didot,"Playfair Display",Georgia,serif;
+  --ff-u:Archivo,system-ui,-apple-system,sans-serif;
+  --ff-t:Manrope,system-ui,-apple-system,sans-serif;
+
+  --max:1560px;
+  --pad:clamp(20px,4.4vw,48px);
+  --sec:clamp(88px,12vw,160px);
+  --e:cubic-bezier(.19,1,.22,1);
+  --e-s:cubic-bezier(.25,.46,.45,.94);
+
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --z-fond:0; --z-corps:1; --z-nav:50; --z-cur:70; --z-load:110; --z-mod:120;
+
+  /* le logo, declare UNE fois : _build.py y injecte le base64 */
+  --logo:url("data:image/webp;base64,__LOGO_B64__");
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;overflow-x:hidden}
+section[id]{scroll-margin-top:clamp(72px,9vh,96px)}
+body{
+  margin:0;background:var(--papier);color:var(--encre-2);
+  font-family:var(--ff-t);font-size:15px;font-weight:400;line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+body.lock{overflow:hidden}
+h1,h2,h3{margin:0;font-family:var(--ff-d);font-weight:700;line-height:1;letter-spacing:-.025em}
+p,ul,ol,figure{margin:0;padding:0}
+li{list-style:none}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+em{font-style:italic;font-weight:400}
+::selection{background:var(--rose);color:#fff}
+:focus-visible{outline:2px solid var(--rose);outline-offset:3px}
+
+.wrap{width:100%;max-width:var(--max);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;z-index:var(--z-load);background:var(--rose);color:#fff;
+  padding:12px 18px;font-weight:700}
+.skip:focus{left:12px;top:12px}
+
+/* le grain de la toile, partout */
+.grain{position:fixed;inset:-30%;z-index:40;pointer-events:none;
+  background-image:var(--grain);opacity:.05;mix-blend-mode:multiply}
+
+/* ---------- LE CURSEUR — la lame ---------------------------------
+   Réf. A/C : cercle qui suit à la traîne, s'ouvre au survol. Ici ce
+   n'est pas un cercle : c'est un trait de coupe, qui pivote. */
+.cur{position:fixed;top:0;left:0;z-index:var(--z-cur);width:64px;height:64px;
+  margin:-32px 0 0 -32px;border-radius:50%;pointer-events:none;opacity:0;
+  display:grid;place-items:center;
+  transition:opacity .3s ease,background-color .4s var(--e-s)}
+.cur::before{content:'';position:absolute;width:38px;height:1.5px;background:var(--encre);
+  transform:rotate(-38deg) scaleX(.34);transform-origin:50% 50%;
+  transition:transform .45s var(--e),background-color .3s ease}
+.cur span{font-family:var(--ff-u);font-size:9px;font-weight:600;letter-spacing:.16em;
+  color:#fff;opacity:0;transition:opacity .25s ease}
+.cur.on{opacity:1}
+.cur.gros{background:var(--rose)}
+.cur.gros::before{transform:rotate(-38deg) scaleX(0)}
+.cur.gros span{opacity:1}
+@media (hover:hover) and (pointer:fine){
+  .js body.cur-ok,.js body.cur-ok a,.js body.cur-ok button,
+  .js body.cur-ok select,.js body.cur-ok input,.js body.cur-ok [data-cur]{cursor:none}
+}
+@media (hover:none),(pointer:coarse){ .cur{display:none} }
+
+/* ---------- LE LOADER — la coupe qui s'ouvre ----------------------
+   Réf. C : le monogramme paraît, puis le papier se fend en deux. */
+.load{display:none}
+.js .load{display:grid;place-items:center;position:fixed;inset:0;z-index:var(--z-load);
+  background:transparent;pointer-events:none}
+.load i{position:absolute;left:0;right:0;height:50.5%;background:var(--papier);
+  transition:transform 1.05s cubic-bezier(.76,0,.24,1) 1.4s}
+.load i:first-child{top:0}
+.load i:last-child{bottom:0}
+.load-m{position:relative;z-index:2;width:min(150px,34vw);aspect-ratio:1;
+  background:var(--logo) center/contain no-repeat;
+  opacity:0;transform:scale(.9);filter:blur(4px);
+  transition:opacity .8s ease,transform .8s var(--e-s),filter .8s ease}
+.load.vue .load-m{opacity:1;transform:none;filter:none}
+/* le trait de coupe qui passe avant l'ouverture */
+.load::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;z-index:3;
+  background:var(--rose);transform:scaleX(0);transform-origin:50% 50%;
+  transition:transform .6s var(--e) 1s,opacity .3s ease 1.5s}
+.load.vue::after{transform:scaleX(1)}
+.load.parti::after{opacity:0}
+.load.parti i:first-child{transform:translateY(-101%)}
+.load.parti i:last-child{transform:translateY(101%)}
+.load.parti .load-m{opacity:0;transition:opacity .4s ease}
+.load.fini{display:none}
+
+/* ---------- NAVIGATION ------------------------------------------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:var(--z-nav);
+  display:flex;align-items:center;gap:20px;
+  padding:clamp(14px,2vw,24px) var(--pad);
+  transition:background-color .5s var(--e-s),box-shadow .5s var(--e-s),color .4s ease}
+.nav.pose{background:rgba(247,245,240,.94);box-shadow:inset 0 -1px 0 var(--fil-c)}
+.nav.sombre{color:#fff}
+.nav.sombre.pose{background:rgba(12,12,12,.94);box-shadow:inset 0 -1px 0 var(--fil-n)}
+.nav-g{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+.nav-logo{display:inline-flex;align-items:center;gap:10px;min-height:44px;
+  font-family:var(--ff-d);font-size:18px;font-weight:700;letter-spacing:.01em}
+.nav-logo .mk{width:26px;height:26px;flex:0 0 auto;border-radius:6px;
+  background:var(--logo) center/contain no-repeat}
+.nav-c{margin:0 auto;display:flex;align-items:center;gap:clamp(16px,2.2vw,34px)}
+.nav-c a{font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.13em;
+  min-height:44px;display:inline-flex;align-items:center;position:relative;opacity:.66;
+  transition:opacity .3s ease}
+.nav-c a::after{content:'';position:absolute;left:0;right:0;bottom:12px;height:1px;
+  background:var(--rose);transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .45s var(--e)}
+.nav-c a:hover{opacity:1}
+.nav-c a:hover::after{transform:scaleX(1)}
+.nav-d{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+/* ⛔ pas d'icône panier ni compte : aucun paiement sur le site (règle NEBULA) */
+.nav-ic{width:44px;height:44px;display:grid;place-items:center;opacity:.66;
+  transition:opacity .3s ease}
+.nav-ic svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4}
+.nav-ic:hover{opacity:1}
+.burger{display:none;width:44px;height:44px;flex-direction:column;justify-content:center;
+  align-items:center;gap:5px}
+.burger i{display:block;width:20px;height:1.4px;background:currentColor;
+  transition:transform .4s var(--e-s),opacity .25s ease}
+.burger[aria-expanded="true"] i:nth-child(1){transform:translateY(6.4px) rotate(45deg)}
+.burger[aria-expanded="true"] i:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] i:nth-child(3){transform:translateY(-6.4px) rotate(-45deg)}
+
+/* ---------- LIBELLÉS ET GRANDS TEXTES ---------------------------- */
+.lab{display:flex;align-items:center;gap:14px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.lab b{font-weight:600;color:var(--rose)}
+.lab i{font-style:normal;flex:1 1 auto;height:1px;background:var(--fil-c);
+  max-width:min(300px,24vw);transform:scaleX(0);transform-origin:0 50%;
+  transition:transform 1.1s var(--e) .12s}
+.lab.vu i{transform:scaleX(1)}
+.lab--n{color:rgba(255,255,255,.62)}
+.lab--n i{background:var(--fil-n)}
+.lab--n b{color:var(--ocre)}       /* ocre : 8,2 sur encre — lisible */
+
+.t2{font-size:clamp(2rem,5.4vw,4.6rem);line-height:1.02;letter-spacing:-.028em;
+  max-width:18ch;text-wrap:balance}
+.t2--n{color:#fff}
+.t2 em{color:var(--rose)}
+.t2--n em{color:var(--ocre)}
+.deck{margin-top:20px;max-width:56ch;font-size:15.5px;color:var(--tx-c);text-wrap:pretty}
+.deck--n{color:var(--tx-n)}
+
+/* la révélation mot à mot (SplitText réécrit) */
+.mot{display:inline-block;overflow:hidden;vertical-align:bottom}
+.mot>span{display:inline-block}
+.js .mot>span{transform:translateY(104%);opacity:0;
+  transition:transform .9s var(--e) var(--d,0ms),opacity .6s ease var(--d,0ms)}
+.js .vu .mot>span,.js .mot.vu>span{transform:none;opacity:1}
+
+/* ---------- SECTIONS --------------------------------------------- */
+.sec{position:relative;padding:var(--sec) 0;overflow-x:clip}
+.sec--papier{background:var(--papier)}
+.sec--encre{background:var(--encre);color:#fff}
+.sec--blanc{background:var(--blanc)}
+
+/* ==================================================================
+   1 · LE HÉROS — le slider éditorial
+   ================================================================== */
+.hero{position:relative;min-height:100svh;padding:clamp(88px,12vh,132px) 0 clamp(24px,4vh,40px);
+  display:flex;flex-direction:column;background:var(--papier);overflow:clip}
+
+.hero-in{flex:1 1 auto;position:relative;display:grid;place-items:center;width:100%}
+
+/* le numéro géant, DERRIÈRE le mannequin et DEVANT le fond */
+.hnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);z-index:1;
+  font-family:var(--ff-d);font-weight:700;font-size:clamp(9rem,30vw,22rem);line-height:.8;
+  letter-spacing:-.05em;color:var(--blanc);pointer-events:none;
+  text-shadow:0 2px 0 rgba(26,26,26,.05),0 18px 60px rgba(26,26,26,.10);
+  overflow:hidden;height:.8em;display:flex;align-items:flex-start}
+.hnum span{display:block;transition:transform .85s var(--e),opacity .5s ease}
+.hnum.chg span{transform:translateY(-100%);opacity:0}
+
+/* la scène du slider */
+.hsc{position:relative;z-index:2;width:min(60%,560px);height:min(75vh,720px);
+  display:grid;place-items:center}
+@media (max-width:1024px){ .hsc{width:min(74%,420px);height:min(58vh,520px)} }
+.hsl{position:absolute;inset:0;opacity:0;
+  transition:transform .9s cubic-bezier(.65,0,.35,1),opacity .55s var(--e-s)}
+.hsl.act{opacity:1;transform:none;z-index:2}
+.hsl.sort{opacity:.3;transform:translateX(-100%) skewX(-3deg);z-index:1}
+.hsl.entre{opacity:.3;transform:translateX(100%) skewX(3deg);z-index:1}
+.hsl-c{position:relative;width:100%;height:100%;overflow:hidden;background:var(--papier-2)}
+.hsl-c img{width:100%;height:100%;object-fit:cover;object-position:center top}
+/* le mannequin de substitution, tant qu'il n'y a pas de photo */
+.hsl-c .sil{position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(168deg,#fff,var(--papier-2))}
+.hsl-c .sil svg{width:64%;height:auto;opacity:.5}
+.hsl-c .sil path{fill:none;stroke:var(--encre-2);stroke-width:1.1;stroke-linejoin:round}
+
+/* le titre de collection, à droite */
+.hcol{position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);z-index:4;
+  text-align:right;max-width:min(260px,22vw);pointer-events:none}
+.hcol b{display:block;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(1.5rem,2.6vw,2.4rem);line-height:1.02;letter-spacing:-.02em}
+.hcol .m{display:block;margin-top:10px;font-family:var(--ff-u);font-size:10.5px;
+  font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(26,26,26,.55)}
+/* la description, à gauche */
+.hdes{position:absolute;left:var(--pad);top:50%;transform:translateY(-50%);z-index:4;
+  max-width:min(250px,21vw);pointer-events:none}
+.hdes b{display:block;font-family:var(--ff-d);font-weight:700;font-size:1.32rem;line-height:1.1}
+.hdes p{margin-top:9px;font-size:13.5px;line-height:1.55;color:var(--tx-c)}
+.hcol,.hdes{transition:opacity .4s var(--e-s),transform .5s var(--e-s)}
+.hcol.chg{opacity:0;transform:translateY(-50%) translateX(16px)}
+.hdes.chg{opacity:0;transform:translateY(-50%) translateX(-16px)}
+
+/* les badges flottants — Réf. A */
+.bdg{position:absolute;z-index:5;display:inline-flex;align-items:center;
+  padding:10px 20px;border-radius:50px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:#fff;white-space:nowrap;
+  box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.bdg--1{background:var(--terre);top:12%;right:6%;   animation:flot 4s ease-in-out infinite}
+.bdg--2{background:var(--rose); top:44%;left:4%;    animation:flot 5s ease-in-out infinite}
+.bdg--3{background:var(--vert); bottom:20%;right:9%;animation:flot 6s ease-in-out infinite}
+.bdg--4{background:var(--indigo);bottom:9%;left:11%;animation:flot 4.6s ease-in-out infinite}
+@keyframes flot{0%,100%{transform:translateY(-10px)}50%{transform:translateY(10px)}}
+.js .bdg{opacity:0}
+.js .hero.ouvert .bdg{opacity:1;transition:opacity .5s ease var(--d,0ms)}
+
+/* le grand titre, en bas, qui passe derrière le mannequin */
+.hbig{position:relative;z-index:1;text-align:center;pointer-events:none;
+  margin-top:clamp(-140px,-9vw,-40px)}
+.hbig h1{font-size:clamp(2.6rem,11vw,8.4rem);line-height:.86;letter-spacing:-.04em}
+.hbig .bl{display:block;overflow:hidden}
+.hbig .bl>span{display:block}
+.js .hbig .bl>span{transform:translateY(104%);
+  transition:transform 1.15s var(--e) var(--d,0ms)}
+.js .hero.ouvert .hbig .bl>span{transform:none}
+.hbig .base{display:block;margin-top:14px;font-family:var(--ff-d);font-style:italic;
+  font-weight:400;font-size:clamp(.95rem,1.7vw,1.35rem);color:var(--tx-c)}
+.js .hbig .base{opacity:0;transition:opacity .7s ease .55s}
+.js .hero.ouvert .hbig .base{opacity:1}
+
+/* pagination + réseaux + flèche */
+.hbar{position:relative;z-index:6;display:flex;align-items:center;justify-content:center;
+  gap:14px;margin-top:clamp(14px,2.4vh,26px)}
+.rond{width:44px;height:44px;border-radius:50%;border:1px solid var(--fil-c);
+  display:grid;place-items:center;transition:background-color .35s var(--e-s),border-color .35s var(--e-s)}
+.rond svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round}
+.rond:hover{background:var(--encre);border-color:var(--encre);color:#fff}
+.hcpt{font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.15em;
+  color:rgba(26,26,26,.55);min-width:76px;text-align:center}
+.hsoc{position:absolute;right:var(--pad);bottom:clamp(24px,6vh,72px);z-index:6;
+  display:flex;flex-direction:column;gap:14px}
+.hsoc a{font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  writing-mode:vertical-rl;color:rgba(26,26,26,.55);min-height:44px;
+  display:inline-flex;align-items:center;transition:color .3s ease}
+.hsoc a:hover{color:var(--rose)}
+.hfle{position:absolute;left:var(--pad);bottom:clamp(24px,6vh,72px);z-index:6;
+  display:flex;flex-direction:column;align-items:center;gap:8px;min-height:44px;
+  font-family:var(--ff-u);font-size:10px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.hfle svg{width:14px;height:20px;fill:none;stroke:currentColor;stroke-width:1.3;
+  animation:rebond 2.2s ease-in-out infinite}
+@keyframes rebond{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* ---------- LE RUBAN DÉFILANT ------------------------------------ */
+.ruban{background:var(--rose);color:#fff;overflow:hidden;padding:13px 0;
+  border-top:1px solid rgba(0,0,0,.08);border-bottom:1px solid rgba(0,0,0,.08)}
+.ruban-p{display:flex;width:max-content;animation:defile 34s linear infinite}
+.ruban-p span{display:flex;align-items:center;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(.95rem,1.9vw,1.3rem);padding:0 clamp(18px,2.6vw,36px)}
+.ruban-p span::after{content:'';width:15px;height:1px;background:rgba(255,255,255,.7);
+  margin-left:clamp(18px,2.6vw,36px);transform:rotate(-32deg)}
+@keyframes defile{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+
+/* ==================================================================
+   2 · LA MAISON — fond encre, images en perspective
+   ================================================================== */
+.maison-in{display:grid;gap:clamp(38px,5vw,74px);
+  grid-template-columns:minmax(0,40fr) minmax(0,60fr);align-items:center}
+.maison .t2{margin-top:22px}
+.maison .deck{margin-top:22px}
+.mc-t{color:var(--ocre)}   /* les mots-clés sur encre : ocre et rose seulement */
+.mc-r{color:var(--rose-cl)}
+.piliers{margin-top:32px;display:grid;gap:1px;background:var(--fil-n);
+  border-top:1px solid var(--fil-n);border-bottom:1px solid var(--fil-n)}
+.piliers li{background:var(--encre);padding:17px 0;display:grid;
+  grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:4px 22px;align-items:baseline}
+.piliers b{font-family:var(--ff-d);font-weight:700;font-size:1.12rem;color:#fff}
+.piliers span{font-size:14.5px;color:var(--tx-n)}
+
+/* les trois plans empilés en perspective */
+.plans{position:relative;height:clamp(340px,42vw,540px);perspective:1200px}
+.plan{position:absolute;width:52%;aspect-ratio:3/4;border-radius:16px;overflow:hidden;
+  background:var(--encre-2);box-shadow:0 30px 70px -28px rgba(0,0,0,.85);
+  border:1px solid var(--fil-n)}
+.plan img{width:100%;height:100%;object-fit:cover}
+.plan .ph{position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(150deg,#1c1a19,#131211)}
+.plan .ph svg{width:52%;height:auto;opacity:.55}
+.plan .ph path,.plan .ph circle{fill:none;stroke:var(--ocre);stroke-width:1.2}
+.plan .cap{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;z-index:2;
+  background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);
+  font-family:var(--ff-u);font-size:9.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.8)}
+.plan--1{left:0;   top:4%;  transform:rotate(-3deg)}
+.plan--2{left:24%; top:22%; transform:rotate(0deg);  z-index:2}
+.plan--3{right:0;  top:8%;  transform:rotate(3deg)}
+.js .plan{opacity:0;transition:opacity .9s ease var(--d,0ms)}
+.js .plans.vu .plan{opacity:1}
+
+/* ==================================================================
+   3 · LES COLLECTIONS — coverflow
+   ================================================================== */
+.coll{padding-left:0;padding-right:0}
+.coll-tete{max-width:var(--max);margin:0 auto;padding:0 var(--pad);
+  display:grid;gap:clamp(20px,3vw,52px);
+  grid-template-columns:minmax(0,1fr) minmax(0,320px);align-items:end}
+.coll .t2{margin-top:22px}
+
+.cars{position:relative;margin-top:clamp(32px,4vw,58px);height:clamp(360px,44vw,540px);
+  overflow:hidden}
+.cars-p{position:absolute;inset:0}
+.car{position:absolute;left:50%;top:50%;width:clamp(210px,24vw,340px);margin:0;
+  transform:translate3d(calc(-50% + var(--tx,0px)),-50%,0) scale(var(--sc,1));
+  opacity:var(--op,1);filter:blur(var(--bl,0px));
+  transition:transform .8s cubic-bezier(.4,0,.2,1),opacity .8s var(--e-s),filter .8s var(--e-s);
+  will-change:transform}
+.car-c{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--papier-2);
+  box-shadow:0 30px 64px -34px rgba(26,26,26,.55)}
+.car-c img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.car-c .sil{position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(160deg,#fff,var(--papier-2))}
+.car-c .sil svg{width:62%;height:auto;opacity:.42}
+.car-c .sil path{fill:none;stroke:var(--encre-2);stroke-width:1.1;stroke-linejoin:round}
+.car--act{z-index:4}
+
+.cars-t{position:absolute;left:var(--pad);top:50%;transform:translateY(-50%);z-index:6;
+  max-width:min(300px,23vw);pointer-events:none}
+.cars-t::before{content:'';position:absolute;inset:-34px -70px -34px -60px;z-index:-1;
+  background:linear-gradient(90deg,var(--papier) 46%,rgba(247,245,240,0) 100%)}
+.cars-t .l{font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--rose)}
+.cars-t .t{margin-top:12px;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.04;letter-spacing:-.02em}
+.cars-t .s{margin-top:10px;font-size:13.5px;color:var(--tx-c)}
+.cars-t{transition:opacity .45s var(--e-s),transform .45s var(--e-s)}
+.cars-t.chg{opacity:0;transform:translateY(calc(-50% + 12px))}
+
+.cars-b{max-width:var(--max);margin:clamp(24px,3vw,40px) auto 0;padding:0 var(--pad);
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+.cars-n{display:flex;align-items:center;gap:12px}
+
+/* ==================================================================
+   4 · LE LOOKBOOK — compteur fixe et mosaïque en parallaxe
+   ================================================================== */
+.look{background:var(--blanc);position:relative;padding:0}
+.look-hd{max-width:var(--max);margin:0 auto;padding:clamp(40px,5vw,72px) var(--pad) 0;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.look-hd .mk{display:flex;align-items:center;gap:9px;color:var(--encre-2)}
+.look-hd .mk i{width:22px;height:22px;border-radius:5px;font-style:normal;
+  background:var(--logo) center/contain no-repeat}
+/* la scène : hauteur donnée par le nombre de vues */
+.look-sc{position:relative;max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+.look-cpt{position:sticky;top:0;height:100svh;display:grid;place-items:center;
+  pointer-events:none;z-index:1}
+.look-cpt b{font-family:var(--ff-d);font-weight:700;font-size:clamp(5rem,15vw,10rem);
+  line-height:.9;letter-spacing:-.04em;color:var(--encre-2);
+  display:flex;align-items:center;gap:.12em}
+.look-cpt .n{display:block;overflow:hidden;height:.9em}
+.look-cpt .n span{display:block;transition:transform .5s var(--e),opacity .3s ease}
+.look-cpt .n.chg span{transform:translateY(-100%);opacity:0}
+.look-cpt .sl{font-size:.42em;opacity:.28;font-weight:400}
+.look-gr{position:relative;z-index:2;margin-top:-100svh;padding-bottom:clamp(60px,8vw,110px)}
+.lk{position:relative;overflow:hidden;background:var(--papier-2);
+  filter:grayscale(100%);transition:filter .6s var(--e-s)}
+.lk:hover{filter:grayscale(0%)}
+.lk img{width:100%;height:100%;object-fit:cover}
+.lk .sil{position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(150deg,#fff,var(--papier-2))}
+.lk .sil svg{width:56%;height:auto;opacity:.4}
+.lk .sil path{fill:none;stroke:var(--encre-2);stroke-width:1.1;stroke-linejoin:round}
+.lk .cap{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;z-index:2;
+  background:linear-gradient(0deg,rgba(255,255,255,.94),transparent);
+  font-family:var(--ff-u);font-size:10px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--encre-2)}
+.lk--1{width:min(42%,470px);margin-left:0;             aspect-ratio:4/5}
+.lk--2{width:min(30%,340px);margin-left:auto;margin-top:-6vh;  aspect-ratio:1/1}
+.lk--3{width:min(38%,430px);margin-left:8%;margin-top:14vh;    aspect-ratio:3/4}
+.lk--4{width:min(32%,360px);margin-left:auto;margin-right:6%;margin-top:-4vh;aspect-ratio:4/5}
+.lk--5{width:min(36%,410px);margin-left:2%;margin-top:12vh;    aspect-ratio:5/4}
+.lk--6{width:min(28%,320px);margin-left:auto;margin-top:-2vh;  aspect-ratio:3/4}
+.js .lk{opacity:0;transform:translateY(50px);
+  transition:opacity .9s ease,transform 1s var(--e),filter .6s var(--e-s)}
+.js .lk.vu{opacity:1;transform:none}
+.look-bas{max-width:var(--max);margin:0 auto;padding:0 var(--pad) clamp(40px,5vw,72px);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.look-bas a{min-height:44px;display:inline-flex;align-items:center;
+  transition:color .3s ease}
+.look-bas a:hover{color:var(--rose)}
+.look-soc{display:flex;gap:16px}
+
+/* ==================================================================
+   5 · LE PROCESSUS — les étapes qui se remplissent
+   ================================================================== */
+.etapes{margin-top:clamp(34px,4.4vw,58px);display:grid;gap:16px}
+.et{position:relative;overflow:hidden;border:1px solid var(--fil-n);border-radius:24px;
+  padding:clamp(24px,3vw,32px) clamp(24px,3.4vw,40px);
+  display:grid;gap:6px 26px;grid-template-columns:minmax(0,86px) minmax(0,1fr);
+  align-items:center}
+.et::before{content:'';position:absolute;inset:0;z-index:0;
+  background:linear-gradient(90deg,var(--indigo),#4f46e5);
+  transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .8s var(--e)}
+.et.act::before{transform:scaleX(1)}
+.et>*{position:relative;z-index:1}
+.et .n{font-family:var(--ff-d);font-weight:700;font-size:clamp(2.2rem,4vw,3.4rem);
+  line-height:.9;letter-spacing:-.03em;color:rgba(255,255,255,.34);
+  grid-row:span 2;transition:color .6s var(--e-s)}
+.et.act .n{color:#fff}
+.et b{font-family:var(--ff-d);font-weight:700;font-size:clamp(1.2rem,2vw,1.6rem);color:#fff}
+.et span{grid-column:2;font-size:14.5px;color:var(--tx-n)}
+.js .et{opacity:0;transform:translateY(28px);
+  transition:opacity .8s ease var(--d,0ms),transform .9s var(--e) var(--d,0ms),
+             border-color .5s ease}
+.js .et.vu{opacity:1;transform:none}
+
+/* ==================================================================
+   6 · LE CONTACT
+   ================================================================== */
+.ct-in{display:grid;gap:clamp(30px,4vw,60px);
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+.ct .lab b{color:var(--ocre)}
+.ct .t2{margin-top:20px}
+.pills{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:52px;padding:15px 30px;border-radius:50px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;border:1px solid var(--fil-n);color:#fff;
+  transition:background-color .4s var(--e-s),color .4s var(--e-s),border-color .4s var(--e-s)}
+.pill:hover{background:#fff;color:var(--encre);border-color:#fff}
+.pill--plein{background:var(--rose);border-color:var(--rose);color:#fff}
+.pill--plein:hover{background:#fff;color:var(--encre);border-color:#fff}
+.coords{display:grid;gap:14px}
+.coord{display:flex;gap:14px;align-items:flex-start;padding:15px 0;
+  border-top:1px solid var(--fil-n)}
+.coord svg{width:18px;height:18px;flex:0 0 auto;margin-top:2px;
+  fill:none;stroke:var(--ocre);stroke-width:1.4}
+.coord b{display:block;font-family:var(--ff-u);font-size:10px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.coord span{display:block;margin-top:4px;font-size:15px;color:#fff}
+.socs{margin-top:30px;display:grid;gap:1px;grid-template-columns:repeat(4,1fr)}
+.soc{padding:18px 0 0;border-top:1px solid var(--fil-n);min-height:78px;
+  transition:transform .35s var(--e-s),color .35s ease}
+.soc b{display:block;font-family:var(--ff-u);font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase}
+.soc span{display:block;margin-top:5px;font-size:12.5px;color:var(--tx-n)}
+.soc:hover{transform:translateY(-4px);color:var(--ocre)}
+.wa{display:inline-flex;align-items:center;gap:11px;min-height:52px;padding:15px 28px;
+  border-radius:50px;background:#1EA855;color:#fff;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;transition:background-color .35s var(--e-s)}
+.wa svg{width:19px;height:19px;fill:currentColor}
+.wa:hover{background:#17c85f}
+
+/* ---------- PIED -------------------------------------------------- */
+.pied{background:var(--encre);color:var(--tx-n);
+  padding:clamp(34px,4vw,52px) 0 calc(26px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--fil-n)}
+.pied-in{display:flex;flex-wrap:wrap;gap:10px 28px;justify-content:space-between;
+  align-items:center;font-size:12.5px}
+.pied a{display:inline-flex;align-items:center;min-height:44px;
+  border-bottom:1px solid rgba(230,0,126,.5)}
+.pied a:hover{color:var(--rose-cl)}
+
+/* ==================================================================
+   LE CATALOGUE COMMANDABLE — la grille du moteur, restylée
+   ================================================================== */
+.grid{display:grid;gap:clamp(12px,1.6vw,20px);
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-top:clamp(30px,4vw,50px)}
+.piece{position:relative;background:var(--blanc);border:1px solid var(--fil-c);
+  overflow:hidden;text-align:left;padding:0;
+  transition:transform .45s var(--e),box-shadow .45s var(--e),border-color .35s ease}
+.piece:hover{transform:translateY(-4px);border-color:var(--rose);
+  box-shadow:0 26px 50px -30px rgba(26,26,26,.4)}
+/* ⚠️ ces classes sont GÉNÉRÉES par le moteur (fonction carte()) :
+   .ph .tag .mark .avenir .voile · .bd h3 .ds .meta .pr .del
+   Les renommer casserait le catalogue. */
+.piece .ph{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--papier-2);
+  display:grid;place-items:center;
+  background-image:linear-gradient(160deg,#fff,var(--papier-2))}
+.piece .ph .mark{width:46%;aspect-ratio:1;opacity:.30;filter:grayscale(1);
+  background:var(--logo) center/contain no-repeat}
+.piece .ph .avenir{position:absolute;left:0;right:0;bottom:0;padding:9px 12px;
+  font-family:var(--ff-u);font-size:9.5px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(26,26,26,.5);
+  background:linear-gradient(0deg,rgba(255,255,255,.9),transparent)}
+.piece .ph .tag{position:absolute;top:10px;left:10px;z-index:2;padding:6px 12px;
+  border-radius:50px;background:var(--rose);color:#fff;
+  font-family:var(--ff-u);font-size:9.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase}
+.piece .ph .voile{position:absolute;inset:0;z-index:3;display:grid;place-items:center;
+  background:rgba(230,0,126,.9);opacity:0;transition:opacity .35s var(--e-s)}
+.piece .ph .voile span{font-family:var(--ff-u);font-size:11px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.piece:hover .ph .voile{opacity:1}
+.piece .bd{padding:16px 17px 18px}
+.piece .bd h3{margin:0;font-family:var(--ff-d);font-weight:700;font-size:1.14rem;
+  line-height:1.1;color:var(--encre-2)}
+.piece .bd .ds{display:block;margin-top:6px;font-size:13px;color:var(--tx-c);line-height:1.5}
+.piece .bd .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--fil-c)}
+.piece .bd .pr{font-family:var(--ff-u);font-weight:700;font-size:13px;letter-spacing:.04em;
+  color:var(--rose)}
+.piece .bd .del{display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--ff-u);font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.piece .bd .del svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+
+/* les onglets du catalogue — attendus par le moteur ([data-onglet]) */
+.tabs{display:inline-flex;gap:6px;margin-top:26px;padding:5px;border-radius:50px;
+  background:var(--papier-2)}
+.tab{min-height:44px;padding:11px 24px;border-radius:50px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(26,26,26,.6);
+  transition:background-color .35s var(--e-s),color .35s var(--e-s)}
+.tab[aria-selected="true"]{background:var(--encre);color:#fff}
+@media (max-width:640px){ .grid{grid-template-columns:1fr 1fr;gap:11px} }
+
+/* ---------- RÉVÉLATIONS ------------------------------------------- */
+.js .rv,.js .deck,.js .piliers,.js .cars-b,.js .coll-d,.js .look-hd,.js .look-bas,
+.js .pills,.js .coords,.js .socs{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .85s ease var(--d,0ms),transform .95s var(--e) var(--d,0ms)}
+.js .rv.vu,.js .deck.vu,.js .piliers.vu,.js .cars-b.vu,.js .coll-d.vu,.js .look-hd.vu,
+.js .look-bas.vu,.js .pills.vu,.js .coords.vu,.js .socs.vu{opacity:1;transform:none}
+/* le héros a sa propre chorégraphie */
+.js .hero .deck{opacity:1;transform:none}
+
+/* ==================================================================
+   RESPONSIVE
+   ================================================================== */
+@media (max-width:1180px){
+  .maison-in{grid-template-columns:1fr}
+  .plans{height:clamp(300px,60vw,420px)}
+  .coll-tete{grid-template-columns:1fr}
+  .ct-in{grid-template-columns:1fr}
+  .hcol,.hdes{position:static;transform:none;max-width:none;text-align:left;
+    margin:0 auto;padding:0 var(--pad)}
+  .hcol{order:3;margin-top:16px}
+  .hdes{order:4;margin-top:10px}
+  .hcol.chg,.hdes.chg{transform:translateY(10px)}
+  .hsoc{display:none}
+  .cars-t{position:relative;left:auto;top:auto;transform:none;max-width:none;
+    padding:0 var(--pad);text-align:center;margin-bottom:clamp(18px,3vw,28px)}
+  .cars-t::before{display:none}
+  .cars-t.chg{transform:translateY(10px)}
+  .lk--1,.lk--2,.lk--3,.lk--4,.lk--5,.lk--6{
+    width:min(74%,420px);margin-left:0;margin-right:0;margin-top:clamp(22px,5vw,44px)}
+  .lk--2,.lk--4,.lk--6{margin-left:auto}
+}
+@media (max-width:880px){
+  .nav-c{position:fixed;inset:0 0 0 auto;width:min(320px,86vw);margin:0;
+    background:var(--encre);color:#fff;flex-direction:column;align-items:stretch;
+    justify-content:center;gap:2px;padding:86px 28px calc(30px + env(safe-area-inset-bottom));
+    transform:translateX(101%);transition:transform .5s var(--e);overflow-y:auto}
+  .nav-c.ouvert{transform:none;box-shadow:-36px 0 70px -34px rgba(0,0,0,.85)}
+  .nav-c a{font-family:var(--ff-d);font-weight:700;font-size:1.5rem;letter-spacing:-.02em;
+    padding:13px 0;border-bottom:1px solid var(--fil-n);opacity:1;text-transform:none}
+  .nav-c a::after{display:none}
+  .burger{display:flex;margin-left:auto}
+  .nav-d{display:none}
+  .hbig{margin-top:clamp(-60px,-6vw,-20px)}
+  .look-cpt{height:70svh}
+  .look-gr{margin-top:-70svh}
+}
+@media (max-width:640px){
+  .hero{min-height:auto;padding-top:clamp(96px,14vh,128px)}
+  .hsc{width:min(84%,340px);height:min(52vh,420px)}
+  .hnum{font-size:clamp(7rem,42vw,13rem)}
+  .bdg--1{top:6%;right:2%} .bdg--2{top:40%;left:0}
+  .bdg--3{bottom:16%;right:2%} .bdg--4{display:none}
+  .bdg{font-size:10px;padding:8px 15px}
+  .hfle{display:none}
+  .piliers li{grid-template-columns:1fr;gap:2px}
+  .plans{height:clamp(280px,86vw,400px)}
+  .plan{width:60%}
+  .cars{height:clamp(320px,86vw,420px)}
+  .car{width:min(58vw,240px)}
+  .socs{grid-template-columns:1fr 1fr;gap:0 18px}
+  .et{grid-template-columns:60px 1fr;padding:22px 20px}
+  .look-bas{flex-wrap:wrap;gap:10px}
+  /* on fige ce qui coûte sur un téléphone d'entrée de gamme */
+  .grain{opacity:.045}
+  .plan{box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+}
+
+/* ==================================================================
+   MOUVEMENT RÉDUIT
+   ================================================================== */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .bdg{animation:none}
+  .ruban-p{animation:none}
+  .hfle svg{animation:none}
+  .js .mot>span,.js .hbig .bl>span{transform:none;opacity:1}
+  .js .rv,.js .deck,.js .piliers,.js .cars-b,.js .coll-d,.js .look-hd,.js .look-bas,
+  .js .pills,.js .coords,.js .socs,.js .lk,.js .et,.js .plan,.js .bdg,.js .hbig .base{
+    opacity:1;transform:none}
+  .lab i{transform:scaleX(1)}
+  .lk{filter:none}
+  .cur{display:none}
+  .load{display:none}
+}
+
+/* ==================================================================
+   LA MODALE · le carnet de mesures
+   ================================================================== */
+.ov{position:fixed;inset:0;z-index:120;background:rgba(6,5,7,.62);backdrop-filter:blur(6px);
+  display:none;overflow-y:auto}
+.ov.on{display:block}
+.sheet{background:var(--craie);width:100%;max-width:760px;margin:0 auto;min-height:100%}
+.ov.on .sheet{animation:leve .62s var(--e)}
+@keyframes leve{from{transform:translateY(34px);opacity:0}}
+@media(min-width:800px){.ov{padding:34px 22px}.sheet{min-height:0}}
+.sh-top{position:sticky;top:0;z-index:5;background:var(--craie);border-bottom:1px solid var(--ligne);
+  padding:16px 22px;display:flex;align-items:center;gap:14px}
+.sh-top .mark{width:36px;height:36px;flex:0 0 auto;border-radius:9px;background-color:#fff;background-size:78%}
+.sh-top .t{flex:1;min-width:0}
+.sh-top .t b{display:block;font-family:var(--ff-d);font-size:19px;font-weight:400;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.sh-top .t span{font-family:var(--ff-u);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
+.x{width:46px;height:46px;border-radius:50%;border:1px solid var(--ligne);background:transparent;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto;transition:background .3s,border-color .3s,transform .3s var(--e)}
+.x:hover{background:var(--encre);border-color:var(--encre);transform:rotate(90deg)}
+.x svg{width:16px;height:16px;stroke:var(--encre);stroke-width:1.6;fill:none;stroke-linecap:round;transition:stroke .3s}
+.x:hover svg{stroke:#fff}
+.prog{display:flex;gap:6px;padding:16px 22px 0}
+.prog i{height:2px;flex:1;background:var(--ligne);position:relative;overflow:hidden}
+.prog i:after{content:"";position:absolute;inset:0;background:var(--rose);transform:scaleX(0);
+  transform-origin:0 50%;transition:transform .6s var(--e)}
+.prog i.on:after{transform:scaleX(1)}
+.sh-bd{position:relative;z-index:1;padding:26px 22px 30px}
+.sh-bd>*{animation:entre .55s var(--e) both}
+@keyframes entre{from{opacity:0;transform:translateY(16px)}}
+.stitle{font-family:var(--ff-d);font-size:29px;font-weight:400;margin-bottom:8px;line-height:1.08}
+.sdesc{font-size:14.5px;color:var(--gris);margin-bottom:22px}
+
+.aide{display:flex;gap:13px;background:var(--rose-p);padding:16px 17px;margin-bottom:20px;
+  border-left:2px solid var(--rose)}
+.aide svg{width:19px;height:19px;stroke:var(--rose);fill:none;stroke-width:1.6;stroke-linecap:round;
+  stroke-linejoin:round;flex:0 0 auto;margin-top:2px}
+.aide p{font-size:14px;color:#7A0044;line-height:1.55}
+.warn{background:#FBF3E0;border-left:2px solid #C08A16;padding:16px 17px;margin-bottom:20px;
+  font-size:13.5px;color:#6D4A05;line-height:1.55}
+
+.opts{display:grid;gap:11px}
+.opt{display:flex;align-items:center;gap:15px;background:#fff;border:1px solid var(--ligne);padding:17px;
+  cursor:pointer;min-height:46px;text-align:left;width:100%;position:relative;
+  transition:border-color .35s,box-shadow .35s var(--e),transform .35s var(--e)}
+.opt:hover{transform:translateX(3px)}
+.opt.sel{border-color:var(--rose);box-shadow:0 6px 26px rgba(230,0,126,.13)}
+.opt .rd{width:20px;height:20px;border-radius:50%;border:1px solid var(--ligne);flex:0 0 auto;
+  display:grid;place-items:center;transition:border-color .3s}
+.opt.sel .rd{border-color:var(--rose)}
+.opt .rd:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--rose);
+  transform:scale(0);transition:transform .35s var(--e-s)}
+.opt.sel .rd:after{transform:scale(1)}
+.opt .tx{flex:1;min-width:0}
+.opt .tx b{display:block;font-family:var(--ff-d);font-size:18px;font-weight:400}
+.opt .tx span{display:block;font-size:13px;color:var(--gris);margin-top:3px;line-height:1.45}
+.opt .pz{font-family:var(--ff-u);font-weight:700;font-size:12.5px;letter-spacing:.06em;white-space:nowrap}
+
+.tailles{display:flex;flex-wrap:wrap;gap:10px}
+.taille{min-width:62px;min-height:52px;padding:0 17px;border:1px solid var(--ligne);background:#fff;
+  font-family:var(--ff-d);font-weight:400;font-size:19px;cursor:pointer;
+  transition:background .3s,color .3s,border-color .3s,transform .35s var(--e-s)}
+.taille:hover{border-color:var(--encre)}
+.taille.sel{border-color:var(--rose);background:var(--rose);color:#fff;transform:translateY(-3px)}
+
+.mes{display:grid;gap:13px;grid-template-columns:1fr}
+@media(min-width:540px){.mes{grid-template-columns:1fr 1fr}}
+.fd{animation:entre .5s var(--e) both;animation-delay:calc(var(--d,0)*.035s)}
+.fd label{display:block;font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--gris);margin-bottom:7px}
+.fd .ipw{position:relative}
+.fd input,.fd select,.fd textarea{width:100%;min-height:52px;border:0;border-bottom:1px solid var(--ligne);
+  background:transparent;padding:0 2px;font-family:var(--ff-d);font-size:19px;transition:border-color .35s}
+.fd textarea{padding:14px 2px;min-height:92px;resize:vertical;line-height:1.5;font-family:var(--ff-t);font-size:15px;
+  border:1px solid var(--ligne);padding-left:14px;padding-right:14px;background:#fff}
+.fd select{font-family:var(--ff-t);font-size:15.5px}
+.fd input:focus,.fd select:focus,.fd textarea:focus{outline:0;border-color:var(--rose)}
+.fd .unit{position:absolute;right:2px;top:50%;transform:translateY(-50%);font-family:var(--ff-u);font-size:10.5px;
+  color:var(--gris);font-weight:600;letter-spacing:.1em;pointer-events:none}
+.fd .cm input{padding-right:32px}
+.full{grid-column:1/-1}
+.mes-hd{grid-column:1/-1;font-family:var(--ff-u);font-weight:700;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--rose);margin-top:14px;padding-bottom:4px;
+  display:flex;align-items:center;gap:12px}
+.mes-hd:after{content:"";flex:1;height:1px;background:var(--ligne)}
+
+/* le tampon de la date */
+.dispo{display:flex;gap:14px;background:var(--ok-bg);padding:18px;margin-top:22px;border-left:2px solid var(--ok);
+  animation:tampon .6s var(--e-s) both}
+@keyframes tampon{from{opacity:0;transform:scale(1.06) rotate(-1.2deg)}}
+.dispo svg{width:21px;height:21px;stroke:var(--ok);fill:none;stroke-width:1.5;stroke-linecap:round;
+  stroke-linejoin:round;flex:0 0 auto;margin-top:3px}
+.dispo b{display:block;font-family:var(--ff-u);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ok);font-weight:700}
+.dispo p{font-family:var(--ff-d);font-weight:400;font-size:24px;color:#0A5233;margin-top:5px;line-height:1.15}
+.dispo small{display:block;font-family:var(--ff-t);font-size:13px;color:#3B6E52;margin-top:7px;font-weight:500}
+
+.momo{display:flex;gap:12px;background:#fff;border:1px solid var(--ligne);padding:15px;margin-top:16px;
+  font-size:13px;color:var(--gris);line-height:1.55}
+.momo svg{width:18px;height:18px;stroke:var(--rose);fill:none;stroke-width:1.6;stroke-linecap:round;
+  stroke-linejoin:round;flex:0 0 auto;margin-top:2px}
+
+.recap{background:#fff;border:1px solid var(--ligne);padding:20px;margin-top:24px}
+.recap .li{display:flex;justify-content:space-between;gap:16px;font-size:14px;padding:7px 0;color:var(--gris)}
+.recap .li span:last-child{color:var(--encre);font-weight:600;white-space:nowrap}
+.recap .tt{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--ligne);margin-top:12px;
+  padding-top:15px;font-family:var(--ff-d);font-size:26px;align-items:baseline}
+.recap .tt span:last-child{color:var(--rose)}
+
+.sh-ft{position:sticky;bottom:0;z-index:6;background:var(--craie);border-top:1px solid var(--ligne);padding:15px 22px;
+  display:flex;gap:11px;padding-bottom:calc(15px + env(safe-area-inset-bottom))}
+.bt{position:relative;overflow:hidden;flex:1;min-height:56px;border:0;cursor:pointer;
+  font-family:var(--ff-u);font-weight:700;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.bt span,.bt svg{position:relative;z-index:2}
+.bt:before{content:"";position:absolute;inset:0;transform:translateY(101%);transition:transform .5s var(--e)}
+.bt:hover:before{transform:translateY(0)}
+.bt.g{background:transparent;border:1px solid var(--ligne);color:var(--encre);flex:0 0 auto;padding:0 26px}
+.bt.g:before{background:var(--encre)} .bt.g:hover{color:#fff}
+.bt.p{background:var(--rose);color:#fff} .bt.p:before{background:var(--encre)}
+.bt.p[disabled]{background:var(--ligne);color:#9C978F;cursor:not-allowed} .bt.p[disabled]:before{display:none}
+.bt.w{background:#0E7A44;color:#fff} .bt.w:before{background:var(--encre)}
+.bt{transition:color .35s}
+.err{font-size:13.5px;color:#B4103A;margin-top:12px;font-weight:600;display:none}
+.err.on{display:block}
+
+.fin{text-align:center;padding:16px 4px 4px}
+.fin .ck{width:78px;height:78px;border-radius:50%;background:var(--ok-bg);display:grid;place-items:center;
+  margin:0 auto 22px;animation:tampon .7s var(--e-s) both}
+.fin .ck svg{width:34px;height:34px;stroke:var(--ok);fill:none;stroke-width:1.8;stroke-linecap:round;
+  stroke-linejoin:round;stroke-dasharray:34;stroke-dashoffset:34;animation:trace .7s .35s var(--e) forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+.fin h3{font-size:30px}
+.fin p{font-size:15px;color:var(--gris);margin-top:12px}
+.fin .alt{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 16px;
+  margin-top:16px;font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gris);text-decoration:none;border-bottom:1px solid var(--ligne)}
+.fin .alt:hover{color:var(--rose);border-color:var(--rose)}
+
+/* ==================================================================
+   LE TOUCHER — enfoncement, lueur, et vibration (Android)
+   Une seule règle pour tout ce qui se touche. Les règles d'appui
+   sont EN FIN DE FEUILLE : à spécificité égale, la dernière gagne.
+   ================================================================== */
+[data-tap]{position:relative;overflow:hidden;
+  -webkit-touch-callout:none;user-select:none;
+  transition:transform .22s var(--e-s),box-shadow .3s var(--e),border-color .3s}
+.onde{position:absolute;border-radius:50%;pointer-events:none;z-index:3;
+  background:radial-gradient(circle,rgba(230,0,126,.42),rgba(230,0,126,0) 68%);
+  transform:translate(-50%,-50%) scale(0);animation:onde .62s var(--e) forwards}
+.onde.clair{background:radial-gradient(circle,rgba(255,255,255,.40),rgba(255,255,255,0) 68%)}
+@keyframes onde{to{transform:translate(-50%,-50%) scale(1);opacity:0}}
+
+/* ---------- 02 · LE CATALOGUE · les échantillons qu'on pose ------
+   Les cartes ne « montent » plus : elles se posent sur la table,
+   légèrement de travers, comme des coupons de tissu qu'on aligne.  */
+.piece{transform:translateY(38px) rotate(var(--rot,0deg)) scale(.965);
+  transition:opacity .8s var(--e),transform .8s var(--e);
+  transition-delay:calc(var(--d,0)*.085s)}
+.piece.vu{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+/* la lumière qui balaie le tissu — au doigt et au survol seulement,
+   jamais en boucle : une animation infinie sur 12 cartes coûte cher */
+.piece .ph:after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.62) 50%,transparent 62%);
+  transform:translateX(-120%);opacity:0}
+.piece.brille .ph:after{animation:brille .85s var(--e) forwards}
+@keyframes brille{0%{opacity:1;transform:translateX(-120%)}100%{opacity:1;transform:translateX(120%)}}
+/* la craie se retrace quand on touche la carte */
+.piece.brille .patron rect{animation:retrace .9s var(--e)}
+@keyframes retrace{from{stroke-dashoffset:460}to{stroke-dashoffset:0}}
+/* le changement d'onglet : la table se vide avant qu'on repose */
+.grid{transition:opacity .18s ease,transform .18s ease}
+.grid.sort{opacity:0;transform:translateY(-10px)}
+
+/* ---------- LE TUNNEL · une animation par étape ------------------ */
+/* 1 · le carnet de mesures qui s'ouvre */
+#shBd[data-e="1"] .mes .fd{transform-origin:50% 0;
+  animation:carnet .55s var(--e) both}
+@keyframes carnet{from{opacity:0;transform:perspective(700px) rotateX(-42deg)}}
+#shBd[data-e="1"] .taille{animation:etiquette .5s var(--e-s) both;
+  animation-delay:calc(var(--t,0)*.045s)}
+@keyframes etiquette{from{opacity:0;transform:translateY(-16px) rotate(-6deg)}}
+/* 2 · la carte de livraison qui se déplie */
+#shBd[data-e="2"] .opt{transform-origin:0 50%;animation:deplie .6s var(--e) both}
+#shBd[data-e="2"] .opt:nth-child(2){animation-delay:.09s}
+@keyframes deplie{from{opacity:0;transform:perspective(900px) rotateY(-34deg)}}
+/* 3 · le sablier : le choix se remplit de haut en bas */
+#shBd[data-e="3"] .opt{animation:sablier .55s var(--e) both}
+#shBd[data-e="3"] .opt:nth-child(2){animation-delay:.1s}
+@keyframes sablier{from{opacity:0;clip-path:inset(0 0 100% 0)}}
+/* 4 · l'étiquette qu'on coud : les champs entrent en piquant */
+#shBd[data-e="4"] .fd{animation:couds .55s var(--e) both}
+@keyframes couds{from{opacity:0;transform:translateX(-18px)}}
+#shBd[data-e="4"] .recap{animation:couds .6s var(--e) .18s both}
+
+/* ---------- L'APPUI — en dernier, volontairement ---------------- */
+[data-tap]:active{transform:scale(.972)}
+.piece:active{transform:translateY(0) rotate(0deg) scale(.972)}
+.opt:active{transform:translateX(3px) scale(.985)}
+.taille:active{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){
+  [data-tap]:active,.piece:active,.opt:active,.taille:active{transform:none}
+  .onde{display:none}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#maison">Aller au contenu</a>
+<i class="grain" aria-hidden="true"></i>
+<div class="cur" id="cur" aria-hidden="true"><span id="curT"></span></div>
+
+<!-- ============ LE LOADER — la coupe qui s'ouvre ============ -->
+<div class="load" id="load" aria-hidden="true">
+  <i></i><i></i>
+  <i class="load-m" aria-hidden="true"></i>
+</div>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="nav" id="nav">
+  <div class="nav-g">
+    <a class="nav-logo" href="#haut" aria-label="Hillary M. Styl, retour en haut">
+      <i class="mk" aria-hidden="true"></i><span>HILLARY M. STYL</span>
+    </a>
+  </div>
+  <nav class="nav-c" id="navC" aria-label="Navigation principale">
+    <a href="#catalogue">NOS CRÉATIONS</a>
+    <a href="#maison">L'ATELIER</a>
+    <a href="#lookbook">LOOKBOOK</a>
+    <a href="#contact">CONTACT</a>
+  </nav>
+  <div class="nav-d">
+    <a class="nav-ic" href="#catalogue" aria-label="Voir les créations">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+    </a>
+  </div>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="navC" aria-label="Ouvrir le menu">
+    <i></i><i></i><i></i>
+  </button>
+</header>
+
+<main id="haut">
+
+<!-- ============ 1 · LE HÉROS ============ -->
+<section class="hero" id="hero" aria-labelledby="h1">
+  <div class="hero-in">
+
+    <!-- le numéro géant : derrière le mannequin, devant le fond -->
+    <div class="hnum" id="hnum" aria-hidden="true"><span>01</span></div>
+
+    <!-- la description, à gauche -->
+    <div class="hdes" id="hdes" aria-hidden="true"></div>
+
+    <!-- la scène : 4 emplacements de photo, prêts -->
+    <div class="hsc" id="hsc" data-cur="VOIR">
+      <!-- les diapositives sont posées par le script depuis HERO -->
+    </div>
+
+    <!-- le titre de collection, à droite -->
+    <div class="hcol" id="hcol" aria-hidden="true"></div>
+
+    <!-- les badges flottants -->
+    <span class="bdg bdg--1" style="--d:0ms">PAGNE &amp; WAX</span>
+    <span class="bdg bdg--2" style="--d:180ms">SUR-MESURE</span>
+    <span class="bdg bdg--3" style="--d:360ms">PRÊT-À-PORTER</span>
+    <span class="bdg bdg--4" style="--d:540ms">EXPRESS 1 À 3 JOURS</span>
+
+    <a class="hfle" href="#maison" aria-label="Descendre">
+      <svg viewBox="0 0 14 20" aria-hidden="true"><path d="M7 1v16M2 12l5 5 5-5"/></svg>
+      <span>Défiler</span>
+    </a>
+
+    <nav class="hsoc" aria-label="Réseaux sociaux">
+      <a href="#contact">INSTAGRAM</a>
+      <a href="#contact">FACEBOOK</a>
+      <a href="#contact">TIKTOK</a>
+    </nav>
+  </div>
+
+  <!-- le grand titre, qui passe derrière le mannequin -->
+  <div class="hbig">
+    <h1 id="h1">
+      <span class="bl" style="--d:0ms"><span>HILLARY</span></span>
+      <span class="bl" style="--d:120ms"><span>M. STYL</span></span>
+    </h1>
+    <span class="base"><em>Styliste &amp; modéliste — Cotonou, Bénin</em></span>
+  </div>
+
+  <div class="hbar">
+    <button class="rond" id="hPrev" type="button" aria-label="Création précédente" data-tap>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+    </button>
+    <p class="hcpt" id="hcpt" aria-live="polite">01 — 04</p>
+    <button class="rond" id="hNext" type="button" aria-label="Création suivante" data-tap>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- ============ LE RUBAN ============ -->
+<div class="ruban" aria-hidden="true">
+  <div class="ruban-p" id="ruban">
+    <span>sur-mesure</span><span>pagne</span><span>wax</span><span>prêt-à-porter</span>
+    <span>modélisme</span><span>vos mesures, votre coupe</span><span>fait à l'atelier</span>
+    <span>Cotonou</span>
+  </div>
+</div>
+
+<!-- ============ 2 · LA MAISON ============ -->
+<section class="sec sec--encre maison" id="maison" aria-labelledby="h2a">
+  <div class="wrap maison-in">
+    <div>
+      <p class="lab lab--n"><b>01</b> — NOTRE SAVOIR-FAIRE <i></i></p>
+      <h2 class="t2 t2--n" id="h2a" data-mots>Nous créons avec le tissu, la main, et une <em>mesure juste.</em></h2>
+      <p class="deck deck--n">Chaque pièce part d'un corps, pas d'une taille standard. Entre le
+        <span class="mc-t">pagne</span> qu'on connaît depuis toujours et une
+        <span class="mc-r">coupe</span> qui tombe aujourd'hui, il n'y a qu'un patron bien tracé.</p>
+
+      <ul class="piliers">
+        <li><b>Sur-mesure</b><span>Vos mesures exactes, prises chez vous ou à l'atelier.</span></li>
+        <li><b>Prêt-à-porter</b><span>Par tailles, pour ce qui n'a pas besoin d'attendre.</span></li>
+        <li><b>Tous tissus</b><span>Pagne, wax, bazin, dentelle. La maison mère fait tout.</span></li>
+      </ul>
+
+      <p class="hello sr" id="helloTxt">Bienvenue chez Hillary M. Styl</p>
+    </div>
+
+    <!-- 3 emplacements de photo, empilés en perspective -->
+    <div class="plans" id="plans" aria-hidden="true">
+      <figure class="plan plan--1" style="--d:0ms">
+        <div class="ph"><svg viewBox="0 0 120 160" fill="none">
+          <path d="M20 20h80M20 40h80M20 60h80M20 80h80M20 100h80M20 120h80"/>
+          <path d="M30 10v140M50 10v140M70 10v140M90 10v140"/></svg></div>
+        <figcaption class="cap">Le tissu</figcaption>
+      </figure>
+      <figure class="plan plan--2" style="--d:120ms">
+        <div class="ph"><svg viewBox="0 0 120 160" fill="none">
+          <path d="M42 24c0-8 6-14 18-14s18 6 18 14"/>
+          <path d="M42 24 24 42l10 12 8-8v76h56V46l8 8 10-12-18-18"/>
+          <path d="M42 88h36"/></svg></div>
+        <figcaption class="cap">Le patron</figcaption>
+      </figure>
+      <figure class="plan plan--3" style="--d:240ms">
+        <div class="ph"><svg viewBox="0 0 120 160" fill="none">
+          <circle cx="60" cy="52" r="18"/><path d="M42 96c0-14 8-22 18-22s18 8 18 22"/>
+          <path d="M24 130c6-18 20-28 36-28s30 10 36 28"/></svg></div>
+        <figcaption class="cap">La finition</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 · LES COLLECTIONS ============ -->
+<section class="sec sec--papier coll" id="collections" aria-labelledby="h2b">
+  <div class="coll-tete">
+    <div>
+      <p class="lab"><b>02</b> — NOS COLLECTIONS <i></i></p>
+      <h2 class="t2" id="h2b" data-mots>Une garde-robe <em>écrite à la main.</em></h2>
+    </div>
+    <p class="deck coll-d">Les collections changent au rythme des saisons. Ce qui ne change pas&nbsp;:
+      le respect du tissu, la patience de la couture, et les femmes et les hommes que nous habillons.</p>
+  </div>
+
+  <div class="cars" id="cars" data-cur="VOIR">
+    <div class="cars-p" id="carsP"><!-- posé par le script depuis COLLECTIONS --></div>
+  </div>
+
+  <div class="cars-b">
+    <div class="cars-n">
+      <button class="rond" id="cPrev" type="button" aria-label="Pièce précédente" data-tap>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+      </button>
+      <button class="rond" id="cNext" type="button" aria-label="Pièce suivante" data-tap>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+      <p class="hcpt" id="cCpt" aria-live="polite">01 — 06</p>
+    </div>
+    <a class="pill pill--plein" href="#catalogue" style="color:#fff">VOIR TOUT LE CATALOGUE</a>
+  </div>
+</section>
+
+<!-- ============ 4 · LE LOOKBOOK ============ -->
+<section class="sec look" id="lookbook" aria-labelledby="h2c">
+  <div class="look-hd">
+    <span class="mk"><i aria-hidden="true"></i>H.M.S / 2026</span>
+    <span id="h2c">COLLECTION SAISON 2026</span>
+    <span>COTONOU</span>
+  </div>
+
+  <div class="look-sc" id="lookSc">
+    <div class="look-cpt" aria-hidden="true">
+      <b><span class="n" id="lkN"><span>01</span></span><span class="sl">/</span><span class="sl" id="lkT">06</span></b>
+    </div>
+    <div class="look-gr" id="lookGr">
+      <!-- 6 emplacements de photo, en mosaïque asymétrique -->
+      <figure class="lk lk--1" data-vit="0.8" data-cur="VOIR">
+        <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M46 26c0-8 6-14 14-14s14 6 14 14"/><path d="M46 26 26 44l9 11 11-9v92h28V46l11 9 9-11-20-18"/></svg></div>
+        <figcaption class="cap">Silhouette · à venir</figcaption></figure>
+      <figure class="lk lk--2" data-vit="1.1" data-cur="VOIR">
+        <div class="sil"><svg viewBox="0 0 120 120" fill="none"><path d="M20 20h80v80H20z"/><path d="M20 44h80M20 68h80M44 20v80M68 20v80"/></svg></div>
+        <figcaption class="cap">Détail de tissu · à venir</figcaption></figure>
+      <figure class="lk lk--3" data-vit="0.9" data-cur="VOIR">
+        <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M60 14c-10 0-16 6-16 14 0 10 6 16 16 16s16-6 16-16c0-8-6-14-16-14z"/><path d="M32 148c0-30 12-46 28-46s28 16 28 46"/></svg></div>
+        <figcaption class="cap">Portrait · à venir</figcaption></figure>
+      <figure class="lk lk--4" data-vit="1.3" data-cur="VOIR">
+        <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M40 20h40l14 40-14 90H40L26 60z"/><path d="M40 60h40M40 100h40"/></svg></div>
+        <figcaption class="cap">Silhouette · à venir</figcaption></figure>
+      <figure class="lk lk--5" data-vit="0.85" data-cur="VOIR">
+        <div class="sil"><svg viewBox="0 0 150 120" fill="none"><path d="M14 100c30-40 60-60 122-72"/><path d="M14 60c26-16 60-24 96-24"/><path d="M40 100V44M76 100V32M112 100V28"/></svg></div>
+        <figcaption class="cap">Atelier · à venir</figcaption></figure>
+      <figure class="lk lk--6" data-vit="1.2" data-cur="VOIR">
+        <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M60 10v140"/><path d="M36 34c16-8 32-8 48 0M32 62c18-9 38-9 56 0M28 92c20-10 44-10 64 0"/></svg></div>
+        <figcaption class="cap">Détail · à venir</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="look-bas">
+    <span id="lkPage">01 / 06</span>
+    <nav class="look-soc" aria-label="Réseaux sociaux">
+      <a href="#contact">FB</a><a href="#contact">IG</a><a href="#contact">TT</a>
+    </nav>
+  </div>
+</section>
+
+<!-- ============ LE CATALOGUE COMMANDABLE (le moteur) ============ -->
+<section class="sec sec--papier" id="catalogue" aria-labelledby="h2cat">
+  <div class="wrap">
+    <p class="lab"><b>03</b> — COMMANDER <i></i></p>
+    <h2 class="t2" id="h2cat" data-mots>Choisissez la pièce. <em>On prend vos mesures.</em></h2>
+    <p class="deck">Chaque pièce affiche son prix et son délai. Vous donnez votre taille ou vos
+      mesures exactes, et vous connaissez le jour où votre tenue sera prête avant de valider.</p>
+    <div class="tabs" role="tablist" aria-label="Type de commande">
+      <button class="tab" role="tab" id="tab-pap" aria-selected="true"  data-onglet="pap" data-tap>Prêt-à-porter</button>
+      <button class="tab" role="tab" id="tab-sm"  aria-selected="false" data-onglet="sm"  data-tap>Sur-mesure</button>
+    </div>
+    <div class="grid" id="grille"></div>
+  </div>
+</section>
+
+<!-- ============ 5 · LE PROCESSUS ============ -->
+<section class="sec sec--encre" id="process" aria-labelledby="h2d">
+  <div class="wrap">
+    <p class="lab lab--n"><b>04</b> — DE LA MESURE À LA PIÈCE <i></i></p>
+    <h2 class="t2 t2--n" id="h2d" data-mots>La couture, en quatre <em>gestes.</em></h2>
+    <p class="deck deck--n">Rien ne commence avant que le corps ne soit mesuré. Tout le reste
+      en découle, dans cet ordre, et jamais dans un autre.</p>
+
+    <ol class="etapes" id="etapes">
+      <li class="et" style="--d:0ms"><span class="n">01</span><b>La mesure</b>
+        <span>Vos mesures exactes, prises chez vous ou à l'atelier. Une mesure vide se prend ensemble.</span></li>
+      <li class="et" style="--d:110ms"><span class="n">02</span><b>Le patron</b>
+        <span>Tracé à la craie sur votre morphologie, ajusté, puis coupé.</span></li>
+      <li class="et" style="--d:220ms"><span class="n">03</span><b>La couture</b>
+        <span>Assemblage à la main et à la machine, finitions intérieures soignées.</span></li>
+      <li class="et" style="--d:330ms"><span class="n">04</span><b>L'essayage</b>
+        <span>Retouches, repassage, et la pièce quitte l'atelier.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 6 · LE CONTACT ============ -->
+<section class="sec sec--encre ct" id="contact" aria-labelledby="h2e">
+  <div class="wrap ct-in">
+    <div>
+      <p class="lab lab--n"><b>UNE CRÉATION SUR MESURE&nbsp;?</b> <i></i></p>
+      <h2 class="t2 t2--n" id="h2e" data-mots>Travaillons <em>ensemble.</em></h2>
+      <p class="deck deck--n">Pour un mariage, une cérémonie, ou pour ce que vous portez tous
+        les jours. Dites-moi d'abord ce que vous cherchez.</p>
+      <div class="pills">
+        <a class="wa" id="waBas" href="#" data-mag data-tap>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>
+          <span>Écrire sur WhatsApp</span>
+        </a>
+        <a class="pill" href="#catalogue">VOIR LE CATALOGUE</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="coords">
+        <div class="coord">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.4 7-11a7 7 0 10-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          <div><b>Retrait</b><span id="adr">Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp</span></div>
+        </div>
+        <div class="coord">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+          <div><b>Confection</b><span id="hor">Confection : 7 à 14 jours · 1 à 3 jours en express</span></div>
+        </div>
+        <div class="coord">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          <div><b>Email</b><span id="mail">contact@hillarymstyl.com</span></div>
+        </div>
+      </div>
+
+      <div class="socs">
+        <a class="soc" href="#contact"><b>Instagram</b><span>à confirmer</span></a>
+        <a class="soc" href="#contact"><b>Facebook</b><span>à confirmer</span></a>
+        <a class="soc" href="#contact"><b>TikTok</b><span>à confirmer</span></a>
+        <a class="soc" href="#" data-wa-soc><b>WhatsApp</b><span>+229 51 37 47 93</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="wrap pied-in">
+    <span>© <span id="an"></span> HILLARY M. STYL — Maison de couture · Cotonou</span>
+    <span>Conçu par <a href="https://www.nebula-agency.online" target="_blank" rel="noopener">NEBULA Agency</a></span>
+  </div>
+</footer>
+
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="shTitre">
+  <div class="sheet">
+    <div class="sh-top">
+      <div class="mark" role="img" aria-label=""></div>
+      <div class="t"><b id="shTitre">—</b><span id="shSub">—</span></div>
+      <button class="x" id="btX" type="button" aria-label="Fermer" data-tap><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="prog" id="prog"><i></i><i></i><i></i><i></i></div>
+    <div class="sh-bd" id="shBd"></div>
+    <div class="sh-ft" id="shFt"></div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"ClothingStore","@id":"https://hillary-m-styl.pages.dev/#maison","name":"HILLARY M. STYL","description":"Maison de couture à Cotonou : pagne, wax et tous tissus, prêt-à-porter par tailles et sur-mesure aux mesures exactes.","url":"https://hillary-m-styl.pages.dev/","telephone":"+22951374793","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"},"areaServed":["BJ","TG","CI","NG"],"currenciesAccepted":"XOF","paymentAccepted":"Mobile Money"},
+ {"@type":"WebSite","@id":"https://hillary-m-styl.pages.dev/#site","url":"https://hillary-m-styl.pages.dev/","name":"HILLARY M. STYL","inLanguage":"fr-FR","publisher":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},
+ {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"Faites-vous du sur-mesure ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Les mesures demandées dépendent du type de vêtement, pas du genre : une robe coupée à la taille en demande 9, une robe droite 15, un pantalon 6, une chemise 8. Une mesure que vous ne savez pas prendre se prend ensemble."}},
+  {"@type":"Question","name":"En combien de temps ma tenue est-elle prête ?","acceptedAnswer":{"@type":"Answer","text":"De 7 à 14 jours en confection normale, de 1 à 3 jours en express. La date exacte de disponibilité s'affiche avant que vous ne validiez, acheminement compris."}},
+  {"@type":"Question","name":"Comment se fait le règlement ?","acceptedAnswer":{"@type":"Answer","text":"Par Mobile Money uniquement. Aucun paiement ne se fait sur le site : la commande part sur WhatsApp et le règlement se convient directement."}},
+  {"@type":"Question","name":"Travaillez-vous le pagne et le wax ?","acceptedAnswer":{"@type":"Answer","text":"Oui, comme tous les autres tissus. La maison fait le pagne, le wax, le bazin et la dentelle, en prêt-à-porter comme en sur-mesure."}}]}
+]}
+</script>
+
+<script>
+/* ==================================================================
+   HILLARY M. STYL — moteur de commande
+   NEBULA Agency · 2026
+   ==================================================================
+
+   ┌────────────────────────────────────────────────────────────────┐
+   │  RÉGLAGES DU SITE — ce que la cliente peut faire évoluer       │
+   │                                                                │
+   │  1. WHATSAPP  : ✅ FAIT — +229 51 37 47 93                      │
+   │  2. EMAIL     : adresse de repli si le client n'a pas WhatsApp │
+   │  3. PAYS      : frais d'expédition et jours d'acheminement     │
+   │  4. DELAIS    : délais de confection et supplément express     │
+   │  5. PIECES    : le vrai catalogue, vrais prix, vraies photos   │
+   │  6. ATELIER   : ✅ retrait sur RDV via WhatsApp · délais posés  │
+   │  7. MESURES.robe_ovale : liste à valider par l'atelier         │
+   │                                                                │
+   │  ⚠️ Tester le lien en envoyant un VRAI message avant diffusion. │
+   └────────────────────────────────────────────────────────────────┘ */
+
+/* ---------- 1 & 2 · CONTACT ------------------------------------- */
+var WHATSAPP = "22951374793";            /* +229 51 37 47 93 — fourni par Mongazi le 2026-08-01 */
+var EMAIL    = "contact@hillarymstyl.com"; /* ⚠ À REMPLACER */
+
+/* ---------- 6 · ATELIER ----------------------------------------- */
+var ATELIER = {
+  pays: "bj",
+  adresse: "Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp",
+  horaires: "Confection : 7 à 14 jours · 1 à 3 jours en express"
+};
+
+/* ---------- 3 · PAYS, FRAIS ET ACHEMINEMENT --------------------- */
+/* frais = coût d'expédition en FCFA · achem = jours de transport   */
+var PAYS = [
+  {id:"bj", nom:"Bénin",           frais:2000,  achem:1},
+  {id:"tg", nom:"Togo",            frais:8000,  achem:2},
+  {id:"ci", nom:"Côte d'Ivoire",   frais:12000, achem:4},
+  {id:"ng", nom:"Nigeria",         frais:12000, achem:4},
+  {id:"sn", nom:"Sénégal",         frais:15000, achem:5},
+  {id:"bf", nom:"Burkina Faso",    frais:12000, achem:4},
+  {id:"ml", nom:"Mali",            frais:15000, achem:5},
+  {id:"ne", nom:"Niger",           frais:15000, achem:5},
+  {id:"ga", nom:"Gabon",           frais:25000, achem:7},
+  {id:"cm", nom:"Cameroun",        frais:22000, achem:6},
+  {id:"fr", nom:"France",          frais:35000, achem:8},
+  {id:"other", nom:"Autre pays",   frais:null,  achem:10}
+];
+
+/* ---------- 4 · DELAIS DE CONFECTION ---------------------------- */
+var DELAIS = {
+  normal:  {id:"normal",  nom:"Délai normal",  jmin:7, jmax:14, sup:0,
+            desc:"Confection sereine, dans l'ordre des commandes"},
+  express: {id:"express", nom:"Délai express", jmin:1, jmax:3,  sup:10000,
+            desc:"Commande précipitée, passée devant les autres"}
+};
+
+/* ---------- 7 · LES JEUX DE MESURES PAR TYPE DE VÊTEMENT --------
+   C'est le cœur de l'outil : les mesures dépendent du VÊTEMENT,
+   pas du genre du client.                                          */
+var MESURES = {
+  robe_taille: {
+    nom: "Robe coupée à la taille",
+    champs: [
+      {id:"epaules",   g:"Le haut",   l:"Épaules"},
+      {id:"carr_dev",  g:"Le haut",   l:"Carrure devant"},
+      {id:"poitrine",  g:"Le haut",   l:"Poitrine"},
+      {id:"t_taille",  g:"Le haut",   l:"Tour de taille"},
+      {id:"l_taille",  g:"Les longueurs", l:"Longueur taille"},
+      {id:"l_courte",  g:"Les longueurs", l:"Longueur robe courte"},
+      {id:"l_longue",  g:"Les longueurs", l:"Longueur robe longue"},
+      {id:"t_manche",  g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",  g:"Les manches",   l:"Longueur manche"}
+    ]
+  },
+  robe_droite: {
+    nom: "Robe droite",
+    champs: [
+      {id:"epaules",     g:"Le haut", l:"Épaules"},
+      {id:"carr_dev",    g:"Le haut", l:"Carrure devant"},
+      {id:"poitrine",    g:"Le haut", l:"Poitrine"},
+      {id:"t_sous_sein", g:"Le haut", l:"Tour du sous-sein"},
+      {id:"t_taille",    g:"Le haut", l:"Tour de taille"},
+      {id:"t_ceinture",  g:"Le haut", l:"Tour de ceinture"},
+      {id:"t_hanche",    g:"Le haut", l:"Tour de hanche"},
+      {id:"l_sous_sein", g:"Les longueurs", l:"Longueur sous-sein"},
+      {id:"l_taille",    g:"Les longueurs", l:"Longueur taille"},
+      {id:"l_ceinture",  g:"Les longueurs", l:"Longueur ceinture"},
+      {id:"l_genou",     g:"Les longueurs", l:"Longueur genou"},
+      {id:"l_courte",    g:"Les longueurs", l:"Longueur robe courte"},
+      {id:"l_longue",    g:"Les longueurs", l:"Longueur robe longue"},
+      {id:"t_manche",    g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",    g:"Les manches",   l:"Longueur manche"}
+    ]
+  },
+  robe_ovale: {
+    nom: "Robe ovale",
+    aValider: true,
+    champs: [
+      {id:"epaules",     g:"Le haut", l:"Épaules"},
+      {id:"carr_dev",    g:"Le haut", l:"Carrure devant"},
+      {id:"poitrine",    g:"Le haut", l:"Poitrine"},
+      {id:"t_sous_sein", g:"Le haut", l:"Tour du sous-sein"},
+      {id:"t_taille",    g:"Le haut", l:"Tour de taille"},
+      {id:"t_hanche",    g:"Le haut", l:"Tour de hanche"},
+      {id:"l_taille",    g:"Les longueurs", l:"Longueur taille"},
+      {id:"l_courte",    g:"Les longueurs", l:"Longueur robe courte"},
+      {id:"l_longue",    g:"Les longueurs", l:"Longueur robe longue"},
+      {id:"t_manche",    g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",    g:"Les manches",   l:"Longueur manche"}
+    ]
+  },
+  pantalon: {
+    nom: "Pantalon",
+    champs: [
+      {id:"t_taille",   g:"Les tours",     l:"Tour de taille"},
+      {id:"t_bassins",  g:"Les tours",     l:"Tour de bassins"},
+      {id:"t_cuisse",   g:"Les tours",     l:"Tour de cuisse"},
+      {id:"t_genoux",   g:"Les tours",     l:"Tour de genoux"},
+      {id:"l_genou",    g:"Les longueurs", l:"Longueur genou"},
+      {id:"l_pantalon", g:"Les longueurs", l:"Longueur pantalon"}
+    ]
+  },
+  haut: {
+    nom: "Chemise ou haut",
+    champs: [
+      {id:"epaules",   g:"Le haut", l:"Épaules"},
+      {id:"carr_dev",  g:"Le haut", l:"Carrure devant"},
+      {id:"carr_dos",  g:"Le haut", l:"Carrure dos"},
+      {id:"poitrine",  g:"Le haut", l:"Tour de poitrine"},
+      {id:"t_taille",  g:"Le haut", l:"Tour de taille"},
+      {id:"l_habit",   g:"Les longueurs", l:"Longueur habit"},
+      {id:"t_manche",  g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",  g:"Les manches",   l:"Longueur manche"}
+    ]
+  }
+};
+
+var AIDE = "Vous pouvez prendre les mesures vous-même ou inviter quelqu'un à le faire pour vous ou vous aider.";
+
+/* ---------- 5 · LE CATALOGUE ------------------------------------
+   cat  : "pap" (prêt-à-porter) ou "sm" (sur-mesure)
+   prix : nombre en FCFA, ou null pour « sur devis »
+   type : clé de MESURES (sur-mesure) · typeLibre : le client choisit
+   jmin/jmax : délai de confection propre à la pièce               */
+var TAILLES = ["XS","S","M","L","XL","XXL"];
+
+var PIECES = [
+  {id:"p1", cat:"pap", nom:"Robe Amazone",        prix:35000, jmin:7,  jmax:10, tag:"Nouveauté",
+   ds:"Robe droite en wax, col rond, manches trois-quarts."},
+  {id:"p2", cat:"pap", nom:"Chemise Lagune",      prix:22000, jmin:5,  jmax:8,  tag:"",
+   ds:"Chemise en coton léger, coupe droite, poche poitrine."},
+  {id:"p3", cat:"pap", nom:"Ensemble Kora",       prix:48000, jmin:8,  jmax:12, tag:"",
+   ds:"Haut et pantalon assortis, tissu imprimé, ceinture nouée."},
+  {id:"p4", cat:"pap", nom:"Pantalon Sablé",      prix:25000, jmin:5,  jmax:8,  tag:"",
+   ds:"Pantalon fluide taille haute, deux poches latérales."},
+  {id:"p5", cat:"pap", nom:"Robe Vespérale",      prix:52000, jmin:8,  jmax:12, tag:"Cérémonie",
+   ds:"Robe longue de cérémonie, dos travaillé, doublure."},
+  {id:"p6", cat:"pap", nom:"Boubou Sahel",        prix:40000, jmin:7,  jmax:10, tag:"",
+   ds:"Boubou brodé au col et aux poignets, coupe ample."},
+
+  {id:"s1", cat:"sm", nom:"Robe coupée à la taille", prix:45000, jmin:7, jmax:14, type:"robe_taille", tag:"",
+   ds:"Buste ajusté, jupe montée à la taille. Courte ou longue, à votre choix."},
+  {id:"s2", cat:"sm", nom:"Robe droite",             prix:55000, jmin:8, jmax:14, type:"robe_droite", tag:"Signature",
+   ds:"La coupe la plus exigeante de la maison : quinze mesures pour une tombée parfaite."},
+  {id:"s3", cat:"sm", nom:"Robe ovale",              prix:58000, jmin:8, jmax:14, type:"robe_ovale", tag:"",
+   ds:"Volume arrondi, taille suggérée. Une pièce de caractère."},
+  {id:"s4", cat:"sm", nom:"Pantalon sur-mesure",     prix:30000, jmin:5, jmax:10, type:"pantalon", tag:"",
+   ds:"Droit, fuselé ou large. Six mesures suffisent."},
+  {id:"s5", cat:"sm", nom:"Chemise ou haut",         prix:28000, jmin:5, jmax:10, type:"haut", tag:"",
+   ds:"Chemise, chemisier, haut de cérémonie. Femme ou homme."},
+  {id:"s6", cat:"sm", nom:"Création libre",          prix:null,  jmin:10,jmax:21, typeLibre:true, tag:"Sur devis",
+   ds:"Vous avez un modèle en tête ou une photo. On en discute, on chiffre, on coud."}
+];
+
+/* ================================================================
+   MOTEUR — rien à modifier en dessous
+   ================================================================ */
+var $  = function(s,c){return (c||document).querySelector(s);};
+var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+var esc = function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};
+var fcfa = function(n){return Number(n).toLocaleString("fr-FR").replace(/ | /g," ")+" F";};
+
+var JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+var MOIS  = ["janvier","février","mars","avril","mai","juin","juillet","août",
+             "septembre","octobre","novembre","décembre"];
+
+/* Date de disponibilité — annoncée sur la BORNE HAUTE du délai.
+   Promettre le jour 8 d'un « 8 à 14 jours » fabrique un client déçu. */
+function dateDispo(jours){
+  var d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + Number(jours||0));
+  return d;
+}
+function dateFr(d){
+  return JOURS[d.getDay()]+" "+d.getDate()+" "+MOIS[d.getMonth()]+
+         (d.getFullYear()!==new Date().getFullYear()? " "+d.getFullYear() : "");
+}
+
+/* ---------- accueil personnalisé -------------------------------- */
+var LS = "hms:client";
+function memoire(){
+  try{ return JSON.parse(localStorage.getItem(LS)||"{}"); }catch(e){ return {}; }
+}
+function memorise(o){
+  try{
+    var m = memoire();
+    for(var k in o){ if(o[k]) m[k]=o[k]; }
+    localStorage.setItem(LS, JSON.stringify(m));
+  }catch(e){}
+}
+(function accueil(){
+  var h = new Date().getHours();
+  var salut = h<12 ? "Bonjour" : (h<18 ? "Bon après-midi" : "Bonsoir");
+  var m = memoire();
+  var t = m.prenom
+    ? salut+" "+m.prenom+", contente de vous revoir."
+    : salut+" — bienvenue chez HILLARY M. STYL.";
+  var el = document.getElementById("helloTxt");
+  if(el) el.textContent = t;
+})();
+
+/* ---------- catalogue ------------------------------------------- */
+var HORLOGE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 1.9"/></svg>';
+
+function carte(p){
+  var prix = p.prix==null ? "Sur devis" : fcfa(p.prix);
+  return '<button class="piece" type="button" data-id="'+p.id+'">'+
+    '<div class="ph">'+(p.tag?'<span class="tag">'+esc(p.tag)+'</span>':'')+
+      '<div class="mark"></div><span class="avenir">Photo à venir</span>'+
+      '<span class="voile"><span>Commander</span></span></div>'+
+    '<div class="bd">'+
+      '<h3>'+esc(p.nom)+'</h3>'+
+      '<p class="ds">'+esc(p.ds)+'</p>'+
+      '<div class="meta"><span class="pr">'+prix+'</span>'+
+        '<span class="del">'+HORLOGE+'<span>'+p.jmin+' à '+p.jmax+' jours</span></span></div>'+
+    '</div></button>';
+}
+function rendreGrille(cat){
+  var g = document.getElementById("grille");
+  g.innerHTML = PIECES.filter(function(p){return p.cat===cat;}).map(carte).join("");
+}
+function onglet(cat){
+  $$(".tab").forEach(function(t){ t.setAttribute("aria-selected", t.dataset.onglet===cat ? "true":"false"); });
+  rendreGrille(cat);
+}
+$$("[data-onglet]").forEach(function(b){
+  b.addEventListener("click", function(){
+    onglet(b.dataset.onglet);
+    if(!b.classList.contains("tab")){
+      document.getElementById("catalogue").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+  });
+});
+onglet("pap");
+
+/* ---------- état de la commande --------------------------------- */
+var etat = null;
+
+function ouvrir(id){
+  var p = PIECES.filter(function(x){return x.id===id;})[0];
+  if(!p) return;
+  var m = memoire();
+  etat = {
+    piece: p,
+    etape: 1,
+    taille: null,
+    typeMesure: p.type || (p.typeLibre ? null : null),
+    mesures: {},
+    tissu: "",
+    details: "",
+    mode: null,          /* "retrait" | "expedition" */
+    pays: null,
+    delai: null,
+    prenom: m.prenom||"", nom: m.nom||"", tel: m.tel||"", mail: m.mail||"",
+    ville: m.ville||"", note: ""
+  };
+  document.getElementById("shTitre").textContent = p.nom;
+  document.getElementById("shSub").textContent = (p.cat==="sm" ? "Sur-mesure" : "Prêt-à-porter")+
+    " · "+(p.prix==null ? "sur devis" : fcfa(p.prix));
+  document.getElementById("ov").classList.add("on");
+  document.body.style.overflow = "hidden";
+  dessiner();
+}
+function fermer(){
+  document.getElementById("ov").classList.remove("on");
+  document.body.style.overflow = "";
+  etat = null;
+}
+document.getElementById("grille").addEventListener("click", function(e){
+  var b = e.target.closest ? e.target.closest(".piece") : null;
+  if(b) ouvrir(b.dataset.id);
+});
+document.getElementById("btX").addEventListener("click", fermer);
+document.getElementById("ov").addEventListener("click", function(e){ if(e.target===this) fermer(); });
+document.addEventListener("keydown", function(e){ if(e.key==="Escape" && etat) fermer(); });
+
+/* ---------- calculs --------------------------------------------- */
+function fraisLivraison(){
+  if(!etat || etat.mode!=="expedition" || !etat.pays) return 0;
+  return etat.pays.frais==null ? null : etat.pays.frais;
+}
+function joursAcheminement(){
+  if(!etat || etat.mode!=="expedition" || !etat.pays) return 0;
+  return etat.pays.achem||0;
+}
+function totalCommande(){
+  if(!etat) return null;
+  if(etat.piece.prix==null) return null;                 /* sur devis */
+  var f = fraisLivraison();
+  if(f===null) return null;                              /* pays « autre » */
+  var sup = etat.delai ? etat.delai.sup : 0;
+  return etat.piece.prix + f + sup;
+}
+function joursTotal(){
+  if(!etat || !etat.delai) return null;
+  /* borne haute du délai de confection propre à la pièce, ajustée
+     par le mode de délai choisi, plus l'acheminement */
+  var conf = etat.delai.id==="express"
+    ? etat.delai.jmax
+    : Math.max(etat.piece.jmax, etat.delai.jmin);
+  return conf + joursAcheminement();
+}
+
+/* ---------- rendu ----------------------------------------------- */
+function dessiner(){
+  if(!etat) return;
+  $$("#prog i").forEach(function(i,k){ i.classList.toggle("on", k < etat.etape); });
+  var bd = document.getElementById("shBd");
+  var ft = document.getElementById("shFt");
+  var e  = etat.etape;
+
+  if(e===1)      bd.innerHTML = vue1();
+  else if(e===2) bd.innerHTML = vue2();
+  else if(e===3) bd.innerHTML = vue3();
+  else if(e===4) bd.innerHTML = vue4();
+  else           bd.innerHTML = vue5();
+
+  ft.innerHTML = pied();
+  brancher();
+  document.querySelector(".sheet").scrollTop = 0;
+  document.getElementById("ov").scrollTop = 0;
+}
+
+/* --- étape 1 : taille ou mesures --- */
+function vue1(){
+  var p = etat.piece;
+  if(p.cat==="pap"){
+    return '<div class="stitle">Votre taille</div>'+
+      '<div class="sdesc">Choisissez la taille qui vous correspond. En cas de doute, prenez la plus grande : une retouche à la baisse est gratuite à l\'atelier.</div>'+
+      '<div class="tailles">'+TAILLES.map(function(t){
+        return '<button class="taille'+(etat.taille===t?" sel":"")+'" type="button" data-taille="'+t+'">'+t+'</button>';
+      }).join("")+'</div>'+
+      '<div class="mes" style="margin-top:20px"><div class="fd full"><label for="f_det">Une précision sur votre commande ?</label>'+
+      '<textarea id="f_det" placeholder="Couleur souhaitée, longueur de manche, occasion…">'+esc(etat.details)+'</textarea></div></div>';
+  }
+  /* sur-mesure */
+  var h = '';
+  if(p.typeLibre){
+    h += '<div class="stitle">Quel vêtement ?</div>'+
+      '<div class="sdesc">Les mesures demandées dépendent du vêtement. Choisissez d\'abord le type.</div>'+
+      '<div class="fd" style="margin-bottom:18px"><label for="f_type">Type de vêtement</label><select id="f_type">'+
+        '<option value="">— Choisir —</option>'+
+        Object.keys(MESURES).map(function(k){
+          return '<option value="'+k+'"'+(etat.typeMesure===k?" selected":"")+'>'+esc(MESURES[k].nom)+'</option>';
+        }).join("")+
+      '</select></div>';
+    if(!etat.typeMesure) return h;
+  }
+  var jeu = MESURES[etat.typeMesure];
+  if(!jeu) return h || '<div class="sdesc">Type de vêtement introuvable.</div>';
+
+  /* le nom du vêtement descend dans la ligne de description : en didone,
+     le tiret cadratin est un cheveu, et « Vos mesures — Robe droite » cassait mal */
+  h += '<div class="stitle">Vos mesures</div>'+
+       '<div class="sdesc"><b style="color:var(--encre)">'+esc(jeu.nom)+'</b> · '+
+       jeu.champs.length+' mesures, en centimètres. Un ruban de couturière suffit.</div>'+
+       '<div class="aide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>'+
+       '<p>'+esc(AIDE)+'</p></div>';
+  if(jeu.aValider){
+    h += '<div class="warn"><strong>Liste de mesures en cours de validation par l\'atelier.</strong> '+
+         'Nous vous rappellerons pour confirmer ou compléter ces mesures avant de couper.</div>';
+  }
+  h += '<div class="mes">';
+  var groupe = null;
+  jeu.champs.forEach(function(c){
+    if(c.g!==groupe){ groupe=c.g; h += '<div class="mes-hd">'+esc(groupe)+'</div>'; }
+    h += '<div class="fd cm"><label for="m_'+c.id+'">'+esc(c.l)+'</label><div class="ipw">'+
+         '<input id="m_'+c.id+'" type="number" inputmode="decimal" min="1" max="300" step="0.5" '+
+         'data-mes="'+c.id+'" placeholder="—" value="'+esc(etat.mesures[c.id]||"")+'"><span class="unit">cm</span></div></div>';
+  });
+  h += '<div class="fd full"><label for="f_tissu">Tissu souhaité</label>'+
+       '<input id="f_tissu" type="text" placeholder="Wax, bazin, satin… ou « à conseiller »" value="'+esc(etat.tissu)+'"></div>'+
+       '<div class="fd full"><label for="f_det">Le modèle et les détails</label>'+
+       '<textarea id="f_det" placeholder="Longueur, col, manches, doublure, occasion… Vous pouvez aussi nous envoyer une photo sur WhatsApp après la commande.">'+esc(etat.details)+'</textarea></div>'+
+       '</div>'+
+       '<div class="momo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h6M9 14h6M12 7v10"/></svg>'+
+       '<span>Une mesure que vous ne savez pas prendre ? Laissez-la vide : elle partira en « à prendre ensemble » et nous vous appellerons.</span></div>';
+  return h;
+}
+
+/* --- étape 2 : retrait ou expédition --- */
+function vue2(){
+  var h = '<div class="stitle">Retrait ou expédition ?</div>'+
+    '<div class="sdesc">Le retrait à l\'atelier est gratuit et permet l\'essayage. L\'expédition est facturée selon votre pays.</div>'+
+    '<div class="opts">'+
+      '<button class="opt'+(etat.mode==="retrait"?" sel":"")+'" type="button" data-mode="retrait">'+
+        '<span class="rd"></span><span class="tx"><b>Retrait à l\'atelier</b>'+
+        '<span>'+esc(ATELIER.adresse)+' · essayage et retouche sur place</span></span>'+
+        '<span class="pz">Gratuit</span></button>'+
+      '<button class="opt'+(etat.mode==="expedition"?" sel":"")+'" type="button" data-mode="expedition">'+
+        '<span class="rd"></span><span class="tx"><b>Expédition</b>'+
+        '<span>Nous envoyons la tenue chez vous</span></span>'+
+        '<span class="pz" id="pzExp">Selon pays</span></button>'+
+    '</div>';
+
+  if(etat.mode==="expedition"){
+    h += '<div class="fd" style="margin-top:16px"><label for="f_pays">Votre pays</label><select id="f_pays">'+
+      '<option value="">— Choisir votre pays —</option>'+
+      PAYS.map(function(p){
+        return '<option value="'+p.id+'"'+(etat.pays&&etat.pays.id===p.id?" selected":"")+'>'+esc(p.nom)+
+          (p.frais==null? " (frais à confirmer)" : " — "+fcfa(p.frais))+'</option>';
+      }).join("")+'</select></div>';
+    if(etat.pays && etat.pays.frais===null){
+      h += '<div class="warn" style="margin-top:14px">Nous n\'expédions pas encore automatiquement vers ce pays. '+
+           'Envoyez-nous quand même la commande : nous vous donnerons le tarif exact avant tout règlement.</div>';
+    }
+    h += '<div class="fd" style="margin-top:12px"><label for="f_ville">Ville de livraison</label>'+
+         '<input id="f_ville" type="text" placeholder="Cotonou, Abidjan, Dakar…" value="'+esc(etat.ville)+'"></div>';
+  }
+  if(etat.mode==="retrait"){
+    h += '<div class="momo" style="margin-top:16px"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>'+
+         '<span><strong>'+esc(ATELIER.adresse)+'</strong><br>'+esc(ATELIER.horaires)+'</span></div>';
+  }
+  return h;
+}
+
+/* --- étape 3 : délai + date de disponibilité --- */
+function vue3(){
+  var p = etat.piece;
+  var h = '<div class="stitle">Quand la voulez-vous ?</div>'+
+    '<div class="sdesc">Cette pièce demande normalement '+p.jmin+' à '+p.jmax+' jours de confection.</div>'+
+    '<div class="opts">'+
+      opt3(DELAIS.normal, "Confection en "+p.jmin+" à "+p.jmax+" jours")+
+      opt3(DELAIS.express, "Votre tenue en "+DELAIS.express.jmin+" à "+DELAIS.express.jmax+" jours maximum")+
+    '</div>';
+
+  if(etat.delai){
+    var j = joursTotal();
+    var d = dateDispo(j);
+    var motLivr = etat.mode==="expedition" ? "Chez vous au plus tard le" : "Prête à retirer au plus tard le";
+    var det = etat.mode==="expedition" && joursAcheminement()
+      ? "Confection incluse, plus "+joursAcheminement()+" jour"+(joursAcheminement()>1?"s":"")+" d'acheminement vers "+esc(etat.pays?etat.pays.nom:"")+"."
+      : "Vous pouvez venir l'essayer à l'atelier ce jour-là.";
+    h += '<div class="dispo"><svg viewBox="0 0 24 24"><path d="M4.5 5.5h15v14h-15z"/><path d="M4.5 10h15M8.5 3v4M15.5 3v4"/><path d="M9 15l2 2 4-4"/></svg>'+
+      '<div><b>'+motLivr+'</b><p>'+dateFr(d)+'</p><small>'+det+'</small></div></div>';
+    if(etat.delai.id==="express"){
+      h += '<div class="warn" style="margin-top:14px">Le délai express fait passer votre commande devant les autres. '+
+           'Il est confirmé par l\'atelier à la validation : si la charge du moment ne le permet pas, nous vous prévenons '+
+           'immédiatement et le supplément n\'est pas dû.</div>';
+    }
+  }
+  return h;
+}
+function opt3(d, sous){
+  return '<button class="opt'+(etat.delai&&etat.delai.id===d.id?" sel":"")+'" type="button" data-delai="'+d.id+'">'+
+    '<span class="rd"></span><span class="tx"><b>'+esc(d.nom)+'</b><span>'+esc(sous)+'</span></span>'+
+    '<span class="pz">'+(d.sup? "+ "+fcfa(d.sup) : "Inclus")+'</span></button>';
+}
+
+/* --- étape 4 : coordonnées + récapitulatif --- */
+function vue4(){
+  var h = '<div class="stitle">Vos coordonnées</div>'+
+    '<div class="sdesc">Pour vous confirmer la commande et vous prévenir dès que la tenue est prête.</div>'+
+    '<div class="mes">'+
+      '<div class="fd"><label for="f_prenom">Prénom</label><input id="f_prenom" type="text" value="'+esc(etat.prenom)+'" placeholder="Votre prénom"></div>'+
+      '<div class="fd"><label for="f_nom">Nom</label><input id="f_nom" type="text" value="'+esc(etat.nom)+'" placeholder="Votre nom"></div>'+
+      '<div class="fd"><label for="f_tel">Numéro WhatsApp</label><input id="f_tel" type="tel" inputmode="tel" value="'+esc(etat.tel)+'" placeholder="+229 01 …"></div>'+
+      '<div class="fd"><label for="f_mail">Email <span style="font-weight:500;text-transform:none">(si vous n\'avez pas WhatsApp)</span></label><input id="f_mail" type="email" inputmode="email" value="'+esc(etat.mail)+'" placeholder="vous@gmail.com"></div>'+
+      '<div class="fd full"><label for="f_note">Un mot pour l\'atelier ?</label><textarea id="f_note" placeholder="Optionnel">'+esc(etat.note)+'</textarea></div>'+
+    '</div>'+
+    '<div class="momo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h6M9 14h6M12 7v10"/></svg>'+
+    '<span><strong>Règlement par Mobile Money uniquement.</strong> Le numéro vous sera communiqué au message de confirmation. Aucun paiement ne se fait sur ce site.</span></div>'+
+    recap()+
+    '<div class="err" id="err"></div>';
+  return h;
+}
+
+function recap(){
+  var p = etat.piece;
+  var lignes = [];
+  lignes.push(["Pièce", p.nom]);
+  if(p.cat==="pap" && etat.taille) lignes.push(["Taille", etat.taille]);
+  if(p.cat==="sm" && etat.typeMesure){
+    var jeu = MESURES[etat.typeMesure];
+    var remplies = jeu.champs.filter(function(c){return etat.mesures[c.id];}).length;
+    lignes.push(["Mesures", remplies+" / "+jeu.champs.length+" renseignées"]);
+  }
+  lignes.push(["Prix de la pièce", p.prix==null ? "Sur devis" : fcfa(p.prix)]);
+  if(etat.mode==="retrait") lignes.push(["Retrait atelier","Gratuit"]);
+  if(etat.mode==="expedition"){
+    var f = fraisLivraison();
+    lignes.push(["Expédition "+(etat.pays?etat.pays.nom:""), f===null ? "À confirmer" : fcfa(f)]);
+  }
+  if(etat.delai) lignes.push([etat.delai.nom, etat.delai.sup ? fcfa(etat.delai.sup) : "Inclus"]);
+  var j = joursTotal();
+  if(j!=null) lignes.push(["Disponible le", dateFr(dateDispo(j))]);
+
+  var t = totalCommande();
+  return '<div class="recap">'+
+    lignes.map(function(l){return '<div class="li"><span>'+esc(l[0])+'</span><span>'+esc(l[1])+'</span></div>';}).join("")+
+    '<div class="tt"><span>Total</span><span>'+(t==null ? "Sur devis" : fcfa(t))+'</span></div></div>';
+}
+
+/* --- étape 5 : envoi --- */
+function vue5(){
+  return '<div class="fin">'+
+    '<div class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></div>'+
+    '<h3>Votre commande est prête à partir</h3>'+
+    '<p>Le bouton ci-dessous ouvre WhatsApp avec votre commande déjà écrite : la pièce, vos mesures, '+
+    'la livraison, le délai et le total. Vous n\'avez qu\'à appuyer sur envoyer.</p>'+
+    recap()+
+    '<a class="alt" id="altMail" href="#">Je n\'ai pas WhatsApp — envoyer par email</a>'+
+    '</div>';
+}
+
+/* --- pied de modale --- */
+function pied(){
+  var e = etat.etape;
+  if(e===5){
+    return '<button class="bt g" type="button" data-nav="prec">Retour</button>'+
+      '<a class="bt w" id="btWa" href="#" target="_blank" rel="noopener">'+
+      '<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>'+
+      'Envoyer sur WhatsApp</a>';
+  }
+  var libelle = e===4 ? "Vérifier ma commande" : "Continuer";
+  return (e>1 ? '<button class="bt g" type="button" data-nav="prec">Retour</button>' : '')+
+    '<button class="bt p" type="button" data-nav="suiv"'+(peutAvancer()?"":" disabled")+'>'+libelle+'</button>';
+}
+
+function peutAvancer(){
+  var e = etat.etape, p = etat.piece;
+  if(e===1){
+    if(p.cat==="pap") return !!etat.taille;
+    if(!etat.typeMesure) return false;
+    var jeu = MESURES[etat.typeMesure];
+    /* au moins la moitié des mesures : le reste se prend ensemble */
+    var n = jeu.champs.filter(function(c){return etat.mesures[c.id];}).length;
+    return n >= Math.ceil(jeu.champs.length/2);
+  }
+  if(e===2){
+    if(etat.mode==="retrait") return true;
+    if(etat.mode==="expedition") return !!etat.pays;
+    return false;
+  }
+  if(e===3) return !!etat.delai;
+  if(e===4) return !!(etat.prenom.trim() && (etat.tel.trim() || etat.mail.trim()));
+  return true;
+}
+
+/* ---------- branchements ---------------------------------------- */
+function brancher(){
+  var bd = document.getElementById("shBd");
+
+  $$(".taille", bd).forEach(function(b){
+    b.addEventListener("click", function(){ etat.taille = b.dataset.taille; dessiner(); });
+  });
+  $$("[data-mode]", bd).forEach(function(b){
+    b.addEventListener("click", function(){
+      etat.mode = b.dataset.mode;
+      if(etat.mode==="retrait"){ etat.pays = null; }
+      dessiner();
+    });
+  });
+  $$("[data-delai]", bd).forEach(function(b){
+    b.addEventListener("click", function(){ etat.delai = DELAIS[b.dataset.delai]; dessiner(); });
+  });
+  $$("[data-mes]", bd).forEach(function(i){
+    i.addEventListener("input", function(){
+      var v = i.value.trim();
+      if(v) etat.mesures[i.dataset.mes] = v; else delete etat.mesures[i.dataset.mes];
+      majSuiv();
+    });
+  });
+
+  var ty = document.getElementById("f_type");
+  if(ty) ty.addEventListener("change", function(){ etat.typeMesure = ty.value||null; etat.mesures = {}; dessiner(); });
+
+  var pa = document.getElementById("f_pays");
+  if(pa) pa.addEventListener("change", function(){
+    etat.pays = PAYS.filter(function(p){return p.id===pa.value;})[0] || null;
+    dessiner();
+  });
+
+  lie("f_tissu","tissu"); lie("f_det","details"); lie("f_ville","ville");
+  lie("f_prenom","prenom"); lie("f_nom","nom"); lie("f_tel","tel");
+  lie("f_mail","mail"); lie("f_note","note");
+
+  $$("[data-nav]", document.getElementById("shFt")).forEach(function(b){
+    b.addEventListener("click", function(){
+      if(b.dataset.nav==="prec"){
+        etat.etape = Math.max(1, etat.etape-1);
+      }else{
+        if(!peutAvancer()) return;
+        if(etat.etape===4){
+          memorise({prenom:etat.prenom.trim(), nom:etat.nom.trim(), tel:etat.tel.trim(),
+                    mail:etat.mail.trim(), ville:etat.ville.trim()});
+        }
+        etat.etape = Math.min(5, etat.etape+1);
+      }
+      dessiner();
+    });
+  });
+
+  var wa = document.getElementById("btWa");
+  if(wa) wa.href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message());
+  var al = document.getElementById("altMail");
+  if(al) al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — "+etat.piece.nom)+
+                   "&body="+encodeURIComponent(message());
+}
+function lie(id, cle){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener("input", function(){ etat[cle] = el.value; majSuiv(); });
+}
+function majSuiv(){
+  var b = document.querySelector('[data-nav="suiv"]');
+  if(b) b.disabled = !peutAvancer();
+}
+
+/* ---------- le message de commande ------------------------------ */
+function message(){
+  var p = etat.piece, L = [];
+  L.push("*NOUVELLE COMMANDE — HILLARY M. STYL*");
+  L.push("");
+  L.push("*Pièce :* "+p.nom+" ("+(p.cat==="sm"?"sur-mesure":"prêt-à-porter")+")");
+  L.push("*Prix :* "+(p.prix==null ? "sur devis" : fcfa(p.prix)));
+
+  if(p.cat==="pap" && etat.taille) L.push("*Taille :* "+etat.taille);
+
+  if(p.cat==="sm" && etat.typeMesure){
+    var jeu = MESURES[etat.typeMesure];
+    L.push("");
+    L.push("*MESURES — "+jeu.nom+"*");
+    if(jeu.aValider) L.push("_(liste de mesures à valider par l'atelier)_");
+    var manquantes = [];
+    jeu.champs.forEach(function(c){
+      if(etat.mesures[c.id]) L.push("• "+c.l+" : "+etat.mesures[c.id]+" cm");
+      else manquantes.push(c.l);
+    });
+    if(manquantes.length){
+      L.push("");
+      L.push("_À prendre ensemble ("+manquantes.length+") :_ "+manquantes.join(", "));
+    }
+    if(etat.tissu.trim())   L.push(""), L.push("*Tissu :* "+etat.tissu.trim());
+  }
+  if(etat.details.trim()){ L.push(""); L.push("*Modèle et détails :* "+etat.details.trim()); }
+
+  L.push("");
+  L.push("*LIVRAISON*");
+  if(etat.mode==="retrait"){
+    L.push("Retrait à l'atelier — gratuit");
+  }else{
+    var f = fraisLivraison();
+    L.push("Expédition — "+(etat.pays?etat.pays.nom:"")+(etat.ville.trim()? ", "+etat.ville.trim() : ""));
+    L.push("Frais : "+(f===null ? "à confirmer" : fcfa(f)));
+  }
+  if(etat.delai){
+    L.push("");
+    L.push("*DÉLAI*");
+    L.push(etat.delai.nom+(etat.delai.sup? " (+ "+fcfa(etat.delai.sup)+")" : ""));
+    var j = joursTotal();
+    if(j!=null) L.push("Disponible au plus tard le "+dateFr(dateDispo(j)));
+  }
+
+  var t = totalCommande();
+  L.push("");
+  L.push("*TOTAL : "+(t==null ? "sur devis" : fcfa(t))+"*");
+  L.push("_Règlement par Mobile Money._");
+
+  L.push("");
+  L.push("*CLIENT*");
+  L.push((etat.prenom.trim()+" "+etat.nom.trim()).trim());
+  if(etat.tel.trim())  L.push("WhatsApp : "+etat.tel.trim());
+  if(etat.mail.trim()) L.push("Email : "+etat.mail.trim());
+  if(etat.ville.trim())L.push("Ville : "+etat.ville.trim());
+  if(etat.note.trim()){ L.push(""); L.push("*Note :* "+etat.note.trim()); }
+
+  return L.join("\n");
+}
+
+/* ---------- remplissages simples -------------------------------- */
+document.getElementById("an").textContent = new Date().getFullYear();
+document.getElementById("adr").textContent  = ATELIER.adresse;
+document.getElementById("hor").textContent  = ATELIER.horaires;
+document.getElementById("mail").textContent = EMAIL;
+document.getElementById("waBas").href =
+  "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Bonjour HILLARY M. STYL, j'ai une question avant de commander.");
+
+
+/* ==================================================================
+
+/* ==================================================================
+   HILLARY M. STYL — V4 « LA COUPE » · le mouvement
+   Lenis, GSAP, ScrollTrigger, SplitText et Swiper réécrits à la main.
+   Aucune bibliothèque : règle NEBULA + 4G et Android d'entrée de gamme.
+   ================================================================== */
+(function () {
+  'use strict';
+
+  /* ================================================================
+     LES IMAGES — c'est ici, et nulle part ailleurs.
+
+     Chaque entrée a un champ `f`. Tant qu'il est vide, l'emplacement
+     montre un dessin au trait. Dès qu'on met un nom de fichier, la
+     photo prend sa place : rien d'autre à toucher.
+
+     Les fichiers vont dans  assets/images/  et sont injectés en base64
+     par _build.py (marqueurs), ou référencés en relatif si le site
+     passe en multi-fichiers.
+
+     ⛔ Aucune photo générée par IA présentée comme une pièce vendable.
+     ================================================================ */
+
+  /* --- 1 · LE HÉROS : 4 mannequins, fond blanc uni impératif --- */
+  var HERO = [
+    { f:'', col:'Sur-mesure',     mat:'Vos mesures, votre coupe',
+      t:'La pièce ajustée',  d:"Tracée sur vos mesures exactes, pas sur une taille standard." },
+    { f:'', col:'Pagne & wax',    mat:'Tissus d’ici, coupe d’aujourd’hui',
+      t:'Le pagne',          d:"Le tissu qu’on connaît depuis toujours, dans une coupe qui tombe." },
+    { f:'', col:'Prêt-à-porter',  mat:'Par tailles, prêt à partir',
+      t:'Les tailles',       d:"Pour ce qui n’a pas besoin d’attendre l’atelier." },
+    { f:'', col:'Cérémonie',      mat:'Mariages et grandes occasions',
+      t:'La tenue de fête',  d:"Ce qu’on porte le jour dont on se souvient." }
+  ];
+
+  /* --- 3 · LES COLLECTIONS : 6 à 8 pièces phares --- */
+  var COLLECTIONS = [
+    { f:'', l:'Sur-mesure',    t:'Robe coupée à la taille', s:'9 mesures · toutes matières' },
+    { f:'', l:'Sur-mesure',    t:'Robe droite',             s:'15 mesures · tombé net' },
+    { f:'', l:'Pagne',         t:'Ensemble pagne',          s:'Haut et bas assortis' },
+    { f:'', l:'Prêt-à-porter', t:'Chemise',                 s:'8 mesures ou par tailles' },
+    { f:'', l:'Sur-mesure',    t:'Pantalon',                s:'6 mesures · ourlet posé à l’essayage' },
+    { f:'', l:'Cérémonie',     t:'Tenue de cérémonie',      s:'Sur rendez-vous · délai à convenir' }
+  ];
+
+  /* ================================================================ */
+
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+  var doux = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fin = matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+    });
+  }
+  function d2(n) { return (n < 10 ? '0' : '') + n; }
+
+  /* la robe au trait, quand il n'y a pas encore de photo */
+  var SIL = '<div class="sil"><svg viewBox="0 0 120 170" fill="none" aria-hidden="true">'
+    + '<path d="M46 26c0-8 6-14 14-14s14 6 14 14"/>'
+    + '<path d="M46 26 24 44l10 13 12-10"/><path d="M74 26l22 18-10 13-12-10"/>'
+    + '<path d="M46 33v34l-8 91h44l-8-91V33"/>'
+    + '<path d="M40 78h40"/><path d="M44 112h32"/>'
+    + '</svg></div>';
+
+  /* ---------- 1 · LE LOADER — la coupe qui s'ouvre ---------------- */
+  (function loader() {
+    var l = $('#load'), h = $('#hero');
+    if (!l) { if (h) h.classList.add('ouvert'); return; }
+    if (doux) { l.classList.add('fini'); if (h) h.classList.add('ouvert'); return; }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { l.classList.add('vue'); });
+    });
+    setTimeout(function () {
+      l.classList.add('parti');
+      if (h) h.classList.add('ouvert');
+    }, 1750);
+    setTimeout(function () { l.classList.add('fini'); }, 2900);
+    /* filet de sécurité : jamais de rideau bloqué à l'écran */
+    setTimeout(function () {
+      l.classList.add('fini');
+      if (h) h.classList.add('ouvert');
+    }, 4800);
+  })();
+
+  /* ---------- 2 · LE DÉCOUPAGE EN MOTS (SplitText réécrit) -------- */
+  function decouper(el) {
+    Array.prototype.slice.call(el.childNodes).forEach(function (nd) {
+      if (nd.nodeType === 3) {
+        if (!nd.textContent.trim()) return;
+        var frag = document.createDocumentFragment();
+        nd.textContent.split(/(\s+)/).forEach(function (t) {
+          if (!t) return;
+          if (!t.trim()) { frag.appendChild(document.createTextNode(t)); return; }
+          var m = document.createElement('span'); m.className = 'mot';
+          var i = document.createElement('span'); i.textContent = t;
+          m.appendChild(i); frag.appendChild(m);
+        });
+        nd.parentNode.replaceChild(frag, nd);
+      } else if (nd.nodeType === 1 && nd.tagName !== 'BR') {
+        decouper(nd);
+      }
+    });
+  }
+  if (!doux) {
+    $$('[data-mots]').forEach(function (el) {
+      decouper(el);
+      $$('.mot', el).forEach(function (m, i) { m.style.setProperty('--d', (i * 40) + 'ms'); });
+    });
+  }
+
+  /* ---------- 3 · LES RÉVÉLATIONS — un balayage, pas un observateur
+     Un IntersectionObserver laisse invisibles POUR TOUJOURS les
+     sections qu'un clic de menu a sautées. Leçon du 2026-08-05. ---- */
+  (function revelations() {
+    var restants = $$('[data-mots], .lab, .rv, .deck, .piliers, .plans, .cars-b,'
+      + ' .coll-d, .look-hd, .look-bas, .pills, .coords, .socs, .lk, .et');
+    if (doux) { restants.forEach(function (el) { el.classList.add('vu'); }); return; }
+    var attente = false;
+    function balayer() {
+      attente = false;
+      var seuil = innerHeight * 0.9;
+      restants = restants.filter(function (el) {
+        if (el.getBoundingClientRect().top >= seuil) return true;
+        el.classList.add('vu');
+        return false;
+      });
+      if (!restants.length) {
+        removeEventListener('scroll', pousser);
+        removeEventListener('resize', pousser);
+      }
+    }
+    function pousser() {
+      if (attente) return;
+      attente = true; requestAnimationFrame(balayer);
+    }
+    addEventListener('scroll', pousser, { passive: true });
+    addEventListener('resize', pousser, { passive: true });
+    balayer();
+  })();
+
+  /* ---------- 4 · LE DÉFILEMENT LISSÉ (Lenis réécrit) -------------
+     On interpole scrollTop. On ne transforme rien : les éléments en
+     position:fixed et la modale restent intacts. ------------------- */
+  var majCible = function () {};
+  if (fin && !doux) {
+    (function lisse() {
+      var cible = scrollY, courant = scrollY, anime = false;
+      document.documentElement.style.scrollBehavior = 'auto';
+      function borne(v) {
+        return Math.max(0, Math.min(document.documentElement.scrollHeight - innerHeight, v));
+      }
+      function boucle() {
+        courant += (cible - courant) * 0.1;
+        if (Math.abs(cible - courant) < 0.5) { courant = cible; anime = false; }
+        scrollTo(0, courant);
+        if (anime) requestAnimationFrame(boucle);
+      }
+      function lancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
+      majCible = function (v) { cible = borne(v); lancer(); };
+      addEventListener('wheel', function (e) {
+        if (e.ctrlKey) return;                                /* le zoom reste le zoom */
+        if (document.body.classList.contains('lock')) return; /* pas dans la modale */
+        if (e.target.closest && e.target.closest('.ov,select,textarea')) return;
+        e.preventDefault();
+        cible = borne(cible + e.deltaY * (e.deltaMode === 1 ? 18 : 1));
+        lancer();
+      }, { passive: false });
+      addEventListener('scroll', function () {
+        if (!anime) { cible = scrollY; courant = scrollY; }
+      }, { passive: true });
+      addEventListener('resize', function () { cible = borne(cible); }, { passive: true });
+    })();
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (!id) return;
+    var c = document.getElementById(id);
+    if (!c) return;
+    e.preventDefault();
+    var y = c.getBoundingClientRect().top + scrollY;
+    if (fin && !doux) majCible(y);
+    else scrollTo({ top: y, behavior: doux ? 'auto' : 'smooth' });
+    history.replaceState(null, '', '#' + id);
+  });
+
+  /* ---------- 5 · LE CURSEUR — la lame ---------------------------- */
+  if (fin && !doux) {
+    (function curseur() {
+      var c = $('#cur'), t = $('#curT');
+      if (!c) return;
+      document.body.classList.add('cur-ok');
+      var x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y, anime = false, ne = false;
+      addEventListener('pointermove', function (e) {
+        x = e.clientX; y = e.clientY;
+        if (!ne) { ne = true; cx = x; cy = y; }   /* il naît sous la souris */
+        c.classList.add('on');
+        if (!anime) { anime = true; requestAnimationFrame(suivre); }
+      }, { passive: true });
+      function suivre() {
+        cx += (x - cx) * 0.15;
+        cy += (y - cy) * 0.15;
+        c.style.transform = 'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0)';
+        if (Math.abs(x - cx) > 0.3 || Math.abs(y - cy) > 0.3) requestAnimationFrame(suivre);
+        else anime = false;                        /* la boucle s'arrête d'elle-même */
+      }
+      document.addEventListener('pointerover', function (e) {
+        var z = e.target.closest && e.target.closest('[data-cur]');
+        var lien = e.target.closest && e.target.closest('a,button,.piece');
+        c.classList.toggle('gros', !!(z || lien));
+        t.textContent = z ? z.getAttribute('data-cur') : (lien ? 'OUVRIR' : '');
+      });
+      document.addEventListener('pointerleave', function () { c.classList.remove('on'); });
+    })();
+  }
+
+  /* ---------- 6 · LA NAVIGATION ----------------------------------- */
+  (function navigation() {
+    var nav = $('#nav'), b = $('#burger'), l = $('#navC');
+    var sombres = $$('.sec--encre');
+    var attente = false;
+    function poser() {
+      attente = false;
+      if (!nav) return;
+      nav.classList.toggle('pose', scrollY > 30);
+      /* la barre s'inverse quand elle passe sur une section encre */
+      var h = nav.getBoundingClientRect().height || 64;
+      var dessus = sombres.some(function (s) {
+        var r = s.getBoundingClientRect();
+        return r.top <= h * 0.6 && r.bottom >= h * 0.6;
+      });
+      nav.classList.toggle('sombre', dessus);
+    }
+    addEventListener('scroll', function () {
+      if (attente) return;
+      attente = true; requestAnimationFrame(poser);
+    }, { passive: true });
+    poser();
+    if (!b || !l) return;
+    function basculer(o) {
+      b.setAttribute('aria-expanded', o ? 'true' : 'false');
+      b.setAttribute('aria-label', o ? 'Fermer le menu' : 'Ouvrir le menu');
+      l.classList.toggle('ouvert', o);
+      document.body.classList.toggle('lock', o);
+    }
+    b.addEventListener('click', function () { basculer(b.getAttribute('aria-expanded') !== 'true'); });
+    l.addEventListener('click', function (e) { if (e.target.closest('a')) basculer(false); });
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') { basculer(false); b.focus(); }
+    });
+  })();
+
+  /* ---------- 7 · LE RUBAN, sans couture -------------------------- */
+  (function ruban() {
+    var r = $('#ruban');
+    if (r) r.innerHTML += r.innerHTML;
+  })();
+
+  /* ---------- 8 · LE HÉROS — le slider éditorial ------------------
+     Glissement latéral avec skew, numéro géant synchronisé au DÉBUT
+     de la transition (pas après), autoplay 5 s en pause au survol. -- */
+  (function heros() {
+    var sc = $('#hsc'), num = $('#hnum'), col = $('#hcol'), des = $('#hdes'), cpt = $('#hcpt');
+    if (!sc) return;
+
+    sc.innerHTML = HERO.map(function (o, i) {
+      var img = o.f
+        ? '<img src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t) + ', création Hillary M. Styl"'
+          + (i ? ' loading="lazy"' : ' fetchpriority="high"') + ' decoding="async">'
+        : SIL;
+      return '<figure class="hsl' + (i === 0 ? ' act' : '') + '" data-i="' + i + '">'
+        + '<div class="hsl-c">' + img + '</div></figure>';
+    }).join('');
+
+    var sl = $$('.hsl', sc), n = sl.length, actif = 0, occupe = false;
+
+    function ecrire(i) {
+      var o = HERO[i];
+      if (num) {
+        num.classList.add('chg');
+        setTimeout(function () {
+          num.innerHTML = '<span>' + d2(i + 1) + '</span>';
+          num.classList.remove('chg');
+        }, 240);
+      }
+      [col, des].forEach(function (e) { if (e) e.classList.add('chg'); });
+      setTimeout(function () {
+        if (col) col.innerHTML = '<b>' + esc(o.col) + '</b><span class="m">' + esc(o.mat) + '</span>';
+        if (des) des.innerHTML = '<b>' + esc(o.t) + '</b><p>' + esc(o.d) + '</p>';
+        [col, des].forEach(function (e) { if (e) e.classList.remove('chg'); });
+      }, 260);
+      if (cpt) cpt.textContent = d2(i + 1) + ' — ' + d2(n);
+    }
+
+    function aller(i, sens) {
+      if (occupe || n < 2) return;
+      i = (i + n) % n;
+      if (i === actif) return;
+      occupe = true;
+      var sort = sl[actif], entre = sl[i];
+      entre.classList.remove('act', 'sort', 'entre');
+      entre.classList.add(sens > 0 ? 'entre' : 'sort');
+      /* le numéro change AU DÉBUT du mouvement */
+      ecrire(i);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          sort.classList.remove('act');
+          sort.classList.add(sens > 0 ? 'sort' : 'entre');
+          entre.classList.remove('sort', 'entre');
+          entre.classList.add('act');
+        });
+      });
+      setTimeout(function () {
+        sl.forEach(function (s) { if (s !== entre) s.classList.remove('act', 'sort', 'entre'); });
+        actif = i; occupe = false;
+      }, 950);
+    }
+
+    var prev = $('#hPrev'), next = $('#hNext');
+    if (prev) prev.addEventListener('click', function () { aller(actif - 1, -1); relancer(); });
+    if (next) next.addEventListener('click', function () { aller(actif + 1, 1); relancer(); });
+
+    /* le glissement du doigt */
+    var dx = 0, dep = false;
+    sc.addEventListener('pointerdown', function (e) { dep = true; dx = e.clientX; });
+    sc.addEventListener('pointerup', function (e) {
+      if (!dep) return; dep = false;
+      var d = e.clientX - dx;
+      if (Math.abs(d) > 42) { aller(actif + (d < 0 ? 1 : -1), d < 0 ? 1 : -1); relancer(); }
+    });
+    sc.addEventListener('pointercancel', function () { dep = false; });
+
+    /* autoplay, en pause au survol et onglet caché */
+    var minuteur = null;
+    function relancer() {
+      clearInterval(minuteur);
+      if (doux || n < 2) return;
+      minuteur = setInterval(function () {
+        if (document.hidden) return;
+        aller(actif + 1, 1);
+      }, 5000);
+    }
+    sc.addEventListener('pointerenter', function () { clearInterval(minuteur); });
+    sc.addEventListener('pointerleave', relancer);
+    ecrire(0); relancer();
+  })();
+
+  /* ---------- 9 · LES COLLECTIONS — coverflow (Swiper réécrit) ---- */
+  (function collections() {
+    var zone = $('#cars'), piste = $('#carsP');
+    if (!zone || !piste) return;
+    var data = COLLECTIONS;
+    if (!data.length) { zone.remove(); return; }
+
+    var txt = document.createElement('div');
+    txt.className = 'cars-t';
+    zone.appendChild(txt);
+
+    piste.innerHTML = data.map(function (o, i) {
+      var img = o.f
+        ? '<img src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t)
+          + ', création Hillary M. Styl" loading="lazy" decoding="async">'
+        : SIL;
+      return '<figure class="car" data-i="' + i + '"><div class="car-c">' + img + '</div></figure>';
+    }).join('');
+
+    var cartes = $$('.car', piste), n = cartes.length, actif = 0;
+    var cpt = $('#cCpt');
+
+    function ecrire() {
+      var o = data[actif];
+      txt.classList.add('chg');
+      setTimeout(function () {
+        txt.innerHTML = '<p class="l">' + esc(o.l) + '</p>'
+          + '<p class="t">' + esc(o.t) + '</p>'
+          + '<p class="s">' + esc(o.s) + '</p>';
+        txt.classList.remove('chg');
+      }, 230);
+      if (cpt) cpt.textContent = d2(actif + 1) + ' — ' + d2(n);
+    }
+    function placer() {
+      var pas = cartes[0].offsetWidth * 1.04;
+      cartes.forEach(function (c, i) {
+        var o = i - actif;
+        if (o > n / 2) o -= n;
+        if (o < -n / 2) o += n;
+        var a = Math.abs(o);
+        c.style.setProperty('--tx', (o * pas).toFixed(1) + 'px');
+        c.style.setProperty('--sc', a === 0 ? 1 : (a === 1 ? 0.75 : 0.58));
+        c.style.setProperty('--op', a === 0 ? 1 : (a === 1 ? 0.4 : 0.16));
+        c.style.setProperty('--bl', (a === 0 ? 0 : (a === 1 ? 2 : 4)) + 'px');
+        c.classList.toggle('car--act', a === 0);
+        c.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
+      });
+    }
+    function aller(i) { actif = (i + n) % n; placer(); ecrire(); }
+
+    var p = $('#cPrev'), s = $('#cNext');
+    if (p) p.addEventListener('click', function () { aller(actif - 1); });
+    if (s) s.addEventListener('click', function () { aller(actif + 1); });
+    addEventListener('resize', placer, { passive: true });
+
+    var dx = 0, dep = false;
+    zone.addEventListener('pointerdown', function (e) { dep = true; dx = e.clientX; });
+    zone.addEventListener('pointerup', function (e) {
+      if (!dep) return; dep = false;
+      var d = e.clientX - dx;
+      if (Math.abs(d) > 42) aller(actif + (d < 0 ? 1 : -1));
+      else {
+        /* un clic sur la carte active mène au catalogue commandable */
+        var c = document.getElementById('catalogue');
+        if (c) {
+          var y = c.getBoundingClientRect().top + scrollY;
+          if (fin && !doux) majCible(y); else scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }
+    });
+    zone.addEventListener('pointercancel', function () { dep = false; });
+    aller(0);
+  })();
+
+  /* ---------- 10 · LE LOOKBOOK — compteur fixe et parallaxe -------
+     ScrollTrigger + scrub réécrits : une boucle rAF, scrollY lu une
+     seule fois, et le compteur qui « clique » sur chaque vue. ------ */
+  (function lookbook() {
+    var sc = $('#lookSc'), gr = $('#lookGr'), nEl = $('#lkN'), tEl = $('#lkT'), pg = $('#lkPage');
+    if (!sc || !gr) return;
+    var vues = $$('.lk', gr), n = vues.length;
+    if (tEl) tEl.textContent = d2(n);
+    var cour = -1, attente = false;
+
+    function poser() {
+      attente = false;
+      var r = sc.getBoundingClientRect();
+      var h = sc.offsetHeight - innerHeight;
+      if (h <= 0) return;
+      var k = Math.min(1, Math.max(0, -r.top / h));
+      var i = Math.min(n - 1, Math.floor(k * n));
+      if (i !== cour) {
+        cour = i;
+        if (nEl) {
+          nEl.classList.add('chg');
+          setTimeout(function () {
+            nEl.innerHTML = '<span>' + d2(i + 1) + '</span>';
+            nEl.classList.remove('chg');
+          }, 220);
+        }
+        if (pg) pg.textContent = d2(i + 1) + ' / ' + d2(n);
+      }
+      /* la parallaxe : chaque vue à sa propre vitesse */
+      if (!doux) {
+        vues.forEach(function (v) {
+          var vr = v.getBoundingClientRect();
+          if (vr.bottom < -200 || vr.top > innerHeight + 200) return;
+          var vit = parseFloat(v.getAttribute('data-vit') || '1');
+          var c = (vr.top + vr.height / 2 - innerHeight / 2) / innerHeight;
+          v.style.setProperty('--py', (c * (1 - vit) * 150).toFixed(1) + 'px');
+          v.style.translate = '0 ' + (c * (1 - vit) * 150).toFixed(1) + 'px';
+        });
+      }
+    }
+    function pousser() {
+      if (attente) return;
+      attente = true; requestAnimationFrame(poser);
+    }
+    addEventListener('scroll', pousser, { passive: true });
+    addEventListener('resize', pousser, { passive: true });
+    poser();
+  })();
+
+  /* ---------- 11 · LE PROCESSUS — l'étape centrée se remplit ------ */
+  (function processus() {
+    var ets = $$('.et');
+    if (!ets.length) return;
+    if (doux) { return; }
+    var attente = false;
+    function poser() {
+      attente = false;
+      var mi = innerHeight / 2, best = null, dist = 1e9;
+      ets.forEach(function (e) {
+        var r = e.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) { e.classList.remove('act'); return; }
+        var d = Math.abs(r.top + r.height / 2 - mi);
+        if (d < dist) { dist = d; best = e; }
+      });
+      ets.forEach(function (e) { e.classList.toggle('act', e === best && dist < innerHeight * 0.34); });
+    }
+    function pousser() {
+      if (attente) return;
+      attente = true; requestAnimationFrame(poser);
+    }
+    addEventListener('scroll', pousser, { passive: true });
+    addEventListener('resize', pousser, { passive: true });
+    poser();
+  })();
+
+  /* ---------- 12 · LE LIEN WHATSAPP DES RÉSEAUX ------------------- */
+  (function reseaux() {
+    var bas = $('#waBas');
+    var soc = $('[data-wa-soc]');
+    if (bas && soc) {
+      /* le moteur pose déjà l'href de #waBas : on le recopie */
+      setTimeout(function () { soc.setAttribute('href', bas.getAttribute('href') || '#'); }, 0);
+    }
+  })();
+
+  /* ---------- 13 · LA MODALE : verrouiller le fond ----------------
+     Le moteur expose ouvrir()/fermer() ; on les enveloppe pour
+     bloquer le défilement de la page derrière la modale. ---------- */
+  if (typeof window.ouvrir === 'function') {
+    var _ou = window.ouvrir;
+    window.ouvrir = function (id) { document.body.classList.add('lock'); _ou(id); };
+  }
+  if (typeof window.fermer === 'function') {
+    var _fe = window.fermer;
+    window.fermer = function () { document.body.classList.remove('lock'); _fe(); };
+  }
+
+})();
+</script>
+</body>
+</html>

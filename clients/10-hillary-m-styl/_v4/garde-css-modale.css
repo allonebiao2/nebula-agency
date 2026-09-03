@@ -1,0 +1,296 @@
+/* ==================================================================
+   LA MODALE · le carnet de mesures
+   ================================================================== */
+
+/* ⛔ CINQ COULEURS ÉTAIENT UTILISÉES SANS JAMAIS ÊTRE DÉFINIES.
+   `background: var(--craie)` sans valeur ne donne pas du blanc : il ne
+   donne RIEN. La fiche de commande n'avait donc aucun fond, la page
+   passait au travers, et le texte noir se posait sur les photos du
+   catalogue. Signalé par Mongazi le 2026-08-10 ; c'était EN LIGNE.
+   Les valeurs reprennent les jetons du site, rien n'est inventé :
+   --gris = --tx-c · --ligne = --fil-c · --ok = --vert. */
+:root{
+  --craie:#faf8f4;             /* le fond de la fiche : entre le papier
+                                  (#f7f5f0) et le blanc, pour que les
+                                  cartes en #fff se détachent dessus */
+  --gris:#4a4740;              /* 8,4:1 sur la craie */
+  --ligne:rgba(26,26,26,.16);
+  --ok:#1b4332;                /* le vert du site · 11,9:1 sur --ok-bg */
+  --ok-bg:#e9f1ec;
+}
+.ov{position:fixed;inset:0;z-index:120;background:rgba(6,5,7,.62);backdrop-filter:blur(6px);
+  display:none;overflow-y:auto}
+.ov.on{display:block}
+.sheet{background:var(--craie);width:100%;max-width:760px;margin:0 auto;min-height:100%}
+.ov.on .sheet{animation:leve .62s var(--e)}
+@keyframes leve{from{transform:translateY(34px);opacity:0}}
+@media(min-width:800px){.ov{padding:34px 22px}.sheet{min-height:0}}
+.sh-top{position:sticky;top:0;z-index:5;background:var(--craie);border-bottom:1px solid var(--ligne);
+  padding:16px 22px;display:flex;align-items:center;gap:14px}
+.sh-top .mark{width:36px;height:36px;flex:0 0 auto;border-radius:9px;background-color:#fff;background-size:78%}
+.sh-top .t{flex:1;min-width:0}
+.sh-top .t b{display:block;font-family:var(--ff-d);font-size:19px;font-weight:400;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.sh-top .t span{font-family:var(--ff-u);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
+.x{width:46px;height:46px;border-radius:50%;border:1px solid var(--ligne);background:transparent;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto;transition:background .3s,border-color .3s,transform .3s var(--e)}
+.x:hover{background:var(--encre);border-color:var(--encre);transform:rotate(90deg)}
+.x svg{width:16px;height:16px;stroke:var(--encre);stroke-width:1.6;fill:none;stroke-linecap:round;transition:stroke .3s}
+.x:hover svg{stroke:#fff}
+.prog{display:flex;gap:6px;padding:16px 22px 0}
+.prog i{height:2px;flex:1;background:var(--ligne);position:relative;overflow:hidden}
+.prog i:after{content:"";position:absolute;inset:0;background:var(--rose);transform:scaleX(0);
+  transform-origin:0 50%;transition:transform .6s var(--e)}
+.prog i.on:after{transform:scaleX(1)}
+.sh-bd{position:relative;z-index:1;padding:26px 22px 30px}
+.sh-bd>*{animation:entre .55s var(--e) both}
+@keyframes entre{from{opacity:0;transform:translateY(16px)}}
+.stitle{font-family:var(--ff-d);font-size:29px;font-weight:400;margin-bottom:8px;line-height:1.08}
+.sdesc{font-size:14.5px;color:var(--gris);margin-bottom:22px}
+
+.aide{display:flex;gap:13px;background:var(--rose-p);padding:16px 17px;margin-bottom:20px;
+  border-left:2px solid var(--rose)}
+.aide svg{width:19px;height:19px;stroke:var(--rose);fill:none;stroke-width:1.6;stroke-linecap:round;
+  stroke-linejoin:round;flex:0 0 auto;margin-top:2px}
+.aide p{font-size:14px;color:#7A0044;line-height:1.55}
+.warn{background:#FBF3E0;border-left:2px solid #C08A16;padding:16px 17px;margin-bottom:20px;
+  font-size:13.5px;color:#6D4A05;line-height:1.55}
+
+.opts{display:grid;gap:11px}
+.opt{display:flex;align-items:center;gap:15px;background:#fff;border:1px solid var(--ligne);padding:17px;
+  cursor:pointer;min-height:46px;text-align:left;width:100%;position:relative;
+  transition:border-color .35s,box-shadow .35s var(--e),transform .35s var(--e)}
+.opt:hover{transform:translateX(3px)}
+.opt.sel{border-color:var(--rose);box-shadow:0 6px 26px rgba(230,0,126,.13)}
+.opt .rd{width:20px;height:20px;border-radius:50%;border:1px solid var(--ligne);flex:0 0 auto;
+  display:grid;place-items:center;transition:border-color .3s}
+.opt.sel .rd{border-color:var(--rose)}
+.opt .rd:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--rose);
+  transform:scale(0);transition:transform .35s var(--e-s)}
+.opt.sel .rd:after{transform:scale(1)}
+.opt .tx{flex:1;min-width:0}
+.opt .tx b{display:block;font-family:var(--ff-d);font-size:18px;font-weight:400}
+.opt .tx span{display:block;font-size:13px;color:var(--gris);margin-top:3px;line-height:1.45}
+.opt .pz{font-family:var(--ff-u);font-weight:700;font-size:12.5px;letter-spacing:.06em;white-space:nowrap}
+
+.tailles{display:flex;flex-wrap:wrap;gap:10px}
+.taille{min-width:62px;min-height:52px;padding:0 17px;border:1px solid var(--ligne);background:#fff;
+  font-family:var(--ff-d);font-weight:400;font-size:19px;cursor:pointer;
+  transition:background .3s,color .3s,border-color .3s,transform .35s var(--e-s)}
+.taille:hover{border-color:var(--encre)}
+.taille.sel{border-color:var(--rose);background:var(--rose);color:#fff;transform:translateY(-3px)}
+
+.mes{display:grid;gap:13px;grid-template-columns:1fr}
+@media(min-width:540px){.mes{grid-template-columns:1fr 1fr}}
+.fd{animation:entre .5s var(--e) both;animation-delay:calc(var(--d,0)*.035s)}
+.fd label{display:block;font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--gris);margin-bottom:7px}
+.fd .ipw{position:relative}
+.fd input,.fd select,.fd textarea{width:100%;min-height:52px;border:0;border-bottom:1px solid var(--ligne);
+  background:transparent;padding:0 2px;font-family:var(--ff-d);font-size:19px;transition:border-color .35s}
+.fd textarea{padding:14px 2px;min-height:92px;resize:vertical;line-height:1.5;font-family:var(--ff-t);font-size:15px;
+  border:1px solid var(--ligne);padding-left:14px;padding-right:14px;background:#fff}
+.fd select{font-family:var(--ff-t);font-size:15.5px}
+.fd input:focus,.fd select:focus,.fd textarea:focus{outline:0;border-color:var(--rose)}
+.fd .unit{position:absolute;right:2px;top:50%;transform:translateY(-50%);font-family:var(--ff-u);font-size:10.5px;
+  color:var(--gris);font-weight:600;letter-spacing:.1em;pointer-events:none}
+.fd .cm input{padding-right:32px}
+.full{grid-column:1/-1}
+.mes-hd{grid-column:1/-1;font-family:var(--ff-u);font-weight:700;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--rose);margin-top:14px;padding-bottom:4px;
+  display:flex;align-items:center;gap:12px}
+.mes-hd:after{content:"";flex:1;height:1px;background:var(--ligne)}
+
+/* le tampon de la date */
+.dispo{display:flex;gap:14px;background:var(--ok-bg);padding:18px;margin-top:22px;border-left:2px solid var(--ok);
+  animation:tampon .6s var(--e-s) both}
+@keyframes tampon{from{opacity:0;transform:scale(1.06) rotate(-1.2deg)}}
+.dispo svg{width:21px;height:21px;stroke:var(--ok);fill:none;stroke-width:1.5;stroke-linecap:round;
+  stroke-linejoin:round;flex:0 0 auto;margin-top:3px}
+.dispo b{display:block;font-family:var(--ff-u);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ok);font-weight:700}
+.dispo p{font-family:var(--ff-d);font-weight:400;font-size:24px;color:#0A5233;margin-top:5px;line-height:1.15}
+.dispo small{display:block;font-family:var(--ff-t);font-size:13px;color:#3B6E52;margin-top:7px;font-weight:500}
+
+.momo{display:flex;gap:12px;background:#fff;border:1px solid var(--ligne);padding:15px;margin-top:16px;
+  font-size:13px;color:var(--gris);line-height:1.55}
+.momo svg{width:18px;height:18px;stroke:var(--rose);fill:none;stroke-width:1.6;stroke-linecap:round;
+  stroke-linejoin:round;flex:0 0 auto;margin-top:2px}
+
+.recap{background:#fff;border:1px solid var(--ligne);padding:20px;margin-top:24px}
+.recap .li{display:flex;justify-content:space-between;gap:16px;font-size:14px;padding:7px 0;color:var(--gris)}
+.recap .li span:last-child{color:var(--encre);font-weight:600;white-space:nowrap}
+.recap .tt{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--ligne);margin-top:12px;
+  padding-top:15px;font-family:var(--ff-d);font-size:26px;align-items:baseline}
+.recap .tt span:last-child{color:var(--rose)}
+
+.sh-ft{position:sticky;bottom:0;z-index:6;background:var(--craie);border-top:1px solid var(--ligne);padding:15px 22px;
+  display:flex;gap:11px;padding-bottom:calc(15px + env(safe-area-inset-bottom))}
+.bt{position:relative;overflow:hidden;flex:1;min-height:56px;border:0;cursor:pointer;
+  font-family:var(--ff-u);font-weight:700;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.bt span,.bt svg{position:relative;z-index:2}
+.bt:before{content:"";position:absolute;inset:0;transform:translateY(101%);transition:transform .5s var(--e)}
+.bt:hover:before{transform:translateY(0)}
+.bt.g{background:transparent;border:1px solid var(--ligne);color:var(--encre);flex:0 0 auto;padding:0 26px}
+.bt.g:before{background:var(--encre)} .bt.g:hover{color:#fff}
+.bt.p{background:var(--rose);color:#fff} .bt.p:before{background:var(--encre)}
+.bt.p[disabled]{background:var(--ligne);color:#9C978F;cursor:not-allowed} .bt.p[disabled]:before{display:none}
+.bt.w{background:#0E7A44;color:#fff} .bt.w:before{background:var(--encre)}
+.bt{transition:color .35s}
+.err{font-size:13.5px;color:#B4103A;margin-top:12px;font-weight:600;display:none}
+.err.on{display:block}
+
+.fin{text-align:center;padding:16px 4px 4px}
+.fin .ck{width:78px;height:78px;border-radius:50%;background:var(--ok-bg);display:grid;place-items:center;
+  margin:0 auto 22px;animation:tampon .7s var(--e-s) both}
+.fin .ck svg{width:34px;height:34px;stroke:var(--ok);fill:none;stroke-width:1.8;stroke-linecap:round;
+  stroke-linejoin:round;stroke-dasharray:34;stroke-dashoffset:34;animation:trace .7s .35s var(--e) forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+.fin h3{font-size:30px}
+.fin p{font-size:15px;color:var(--gris);margin-top:12px}
+.fin .alt{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 16px;
+  margin-top:16px;font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gris);text-decoration:none;border-bottom:1px solid var(--ligne)}
+.fin .alt:hover{color:var(--rose);border-color:var(--rose)}
+
+/* La seconde vue de la pièce, dans l'étape des mesures. Elle est CONTENUE :
+   une photo de 760 px de haut à pleine largeur pousserait le formulaire
+   hors de l'écran, et la cliente ne verrait plus ce qu'elle doit remplir. */
+.dosvue{margin:0 0 20px;display:inline-flex;align-items:center;gap:16px;
+  background:var(--papier,#F7F4F0);padding:13px 20px 13px 15px;
+  width:auto;max-width:100%}
+.dosvue img{width:92px;height:auto;max-height:150px;object-fit:contain;
+  flex:none;display:block}
+.dosvue figcaption{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:#7A6E63;white-space:nowrap}
+
+/* ── LE BOUTON DE SON ─────────────────────────────────────────────
+   Il doit être visible dès la première seconde : un son qu'on ne peut
+   pas couper est un son qu'on subit. Posé en bas à gauche, à l'opposé
+   du bouton WhatsApp, et il ne recouvre jamais de texte. */
+/* ⚠️ z-index AU-DESSUS de la modale (120). En dessous, le bouton
+   devenait inaccessible des qu'une fiche s'ouvrait : le son genait
+   pendant la commande et on ne pouvait plus le couper. */
+/* DANS LA BARRE DU HAUT : un bouton comme la loupe et le panier. Il suit la
+   couleur de la barre (`currentColor`), qui s'inverse sur fond sombre. */
+.sonbt{position:static;width:44px;height:44px;border-radius:50%;
+  border:1px solid transparent;background:none;color:inherit;opacity:.66;
+  display:grid;place-items:center;cursor:pointer;padding:0;
+  transition:background-color .25s,border-color .25s,transform .25s,opacity .25s}
+.sonbt:hover,.sonbt:focus-visible{opacity:1;transform:scale(1.06)}
+/* PENDANT UNE COMMANDE : il redevient flottant, au-dessus du voile, dans le
+   couloir de 78 px que les deux pieds de page lui réservent. */
+.ecran-on .sonbt{position:fixed;left:18px;bottom:18px;z-index:130;
+  width:46px;height:46px;color:#1a1a1a;opacity:1;
+  border-color:rgba(12,12,12,.16);background:rgba(255,255,255,.92)}
+.ecran-on .sonbt:hover,.ecran-on .sonbt:focus-visible{background:#fff;
+  border-color:rgba(12,12,12,.34)}
+.sonbt svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.sonbt .hp{fill:currentColor;stroke:none}
+.sonbt .off{opacity:0}
+.sonbt[aria-pressed="true"] .on1,
+.sonbt[aria-pressed="true"] .on2{opacity:0}
+.sonbt[aria-pressed="true"] .off{opacity:1}
+.sonbt .vhs{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+@media(max-width:900px){.ecran-on .sonbt{left:14px;bottom:14px;width:44px;height:44px}}
+
+/* ==================================================================
+   LE PANIER · un tiroir qui vient de la droite
+   ==================================================================
+   Demandé par Mongazi le 2026-08-16. ⚠️ Le tiroir est en `fixed` et
+   c'est LUI qu'on anime : on ne pose jamais de `transform` sur un
+   ancêtre, sinon le fixe se décroche (leçon FAB du 2026-07-25).
+   ================================================================== */
+.pan-bt{position:relative;border:0;background:transparent;cursor:pointer;padding:0;color:inherit}
+.pan-n{position:absolute;top:2px;right:2px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:9px;background:var(--rose);color:#fff;
+  font:600 10px/17px var(--ff-u);letter-spacing:0;text-align:center;
+  display:none;font-style:normal}
+.pan-n.on{display:block}
+
+/* ⚠️ `visibility` ne se dégrade pas en douceur : elle bascule à la FIN de la
+   transition. Un voile fermé continuait donc d'avaler les clics pendant
+   350 ms, et la fiche qui s'ouvrait derrière ne répondait pas. C'est
+   `pointer-events` qui règle ça, immédiatement. */
+.pan-ov{position:fixed;inset:0;z-index:124;background:rgba(6,5,7,.5);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .35s ease,visibility .35s}
+.pan-ov.on{opacity:1;visibility:visible;pointer-events:auto}
+
+.pan{position:fixed;top:0;right:0;bottom:0;z-index:125;width:min(430px,92vw);
+  background:var(--craie);display:flex;flex-direction:column;
+  box-shadow:-24px 0 60px rgba(0,0,0,.28);
+  transform:translateX(101%);transition:transform .48s var(--e);
+  visibility:hidden;pointer-events:none}
+.pan.on{transform:none;visibility:visible;pointer-events:auto}
+
+.pan-top{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 18px;border-bottom:1px solid var(--ligne)}
+.pan-top b{font-family:var(--ff-d);font-size:21px;font-weight:400}
+.pan-bd{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 18px}
+.pan-ft{flex:0 0 auto;border-top:1px solid var(--ligne);padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:10px;background:var(--craie)}
+
+.pan-vide{text-align:center;padding:56px 10px;color:var(--gris)}
+.pan-vide svg{width:44px;height:44px;fill:none;stroke:var(--gris);stroke-width:1.2;opacity:.5}
+.pan-vide p{font-family:var(--ff-d);font-size:19px;color:var(--encre);margin:14px 0 6px}
+.pan-vide span{font-size:13.5px;line-height:1.55;display:block;max-width:30ch;margin:0 auto}
+
+.pl{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start;
+  padding:16px 0;border-bottom:1px solid var(--ligne)}
+.pl:last-child{border-bottom:0}
+.pl-img{width:64px;height:84px;object-fit:contain;object-position:center;border-radius:8px;
+  background:#fff;display:block}
+.pl-mono{display:grid;place-items:center;font-family:var(--ff-d);font-size:26px;color:var(--gris)}
+.pl-i{min-width:0}
+.pl-i h4{margin:0 0 3px;font-family:var(--ff-d);font-size:17px;font-weight:400;line-height:1.15}
+.pl-d{font-size:12px;color:var(--gris);line-height:1.5}
+.pl-ex{color:var(--rose-f);font-weight:700;font-style:normal}
+.pl-c{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}
+.pl-p{font-family:var(--ff-u);font-size:14px;font-weight:600;white-space:nowrap}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--ligne);border-radius:999px;overflow:hidden}
+.qty button{width:32px;height:32px;border:0;background:transparent;cursor:pointer;
+  font-size:17px;line-height:1;color:var(--encre)}
+.qty button:hover{background:var(--papier-2)}
+.qty b{min-width:22px;text-align:center;font:600 13px/1 var(--ff-u)}
+.pl-mod,.pl-rm{border:0;background:transparent;cursor:pointer;padding:6px 2px;
+  font:500 12px/1 var(--ff-u);letter-spacing:.04em;text-decoration:underline;
+  text-underline-offset:3px;color:var(--gris)}
+.pl-rm:hover{color:#a4111a}
+.pl-mod:hover{color:var(--encre)}
+
+.pan-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.pan-t span{font:600 11px/1 var(--ff-u);letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
+.pan-t b{font-family:var(--ff-d);font-size:26px;font-weight:400}
+.pan-dev{margin-top:-6px;font-size:12px;color:var(--gris)}
+.pan-note{font-size:11.5px;line-height:1.5;color:var(--gris)}
+.pan-ft .bt{width:100%}
+
+/* le détail d'une ligne dans le récapitulatif de la modale */
+.recap .li em{display:block;font-style:normal;font-size:11.5px;color:var(--gris);margin-top:2px}
+.recap .li.dev span:last-child{color:var(--gris)}
+/* les boutons de quantité, dans la fiche d'une pièce */
+.qbt{width:30px;height:30px;border:1px solid var(--ligne);background:transparent;border-radius:50%;
+  cursor:pointer;font-size:16px;line-height:1;color:var(--encre);margin:0 4px;vertical-align:middle}
+.qbt:hover{background:var(--papier-2)}
+.qn{display:inline-block;min-width:20px;text-align:center;vertical-align:middle}
+
+@media(max-width:520px){
+  .pan{width:100%}
+  .pl{grid-template-columns:54px 1fr auto;gap:10px}
+  .pl-img{width:54px;height:72px}
+}
+
+/* ⚠️ Le bouton du son est en `position:fixed` en bas à gauche, et il se posait
+   sur « Retour » dans la fiche et sur « Vider le panier » dans le panier.
+   Le cacher serait plus simple, mais une règle de la maison veut qu'il reste
+   ATTEIGNABLE quand une fiche est ouverte : quelqu'un doit pouvoir couper le
+   son pendant qu'il donne ses mesures. On lui réserve donc un couloir dans les
+   deux pieds de page, au lieu de le faire disparaître. */
+@media(max-width:900px){
+  .ecran-on .sh-ft{padding-left:78px}
+  .ecran-on .pan-ft{padding-left:78px}
+}

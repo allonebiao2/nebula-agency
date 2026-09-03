@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>NEBULA — Le Saviez-Vous v2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:540px;height:960px;overflow:hidden;background:#04010c;
+  font-family:'Segoe UI',system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+#cv{width:540px;height:960px;position:relative;overflow:hidden;}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:50px 34px;pointer-events:none;}
+#pb{position:absolute;bottom:0;left:0;height:4px;
+  background:linear-gradient(90deg,#7c3aed,#c084fc,#ffd700);z-index:99;width:0%;}
+</style>
+</head>
+<body>
+<div id="cv">
+  <canvas id="bg" width="540" height="960" style="position:absolute;inset:0;z-index:0;"></canvas>
+  <div id="pb"></div>
+
+  <!-- S1: Hook 0-5s -->
+  <div class="scene" id="s1" style="z-index:10;opacity:0;">
+    <div id="bw" style="position:relative;width:96px;height:116px;margin-bottom:22px;">
+      <div id="rc" style="position:absolute;inset:-14px;display:flex;align-items:center;justify-content:center;">
+        <div id="rays" style="position:relative;width:80px;height:80px;"></div>
+      </div>
+      <div id="bg2" style="position:absolute;top:0;left:13px;width:70px;height:72px;
+        background:radial-gradient(circle at 38% 35%,#fff9c4,#ffd700 45%,#f9a825);
+        border-radius:50% 50% 42% 42%;">
+        <div style="position:absolute;top:9px;left:17px;width:13px;height:22px;
+          background:rgba(255,255,255,.55);border-radius:50%;transform:rotate(-25deg);filter:blur(2px);"></div>
+      </div>
+      <div style="position:absolute;bottom:24px;left:27px;width:42px;height:8px;background:linear-gradient(90deg,#f9a825,#ffd700);border-radius:2px;"></div>
+      <div style="position:absolute;bottom:14px;left:31px;width:34px;height:8px;background:linear-gradient(90deg,#f9a825,#ffd700);border-radius:2px;"></div>
+      <div style="position:absolute;bottom:4px;left:37px;width:22px;height:10px;background:#e65100;border-radius:0 0 4px 4px;"></div>
+    </div>
+    <div id="s1t" style="opacity:0;transform:translateY(32px);text-align:center;">
+      <div style="font-size:54px;font-weight:900;color:#fff;line-height:1;letter-spacing:-1px;">
+        LE <span style="color:#ffd700;">SAVIEZ</span>-<br>VOUS&nbsp;?
+      </div>
+    </div>
+    <div id="s1d" style="height:3px;width:0;background:linear-gradient(90deg,#7c3aed,#ffd700);border-radius:2px;margin:20px auto;"></div>
+    <div id="s1s" style="opacity:0;transform:translateY(14px);text-align:center;font-size:15px;color:rgba(255,255,255,.6);line-height:1.65;">
+      Des faits qui vont changer<br>votre vision du business digital
+    </div>
+  </div>
+
+  <!-- S2: 70% 5-13s -->
+  <div class="scene" id="s2" style="z-index:10;opacity:0;">
+    <div id="pw" style="position:relative;opacity:0;transform:translateY(18px);margin-bottom:22px;">
+      <div style="width:130px;height:210px;background:linear-gradient(155deg,#1a0f40,#0d0620);
+        border-radius:22px;border:2.5px solid rgba(160,130,255,.22);overflow:hidden;
+        box-shadow:0 12px 40px rgba(0,0,0,.65),0 0 28px rgba(124,58,237,.2);">
+        <div style="height:18px;background:linear-gradient(90deg,#4f46e5,#7c3aed);
+          display:flex;align-items:center;padding:0 7px;gap:3px;">
+          <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);"></div>
+          <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);"></div>
+          <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);"></div>
+        </div>
+        <div style="padding:9px 8px 0;">
+          <div style="font-size:5.5px;color:#c084fc;letter-spacing:.5px;margin-bottom:5px;font-weight:700;">CLIENTS EN LIGNE</div>
+          <div id="bars" style="display:flex;align-items:flex-end;gap:4px;height:68px;">
+            <div id="b1" style="flex:1;background:linear-gradient(to top,#7c3aed,#c084fc);border-radius:2px 2px 0 0;height:0;transition:none;"></div>
+            <div id="b2" style="flex:1;background:linear-gradient(to top,#7c3aed,#c084fc);border-radius:2px 2px 0 0;height:0;transition:none;"></div>
+            <div id="b3" style="flex:1;background:linear-gradient(to top,#7c3aed,#c084fc);border-radius:2px 2px 0 0;height:0;transition:none;"></div>
+            <div id="b4" style="flex:1;background:linear-gradient(to top,#f59e0b,#ffd700);border-radius:2px 2px 0 0;height:0;transition:none;"></div>
+            <div id="b5" style="flex:1;background:linear-gradient(to top,#f59e0b,#ffd700);border-radius:2px 2px 0 0;height:0;transition:none;"></div>
+            <div id="b6" style="flex:1;background:linear-gradient(to top,#f59e0b,#ffd700);border-radius:2px 2px 0 0;height:0;transition:none;"></div>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,.1);margin-top:3px;"></div>
+          <div style="display:flex;gap:4px;margin-top:6px;">
+            <div style="width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#c084fc);"></div>
+            <div style="width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#c084fc);"></div>
+            <div style="width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ffd700);"></div>
+            <div style="width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.1);border:1px dashed rgba(255,255,255,.2);font-size:6px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);">+</div>
+          </div>
+        </div>
+      </div>
+      <div id="ntf" style="position:absolute;top:-10px;right:-20px;background:#ff3d3d;border-radius:12px;
+        padding:4px 9px;font-size:9.5px;color:#fff;font-weight:800;white-space:nowrap;
+        opacity:0;transform:scale(0);box-shadow:0 2px 12px rgba(255,60,60,.45);">3 nouveaux clients !</div>
+    </div>
+    <div id="s2c" style="background:rgba(124,58,237,.12);border:1.5px solid rgba(124,58,237,.35);
+      border-radius:20px;padding:22px 24px;width:100%;text-align:center;opacity:0;transform:translateY(18px);">
+      <div style="display:flex;align-items:flex-end;justify-content:center;gap:1px;line-height:1;">
+        <div id="s2n" style="font-size:76px;font-weight:900;color:#ffd700;text-shadow:0 0 28px rgba(255,215,0,.4);font-variant-numeric:tabular-nums;">0</div>
+        <div style="font-size:44px;font-weight:900;color:#ffd700;margin-bottom:6px;">%</div>
+      </div>
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-top:6px;line-height:1.45;">des clients cherchent en ligne<br><strong>avant</strong> d'acheter</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.38);margin-top:5px;">Source : Google Consumer Insights</div>
+    </div>
+    <div id="s2s" style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;margin-top:14px;line-height:1.65;opacity:0;">
+      Sans vitrine, vous êtes<br><span style="color:#ff5a5a;font-weight:700;font-size:16px;">invisible</span> pour la majorité.
+    </div>
+  </div>
+
+  <!-- S3: Africa 13-22s -->
+  <div class="scene" id="s3" style="z-index:10;opacity:0;">
+    <div id="s3g" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c084fc;margin-bottom:14px;opacity:0;text-align:center;">Afrique de l'Ouest · 2024</div>
+    <div id="s3m" style="position:relative;width:175px;height:185px;margin-bottom:18px;opacity:0;">
+      <svg width="175" height="185" viewBox="0 0 175 185" fill="none">
+        <path d="M66,10 L80,8 L93,11 L108,16 L121,25 L132,36 L138,50 L140,65 L136,79 L132,89 L137,103 L142,117 L145,133 L141,151 L130,166 L114,177 L92,184 L72,180 L54,169 L40,154 L30,134 L27,114 L31,98 L40,84 L36,68 L32,52 L34,38 L44,24 L56,14 Z"
+          fill="rgba(109,40,217,0.22)" stroke="rgba(167,139,250,0.7)" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M40,88 Q28,106 27,114 Q30,130 40,154" stroke="rgba(167,139,250,0.4)" stroke-width="1.5" fill="none"/>
+      </svg>
+      <div id="dbn" style="position:absolute;top:52%;left:50%;width:10px;height:10px;border-radius:50%;background:#ffd700;transform:translate(-50%,-50%);opacity:0;"></div>
+      <div id="dng" style="position:absolute;top:49%;left:56%;width:13px;height:13px;border-radius:50%;background:#ffd700;transform:translate(-50%,-50%);opacity:0;"></div>
+      <div id="dgh" style="position:absolute;top:54%;left:43%;width:9px;height:9px;border-radius:50%;background:#ffd700;transform:translate(-50%,-50%);opacity:0;"></div>
+      <div id="dsn" style="position:absolute;top:35%;left:27%;width:9px;height:9px;border-radius:50%;background:#ffd700;transform:translate(-50%,-50%);opacity:0;"></div>
+      <div id="dml" style="position:absolute;top:28%;left:37%;width:7px;height:7px;border-radius:50%;background:#c084fc;transform:translate(-50%,-50%);opacity:0;"></div>
+      <div id="dci" style="position:absolute;top:57%;left:36%;width:9px;height:9px;border-radius:50%;background:#ffd700;transform:translate(-50%,-50%);opacity:0;"></div>
+      <div id="dtg" style="position:absolute;top:53%;left:47%;width:7px;height:7px;border-radius:50%;background:#c084fc;transform:translate(-50%,-50%);opacity:0;"></div>
+      <div id="rg1" style="position:absolute;top:52%;left:50%;border:2px solid rgba(255,215,0,0);border-radius:50%;transform:translate(-50%,-50%);width:14px;height:14px;pointer-events:none;"></div>
+      <div id="rg2" style="position:absolute;top:52%;left:50%;border:2px solid rgba(255,215,0,0);border-radius:50%;transform:translate(-50%,-50%);width:14px;height:14px;pointer-events:none;"></div>
+    </div>
+    <div id="s3c" style="background:rgba(124,58,237,.12);border:1.5px solid rgba(124,58,237,.35);
+      border-radius:20px;padding:22px 24px;width:100%;text-align:center;opacity:0;transform:translateY(18px);">
+      <div style="display:flex;align-items:flex-end;justify-content:center;gap:2px;line-height:1;">
+        <div id="s3n" style="font-size:76px;font-weight:900;color:#ffd700;text-shadow:0 0 28px rgba(255,215,0,.4);font-variant-numeric:tabular-nums;">0</div>
+        <div style="font-size:36px;font-weight:900;color:#ffd700;margin-bottom:8px;">M+</div>
+      </div>
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-top:6px;line-height:1.45;">utilisateurs mobiles actifs<br>en Afrique de l'Ouest</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.38);margin-top:5px;">Bénin · Nigeria · Sénégal · Côte d'Ivoire…</div>
+    </div>
+    <div id="s3s" style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;margin-top:14px;line-height:1.65;opacity:0;">
+      Votre futur client est sur son téléphone<br><span style="color:#ffd700;font-weight:700;">en ce moment même.</span>
+    </div>
+  </div>
+
+  <!-- S4: 24/7 22-28s -->
+  <div class="scene" id="s4" style="z-index:10;opacity:0;">
+    <div id="s4g" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c084fc;margin-bottom:14px;opacity:0;text-align:center;">Le secret des entrepreneurs qui réussissent</div>
+    <div id="s4t" style="font-size:28px;font-weight:900;text-align:center;color:#fff;line-height:1.2;margin-bottom:24px;opacity:0;transform:translateY(18px);">
+      Votre <span style="color:#ffd700;">meilleur vendeur</span><br>ne dort jamais
+    </div>
+    <div id="clw" style="position:relative;width:150px;height:150px;margin-bottom:24px;opacity:0;">
+      <div style="width:150px;height:150px;border-radius:50%;
+        background:radial-gradient(circle at 40% 40%,#1a0850,#08001c);
+        border:2.5px solid rgba(124,58,237,.5);position:relative;
+        box-shadow:0 0 32px rgba(124,58,237,.22),inset 0 0 28px rgba(0,0,0,.5);">
+        <span style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:rgba(255,255,255,.65);">12</span>
+        <span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:rgba(255,255,255,.65);">3</span>
+        <span style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:rgba(255,255,255,.65);">6</span>
+        <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:rgba(255,255,255,.65);">9</span>
+        <div id="hh" style="position:absolute;bottom:50%;left:50%;width:4px;height:38px;margin-left:-2px;border-radius:2px 2px 0 0;background:linear-gradient(to top,#7c3aed,#c084fc);transform-origin:bottom center;transform:rotate(0deg);"></div>
+        <div id="hm" style="position:absolute;bottom:50%;left:50%;width:3px;height:52px;margin-left:-1.5px;border-radius:2px 2px 0 0;background:linear-gradient(to top,#ffd700,#fff);transform-origin:bottom center;transform:rotate(0deg);"></div>
+        <div id="hs" style="position:absolute;bottom:50%;left:50%;width:1.5px;height:58px;margin-left:-.75px;border-radius:2px 2px 0 0;background:#ff4444;transform-origin:bottom center;transform:rotate(0deg);"></div>
+        <div style="position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#ffd700;transform:translate(-50%,-50%);z-index:5;box-shadow:0 0 8px rgba(255,215,0,.7);"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%;">
+      <div id="cp1" style="padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;background:rgba(255,215,0,.14);border:1.5px solid rgba(255,215,0,.5);color:#ffd700;opacity:0;transform:translateY(10px);">✅ 24h/24</div>
+      <div id="cp2" style="padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;background:rgba(255,215,0,.14);border:1.5px solid rgba(255,215,0,.5);color:#ffd700;opacity:0;transform:translateY(10px);">✅ 7j/7</div>
+      <div id="cp3" style="padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;background:rgba(124,58,237,.2);border:1.5px solid rgba(124,58,237,.5);color:#c084fc;opacity:0;transform:translateY(10px);">🌙 Nuit incluse</div>
+      <div id="cp4" style="padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;background:rgba(124,58,237,.2);border:1.5px solid rgba(124,58,237,.5);color:#c084fc;opacity:0;transform:translateY(10px);">🎉 Jours fériés</div>
+    </div>
+    <div id="s4s" style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;margin-top:16px;line-height:1.65;opacity:0;">
+      Une vitrine travaille pour vous<br><span style="color:#ffd700;font-weight:700;">pendant votre sommeil.</span>
+    </div>
+  </div>
+
+  <!-- S5: Outro 28-30s -->
+  <div class="scene" id="s5" style="z-index:10;opacity:0;">
+    <div id="og" style="position:absolute;width:360px;height:360px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;"></div>
+    <div id="nl" style="font-size:58px;font-weight:900;color:#fff;letter-spacing:5px;position:relative;z-index:1;opacity:0;">NEBULA</div>
+    <div id="na" style="font-size:13px;letter-spacing:5px;color:#ffd700;text-transform:uppercase;position:relative;z-index:1;margin-top:5px;opacity:0;">Agency</div>
+    <div id="s5d" style="height:3px;width:0;background:linear-gradient(90deg,#7c3aed,#ffd700);border-radius:2px;margin:18px auto;position:relative;z-index:1;"></div>
+    <div id="s5tl" style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;line-height:1.7;position:relative;z-index:1;opacity:0;">
+      Votre présence digitale professionnelle<br>en Afrique de l'Ouest
+    </div>
+    <div id="s5ct" style="background:linear-gradient(135deg,#7c3aed,#9c27b0);border-radius:50px;
+      padding:15px 32px;font-size:15px;font-weight:800;color:#fff;text-align:center;
+      margin-top:22px;width:100%;box-shadow:0 0 32px rgba(124,58,237,.45);
+      position:relative;z-index:1;opacity:0;transform:translateY(14px);">
+      💬 Contactez-nous sur WhatsApp
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── ENGINE ───────────────────────────────────────────────
+function c01(v){return v<0?0:v>1?1:v;}
+function lerp(a,b,t){return a+(b-a)*c01(t);}
+function rng(t,s,e){return c01((t-s)/(e-s));}
+function eO(t){t=c01(t);return 1-Math.pow(1-t,3);}
+function eIO(t){t=c01(t);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+function eBk(t){t=c01(t);var c=1.70158;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);}
+function eEl(t){if(!t||t===1)return t;return Math.pow(2,-10*t)*Math.sin((t*10-.75)*Math.PI*2/3)+1;}
+
+// ─── BACKGROUND CANVAS ────────────────────────────────────
+var bgc=document.getElementById('bg'),ctx=bgc.getContext('2d');
+var bgCache=null;
+var STARS=[];
+(function(){
+  // Deterministic star positions using stable values
+  var primes=[7919,6271,5197,4139,3571,2971,2381,1873,1409,997];
+  function sr(i,j){return Math.abs(Math.sin(i*primes[j%10]+j*primes[(i+1)%10]));}
+  for(var i=0;i<65;i++){
+    STARS.push({x:sr(i,0)*538+1,y:sr(i,1)*958+1,r:sr(i,2)*1.3+0.3,
+      ph:sr(i,3)*Math.PI*2,sp:sr(i,4)*2+0.5,
+      c:['#ffffff','#ffffff','#ffd700','#c8a2ff','#ffffff'][i%5]});
+  }
+  // Pre-render static background gradient
+  var g=ctx.createRadialGradient(135,130,0,270,480,530);
+  g.addColorStop(0,'#1c0055');g.addColorStop(0.45,'#0d0025');g.addColorStop(1,'#04010c');
+  ctx.fillStyle=g;ctx.fillRect(0,0,540,960);
+  bgCache=ctx.getImageData(0,0,540,960);
+})();
+
+function drawBG(t){
+  ctx.putImageData(bgCache,0,0);
+  for(var i=0;i<STARS.length;i++){
+    var s=STARS[i];
+    var a=c01(0.3+0.5*Math.sin(t*s.sp+s.ph));
+    var hex=Math.round(a*255).toString(16).padStart(2,'0');
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=s.c+hex;ctx.fill();
+    if(s.r>1.1){
+      var grd=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4);
+      grd.addColorStop(0,s.c+(Math.round(a*0.3*255).toString(16).padStart(2,'0')));
+      grd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=grd;ctx.beginPath();ctx.arc(s.x,s.y,s.r*4,0,Math.PI*2);ctx.fill();
+    }
+  }
+}
+
+// ─── BUILD RAYS (once) ────────────────────────────────────
+(function(){
+  var rc=document.getElementById('rays');
+  rc.style.cssText='position:relative;width:80px;height:80px;';
+  for(var i=0;i<8;i++){
+    var r=document.createElement('div');
+    r.style.cssText='position:absolute;width:2.5px;height:16px;background:rgba(255,215,0,.52);'
+      +'border-radius:1px;top:0;left:50%;margin-left:-1.25px;transform-origin:1.25px 40px;'
+      +'transform:rotate('+i*45+'deg);';
+    rc.appendChild(r);
+  }
+})();
+
+// ─── CACHE DOM ────────────────────────────────────────────
+var E={};
+'s1,bw,s1t,s1d,s1s,bg2,rc,s2,pw,ntf,s2c,s2n,s2s,b1,b2,b3,b4,b5,b6,s3,s3g,s3m,s3c,s3n,s3s,dbn,dng,dgh,dsn,dml,dci,dtg,rg1,rg2,s4,s4g,s4t,clw,hh,hm,hs,cp1,cp2,cp3,cp4,s4s,s5,og,nl,na,s5d,s5tl,s5ct,pb'.split(',').forEach(function(id){E[id]=document.getElementById(id);});
+
+// ─── SCENES ───────────────────────────────────────────────
+function S1(t){
+  var show=eO(rng(t,0,.4)),hide=eIO(rng(t,4.5,5.1));
+  E.s1.style.opacity=c01(show*(1-hide));
+  if(show===0)return;
+  // Bulb glow
+  var g=0.5+0.5*Math.sin(t*2.9);
+  E.bg2.style.boxShadow='0 0 '+(18+g*22)+'px '+(5+g*9)+'px rgba(255,215,0,'+(0.38+g*.28)+')'
+    +',0 0 '+(38+g*32)+'px '+(10+g*16)+'px rgba(255,215,0,'+(0.10+g*.10)+')';
+  // Rays rotate
+  E.rc.style.transform='rotate('+(t*42)+'deg)';
+  // Bulb wrap
+  E.bw.style.opacity=eO(rng(t,0,.5));
+  // Text
+  var tp=eO(rng(t,.4,1.4));
+  E.s1t.style.opacity=tp;E.s1t.style.transform='translateY('+(lerp(32,0,tp))+'px)';
+  // Divider
+  E.s1d.style.width=lerp(0,60,eO(rng(t,.9,1.8)))+'px';
+  // Sub
+  var sp=eO(rng(t,1.6,2.7));
+  E.s1s.style.opacity=sp;E.s1s.style.transform='translateY('+(lerp(14,0,sp))+'px)';
+}
+
+function S2(t){
+  var show=eO(rng(t,4.8,5.6)),hide=eIO(rng(t,12.4,13));
+  E.s2.style.opacity=c01(show*(1-hide));
+  if(show===0)return;
+  // Phone
+  var pp=eEl(rng(t,5,6.3));
+  E.pw.style.opacity=pp;E.pw.style.transform='translateY('+(lerp(18,0,pp))+'px)';
+  // Bars
+  var bt=[32,50,44,66,76,88];
+  [E.b1,E.b2,E.b3,E.b4,E.b5,E.b6].forEach(function(b,i){
+    b.style.height=(eO(rng(t,5.3+i*.22,6.4+i*.22))*bt[i])+'%';
+  });
+  // Notif
+  var np=eBk(rng(t,6.5,7.2));
+  E.ntf.style.opacity=np;E.ntf.style.transform='scale('+np+')';
+  // Card
+  var cp=eO(rng(t,5.9,7.1));
+  E.s2c.style.opacity=cp;E.s2c.style.transform='translateY('+(lerp(18,0,cp))+'px)';
+  // Counter
+  E.s2n.textContent=Math.round(70*eO(rng(t,6.3,9.2)));
+  // Sub
+  E.s2s.style.opacity=eO(rng(t,7.6,9.2));
+}
+
+function S3(t){
+  var show=eO(rng(t,12.8,13.7)),hide=eIO(rng(t,21.4,22));
+  E.s3.style.opacity=c01(show*(1-hide));
+  if(show===0)return;
+  E.s3g.style.opacity=eO(rng(t,13,14));
+  E.s3m.style.opacity=eO(rng(t,13.2,14.3));
+  // Dots
+  var dts=[{el:E.dbn,d:14.0},{el:E.dng,d:14.4},{el:E.dgh,d:14.8},
+           {el:E.dsn,d:15.2},{el:E.dci,d:15.6},{el:E.dml,d:15.9},{el:E.dtg,d:16.2}];
+  dts.forEach(function(d){
+    var p=eBk(rng(t,d.d,d.d+.55));
+    var pls=0.72+0.28*Math.sin(t*2.8+d.d*4);
+    d.el.style.opacity=p;
+    d.el.style.transform='translate(-50%,-50%) scale('+(lerp(.4,1,p)*pls)+')';
+    d.el.style.boxShadow='0 0 '+(9*pls)+'px '+(4*pls)+'px rgba(255,215,0,'+(0.42*pls)+')';
+  });
+  // Rings
+  if(t>14.0){
+    var rp1=((t-14.0)*0.65)%1,rs1=lerp(1,5.5,rp1),ra1=c01(1-rp1)*0.7;
+    E.rg1.style.transform='translate(-50%,-50%) scale('+rs1+')';
+    E.rg1.style.borderColor='rgba(255,215,0,'+ra1+')';
+    var rp2=((t-14.7)*0.65)%1,rs2=lerp(1,5.5,rp2),ra2=c01(1-rp2)*0.7;
+    E.rg2.style.transform='translate(-50%,-50%) scale('+rs2+')';
+    E.rg2.style.borderColor='rgba(255,215,0,'+ra2+')';
+  }
+  // Card
+  var cp=eO(rng(t,14.8,15.8));
+  E.s3c.style.opacity=cp;E.s3c.style.transform='translateY('+(lerp(18,0,cp))+'px)';
+  // Counter
+  E.s3n.textContent=Math.round(65*eO(rng(t,15.2,18.8)));
+  E.s3s.style.opacity=eO(rng(t,17.2,18.8));
+}
+
+function S4(t){
+  var show=eO(rng(t,21.8,22.7)),hide=eIO(rng(t,27.4,28));
+  E.s4.style.opacity=c01(show*(1-hide));
+  if(show===0)return;
+  E.s4g.style.opacity=eO(rng(t,22,23));
+  var tp=eO(rng(t,22.4,23.6));
+  E.s4t.style.opacity=tp;E.s4t.style.transform='translateY('+(lerp(18,0,tp))+'px)';
+  E.clw.style.opacity=eO(rng(t,22.9,24));
+  // Clock hands (deterministic: scene-local time drives rotation)
+  var st=t-22;
+  E.hh.style.transform='rotate('+(st*58)+'deg)';
+  E.hm.style.transform='rotate('+(st*175)+'deg)';
+  E.hs.style.transform='rotate('+(st*360)+'deg)';
+  // Chips
+  [[E.cp1,23.5],[E.cp2,23.9],[E.cp3,24.4],[E.cp4,24.8]].forEach(function(c){
+    var p=eEl(rng(t,c[1],c[1]+.65));
+    c[0].style.opacity=p;c[0].style.transform='translateY('+(lerp(10,0,p))+'px)';
+  });
+  E.s4s.style.opacity=eO(rng(t,25.2,26.3));
+}
+
+function S5(t){
+  var show=eO(rng(t,27.8,28.9));
+  E.s5.style.opacity=show;
+  if(show===0)return;
+  // Glow
+  var gp=0.32+0.14*Math.sin(t*2.1);
+  E.og.style.background='radial-gradient(circle,rgba(124,58,237,'+gp+') 0%,transparent 70%)';
+  // Logo
+  var lp=eO(rng(t,28,29.1));
+  E.nl.style.opacity=lp;
+  var gs=18+lp*34;
+  E.nl.style.textShadow='0 0 '+gs+'px rgba(160,80,255,'+(0.38+lp*.52)+')'
+    +',0 0 '+(gs*2)+'px rgba(160,80,255,'+(0.12+lp*.14)+')';
+  E.na.style.opacity=eO(rng(t,28.3,29.2));
+  E.s5d.style.width=lerp(0,60,eO(rng(t,28.5,29.4)))+'px';
+  E.s5tl.style.opacity=eO(rng(t,28.9,29.6));
+  var cp=eBk(rng(t,29.3,30));
+  E.s5ct.style.opacity=cp;E.s5ct.style.transform='translateY('+(lerp(14,0,cp))+'px)';
+}
+
+// ─── MAIN ─────────────────────────────────────────────────
+function setTime(t){
+  t=t<0?0:t>30?30:t;
+  drawBG(t);
+  E.pb.style.width=(t/30*100)+'%';
+  S1(t);S2(t);S3(t);S4(t);S5(t);
+}
+window.setTime=setTime;
+setTime(0);
+</script>
+</body>
+</html>

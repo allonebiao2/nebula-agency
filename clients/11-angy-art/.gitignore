@@ -1,0 +1,7 @@
+# Les captures de travail : elles se refabriquent en une commande et ne
+# regardent que la session qui les a prises. Même convention que le client 09.
+_vues/
+_qc_captures/
+.impeccable/
+.wrangler/
+_dist/

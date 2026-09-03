@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Angy Art — affiche A4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  @page{size:A4;margin:0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:210mm;height:297mm}
+  body{
+    font-family:"Public Sans",Helvetica,Arial,sans-serif;font-weight:300;
+    background:#0a0a0a;color:#f3efe6;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    display:flex;flex-direction:column;position:relative;overflow:hidden;
+  }
+  /* la lumière rasante, figée : c'est une affiche, elle ne bouge pas */
+  body::before{content:'';position:absolute;top:-10%;left:-6%;width:74%;height:130%;
+    background:linear-gradient(102deg,transparent 4%,rgba(255,240,214,.10) 26%,
+      rgba(201,185,154,.15) 46%,rgba(255,255,255,.05) 64%,transparent 92%);
+    transform:rotate(8deg)}
+  .z{position:relative;z-index:1}
+
+  header{padding:14mm 16mm 0;display:flex;align-items:flex-start;justify-content:space-between}
+  .mono{width:15mm;height:auto;display:block}
+  .co{text-align:right;font-size:7pt;letter-spacing:.2em;color:rgba(255,255,255,.62);line-height:1.9}
+  .co i{font-style:normal;color:#c9b99a}
+
+  /* le corps : titre à gauche, arche à droite, et il occupe toute la hauteur */
+  .corps{flex:1 1 auto;padding:7mm 16mm 0;display:grid;
+    grid-template-columns:minmax(0,1fr) 62mm;gap:10mm;align-items:center}
+  h1{font-family:"Playfair Display",Georgia,serif;font-weight:400;
+    font-size:64pt;line-height:.86;letter-spacing:-.03em}
+  .st{margin-top:6mm;font-family:"Playfair Display",Georgia,serif;font-style:italic;
+    font-size:16pt;color:#c9b99a;line-height:1.25}
+  .de{margin-top:5mm;font-size:9.5pt;line-height:1.66;color:rgba(255,255,255,.78);max-width:98mm}
+  .trait{margin-top:7mm;width:26mm;height:1px;background:#c9b99a}
+
+  /* 76 mm laissaient une bande vide de près de 5 cm au milieu de l'A4, et la
+     photo, qui est le sujet de l'affiche, y tenait en timbre-poste. */
+  .arche .ph{width:100%;height:106mm;object-fit:cover;display:block;
+    border-radius:26mm 26mm 1mm 1mm / 20mm 20mm 1mm 1mm}
+  .arche .lg{margin-top:3.5mm;text-align:center;font-size:6.5pt;letter-spacing:.2em;
+    color:rgba(255,255,255,.55)}
+
+  .axes{padding:9mm 16mm 0;border-top:1px solid rgba(255,255,255,.14);margin:9mm 16mm 0;
+    padding-left:0;padding-right:0}
+  .axes{margin-left:16mm;margin-right:16mm;padding:8mm 0 0}
+  .axes-t{font-size:7pt;letter-spacing:.2em;color:rgba(255,255,255,.62);margin-bottom:4mm}
+  .axes ul{display:grid;grid-template-columns:1fr 1fr;gap:3mm 8mm}
+  .axes li{list-style:none;position:relative;padding-left:7mm;
+    font-size:9.5pt;color:rgba(255,255,255,.86)}
+  .axes li::before{content:'';position:absolute;left:0;top:.62em;
+    width:4mm;height:1px;background:#c9b99a}
+
+  .qrs{margin-top:8mm;padding:8mm 16mm;background:#f3efe6;color:#1a1a1a;
+    display:grid;grid-template-columns:1fr auto auto;gap:9mm;align-items:center}
+  .qrs h2{font-family:"Playfair Display",Georgia,serif;font-weight:400;
+    font-size:20pt;line-height:1.1;letter-spacing:-.02em}
+  .qrs .p{margin-top:2.5mm;font-size:8.5pt;line-height:1.6;color:#54504a;max-width:74mm}
+  .qrs .tel{margin-top:3.5mm;font-family:"Playfair Display",Georgia,serif;
+    font-size:15pt;color:#1a1a1a}
+  .q{text-align:center;width:32mm}
+  .q img{width:32mm;height:32mm;display:block;border:1px solid rgba(26,26,26,.18)}
+  .q span{display:block;margin-top:2mm;font-size:6.5pt;letter-spacing:.16em;
+    font-weight:500;color:#54504a}
+
+  footer{padding:5mm 16mm 6mm;display:flex;justify-content:space-between;align-items:center;
+    font-size:7pt;letter-spacing:.14em;color:rgba(255,255,255,.5)}
+  footer i{font-style:normal;color:#c9b99a}
+</style>
+</head>
+<body>
+
+<header class="z">
+  <img class="mono" src="assets/images/logos/marque.png" alt="Angy Art">
+  <p class="co">ATELIER <i>·</i> COTONOU, BÉNIN<br>6.3703° N <i>/</i> 2.3912° E</p>
+</header>
+
+<div class="corps z">
+  <div>
+    <h1>ANGY<br>ART</h1>
+    <p class="st">Inspiré d'en haut,<br>enraciné ici.</p>
+    <p class="de">Angélique Avocevou, artiste plasticienne. Des œuvres contemporaines nées
+      du relief, de la matière brute et de la patience de la main. Aucune pièce n'existe
+      en double.</p>
+    <div class="trait"></div>
+  </div>
+
+  <div class="arche">
+  <img class="ph" src="assets/images/scenes/hero.webp" alt="">
+  <p class="lg">MODELÉ ET PEINT À LA MAIN</p>
+  </div>
+</div>
+
+<div class="axes z">
+  <p class="axes-t">CE QUE JE CRÉE</p>
+  <ul>
+    <li>Œuvres originales, pièces uniques</li>
+    <li>Tableaux personnalisés, à partir d'une histoire</li>
+    <li>Œuvres pour hôtels, restaurants, résidences</li>
+    <li>Expositions et projets artistiques</li>
+    <li>Ateliers créatifs, transmission du geste</li>
+  </ul>
+</div>
+
+<div class="qrs z">
+  <div>
+    <h2>Recevoir le portfolio</h2>
+    <p class="p">Scannez, la conversation s'ouvre avec le message déjà écrit.
+      Vous recevez les pièces disponibles, leurs dimensions et leurs techniques.</p>
+    <p class="tel">+229 01 52 00 64 90</p>
+  </div>
+  <div class="q">
+    <img src="assets/images/qr/qr-whatsapp.png" alt="QR code WhatsApp">
+    <span>WHATSAPP</span>
+  </div>
+  <div class="q">
+    <img src="assets/images/qr/qr-site.png" alt="QR code du site">
+    <span>LE SITE</span>
+  </div>
+</div>
+
+<footer class="z">
+  <p>@ANGY_ART_CREATIF <i>·</i> @ANGY_ART_ <i>·</i> ANGYAVOCEVOU@GMAIL.COM</p>
+  <p>ANGY-ART.PAGES.DEV</p>
+</footer>
+
+</body>
+</html>

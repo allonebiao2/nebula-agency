@@ -34,6 +34,14 @@ const DIST = path.resolve(ICI, 'dist')
    les LIT dans les donnees du site, on ne les fige jamais dans le controle. */
 const D = await import('./src/donnees.js')
 const PX = await import('./src/prix.js')
+/* ⚠️ ON LIT LES LIBELLES DANS LE MODULE, ON NE LES RECOPIE PAS.
+   Le jour ou « Le numero est teste » est devenu « Le numero est verifie »,
+   trois controles sont passes au rouge d'un coup en accusant le calcul des
+   prix, alors que le prix etait juste : le controle cliquait simplement a
+   cote. Un controle qui recopie une chaine casse a chaque mot change. */
+const OPT_VERIFIE = PX.SUPPLEMENTS.find((x) => x.cle === 'teste')
+const NOM_VERIFIE = OPT_VERIFIE.nom
+const COURT_VERIFIE = OPT_VERIFIE.court
 const nombre = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 
 /* ⚠️ Les libelles viennent des DONNEES, jamais d'une copie. « Ateliers de
@@ -162,6 +170,13 @@ const MESURES = () => {
         exige,
         px: Math.round(px),
         t: e.innerText.slice(0, 46).replace(/\s+/g, ' '),
+        /* ⚠️ Sans ces trois champs, un contraste rouge est INTROUVABLE : on
+           connaît le texte fautif mais ni sa couleur, ni son fond, ni la
+           classe qui les pose. On perd alors plus de temps à chercher le
+           coupable qu'à le corriger. */
+        couleur: s.color,
+        fond: `rgb(${Math.round(f.r)}, ${Math.round(f.g)}, ${Math.round(f.b)})`,
+        ou: (e.className || '').toString().slice(0, 90),
       })
     }
   })
@@ -266,7 +281,10 @@ const totalAffiche = (page) =>
     { nom: 'telephone', w: 390, h: 844, mobile: true },
     { nom: 'PC', w: 1440, h: 900, mobile: false },
   ]
-  const ROUTES = [
+  /* Notre base. Tout le reste est un tiers. */
+const NOTRE_SERVEUR = 'https://xukduhqqfzogisoimhyo.supabase.co'
+
+const ROUTES = [
     { nom: 'vitrine', h: '#/' },
     { nom: 'commander', h: '#/commander' },
     { nom: 'donnees', h: '#/donnees' },
@@ -283,9 +301,17 @@ const totalAffiche = (page) =>
       page.on('console', (m) => {
         if (m.type() === 'error') erreurs.push(m.text())
       })
+      /* ⚠️ CETTE REGLE VISE LES TIERS, PAS NOTRE PROPRE SERVEUR.
+         Elle existe pour interdire un CDN, une police distante, un mouchard :
+         tout ce qui met le site a la merci de quelqu'un d'autre. Nos propres
+         appels a Supabase (lire un carnet, compter une visite) sont le
+         fonctionnement normal du produit. Les compter comme des fautes aurait
+         pousse a supprimer la mesure au lieu de supprimer les dependances. */
       page.on('request', (req) => {
         const u = req.url()
-        if (!u.startsWith(base) && !u.startsWith('data:') && !u.startsWith('blob:')) externes.push(u)
+        if (u.startsWith(base) || u.startsWith('data:') || u.startsWith('blob:')) return
+        if (u.startsWith(NOTRE_SERVEUR)) return
+        externes.push(u)
       })
       await page.setViewport({
         width: e.w,
@@ -387,7 +413,7 @@ const totalAffiche = (page) =>
   await attendre(150)
   await cliquerTexte(page, 'button', 'Continuer')
   await attendre(250)
-  await cocher(page, ['Le numéro est testé', 'Le message déjà écrit'])
+  await cocher(page, [NOM_VERIFIE, 'Le message déjà écrit'])
   await attendre(250)
   t = await totalAffiche(page)
   const attB = String(PX.calcul(50, { teste: 1, message: 1 }).total)
@@ -482,7 +508,7 @@ const totalAffiche = (page) =>
   await attendre(150)
   await cliquerTexte(page, 'button', 'Continuer') /* → suppléments */
   await attendre(250)
-  await cocher(page, ['Le numéro est testé', 'Le message déjà écrit'])
+  await cocher(page, [NOM_VERIFIE, 'Le message déjà écrit'])
   await cliquerTexte(page, 'button', 'Continuer') /* → offre */
   await attendre(250)
   await page.evaluate(() => {

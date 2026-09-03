@@ -2,3 +2,4 @@
 # Les livrables web (assets/images/*.webp, assets/videos/*.mp4) sont, eux, versionnés.
 assets/raw/
 .impeccable/
+_vues/

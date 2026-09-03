@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* La scène : un mur clair, pas un blanc pur. Un blanc pur sous une assiette
+     détourée fait « fond de catalogue » ; un gris chaud fait « pièce ». */
+  --mur: #ede9e3;
+  --mur-2: #e3ded7;
+  --encre: #1d1a17;
+  --encre-2: #55504a;
+  --verre: rgba(255, 255, 255, 0.82);
+  --verre-brd: rgba(255, 255, 255, 0.9);
+  --ombre: 0 20px 60px rgba(0, 0, 0, 0.08);
+  --wash: #f6ede6; /* réécrite par le plat courant */
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--mur);
+  color: var(--encre);
+  font-family: var(--f-texte), system-ui, sans-serif;
+  /* Pas de barre de défilement : la scène occupe l'écran, le défilement est
+     un moteur, pas un contenu. */
+  overflow-x: hidden;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.police-titre {
+  font-family: var(--f-display), system-ui, sans-serif;
+}
+
+/* Le visiteur qui demande moins d'animations en obtient moins. Ce n'est pas
+   un réglage de confort : pour certains, c'est une demande médicale. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* L'assiette respire : ±8 px en 4 s, comme dans la référence. */
+@keyframes flotte {
+  0%, 100% { transform: translateY(-8px); }
+  50%      { transform: translateY(8px); }
+}
+.assiette-flotte { animation: flotte 4s ease-in-out infinite; }
+
+@keyframes pouls {
+  0%   { box-shadow: 0 16px 36px rgba(0,0,0,.18), 0 0 0 0 rgba(29,26,23,.16); }
+  70%  { box-shadow: 0 16px 36px rgba(0,0,0,.18), 0 0 0 14px rgba(29,26,23,0); }
+  100% { box-shadow: 0 16px 36px rgba(0,0,0,.18), 0 0 0 0 rgba(29,26,23,0); }
+}
+.pulse { animation: pouls 2.8s ease-out infinite; }
+
+/* La barre du panier bat une fois quand on vient d'y ajouter quelque chose.
+   ⚠️ NI `transform` NI ANIMATION INFINIE : cette barre porte un
+   `backdrop-filter`, et les deux ensemble coûtent une image sur deux sur un
+   téléphone d'entrée de gamme. Une ombre qui bat ne touche ni au calque ni à
+   la mise en page. */
+@keyframes barreBat {
+  0%   { box-shadow: 0 -1px 0 0 rgba(29,26,23,.08); }
+  35%  { box-shadow: 0 -3px 0 0 rgba(232,118,58,.85), 0 -18px 34px -18px rgba(232,118,58,.55); }
+  100% { box-shadow: 0 -1px 0 0 rgba(29,26,23,.08); }
+}
+.barre-bat { animation: barreBat 0.52s ease-out 1; }
+
+/* ⚠️ LE BOUTON QUI PREND LA COMMANDE PORTE SA COULEUR ICI, PAS EN STYLE EN
+   LIGNE. Il est animé par GSAP, et un `clearProps: "all"` VIDE l'attribut
+   `style` : le bouton se retrouvait en texte crème sur fond transparent,
+   au-dessus d'une carte de verre claire. Invisible, mesuré à 1,1:1. Une
+   classe, elle, ne s'efface pas. */
+.btn-commander { background: #1d1a17; color: #f6efe6; }
+
+/* ── L'ARDOISE RONDE DU HÉROS ────────────────────────────────────
+   ⚠️ Elle doit tenir dans sa boîte, qui n'est PAS carrée sur téléphone
+   (100 % × 30vh). Aucun calcul CSS ne sait dire « le plus petit des deux
+   côtés » sans conteneur mesuré : d'où `container-type: size` sur la boîte et
+   `min(100cqw, 100cqh)` sur le disque. La première déclaration `width: 100%`
+   est le repli d'un navigateur qui ne connaît pas les unités `cq` : sans
+   elle, il tomberait sur une largeur automatique, donc nulle. */
+.ardoise-boite { container-type: size; }
+.ardoise-plat {
+  width: 100%;
+  width: min(100cqw, 100cqh);
+  aspect-ratio: 1 / 1;
+}
+
+/* ── QUAND LE PANIER N'EST PAS VIDE, LA SCÈNE LUI FAIT DE LA PLACE ──
+   ⚠️ Depuis qu'on ajoute au panier DEPUIS le héros (2026-08-26), la barre du
+   panier — fixe, en bas, environ 64 px, plus sur téléphone où elle passe à la
+   ligne — apparaît alors qu'on est encore sur la scène. Elle se posait
+   par-dessus la barre du bas et par-dessus le carrousel des sauces : trois
+   rangées de boutons empilées, dont deux inutilisables.
+   Réserver la place en permanence aurait abîmé la scène pour tout le monde,
+   y compris pour qui n'a rien commandé. On la réserve donc au moment où elle
+   sert, et `_outils/_qc.py` mesure qu'il ne reste aucun chevauchement. */
+/* ⚠️ `--barre-h` est MESURÉE par `Carte.tsx`, elle n'est pas écrite ici.
+   Les valeurs en `rem` du premier jet laissaient **8 px de recouvrement** en
+   390 px : la barre passe à la ligne sur téléphone, donc sa hauteur dépend de
+   son contenu. Une hauteur supposée est fausse le jour où le contenu change. */
+body.a-panier .nav-bas { bottom: calc(var(--barre-h, 4rem) + 1.75rem); }
+body.a-panier .rail-bas { bottom: calc(var(--barre-h, 4rem) + 6.5rem); }
+@media (max-width: 767px) {
+  body.a-panier .rail-bas { bottom: calc(var(--barre-h, 4rem) + 5.25rem); }
+  body.a-panier .scene-stack { bottom: calc(var(--barre-h, 4rem) + 11.9rem); }
+}
+
+/* ── LA SCÈNE : DEUX MISES EN PAGE, PAS UNE ──────────────────────
+   Sur grand écran, l'assiette est à gauche, le titre au milieu, la carte à
+   droite : la composition de la référence, en positions absolues.
+   ⚠️ SUR TÉLÉPHONE ON EMPILE POUR DE VRAI. Le premier essai posait les trois
+   blocs à 39 %, 56 % et 7 % de la hauteur : ça tenait sur un écran de 844 px
+   et se chevauchait sur un écran de 640, parce qu'un pourcentage de hauteur
+   ne sait rien de la hauteur en pixels du texte qu'il contient. On ne place
+   pas des boîtes à la main, on laisse le navigateur les empiler. */
+.scene-stack { display: contents; }
+.scene-plat {
+  width: min(42vw, 46vh);
+  height: min(42vw, 46vh);
+  transform: translateX(-26vw);
+}
+
+@media (max-width: 767px) {
+  .scene-stack {
+    position: absolute;
+    /* ⚠️ 11,9rem en bas, ce n'est pas un chiffre rond choisi à l'œil : c'est
+       la place que prennent le carrousel (84 px du bas, 100 de haut) et la
+       barre. Réservé trop court, la carte de verre passait par-dessus les
+       miniatures. */
+    inset: 4.5rem 1.25rem 11.9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.9rem;
+  }
+  .scene-plat,
+  .scene-txt,
+  .scene-carte {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+  /* ⚠️ `width: 100%`, pas `auto`. En `auto` la boîte de l'assiette est
+     mesurée à ZÉRO de large : ses enfants sont tous en position absolue, donc
+     elle n'a aucun contenu à mesurer, et l'assiette disparaissait de l'écran
+     alors que l'image était bien chargée. */
+  .scene-plat, .scene-txt, .scene-carte { width: 100% !important; }
+  .scene-plat { height: 30vh; min-height: 150px; }
+  .scene-carte { padding: 0.85rem 0.95rem; }
+  /* la carte garde l'essentiel : le prix et le bouton. Les onglets et la
+     description restent sur grand écran, où il y a la place. */
+  .scene-carte .ic-onglets,
+  .scene-carte .ic-desc,
+  .scene-txt .dt-act-zone { display: none; }
+  .scene-carte .ic-prix-bloc { margin-bottom: 0.7rem; }
+}

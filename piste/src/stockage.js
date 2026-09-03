@@ -17,6 +17,8 @@ export const CLES = {
   commandes: 'piste_commandes_v1',
   demandes: 'piste_demandes_v1',
   signalements: 'piste_signalements_v1',
+  /* Les references deja vues, pour ne sonner QUE sur ce qui est nouveau. */
+  refsVues: 'piste_refs_vues_v1',
 }
 
 export function lire(cle) {

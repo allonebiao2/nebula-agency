@@ -33,6 +33,8 @@ MOMO_NUMBER  = os.environ.get("MOMO_NUMBER", "")
 MOMO_NETWORK = os.environ.get("MOMO_NETWORK", "")
 PACKS = {"express": 15000, "pro": 25000, "business": 45000}
 
+import notify  # alertes WhatsApp + Telegram (best-effort, jamais bloquant)
+
 def db():
     c = sqlite3.connect(DB); c.row_factory = sqlite3.Row; return c
 
@@ -50,14 +52,12 @@ def init():
 init()
 
 def tg(text):
-    if not TG_TOKEN or not TG_CHAT:
-        print("[Telegram non configure] nouvelle notification (TG off)"); return
+    """Alerte Mongazi sur WhatsApp ET Telegram. Ne leve jamais."""
     try:
-        data = urllib.parse.urlencode({"chat_id": TG_CHAT, "text": text,
-            "parse_mode": "HTML", "disable_web_page_preview": "true"}).encode()
-        urllib.request.urlopen(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage", data, timeout=6)
+        return notify.alerter_mongazi(text)
     except Exception as e:
-        print("Telegram err:", e)
+        print("[notify] echec inattendu:", e)
+        return {"whatsapp": False, "telegram": False}
 
 def slugify(s):
     s = re.sub(r'[^a-z0-9]+', '-', (s or 'site').lower()).strip('-')
@@ -73,6 +73,25 @@ def _auth_token():
 
 def _is_authed(request: Request):
     return request.cookies.get("vitrina_auth") == _auth_token()
+
+def _order_token(oid: int) -> str:
+    """Jeton signe propre a une commande, pour agir depuis WhatsApp sans se connecter."""
+    return hmac.new(ADMIN_KEY.encode(), f"vitrina-order-{oid}".encode(), hashlib.sha256).hexdigest()[:24]
+
+def _may_act(request: Request, oid: int, token: str = "") -> bool:
+    """Autorise soit la session admin, soit le jeton signe du lien."""
+    return _is_authed(request) or (bool(token) and hmac.compare_digest(token, _order_token(oid)))
+
+def _ref_doublon(ref: str, sauf_id: int = 0) -> int:
+    """Nombre d'AUTRES commandes portant deja cette reference de transaction."""
+    ref = (ref or "").strip()
+    if not ref:
+        return 0
+    c = db()
+    n = c.execute("SELECT COUNT(*) AS n FROM orders WHERE TRIM(ref)=? AND id<>?",
+                  (ref, sauf_id)).fetchone()["n"]
+    c.close()
+    return n
 
 LOGIN_HTML = """<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Vitrina - Connexion</title>
@@ -134,25 +153,60 @@ def create_order(o: OrderIn):
               (slug, o.pack, price, o.biz_name, o.client_name, o.whatsapp, o.email, o.network, o.ref, o.html, now))
     oid = c.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
     c.commit(); c.close()
-    tg(f"🟡 <b>Nouvelle commande Vitrina</b>\n"
-       f"Activité : {o.biz_name}\nPack : {o.pack.upper()} — {money(price)}\n"
-       f"Cliente : {o.client_name} ({o.whatsapp})\nEmail : {o.email or '—'}\n"
-       f"Réseau : {o.network}   Réf : {o.ref or '—'}\n\n"
-       f"➡️ Ouvrir le back-office : {BASE_URL}/admin")
+    doublons = _ref_doublon(o.ref, sauf_id=oid)
+    garde = ""
+    if not (o.ref or "").strip():
+        # On accepte quand meme : une vente par un partenaire ou en main propre
+        # n'a pas de reference. Mais ca doit sauter aux yeux.
+        garde += "\n\n*AUCUNE RÉFÉRENCE FOURNIE* : vente hors ligne, ou client qui n'a pas payé."
+    if doublons:
+        garde = (f"\n\n*ATTENTION* : cette référence a déjà été utilisée sur "
+                 f"{doublons} autre(s) commande(s). À vérifier avant de valider.")
+    tg("Nouvelle commande Vitrina\n\n"
+       f"Activité : {o.biz_name}\n"
+       f"Pack : {o.pack.upper()} - {money(price)}\n"
+       f"Cliente : {o.client_name} ({o.whatsapp})\n"
+       f"Email : {o.email or '-'}\n"
+       f"Réseau : {o.network}\n"
+       f"Référence : {o.ref or '-'}"
+       f"{garde}\n\n"
+       f"Vérifie le SMS Mobile Money, PUIS ouvre :\n"
+       f"{BASE_URL}/a/{oid}/{_order_token(oid)}")
     return {"ok": True, "id": oid, "slug": slug}
 
 @app.post("/api/order/{oid}/validate")
-def validate(oid: int, request: Request):
-    if not _is_authed(request): raise HTTPException(403)
+def validate(oid: int, request: Request, token: str = Form("")):
+    if not _may_act(request, oid, token): raise HTTPException(403)
     exp = (datetime.date.today() + datetime.timedelta(days=365)).isoformat()
-    c = db(); c.execute("UPDATE orders SET status='live', expires=? WHERE id=?", (exp, oid)); c.commit(); c.close()
-    return RedirectResponse("/admin", status_code=303)
+    c = db()
+    c.execute("UPDATE orders SET status='live', expires=? WHERE id=?", (exp, oid))
+    c.commit()
+    r = c.execute("SELECT * FROM orders WHERE id=?", (oid,)).fetchone()
+    c.close()
+    if not r:
+        raise HTTPException(404)
+
+    # Des que Mongazi valide, le travail part tout seul : la page est en ligne
+    # ET la cliente est prevenue. Plus aucun clic apres la decision.
+    lien = f"{BASE_URL}/v/{r['slug']}"
+    envoye = False
+    if r["whatsapp"]:
+        envoye = notify.prevenir_client(
+            r["whatsapp"],
+            f"Bonjour {r['client_name']}, votre site est en ligne :\n{lien}\n\n"
+            f"Mettez ce lien dans votre bio Instagram et sur WhatsApp.\n\nVitrina by NEBULA")
+    tg(f"Valide : {r['biz_name']} est en ligne.\n{lien}\n\n"
+       + ("Cliente prévenue automatiquement sur WhatsApp."
+          if envoye else
+          "ATTENTION : la cliente n'a PAS pu être prévenue automatiquement. "
+          "Utilise le bouton WhatsApp du back-office."))
+    return RedirectResponse(f"/a/{oid}/{_order_token(oid)}", status_code=303)
 
 @app.post("/api/order/{oid}/reject")
-def reject(oid: int, request: Request):
-    if not _is_authed(request): raise HTTPException(403)
+def reject(oid: int, request: Request, token: str = Form("")):
+    if not _may_act(request, oid, token): raise HTTPException(403)
     c = db(); c.execute("UPDATE orders SET status='rejected' WHERE id=?", (oid,)); c.commit(); c.close()
-    return RedirectResponse("/admin", status_code=303)
+    return RedirectResponse(f"/a/{oid}/{_order_token(oid)}", status_code=303)
 
 @app.post("/api/order/{oid}/delete")
 def delete_order(oid: int, request: Request):
@@ -170,6 +224,97 @@ def view(slug: str):
                 "text-align:center;padding:9px;font:600 13px sans-serif;z-index:99999'>"
                 "&#9203; Aper&#231;u &mdash; en attente de validation du paiement</div>") + html
     return HTMLResponse(html)
+
+ACTION_CSS = """
+*{box-sizing:border-box}
+body{margin:0;background:#15110E;color:#fff;font:16px/1.55 -apple-system,Segoe UI,Roboto,Arial,sans-serif;
+padding:18px;display:flex;justify-content:center}
+.k{width:100%;max-width:460px}
+.c{background:#fff;color:#15110E;border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+h1{font-size:20px;margin:0 0 2px}h1 span{color:#A77E37}
+.s{color:#6B6157;font-size:13px;margin:0 0 16px}
+dl{margin:0 0 16px;display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:14px}
+dt{color:#6B6157}dd{margin:0;font-weight:600;word-break:break-word}
+.ref{font-family:ui-monospace,Menlo,Consolas,monospace;background:#F6F1E8;padding:2px 7px;border-radius:6px;display:inline-block}
+.warn{background:#FDEBEA;border:1.5px solid #E5A9A2;color:#8E2A20;border-radius:12px;padding:12px 14px;font-size:14px;margin:0 0 16px}
+.ok{background:#E8F5EE;border:1.5px solid #9ED2B6;color:#186B45;border-radius:12px;padding:12px 14px;font-size:14px;margin:0 0 16px}
+.rappel{background:#FFF7E6;border:1.5px solid #EBCF95;color:#7A5A12;border-radius:12px;padding:12px 14px;font-size:13.5px;margin:0 0 18px}
+form{margin:0 0 10px}
+button{width:100%;border:none;border-radius:999px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;min-height:52px}
+.v{background:linear-gradient(135deg,#2E9E68,#1F8F5C);color:#fff}
+.r{background:#fff;color:#C0392B;border:1.5px solid #E5B4AE}
+a.lien{display:block;text-align:center;color:#A77E37;font-size:14px;margin-top:14px;text-decoration:none}
+.tag{display:inline-block;padding:3px 11px;border-radius:999px;color:#fff;font-size:12px;font-weight:700}
+"""
+
+def _esc(v):
+    return (str(v or "")
+            .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;"))
+
+@app.get("/a/{oid}/{token}", response_class=HTMLResponse)
+def action_page(oid: int, token: str):
+    """Fiche d'une commande, ouverte depuis WhatsApp ou Telegram.
+
+    LECTURE SEULE. C'est deliberé : WhatsApp et Telegram vont chercher un
+    apercu de chaque lien envoye. Si cette adresse validait la commande, leur
+    robot la validerait tout seul avant meme que Mongazi la voie. Rien ne
+    change ici ; seuls les POST ci-dessous agissent.
+    """
+    if not hmac.compare_digest(token, _order_token(oid)):
+        raise HTTPException(403, "Lien invalide")
+    c = db(); r = c.execute("SELECT * FROM orders WHERE id=?", (oid,)).fetchone(); c.close()
+    if not r:
+        raise HTTPException(404, "Commande introuvable")
+
+    doublons = _ref_doublon(r["ref"], sauf_id=oid)
+    etat = {"pending": ("En attente", "#d39a1f"), "live": ("En ligne", "#1f8f5c"),
+            "rejected": ("Refusé", "#c0392b")}.get(r["status"], (r["status"], "#888"))
+
+    bloc = ""
+    if doublons:
+        bloc += (f"<div class=warn><b>Référence déjà vue.</b> Cette référence apparaît sur "
+                 f"{doublons} autre(s) commande(s). Vérifie le SMS avant de valider.</div>")
+
+    if r["status"] == "pending":
+        bloc += ("<div class=rappel><b>Avant de valider :</b> ouvre ton SMS Mobile Money et "
+                 "vérifie que la somme est bien arrivée. Tant que tu n'as pas validé, "
+                 "rien n'est envoyé à la cliente.</div>")
+        actions = (
+            f"<form method=post action='/api/order/{oid}/validate'>"
+            f"<input type=hidden name=token value='{_esc(token)}'>"
+            f"<button class=v>Valider et mettre en ligne</button></form>"
+            f"<form method=post action='/api/order/{oid}/reject'>"
+            f"<input type=hidden name=token value='{_esc(token)}'>"
+            f"<button class=r>Refuser</button></form>")
+    elif r["status"] == "live":
+        bloc += "<div class=ok><b>Commande validée.</b> Le site est en ligne et la cliente a été prévenue.</div>"
+        actions = ""
+    else:
+        actions = ""
+
+    wa = re.sub(r"\D", "", r["whatsapp"] or "")
+    msg = urllib.parse.quote(f"Bonjour {r['client_name']}, votre site est en ligne : {BASE_URL}/v/{r['slug']}")
+
+    return HTMLResponse(f"""<!DOCTYPE html><html lang=fr><head><meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noindex,nofollow">
+<title>Commande {oid} - Vitrina</title><style>{ACTION_CSS}</style></head><body><div class=k><div class=c>
+<h1>Vitri<span>na</span></h1>
+<p class=s>Commande {oid} &middot; <span class=tag style="background:{etat[1]}">{etat[0]}</span></p>
+<dl>
+<dt>Activité</dt><dd>{_esc(r['biz_name'])}</dd>
+<dt>Pack</dt><dd>{_esc((r['pack'] or '').upper())} &middot; {money(r['price'])}</dd>
+<dt>Cliente</dt><dd>{_esc(r['client_name'])}</dd>
+<dt>WhatsApp</dt><dd>{_esc(r['whatsapp'])}</dd>
+<dt>Réseau</dt><dd>{_esc(r['network'] or '-')}</dd>
+<dt>Référence</dt><dd><span class=ref>{_esc(r['ref'] or '-')}</span></dd>
+<dt>Reçue le</dt><dd>{_esc(r['created'])}</dd>
+</dl>
+{bloc}
+{actions}
+<a class=lien href="{BASE_URL}/v/{_esc(r['slug'])}" target=_blank>Voir la page de la cliente</a>
+<a class=lien href="https://wa.me/{wa}?text={msg}" target=_blank>Écrire à la cliente sur WhatsApp</a>
+</div></div></body></html>""")
 
 @app.get("/admin", response_class=HTMLResponse)
 def admin(request: Request):

@@ -1,9 +1,196 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-04
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-29
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 sexies. LE 2026-08-29 — TOUT LE PARC SERT CE QU'IL Y A DANS LE DÉPÔT
+
+**17 adresses vérifiées, une seule était en retard : Hillary M. Styl**, publiée
+depuis (151 contrôles verts). Les 3 branches du 28/08 sont dans `main`.
+
+```bash
+python scripts/verif_parc.py     # chaque site, comparé à sa source
+```
+
+⚠️ **Ne jamais juger « en retard » sur une date.** Comparer la date du dernier
+déploiement à celle du dernier commit déclarait **7 sites sur 15 en retard** ;
+un seul l'était. Un commit peut ne toucher qu'un `CONTEXT.md`, et un
+déploiement du même jour peut être antérieur au commit. **C'est le corps servi
+qui tranche.**
+⚠️ **Cloudflare injecte une ligne dans le HTML servi** (Web Analytics) sur les
+domaines qui ont l'analytique : le MD5 diffère alors que la page est
+identique. Le script la retire et dit combien.
+
+⛔ **Un contrôle peut être vert pour la mauvaise raison.** Celui du défilement
+lissé d'Hillary tournait dans le contexte du **toucher** (390 px, `has_touch`)
+alors qu'il testait un moteur qui n'existe que sur **pointeur fin**, et sa
+molette visait x = 700 sur une page large de 390. C'est **le témoin** qui l'a
+dit — « je ne prouve rien » — pas un plantage. Détail :
+`_memoire/journal/2026-08-29-journal.md`.
+
+
+
+---
+
+## 0 quinquies. LE 2026-08-28 — LE STANDARD, L'AGENT WHATSAPP DES CLIENTS
+
+Nouveau produit interne : **`whatsapp-agent/`**. Un client écrit sur le WhatsApp
+d'une maison, l'agent répond avec **la carte réelle de cette maison, lue dans le
+fichier que son site sert**, prend la commande, prévient le patron, et passe la
+main dès qu'il ne sait pas. Les onze vitrines finissent toutes sur « écrire sur
+WhatsApp » : c'était le seul maillon que personne n'avait automatisé.
+
+- **Essayer sans compte WhatsApp** : `python whatsapp-agent/simuler.py braise-dor --faux`
+- **Contrôler** : `python whatsapp-agent/_qc.py` → **146 contrôles**, sans clé ni réseau
+- ⚠️ **Ce n'est pas Vendora** : `boutique-ia/` sert les commerçants qui s'inscrivent ;
+  LE STANDARD sert les clients NEBULA qui existent déjà.
+- ⛔ **Le garde-fou des prix** est ce qui rend le kit livrable : le code relit
+  chaque réponse avant l'envoi et bloque tout montant que la carte ne porte pas.
+
+### ⛔ CE QUI BLOQUE LA MISE EN LIGNE
+1. **Le numéro d'Au Braisé d'Or.** Le dépôt en porte **deux** (`index.html`
+   `2290156057157` · `dishes.ts`, le fichier servi, `22956057157` sans le `01`)
+   et l'enseigne un troisième (43 99 29 29). La fiche est **vide exprès** et le
+   serveur refuse de démarrer en le disant. **Seul Mongazi peut trancher.**
+2. **Le numéro qui reçoit les alertes**, pour chaque maison.
+3. ~~**Le premier appel réel au modèle**~~ ✅ **FAIT le 2026-08-29, depuis le PC.**
+   La clé était déjà là, dans `secrets/nebula-affilies.env`. Question posée :
+   « c'est combien le tilapia braisé en grand ? » → réponse : **6 000 F**, avec
+   les neuf accompagnements, tous lus dans `carte.ts`. 123 jetons en entrée,
+   95 en sortie. La chaîne complète (carte réelle → Claude → garde-fou →
+   réponse) tourne.
+   ```bash
+   # la cle est dans secrets/nebula-affilies.env
+   python whatsapp-agent/simuler.py braise-dor        # vrai modele
+   python whatsapp-agent/simuler.py braise-dor --faux # sans cle, la mecanique
+   ```
+
+### ✅ LE TRAVAIL EST DANS `main` DEPUIS LE 2026-08-29
+`claude/whatsapp-automation-agent-ryk9j5` a été fusionnée (fusion propre, comme
+annoncé), avec les deux autres branches du 28/08 : le manuel Minuit + Vitrina
+(`claude/video-project-analysis-monetization-18oh7b`) et la direction « BLEU
+ÉLECTRIQUE » (`claude/nebula-carousel-post-5cp35d`).
+**Contrôlé après fusion** : `python whatsapp-agent/_qc.py` → **146/146 verts**.
+Les trois blocages ci-dessus restent entiers : ils attendent Mongazi.
+
+⚠️ **`main` local était 131 commits en retard** au 28/08 : le piège n°1 du dépôt.
+`git checkout main && git merge --ff-only origin/main` avant tout.
+
+⛔ **`scripts/rapatrier.py` mentait** : il jugeait un conflit en cherchant le mot
+« CONFLICT » dans la sortie de `git merge-tree`, qui **imprime le contenu des
+fichiers**. Un `ON CONFLICT` SQLite suffisait à faire écarter une branche saine.
+Corrigé sur la branche ci-dessus (on lit le **code de sortie**). Mesuré avant de
+corriger : **un seul faux positif sur les 21 branches**.
+
+## 0 ter. LE 2026-08-22 — LES TROIS VITRINES SONT À JOUR EN LIGNE
+
+Trois clients traînaient le **même** retard : du travail poussé dans `main` et
+**jamais publié**. Un `git push` ne déploie rien.
+
+| | en ligne | ce qui a été publié |
+|---|---|---|
+| **Au Braisé d'Or** | au-braise-dor.pages.dev | 13 plats retirés, les **Sauces (14)** et leurs 4 vraies photos au héros, puis **l'aperçu WhatsApp, robots, sitemap et le balisage `Restaurant`** |
+| **Hillary M. Styl** | hillary-m-styl.pages.dev | **8 modèles photographiés**, la Robe Soleil, la bascule face/dos · il ne reste que **2 cartes** sans photo |
+| **Angy Art** | angy-art.pages.dev | **ses 6 œuvres nommées et chiffrées**, ÉNERGIES, son vocabulaire |
+
+⚠️ **Pourquoi ça s'accumule** : une session lancée depuis le téléphone tourne
+en conteneur et **n'a pas les jetons Cloudflare** (`secrets/` est ignoré par
+git). Elle écrit tout, elle ne publie rien. **Publier est un geste du PC.**
+
+### Les outils, après le ménage du disque
+- ⚠️ **`npx playwright install` ≠ `python -m playwright install`** : Node épingle
+  la version 1234, la bibliothèque Python veut 1223. 430 Mo pour rien.
+- ⚠️ **`npx wrangler` ne marche plus** ici : wrangler 3 est **installé
+  globalement** (`wrangler pages deploy …`).
+- Le disque tourne autour de **0,7 Go libres**. L'image de machine virtuelle de
+  Claude (~12 Go) est le seul vrai morceau, et **Mongazi décide**.
+
+### ▶️ PAR QUOI COMMENCER
+1. **Hillary** : les 11 mesures de la robe ovale (jamais validées depuis le
+   6 août) et les 2 dernières photos.
+2. **Angy** : l'adresse de l'atelier, de vrais avis, **tester son numéro**.
+3. **Au Braisé d'Or** : le prix du yaourt et de la glace, l'aileron surligné,
+   confirmer le numéro WhatsApp.
+4. **15 branches** ne sont pas dans `main` (aucune n'a bougé depuis le 12 août).
+   ⛔ Ne jamais fusionner `claude/github-repo-context-nisd2r` : elle supprimerait
+   30 790 lignes.
+
+---
+
+## 0 bis. LE 2026-08-20 — où en est le parc
+
+### ✅ Au Braisé d'Or : publié et vérifié
+https://au-braise-dor.pages.dev · carte à **9 rubriques / 52 plats**, la
+catégorie **Sauces (14)** et ses **4 vraies photos au héros** (gombo, krinkrin,
+graine, feuille). **76 contrôles verts.** ⚠️ Publier = `npm run build` +
+`cp -r ../assets/docs out/` + `wrangler pages deploy out` : **un `git push` ne
+déploie rien**, et ce site a passé une journée en retard d'un cran pour ça.
+⛔ Reste la **décision sur les 48 photos générées par IA** : c'est le dernier
+site du parc où la règle du 2026-08-01 n'est pas appliquée.
+
+### ⏳ Hillary M. Styl : 11 modèles en ligne SANS leurs photos
+Le catalogue affiche 20 cartes, dont 11 avec « Photo sur WhatsApp ». Deux
+blocages, tous deux du côté de la cliente, aucun technique :
+**les 11 mesures de la robe ovale** (jamais validées depuis le 6 août, ses
+quatre pièces en dépendent) et **les fichiers photo** des nouveaux modèles.
+`python _nouveaux_modeles.py` dit ce qui manque, `--poser` pose ce qui est prêt.
+
+### ⚠️ Le disque de ce PC
+Il est passé à **zéro octet libre** pendant une fusion git le 19/08, ce qui
+casse `git merge` en plein vol. `node_modules` de `_studio-video` a été effacé
+(`npm install` le restaure), celui du Braisé réinstallé (6 minutes ici).
+**Le gros morceau restant est l'image de machine virtuelle de Claude, ~9 Go** :
+décision de Mongazi en attente.
+
+### ▶️ PAR QUOI COMMENCER, aujourd'hui
+1. Les deux réponses d'Hillary (mesures robe ovale, photos).
+2. La décision sur les photos IA d'Au Braisé d'Or.
+3. Le disque.
+
+---
+
+## 0. LE 2026-08-10 — MON BÉNIN est en ligne
+
+**https://dev.mon-benin.pages.dev** · dossier `benin-mon-pays/` · projet
+Cloudflare Pages `mon-benin`, branche `dev`.
+
+Un **voyage de sept cents kilomètres** de la Porte du Non-Retour au fleuve
+Niger, huit stations dans l'ordre réel de la latitude, **un verbe
+d'interaction différent par lieu**, et **huit ambiances sonores générées avec
+WaveSpeed**. Zéro bibliothèque, zéro requête vers un tiers, **189 Ko la page
+sans les sons**. **91 contrôles verts.**
+
+**Treize décisions prises par Mongazi** ce jour-là : voir `_memoire/decisions.md`
+et `benin-mon-pays/CONTEXT.md`.
+
+### ▶️ PAR QUOI COMMENCER
+1. **HILLARY M. STYL** : Mongazi a dit « on continue avec Hillary ». ⚠️ Le vrai
+   bloquant n'est pas les photos, ce sont **les 11 mesures de la robe ovale,
+   jamais validées par l'atelier depuis le 6 août** : ses quatre pièces en
+   dépendent toutes.
+2. **Mon Bénin, vague suivante** : les 3 lieux décidés (Porto-Novo
+   « retourner », Grand-Popo « mêler », Dassa « compter »), puis l'anglais
+   complet, puis les photos et les voix, puis l'annuaire.
+3. **La note due à Mongazi** : ce que perdrait PISTE (100 F la fiche,
+   exclusivité 90 jours) contre ce que gagnerait l'annuaire d'entreprises, avec
+   les chiffres réels du vivier de 7 817 fiches.
+
+### ⚠️ CE QUI BLOQUE OU MENACE
+- **Le disque de la machine est saturé.** Il est passé à **0 octet libre sur
+  271 Go** pendant la session : ça a empêché l'installation des outils puis le
+  démarrage du navigateur de test. Nettoyé, mais **il reste peu de marge**.
+  Vérifier avec `df -h /c`. Récupérable : cache npm, profils Playwright
+  abandonnés. ⚠️ Ne pas vider `%TEMP%` en entier, Claude Code y travaille.
+- **La branche `worktree-angy-photos` n'est pas fusionnée dans `main`.** Elle
+  porte ANGY ART et tout Mon Bénin.
+- **Un agent non navigateur reçoit 403** sur `*.pages.dev` : filtrage de bots
+  Cloudflare. Vérifier avec un vrai `User-Agent`.
+- **L'alias `dev` a quelques secondes de retard** sur l'URL immuable après un
+  déploiement.
 
 ---
 

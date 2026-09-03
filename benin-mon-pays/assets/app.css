@@ -1,0 +1,1270 @@
+/* ═══════════════════════════════════════════════════════════════
+   BÉNIN MON PAYS · feuille unique
+   Aucune bibliothèque. Aucune image externe. Aucun @import.
+   Règles tenues :
+     · aucune animation infinie sous un backdrop-filter
+     · aucune transformation sur un ancêtre d'un position:fixed
+     · aucune variable de couleur réécrite sur :root à chaque image
+     · toute cible tactile >= 44px · tout texte >= 4,5:1
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Bodoni Moda, servi depuis notre propre domaine. Jamais bloquant
+   (font-display: swap) et jamais chez un tiers. */
+@font-face {
+  font-family: 'Bodoni Ici';
+  src: url('fonts/bodoni-normal.woff2') format('woff2');
+  font-weight: 300 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Bodoni Ici';
+  src: url('fonts/bodoni-italic.woff2') format('woff2');
+  font-weight: 300 700; font-style: italic; font-display: swap;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* les deux fonds permanents */
+  --encre:  #0b0a09;
+  --papier: #f2ede5;
+
+  /* la terre du moment : changée SEULEMENT au changement de station */
+  --terre:  #a4462a;
+
+  --clair:  #f4efe7;
+  --clair-d:#cdc4b6;          /* 7,0:1 sur #0b0a09 */
+
+  /* Piles système uniquement : zéro requête, zéro tiers, zéro attente.
+     Georgia sur Windows et Mac, Noto Serif sur Android : le rendu est
+     proche partout, et la page ne dépend de personne. */
+  --ff-d: 'Bodoni Ici', Georgia, 'Noto Serif', 'Times New Roman', serif;
+  --ff-t: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+
+  --e:   cubic-bezier(.22, 1, .36, 1);
+  --e-x: cubic-bezier(.76, 0, .24, 1);
+
+  --marge: clamp(20px, 5vw, 88px);
+  --barre-h: 60px;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--encre);
+  color: var(--clair);
+  font-family: var(--ff-t);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body { overflow-x: hidden; }
+
+img, svg { max-width: 100%; display: block; }
+button { font: inherit; color: inherit; }
+
+a { color: inherit; }
+
+.vh {
+  position: absolute !important; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+::selection { background: var(--terre); color: #fff; }
+
+/* ─── LE GRAIN ────────────────────────────────────────────────── */
+/* feTurbulence rasterisé une seule fois, jamais animé. */
+.st-grain {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: .30; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'>\
+<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/>\
+<feColorMatrix type='saturate' values='0'/></filter>\
+<rect width='180' height='180' filter='url(%23n)' opacity='.55'/></svg>");
+  background-size: 180px 180px;
+}
+
+/* ═══ LE RIDEAU ═══════════════════════════════════════════════ */
+.rideau { display: none; }
+
+.js .rideau {
+  display: block; position: fixed; inset: 0; z-index: 9000;
+  pointer-events: none;
+}
+.js .rideau-h, .js .rideau-b {
+  position: absolute; left: 0; right: 0; height: 50.2%;
+  background: var(--papier);
+  transition: transform 1.05s var(--e-x);
+  will-change: transform;
+}
+.js .rideau-h { top: 0; }
+.js .rideau-b { bottom: 0; }
+
+.js .rideau.parti .rideau-h { transform: translateY(-101%); }
+.js .rideau.parti .rideau-b { transform: translateY(101%); }
+
+.rideau-c {
+  position: absolute; inset: 0; display: grid;
+  place-content: center; justify-items: center; gap: 14px;
+  color: #17130f; text-align: center;
+  transition: opacity .34s linear;
+}
+.rideau.parti .rideau-c { opacity: 0; }
+
+.rideau-t {
+  margin: 0; font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(28px, 6vw, 54px); letter-spacing: .02em;
+}
+.rideau-t i { color: #8a5a2b; font-style: italic; }
+
+.rideau-f {
+  display: block; width: min(46vw, 320px); height: 1px;
+  background: #8a5a2b; transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .95s var(--e) .05s;
+}
+.rideau.tire .rideau-f { transform: scaleX(1); }
+
+.rideau-n {
+  margin: 0; font-variant-numeric: tabular-nums;
+  font-size: 13px; letter-spacing: .34em; text-transform: uppercase;
+  color: #5c5347;
+}
+.rideau-n b { font-weight: 600; font-size: 17px; color: #17130f; }
+.rideau-n small { font-size: 11px; }
+
+body.rideau-la { overflow: hidden; }
+
+/* ═══ LE SEUIL ════════════════════════════════════════════════ */
+.seuil {
+  position: fixed; inset: 0; z-index: 8000;
+  display: grid; place-items: center;
+  background: var(--encre);
+  padding: var(--marge);
+  transition: opacity .6s linear, visibility .6s;
+}
+.seuil[hidden] { display: none; }
+.seuil.parti { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.seuil-in { max-width: 640px; text-align: center; }
+
+.seuil-k {
+  margin: 0 0 22px; font-size: 11px; letter-spacing: .38em;
+  text-transform: uppercase; color: var(--clair-d);
+}
+.seuil-t {
+  margin: 0 0 20px; font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(38px, 9vw, 86px); line-height: 1.02; letter-spacing: -.01em;
+}
+.seuil-t i { font-style: italic; color: #d99a5e; }   /* 7,4:1 sur l'encre */
+
+/* La signature demandée par Mongazi, sous le nom. */
+.seuil-sig {
+  margin: 0 0 26px;
+  font-size: 11.5px; letter-spacing: .42em; text-transform: uppercase;
+  color: #cdc4b6;
+}
+.seuil-p { margin: 0 0 40px; color: var(--clair-d); }
+
+/* Le nom porte son italique partout où il apparaît. */
+.barre-m i, .pied-t i { font-style: italic; color: #e0a878; }
+
+.seuil-b {
+  display: inline-flex; align-items: center; gap: 14px;
+  min-height: 56px; padding: 0 30px;
+  border: 1px solid rgba(242,237,229,.34); border-radius: 999px;
+  background: transparent; cursor: pointer;
+  font-size: 12px; letter-spacing: .26em; text-transform: uppercase;
+  transition: border-color .3s, background-color .3s;
+}
+.seuil-b:hover, .seuil-b:focus-visible {
+  border-color: var(--clair); background: rgba(242,237,229,.07);
+}
+.seuil-o {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #d99a5e; flex: none;
+}
+.js .seuil-o { animation: pouls 2.4s ease-in-out infinite; }
+
+@keyframes pouls {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.5); opacity: .5; }
+}
+
+.seuil-s { margin: 26px 0 0; font-size: 12.5px; color: #9a9186; }
+
+/* ═══ LA BARRE ════════════════════════════════════════════════ */
+.barre {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 700;
+  height: var(--barre-h);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 0 var(--marge);
+  opacity: 0; visibility: hidden;
+  transition: opacity .5s linear, visibility .5s;
+}
+.barre.la { opacity: 1; visibility: visible; }
+
+/* Le voile doit vraiment masquer : le bas de la section précédente
+   passe dessous et restait lisible à travers. */
+.barre::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0;
+  height: calc(100% + 26px); z-index: -1;
+  background: linear-gradient(to bottom,
+              rgba(8,7,10,.97) 0%, rgba(8,7,10,.92) 46%, rgba(8,7,10,0) 100%);
+  pointer-events: none;
+}
+body.sur-clair .barre::before {
+  background: linear-gradient(to bottom,
+              rgba(242,237,229,.97) 0%, rgba(242,237,229,.92) 46%, rgba(242,237,229,0) 100%);
+}
+body.sur-clair .barre-m,
+body.sur-clair .barre-b,
+body.sur-clair .barre-s { color: #14110d; }
+
+.barre-m {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-family: var(--ff-d); font-size: 15px; letter-spacing: .04em;
+  text-decoration: none; white-space: nowrap;
+}
+
+.barre-b {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 44px; min-width: 44px; padding: 0 6px;
+  background: none; border: 0; cursor: pointer;
+  font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--clair-d);
+  transition: color .3s;
+}
+.barre-b:hover, .barre-b:focus-visible { color: var(--clair); }
+.barre-b span {
+  display: block; width: 15px; height: 1px; background: currentColor;
+  transition: transform .35s var(--e);
+}
+.barre-b span + span { margin-left: -15px; margin-top: 5px; }
+.barre-b[aria-expanded="true"] span:first-of-type { transform: translateY(3px) rotate(45deg); }
+.barre-b[aria-expanded="true"] span:last-of-type  { transform: translateY(-3px) rotate(-45deg); }
+
+.barre-s {
+  display: grid; place-items: center;
+  width: 44px; height: 44px; flex: none;
+  background: none; border: 0; cursor: pointer; color: var(--clair-d);
+  transition: color .3s;
+}
+.barre-s:hover, .barre-s:focus-visible { color: var(--clair); }
+.barre-so { display: flex; align-items: flex-end; gap: 3px; height: 15px; }
+.barre-so i { display: block; width: 2px; background: currentColor; }
+.barre-so i:nth-child(1) { height: 6px; }
+.barre-so i:nth-child(2) { height: 13px; }
+.barre-so i:nth-child(3) { height: 9px; }
+.barre-s[aria-pressed="true"] .barre-so { opacity: .34; }
+.barre-s[aria-pressed="true"] .barre-so::after {
+  content: ''; position: absolute; width: 22px; height: 1px;
+  background: currentColor; transform: rotate(-32deg);
+}
+
+/* ═══ LA JAUGE (l'anneau gradué) ══════════════════════════════ */
+/* L'anneau se range TOUJOURS du côté opposé au cartel : c'est ce qui
+   l'empêche de se poser sur l'avertissement de la Pendjari. Le décalage
+   se fait par transform, jamais par left/right. */
+.jauge {
+  position: fixed; z-index: 600;
+  left: var(--marge); bottom: clamp(18px, 4vh, 40px);
+  width: 108px; height: 108px;
+  display: grid; place-items: center;
+  opacity: 0; visibility: hidden;
+  transform: translateX(var(--jx, 0px));
+  transition: opacity .6s linear, visibility .6s, transform .8s var(--e);
+  pointer-events: none;
+}
+.jauge.la { opacity: 1; visibility: visible; }
+/* Le portail porte ses propres cercles : l anneau des kilometres s y
+   posait sur le bouton « au hasard ». Il appartient a la route. */
+body.au-portail .jauge { opacity: 0; visibility: hidden; }
+
+.jauge-a { position: absolute; inset: 0; width: 100%; height: 100%; }
+.jauge-a .grad  { stroke: rgba(242,237,229,.26); stroke-width: 1; }
+.jauge-a .grad5 { stroke: rgba(242,237,229,.52); stroke-width: 1.2; }
+.jauge-a .anneau{ fill: none; stroke: rgba(242,237,229,.16); stroke-width: 1; }
+.jauge-a .arc {
+  fill: none; stroke: var(--terre); stroke-width: 2.4; stroke-linecap: round;
+  transition: stroke-dashoffset .7s var(--e), stroke .9s linear;
+}
+
+.jauge-k {
+  margin: 0; text-align: center; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.jauge-k b {
+  display: block; font-family: var(--ff-d); font-weight: 400;
+  font-size: 25px; letter-spacing: -.01em;
+}
+.jauge-k small {
+  display: block; margin-top: 3px;
+  font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--clair-d);
+}
+.jauge-l {
+  position: absolute; bottom: -19px; left: 50%; transform: translateX(-50%);
+  margin: 0; white-space: nowrap;
+  font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+  color: #97907f;
+}
+
+/* Sur les sections claires, l'instrument se retourne au lieu de
+   disparaître : en clair sur clair il n'était tout simplement plus là. */
+body.sur-clair .jauge-k b { color: #14110d; }
+body.sur-clair .jauge-k small { color: #554d42; }
+body.sur-clair .jauge-l { color: #6d6355; }
+body.sur-clair .jauge-a .anneau { stroke: rgba(20,17,13,.20); }
+body.sur-clair .jauge-a .grad   { stroke: rgba(20,17,13,.30); }
+body.sur-clair .jauge-a .grad5  { stroke: rgba(20,17,13,.55); }
+
+/* ═══ LE PANNEAU DES HUIT LIEUX ═══════════════════════════════ */
+.carte {
+  position: fixed; inset: 0; z-index: 800;
+  background: var(--encre);
+  padding: calc(var(--barre-h) + 30px) var(--marge) var(--marge);
+  overflow-y: auto;
+  clip-path: circle(0% at calc(100% - 120px) 30px);
+  transition: clip-path .8s var(--e-x);
+}
+.carte[hidden] { display: none; }
+.carte.la { clip-path: circle(150% at calc(100% - 120px) 30px); }
+
+.carte-in { max-width: 900px; margin: 0 auto; }
+.carte-k {
+  margin: 0 0 26px; font-size: 10.5px; letter-spacing: .34em;
+  text-transform: uppercase; color: var(--clair-d);
+}
+.carte-l { margin: 0; padding: 0; list-style: none; }
+.carte-l li { border-top: 1px solid rgba(242,237,229,.13); }
+.carte-l li:last-child { border-bottom: 1px solid rgba(242,237,229,.13); }
+
+.carte-a {
+  display: grid; grid-template-columns: 62px 1fr auto;
+  align-items: baseline; gap: 16px;
+  min-height: 62px; padding: 15px 0;
+  text-decoration: none;
+  transition: opacity .3s;
+}
+.carte-a:hover, .carte-a:focus-visible { opacity: .58; }
+.carte-a .km {
+  font-variant-numeric: tabular-nums; font-size: 12px;
+  color: var(--clair-d); letter-spacing: .06em;
+}
+.carte-a .nm {
+  font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(22px, 4.4vw, 40px); line-height: 1.1;
+}
+.carte-a .vb {
+  font-size: 10px; letter-spacing: .26em; text-transform: uppercase;
+  color: #d99a5e;
+}
+.carte-n { margin: 26px 0 0; font-size: 12.5px; color: #97907f; }
+
+/* ═══ LA ROUTE ════════════════════════════════════════════════ */
+.route { position: relative; z-index: 1; }
+
+/* ═══ UNE STATION ═════════════════════════════════════════════ */
+.st {
+  position: relative;
+  min-height: 100svh;
+  display: grid; align-items: center;
+  /* Le bas est réservé à la jauge : sans cette marge, l'anneau se pose
+     sur le curseur de Ganvié, le mur d'Abomey et l'avertissement de la
+     Pendjari. La voie de l'instrument n'est jamais du contenu. */
+  padding: calc(var(--barre-h) + 40px) var(--marge) clamp(172px, 21vh, 226px);
+  overflow: hidden;
+  background: var(--encre);
+  scroll-margin-top: var(--barre-h);
+}
+
+.st-fond { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+.st-motif {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  opacity: .30;
+}
+.st-motif svg { width: min(88vw, 900px); height: auto; overflow: visible; }
+.st-motif .tr {
+  fill: none; stroke: var(--terre); stroke-width: 1.4;
+  stroke-linecap: round; stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.st-motif .tr-f { fill: var(--terre); stroke: none; opacity: .5; }
+
+/* le trait qui se dessine à l'arrivée */
+.js .st-motif .tr {
+  stroke-dasharray: var(--L, 900);
+  stroke-dashoffset: var(--L, 900);
+  transition: stroke-dashoffset 1.8s var(--e);
+}
+.js .st.vue .st-motif .tr { stroke-dashoffset: 0; }
+.js .st-motif .tr-f { opacity: 0; transition: opacity .9s linear .5s; }
+.js .st.vue .st-motif .tr-f { opacity: .5; }
+
+/* ─── LE CARTEL, panneau qui balaye (grammaire de la vidéo 2) ── */
+.st-in {
+  position: relative; z-index: 2;
+  width: min(560px, 100%);
+  padding: clamp(26px, 4vw, 44px);
+}
+.st-in--d { margin-left: auto; }
+
+.st-in::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: color-mix(in oklab, var(--terre) 22%, #0b0a09 78%);
+  border-left: 2px solid var(--terre);
+}
+.st-in--d::before { border-left: 0; border-right: 2px solid var(--terre); }
+
+.js .st-in::before {
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .85s var(--e-x);
+}
+.js .st-in--d::before { transform-origin: 100% 50%; }
+.js .st.vue .st-in::before { transform: scaleX(1); }
+
+.js .st-in > * {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity .55s linear, transform .75s var(--e);
+}
+.js .st.vue .st-in > * { opacity: 1; transform: none; }
+.js .st.vue .st-in > *:nth-child(1) { transition-delay: .40s; }
+.js .st.vue .st-in > *:nth-child(2) { transition-delay: .48s; }
+.js .st.vue .st-in > *:nth-child(3) { transition-delay: .56s; }
+.js .st.vue .st-in > *:nth-child(4) { transition-delay: .64s; }
+.js .st.vue .st-in > *:nth-child(5) { transition-delay: .72s; }
+
+.st-k {
+  margin: 0 0 18px; font-size: 10.5px; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--clair-d);
+}
+.st-km { color: #e5b47a; }        /* 8,6:1 sur l'encre */
+
+/* le titre : fantôme puis solide (grammaire de la vidéo 2) */
+.st-t {
+  margin: 0 0 10px;
+  font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(40px, 10vw, 96px); line-height: .98;
+  letter-spacing: -.015em;
+}
+.st-t .mot { display: inline-block; }
+.js .st-t .mot {
+  color: rgba(242,237,229,.17);
+  transition: color .85s var(--e);
+}
+.js .st.vue .st-t .mot { color: var(--clair); }
+.js .st.vue .st-t .mot:nth-child(2) { transition-delay: .12s; }
+
+.st-r {
+  margin: 0 0 22px; font-family: var(--ff-d); font-style: italic;
+  font-weight: 300; font-size: clamp(16px, 2.4vw, 21px);
+  color: #e0a878;                  /* 7,6:1 sur l'encre */
+}
+
+.st-tx p { margin: 0 0 14px; color: #e6e0d6; }
+.st-tx p:last-child { margin-bottom: 0; }
+.st-tx strong { color: #fff; font-weight: 600; }
+
+.st-av {
+  margin: 24px 0 0; padding: 14px 16px;
+  border-left: 2px solid #e5b47a;
+  background: rgba(229,180,122,.08);
+  font-size: 14px; color: #efe8dc;
+}
+.st-av strong { color: #fff; }
+
+/* Ces mentions suivent le cartel, pour laisser l'autre bord à l'anneau. */
+.st-jauge, .attente {
+  position: absolute; z-index: 2; right: var(--marge); left: auto;
+  bottom: clamp(26px, 6vh, 60px); margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--clair-d);
+}
+.st-in--g ~ .st-jauge, .st-in--g ~ .attente {
+  left: var(--marge); right: auto;
+}
+
+/* ═══ VERBE · TENIR (la Porte) ════════════════════════════════ */
+.st--porte { min-height: 100svh; }
+
+.tenir {
+  position: relative; z-index: 3;
+  justify-self: center; text-align: center;
+  margin-top: clamp(28px, 5vh, 54px);
+}
+.tenir-b {
+  position: relative; display: grid; place-items: center;
+  width: 132px; height: 132px; margin: 0 auto;
+  background: none; border: 0; cursor: pointer;
+  touch-action: none; -webkit-tap-highlight-color: transparent;
+}
+.tenir-c { position: absolute; inset: 0; transform: rotate(-90deg); }
+.tenir-p { fill: none; stroke: rgba(242,237,229,.20); stroke-width: 1.5; }
+.tenir-j {
+  fill: none; stroke: #e5b47a; stroke-width: 2.5; stroke-linecap: round;
+  stroke-dasharray: 289.03; stroke-dashoffset: 289.03;
+}
+.tenir-l {
+  position: relative; max-width: 96px;
+  font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+  line-height: 1.5; color: var(--clair);
+}
+.tenir-n {
+  margin: 20px auto 0; max-width: 300px;
+  font-size: 12.5px; color: #97907f;
+}
+.tenir.fini { opacity: .3; pointer-events: none; transition: opacity .6s; }
+
+body.bloque { overflow: hidden; }
+
+/* ═══ VERBE · CHOISIR (Dantokpa) ══════════════════════════════ */
+.choisir {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  overflow: hidden;
+}
+.choisir b {
+  position: absolute; display: block;
+  border: 1px solid var(--terre); opacity: .34;
+}
+
+/* ═══ VERBE · PAGAYER (Ganvié) ════════════════════════════════ */
+.pagaie {
+  position: relative; z-index: 3; margin-top: clamp(24px, 4vh, 44px);
+  width: min(560px, 100%);
+}
+.st-in--d + .pagaie { margin-left: auto; }
+.pagaie-l {
+  margin: 0 0 12px; font-size: 10.5px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--clair-d);
+}
+.pagaie-p {
+  position: relative; height: 54px; cursor: grab;
+  border-top: 1px solid rgba(242,237,229,.22);
+  border-bottom: 1px solid rgba(242,237,229,.22);
+  touch-action: pan-y; -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+.pagaie-p:active { cursor: grabbing; }
+.pagaie-p::before {
+  content: ''; position: absolute; top: 50%; left: 0;
+  width: 34px; height: 2px; margin-top: -1px;
+  background: #e5b47a;
+  transform: translateX(var(--x, 0px));
+}
+.pagaie-p::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    90deg, transparent 0 30px, rgba(242,237,229,.16) 30px 31px);
+  transform: translateX(calc(var(--x, 0px) * -.45));
+}
+.pagaie-p:focus-visible { outline: 2px solid #e5b47a; outline-offset: 3px; }
+
+/* ═══ VERBE · FROTTER (Abomey) ════════════════════════════════ */
+.frotter {
+  position: relative; z-index: 3; margin-top: clamp(24px, 4vh, 44px);
+  width: min(560px, 100%);
+}
+.st-in--d + .frotter { margin-left: auto; }
+.frotter-l {
+  margin: 0 0 12px; font-size: 10.5px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--clair-d);
+}
+.frotter-m {
+  position: relative; aspect-ratio: 16 / 7;
+  border: 1px solid rgba(242,237,229,.18);
+  background: #150a05;
+  overflow: hidden; cursor: crosshair;
+  touch-action: pan-y; -webkit-tap-highlight-color: transparent;
+}
+.frotter-m svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.frotter-m .mur { stroke: rgba(242,237,229,.10); }
+.frotter-m .grave { stroke: #e0a878; stroke-width: 1.6; }
+.frotter-m .voile {
+  position: absolute; inset: 0; background: #150a05;
+  -webkit-mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), transparent 60%, #000 100%);
+          mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), transparent 60%, #000 100%);
+}
+
+/* ═══ VERBE · DESCENDRE (les Tata Somba) ══════════════════════ */
+.tata {
+  position: relative; z-index: 3; margin-top: clamp(24px, 4vh, 44px);
+  width: min(560px, 100%);
+}
+.st-in--d + .tata { margin-left: auto; }
+.tata-l {
+  margin: 0 0 12px; font-size: 10.5px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--clair-d);
+}
+.tata-c { border-top: 1px solid rgba(242,237,229,.18); }
+.tata-n {
+  display: grid; grid-template-columns: 1fr auto; align-items: baseline;
+  gap: 10px; min-height: 52px; padding: 13px 0;
+  border-bottom: 1px solid rgba(242,237,229,.14);
+  opacity: .34; transform: translateX(0);
+  transition: opacity .5s, transform .5s var(--e);
+}
+.tata-n.ouvert { opacity: 1; transform: translateX(14px); }
+.tata-n b {
+  font-family: var(--ff-d); font-weight: 400; font-size: 19px;
+}
+.tata-n span { font-size: 12.5px; color: var(--clair-d); text-align: right; }
+
+/* ═══ VERBE · ATTENDRE (la Pendjari) ══════════════════════════ */
+.st--attente .st-motif { opacity: .22; }
+.js .st--attente.vue .st-motif svg { animation: derive 44s linear infinite alternate; }
+@keyframes derive {
+  from { transform: translateX(-3.5%) scale(1.06); }
+  to   { transform: translateX( 3.5%) scale(1.06); }
+}
+.attente { z-index: 3; }
+
+/* ═══ LA HALTE (page claire, grammaire de la vidéo 1) ══════════ */
+.ha {
+  position: relative; overflow: hidden;
+  background: var(--papier); color: #14110d;
+  padding: clamp(72px, 13vh, 150px) var(--marge);
+  scroll-margin-top: var(--barre-h);
+}
+.ha-pan {
+  position: absolute; inset: 0; z-index: 1;
+  background: var(--encre);
+}
+.js .ha-pan {
+  transform-origin: 50% 100%;
+  transition: transform 1.05s var(--e-x);
+}
+.js .ha.vue .ha-pan { transform: scaleY(0); }
+
+.ha-in { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; }
+.ha-k {
+  margin: 0 0 22px; font-size: 10.5px; letter-spacing: .34em;
+  text-transform: uppercase; color: #6d6355;
+}
+.ha-t {
+  margin: 0 0 30px; font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(40px, 9vw, 92px); line-height: 1; letter-spacing: -.015em;
+}
+.js .ha-t { color: rgba(20,17,13,.16); transition: color .9s var(--e) .3s; }
+.js .ha.vue .ha-t { color: #14110d; }
+
+.ha-ch {
+  font-family: var(--ff-d); font-style: italic; font-size: 20px;
+  color: #8a4a2c;                  /* 5,9:1 sur le papier */
+  margin: 0 0 16px;
+}
+.ha-tx { max-width: 620px; }
+.ha-tx p { margin: 0 0 14px; color: #332d25; }
+.ha-tx strong { color: #14110d; }
+
+.ha-ch2 {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px; margin-top: 44px;
+  border-top: 1px solid rgba(20,17,13,.16); padding-top: 26px;
+}
+.ha-c b {
+  display: block; font-family: var(--ff-d); font-weight: 400;
+  font-size: clamp(28px, 5vw, 44px); line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.ha-c span {
+  display: block; margin-top: 7px; font-size: 12.5px; color: #554d42;
+}
+
+/* ═══ LE SAUT (parallaxe par mot, grammaire de la vidéo 3) ═════ */
+.saut {
+  position: relative; min-height: 92svh;
+  display: grid; place-items: center;
+  padding: clamp(60px, 12vh, 130px) var(--marge);
+  background: var(--encre); overflow: hidden;
+  scroll-margin-top: var(--barre-h);
+}
+.saut-in { max-width: 1000px; text-align: center; }
+.saut-p, .saut-s {
+  margin: 0 0 22px; font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(26px, 5.4vw, 60px); line-height: 1.14;
+}
+.saut-s { color: #e0a878; }
+
+.saut-p .m, .saut-s .m { display: inline-block; will-change: transform; }
+.js .saut-p .m, .js .saut-s .m {
+  opacity: 0; transform: translate3d(var(--dx, 0), 26px, 0);
+  transition: opacity .5s linear, transform .9s var(--e);
+}
+.js .saut.vue .saut-p .m, .js .saut.vue .saut-s .m {
+  opacity: 1; transform: none;
+}
+
+.saut-b {
+  width: min(70vw, 460px); height: 1px; margin: 30px auto 0;
+  background: rgba(242,237,229,.20);
+}
+.saut-b span {
+  display: block; height: 100%; width: 100%;
+  background: #e5b47a;
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform 1.6s var(--e) .5s;
+}
+.saut.vue .saut-b span { transform: scaleX(1); }
+
+/* ═══ LE CARNET ═══════════════════════════════════════════════ */
+.ca {
+  background: var(--papier); color: #14110d;
+  padding: clamp(72px, 13vh, 150px) var(--marge);
+  scroll-margin-top: var(--barre-h);
+}
+.ca-in { max-width: 900px; margin: 0 auto; }
+.ca-k {
+  margin: 0 0 20px; font-size: 10.5px; letter-spacing: .34em;
+  text-transform: uppercase; color: #6d6355;
+}
+.ca-t {
+  margin: 0 0 34px; font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(36px, 8vw, 78px); line-height: 1;
+}
+.ca-g {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px; background: rgba(20,17,13,.16);
+  border: 1px solid rgba(20,17,13,.16); margin-bottom: 34px;
+}
+.ca-i { background: var(--papier); padding: 20px 18px; }
+.ca-i b {
+  display: block; font-family: var(--ff-d); font-weight: 400;
+  font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums;
+}
+.ca-i span { display: block; margin-top: 7px; font-size: 12.5px; color: #554d42; }
+
+.ca-p { margin: 0 0 34px; max-width: 620px; color: #332d25; }
+
+.ca-b { display: flex; flex-wrap: wrap; gap: 14px; }
+.ca-r, .ca-w {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 52px; padding: 0 28px; border-radius: 999px;
+  font-size: 12px; letter-spacing: .2em; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+  transition: opacity .3s, background-color .3s;
+}
+.ca-r { background: none; border: 1px solid rgba(20,17,13,.34); color: #14110d; }
+.ca-r:hover, .ca-r:focus-visible { background: rgba(20,17,13,.06); }
+.ca-w { background: #128040; border: 0; color: #fff; }  /* 5,0:1 */
+.ca-w:hover, .ca-w:focus-visible { opacity: .88; }
+
+/* ═══ LE PIED ═════════════════════════════════════════════════ */
+.pied {
+  background: var(--encre); color: var(--clair);
+  padding: clamp(52px, 9vh, 96px) var(--marge);
+  border-top: 1px solid rgba(242,237,229,.12);
+}
+.pied-in { max-width: 900px; margin: 0 auto; }
+.pied-t {
+  margin: 0 0 12px; font-family: var(--ff-d); font-weight: 300; font-size: 26px;
+}
+.pied-p { margin: 0 0 18px; color: #e6e0d6; }
+.pied-s { margin: 0 0 22px; font-size: 12.5px; color: #a49b8d; max-width: 640px; }
+.pied-c { margin: 0; font-size: 12px; color: #8d8578; }
+
+/* ═══ LE CURSEUR ══════════════════════════════════════════════ */
+.curseur { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  /* Le suivi se fait par transform (jamais top/left, écrits à chaque image),
+     et le grossissement par scale sur un enfant : aucune propriété de mise
+     en page n'est animée. */
+  .js .curseur {
+    display: block; position: fixed; z-index: 9500; top: 0; left: 0;
+    width: 0; height: 0; pointer-events: none; opacity: 0;
+    transform: translate3d(var(--cx, -100px), var(--cy, -100px), 0);
+    transition: opacity .3s linear;
+    will-change: transform;
+  }
+  .js .curseur.la { opacity: 1; }
+  .js .curseur > span {
+    display: block; position: absolute; left: -13px; top: -13px;
+    width: 26px; height: 26px;
+    border: 1px solid rgba(242,237,229,.55); border-radius: 50%;
+    transition: transform .28s var(--e), background-color .28s linear,
+                border-color .28s linear;
+  }
+  .js .curseur.gros > span {
+    transform: scale(2); background: rgba(242,237,229,.10);
+  }
+  .js body.sur-clair .curseur > span { border-color: rgba(20,17,13,.55); }
+  .js body.sur-clair .curseur.gros > span { background: rgba(20,17,13,.08); }
+}
+
+/* ═══ RESPONSIVE ══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  :root { --barre-h: 54px; }
+  .st-in, .pagaie, .frotter, .tata { width: 100%; }
+  .st-in--d { margin-left: 0; }
+  .st-in--d + .pagaie, .st-in--d + .frotter, .st-in--d + .tata { margin-left: 0; }
+  .st-in--d::before { border-right: 0; border-left: 2px solid var(--terre); }
+  .js .st-in--d::before { transform-origin: 0 50%; }
+  /* Au téléphone, l'anneau devient une RÉGLETTE au bas de l'écran.
+     Un disque de 84 px se posait sur le curseur de Ganvié, sur « Les
+     greniers » et sur le bouton WhatsApp : une bande de 34 px ne se
+     pose sur rien, et elle porte son propre fond, donc elle reste
+     lisible au-dessus des sections claires comme des sombres. */
+  .jauge {
+    left: 0; right: 0; bottom: 0; width: auto; height: 34px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 var(--marge);
+    /* Opaque, sans exception : une bande de bord a le droit de passer
+       devant du contenu, mais alors elle doit vraiment le couvrir. */
+    background: #08070a;
+    border-top: 1px solid rgba(242,237,229,.12);
+    transform: none;
+  }
+  .jauge::after {
+    content: ''; position: absolute; left: 0; bottom: 0; height: 2px;
+    width: 100%; background: var(--terre);
+    transform: scaleX(var(--p, 0)); transform-origin: 0 50%;
+  }
+  .jauge-a { display: none; }
+  .jauge-k { display: flex; align-items: baseline; gap: 5px; }
+  .jauge-k b { font-size: 15px; }
+  .jauge-k small { margin: 0; }
+  .jauge-l {
+    position: static; transform: none; bottom: auto; left: auto;
+    display: block; opacity: .8;
+  }
+  body.sur-clair .jauge-k b,
+  body.sur-clair .jauge-k small,
+  body.sur-clair .jauge-l { color: inherit; }
+  body.sur-clair .jauge-k b { color: var(--clair); }
+
+  .st { padding-bottom: clamp(104px, 15vh, 140px); }
+  .st-jauge, .attente { right: auto; left: var(--marge); bottom: 46px; }
+  .pied { padding-bottom: calc(clamp(52px, 9vh, 96px) + 34px); }
+}
+
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .barre-b { font-size: 0; letter-spacing: 0; gap: 0; }
+  .barre-b span { width: 19px; }
+  .barre-b span + span { margin-left: -19px; }
+  .st { padding-bottom: clamp(120px, 20vh, 170px); }
+  .st-grain { opacity: .20; }
+  .ha-ch2 { grid-template-columns: 1fr 1fr; }
+}
+
+/* ═══ MOUVEMENT RÉDUIT ════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .js .rideau { display: none; }
+  .js .st-motif .tr { stroke-dashoffset: 0; }
+  .js .st-in::before { transform: scaleX(1); }
+  .js .st-in > * { opacity: 1; transform: none; }
+  .js .st-t .mot { color: var(--clair); }
+  .js .ha-pan { transform: scaleY(0); }
+  .js .ha-t { color: #14110d; }
+  .js .saut-p .m, .js .saut-s .m { opacity: 1; transform: none; }
+  .js .st--attente.vue .st-motif svg { animation: none; }
+  .js .seuil-o { animation: none; }
+  .curseur { display: none !important; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   LE PORTAIL
+   Composition relevée sur la référence envoyée par Mongazi :
+   deux cercles concentriques centrés, le nom très grand et très
+   espacé, la région dessous, les flèches, et trois commandes aux
+   coins bas. Le lieu suivant arrive PAR LE CERCLE.
+   ═══════════════════════════════════════════════════════════════ */
+
+.po {
+  position: relative;
+  min-height: 100svh;
+  display: grid; place-items: center;
+  overflow: hidden;
+  background: var(--encre);
+  scroll-margin-top: 0;
+  isolation: isolate;
+}
+
+.po-fond, .po-iris { position: absolute; inset: 0; z-index: 0; }
+.po-iris {
+  z-index: 1; opacity: 0;
+  clip-path: circle(0px at 50% 50%);
+  will-change: clip-path, opacity;
+}
+.po-iris.pret { opacity: 1; clip-path: circle(var(--r0, 36svh) at 50% 50%); }
+.po-iris.va {
+  clip-path: circle(150vmax at 50% 50%);
+  transition: clip-path 1.15s var(--e-x);
+}
+
+/* ── LA PHOTO DU LIEU, AU PORTAIL ────────────────────────────────
+   Mongazi, devant l'écran : « dans le héros je ne vois toujours pas
+   d'image ». C'était vrai : le portail ne montrait que l'atlas dessiné,
+   les photos ne vivaient que dans les sections, plus bas.
+   ⚠️ Elle passe SOUS la nappe, qui devient un voile teinté de la couleur
+   du lieu : la photo se voit, l'identité de couleur reste, et le titre de
+   96 px garde son contraste. Le voile est plus dense AU CENTRE, là où le
+   nom est écrit, et s'ouvre sur les bords, là où la photo doit se lire. */
+.po-ph {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 42%;
+}
+.po-nappe {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(78% 58% at 50% 44%,
+      color-mix(in oklab, var(--po-fond, #08070a) 80%, transparent) 0%,
+      color-mix(in oklab, var(--po-fond, #08070a) 52%, transparent) 58%,
+      color-mix(in oklab, var(--po-fond, #08070a) 10%, transparent) 100%),
+    linear-gradient(to bottom,
+      color-mix(in oklab, var(--po-fond, #08070a) 62%, transparent) 0%,
+      color-mix(in oklab, var(--po-fond, #08070a) 14%, transparent) 38%,
+      color-mix(in oklab, var(--po-fond, #08070a) 40%, transparent) 100%),
+    linear-gradient(to bottom right,
+      color-mix(in oklab, var(--po-terre, #a4462a) 18%, transparent) 0%,
+      transparent 60%);
+}
+/* la photo du portail est relevée : elle passe sous un voile, et une
+   image plongée dans l'encre finit en tache grise */
+.po-ph { filter: saturate(1.06) contrast(1.04) brightness(1.1); }
+/* Le motif et les cercles sont tous des arcs fins : sans ecart d echelle
+   ils se confondent. Le motif est donc bien plus grand, et plus sourd. */
+.po-motif { transform: scale(1.42); }
+.po-motif {
+  position: absolute; inset: 0; display: grid; place-items: center; opacity: .22;
+}
+.po-motif svg { width: min(96vw, 1000px); height: auto; overflow: visible; }
+.po-motif .tr {
+  fill: none; stroke: var(--po-terre, #a4462a); stroke-width: 1.3;
+  stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke;
+}
+.po-motif .tr-f { fill: var(--po-terre, #a4462a); stroke: none; opacity: .5; }
+.po-grain {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: .26; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'>\
+<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/>\
+<feColorMatrix type='saturate' values='0'/></filter>\
+<rect width='180' height='180' filter='url(%23n)' opacity='.55'/></svg>");
+  background-size: 180px 180px;
+}
+
+/* ─── les deux cercles ────────────────────────────────────────── */
+.po-cercles {
+  position: absolute; inset: 0; z-index: 2;
+  display: grid; place-items: center; pointer-events: none;
+}
+.po-c {
+  position: absolute; border-radius: 50%; aspect-ratio: 1;
+  border: 1px solid rgba(255,255,255,.28);
+}
+.po-c1 { width: 72svh; background: rgba(255,255,255,.035); }
+.po-c2 { width: 134svh; border-color: rgba(255,255,255,.14); }
+
+.js .po-cercles {
+  transform: rotate(0deg) scale(1);
+  transition: transform 1.15s var(--e-x);
+}
+.js .po-cercles.bouge { transform: rotate(45deg) scale(1.05); }
+
+/* ─── le centre ───────────────────────────────────────────────── */
+.po-centre {
+  position: relative; z-index: 3;
+  display: grid; justify-items: center; gap: 0;
+  text-align: center; padding: 0 var(--marge);
+  width: 100%;
+}
+
+.po-t {
+  margin: 0;
+  font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(30px, 7.2vw, 96px);
+  line-height: 1.02; letter-spacing: .30em; text-indent: .30em;
+  text-transform: uppercase; color: #fff;
+  white-space: nowrap;
+}
+.po-t .l { display: inline-block; will-change: transform; }
+.js .po-t .l {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity .45s linear, transform .7s var(--e);
+}
+.js .po-t.la .l { opacity: 1; transform: none; }
+.js .po-t.sort .l {
+  opacity: 0; transform: translateY(-26px);
+  transition: opacity .3s linear, transform .45s var(--e);
+}
+
+.po-fil {
+  display: block; height: 1px; width: min(64vw, 660px);
+  margin: clamp(14px, 2.4vh, 26px) 0 clamp(13px, 2.2vh, 22px);
+  background: rgba(255,255,255,.55);
+  transform: scaleX(0); transform-origin: 50% 50%;
+}
+.js .po-fil { transition: transform .9s var(--e) .12s; }
+.js .po.pret .po-fil { transform: scaleX(1); }
+html:not(.js) .po-fil { transform: none; }
+
+.po-r {
+  margin: 0;
+  font-size: clamp(9.5px, 1vw, 12px); letter-spacing: .42em; text-indent: .42em;
+  text-transform: uppercase; color: rgba(255,255,255,.88);
+}
+.js .po-r { opacity: 0; transition: opacity .5s linear .25s; }
+.js .po.pret .po-r { opacity: 1; }
+
+.po-nav {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: clamp(20px, 3.4vh, 40px);
+}
+.po-sep { display: block; width: 1px; height: 30px; background: rgba(255,255,255,.34); }
+.po-fl {
+  display: grid; place-items: center;
+  width: 52px; height: 52px; padding: 0;
+  background: none; border: 0; cursor: pointer;
+  color: rgba(255,255,255,.72);
+  transition: color .3s, transform .35s var(--e);
+}
+.po-fl:hover, .po-fl:focus-visible { color: #fff; }
+.po-prec:hover, .po-prec:focus-visible { transform: translateX(-4px); }
+.po-suiv:hover, .po-suiv:focus-visible { transform: translateX(4px); }
+
+/* ─── les trois commandes du bas ──────────────────────────────── */
+.po-part, .po-has, .po-dec { position: absolute; z-index: 4; }
+
+.po-part {
+  left: var(--marge); bottom: clamp(20px, 4vh, 44px);
+  display: grid; justify-items: center; gap: 12px;
+}
+.po-part-t {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 9.5px; letter-spacing: .34em; text-transform: uppercase;
+  color: rgba(255,255,255,.72);
+}
+.po-part-f { display: block; width: 1px; height: 34px; background: rgba(255,255,255,.34); }
+.po-part-b {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  color: rgba(255,255,255,.78); transition: color .3s;
+}
+.po-part-b:hover, .po-part-b:focus-visible { color: #fff; }
+
+.po-dec {
+  left: 50%; transform: translateX(-50%);
+  bottom: clamp(20px, 4vh, 44px);
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 8px;
+  font-size: 10px; letter-spacing: .28em; text-transform: uppercase;
+  color: #fff; text-decoration: none;
+}
+.po-dec::after {
+  content: ''; position: absolute; left: 8px; right: 8px; bottom: 8px;
+  height: 1px; background: rgba(255,255,255,.85);
+  transform: scaleX(1); transform-origin: 0 50%;
+  transition: transform .5s var(--e);
+}
+.po-dec:hover::after, .po-dec:focus-visible::after { transform: scaleX(.35); }
+
+.po-has {
+  right: var(--marge); bottom: clamp(20px, 4vh, 44px);
+  display: flex; align-items: center; gap: 14px;
+}
+.po-has-t {
+  font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(255,255,255,.78);
+}
+.po-has-f { display: block; width: 34px; height: 1px; background: rgba(255,255,255,.34); }
+.po-has-b {
+  display: grid; place-items: center;
+  width: 52px; height: 52px; flex: none; border: 0; border-radius: 50%;
+  background: var(--po-or, #d9c05a); color: #14110d; cursor: pointer;
+  transition: transform .5s var(--e), background-color .4s linear;
+}
+.po-has-b:hover, .po-has-b:focus-visible { transform: rotate(180deg); }
+.po-has-b.tourne { transform: rotate(540deg); }
+
+/* ─── la barre, recomposée comme la référence ─────────────────── */
+.barre { justify-content: space-between; }
+.barre-g, .barre-d { display: flex; align-items: center; gap: clamp(6px, 1.4vw, 20px); }
+.barre-m {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  font-size: 13px; letter-spacing: .26em; text-transform: uppercase;
+  white-space: nowrap;
+  /* .barre-m est en inline-flex : le flex SUPPRIME l espace entre les
+     elements, et la marque se lisait « MONBENIN ». */
+  gap: .34em;
+}
+.barre-m i { font-style: normal; color: #e0a878; }
+
+.barre-b { min-width: 44px; min-height: 44px; padding: 0; gap: 0; font-size: 0; }
+/* Les anciennes regles .barre-b span (d avant la recomposition de la barre)
+   aplatissaient ce bloc a 1 px de haut : le menu ne montrait qu un trait. */
+.barre-b .barre-h {
+  display: grid; gap: 4px;
+  width: auto; height: auto; background: none; margin: 0; transform: none;
+}
+.barre-b .barre-h i { display: block; width: 20px; height: 1px; background: currentColor;
+  transition: transform .35s var(--e), opacity .25s linear; }
+.barre-b[aria-expanded="true"] .barre-h i:nth-child(2) { opacity: 0; }
+.barre-b[aria-expanded="true"] .barre-h i:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.barre-b[aria-expanded="true"] .barre-h i:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+.barre-l {
+  min-height: 44px; padding: 0 4px; background: none; border: 0; cursor: pointer;
+  font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase;
+  color: var(--clair-d); position: relative; transition: color .3s;
+}
+.barre-l::after {
+  content: ''; position: absolute; left: 4px; right: 4px; bottom: 11px;
+  height: 1px; background: currentColor; opacity: .6;
+}
+.barre-l:hover, .barre-l:focus-visible { color: var(--clair); }
+.barre-q {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  background: none; border: 0; cursor: pointer; color: var(--clair-d);
+  transition: color .3s;
+}
+.barre-q:hover, .barre-q:focus-visible { color: var(--clair); }
+
+/* ─── le champ de recherche du panneau ────────────────────────── */
+.carte-ch { display: block; margin: 0 0 22px; }
+.carte-ch input {
+  width: 100%; min-height: 52px; padding: 0 16px;
+  background: rgba(242,237,229,.05); color: var(--clair);
+  border: 1px solid rgba(242,237,229,.20); border-radius: 0;
+  font: inherit; font-size: 15px;
+}
+.carte-ch input::placeholder { color: #8d8578; }
+.carte-ch input:focus-visible { outline: 2px solid #e5b47a; outline-offset: 2px; }
+.carte-v { margin: 22px 0 0; color: var(--clair-d); }
+
+/* ─── au téléphone ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .po-c1 { width: 62svh; }
+  .po-c2 { width: 104svh; }
+  .po-t { font-size: clamp(24px, 8.4vw, 46px); letter-spacing: .22em; text-indent: .22em; }
+  .po-fil { width: 78vw; }
+  .barre-m { font-size: 11.5px; letter-spacing: .2em; }
+  .barre-l { display: none; }
+  .po-part-t, .po-has-t { display: none; }
+  .po-part-f, .po-has-f { display: none; }
+  .po-dec { font-size: 9.5px; letter-spacing: .22em; }
+  .po { padding-bottom: 34px; }
+}
+
+@media (max-width: 560px) {
+  .po-t { font-size: clamp(21px, 8.6vw, 34px); }
+  .po-c1 { width: 54svh; }
+  .po-c2 { width: 88svh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .po-t .l { opacity: 1; transform: none; }
+  .js .po-fil { transform: scaleX(1); }
+  .js .po-r { opacity: 1; }
+  .js .po-cercles.bouge { transform: none; }
+  .po-iris { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LES PHOTOGRAPHIES DES LIEUX
+   De vraies photos, sous licence libre, moissonnées sur Wikimedia
+   Commons. Elles remplacent l'atlas dessiné, qui n'était qu'une
+   attente. Le dessin reste dessous, très sourd : il donne la
+   matière que le grain seul ne donnait pas.
+   ═══════════════════════════════════════════════════════════════ */
+
+.st-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 42%;
+  background-size: cover; background-position: 50% 42%;
+  /* la vignette de 28 px sert de fond pendant le chargement :
+     l'effet et la performance sont la même chose */
+}
+.js .st-photo { opacity: 0; transition: opacity 1.15s var(--e); }
+.js .st.vue .st-photo { opacity: 1; }
+html:not(.js) .st-photo { opacity: 1; }
+
+/* ⚠️ LE VOILE N'EST PAS UNE DÉCORATION. Sans lui, le texte clair se
+   pose sur un ciel blanc ou sur du sable, et devient illisible. Il est
+   plus dense en bas, là où le cartel tombe. */
+.st-voile {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom,
+      color-mix(in oklab, var(--encre) 62%, transparent) 0%,
+      color-mix(in oklab, var(--encre) 48%, transparent) 34%,
+      color-mix(in oklab, var(--encre) 80%, transparent) 100%),
+    linear-gradient(to right,
+      color-mix(in oklab, var(--encre) 55%, transparent) 0%,
+      transparent 62%);
+}
+
+/* le dessin passe derrière la photo, très sourd : il reste comme une
+   trace du relevé, il ne se bat plus avec elle */
+.st-photo ~ .st-motif { opacity: .07; mix-blend-mode: screen; }
+
+.st-ph {
+  margin: 16px 0 0; padding-top: 13px;
+  border-top: 1px solid rgba(242,237,229,.16);
+  font-size: 12.5px; line-height: 1.5; color: #b9b1a4;
+}
+.st-ph span {
+  display: block; margin-bottom: 3px;
+  font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase;
+  color: #8d8578;
+}
+
+/* ─── le crédit, dans le pied ─────────────────────────────────── */
+.pied-cr {
+  margin: 34px 0 30px; padding-top: 26px;
+  border-top: 1px solid rgba(242,237,229,.14);
+}
+.pied-crt {
+  margin: 0 0 12px; font-family: var(--ff-d); font-weight: 300;
+  font-size: 21px;
+}
+.pied-crp { margin: 0 0 18px; font-size: 13.5px; color: #cdc4b6; max-width: 640px; }
+.pied-crl { margin: 0 0 16px; padding: 0; list-style: none; }
+.pied-crl li {
+  font-size: 12.5px; color: #a49b8d;
+  border-bottom: 1px solid rgba(242,237,229,.07);
+}
+/* ⚠️ Ces liens faisaient 16 px de haut : impossibles à toucher au doigt.
+   Le lien mène à la source de la photo, il fait partie de l'attribution
+   obligatoire, donc il doit être atteignable. */
+.pied-crl a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  padding: 2px 0; color: #e0a878; text-decoration: none;
+}
+.pied-crl a:hover, .pied-crl a:focus-visible { text-decoration: underline; }
+.pied-crn { margin: 0; font-size: 12px; color: #8d8578; max-width: 640px; }
+
+/* ── LE LOGO ──────────────────────────────────────────────────────
+   La marque est LE PAYS rempli du drapeau, traversé par la ligne des
+   sept cents kilomètres, avec le point d'or au kilomètre zéro sur la
+   côte. Le texte du logo est tracé en COURBES : il ne dépend d'aucune
+   police installée chez le lecteur.
+   ⚠️ PLUS AUCUN FILTRE ICI. La marque était monochrome et la barre la
+   retournait en `invert(1)` pour la poser sur l'encre : avec le drapeau,
+   inverser rend le vert MAGENTA. La marque est désormais remplie, donc
+   lisible telle quelle sur l'encre comme sur le papier. */
+.barre-m { gap: .5em; }
+.barre-lo { width: 26px; height: 26px; flex: none; }
+
+.pied-lo {
+  width: min(296px, 74vw); height: auto; margin: 0 0 14px;
+  display: block;
+}
+@media (max-width: 560px) {
+  .barre-lo { width: 22px; height: 22px; }
+}

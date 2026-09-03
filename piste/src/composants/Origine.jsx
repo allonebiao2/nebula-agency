@@ -58,7 +58,11 @@ const VRAI = [
 
 const PAS_SUR = [
   "Qu'un commerce soit toujours ouvert. Un annuaire vieillit, et une boutique peut avoir fermé le mois dernier.",
-  "Qu'un numéro soit toujours en service, sauf si vous prenez le supplément « le numéro est testé » : dans ce cas il est composé avant l'envoi, et une fiche morte est remplacée avant de partir.",
+  /* ⚠️ Cette page est celle où l'on dit ce qu'on ne sait PAS. Elle promettait
+     « il est composé avant l'envoi » : c'était faux, personne ne composait.
+     Le supplément vérifie trois choses réelles, et aucune ne garantit qu'on
+     décroche. C'est écrit tel quel. */
+  "Qu'un numéro décroche. Le supplément « le numéro est vérifié » contrôle trois choses : que la ligne appartient à une tranche réellement attribuée par le régulateur, que la fiche a été revue à sa source depuis moins de deux mois, et qu'aucun client ne l'a signalée injoignable. Ça écarte les numéros morts, ça ne promet pas qu'on vous répondra. Si ça ne répond pas, on remplace la fiche gratuitement.",
   "Qu'un commerce n'ait vraiment aucun site, sauf si vous prenez le supplément correspondant : sans lui, l'absence de site est une indication, pas une vérification.",
 ]
 

@@ -1,0 +1,153 @@
+/**
+ * EXTRAIT LA CARTE DU SITE ACTUEL VERS LE PROJET NEXT.
+ *
+ * ⚠️ POURQUOI UN SCRIPT ET PAS UNE RECOPIE À LA MAIN. La carte fait 48 plats
+ * avec leurs prix, leurs deuxièmes tailles et leurs descriptions. Recopier
+ * tout ça, c'est s'offrir une faute de prix, et une faute de prix se paie à
+ * chaque commande, tous les jours, sans que personne la voie.
+ *
+ * Le tableau `CATS` et la table `PHOTO` sont lus directement dans
+ * `index.html`, évalués, puis réécrits en TypeScript.
+ *
+ *   node _outils/_extraire_carte.js
+ */
+const fs = require("fs");
+const path = require("path");
+
+const RACINE = path.join(__dirname, "..");
+const s = fs.readFileSync(path.join(RACINE, "index.html"), "utf8");
+
+/** Découpe le littéral qui suit `nom`, en comptant les accolades. */
+function bloc(nom, ouvre) {
+  const i = s.indexOf(nom);
+  if (i < 0) throw new Error("introuvable dans index.html : " + nom);
+  const d = s.indexOf(ouvre, i);
+  const [a, b] = ouvre === "[" ? ["[", "]"] : ["{", "}"];
+  let p = 0,
+    j = d;
+  for (; j < s.length; j++) {
+    if (s[j] === a) p++;
+    else if (s[j] === b) {
+      p--;
+      if (!p) break;
+    }
+  }
+  return s.slice(d, j + 1);
+}
+
+// les icônes sont des chaînes SVG définies plus haut dans le fichier : on ne
+// les veut pas ici, on les neutralise le temps de l'évaluation
+const FIRE = "", GRILL = "", DROP = "", LEAF = "", CUP = "", GLASS = "", BURGER = "", PIZZA = "";
+void [FIRE, GRILL, DROP, LEAF, CUP, GLASS, BURGER, PIZZA];
+
+const sansPhoto = [];
+const CATS = eval("(" + bloc("var CATS=", "[") + ")");
+const PHOTO = eval("(" + bloc("var PHOTO=", "{") + ")");
+
+const BS = String.fromCharCode(92);
+const esc = (t) =>
+  String(t || "")
+    .split(BS)
+    .join(BS + BS)
+    .split('"')
+    .join(BS + '"');
+
+let out = `/**
+ * LA CARTE COMPLÈTE — ${CATS.reduce((n, c) => n + c.items.length, 0)} plats, ${CATS.length} catégories.
+ *
+ * ⚠️ FICHIER GÉNÉRÉ, NE PAS ÉDITER À LA MAIN.
+ * Source : le tableau \`CATS\` de \`../../index.html\`, qui reste la vérité.
+ * Régénérer :  node _outils/_extraire_carte.js
+ */
+
+export type Plat = {
+  n: string;
+  d?: string;
+  /** Prix, ou borne BASSE quand pMax est là. */
+  p: number;
+  /** Deuxième taille, à son propre prix. Voir aussi tailles. */
+  p2?: number;
+  /** ⚠️ FOURCHETTE, PAS DEUX TAILLES. Le prix des sauces dépend de ce que le
+   *  client met dedans (voir garn) : la maison le confirme à la commande. */
+  pMax?: number;
+  /** Ce qu'on peut mettre dedans, et qui fait monter le prix. */
+  garn?: string[];
+  /** Libellés des deux tailles quand ce n'est pas « Normal / Grand ». */
+  tailles?: [string, string];
+  /** ⚠️ BARÈME À N CRANS, quand deux tailles ne suffisent pas : la glace se
+   *  vend à la boule (1 000 / 1 500 / 2 500 F). Chaque palier porte son
+   *  libellé et son prix exact — ce n'est PAS une fourchette. */
+  paliers?: [string, number][];
+  joq?: boolean;
+  /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
+   *  alors une tuile au nom du plat, jamais une image d'emprunt. */
+  img?: string;
+};
+
+export type Cat = {
+  id: string;
+  label: string;
+  tag: string;
+  note?: string;
+  acc?: "grillades" | "sauces";
+  items: Plat[];
+};
+
+/** Les accompagnements au choix, repris tels quels du site. */
+export const ACC: Record<string, string[]> = {
+  grillades: ["Riz", "Attiéké", "Aloco", "Frites", "Pommes sautées", "Pomme vapeur", "Pâte rouge", "Bomiwo", "Akassa", "Igname frit"],
+  /* ⚠️ Repris MOT POUR MOT de la feuille de menu de la maison (2026-08-19),
+     qui remplace l'ancienne liste. « Tègbô » y est barré et corrigé en
+     « telibo » de sa main : c'est telibo. */
+  sauces: ["Telibo", "Agbéli", "Couscous", "Atchiéké", "Igname pilée", "Riz au gras", "Frites", "Pâte de maïs", "Akassa", "Riz blanc", "Wassa Wassa", "Foutou banane", "Foutou de manioc", "Aloko", "Toubani"],
+};
+
+export const CARTE: Cat[] = [
+`;
+
+CATS.forEach((c) => {
+  const acc =
+    c.id === "grillades" ? '\n    acc: "grillades",' : c.id === "sauces" ? '\n    acc: "sauces",' : "";
+  out += `  {
+    id: "${c.id}",
+    label: "${esc(c.label)}",
+    tag: "${esc(c.tag)}",${c.note ? `\n    note: "${esc(c.note)}",` : ""}${acc}
+    items: [
+`;
+  c.items.forEach((it) => {
+    const k = PHOTO[it.n.toLowerCase()];
+    if (!k) sansPhoto.push(it.n);
+    out += `      { n: "${esc(it.n)}"`;
+    if (it.d) out += `, d: "${esc(it.d)}"`;
+    out += `, p: ${it.p}`;
+    if (it.p2) out += `, p2: ${it.p2}`;
+    if (it.pMax) out += `, pMax: ${it.pMax}`;
+    if (it.garn) out += `, garn: [${it.garn.map((g) => `"${esc(g)}"`).join(", ")}]`;
+    if (it.tailles)
+      out += `, tailles: [${it.tailles.map((t) => `"${esc(t)}"`).join(", ")}]`;
+    if (it.paliers)
+      out += `, paliers: [${it.paliers
+        .map(([l, v]) => `["${esc(l)}", ${v}]`)
+        .join(", ")}]`;
+    if (it.joq) out += `, joq: true`;
+    // ⚠️ SANS PHOTO, PAS DE CHAMP. Écrire `/carte/undefined.webp`
+    // fabriquait un lien mort que rien n'aurait signalé.
+    if (k) out += `, img: "/carte/${k}.webp"`;
+    out += ` },\n`;
+  });
+  out += "    ],\n  },\n";
+});
+out += "];\n\nexport const NB_PLATS = CARTE.reduce((n, c) => n + c.items.length, 0);\n";
+
+const dst = path.join(RACINE, "experience", "data", "carte.ts");
+fs.mkdirSync(path.dirname(dst), { recursive: true });
+fs.writeFileSync(dst, out, "utf8");
+if (sansPhoto.length)
+  console.log(
+    "  " + sansPhoto.length + " plat(s) sans photo, tuile au nom du plat : " +
+      sansPhoto.join(", ")
+  );
+console.log(
+  CATS.length + " catégories, " +
+    CATS.reduce((n, c) => n + c.items.length, 0) + " plats → " + dst
+);

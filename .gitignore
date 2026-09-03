@@ -23,6 +23,22 @@ skill claude code/
 *.key
 secrets/
 
+# Documents SIGNÉS — la signature manuscrite de Mongazi ne va jamais sur un
+# dépôt public : une signature qui traîne se colle sur n'importe quel papier.
+# Le PDF vierge, lui, reste versionné.
+_documents/nebula-agency/vente/pdf/signe/
+
+# La PHOTO de la signature, où qu'elle soit posée. _partage/ est versionné
+# (33 fichiers y sont suivis) : sans cette règle, un « git add -A » publierait
+# la signature de Mongazi sur un dépôt public. La règle vise le nom, pas le
+# dossier, parce que le fichier arrive rarement au même endroit.
+signature.jpg
+signature.JPG
+signature.jpeg
+signature.png
+signature-*.png
+signature-*.jpg
+
 # Captures d'écran locales — ne pas versionner
 _tmp_screenshots/
 
@@ -45,6 +61,9 @@ _partage/actuellement-je-travails-sur-mon-outil-boussole-regarde-dans/
 clients/*/_deploy_netlify/
 _dist/
 clients/*/_dist/
+
+# Captures de contrôle — régénérables (`python _qc.py --voir`), lourdes
+clients/*/_qc_captures/
 00-nebula-agency/_dist/
 # assemblé à chaque déploiement du site de l'agence depuis 00-nebula-agency/
 _tmp_pages/
@@ -68,3 +87,16 @@ clients/*/_diag.html
 
 __pycache__/
 node_modules/
+
+# Originaux des images (logo source, rendus IA bruts) — lourds, non déployés
+clients/*/_sources/
+
+# Planches d essai de _partage/ (verification des decoupes sur fond creme).
+# Regenerables a la demande, elles n ont rien a faire dans un depot public.
+_partage/_essai-*
+_partage/_planche-*
+
+# Base des conversations du Standard WhatsApp (jamais commitée : elle contient
+# les messages de vrais clients).
+whatsapp-agent.db
+*.db-journal

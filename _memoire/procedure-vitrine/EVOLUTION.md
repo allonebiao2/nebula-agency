@@ -600,3 +600,248 @@ tête de `SKILL.md`, en PHASE 1 et PHASE 6 de `PROCEDURE.md`, et en tête des `C
 fait croire à des débordements qui n'existent pas.
 
 **Exécution de référence :** `clients/10-hillary-m-styl/` (direction « LE FIL »), 64 contrôles.
+
+---
+
+## 2026-08-05 — Un `IntersectionObserver` seul laisse des sections vides POUR TOUJOURS
+
+**Trouvé sur Angy Art (#11), à corriger sur tout le parc.**
+
+Toutes nos vitrines révèlent au défilement avec le même motif : un `IntersectionObserver`
+qui pose `.vu`, puis `unobserve`. Ça marche tant que le visiteur **fait défiler**.
+
+Un visiteur qui **clique une entrée du menu** saute par-dessus une ou deux sections.
+L'observateur ne se déclenche jamais pour elles. Leurs textes restent à `opacity: 0`
+**définitivement** : il faut remonter puis redescendre pour les faire apparaître.
+
+Ça ne se voit ni dans une capture (on scrolle pour capturer), ni dans le code, ni dans un
+contrôle de débordement. C'est un défaut qu'on ne trouve qu'en le cherchant.
+
+**Le contrôle qui l'attrape**, à ajouter à toute suite QC :
+
+```python
+# après un défilement complet, que reste-t-il d'invisible ?
+f = page.evaluate("""() => [...document.querySelectorAll('main p, main h1, main h2, main li')]
+  .filter(el => parseFloat(getComputedStyle(el).opacity) < .5)
+  .map(el => el.tagName + '.' + (el.className||'').split(' ')[0]) """)
+assert not f, f
+```
+
+**Le remède** : remplacer l'observateur par un balayage au défilement. Tout ce qui est
+passé au-dessus de la ligne de flottaison est révélé, sauté ou non. Chaque élément est
+traité une seule fois (donc jamais rejoué en remontant, ce qui était la raison d'être du
+`unobserve`), et l'écouteur se retire quand la liste est vide.
+
+```js
+var restants = $$('.rv, [data-mots], …');
+function balayer() {
+  var seuil = innerHeight * 0.92;
+  restants = restants.filter(function (el) {
+    if (el.getBoundingClientRect().top >= seuil) return true;
+    el.classList.add('vu');
+    return false;
+  });
+  if (!restants.length) { removeEventListener('scroll', pousser); }
+}
+function pousser() { if (!attente) { attente = true; requestAnimationFrame(balayer); } }
+addEventListener('scroll', pousser, { passive: true });
+balayer();
+```
+
+⚠️ **À reprendre sur les vitrines existantes** : Djambar, Miss cakes, Speed×Weinkeller,
+HH Design, Au Braisé d'Or, Hillary. Toutes ont un menu qui saute des sections.
+
+### Trois autres leçons de la même session
+
+- **Ne jamais reprendre la palette d'un brief sans la calculer.** L'or « élégant »
+  `#c9b99a` demandé donne **1,68:1** sur le crème `#f3efe6`. Illisible, pas raffiné.
+  Il a fallu un second or, `#7e6d3a` (4,4:1), pour tout ce qui est posé sur clair.
+- **`npx wrangler` peut casser d'un coup** : `The package "@cloudflare/workerd-windows-64"
+  could not be found`. Le cache npx est corrompu. Supprimer le dossier fautif signalé dans
+  la trace, sous `AppData/Local/npm-cache/_npx/`, puis relancer. Rien d'autre à faire.
+- **La console Windows est en cp1252** : un seul `≤` dans un `print()` fait tomber tout un
+  script Python au premier contrôle. `sys.stdout.reconfigure(encoding="utf-8",
+  errors="replace")` en tête de chaque script, systématiquement.
+
+**Exécution de référence :** `clients/11-angy-art/` (direction éditoriale noir/crème),
+66 contrôles, **zéro bibliothèque** là où le brief en demandait quatre (Next.js, GSAP,
+Lenis, Swiper), tous réécrits en natif pour tenir la 4G de Cotonou.
+
+---
+
+## 2026-08-06 — Refondre un site qui a un MOTEUR : la méthode des morceaux gardés
+
+**Hillary M. Styl V4.** Le brief de refonte ne parlait que d'esthétique et ne
+mentionnait nulle part le moteur de commande — la seule partie du site qui
+rapporte. Une refonte « à la lettre » l'aurait emporté sans que personne ne s'en
+aperçoive avant la première commande perdue.
+
+**La méthode, à reprendre sur toute refonte d'un site qui fait quelque chose :**
+
+1. **Trouver la frontière** entre le moteur et la présentation. Ici : une ligne
+   nette dans le `<script>`, entre les données/tunnel et les animations.
+2. **Extraire les morceaux à garder dans des fichiers séparés**, préfixés
+   `garde-` pour qu'on ne les touche pas par réflexe.
+3. **Relever automatiquement les identifiants dont le moteur dépend** :
+
+```python
+ids = sorted(set(re.findall(r'getElementById\("([^"]+)"\)', moteur)))
+```
+
+   Sur Hillary : **18 identifiants**, plus deux sélecteurs. Aucun n'aurait été
+   retrouvé à la main.
+
+4. **Un assembleur qui REFUSE d'écrire** si un identifiant manque du nouveau
+   balisage. C'est ce qui transforme une bonne intention en garantie.
+
+```python
+manquants = [i for i in exiges if ('id="'+i+'"') not in out]
+if manquants: raise SystemExit("⛔ identifiants absents : " + ", ".join(manquants))
+```
+
+5. **Rebrancher ce que le CSS gardé attend.** Trois régressions sont apparues
+   parce que le CSS conservé dépendait de comportements de l'ancienne couche
+   mouvement : l'onde au toucher, les inclinaisons des cartes, l'attribut
+   `data-e` du tunnel. **Aucune ne se voyait sur une capture.** C'est la suite
+   de contrôle qui les a trouvées.
+
+### ⚠️ Une sauvegarde qui se réécrit n'est pas une sauvegarde
+
+L'assembleur écrivait `_avant-v4.html` à chaque exécution. Au deuxième passage,
+il a sauvegardé la V4 par-dessus la V3 : la seule copie du comportement d'origine
+avait disparu. Récupérée par `git show HEAD:...`.
+
+**Toute sauvegarde automatique doit refuser d'écraser une sauvegarde existante.**
+
+```python
+if os.path.exists(SRC) and not os.path.exists(sauve):
+    ...   # une seule fois, jamais deux
+```
+
+### Deux contrôles qui se trompaient, pas le site
+
+- **`offsetTop` est relatif à l'ancêtre POSITIONNÉ**, pas au document. Une
+  section en `position:relative` suffit à fausser un contrôle qui défile.
+  Utiliser `getBoundingClientRect().top + scrollY`.
+- **Un contrôle ne recopie jamais un chiffre.** Les contrôles du carrousel
+  attendaient « 5 diapositives » ; ils lisent maintenant les données. Règle déjà
+  écrite pour PISTE, à appliquer sur tout le parc.
+
+### Et une leçon de document
+
+`DEPLOIEMENT.md` décrivait un piège réel devenu faux cinq jours plus tard, et
+pointait vers la branche dont la fusion aurait supprimé **30 790 lignes** de
+`main`. **Un document qui décrit un piège doit être daté et re-vérifié** : il
+finit par pointer vers l'action la plus destructrice possible.
+
+**Exécution de référence :** `clients/10-hillary-m-styl/_v4/` (assembleur,
+morceaux gardés, 74 contrôles) et `IMAGES-A-FOURNIR.md`.
+
+### 2026-08-06 (suite) — Le détourage n'est pas de la finition, c'est l'effet
+
+Sur Hillary V4, le brief demandait un **numéro de diapositive géant derrière le
+mannequin**. Avec une photo rectangulaire, même sur fond blanc, le chiffre est
+**entièrement couvert** : il n'apparaît nulle part. On croit que c'est un
+problème de couleur ou de taille — ce n'en est pas un.
+
+**Il faut détourer le sujet.** Une fois le mannequin sans fond, le chiffre passe
+derrière lui et l'effet existe enfin. Trois tentatives ont été perdues à
+éclaircir, agrandir et déplacer le chiffre avant de comprendre.
+
+```python
+from rembg import remove, new_session
+sess = new_session("isnet-general-use")
+out = remove(im, session=sess)          # ⚠️ SANS alpha_matting
+```
+
+⚠️ **`alpha_matting=True` demande 1,9 Go de RAM** sur une image de 1100 px et
+tombe (`numpy._core._exceptions._ArrayMemoryError`). Sur un fond blanc uni,
+`isnet` seul suffit. Nettoyer ensuite : alpha < 70 → 0, puis recadrer sur la
+boîte alpha. Sans ce nettoyage, la boîte garde l'ombre portée et la silhouette
+reste large (1080 px au lieu de 316).
+
+### Quand un site passe de « fichier unique » à multi-fichiers
+
+Le base64 est la bonne règle pour 2 images de 6 Ko. **Pas pour 19 photos** : le
+HTML passerait 6 Mo, illisible et non cachable. Trois choses changent alors :
+
+1. les photos vont dans `assets/images/`, référencées en relatif ;
+2. **le script de pré-déploiement doit les copier dans `_dist/`** — un
+   déploiement Cloudflare est un instantané complet, ce qui manque disparaît ;
+3. il doit **refuser de préparer** si une image référencée par le HTML n'est pas
+   dans `_dist` :
+
+```python
+manquantes = [r for r in set(re.findall(r'assets/images/([A-Za-z0-9_.-]+)', html))
+              if not (DIST / "assets" / "images" / r).exists()]
+```
+
+Et **relever les délais du contrôle** : 19 images chargées depuis `file://`
+dépassent les 15 s par défaut.
+
+---
+
+## 2026-08-06 (fin) — Le jour où les vraies pièces arrivent
+
+**Hillary a envoyé 4 pièces réelles avec leurs prix.** Ce qui a sauté au passage,
+et qu'aucun brief n'annonce jamais :
+
+### 1. Le supplément express n'est pas fixe
+
+Le moteur appliquait **10 000 F à toutes les pièces**. Ses vrais chiffres :
+
+| Pièce | Normal | Express | Écart |
+|---|---|---|---|
+| Robe de cérémonie | 100 000 | 140 000 | **+40 000** |
+| Robe de ville | 30 000 | 45 000 | **+15 000** |
+
+Une cliente aurait vu 110 000 F au lieu de 140 000 : **la couturière absorbait
+l'écart à chaque commande.** Le supplément et le délai express sont maintenant
+**propres à chaque pièce** (`expPrix`, `expMin`, `expMax`).
+
+**La leçon générale : un tarif « global » dans un moteur de commande est une
+hypothèse, pas une donnée.** Tant que le client n'a pas donné ses vrais chiffres,
+on ne sait pas si la variable est globale ou par article.
+
+### 2. Un onglet peut devenir vide
+
+Ses 4 pièces étaient toutes en sur-mesure. L'onglet « prêt-à-porter » se
+retrouvait vide **et c'était celui qui s'ouvrait** : le catalogue s'affichait
+sans une seule pièce. Un onglet dont la catégorie est vide se masque désormais,
+et n'est jamais celui qu'on ouvre.
+
+### 3. Une refonte de données casse les contrôles qui nommaient les données
+
+Le contrôle cliquait « Robe Amazone », « Pantalon sur-mesure », attendait « 6
+pièces », « 57 000 F », « 10 jours ». Toutes ces valeurs venaient des pièces
+d'exemple. **Onze assertions ont dû être rebranchées sur les données**, ce qui
+était la règle depuis PISTE et n'avait pas été appliqué ici.
+
+```python
+att = await page.evaluate("()=>PIECES.filter(p=>p.cat==='sm').length")
+ok(n == att, f"{att} pieces sur-mesure affichees (vu {n})")
+```
+
+⚠️ Et un contrôle ne clique pas un onglet qui peut être masqué : il appelle le
+moteur (`onglet('sm')`).
+
+### 4. Une variable CSS redéclarée localement annule le script
+
+Le héros devait changer de couleur avec la pièce affichée. Le script posait
+`--piece` sur `:root`, mais le CSS la redéclarait sur `.hero` comme valeur de
+repli. **La déclaration locale l'emporte** : la couleur ne changeait jamais.
+La valeur de repli va sur `:root`, jamais sur l'élément qui l'utilise.
+
+### 5. Extraire une couleur : la moyenne ne marche pas
+
+Pour faire suivre la couleur du vêtement, la **moyenne** des pixels d'une robe
+bleu-et-rouge donne du violet boueux. Il faut l'**histogramme de teintes** sur
+les pixels saturés, garder le pic, puis remonter saturation et valeur pour que
+la couleur tienne sur du papier.
+
+```python
+sat = (mx-mn)/mx ; garder sat>0.4 et 0.25<mx<0.97
+hist = histogram(hue, bins=36) ; pic = hist.argmax()
+h,s,v = rgb_to_hsv(moyenne_du_pic)
+couleur = hsv_to_rgb(h, clamp(s*1.25, .55, .92), clamp(v, .42, .72))
+```

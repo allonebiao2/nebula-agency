@@ -589,3 +589,90 @@
   autres numéros du dépôt et au plan de numérotation en vigueur.
 - **Un partenaire perdu se restaure, il ne se recrée pas** : lui rendre son code d'origine
   préserve sa carte de visite et les liens qu'il a déjà distribués.
+
+
+## 2026-08-10 — MON BÉNIN : les treize décisions de Mongazi
+
+- **Décidé par** : Mongazi, en répondant à trois séries de questions
+- **Portée** : l'objet éditorial `benin-mon-pays/`, en ligne sur
+  https://dev.mon-benin.pages.dev
+
+1. **Nom : « Mon Bénin »**, avec « sept cents kilomètres » en signature.
+   Écarté : Bénin mon pays (sonne officiel, or on est indépendant), Sept Cents
+   (froid), Remonter (ne se comprend qu'après l'expérience).
+2. **Le voyage part de la Porte du Non-Retour** et remonte la Route des
+   Esclaves à l'envers. C'est une décision sur son pays et son histoire, pas une
+   décision de mise en page : elle lui revenait.
+3. **Cible n° 1 : la diaspora afro-descendante.** Conséquence directe : l'anglais
+   n'est plus une deuxième vague.
+4. **Bilingue français / anglais dès la mise en ligne.**
+5. **Onze lieux** : les huit construits, plus Porto-Novo, Grand-Popo et Dassa.
+   Verbes proposés : Porto-Novo « retourner » (l'église baroque brésilienne
+   devenue mosquée, l'histoire des affranchis revenus du Brésil), Grand-Popo
+   « mêler » (l'eau douce du Mono et la mer à la Bouche du Roi), Dassa
+   « compter » (les 41 collines).
+6. **Photos sous licence, à chercher.** Mongazi en enverra d'autres.
+7. **Sons générés avec WaveSpeed**, courts et adaptés à chaque lieu.
+8. **Voix des habitants : plus tard.** Les emplacements sont prévus.
+9. **Haltes d'artisans : oui**, Mongazi demande leur accord aux cinq clients.
+10. **L'annuaire d'entreprises est un SECOND objet**, même identité visuelle,
+    pas une couche du voyage.
+11. **PISTE : une note avant de trancher** sur la réutilisation des 7 817 fiches.
+12. **Mise en ligne en dev maintenant**, vrai domaine acheté plus tard.
+13. **Cap sur les Vodun Days de janvier**, à Ouidah.
+
+- **Décision antérieure INVERSÉE** : le bouton « au hasard ». Il avait été
+  écarté parce qu'il est la signature d'un catalogue et qu'ici « l'ordre des
+  lieux est le sens ». Mongazi l'a **redemandé explicitement** en demandant que
+  le héros soit « exactement comme » la référence. Fait, et signalé une fois.
+
+- **En attente** : les 3 lieux et leurs verbes, l'anglais, les photos, les voix,
+  l'annuaire, la note sur PISTE.
+
+---
+
+## 2026-08-20 · Les photos IA d'Au Braisé d'Or : ON LES GARDE
+
+**Décision de Mongazi, mot pour mot : « les photos IA de Braisé d'Or on les
+garde, oublie ça ».**
+
+Les **48 photos de plats** du client 09 ont été générées par IA (z_image, le
+2026-07-20), donc **avant** la règle du 2026-08-01. Elles restent en ligne.
+
+⚠️ **Ce qui ne change PAS** : la règle du cerveau reste entière et absolue.
+
+> ⛔ **INTERDIT ABSOLU : une photo produit générée par IA présentée comme le
+> catalogue du client.** Aucune exception.
+
+Au Braisé d'Or est un **héritage assumé**, pas une exception à la règle. Angy
+Art a été purgée de ses 13 visuels le 2026-08-08, Hillary affiche « Photo sur
+WhatsApp » sur 11 modèles : rien de tout ça n'est remis en cause, et **aucun
+nouveau visuel généré n'entre dans un catalogue**, ici comme ailleurs.
+
+⛔ **Le sujet est clos : ne plus le remonter.** Il figurait dans le « reste à
+faire » de trois fichiers, il en sort.
+
+## 2026-08-20 · Le disque du PC : noté, pas traité
+
+Mongazi : « le disque, garde en mémoire ». Rien n'est supprimé sans son accord.
+
+**0,6 Go libres sur 270 Go** au moment de la mesure. Le 19/08, le disque était
+tombé à **zéro octet** en pleine fusion git (`unable to write file`,
+`index.lock write error`) : ce n'est pas un inconfort, ça casse une opération
+en plein vol.
+
+| Ce qui pèse | Poids |
+|---|---|
+| **Image de machine virtuelle de Claude** (`AppData\Local\Packages\Claude_pzs8sxrjxfjjc\...\rootfs.vhdx`) | **11,93 Go** (9 Go le 19/08 : elle grossit) |
+| `cercle/node_modules` | 0,33 Go |
+| `clients/09-au-braise-dor/experience/node_modules` | 0,30 Go |
+| Cache npm | 0,59 Go |
+| Navigateurs Playwright | 0,43 Go |
+| `piste/node_modules` | 0,05 Go |
+
+- **Le seul geste sans conséquence** : `npm cache clean --force` (0,59 Go, un
+  cache se refabrique). Déjà fait une fois le 19/08, il s'est reconstitué.
+- **Les `node_modules` se réinstallent** mais coûtent du temps : 6 minutes pour
+  celui du Braisé, sur ce poste.
+- ⚠️ **L'image de machine virtuelle n'est pas à moi.** C'est l'environnement de
+  Claude sur ce PC : la supprimer se décide, ne se déduit pas.

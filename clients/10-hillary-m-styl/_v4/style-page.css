@@ -1,0 +1,976 @@
+/* ==================================================================
+   HILLARY M. STYL — V4 « LA COUPE »
+   Une maison de couture, c'est une COUPE : un trait décidé une fois,
+   qui sépare et qui donne la forme. Tout part de là.
+
+   Fusion de trois références (badges flottants · numéro géant derrière
+   le mannequin · lookbook à compteur fixe), aux couleurs d'Hillary.
+   Aucune bibliothèque : Lenis, GSAP, SplitText et Swiper sont réécrits.
+   ================================================================== */
+
+:root{
+  /* les fonds du brief — à l'œil près, ce sont déjà les siens */
+  --papier:#f7f5f0;
+  --papier-2:#e8e4de;
+  --blanc:#ffffff;
+  --encre:#0c0c0c;
+  --encre-2:#1a1a1a;
+
+  /* SA signature. Réf. B « aux couleurs Hillary » : le magenta mène. */
+  --rose:#E6007E;
+  --rose-cl:#FF3FA4;
+  --rose-p:#FFE9F5;
+  /* le magenta de la maison en PETIT corps sur un fond clair : #E6007E
+     n'y tient que 4,13:1 sur le papier et 3,55:1 sur le papier gris.
+     ⚠️ ne PAS toucher à --rose : c'est sa signature, elle reste telle
+     quelle en aplat, en gros corps et sur l'encre. */
+  --rose-f:#c9006c;     /* papier 5,2:1 ✅ · carte blanche 5,7:1 ✅ */
+
+  /* les accents wax — elle fait tout, ils servent aux collections.
+     ⚠️ chacun n'est lisible que sur UN fond : voir BRIEF-V4.md § 2.2 */
+  --terre:#a8452a;      /* fond du badge : blanc dessus = 5,9:1 ✅
+                          ⚠️ ancien #c75b39 = 4,21:1, sous la barre */
+  --ocre:#d4a017;       /* papier 2,2 ⛔ · encre 8,2 ✅ */
+  --indigo:#2e1a47;     /* papier 14,2 ✅ · encre 1,3 ⛔ */
+  --vert:#1b4332;       /* papier 10,2 ✅ · encre 1,8 ⛔ */
+
+  /* textes */
+  --tx-c:#4a4740;                     /* sur papier : 8,4 */
+  --tx-n:rgba(255,255,255,.74);       /* sur encre  : 10,6 */
+  --fil-c:rgba(26,26,26,.16);
+  --fil-n:rgba(255,255,255,.16);
+
+  --ff-d:"Bodoni Moda",Didot,"Playfair Display",Georgia,serif;
+  --ff-u:Archivo,system-ui,-apple-system,sans-serif;
+  --ff-t:Manrope,system-ui,-apple-system,sans-serif;
+
+  --max:1560px;
+  --pad:clamp(20px,4.4vw,48px);
+  --sec:clamp(88px,12vw,160px);
+  --e:cubic-bezier(.19,1,.22,1);
+  --e-s:cubic-bezier(.25,.46,.45,.94);
+
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --z-fond:0; --z-corps:1; --z-nav:50; --z-cur:70; --z-load:110; --z-mod:120;
+
+  /* la couleur de la pièce affichée au héros, posée par le script à chaque
+     diapositive. ⚠️ Ne JAMAIS la redéclarer sur .hero : une déclaration locale
+     l'emporte sur celle-ci, et le script n'a plus aucun effet. */
+  --piece:#E6007E;
+
+  /* le logo, declare UNE fois : _build.py y injecte le base64 */
+  --logo:url("data:image/webp;base64,__LOGO_B64__");
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;overflow-x:hidden}
+section[id]{scroll-margin-top:clamp(72px,9vh,96px)}
+body{
+  margin:0;background:var(--papier);color:var(--encre-2);
+  font-family:var(--ff-t);font-size:15px;font-weight:400;line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+body.lock{overflow:hidden}
+h1,h2,h3{margin:0;font-family:var(--ff-d);font-weight:700;line-height:1;letter-spacing:-.025em}
+p,ul,ol,figure{margin:0;padding:0}
+li{list-style:none}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+em{font-style:italic;font-weight:400}
+::selection{background:var(--rose);color:#fff}
+:focus-visible{outline:2px solid var(--rose);outline-offset:3px}
+
+.wrap{width:100%;max-width:var(--max);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;z-index:var(--z-load);background:var(--rose);color:#fff;
+  padding:12px 18px;font-weight:700}
+.skip:focus{left:12px;top:12px}
+
+/* le grain de la toile, partout */
+.grain{position:fixed;inset:-30%;z-index:40;pointer-events:none;
+  background-image:var(--grain);opacity:.05;mix-blend-mode:multiply}
+
+/* ---------- LE CURSEUR — la lame ---------------------------------
+   Réf. A/C : cercle qui suit à la traîne, s'ouvre au survol. Ici ce
+   n'est pas un cercle : c'est un trait de coupe, qui pivote. */
+.cur{position:fixed;top:0;left:0;z-index:var(--z-cur);width:64px;height:64px;
+  margin:-32px 0 0 -32px;border-radius:50%;pointer-events:none;opacity:0;
+  display:grid;place-items:center;
+  transition:opacity .3s ease,background-color .4s var(--e-s)}
+.cur::before{content:'';position:absolute;width:38px;height:1.5px;background:var(--encre);
+  transform:rotate(-38deg) scaleX(.34);transform-origin:50% 50%;
+  transition:transform .45s var(--e),background-color .3s ease}
+.cur span{font-family:var(--ff-u);font-size:9px;font-weight:600;letter-spacing:.16em;
+  color:#fff;opacity:0;transition:opacity .25s ease}
+.cur.on{opacity:1}
+.cur.gros{background:var(--rose)}
+.cur.gros::before{transform:rotate(-38deg) scaleX(0)}
+.cur.gros span{opacity:1}
+@media (hover:hover) and (pointer:fine){
+  .js body.cur-ok,.js body.cur-ok a,.js body.cur-ok button,
+  .js body.cur-ok select,.js body.cur-ok input,.js body.cur-ok [data-cur]{cursor:none}
+}
+@media (hover:none),(pointer:coarse){ .cur{display:none} }
+
+/* ---------- LE LOADER — la coupe qui s'ouvre ----------------------
+   Réf. C : le monogramme paraît, puis le papier se fend en deux. */
+.load{display:none}
+.js .load{display:grid;place-items:center;position:fixed;inset:0;z-index:var(--z-load);
+  background:transparent;pointer-events:none}
+.load i{position:absolute;left:0;right:0;height:50.5%;background:var(--papier);
+  transition:transform 1.05s cubic-bezier(.76,0,.24,1) 1.4s}
+.load i:first-child{top:0}
+.load i:last-child{bottom:0}
+.load-m{position:relative;z-index:2;width:min(150px,34vw);aspect-ratio:1;
+  background:var(--logo) center/contain no-repeat;
+  opacity:0;transform:scale(.9);filter:blur(4px);
+  transition:opacity .8s ease,transform .8s var(--e-s),filter .8s ease}
+.load.vue .load-m{opacity:1;transform:none;filter:none}
+/* le trait de coupe qui passe avant l'ouverture */
+.load::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;z-index:3;
+  background:var(--rose);transform:scaleX(0);transform-origin:50% 50%;
+  transition:transform .6s var(--e) 1s,opacity .3s ease 1.5s}
+.load.vue::after{transform:scaleX(1)}
+.load.parti::after{opacity:0}
+.load.parti i:first-child{transform:translateY(-101%)}
+.load.parti i:last-child{transform:translateY(101%)}
+.load.parti .load-m{opacity:0;transition:opacity .4s ease}
+.load.fini{display:none}
+
+/* ---------- NAVIGATION ------------------------------------------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:var(--z-nav);
+  display:flex;align-items:center;gap:20px;
+  padding:clamp(14px,2vw,24px) var(--pad);
+  /* ⚠️ COURT, ET LES DEUX ENSEMBLE. Le fond et le texte se croisaient sur
+     un demi-fondu : à mi-chemin ils valaient le même gris et le menu
+     devenait ILLISIBLE (mesuré 1,01:1 à 260 ms, deux fois sur la page).
+     À 0,22 s la zone trouble dure ~100 ms et personne ne la voit. */
+  transition:background-color .22s var(--e-s),box-shadow .22s var(--e-s),color .22s var(--e-s)}
+.nav.pose{background:rgba(247,245,240,.94);box-shadow:inset 0 -1px 0 var(--fil-c)}
+.nav.sombre{color:#fff}
+.nav.sombre.pose{background:rgba(12,12,12,.94);box-shadow:inset 0 -1px 0 var(--fil-n)}
+.nav-g{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+.nav-logo{display:inline-flex;align-items:center;gap:10px;min-height:44px;
+  font-family:var(--ff-d);font-size:18px;font-weight:700;letter-spacing:.01em}
+.nav-logo .mk{width:26px;height:26px;flex:0 0 auto;border-radius:6px;
+  background:var(--logo) center/contain no-repeat}
+.nav-c{margin:0 auto;display:flex;align-items:center;gap:clamp(16px,2.2vw,34px)}
+.nav-c a{font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.13em;
+  min-height:44px;display:inline-flex;align-items:center;position:relative;opacity:.66;
+  transition:opacity .3s ease}
+.nav-c a::after{content:'';position:absolute;left:0;right:0;bottom:12px;height:1px;
+  background:var(--rose);transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .45s var(--e)}
+.nav-c a:hover{opacity:1}
+.nav-c a:hover::after{transform:scaleX(1)}
+.nav-d{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+/* Une icône panier depuis le 2026-08-16, à la demande de Mongazi. ⚠️ Elle ne
+   contredit pas la règle NEBULA : rien ne se paie sur ce site. Le panier est la
+   liste de ce que la cliente commande, avec les prix ; le règlement se convient
+   par Mobile Money sur WhatsApp. Toujours pas d'icône « compte ». */
+.nav-ic{width:44px;height:44px;display:grid;place-items:center;opacity:.66;
+  transition:opacity .3s ease}
+.nav-ic svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4}
+.nav-ic:hover{opacity:1}
+.burger{display:none;width:44px;height:44px;flex-direction:column;justify-content:center;
+  align-items:center;gap:5px}
+.burger i{display:block;width:20px;height:1.4px;background:currentColor;
+  transition:transform .4s var(--e-s),opacity .25s ease}
+.burger[aria-expanded="true"] i:nth-child(1){transform:translateY(6.4px) rotate(45deg)}
+.burger[aria-expanded="true"] i:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] i:nth-child(3){transform:translateY(-6.4px) rotate(-45deg)}
+
+/* ---------- LIBELLÉS ET GRANDS TEXTES ---------------------------- */
+.lab{display:flex;align-items:center;gap:14px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.lab b{font-weight:600;color:var(--rose)}
+.lab i{font-style:normal;flex:1 1 auto;height:1px;background:var(--fil-c);
+  max-width:min(300px,24vw);transform:scaleX(0);transform-origin:0 50%;
+  transition:transform 1.1s var(--e) .12s}
+.lab.vu i{transform:scaleX(1)}
+.lab--n{color:rgba(255,255,255,.62)}
+.lab--n i{background:var(--fil-n)}
+.lab--n b{color:var(--ocre)}       /* ocre : 8,2 sur encre — lisible */
+
+.t2{font-size:clamp(2rem,5.4vw,4.6rem);line-height:1.02;letter-spacing:-.028em;
+  max-width:18ch;text-wrap:balance}
+.t2--n{color:#fff}
+.t2 em{color:var(--rose)}
+.t2--n em{color:var(--ocre)}
+.deck{margin-top:20px;max-width:56ch;font-size:15.5px;color:var(--tx-c);text-wrap:pretty}
+.deck--n{color:var(--tx-n)}
+
+/* la révélation mot à mot (SplitText réécrit) */
+.mot{display:inline-block;overflow:hidden;vertical-align:bottom}
+.mot>span{display:inline-block}
+.js .mot>span{transform:translateY(104%);opacity:0;
+  transition:transform .9s var(--e) var(--d,0ms),opacity .6s ease var(--d,0ms)}
+.js .vu .mot>span,.js .mot.vu>span{transform:none;opacity:1}
+
+/* ---------- SECTIONS --------------------------------------------- */
+.sec{position:relative;padding:var(--sec) 0;overflow-x:clip}
+.sec--papier{background:var(--papier)}
+.sec--encre{background:var(--encre);color:#fff}
+.sec--blanc{background:var(--blanc)}
+
+/* ==================================================================
+   1 · LE HÉROS — le slider éditorial
+   ================================================================== */
+.hero{position:relative;min-height:100svh;padding:clamp(88px,12vh,132px) 0 clamp(24px,4vh,40px);
+  display:flex;flex-direction:column;background:var(--papier);overflow:clip}
+/* LA NAPPE QUI SUIT LE TISSU : une lueur de la couleur de la pièce qui passe,
+   derrière la silhouette. Elle change en même temps que la diapositive. */
+.hero::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  /* `in oklab` et pas `in srgb` : un bleu à 22 % en srgb sur du papier crème
+     devient un voile gris sale. En oklab la teinte survit à la transparence,
+     et la nappe reste une COULEUR — c'est tout l'intérêt de la faire suivre
+     le tissu. Vu sur l'ensemble JOSY (denim) le 2026-08-06. */
+  background:radial-gradient(58% 46% at 50% 42%,
+    color-mix(in oklab, var(--piece) 26%, transparent), transparent 72%);
+  transition:background 1.1s var(--e-s)}
+@supports not (background: color-mix(in srgb, red 20%, transparent)){
+  .hero::before{background:radial-gradient(58% 46% at 50% 42%,
+    rgba(230,0,126,.10), transparent 72%)}
+}
+
+.hero-in{flex:1 1 auto;position:relative;display:grid;place-items:center;width:100%}
+
+/* le numéro géant, DERRIÈRE le mannequin et DEVANT le fond */
+.hnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);z-index:1;
+  font-family:var(--ff-d);font-weight:700;font-size:clamp(11rem,42vw,30rem);line-height:.8;
+  letter-spacing:-.05em;pointer-events:none;
+  color:color-mix(in srgb, var(--piece) 14%, #e2ddd2);
+  transition:color 1.1s var(--e-s);
+  /* pas d'ombre portée dure : le mannequin couvre le milieu du chiffre, et
+     le pied plat du « 2 » de Bodoni se retrouvait seul, cerné de blanc et de
+     gris — une dalle qui passait pour un bug. Un simple relief de papier. */
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+  /* et le chiffre s'enfonce dans le papier au lieu de finir au couteau */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.34) 88%,rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.34) 88%,rgba(0,0,0,0) 100%);
+  overflow:hidden;height:.98em;display:grid;align-items:start;justify-items:center}
+/* LE CHIFFRE SUIT LA PIÈCE. Les deux chiffres se croisent sur EXACTEMENT
+   l'horloge du glissement (.72 s, même courbe que `.hsl`) et dans le SENS du
+   mouvement : `--s` vaut 1 vers l'avant, -1 vers l'arrière.
+   ⚠️ Avant, le chiffre roulait 240 ms puis se remplaçait d'un coup : il
+   arrivait 900 ms avant le vêtement et ça se voyait comme un raté.
+   Vu par Mongazi le 2026-08-06. */
+.hnum span{grid-area:1/1;display:block;
+  transition:transform .72s cubic-bezier(.25,1,.5,1),
+             opacity .46s cubic-bezier(.33,0,.2,1)}
+.hnum span.hn-e{transform:translateY(calc(var(--s,1) * 100%));opacity:0}
+.hnum span.hn-s{transform:translateY(calc(var(--s,1) * -100%));opacity:0}
+@media (prefers-reduced-motion:reduce){
+  .hnum span{transition:opacity .3s linear}
+  .hnum span.hn-e,.hnum span.hn-s{transform:none}
+}
+
+/* la scène du slider */
+.hsc{position:relative;z-index:2;width:min(60%,560px);height:min(75vh,720px);
+  display:grid;place-items:center}
+@media (max-width:1024px){ .hsc{width:min(74%,420px);height:min(58vh,520px)} }
+/* ⚠️ LA COURBE PART TOUT DE SUITE. `cubic-bezier(.45,.02,.2,1)` démarrait
+   presque à plat : la pièce restait figée ~580 ms après le clic, puis se
+   précipitait. On voyait un raté, pas un glissement. Un ease-out quart
+   bouge dès la première image et se pose longuement. */
+.hsl{position:absolute;inset:0;opacity:0;
+  transition:transform .72s cubic-bezier(.25,1,.5,1),
+             opacity .46s cubic-bezier(.33,0,.2,1)}
+.hsl.act{opacity:1;transform:none;z-index:2}
+.hsl.sort{opacity:0;transform:translateX(-62%) skewX(-2.5deg) scale(.96);z-index:1}
+.hsl.entre{opacity:0;transform:translateX(62%) skewX(2.5deg) scale(.96);z-index:1}
+.hsl-c{position:relative;width:100%;height:100%;overflow:hidden}
+.hsl-c:has(img){background:none}
+/* un mannequin DÉTOURÉ : il se pose entier, il ne se recadre pas.
+   C'est ce qui laisse le numéro géant passer derrière lui. */
+.hsl-c img{width:100%;height:100%;object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 30px 26px rgba(26,26,26,.10))}
+/* ⚠️ PENDANT LE MOUVEMENT, PAS D'OMBRE PORTÉE ET PAS D'OMBRE AU SOL.
+   Une `drop-shadow` sur une photo détourée de 700 px se recalcule à CHAQUE
+   image : c'est ce qui fait hacher le glissement sur un téléphone. L'ombre
+   revient dès que la pièce est posée, et personne ne voit qu'elle est
+   partie une seconde. */
+.hsc.bouge .hsl-c img{filter:none}
+.hsc.bouge .hsl-c::after{opacity:0}
+.hsc.bouge .hsl{will-change:transform,opacity}
+/* l'ombre au sol : elle donne le poids sans redessiner le contour */
+.hsl-c::after{content:'';position:absolute;left:14%;right:14%;bottom:2%;height:26px;
+  border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.20),transparent 72%)}
+/* le mannequin de substitution, tant qu'il n'y a pas de photo */
+.hsl-c .sil{position:absolute;inset:0;display:grid;place-items:center;background:none}
+.hsl-c .sil svg{width:66%;height:auto;opacity:.7}
+.hsl-c .sil path{fill:var(--papier);stroke:var(--encre-2);stroke-width:1.3;stroke-linejoin:round}
+
+/* le titre de collection, à droite */
+.hcol{position:absolute;right:calc(var(--pad) + 38px);top:52%;transform:translateY(-50%);z-index:4;
+  text-align:right;max-width:min(260px,22vw);pointer-events:none}
+.hcol b{display:block;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(1.5rem,2.6vw,2.4rem);line-height:1.02;letter-spacing:-.02em}
+.hcol .m{display:block;margin-top:10px;font-family:var(--ff-u);font-size:10.5px;
+  font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(26,26,26,.62)}
+/* le trait sous le titre de collection prend la couleur du tissu */
+.hcol b::after{content:'';display:block;height:2px;width:52px;margin:12px 0 0 auto;
+  background:var(--piece);transition:background 1.1s var(--e-s)}
+/* la description, à gauche */
+.hdes{position:absolute;left:var(--pad);top:56%;transform:translateY(-50%);z-index:4;
+  max-width:min(250px,20vw);pointer-events:none}
+.hdes b{display:block;font-family:var(--ff-d);font-weight:700;font-size:1.32rem;line-height:1.1}
+.hdes p{margin-top:9px;font-size:13.5px;line-height:1.55;color:var(--tx-c)}
+.hcol,.hdes{transition:opacity .4s var(--e-s),transform .5s var(--e-s)}
+.hcol.chg{opacity:0;transform:translateY(-50%) translateX(16px)}
+.hdes.chg{opacity:0;transform:translateY(-50%) translateX(-16px)}
+
+/* les badges flottants — Réf. A */
+.bdg{position:absolute;z-index:5;display:inline-flex;align-items:center;
+  padding:10px 20px;border-radius:50px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:#fff;white-space:nowrap;
+  box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.bdg--1{background:var(--terre);top:12%;right:6%;   animation:flot 4s ease-in-out infinite}
+.bdg--2{background:var(--rose); top:44%;left:4%;    animation:flot 5s ease-in-out infinite}
+.bdg--3{background:var(--vert); bottom:20%;right:9%;animation:flot 6s ease-in-out infinite}
+.bdg--4{background:var(--indigo);bottom:9%;left:11%;animation:flot 4.6s ease-in-out infinite}
+@keyframes flot{0%,100%{transform:translateY(-10px)}50%{transform:translateY(10px)}}
+.js .bdg{opacity:0}
+.js .hero.ouvert .bdg{opacity:1;transition:opacity .5s ease var(--d,0ms)}
+
+/* le grand titre, en bas, qui passe derrière le mannequin */
+.hbig{position:relative;z-index:3;text-align:center;pointer-events:none;
+  margin-top:clamp(-130px,-8.5vw,-40px);mix-blend-mode:multiply}
+.hbig h1{font-size:clamp(2.6rem,11vw,8.4rem);line-height:.86;letter-spacing:-.04em}
+.hbig .bl{display:block;overflow:hidden}
+.hbig .bl>span{display:block}
+.js .hbig .bl>span{transform:translateY(104%);
+  transition:transform 1.15s var(--e) var(--d,0ms)}
+.js .hero.ouvert .hbig .bl>span{transform:none}
+.hbig .base{display:block;margin-top:14px;font-family:var(--ff-d);font-style:italic;
+  font-weight:400;font-size:clamp(.95rem,1.7vw,1.35rem);color:var(--tx-c)}
+.js .hbig .base{opacity:0;transition:opacity .7s ease .55s}
+.js .hero.ouvert .hbig .base{opacity:1}
+
+/* pagination + réseaux + flèche */
+.hbar{position:relative;z-index:6;display:flex;align-items:center;justify-content:center;
+  gap:14px;margin-top:clamp(14px,2.4vh,26px)}
+.rond{width:44px;height:44px;border-radius:50%;border:1px solid var(--fil-c);
+  display:grid;place-items:center;transition:background-color .35s var(--e-s),border-color .35s var(--e-s)}
+.rond svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round}
+.rond:hover{background:var(--encre);border-color:var(--encre);color:#fff}
+.hcpt{font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.15em;
+  color:rgba(26,26,26,.55);min-width:76px;text-align:center}
+.hsoc{position:absolute;right:calc(var(--pad) - 12px);bottom:clamp(24px,6vh,72px);z-index:6;
+  display:flex;flex-direction:column;gap:14px}
+.hsoc a{font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  writing-mode:vertical-rl;color:rgba(26,26,26,.55);min-height:44px;
+  display:inline-flex;align-items:center;transition:color .3s ease}
+.hsoc a:hover{color:var(--rose)}
+.hfle{position:absolute;left:var(--pad);bottom:clamp(24px,6vh,72px);z-index:6;
+  display:flex;flex-direction:column;align-items:center;gap:8px;min-height:44px;
+  font-family:var(--ff-u);font-size:10px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.hfle svg{width:14px;height:20px;fill:none;stroke:currentColor;stroke-width:1.3;
+  animation:rebond 2.2s ease-in-out infinite}
+@keyframes rebond{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* ---------- LE RUBAN DÉFILANT ------------------------------------ */
+.ruban{background:var(--rose);color:#fff;overflow:hidden;padding:13px 0;
+  border-top:1px solid rgba(0,0,0,.08);border-bottom:1px solid rgba(0,0,0,.08)}
+.ruban-p{display:flex;width:max-content;animation:defile 34s linear infinite}
+.ruban-p span{display:flex;align-items:center;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(.95rem,1.9vw,1.3rem);padding:0 clamp(18px,2.6vw,36px)}
+.ruban-p span::after{content:'';width:15px;height:1px;background:rgba(255,255,255,.7);
+  margin-left:clamp(18px,2.6vw,36px);transform:rotate(-32deg)}
+@keyframes defile{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+
+/* ==================================================================
+   2 · LA MAISON — fond encre, images en perspective
+   ================================================================== */
+.maison-in{display:grid;gap:clamp(38px,5vw,74px);
+  grid-template-columns:minmax(0,40fr) minmax(0,60fr);align-items:center}
+.maison .t2{margin-top:22px}
+.maison .deck{margin-top:22px}
+.mc-t{color:var(--ocre)}   /* les mots-clés sur encre : ocre et rose seulement */
+.mc-r{color:var(--rose-cl)}
+.piliers{margin-top:32px;display:grid;gap:1px;background:var(--fil-n);
+  border-top:1px solid var(--fil-n);border-bottom:1px solid var(--fil-n)}
+.piliers li{background:var(--encre);padding:17px 0;display:grid;
+  grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:4px 22px;align-items:baseline}
+.piliers b{font-family:var(--ff-d);font-weight:700;font-size:1.12rem;color:#fff}
+.piliers span{font-size:14.5px;color:var(--tx-n)}
+
+/* les trois plans empilés en perspective */
+.plans{position:relative;height:clamp(340px,42vw,540px);perspective:1200px}
+.plan{position:absolute;width:52%;aspect-ratio:3/4;border-radius:16px;overflow:hidden;
+  background:var(--encre-2);box-shadow:0 30px 70px -28px rgba(0,0,0,.85);
+  border:1px solid var(--fil-n)}
+.plan img{width:100%;height:100%;object-fit:cover}
+/* la vraie photo efface le dessin de substitution */
+.plan:has(img) .ph,.lk:has(img) .sil,.hsl-c:has(img) .sil,.car-c:has(img) .sil{display:none}
+.plan img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.plan .ph{position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(150deg,#1c1a19,#131211)}
+.plan .ph svg{width:52%;height:auto;opacity:.55}
+.plan .ph path,.plan .ph circle{fill:none;stroke:var(--ocre);stroke-width:1.2}
+.plan .cap{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;z-index:2;
+  background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);
+  font-family:var(--ff-u);font-size:9.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.8)}
+.plan--1{left:0;   top:4%;  transform:rotate(-3deg)}
+.plan--2{left:24%; top:22%; transform:rotate(0deg);  z-index:2}
+.plan--3{right:0;  top:8%;  transform:rotate(3deg)}
+.js .plan{opacity:0;transition:opacity .9s ease var(--d,0ms)}
+.js .plans.vu .plan{opacity:1}
+
+/* ==================================================================
+   3 · LES COLLECTIONS — coverflow
+   ================================================================== */
+.coll{padding-left:0;padding-right:0}
+.coll-tete{max-width:var(--max);margin:0 auto;padding:0 var(--pad);
+  display:grid;gap:clamp(20px,3vw,52px);
+  grid-template-columns:minmax(0,1fr) minmax(0,320px);align-items:end}
+.coll .t2{margin-top:22px}
+
+.cars{position:relative;margin-top:clamp(32px,4vw,58px);height:clamp(360px,44vw,540px);
+  overflow:hidden}
+.cars-p{position:absolute;inset:0}
+.car{position:absolute;left:50%;top:50%;width:clamp(210px,24vw,340px);margin:0;
+  transform:translate3d(calc(-50% + var(--tx,0px)),-50%,0) scale(var(--sc,1));
+  opacity:var(--op,1);filter:blur(var(--bl,0px));
+  /* ⚠️ CETTE COURBE PARTAIT À PLAT — exactement le défaut réparé au héros le
+     2026-08-06, jamais reporté ici. `cubic-bezier(.4,0,.2,1)` met un bon
+     sixième de sa durée à démarrer, et une carte qui ne bouge pas tout de
+     suite se lit comme un clic perdu. Même ease-out quart qu'au héros : ça
+     part à la première image et ça se pose longuement. */
+  transition:transform .6s cubic-bezier(.25,1,.5,1),opacity .6s var(--e-s),filter .6s var(--e-s);
+  will-change:transform}
+.car-c{position:relative;aspect-ratio:4/5;background:none;overflow:visible}
+/* une piece detouree ne se met pas dans une boite : elle se pose.
+   L'ombre est AU SOL, jamais autour du contour. */
+.car-c img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  object-position:center bottom;
+  filter:drop-shadow(0 24px 22px rgba(26,26,26,.12))}
+/* la même respiration au carrousel, mais SEULE la carte active tourne :
+   les cartes de côté sont déjà floutées et à 16 % d'opacité, y faire
+   passer un fondu ne se verrait pas et coûterait pour rien. */
+.car-c .v2{opacity:0;transition:opacity .85s var(--e-s)}
+.car-c .v1{transition:opacity .85s var(--e-s)}
+.car--act .car-c.dos .v2{opacity:1}
+.car--act .car-c.dos .v1{opacity:0}
+.car-c::after{content:'';position:absolute;left:16%;right:16%;bottom:1%;height:22px;
+  border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.16),transparent 72%)}
+.car-c .sil{position:absolute;inset:0;display:grid;place-items:center;background:none}
+.car-c .sil svg{width:62%;height:auto;opacity:.42}
+.car-c .sil path{fill:none;stroke:var(--encre-2);stroke-width:1.1;stroke-linejoin:round}
+.car--act{z-index:4}
+
+.cars-t{position:absolute;left:var(--pad);top:50%;transform:translateY(-50%);z-index:6;
+  max-width:min(300px,23vw);pointer-events:none}
+.cars-t::before{content:'';position:absolute;inset:-34px -70px -34px -60px;z-index:-1;
+  background:linear-gradient(90deg,var(--papier) 46%,rgba(247,245,240,0) 100%)}
+.cars-t .l{font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--rose-f)}
+.cars-t .t{margin-top:12px;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.04;letter-spacing:-.02em}
+.cars-t .s{margin-top:10px;font-size:13.5px;color:var(--tx-c)}
+.cars-t{transition:opacity .45s var(--e-s),transform .45s var(--e-s)}
+.cars-t.chg{opacity:0;transform:translateY(calc(-50% + 12px))}
+
+.cars-b{max-width:var(--max);margin:clamp(24px,3vw,40px) auto 0;padding:0 var(--pad);
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+.cars-n{display:flex;align-items:center;gap:12px}
+
+/* ==================================================================
+   4 · LE LOOKBOOK — compteur fixe et mosaïque en parallaxe
+   ================================================================== */
+.look{background:var(--blanc);position:relative;padding:0}
+.look-hd{max-width:var(--max);margin:0 auto;padding:clamp(40px,5vw,72px) var(--pad) 0;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.look-hd .mk{display:flex;align-items:center;gap:9px;color:var(--encre-2)}
+.look-hd .mk i{width:22px;height:22px;border-radius:5px;font-style:normal;
+  background:var(--logo) center/contain no-repeat}
+/* la scène : hauteur donnée par le nombre de vues */
+.look-sc{position:relative;max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+.look-cpt{position:sticky;top:0;height:100svh;display:grid;place-items:center;
+  pointer-events:none;z-index:1}
+.look-cpt b{font-family:var(--ff-d);font-weight:700;font-size:clamp(5rem,15vw,10rem);
+  line-height:.9;letter-spacing:-.04em;color:var(--encre-2);
+  display:flex;align-items:center;gap:.12em}
+.look-cpt .n{display:block;overflow:hidden;height:.9em}
+.look-cpt .n span{display:block;transition:transform .5s var(--e),opacity .3s ease}
+.look-cpt .n.chg span{transform:translateY(-100%);opacity:0}
+.look-cpt .sl{font-size:.42em;opacity:.28;font-weight:400}
+.look-gr{position:relative;z-index:2;margin-top:-100svh;padding-bottom:clamp(60px,8vw,110px)}
+.lk{position:relative;overflow:hidden;background:var(--papier-2);
+  filter:grayscale(100%);transition:filter .6s var(--e-s)}
+.lk:hover{filter:grayscale(0%)}
+.lk img{width:100%;height:100%;object-fit:cover}
+.lk .sil{position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(150deg,#fff,var(--papier-2))}
+.lk .sil svg{width:56%;height:auto;opacity:.4}
+.lk .sil path{fill:none;stroke:var(--encre-2);stroke-width:1.1;stroke-linejoin:round}
+.lk .cap{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;z-index:2;
+  background:linear-gradient(0deg,rgba(255,255,255,.94),transparent);
+  font-family:var(--ff-u);font-size:10px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--encre-2)}
+.lk--1{width:min(42%,470px);margin-left:0;             aspect-ratio:4/5}
+.lk--2{width:min(30%,340px);margin-left:auto;margin-top:-6vh;  aspect-ratio:1/1}
+.lk--3{width:min(38%,430px);margin-left:8%;margin-top:14vh;    aspect-ratio:3/4}
+.lk--4{width:min(32%,360px);margin-left:auto;margin-right:6%;margin-top:-4vh;aspect-ratio:4/5}
+.lk--5{width:min(36%,410px);margin-left:2%;margin-top:12vh;    aspect-ratio:5/4}
+.lk--6{width:min(28%,320px);margin-left:auto;margin-top:-2vh;  aspect-ratio:3/4}
+.js .lk{opacity:0;transform:translateY(50px);
+  transition:opacity .9s ease,transform 1s var(--e),filter .6s var(--e-s)}
+.js .lk.vu{opacity:1;transform:none}
+.look-bas{max-width:var(--max);margin:0 auto;padding:0 var(--pad) clamp(40px,5vw,72px);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.look-bas a{min-height:44px;display:inline-flex;align-items:center;
+  transition:color .3s ease}
+.look-bas a:hover{color:var(--rose)}
+.look-soc{display:flex;gap:16px}
+
+/* ==================================================================
+   5 · LE PROCESSUS — les étapes qui se remplissent
+   ================================================================== */
+.etapes{margin-top:clamp(34px,4.4vw,58px);display:grid;gap:16px}
+.et{position:relative;overflow:hidden;border:1px solid var(--fil-n);border-radius:24px;
+  padding:clamp(24px,3vw,32px) clamp(24px,3.4vw,40px);
+  display:grid;gap:6px 26px;grid-template-columns:minmax(0,86px) minmax(0,1fr);
+  align-items:center}
+.et::before{content:'';position:absolute;inset:0;z-index:0;
+  background:linear-gradient(90deg,var(--indigo),#4f46e5);
+  transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .8s var(--e)}
+.et.act::before{transform:scaleX(1)}
+.et>*{position:relative;z-index:1}
+.et .n{font-family:var(--ff-d);font-weight:700;font-size:clamp(2.2rem,4vw,3.4rem);
+  line-height:.9;letter-spacing:-.03em;color:rgba(255,255,255,.34);
+  grid-row:span 2;transition:color .6s var(--e-s)}
+.et.act .n{color:#fff}
+.et b{grid-column:2;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(1.2rem,2vw,1.6rem);color:#fff}
+/* ⚠️ `:not(.n)` OBLIGATOIRE. Le numéro est lui aussi un <span> : un sélecteur
+   `.et span` lui collait `grid-column:2`, le titre se retrouvait dans la
+   colonne de 86 px du numéro, « La mesure » se coupait en deux lignes et
+   « L'essayage » chevauchait le « 04 ». Vu à l'œil le 2026-08-06.
+   ⚠️ La specificite ne protege de rien ici : `.et .n` (0-2-0) l'emporte sur
+   `.et span` (0-1-1) pour ce qu'il declare, mais `grid-column` n'y etait pas. */
+.et>span:not(.n){grid-column:2;font-size:14.5px;color:var(--tx-n)}
+.js .et{opacity:0;transform:translateY(28px);
+  transition:opacity .8s ease var(--d,0ms),transform .9s var(--e) var(--d,0ms),
+             border-color .5s ease}
+.js .et.vu{opacity:1;transform:none}
+
+/* ==================================================================
+   6 · LE CONTACT
+   ================================================================== */
+.ct-in{display:grid;gap:clamp(30px,4vw,60px);
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+.ct .lab b{color:var(--ocre)}
+.ct .t2{margin-top:20px}
+.pills{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:52px;padding:15px 30px;border-radius:50px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;border:1px solid var(--fil-n);color:#fff;
+  transition:background-color .4s var(--e-s),color .4s var(--e-s),border-color .4s var(--e-s)}
+.pill:hover{background:#fff;color:var(--encre);border-color:#fff}
+.pill--plein{background:var(--rose);border-color:var(--rose);color:#fff}
+.pill--plein:hover{background:#fff;color:var(--encre);border-color:#fff}
+.coords{display:grid;gap:14px}
+.coord{display:flex;gap:14px;align-items:flex-start;padding:15px 0;
+  border-top:1px solid var(--fil-n)}
+.coord svg{width:18px;height:18px;flex:0 0 auto;margin-top:2px;
+  fill:none;stroke:var(--ocre);stroke-width:1.4}
+.coord b{display:block;font-family:var(--ff-u);font-size:10px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.coord span{display:block;margin-top:4px;font-size:15px;color:#fff}
+/* un numéro qu'on appelle est une CIBLE : 20 px de haut sur un téléphone,
+   c'est un lien qu'on rate. Souligné aussi, sinon rien ne dit qu'il se
+   touche. Vu par le contrôle des cibles le 2026-08-06. */
+.coord a{display:inline-flex;align-items:center;min-height:44px;
+  text-decoration:underline;text-underline-offset:4px;
+  text-decoration-color:rgba(255,255,255,.4);
+  transition:text-decoration-color .3s ease}
+.coord a:hover{text-decoration-color:#fff}
+.socs{margin-top:30px;display:grid;gap:1px;grid-template-columns:repeat(4,1fr)}
+.soc{padding:18px 0 0;border-top:1px solid var(--fil-n);min-height:78px;
+  transition:transform .35s var(--e-s),color .35s ease}
+.soc b{display:block;font-family:var(--ff-u);font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase}
+.soc span{display:block;margin-top:5px;font-size:12.5px;color:var(--tx-n)}
+.soc:hover{transform:translateY(-4px);color:var(--ocre)}
+.wa{display:inline-flex;align-items:center;gap:11px;min-height:52px;padding:15px 28px;
+  border-radius:50px;background:#128040;color:#fff;   /* blanc dessus = 5,0:1 ✅
+     ⚠️ ancien #1EA855 = 3,09:1 : le vert de la marque WhatsApp est fait
+     pour porter du texte foncé, pas du blanc. */
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;transition:background-color .35s var(--e-s)}
+.wa svg{width:19px;height:19px;fill:currentColor}
+.wa:hover{background:#0f7038}
+
+/* ---------- PIED -------------------------------------------------- */
+.pied{background:var(--encre);color:var(--tx-n);
+  padding:clamp(34px,4vw,52px) 0 calc(26px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--fil-n)}
+.pied-in{display:flex;flex-wrap:wrap;gap:10px 28px;justify-content:space-between;
+  align-items:center;font-size:12.5px}
+.pied a{display:inline-flex;align-items:center;min-height:44px;
+  border-bottom:1px solid rgba(230,0,126,.5)}
+.pied a:hover{color:var(--rose-cl)}
+
+/* ==================================================================
+   LE CATALOGUE COMMANDABLE — la grille du moteur, restylée
+   ================================================================== */
+.grid{display:grid;gap:clamp(12px,1.6vw,20px);
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-top:clamp(30px,4vw,50px)}
+.piece{position:relative;background:var(--blanc);border:1px solid var(--fil-c);
+  overflow:hidden;text-align:left;padding:0;
+  transition:transform .45s var(--e),box-shadow .45s var(--e),border-color .35s ease}
+.piece:hover{transform:translateY(-4px);border-color:var(--rose);
+  box-shadow:0 26px 50px -30px rgba(26,26,26,.4)}
+/* ⚠️ ces classes sont GÉNÉRÉES par le moteur (fonction carte()) :
+   .ph .tag .mark .avenir .voile · .bd h3 .ds .meta .pr .del
+   Les renommer casserait le catalogue. */
+.piece .ph{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--papier-2);
+  display:grid;place-items:center;
+  background-image:linear-gradient(160deg,#fff,var(--papier-2))}
+/* la pièce est DÉTOURÉE : elle se pose sur le papier de la carte, entière.
+   En `cover` elle serait recadrée aux épaules, et le fond blanc du studio
+   ferait un rectangle blanc sur du papier crème. Vu à l'œil le 2026-08-06. */
+.piece .ph img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 14px 14px rgba(26,26,26,.13))}
+/* l'ombre au sol, la même que dans le héros et le carrousel */
+.piece .ph::after{content:'';position:absolute;left:20%;right:20%;bottom:2%;height:14px;
+  border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.17),transparent 72%)}
+/* ── LES DEUX VUES : LA FACE ET LE DOS ──────────────────────────────
+   Hillary photographie certaines pièces des deux côtés, et elle a raison :
+   un laçage, un dos nu, un volant de tulle ne se voient QUE de dos. La
+   carte les montre l'une après l'autre, toute seule, pendant qu'on la
+   regarde. Hors de l'écran, rien ne tourne (voir `duoPoser()`).
+   ⚠️ On croise DEUX OPACITÉS et rien d'autre. La carte porte déjà un
+   `translateY` au survol : une seconde transform se battrait avec elle.
+   ⚠️ La pastille active est plus LARGE, pas seulement rose : un état qui
+   ne tient qu'à la couleur ne se lit pas pour tout le monde. */
+.piece .ph.duo img{transition:opacity .85s var(--e-s)}
+.piece .ph.duo .v2{opacity:0}
+.piece .ph.duo.dos .v2{opacity:1}
+.piece .ph.duo.dos .v1{opacity:0}
+.piece .ph .vues{position:absolute;right:10px;bottom:9px;z-index:2;
+  display:flex;align-items:center;gap:5px;pointer-events:none}
+.piece .ph .vues i{width:5px;height:5px;border-radius:50px;
+  background:rgba(26,26,26,.45);   /* 3,4:1 sur le papier de la carte */
+  transition:width .55s var(--e-s),background .55s var(--e-s)}
+.piece .ph.duo:not(.dos) .vues i:first-child,
+.piece .ph.duo.dos .vues i:last-child{width:15px;background:var(--rose)}
+.piece .ph .mark{width:46%;aspect-ratio:1;opacity:.30;filter:grayscale(1);
+  background:var(--logo) center/contain no-repeat}
+.piece .ph .avenir{position:absolute;left:0;right:0;bottom:0;padding:9px 12px;
+  font-family:var(--ff-u);font-size:9.5px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(26,26,26,.5);
+  background:linear-gradient(0deg,rgba(255,255,255,.9),transparent)}
+.piece .ph .tag{position:absolute;top:10px;left:10px;z-index:2;padding:6px 12px;
+  border-radius:50px;background:var(--rose);color:#fff;
+  font-family:var(--ff-u);font-size:9.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase}
+.piece .ph .voile{position:absolute;inset:0;z-index:3;display:grid;place-items:center;
+  background:rgba(230,0,126,.9);opacity:0;transition:opacity .35s var(--e-s)}
+.piece .ph .voile span{font-family:var(--ff-u);font-size:11px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.piece:hover .ph .voile{opacity:1}
+.piece .bd{padding:16px 17px 18px}
+.piece .bd h3{margin:0;font-family:var(--ff-d);font-weight:700;font-size:1.14rem;
+  line-height:1.1;color:var(--encre-2)}
+.piece .bd .ds{display:block;margin-top:6px;font-size:13px;color:var(--tx-c);line-height:1.5}
+.piece .bd .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--fil-c)}
+/* un prix ne se coupe jamais en deux. En deux colonnes sur un telephone,
+   « 100 000 F » tombait sur deux lignes et « 14 jours » aussi : la carte
+   avait l'air cassee. Vu a l'oeil en 390 px le 2026-08-06. */
+.piece .bd .pr,.piece .bd .del{white-space:nowrap}
+@media(max-width:560px){
+  .piece .bd .meta{flex-direction:column;align-items:flex-start;gap:9px}
+}
+.piece .bd .pr{font-family:var(--ff-u);font-weight:700;font-size:13px;letter-spacing:.04em;
+  color:var(--rose);display:flex;flex-direction:column;gap:2px}
+.piece .bd .pr .dev{font-weight:500;font-size:10.5px;letter-spacing:.06em;
+  color:rgba(26,26,26,.55)}
+.piece .bd .del{display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--ff-u);font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(26,26,26,.55)}
+.piece .bd .del svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+
+/* les onglets du catalogue — attendus par le moteur ([data-onglet]) */
+.tabs{display:inline-flex;gap:6px;margin-top:26px;padding:5px;border-radius:50px;
+  background:var(--papier-2)}
+.tab{min-height:44px;padding:11px 24px;border-radius:50px;
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(26,26,26,.6);
+  transition:background-color .35s var(--e-s),color .35s var(--e-s)}
+.tab[aria-selected="true"]{background:var(--encre);color:#fff}
+@media (max-width:640px){ .grid{grid-template-columns:1fr 1fr;gap:11px} }
+
+/* ---------- RÉVÉLATIONS ------------------------------------------- */
+.js .rv,.js .deck,.js .piliers,.js .cars-b,.js .coll-d,.js .look-hd,.js .look-bas,
+.js .pills,.js .coords,.js .socs{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .85s ease var(--d,0ms),transform .95s var(--e) var(--d,0ms)}
+.js .rv.vu,.js .deck.vu,.js .piliers.vu,.js .cars-b.vu,.js .coll-d.vu,.js .look-hd.vu,
+.js .look-bas.vu,.js .pills.vu,.js .coords.vu,.js .socs.vu{opacity:1;transform:none}
+/* le héros a sa propre chorégraphie */
+.js .hero .deck{opacity:1;transform:none}
+
+/* ==================================================================
+   RESPONSIVE
+   ================================================================== */
+@media (max-width:1180px){
+  .maison-in{grid-template-columns:1fr}
+  .plans{height:clamp(300px,60vw,420px)}
+  .coll-tete{grid-template-columns:1fr}
+  .ct-in{grid-template-columns:1fr}
+  .hcol,.hdes{position:static;transform:none;max-width:none;text-align:left;
+    margin:0 auto;padding:0 var(--pad)}
+  .hcol{order:3;margin-top:16px}
+  .hdes{order:4;margin-top:10px}
+  .hcol.chg,.hdes.chg{transform:translateY(10px)}
+  .hsoc{display:none}
+  /* ⛔ LE TEXTE PASSAIT SOUS LES PHOTOS. En dessous de 1180 px il redevenait
+     `position:relative`, donc dans le flux — mais il restait DANS `.cars`, une
+     boîte de hauteur fixe dont la piste (`.cars-p`) est en `position:absolute`
+     et couvre tout. Le titre et la description se retrouvaient posés sur la
+     robe : 65 % du texte recouvert à 390 px, vu par Mongazi sur son iPhone le
+     2026-08-21. On empile pour de bon : `.cars` devient une colonne, la
+     hauteur passe sur la piste, et le texte occupe sa propre ligne au-dessus. */
+  .cars{height:auto;overflow:visible;display:flex;flex-direction:column}
+  .cars-t{position:relative;left:auto;top:auto;transform:none;max-width:none;
+    padding:0 var(--pad);text-align:center;margin-bottom:clamp(18px,3vw,28px);
+    order:1}
+  .cars-p{position:relative;order:2;height:clamp(360px,44vw,540px);overflow:hidden}
+  .cars-t::before{display:none}
+  .cars-t.chg{transform:translateY(10px)}
+  .lk--1,.lk--2,.lk--3,.lk--4,.lk--5,.lk--6{
+    width:min(74%,420px);margin-left:0;margin-right:0;margin-top:clamp(22px,5vw,44px)}
+  .lk--2,.lk--4,.lk--6{margin-left:auto}
+}
+@media (max-width:880px){
+  .nav-c{position:fixed;inset:0 0 0 auto;width:min(320px,86vw);margin:0;
+    background:var(--encre);color:#fff;flex-direction:column;align-items:stretch;
+    justify-content:center;gap:2px;padding:86px 28px calc(30px + env(safe-area-inset-bottom));
+    transform:translateX(101%);transition:transform .5s var(--e);overflow-y:auto}
+  .nav-c.ouvert{transform:none;box-shadow:-36px 0 70px -34px rgba(0,0,0,.85)}
+  .nav-c a{font-family:var(--ff-d);font-weight:700;font-size:1.5rem;letter-spacing:-.02em;
+    padding:13px 0;border-bottom:1px solid var(--fil-n);opacity:1;text-transform:none}
+  .nav-c a::after{display:none}
+  /* ⚠️ La barre garde SON BOUTON DU SON sur téléphone. `display:none` sur tout
+     `.nav-d` le faisait disparaître avec la loupe et le panier — or le son
+     doit rester coupable partout. On masque les autres, pas le conteneur. */
+  .nav-d{display:flex}
+  .nav-d>:not(.sonbt){display:none}
+  .burger{display:flex}
+  .hbig{margin-top:clamp(-60px,-6vw,-20px)}
+  .look-cpt{height:70svh}
+  .look-gr{margin-top:-70svh}
+}
+@media (max-width:640px){
+  .hero{min-height:auto;padding-top:clamp(96px,14vh,128px)}
+  .hsc{width:min(80%,320px);height:min(48vh,400px)}
+  .hnum{font-size:clamp(8rem,54vw,15rem)}
+  /* les badges restaient a cheval sur les bords : on les rentre */
+  .bdg{font-size:9.5px;padding:7px 13px;letter-spacing:.08em}
+  .bdg--1{top:2%;  right:var(--pad); left:auto}
+  .bdg--2{top:2%;  left:var(--pad);  right:auto}
+  .bdg--3{bottom:auto;top:auto;right:var(--pad);left:auto;
+    top:calc(48vh + 60px);animation-duration:5.4s}
+  .bdg--4{display:none}
+  /* le grand titre ne doit plus ecraser la description */
+  .hbig{margin-top:clamp(18px,4vw,30px);mix-blend-mode:normal}
+  .hbig h1{font-size:clamp(2.4rem,13vw,3.6rem)}
+  .hcol{order:3;margin-top:clamp(70px,16vw,96px)}
+  .nav-logo{font-size:15px}
+  .nav-logo .mk{width:22px;height:22px}
+  .hfle{display:none}
+  .piliers li{grid-template-columns:1fr;gap:2px}
+  .plans{height:clamp(280px,86vw,400px)}
+  .plan{width:60%}
+  .cars-p{height:clamp(320px,86vw,420px)}
+  .car{width:min(58vw,240px)}
+  .socs{grid-template-columns:1fr 1fr;gap:0 18px}
+  .et{grid-template-columns:60px 1fr;padding:22px 20px}
+  .look-bas{flex-wrap:wrap;gap:10px}
+  /* on fige ce qui coûte sur un téléphone d'entrée de gamme */
+  .grain{opacity:.045}
+  .plan{box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+}
+
+/* ==================================================================
+   MOUVEMENT RÉDUIT
+   ================================================================== */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .bdg{animation:none}
+  .ruban-p{animation:none}
+  .hfle svg{animation:none}
+  .js .mot>span,.js .hbig .bl>span{transform:none;opacity:1}
+  .js .rv,.js .deck,.js .piliers,.js .cars-b,.js .coll-d,.js .look-hd,.js .look-bas,
+  .js .pills,.js .coords,.js .socs,.js .lk,.js .et,.js .plan,.js .bdg,.js .hbig .base{
+    opacity:1;transform:none}
+  .lab i{transform:scaleX(1)}
+  .lk{filter:none}
+  .cur{display:none}
+  .load{display:none}
+}
+
+/* ==================================================================
+   LES QUESTIONS · la FAQ (2026-08-16)
+   ==================================================================
+   ⚠️ Écrite en <details> : elle fonctionne SANS JavaScript, elle est
+   navigable au clavier et lisible par un lecteur d'écran sans qu'on
+   ait rien à câbler. Le balisage FAQPage exige que ces textes soient
+   visibles : ils le sont, même script coupé.
+   ================================================================== */
+.faq .faq-l{margin-top:clamp(28px,4vw,48px);border-top:1px solid var(--fil-c)}
+.faq-q{border-bottom:1px solid var(--fil-c)}
+.faq-q>summary{list-style:none;cursor:pointer;padding:22px 46px 22px 0;position:relative;
+  font-family:var(--ff-d);font-size:clamp(17px,2.4vw,22px);font-weight:400;line-height:1.3;
+  color:var(--encre);transition:color .3s ease}
+.faq-q>summary::-webkit-details-marker{display:none}
+.faq-q>summary:hover{color:var(--rose-f)}
+.faq-q>summary::after,.faq-q>summary::before{content:"";position:absolute;right:8px;top:50%;
+  width:15px;height:1.5px;background:var(--encre);transition:transform .38s var(--e),background .3s}
+.faq-q>summary::before{transform:rotate(90deg)}
+.faq-q[open]>summary::before{transform:rotate(0)}
+.faq-q[open]>summary{color:var(--rose-f)}
+.faq-q[open]>summary::after,.faq-q[open]>summary::before{background:var(--rose-f)}
+.faq-r{padding:0 44px 24px 0;max-width:64ch}
+.faq-r p{color:var(--tx-c);font-size:clamp(14px,1.7vw,16px);line-height:1.7;margin:0}
+/* la réponse se déroule comme un ourlet qu'on ouvre */
+.faq-q[open] .faq-r{animation:ourlet .5s var(--e) both}
+@keyframes ourlet{from{opacity:0;transform:translateY(-8px)}}
+@media(prefers-reduced-motion:reduce){.faq-q[open] .faq-r{animation:none}}
+
+/* ==================================================================
+   UNE SIGNATURE PAR SECTION (2026-08-17)
+   ==================================================================
+   Mongazi : « ajoute des animations différentes pour chaque autre
+   section ». Il a raison : cinq blocs partageaient la MÊME révélation
+   (`translateY(24px)` + fondu), alors que la règle de la maison est
+   une signature différente par section, tirée du métier.
+
+   Chacune sort d'un geste de couture réel :
+     01 la maison     — l'ourlet qu'on déroule
+     02 les collections — le portant : les cintres qu'on pousse
+     03 le catalogue  — les patrons qu'on épingle
+     04 les questions — le fil qui se dénoue
+     05 le contact    — la couture qui se ferme
+
+   ⚠️ Aucune de ces animations ne déborde : `section{overflow-x:clip}`
+   plus bas. Une révélation qui vient du côté pousse la page tant
+   qu'elle n'a pas joué, et personne ne le voit en la regardant.
+   ⚠️ `clip` et pas `hidden` : `hidden` créerait un conteneur de
+   défilement et casserait les éléments collants.
+   ================================================================== */
+section{overflow-x:clip}
+
+/* ---- 01 · LA MAISON — l'ourlet qu'on déroule ---------------------
+   Les trois piliers se découvrent de gauche à droite, l'un après
+   l'autre, comme un ourlet qu'on déplie sur la table. */
+.js #maison .piliers li{clip-path:inset(0 100% 0 0);opacity:.001}
+.js #maison .piliers.vu li{animation:ourl .82s var(--e) both}
+.js #maison .piliers.vu li:nth-child(2){animation-delay:.13s}
+.js #maison .piliers.vu li:nth-child(3){animation-delay:.26s}
+@keyframes ourl{
+  from{clip-path:inset(0 100% 0 0);opacity:1}
+  to{clip-path:inset(0 0 0 0);opacity:1}
+}
+
+/* ---- 02 · LES COLLECTIONS — le portant ---------------------------
+   Le bloc arrive en glissant, comme un cintre qu'on pousse sur la
+   tringle, et se stabilise après un balancement très court. */
+.js #collections .coll-d{opacity:0;transform:translateX(38px) rotate(.6deg)}
+.js #collections .coll-d.vu{animation:cintre 1s var(--e) both}
+@keyframes cintre{
+  0%{opacity:0;transform:translateX(38px) rotate(.9deg)}
+  62%{opacity:1;transform:translateX(-5px) rotate(-.25deg)}
+  100%{opacity:1;transform:none}
+}
+.js #collections .cars-b{opacity:0;transform:translateY(20px)}
+.js #collections .cars-b.vu{animation:cintre-b .9s var(--e) .14s both}
+@keyframes cintre-b{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ---- 03 · LE CATALOGUE — les patrons qu'on épingle ---------------
+   Chaque carte pivote autour de son coin haut-gauche, comme une
+   feuille de patron qui retombe autour de son épingle, et s'arrête
+   sur l'inclinaison que le script lui a donnée. */
+.js #catalogue #grille .piece{transform-origin:12px 12px}
+.js #catalogue #grille.vu .piece{animation:epingle .7s var(--e) both}
+.js #catalogue #grille.vu .piece:nth-child(2){animation-delay:.06s}
+.js #catalogue #grille.vu .piece:nth-child(3){animation-delay:.12s}
+.js #catalogue #grille.vu .piece:nth-child(4){animation-delay:.18s}
+.js #catalogue #grille.vu .piece:nth-child(n+5){animation-delay:.24s}
+@keyframes epingle{
+  from{opacity:0;transform:rotate(calc(var(--rot,0deg) - 6deg)) translateY(-10px)}
+  to{opacity:1;transform:rotate(var(--rot,0deg))}
+}
+
+/* ---- 04 · LES QUESTIONS — le fil qui se dénoue -------------------
+   Un fil descend le long de la liste, et chaque séparation se trace
+   de gauche à droite derrière lui. */
+.faq .faq-l{position:relative}
+.js .faq .faq-l::before{content:'';position:absolute;left:-1px;top:0;width:1.5px;height:100%;
+  background:var(--rose);transform:scaleY(0);transform-origin:top;opacity:.9}
+.js .faq .faq-l.vu::before{animation:fil 1.15s var(--e) both}
+@keyframes fil{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.js .faq .faq-q{opacity:0}
+.js .faq .faq-l.vu .faq-q{animation:denoue .6s var(--e) both}
+.js .faq .faq-l.vu .faq-q:nth-child(2){animation-delay:.1s}
+.js .faq .faq-l.vu .faq-q:nth-child(3){animation-delay:.2s}
+.js .faq .faq-l.vu .faq-q:nth-child(4){animation-delay:.3s}
+.js .faq .faq-l.vu .faq-q:nth-child(5){animation-delay:.4s}
+.js .faq .faq-l.vu .faq-q:nth-child(6){animation-delay:.5s}
+@keyframes denoue{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+
+/* ---- 05 · LE CONTACT — la couture qui se ferme -------------------
+   Les quatre accès se rapprochent par paires, comme deux pans de
+   tissu qu'on assemble, et le point de couture se pique au milieu. */
+.js #contact .socs{position:relative;opacity:0}
+.js #contact .socs.vu{opacity:1}
+.js #contact .socs>*{opacity:0}
+.js #contact .socs.vu>*{animation:pan .78s var(--e) both}
+.js #contact .socs.vu>*:nth-child(1){--sens:-1}
+.js #contact .socs.vu>*:nth-child(2){--sens:-1;animation-delay:.06s}
+.js #contact .socs.vu>*:nth-child(3){--sens:1;animation-delay:.06s}
+.js #contact .socs.vu>*:nth-child(4){--sens:1}
+@keyframes pan{
+  from{opacity:0;transform:translateX(calc(var(--sens,1) * 26px))}
+  to{opacity:1;transform:none}
+}
+.js #contact .socs::after{content:'';position:absolute;left:0;right:0;top:-1px;height:1.5px;
+  background:repeating-linear-gradient(90deg,var(--rose) 0 7px,transparent 7px 14px);
+  transform:scaleX(0);transform-origin:50% 50%}
+.js #contact .socs.vu::after{animation:pique 1s var(--e) .3s both}
+@keyframes pique{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+@media(prefers-reduced-motion:reduce){
+  .js #maison .piliers li,.js #collections .coll-d,.js #collections .cars-b,
+  .js #catalogue #grille .piece,.js .faq .faq-q,.js #contact .socs,
+  .js #contact .socs>*{animation:none!important;opacity:1!important;
+    transform:none!important;clip-path:none!important}
+  .js .faq .faq-l::before,.js #contact .socs::after{animation:none!important;transform:none!important}
+  /* les deux vues ne tournent plus : la face reste, le dos se voit dans la
+     fiche de commande (figure « Le dos »). Deux pastilles figées ne disent
+     rien, on les retire. */
+  .piece .ph.duo .v2,.car-c .v2{opacity:0!important;transition:none!important}
+  .piece .ph.duo .v1,.car-c .v1{opacity:1!important;transition:none!important}
+  .piece .ph .vues{display:none}
+}

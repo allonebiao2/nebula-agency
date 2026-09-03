@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr" class="pas-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon Bénin · Sept cents kilomètres, de l'océan au fleuve</title>
+<meta name="description" content="Un voyage de sept minutes à travers le Bénin, de la Porte du Non-Retour au fleuve Niger. Huit lieux, sept cents kilomètres, et le pays raconté par ceux qui le font.">
+<meta name="theme-color" content="#0b0a09">
+<meta name="author" content="NEBULA Agency">
+
+<!-- UNE SEULE ADRESSE. Le site répondait à deux (`mon-benin` et
+     `dev.mon-benin`) et ne disait nulle part laquelle était la vraie :
+     ni pour Google, ni pour WhatsApp, ni pour un lecteur qui copie le
+     lien. C'est celle-ci, et elle est écrite en toutes lettres. -->
+<link rel="canonical" href="https://mon-benin.pages.dev/">
+<meta property="og:url" content="https://mon-benin.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mon Bénin">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Mon Bénin · Sept cents kilomètres">
+<meta property="og:description" content="Sept cents kilomètres, huit lieux, un seul mouvement. Le Bénin comme vous ne l'avez jamais parcouru.">
+<meta property="og:image" content="assets/images/og.png?v=20260811f">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/images/logo/favicon.svg?v=20260811f" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/images/logo/logo-marque.png?v=20260811f">
+<!-- Aucune police distante, aucune requête vers un tiers : la page doit
+     s'ouvrir en moins de trois secondes sur un téléphone moyen en 3G. -->
+<link rel="stylesheet" href="assets/app.css?v=20260811f">
+
+<script>document.documentElement.className = 'js';</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TouristTrip",
+  "name": "Mon Bénin, sept cents kilomètres de l'océan au fleuve",
+  "description": "Un parcours de huit lieux à travers le Bénin, de la Porte du Non-Retour à Ouidah jusqu'au fleuve Niger, sur environ sept cents kilomètres.",
+  "touristType": "Voyageur curieux du Bénin, diaspora afro-descendante",
+  "itinerary": {
+    "@type": "ItemList",
+    "numberOfItems": 8,
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "item": {"@type": "TouristAttraction", "name": "La Porte du Non-Retour", "address": "Ouidah, Bénin"}},
+      {"@type": "ListItem", "position": 2, "item": {"@type": "TouristAttraction", "name": "Ouidah", "address": "Ouidah, Bénin"}},
+      {"@type": "ListItem", "position": 3, "item": {"@type": "TouristAttraction", "name": "Cotonou", "address": "Cotonou, Bénin"}},
+      {"@type": "ListItem", "position": 4, "item": {"@type": "TouristAttraction", "name": "Ganvié", "address": "Lac Nokoué, Bénin"}},
+      {"@type": "ListItem", "position": 5, "item": {"@type": "TouristAttraction", "name": "Les palais royaux d'Abomey", "address": "Abomey, Bénin"}},
+      {"@type": "ListItem", "position": 6, "item": {"@type": "TouristAttraction", "name": "Le Koutammakou et les Tata Somba", "address": "Boukoumbé, Bénin"}},
+      {"@type": "ListItem", "position": 7, "item": {"@type": "TouristAttraction", "name": "Le parc national de la Pendjari", "address": "Atacora, Bénin"}},
+      {"@type": "ListItem", "position": 8, "item": {"@type": "TouristAttraction", "name": "Le fleuve Niger à Malanville", "address": "Malanville, Bénin"}}
+    ]
+  }
+}
+</script>
+</head>
+<body>
+
+<!-- ═══ LE RIDEAU ═══════════════════════════════════════════════ -->
+<div class="rideau" id="rideau" aria-hidden="true">
+  <div class="rideau-h"></div>
+  <div class="rideau-b"></div>
+  <div class="rideau-c">
+    <p class="rideau-t">Mon <i>Bénin</i></p>
+    <span class="rideau-f"></span>
+    <p class="rideau-n"><b id="rideauN">0</b> <small>km</small></p>
+  </div>
+</div>
+
+<!-- ═══ LE SEUIL D'ENTRÉE (autorise le son) ═════════════════════ -->
+<div class="seuil" id="seuil" hidden>
+  <div class="seuil-in">
+    <p class="seuil-k">Huit lieux · un seul mouvement</p>
+    <h1 class="seuil-t">Mon <i>Bénin</i></h1>
+    <p class="seuil-sig">sept cents kilomètres</p>
+    <p class="seuil-p">De la Porte du Non-Retour jusqu'au fleuve.<br>Le voyage remonte la route, à l'envers.</p>
+    <button class="seuil-b" id="entrer" type="button">
+      <span class="seuil-o" aria-hidden="true"></span>
+      Toucher pour entrer
+    </button>
+    <p class="seuil-s">Le son fait partie du voyage. Vous pourrez le couper.</p>
+  </div>
+</div>
+
+<!-- ═══ BARRE FIXE ══════════════════════════════════════════════ -->
+<header class="barre" id="barre">
+  <div class="barre-g">
+    <button class="barre-b" id="ouvrirCarte" type="button" aria-expanded="false" aria-controls="carte">
+      <span class="barre-h" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="vh">Ouvrir la liste des lieux</span>
+    </button>
+    <button class="barre-s" id="sonBtn" type="button" aria-pressed="false" title="Couper ou remettre le son">
+      <span class="barre-so" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="vh">Son</span>
+    </button>
+  </div>
+
+  <a class="barre-m" href="#portail"><img src="assets/images/logo/logo-marque-clair.svg?v=20260811f" alt="" width="26" height="26" class="barre-lo"><span>Mon <i>Bénin</i></span></a>
+
+  <div class="barre-d">
+    <button class="barre-l" id="ouvrirListe" type="button" aria-controls="carte">Les huit lieux</button>
+    <button class="barre-q" id="ouvrirRech" type="button" aria-controls="carte">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17">
+        <circle cx="10.5" cy="10.5" r="6.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M15.4 15.4 L20.5 20.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="vh">Chercher un lieu</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══ LA JAUGE (l'anneau gradué) ══════════════════════════════ -->
+<div class="jauge" id="jauge" aria-hidden="true">
+  <svg viewBox="0 0 200 200" class="jauge-a" id="jaugeA"></svg>
+  <p class="jauge-k"><b id="jaugeN">0</b><small>km</small></p>
+  <p class="jauge-l" id="jaugeL">au nord de l'océan</p>
+</div>
+
+<!-- ═══ LE PANNEAU DES HUIT LIEUX ═══════════════════════════════ -->
+<div class="carte" id="carte" hidden>
+  <div class="carte-in">
+    <p class="carte-k">Le pays, du sud au nord</p>
+    <label class="carte-ch">
+      <span class="vh">Chercher un lieu</span>
+      <input type="search" id="carteQ" placeholder="Chercher un lieu, une ville, un geste" autocomplete="off">
+    </label>
+    <ol class="carte-l" id="carteL"></ol>
+    <p class="carte-v" id="carteV" hidden>Aucun lieu ne porte ce nom.</p>
+    <p class="carte-n">Les kilomètres sont comptés à vol d'oiseau depuis la côte.</p>
+  </div>
+</div>
+
+<main id="route" class="route">
+
+<!-- ═══ LE PORTAIL ══════════════════════════════════════════════
+     Composition et commandes reprises de la référence envoyée par
+     Mongazi : deux cercles concentriques, le nom du lieu en très
+     grand très espacé, la région dessous, les flèches, « partager »
+     à gauche, « découvrir » au centre, « au hasard » à droite.
+     Le lieu suivant arrive PAR LE CERCLE (iris). -->
+<section class="po" id="portail" aria-label="Choisir un lieu">
+  <div class="po-fond" aria-hidden="true">
+    <img class="po-ph" id="poPhoto" alt="" decoding="async" width="1000" height="620">
+    <div class="po-nappe" id="poNappe"></div>
+    <div class="po-motif" id="poMotif"></div>
+    <div class="po-grain"></div>
+  </div>
+  <div class="po-iris" id="poIris" aria-hidden="true">
+    <img class="po-ph" id="poIrisPhoto" alt="" decoding="async" width="1000" height="620">
+    <div class="po-nappe" id="poIrisNappe"></div>
+    <div class="po-motif" id="poIrisMotif"></div>
+    <div class="po-grain"></div>
+  </div>
+
+  <div class="po-cercles" id="poCercles" aria-hidden="true">
+    <span class="po-c po-c1"></span>
+    <span class="po-c po-c2"></span>
+  </div>
+
+  <div class="po-centre">
+    <h1 class="po-t" id="poT">La Porte</h1>
+    <span class="po-fil" aria-hidden="true"></span>
+    <p class="po-r" id="poR">Ouidah &middot; km 0</p>
+    <div class="po-nav">
+      <button class="po-fl po-prec" id="poPrec" type="button">
+        <svg viewBox="0 0 40 10" aria-hidden="true" width="34" height="9">
+          <path d="M38 5 H3 M9 1 L3 5 L9 9" fill="none" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <span class="vh">Lieu pr&eacute;c&eacute;dent</span>
+      </button>
+      <span class="po-sep" aria-hidden="true"></span>
+      <button class="po-fl po-suiv" id="poSuiv" type="button">
+        <svg viewBox="0 0 40 10" aria-hidden="true" width="34" height="9">
+          <path d="M2 5 H37 M31 1 L37 5 L31 9" fill="none" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <span class="vh">Lieu suivant</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="po-part">
+    <span class="po-part-t">Partager</span>
+    <span class="po-part-f" aria-hidden="true"></span>
+    <a class="po-part-b" id="poPartage" href="#" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M15.6 6.3 8.4 10.7M8.4 13.3l7.2 4.4" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span class="vh">Partager sur WhatsApp</span>
+    </a>
+  </div>
+
+  <a class="po-dec" id="poDec" href="#station-0">D&eacute;couvrir ce lieu</a>
+
+  <div class="po-has">
+    <span class="po-has-t">Au hasard</span>
+    <span class="po-has-f" aria-hidden="true"></span>
+    <button class="po-has-b" id="poHasard" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="19" height="19">
+        <path d="M3 7h4l3.2 4.2M21 7h-5l-8 10H3M21 17h-5" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M18.6 4.6 21 7l-2.4 2.4M18.6 14.6 21 17l-2.4 2.4" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="vh">Un lieu au hasard</span>
+    </button>
+  </div>
+</section>
+
+
+<!-- ═══ 0 · LA PORTE ════════════════════════════════════════════ -->
+<section class="st st--porte" id="station-0" data-km="0" data-verbe="tenir" data-son="porte"
+         data-encre="#08070a" data-terre="#7d2f1c" data-motif="porte">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/porte.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/porte-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 0</span> · Ouidah, sur le sable</p>
+    <h2 class="st-t"><span class="mot">La</span> <span class="mot">Porte</span></h2>
+    <p class="st-r">La Porte du Non-Retour</p>
+    <div class="st-tx">
+      <p>Ici la terre s'arrête, au bout de la Route des Esclaves, qui court sur environ trois kilomètres et demi depuis la ville jusqu'à cette plage.</p>
+      <p>Pendant près de trois siècles, des femmes et des hommes ont fait ce chemin dans un seul sens.</p>
+      <p><strong>Vous allez le remonter.</strong></p>
+    <p class="st-ph"><span>Photographie</span> La porte élevée en 1995, sur la plage d'Ouidah. Elle a été remplacée : une porte plus haute, portant plus de deux cents sculptures, a été dévoilée en décembre 2025, recentrée sur l'axe du pont de Djègbadji.</p></div>
+  </div>
+  <div class="tenir" id="tenir">
+    <button class="tenir-b" id="tenirB" type="button">
+      <svg class="tenir-c" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" class="tenir-p"></circle>
+        <circle cx="50" cy="50" r="46" class="tenir-j" id="tenirJ"></circle>
+      </svg>
+      <span class="tenir-l" id="tenirL">Appuyer et tenir</span>
+    </button>
+    <p class="tenir-n">Le seul endroit du voyage où l'on ne peut pas passer sans s'arrêter.</p>
+  </div>
+</section>
+
+<!-- ═══ 1 · OUIDAH ══════════════════════════════════════════════ -->
+<section class="st" id="station-1" data-km="6" data-verbe="remonter" data-son="ouidah"
+         data-encre="#160c0b" data-terre="#a4462a" data-motif="route">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/ouidah.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/ouidah-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 6</span> · Ouidah</p>
+    <h2 class="st-t"><span class="mot">Ouidah</span></h2>
+    <p class="st-r">La ville qui garde la mémoire</p>
+    <div class="st-tx">
+      <p>On remonte. L'Arbre de l'Oubli, la case du Zomaï où l'on enfermait dans le noir, l'Arbre du Retour. Puis la forêt sacrée de Kpassè, le temple des Pythons, et le fort portugais devenu musée d'histoire.</p>
+      <p>Depuis janvier 2024, la ville accueille les Vodun Days. Au Bénin, le vodoun n'est pas une curiosité pour visiteurs : c'est une religion reconnue, et le 10 janvier est une fête nationale.</p>
+      <p>La troisième édition, du 8 au 10 janvier 2026, a réuni <strong>plus de sept cent quarante mille personnes</strong>. Des délégations sont venues du Brésil et de Finlande.</p>
+    <p class="st-ph"><span>Photographie</span> Une case au toit de tuiles coniques, dans l'enceinte du temple des Pythons, à Ouidah.</p></div>
+  </div>
+  <p class="st-jauge" data-jauge>3 500 m parcourus depuis la mer</p>
+</section>
+
+<!-- ═══ 2 · COTONOU ═════════════════════════════════════════════ -->
+<section class="st" id="station-2" data-km="7" data-verbe="choisir" data-son="cotonou"
+         data-encre="#0a1014" data-terre="#c07a2c" data-motif="marche">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/cotonou.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/cotonou-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 7</span> · Cotonou</p>
+    <h2 class="st-t"><span class="mot">Cotonou</span></h2>
+    <p class="st-r">Presque à la même hauteur qu'Ouidah</p>
+    <div class="st-tx">
+      <p>Dantokpa, l'un des plus grands marchés d'Afrique de l'Ouest. On n'y entre pas, on s'y laisse prendre. Il n'y a pas un chemin, il y en a mille, et il faut en choisir un.</p>
+      <p>Plus loin, la Place de l'Amazone et sa statue dressée en 2022, puis la Fondation Zinsou pour l'art contemporain.</p>
+      <p>Face à elle, sur le boulevard de la Marina, la Cité ministérielle a ouvert le <strong>1er octobre 2025</strong> : cinq hectares, dix bâtiments, et à terme vingt ministères réunis sur un seul site. Cotonou n'est pas seulement le plus grand marché. C'est aussi le pays qui décide.</p>
+    <p class="st-ph"><span>Photographie</span> Le marché Dantokpa vu d'en haut : les parasols, les étals, la foule.</p></div>
+  </div>
+  <div class="choisir" id="choisir" aria-hidden="true"></div>
+</section>
+
+<!-- ═══ 3 · GANVIÉ ══════════════════════════════════════════════ -->
+<section class="st" id="station-3" data-km="18" data-verbe="pagayer" data-son="ganvie"
+         data-encre="#06120f" data-terre="#2f7d63" data-motif="pilotis">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/ganvie.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/ganvie-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 18</span> · Lac Nokoué</p>
+    <h2 class="st-t"><span class="mot">Ganvié</span></h2>
+    <p class="st-r">La cité sur l'eau</p>
+    <div class="st-tx">
+      <p>On l'appelle souvent la Venise de l'Afrique, et c'est une phrase qui ne dit rien. Ganvié n'a pas été bâtie sur l'eau pour la beauté.</p>
+      <p>Les Tofinu s'y sont installés pour échapper aux razzias du royaume du Dahomey, dont les guerriers avaient l'interdit religieux d'entrer dans l'eau. <strong>Le lac était la seule chose qui vous sauvait.</strong></p>
+      <p>Aujourd'hui on y vit sur pilotis, on y pêche à l'acadja, et le marché se tient en pirogue.</p>
+    <p class="st-ph"><span>Photographie</span> Ganvié : les maisons sur pilotis alignées le long d'un chenal du lac Nokoué.</p></div>
+  </div>
+  <div class="pagaie" id="pagaie">
+    <p class="pagaie-l">Glissez le doigt pour avancer à la pirogue</p>
+    <div class="pagaie-p" id="pagaieP" role="slider" tabindex="0"
+         aria-label="Avancer sur l'eau" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+  </div>
+</section>
+
+<!-- ═══ HALTE · LA MÉMOIRE ══════════════════════════════════════ -->
+<section class="ha" id="halte-1" data-terre="#a4462a">
+  <div class="ha-pan" aria-hidden="true"></div>
+  <div class="ha-in">
+    <p class="ha-k">La halte · 01</p>
+    <h2 class="ha-t" data-fantome>La mémoire</h2>
+    <div class="ha-tx">
+      <p class="ha-ch">Ce que le sud garde</p>
+      <p>Les quatre premiers lieux de ce voyage tiennent dans les vingt premiers kilomètres du pays. Tout le reste, six cent quatre-vingts kilomètres, est encore devant.</p>
+      <p>C'est la première chose que le Bénin apprend à qui le traverse : <strong>le sud est dense, et le pays est long.</strong></p>
+    </div>
+    <div class="ha-ch2">
+      <div class="ha-c"><b>1625</b><span>premier roi du Danxomè</span></div>
+      <div class="ha-c"><b>1995</b><span>la Porte est élevée</span></div>
+      <div class="ha-c"><b>2021</b><span>26 œuvres reviennent</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4 · ABOMEY ══════════════════════════════════════════════ -->
+<section class="st" id="station-4" data-km="98" data-verbe="frotter" data-son="abomey"
+         data-encre="#180b06" data-terre="#b5561f" data-motif="relief">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/abomey.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/abomey-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 98</span> · Abomey</p>
+    <h2 class="st-t"><span class="mot">Abomey</span></h2>
+    <p class="st-r">Les palais royaux du Danxomè</p>
+    <div class="st-tx">
+      <p>Ici commence le <strong>Danxomè</strong>. On rapporte qu'Akaba redemanda des terres au roi Dâ, qui répondit qu'à ce rythme on finirait par bâtir sur son ventre. Akaba le tua et éleva son palais par-dessus. <em>Dân-xo-mè</em> : dans le ventre de Dâ. En fon, <em>dan</em> désigne aussi le serpent, et beaucoup traduisent ainsi ; dans le nom du royaume, c'est pourtant un homme. Les versions divergent sur le roi, et sur l'ancienneté du récit.</p>
+      <p>Douze rois se sont succédé de 1625 à 1900. Les palais sont inscrits au patrimoine mondial depuis 1985.</p>
+      <p>Ce classement est né d'un désastre. Une tornade, le <strong>15 mars 1984</strong>, a éventré l'enceinte royale. L'inscription est venue l'année suivante, et avec elle les campagnes qui ont sauvé les murs de terre.</p>
+      <p>Sur les murs, les bas-reliefs ne décorent pas : <strong>ils racontent.</strong> Chaque règne y a laissé ses signes, ses animaux, ses batailles. C'est une archive, écrite dans la terre.</p>
+      <p>C'est aussi ici qu'on rencontre les Mino, ce corps de femmes soldats que l'Europe a appelé les Amazones. En novembre 2021, la France a restitué vingt-six œuvres prises en 1892. Un vingt-septième objet, un tabouret à trois pieds appelé <em>kataklè</em>, n'était pas du voyage.</p>
+    <p class="st-ph"><span>Photographie</span> Un bas-relief en terre du quartier de Gbécon-Hounli, à Abomey.</p></div>
+  </div>
+  <div class="frotter" id="frotter">
+    <p class="frotter-l">Passez le doigt sur le mur</p>
+    <div class="frotter-m" id="frotterM"></div>
+  </div>
+</section>
+
+<!-- ═══ LE SAUT ═════════════════════════════════════════════════ -->
+<section class="saut" id="saut">
+  <div class="saut-in">
+    <p class="saut-p" data-mots>Tout ce que vous venez de voir tient dans les cent premiers kilomètres.</p>
+    <p class="saut-s" data-mots>Le pays en fait sept cents.</p>
+    <div class="saut-b" aria-hidden="true"><span id="sautB"></span></div>
+  </div>
+</section>
+
+<!-- ═══ 5 · KOUTAMMAKOU ═════════════════════════════════════════ -->
+<section class="st" id="station-5" data-km="430" data-verbe="descendre" data-son="koutammakou"
+         data-encre="#141008" data-terre="#c98b3a" data-motif="tata">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/koutammakou.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/koutammakou-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 430</span> · Boukoumbé, Atacora</p>
+    <h2 class="st-t"><span class="mot">Koutammakou</span></h2>
+    <p class="st-r">Les Tata Somba</p>
+    <div class="st-tx">
+      <p>Chez les Batammariba, une maison n'est pas un abri : c'est une forteresse à étages, bâtie en terre, et elle se lit de bas en haut.</p>
+      <p>En bas le bétail. Au milieu les greniers. En haut la terrasse, où l'on dort et où l'on sèche le mil. Et dans la cour, les ancêtres.</p>
+      <p>Le Koutammakou est inscrit au patrimoine mondial depuis 2004 du côté togolais, et le versant béninois a été ajouté en 2023.</p>
+    <p class="st-ph"><span>Photographie</span> Une Tata Somba : la maison-forteresse en terre des Batammariba, avec ses tourelles de chaume.</p></div>
+  </div>
+  <div class="tata" id="tata">
+    <p class="tata-l">Descendez dans la maison</p>
+    <div class="tata-c" id="tataC">
+      <div class="tata-n" data-n="3"><b>La terrasse</b><span>on y dort, on y sèche le mil</span></div>
+      <div class="tata-n" data-n="2"><b>Les greniers</b><span>le mil, le sorgho, l'année entière</span></div>
+      <div class="tata-n" data-n="1"><b>Le bétail</b><span>à l'abri, sous la maison</span></div>
+      <div class="tata-n" data-n="0"><b>La cour</b><span>les ancêtres reposent ici</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6 · LA PENDJARI ═════════════════════════════════════════ -->
+<section class="st st--attente" id="station-6" data-km="538" data-verbe="attendre" data-son="pendjari"
+         data-encre="#0d1109" data-terre="#8a9a4a" data-motif="courbes">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/pendjari.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/pendjari-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 538</span> · Atacora</p>
+    <h2 class="st-t"><span class="mot">La</span> <span class="mot">Pendjari</span></h2>
+    <p class="st-r">Le parc national</p>
+    <div class="st-tx">
+      <p>Ici, vous ne commandez rien. La caméra avance seule, lentement, et vous ne pouvez que regarder. C'est exactement cela, un safari : <strong>on attend.</strong></p>
+      <p>Le parc fait partie du complexe W-Arly-Pendjari inscrit au patrimoine mondial. Il abrite l'une des dernières populations de lions d'Afrique de l'Ouest, des éléphants, des guépards. Sa gestion est confiée à African Parks depuis 2017.</p>
+    <p class="st-ph"><span>Photographie</span> Un baobab au bord d'un point d'eau, dans la savane sèche de la Pendjari.</p></div>
+    <p class="st-av"><strong>À savoir avant de partir.</strong> Le nord du Bénin est affecté depuis 2021 par le débordement sécuritaire du Sahel. Une partie de la zone est soumise à restrictions. Consultez les conseils aux voyageurs de votre pays et renseignez-vous localement avant tout déplacement.</p>
+  </div>
+  <p class="attente" id="attente"><span id="attenteN">0</span> secondes d'attente</p>
+</section>
+
+<!-- ═══ 7 · LE FLEUVE ═══════════════════════════════════════════ -->
+<section class="st st--fin" id="station-7" data-km="617" data-verbe="arriver" data-son="fleuve"
+         data-encre="#101418" data-terre="#c9a24a" data-motif="fleuve">
+  <div class="st-fond" aria-hidden="true"><img class="st-photo" data-src="assets/images/lieux/fleuve.webp?v=20260811f" alt="" loading="lazy" decoding="async" width="1400" height="868" style="background-image:url(assets/images/lieux/fleuve-min.webp?v=20260811f)"><div class="st-voile"></div><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 617</span> · Malanville</p>
+    <h2 class="st-t"><span class="mot">Le</span> <span class="mot">Fleuve</span></h2>
+    <p class="st-r">Le Niger, tout en haut</p>
+    <div class="st-tx">
+      <p>Le fleuve ferme le pays par le nord. De l'autre rive, c'est déjà le Niger.</p>
+      <p>Entre cette eau et celle d'où vous êtes parti, il y a sept cents kilomètres, une langue qui change tous les cent kilomètres, et un pays qui n'a jamais eu besoin d'être grand.</p>
+    <p class="st-ph"><span>Photographie</span> Les pirogues alignées sur la berge du fleuve Niger, à Malanville.</p></div>
+  </div>
+</section>
+
+<!-- ═══ LE CARNET ═══════════════════════════════════════════════ -->
+<section class="ca" id="carnet">
+  <div class="ca-in">
+    <p class="ca-k">Le carnet</p>
+    <h2 class="ca-t">Ce que vous remportez</h2>
+    <div class="ca-g" id="caG"></div>
+    <p class="ca-p">Ce voyage est indépendant. Il n'est commandé par personne, et aucun lieu n'y a acheté sa place : chacun est à la latitude où il se trouve vraiment.</p>
+    <div class="ca-b">
+      <button class="ca-r" id="refaire" type="button">Refaire le voyage</button>
+      <a class="ca-w" id="partager" href="#" rel="noopener">Partager sur WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="pied-in">
+    <img class="pied-lo" src="assets/images/logo/logo.svg?v=20260811f" alt="Mon Bénin, sept cents kilomètres" width="296" height="106">
+    <p class="pied-p">Une expérience éditoriale indépendante, écrite et construite à Cotonou par <strong>NEBULA Agency</strong>.</p>
+    <p class="pied-s"><strong>Les ambiances sonores sont générées</strong> : ce sont des matières, pas des enregistrements des lieux. Aucune ne prétend être le son réel de Ganvié ou de la Pendjari, et toutes seront remplacées par de vraies prises de son. Les distances sont des latitudes converties en kilomètres depuis la côte, arrondies. Les dates et les faits cités sont publics et vérifiables. Aucune image de ce site ne prétend représenter un lieu qu'elle ne représente pas : chaque photographie montre le lieu qu'elle nomme, et son auteur est cité plus bas.</p>
+    <div class="pied-cr">
+      <p class="pied-crt">Les photographies</p>
+      <p class="pied-crp">Les huit lieux sont montrés par de <strong>vraies photographies</strong>, sous licence libre, prises par des photographes que voici. Aucune image de ce site n'est générée.</p>
+      <ul class="pied-crl">
+        <li><a href="https://commons.wikimedia.org/wiki/File%3ADoor_of_no_return.jpg" target="_blank" rel="noopener">Door of no return.jpg</a> &middot; Francisco Anzola &middot; CC BY 2.0</li>
+        <li><a href="https://commons.wikimedia.org/wiki/File%3AOuidah-Temple_des_Pythons-Petite_case_ronde_%281%29.jpg" target="_blank" rel="noopener">Ouidah-Temple des Pythons-Petite case ronde (1).jpg</a> &middot; Ji-Elle &middot; CC BY-SA 4.0</li>
+        <li><a href="https://commons.wikimedia.org/wiki/File%3AMarch%C3%A9_Dantokpa_10.jpg" target="_blank" rel="noopener">Marché Dantokpa 10.jpg</a> &middot; Alacoolwiki &middot; CC BY 4.0</li>
+        <li><a href="https://commons.wikimedia.org/wiki/File%3AAll%C3%A9e_ou_rue_des_amoureux_%C3%A0_Ganvi%C3%A9.jpg" target="_blank" rel="noopener">Allée ou rue des amoureux à Ganvié.jpg</a> &middot; Saliousoft &middot; CC BY-SA 4.0</li>
+        <li><a href="https://commons.wikimedia.org/wiki/File%3ABas-relief_d%27une_r%C3%A9sidence_du_quartier_de_Gb%C3%A9con-Hounli%2C_non_loin_du_palais_princier_de_Gu%C3%A9zo%2C_figure_du_cavalier_acrobate_Aloukiki_-_A63609S.jpg" target="_blank" rel="noopener">Bas-relief d'une résidence du quartier de Gbécon-Hounli, non loin du palais princier de Guézo, figure du cavalier acrobate Aloukiki - A63609S.jpg</a> &middot; Gadmer Frédéric &middot; CC BY-SA 4.0</li>
+        <li><a href="https://commons.wikimedia.org/wiki/File%3ATata_Somba_2.jpg" target="_blank" rel="noopener">Tata Somba 2.jpg</a> &middot; Dominik Schwarz &middot; CC BY-SA 3.0</li>
+        <li><a href="https://commons.wikimedia.org/wiki/File%3AParc_national_de_la_Pendjari-Baobab_et_%C3%A9chassier.jpg" target="_blank" rel="noopener">Parc national de la Pendjari-Baobab et échassier.jpg</a> &middot; Ji-Elle &middot; CC BY-SA 4.0</li>
+        <li><a href="https://commons.wikimedia.org/wiki/File%3APirogues_sur_le_fleuve_Niger%2C_fermeture_de_la_fronti%C3%A8re_Niger_B%C3%A9nin_06.jpg" target="_blank" rel="noopener">Pirogues sur le fleuve Niger, fermeture de la frontière Niger Bénin 06.jpg</a> &middot; Barke11 &middot; CC BY-SA 4.0</li>
+      </ul>
+      <p class="pied-crn">Chaque photographie reste sous sa licence d'origine. Les mentions CC BY et CC BY-SA imposent de citer l'auteur : c'est fait ici, et le lien mène à la source.</p>
+    </div>
+    <p class="pied-c">© <span id="an">2026</span> NEBULA Agency · Cotonou, Bénin</p>
+  </div>
+</footer>
+
+<div class="curseur" id="curseur" aria-hidden="true"><span></span></div>
+
+<script src="assets/app.js?v=20260811f" defer></script>
+</body>
+</html>

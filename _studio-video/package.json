@@ -1,0 +1,25 @@
+{
+  "name": "nebula-studio-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Le montage des videos NEBULA (TikTok « oui / non ») avec Remotion.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "verifier": "tsc",
+    "rendu": "npm run rendu:prix && npm run rendu:besoin && npm run rendu:logiciel",
+    "rendu:prix": "remotion render src/index.ts oui-non-1-prix out/oui-non-1-prix.mp4",
+    "rendu:besoin": "remotion render src/index.ts oui-non-2-besoin out/oui-non-2-besoin.mp4",
+    "rendu:logiciel": "remotion render src/index.ts oui-non-3-logiciel out/oui-non-3-logiciel.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.512",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.512"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "typescript": "7.0.2"
+  }
+}
