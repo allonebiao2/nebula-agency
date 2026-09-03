@@ -13,6 +13,7 @@ import {
 import { fcfa } from '../prix.js'
 import { resteEn } from '../stockage.js'
 import { ouvrirPaiement } from '../supabase.js'
+import { noterPaiementEnCours } from './Merci.jsx'
 import { Bouton, Chiffre } from './Ui.jsx'
 
 /*
@@ -46,6 +47,10 @@ function EnLigne({ reference, total }) {
     setSouci('')
     const r = await ouvrirPaiement(reference)
     if (r?.ok && r.url) {
+      /* ⚠️ AVANT de partir. L'adresse de retour de SasPay est fixe et ne porte
+         aucun paramètre : si le code n'est pas rangé ici, la page de retour ne
+         saura pas quelle commande le client vient de payer. */
+      noterPaiementEnCours(reference)
       window.location.href = r.url
       return
     }

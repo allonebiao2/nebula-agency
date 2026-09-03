@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Vitrine from './composants/Vitrine.jsx'
 import Questionnaire from './composants/Questionnaire.jsx'
 import Cockpit from './composants/Cockpit.jsx'
+import Merci from './composants/Merci.jsx'
 import Origine from './composants/Origine.jsx'
 import Carnet from './composants/Carnet.jsx'
 import Recu from './composants/Recu.jsx'
@@ -19,6 +20,10 @@ import { marquerVisite } from './supabase.js'
 const ROUTES = {
   '#/': 'vitrine',
   '#/commander': 'commander',
+  /* ⚠️ C'est l'adresse de retour de SasPay (`SASPAY_RETOUR`). Sans cette
+     ligne, le routeur retombait sur la vitrine : le client payait et
+     atterrissait sur la page d'accueil, sans un mot. */
+  '#/merci': 'merci',
   '#/donnees': 'origine',
   '#/cockpit': 'cockpit',
 }
@@ -79,6 +84,7 @@ export default function App() {
 
   if (route === 'carnet') return <Carnet jeton={lireJeton(hash)} aller={aller} />
   if (route === 'recu') return <Recu jeton={lireJeton(hash)} aller={aller} />
+  if (route === 'merci') return <Merci aller={aller} />
   if (route === 'commander') return <Questionnaire aller={aller} />
   if (route === 'origine') return <Origine aller={aller} />
   if (route === 'cockpit') return <Cockpit aller={aller} />

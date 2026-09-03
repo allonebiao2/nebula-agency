@@ -84,17 +84,34 @@ export const MOMO_PRET = MOBILE_MONEY.some((m) => m.numero)
   rapproche lui-même. SasPay permettrait au client de payer depuis la page, et
   à la commande de se marquer « payée » toute seule.
 
-  ⛔ NE PASSER À `true` QU'APRÈS AVOIR ENCAISSÉ 1 000 F POUR DE VRAI, en FCFA,
-  sur un compte béninois. Le tableau de bord SasPay du 2026-09-03 proposait des
-  montants en CDF (franc congolais) : tant que le XOF n'est pas confirmé de
-  bout en bout, afficher un bouton « payer » promettrait un encaissement qui
-  n'arrive pas. C'est la même règle que pour Moov Flooz, retiré le 2026-08-04.
+  ✅ OUVERT LE 2026-09-03, sur décision de Mongazi. Le doute qui tenait ce
+  drapeau fermé portait sur la devise : le tableau de bord montrait des
+  montants en CDF. Il est levé, et pas sur parole — SasPay a accepté et rendu
+  de vraies sessions en XOF, dont une de 4 320 F pour une commande réelle.
+
+  ⚠️ CE QUI RESTE NON PROUVÉ : que la notification de paiement se rattache
+  toute seule à la commande. SasPay n'envoie ni notre référence ni le numéro
+  de session, seulement le sien ; le lien se refait en relisant la session de
+  checkout, et ça ne se vérifie qu'au premier vrai paiement.
+
+  ⚠️ CE QUE ÇA COÛTE SI ÇA RATE, et c'est pour ça qu'on peut ouvrir : l'argent
+  arrive quand même chez SasPay, et tout est écrit dans
+  `piste.paiement_evenement`. Le pire cas, c'est le rapprochement à la main,
+  exactement ce qui se fait aujourd'hui. Rien n'est perdu et rien n'est promis
+  de faux : la page de retour dit en toutes lettres qu'elle n'est pas un reçu.
+
+  ⛔ TANT QUE LE PREMIER PAIEMENT N'A PAS ÉTÉ VU BOUT EN BOUT, regarder le
+  journal après chaque commande payée en ligne :
+      select recu_le, reference, montant, etat_lu, agi
+        from piste.paiement_evenement order by id desc limit 10;
+  Une ligne « sans commande » veut dire que quelqu'un a payé et que personne
+  n'a été prévenu.
 
   ⚠️ Le chemin Mobile Money à la main NE DISPARAÎT PAS quand ce drapeau passe
   à `true` : il reste dessous, en second. Un moyen de paiement neuf se met à
   côté de celui qui marche, jamais à sa place.
 */
-export const SASPAY_PRET = false
+export const SASPAY_PRET = true
 
 /* Le code de commande, décision 26. Ni O ni 0, ni I ni 1 : il se lit à voix
    haute au téléphone sans qu'on se trompe. */

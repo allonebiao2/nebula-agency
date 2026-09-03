@@ -289,6 +289,11 @@ const ROUTES = [
     { nom: 'commander', h: '#/commander' },
     { nom: 'donnees', h: '#/donnees' },
     { nom: 'cockpit', h: '#/cockpit' },
+    /* ⚠️ C'est l'adresse où SasPay ramène le client après un paiement réussi.
+       Avant le 2026-09-03 elle n'existait pas et le routeur retombait sur la
+       vitrine : on payait, et on atterrissait sur la page d'accueil. Elle est
+       visitée ici SANS code en mémoire, le cas le plus fragile. */
+    { nom: 'merci', h: '#/merci' },
   ]
 
   /* ---------------------------------------------- 1. les quatre écrans ---- */
@@ -349,6 +354,29 @@ const ROUTES = [
         }`
       )
       dire(!m.cadratin, `${t} : aucun tiret cadratin ${m.extraitCadratin}`)
+
+      if (r.nom === 'merci') {
+        /* ⛔ CETTE PAGE NE DOIT JAMAIS ANNONCER UN PAIEMENT CONFIRME. On y
+           arrive parce que SasPay a renvoye le navigateur, mais aussi en
+           tapant l'adresse ou en revenant en arriere. Seule la notification
+           signee fait foi. Promettre une quittance qu'on n'a pas, c'est
+           promettre un carnet qui ne partira pas. */
+        const dit = await page.evaluate(() => {
+          const t = document.body.innerText
+          return {
+            existe: /Merci/.test(t) && !/Reçois en temps/.test(t),
+            pasDeQuittance: /n’est pas un reçu|n'est pas un reçu/.test(t),
+            pasDeConfirmation: !/paiement (confirmé|reçu|validé)/i.test(t),
+            pasDeFauxCode: !/PISTE-[A-Z0-9]{4}/.test(t),
+            whatsapp: /WhatsApp/.test(t),
+          }
+        })
+        dire(dit.existe, `${t} : la page de retour existe (elle ne retombe plus sur la vitrine)`)
+        dire(dit.pasDeQuittance, `${t} : elle dit en toutes lettres qu'elle n'est pas un reçu`)
+        dire(dit.pasDeConfirmation, `${t} : elle n'annonce AUCUN paiement confirmé`)
+        dire(dit.pasDeFauxCode, `${t} : sans code en mémoire, elle n'en invente pas`)
+        dire(dit.whatsapp, `${t} : elle laisse un moyen de nous joindre`)
+      }
 
       if (r.nom === 'vitrine') {
         /* On ne fige plus les nombres : le moteur collecte chaque nuit, et un
@@ -576,6 +604,15 @@ const ROUTES = [
       pasDeTogoNiCI: !/(Togo|Côte d'Ivoire)/.test(t),
       vingtQuatre: /24 heures/.test(plat),
       depotDistinct: /n'est\s*pas le numéro WhatsApp/.test(plat),
+      /* Le paiement en ligne, ouvert le 2026-09-03. */
+      boutonEnLigne: [...document.querySelectorAll('button')]
+        .some((b) => /^Payer\s/.test(b.textContent.trim())),
+      enLigneAvantMomo: (() => {
+        const i = plat.indexOf('Payer maintenant, depuis cette page')
+        const j = plat.indexOf('MTN MoMo')
+        return i >= 0 && j >= 0 && i < j
+      })(),
+      pasDeQuittance: /ne vaut pas reçu/.test(plat),
     }
   }, attenduPaiement)
   dire(/^PISTE-[A-Z0-9]{4}$/.test(paiement.code), `le code de commande est au format PISTE-XXXX (${paiement.code})`)
@@ -592,6 +629,15 @@ const ROUTES = [
     `l'écran prévient que le numéro de dépôt n'est PAS le numéro WhatsApp`
   )
   dire(paiement.vingtQuatre, `le délai de 24 heures est répété sur l'écran de paiement`)
+
+  /* ── LE PAIEMENT EN LIGNE (SasPay), ouvert le 2026-09-03 ──────────────────
+     ⚠️ Le Mobile Money à la main reste EN DESSOUS, pas remplacé : un moyen de
+     paiement neuf se met à côté de celui qui marche. Le contrôle vérifie donc
+     l'ORDRE, pas seulement la présence. */
+  dire(paiement.boutonEnLigne, `le bouton « Payer » en ligne est affiché`)
+  dire(paiement.enLigneAvantMomo, `le paiement en ligne est au-dessus du Mobile Money, qui reste`)
+  dire(paiement.moyens, `le Mobile Money à la main n'a pas disparu sous le paiement en ligne`)
+  dire(paiement.pasDeQuittance, `l'écran dit que revenir sur le site ne vaut pas reçu`)
 
   const range = await page.evaluate(() => {
     const l = JSON.parse(localStorage.getItem('piste_commandes_v1') || '[]')
