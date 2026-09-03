@@ -38,7 +38,7 @@ import { Bouton, Chiffre } from './Ui.jsx'
   signée qui marque la commande payée. Le texte le dit, plutôt que de laisser
   croire qu'un retour vaut quittance.
 */
-function EnLigne({ reference, total }) {
+function EnLigne({ reference, total, enLigne = true }) {
   const [etat, setEtat] = useState('pret')
   const [souci, setSouci] = useState('')
 
@@ -64,10 +64,14 @@ function EnLigne({ reference, total }) {
 
   return (
     <div className="mt-8 rounded-2xl border-2 border-braise/45 bg-braise/8 p-6">
-      <p className="font-display text-[1.2rem] font-bold">Payer maintenant, depuis cette page.</p>
+      <p className="font-display text-[1.2rem] font-bold">
+        {enLigne ? 'Payer maintenant, depuis cette page.' : 'Plus rapide : payer en ligne.'}
+      </p>
       <p className="mt-2 text-[0.95rem] leading-relaxed text-sable">
-        {fcfa(total)} en Mobile Money ou par carte. Votre commande se marque payée toute
-        seule, et le carnet part sans attendre qu’on rapproche votre virement à la main.
+        {fcfa(total)} en Mobile Money ou par carte.{' '}
+        {enLigne
+          ? 'Votre paiement nous arrive tout de suite : pas de capture d’écran à envoyer, pas de virement à rapprocher.'
+          : 'Vous avez choisi le dépôt à la main, et il reste possible juste en dessous. Mais depuis cette page, c’est immédiat.'}
       </p>
       <div className="mt-4">
         <Bouton ton="pleinClair" onClick={partir} disabled={etat === 'ouvre'}>
@@ -136,54 +140,13 @@ export default function Paiement({ commande, aller }) {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-encre text-papier">
-      <div className="mx-auto w-full max-w-[46rem] px-5 py-12 sm:px-8 sm:py-16">
-        <div className="porte">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-braise">
-            Commande enregistrée
-          </p>
-          <h1 className="mt-4 text-[clamp(2rem,8vw,3.2rem)]">
-            Reste à payer,
-            <br />
-            <span className="text-braise">et c'est à vous.</span>
-          </h1>
-        </div>
-
-        {SASPAY_PRET && <EnLigne reference={commande.ref} total={commande.total} />}
-
-        {/* ------------------------------------------------ code et montant */}
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-traitsombre bg-encre2 p-5">
-            <p className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-sable">
-              Votre code de commande
-            </p>
-            <Chiffre className="mt-1 block text-[1.75rem] text-papier">{commande.ref}</Chiffre>
-            <button
-              type="button"
-              onClick={() => copier('ref', commande.ref)}
-              className="mt-2 flex min-h-[44px] items-center text-[0.85rem] font-semibold text-braise underline underline-offset-4"
-            >
-              {copie === 'ref' ? 'Copié' : 'Copier le code'}
-            </button>
-          </div>
-          <div className="rounded-2xl border border-traitsombre bg-encre2 p-5">
-            <p className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-sable">
-              Montant exact à envoyer
-            </p>
-            <Chiffre className="mt-1 block text-[1.75rem] text-braise">
-              {fcfa(commande.total)}
-            </Chiffre>
-            <button
-              type="button"
-              onClick={() => copier('montant', String(commande.total))}
-              className="mt-2 flex min-h-[44px] items-center text-[0.85rem] font-semibold text-braise underline underline-offset-4"
-            >
-              {copie === 'montant' ? 'Copié' : 'Copier le montant'}
-            </button>
-          </div>
-        </div>
-
+  /* ⚠️ LE CHEMIN QUI MARCHE NE DISPARAÎT JAMAIS. Quand le client a choisi de
+     payer en ligne, les consignes de dépôt Mobile Money deviennent du bruit :
+     elles se replient, mais elles restent à un clic. Quelqu'un dont le
+     paiement en ligne échoue ne doit pas avoir à refaire sa commande. */
+  const enLigne = commande.moyen !== 'main'
+  const blocDepot = (
+    <>
         {/* ------------------------------------------------ où l'on crédite */}
         <div className="mt-3 rounded-2xl border border-traitsombre bg-encre2 p-5">
           <p className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-sable">
@@ -244,6 +207,68 @@ export default function Paiement({ commande, aller }) {
             numéro nous fait perdre du temps, et vous aussi.
           </p>
         </div>
+    </>
+  )
+  const depot = enLigne ? (
+    <details className="mt-3 rounded-2xl border border-traitsombre bg-encre2 px-5 py-1">
+      <summary className="flex min-h-[52px] cursor-pointer items-center text-[0.95rem] font-semibold text-braise">
+        Je préfère payer à la main, par dépôt Mobile Money
+      </summary>
+      <div className="pb-4">{blocDepot}</div>
+    </details>
+  ) : (
+    blocDepot
+  )
+
+  return (
+    <div className="min-h-screen bg-encre text-papier">
+      <div className="mx-auto w-full max-w-[46rem] px-5 py-12 sm:px-8 sm:py-16">
+        <div className="porte">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-braise">
+            Commande enregistrée
+          </p>
+          <h1 className="mt-4 text-[clamp(2rem,8vw,3.2rem)]">
+            Reste à payer,
+            <br />
+            <span className="text-braise">et c'est à vous.</span>
+          </h1>
+        </div>
+
+        {SASPAY_PRET && <EnLigne reference={commande.ref} total={commande.total} enLigne={enLigne} />}
+
+        {/* ------------------------------------------------ code et montant */}
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-traitsombre bg-encre2 p-5">
+            <p className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-sable">
+              Votre code de commande
+            </p>
+            <Chiffre className="mt-1 block text-[1.75rem] text-papier">{commande.ref}</Chiffre>
+            <button
+              type="button"
+              onClick={() => copier('ref', commande.ref)}
+              className="mt-2 flex min-h-[44px] items-center text-[0.85rem] font-semibold text-braise underline underline-offset-4"
+            >
+              {copie === 'ref' ? 'Copié' : 'Copier le code'}
+            </button>
+          </div>
+          <div className="rounded-2xl border border-traitsombre bg-encre2 p-5">
+            <p className="text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-sable">
+              Montant exact à envoyer
+            </p>
+            <Chiffre className="mt-1 block text-[1.75rem] text-braise">
+              {fcfa(commande.total)}
+            </Chiffre>
+            <button
+              type="button"
+              onClick={() => copier('montant', String(commande.total))}
+              className="mt-2 flex min-h-[44px] items-center text-[0.85rem] font-semibold text-braise underline underline-offset-4"
+            >
+              {copie === 'montant' ? 'Copié' : 'Copier le montant'}
+            </button>
+          </div>
+        </div>
+
+        {depot}
 
         {/* ------------------------------------------------- compte à rebours */}
         <div className="mt-3">
@@ -252,19 +277,34 @@ export default function Paiement({ commande, aller }) {
 
         {/* ------------------------------------------------------ la marche */}
         <ol className="mt-9 space-y-4">
+          {/* ⛔ CES QUATRE ÉTAPES DÉCRIVAIENT LE DÉPÔT À LA MAIN, POINT. Elles
+              restaient telles quelles au-dessus d'un bouton « Payer », et
+              disaient à quelqu'un qui venait de payer par carte de faire un
+              transfert puis d'envoyer une capture d'écran. Le QC ne pouvait
+              pas le voir : rien n'était cassé, tout était faux. */}
           {[
             {
               t: 'Envoyez votre commande sur WhatsApp',
               d: "Si la conversation ne s'est pas ouverte toute seule, appuyez sur le bouton plus bas. Le message est déjà écrit, votre code est dedans.",
             },
-            {
-              t: 'Faites le transfert Mobile Money',
-              d: `Le montant exact, ${fcfa(commande.total)}, depuis le numéro que vous avez déclaré.`,
-            },
-            {
-              t: 'Envoyez la preuve dans la même conversation',
-              d: "Une capture suffit. Mongazi rapproche à la main sur son application, puis marque la commande payée.",
-            },
+            enLigne
+              ? {
+                  t: 'Payez depuis cette page',
+                  d: `${fcfa(commande.total)} en Mobile Money ou par carte, sur la page sécurisée de notre opérateur.`,
+                }
+              : {
+                  t: 'Faites le transfert Mobile Money',
+                  d: `Le montant exact, ${fcfa(commande.total)}, depuis le numéro que vous avez déclaré.`,
+                },
+            enLigne
+              ? {
+                  t: 'Rien à envoyer, rien à prouver',
+                  d: "La confirmation de l'opérateur nous arrive toute seule : pas de capture d'écran, pas d'attente.",
+                }
+              : {
+                  t: 'Envoyez la preuve dans la même conversation',
+                  d: "Une capture suffit. Mongazi rapproche à la main sur son application, puis marque la commande payée.",
+                },
             {
               t: 'Sous 24 heures, votre carnet arrive',
               d: `Un lien privé qui n'appartient qu'à vous, à ouvrir sur votre téléphone. Il reste valable à vie : vous y retrouvez votre avancement six mois plus tard.`,

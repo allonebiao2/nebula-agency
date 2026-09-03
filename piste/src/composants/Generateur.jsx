@@ -334,7 +334,14 @@ export default function Generateur({ aller, onEtat }) {
     }
     /* Le générateur ne fait que composer : le récapitulatif, les coordonnées et
        le paiement restent l'écran de commande, qui les tient déjà. */
-    ecrire(CLES.brouillon, [{ metiers, ville, quartier: '', n, options, offre }])
+    /* ⛔ LE NOM COURT, PAS LA VALEUR. `ecrire(cle)` fait `CLES[cle]` : lui
+       passer `CLES.brouillon` revenait à chercher `CLES['piste_brouillon_v1']`,
+       donc `undefined`, et le brouillon était rangé sous la clé littérale
+       « undefined ». Lecture et écriture étant fausses de la même façon, ça
+       marchait par accident — mais la ligne qui l'efface visait la VRAIE clé,
+       jamais écrite : le brouillon ne partait donc jamais, et il ressuscitait
+       à la visite suivante avec une configuration périmée. */
+    ecrire('brouillon', [{ metiers, ville, quartier: '', n, options, offre }])
     aller('#/commander')
   }
 

@@ -549,6 +549,60 @@ const ROUTES = [
   await cliquerTexte(page, 'button', 'Voir ma commande')
   await attendre(350)
 
+  /* ── LE CHEMIN PAR DÉFAUT : payer en ligne (ouvert le 2026-09-03) ─────────
+     ⚠️ Tout ce formulaire n'existait que pour le dépôt à la main : le numéro
+     Mobile Money était OBLIGATOIRE, et il servait uniquement à reconnaître un
+     versement parmi ceux du jour. Pour qui paie en ligne c'est un mur inutile,
+     et c'est ce mur qu'on vérifie ici comme tombé. */
+  const enLigneDefaut = await page.evaluate(() => {
+    const t = document.body.innerText
+    const champMomo = [...document.querySelectorAll('input')].some(
+      (x) => (x.getAttribute('aria-label') || '') === 'Numéro Mobile Money'
+    )
+    const bouton = (nom) =>
+      [...document.querySelectorAll('button')].find((b) => b.textContent.trim().startsWith(nom))
+    return {
+      choixPropose: !!bouton('Payer en ligne') && !!bouton('Dépôt Mobile Money'),
+      enLigneParDefaut: bouton('Payer en ligne')?.getAttribute('aria-pressed') === 'true',
+      pasDeChampMomo: !champMomo,
+      pasDeConsigneNom: !/comme ils apparaissent sur votre compte Mobile Money/.test(t),
+      paysAnnonces: /Togo/.test(t) && /Côte d'Ivoire/.test(t) && /Bénin/.test(t),
+    }
+  })
+  dire(enLigneDefaut.choixPropose, `le client choisit comment il paie`)
+  dire(enLigneDefaut.enLigneParDefaut, `« Payer en ligne » est le choix par défaut`)
+  dire(enLigneDefaut.pasDeChampMomo, `en ligne : aucun numéro Mobile Money n'est demandé`)
+  dire(enLigneDefaut.pasDeConsigneNom, `en ligne : la consigne « comme sur votre compte Mobile Money » disparaît`)
+  dire(enLigneDefaut.paysAnnonces, `en ligne : les trois pays du vivier sont nommés`)
+  /* ⚠️ ON REGARDE, on ne fait pas que mesurer. Un écran peut passer tous les
+     contrôles et rester laid ou illisible : ces deux captures sont là pour
+     être ouvertes après chaque passage. */
+  await page.screenshot({ path: path.join(CAPTURES, 'etape-paiement-en-ligne.png'), fullPage: true })
+
+  /* Refusée sans rien, et le message ne réclame PAS un numéro qu'on ne demande plus. */
+  await cliquerTexte(page, 'button', 'Envoyer ma commande sur WhatsApp')
+  await attendre(250)
+  const refusLigne = await page.evaluate(() => document.body.innerText)
+  dire(
+    /Il manque votre nom, votre email ou votre WhatsApp\./.test(refusLigne),
+    `en ligne : le refus ne réclame pas de numéro Mobile Money`
+  )
+
+  /* ── ON BASCULE SUR LE DÉPÔT À LA MAIN ────────────────────────────────────
+     ⚠️ Le chemin qui marchait avant ne doit pas avoir bougé d'un mot : tout ce
+     qui suit le contrôle exactement comme avant l'ouverture du paiement. */
+  await cliquerTexte(page, 'button', 'Dépôt Mobile Money')
+  await attendre(250)
+  const bascule = await page.evaluate(() => ({
+    champMomo: [...document.querySelectorAll('input')].some(
+      (x) => (x.getAttribute('aria-label') || '') === 'Numéro Mobile Money'
+    ),
+    consigneNom: /comme ils apparaissent sur votre compte Mobile Money/.test(document.body.innerText),
+  }))
+  dire(bascule.champMomo, `à la main : le numéro Mobile Money réapparaît`)
+  dire(bascule.consigneNom, `à la main : la consigne sur le nom du compte revient`)
+  await page.screenshot({ path: path.join(CAPTURES, 'etape-paiement-a-la-main.png'), fullPage: true })
+
   /* on ne remplit rien : la commande doit être refusée */
   await cliquerTexte(page, 'button', 'Envoyer ma commande sur WhatsApp')
   await attendre(250)
@@ -607,8 +661,13 @@ const ROUTES = [
       /* Le paiement en ligne, ouvert le 2026-09-03. */
       boutonEnLigne: [...document.querySelectorAll('button')]
         .some((b) => /^Payer\s/.test(b.textContent.trim())),
+      /* ⚠️ VISER UN REPÈRE STABLE, PAS UN TITRE. Le titre du bloc en ligne
+         change selon ce que le client a choisi (« Payer maintenant » s'il a
+         pris le paiement en ligne, « Plus rapide » s'il a pris le dépôt) :
+         un contrôle accroché au titre devient rouge sans que rien ne casse.
+         Cette phrase-là, elle, est dans les deux cas. */
       enLigneAvantMomo: (() => {
-        const i = plat.indexOf('Payer maintenant, depuis cette page')
+        const i = plat.indexOf('en Mobile Money ou par carte')
         const j = plat.indexOf('MTN MoMo')
         return i >= 0 && j >= 0 && i < j
       })(),
@@ -638,6 +697,7 @@ const ROUTES = [
   dire(paiement.enLigneAvantMomo, `le paiement en ligne est au-dessus du Mobile Money, qui reste`)
   dire(paiement.moyens, `le Mobile Money à la main n'a pas disparu sous le paiement en ligne`)
   dire(paiement.pasDeQuittance, `l'écran dit que revenir sur le site ne vaut pas reçu`)
+  await page.screenshot({ path: path.join(CAPTURES, 'ecran-paiement.png'), fullPage: true })
 
   const range = await page.evaluate(() => {
     const l = JSON.parse(localStorage.getItem('piste_commandes_v1') || '[]')
@@ -675,6 +735,107 @@ const ROUTES = [
       fs.statSync(p).isDirectory() ? marcher(p) : fichiers.push(p)
     })
   marcher(DIST)
+  /* ══ DEUXIÈME PASSE · LE CHEMIN PAR DÉFAUT, JUSQU'À L'ÉCRAN DE PAIEMENT ══
+     ⛔ La passe ci-dessus bascule sur le dépôt à la main pour garder ses
+     anciennes assertions : elle ne voit donc JAMAIS l'écran que verra la
+     plupart des clients. C'est exactement l'angle mort qui avait laissé
+     passer une route `#/merci` inexistante — un écran que personne ne
+     regardait. Le brouillon du générateur permet d'atterrir directement à la
+     dernière étape, sans refaire les six questions. */
+  /* ⚠️ UNE PAGE À NOUS. La page du parcours précédent est fermée à ce
+     stade : deux pannes d'instrument d'affilée (« Execution context was
+     destroyed », puis « the page has been closed ») venaient de là, et pas
+     du site. */
+  const page2 = await nav.newPage()
+  await page2.setViewport({ width: 1440, height: 900 })
+  /* ⚠️ ON ATTERRIT SUR UNE PAGE NEUTRE, PAS SUR LA VITRINE : le générateur y
+     vit, et il écrit dans ce même brouillon. Poser notre brouillon sur la
+     vitrine, c'est le faire écraser avant d'avoir servi. */
+  await page2.goto(base + '/#/donnees', { waitUntil: 'domcontentloaded' })
+  await attendre(400)
+  await page2.evaluate(
+    (metier, ville) => {
+      localStorage.setItem(
+        'piste_brouillon_v1',
+        JSON.stringify([{ metiers: [metier], ville, n: 12 }])
+      )
+    },
+    D.METIERS[0].cle,
+    D.VILLES[0].cle
+  )
+  await page2.goto(base + '/#/commander', { waitUntil: 'domcontentloaded' })
+  await attendre(900)
+  /* ⛔ CONTRÔLE NÉ D'UN DÉFAUT TROUVÉ ICI : le brouillon du générateur était
+     rangé sous la clé littérale « undefined » (lecture et écriture fausses de
+     la même façon, donc invisibles), et la ligne qui l'efface visait la vraie
+     clé, jamais écrite. Il ne partait donc jamais et ressuscitait à la visite
+     suivante avec une configuration périmée. */
+  const repris = await page2.evaluate(() => ({
+    etape7: /Qui vous êtes/.test(document.body.innerText),
+    brouillonEfface: localStorage.getItem('piste_brouillon_v1') === null,
+    plusDeCleUndefined: localStorage.getItem('undefined') === null,
+  }))
+  dire(repris.etape7, `le brouillon du générateur ramène bien à la dernière étape`)
+  dire(repris.brouillonEfface, `le brouillon est effacé après usage, il ne ressuscite pas`)
+  dire(repris.plusDeCleUndefined, `plus rien sous la clé « undefined »`)
+
+  await page2.evaluate(() => {
+    window.open = () => null
+    const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+    const poser = (label, v) => {
+      const e = [...document.querySelectorAll('input')].find(
+        (x) =>
+          (x.getAttribute('aria-label') || '') === label ||
+          (x.closest('label')?.innerText || '').startsWith(label)
+      )
+      if (!e) throw new Error('champ introuvable : ' + label)
+      set.call(e, v)
+      e.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+    poser('Votre prénom', 'Kossi')
+    poser('Votre nom', 'Amegan')
+    poser('Votre email', 'kossi@exemple.com')
+    poser('Numéro WhatsApp', '0197000000')
+  })
+  await attendre(250)
+  await cliquerTexte(page2, 'button', 'Envoyer ma commande sur WhatsApp')
+  await attendre(700)
+
+  const ecranLigne = await page2.evaluate(() => {
+    const d = document.querySelector('details')
+    const t = document.body.innerText
+    return {
+      arrive: /Reste à payer/.test(t),
+      replie: !!d && !d.open,
+      resume: (d?.querySelector('summary')?.textContent || '').includes('payer à la main'),
+      momoCache: !/0166000000/.test(t),
+      boutonPayer: [...document.querySelectorAll('button')].some((b) =>
+        /^Payer\s/.test(b.textContent.trim())
+      ),
+      pasDeTransfert:
+        !/Faites le transfert Mobile Money/.test(t) && !/Une capture suffit/.test(t),
+    }
+  })
+  dire(ecranLigne.arrive, `en ligne : la commande passe SANS numéro Mobile Money`)
+  dire(ecranLigne.boutonPayer, `en ligne : le bouton de paiement est là`)
+  dire(ecranLigne.replie, `en ligne : les consignes de dépôt sont repliées, pas supprimées`)
+  dire(ecranLigne.resume, `en ligne : on peut rouvrir le dépôt à la main en un clic`)
+  /* ⛔ Trouvé SUR LA CAPTURE, pas par un contrôle : les quatre étapes
+     décrivaient le dépôt à la main au-dessus d'un bouton « Payer ». */
+  dire(ecranLigne.pasDeTransfert, `en ligne : on ne demande ni transfert ni capture d'écran`)
+  await page2.screenshot({ path: path.join(CAPTURES, 'ecran-paiement-en-ligne.png'), fullPage: true })
+
+  /* ⚠️ ET ON LE ROUVRE : replié ne doit pas vouloir dire perdu. */
+  await page2.evaluate(() => document.querySelector('details')?.setAttribute('open', ''))
+  await attendre(200)
+  /* ⚠️ `innerText` rend le texte TEL QU'IL S'AFFICHE : ce titre porte
+     `text-transform: uppercase`, donc il revient en majuscules. Une regex
+     écrite avec la casse du code ne le trouve jamais. */
+  const rouvert = await page2.evaluate(() => /num[ée]ro nebula/i.test(document.body.innerText))
+  dire(rouvert, `en ligne : le dépôt à la main réapparaît quand on le déplie`)
+
+  await page2.close()
+
   const textuels = fichiers.filter((f) => /\.(js|css|html|txt|xml)$/.test(f))
   const avecCadratin = textuels.filter((f) => /[\u2014]/.test(fs.readFileSync(f, 'utf8')))
   dire(avecCadratin.length === 0, `aucun tiret cadratin dans le bundle ${avecCadratin.join(',')}`)

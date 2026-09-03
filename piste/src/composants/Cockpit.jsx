@@ -73,6 +73,7 @@ export function analyser(texte) {
               nom: o.nom || '',
               email: o.email || '',
               wa: o.wa || '',
+              moyen: o.moyen || 'main',
               momoNumero: o.momo || '',
               momoOperateur: o.ope || '',
               unitaire: Number(o.unit) || 0,
@@ -908,7 +909,7 @@ export default function Cockpit({ aller }) {
     const entete = [
       'Code', 'Reçue le', 'Prénom', 'Nom', 'Métier', 'Ville', 'Quartier', 'Fiches',
       'Informations en plus', 'Ce que le client vend', 'Email', 'WhatsApp',
-      'Numéro Mobile Money', 'Opérateur', 'Prix la fiche', 'Total', 'État',
+      'Moyen de paiement', 'Numéro Mobile Money', 'Opérateur', 'Prix la fiche', 'Total', 'État',
     ]
     const lignes = commandes.map((c) => [
       c.ref,
@@ -923,6 +924,7 @@ export default function Cockpit({ aller }) {
       c.offre,
       c.email,
       '+' + c.wa,
+      c.moyen === 'ligne' ? 'en ligne' : 'depot momo',
       c.momoNumero ? '+229 ' + c.momoNumero : '',
       MOBILE_MONEY.find((m) => m.cle === c.momoOperateur)?.operateur || '',
       c.unitaire,
@@ -1274,6 +1276,15 @@ function Ligne({ c, onEtat, onRetirer, onLivrer }) {
             {metier} · {ville}
             {c.quartier ? ` · ${c.quartier}` : ''} · {c.n} fiches
           </p>
+          {/* ⛔ SANS CETTE LIGNE, UNE COMMANDE NE DIT PAS CE QU'ON ATTEND D'ELLE.
+              Depuis l'ouverture du paiement en ligne, deux commandes
+              identiques peuvent demander deux gestes opposés : guetter un
+              virement, ou ne rien faire du tout. */}
+          {c.moyen === 'ligne' && !c.momoNumero && (
+            <p className="mt-0.5 text-[0.9rem] text-sourd">
+              <b className="font-semibold text-encre">paie en ligne</b> · rien à rapprocher
+            </p>
+          )}
           {c.momoNumero && (
             <p className="mt-0.5 text-[0.9rem] text-sourd">
               paiera depuis le <b className="font-semibold text-encre">+229 {c.momoNumero}</b>
@@ -1364,6 +1375,7 @@ function Ligne({ c, onEtat, onRetirer, onLivrer }) {
             ['Reçue le', (c.date || '').slice(0, 10)],
             ['Email', c.email],
             ['WhatsApp', c.wa ? '+' + c.wa : ''],
+            ['Moyen de paiement', c.moyen === 'ligne' ? 'En ligne (SasPay)' : 'Dépôt Mobile Money'],
             ['Mobile Money', c.momoNumero ? '+229 ' + c.momoNumero : ''],
             [
               'Informations en plus',

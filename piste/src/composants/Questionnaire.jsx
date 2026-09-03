@@ -216,6 +216,15 @@ export default function Questionnaire({ aller }) {
   const [codePays, setCodePays] = useState('229')
   const [autreCode, setAutreCode] = useState('')
   const [tel, setTel] = useState('')
+  /* ⚠️ COMMENT LE CLIENT PAIE, choisi AVANT qu'on lui demande quoi que ce soit.
+     Tout ce formulaire avait été écrit sur une seule hypothèse : le client
+     paiera à la main, et il faudra reconnaître son versement parmi ceux du
+     jour. Trois choses n'existaient que pour ça — le numéro Mobile Money
+     OBLIGATOIRE, la consigne d'écrire son nom comme sur son compte, et le
+     choix de l'opérateur. Pour qui paie en ligne, les trois sont du bruit, et
+     le premier était un mur : un client prêt à payer par carte en dix secondes
+     devait d'abord déclarer un numéro dont personne ne se servirait. */
+  const [moyen, setMoyen] = useState('ligne')
   const [momoOperateur, setMomoOperateur] = useState('mtn')
   const [momoNumero, setMomoNumero] = useState('')
   const [memeNumero, setMemeNumero] = useState(false)
@@ -226,13 +235,17 @@ export default function Questionnaire({ aller }) {
      composé, l'écran garde ses six étapes et fonctionne seul. */
   const [reprise] = useState(() => {
     try {
-      const b = lire(CLES.brouillon)[0]
+      const b = lire('brouillon')[0]
       /* Le générateur envoie une LISTE de métiers depuis le 2026-08-04.
          On accepte les deux formes : l'ancienne clé `metier` reste lue pour
          qu'un brouillon déjà posé dans un navigateur ne se perde pas. */
       const l = b && (b.metiers || (b.metier ? [b.metier] : []))
       if (!b || !l || l.length === 0 || !b.ville) return null
       localStorage.removeItem(CLES.brouillon)
+      /* ⚠️ Et l'ancienne clé « undefined », laissée par les navigateurs qui
+         ont visité le site avant cette correction : sans ce ménage elle y
+         resterait pour toujours. */
+      localStorage.removeItem('undefined')
       return b
     } catch (e) {
       return null
@@ -321,7 +334,9 @@ export default function Questionnaire({ aller }) {
     if (etape === 4) return n >= MINIMUM && n <= dispo
     if (etape === 5) return true
     if (etape === 6) return offre.trim().length >= 8
-    if (etape === 7) return nomOk && emailOk && telOk && momoOk
+    /* ⚠️ Le numéro Mobile Money n'est exigé QUE pour le dépôt à la main : c'est
+       lui, et lui seul, qui sert au rapprochement. */
+    if (etape === 7) return nomOk && emailOk && telOk && (moyen === 'main' ? momoOk : true)
     return false
   }
 
@@ -376,7 +391,9 @@ export default function Questionnaire({ aller }) {
       `Nom et prénom : ${prenom.trim()} ${nom.trim()}`,
       `Email : ${email.trim()}`,
       `WhatsApp : +${numeroComplet}`,
-      `Je paierai depuis le +229 ${momoChiffres} (${ope?.operateur})`,
+      moyen === 'main'
+        ? `Je paierai depuis le +229 ${momoChiffres} (${ope?.operateur})`
+        : 'Je paierai EN LIGNE (Mobile Money ou carte)',
       '',
       'Je fais le dépôt et je vous envoie la capture.',
       '',
@@ -395,8 +412,9 @@ export default function Questionnaire({ aller }) {
           nom: nom.trim(),
           email: email.trim(),
           wa: numeroComplet,
-          momo: momoChiffres,
-          ope: momoOperateur,
+          moyen,
+          momo: moyen === 'main' ? momoChiffres : '',
+          ope: moyen === 'main' ? momoOperateur : '',
           unit: c.unitaire,
           total: c.total,
           date: new Date().toISOString(),
@@ -425,8 +443,9 @@ export default function Questionnaire({ aller }) {
       nom: nom.trim(),
       email: email.trim(),
       wa: numeroComplet,
-      momoNumero: momoChiffres,
-      momoOperateur,
+      moyen,
+      momoNumero: moyen === 'main' ? momoChiffres : '',
+      momoOperateur: moyen === 'main' ? momoOperateur : '',
       unitaire: c.unitaire,
       total: c.total,
       etat: 'recue',
@@ -445,8 +464,9 @@ export default function Questionnaire({ aller }) {
         nom: nom.trim(),
         email: email.trim(),
         whatsapp: numeroComplet,
-        momo: momoChiffres,
-        operateur: momoOperateur,
+        moyen,
+        momo: moyen === 'main' ? momoChiffres : '',
+        operateur: moyen === 'main' ? momoOperateur : '',
       },
       {
         metier,
@@ -773,12 +793,61 @@ export default function Questionnaire({ aller }) {
                   Qui vous êtes, et comment vous payez.
                 </h2>
                 <p className="mt-3 max-w-[38rem] text-[0.98rem] leading-relaxed text-sourd">
-                  Tout est obligatoire, et rien n'est de trop : le carnet part par email, les
-                  échanges passent par WhatsApp, et c'est votre numéro Mobile Money qui permet de
-                  reconnaître votre paiement parmi ceux du jour.
+                  Tout est obligatoire, et rien n'est de trop : le carnet part par email et
+                  les échanges passent par WhatsApp.
+                  {moyen === 'main'
+                    ? " C'est votre numéro Mobile Money qui permet de reconnaître votre paiement parmi ceux du jour."
+                    : ' Le paiement se fait sur la page suivante.'}
                 </p>
 
                 <div className="mt-7 space-y-5">
+                  {/* --------------------------------------- comment vous payez */}
+                  <div className="rounded-2xl border border-trait bg-papier2/70 p-5">
+                    <p className="font-semibold">Comment voulez-vous payer ?</p>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      {[
+                        {
+                          cle: 'ligne',
+                          titre: 'Payer en ligne',
+                          dit: 'Mobile Money ou carte, depuis cette page. Votre paiement nous arrive tout de suite.',
+                        },
+                        {
+                          cle: 'main',
+                          titre: 'Dépôt Mobile Money',
+                          dit: 'Vous transférez sur notre numéro, et nous rapprochons votre versement à la main.',
+                        },
+                      ].map((o) => (
+                        <button
+                          key={o.cle}
+                          type="button"
+                          onClick={() => setMoyen(o.cle)}
+                          aria-pressed={moyen === o.cle}
+                          className={`min-h-[44px] rounded-2xl border p-4 text-left transition-colors ${
+                            moyen === o.cle
+                              ? 'border-brique bg-brique text-creme'
+                              : 'border-trait bg-creme text-encre hover:border-sourd'
+                          }`}
+                        >
+                          <span className="block font-semibold">{o.titre}</span>
+                          <span
+                            className={`mt-1 block text-[0.85rem] leading-relaxed ${
+                              moyen === o.cle ? 'text-creme/85' : 'text-sourd'
+                            }`}
+                          >
+                            {o.dit}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    {moyen === 'ligne' && (
+                      <p className="mt-4 text-[0.85rem] leading-relaxed text-sourd">
+                        Selon votre pays : MTN, Moov, Celtiis au Bénin · Moov, Mixx, Togocel au
+                        Togo · MTN, Moov, Orange, Wave, Djamo en Côte d'Ivoire. Ou une carte
+                        bancaire.
+                      </p>
+                    )}
+                  </div>
+
                   <div className="grid gap-4 sm:grid-cols-2">
                     <label className="block">
                       <span className="text-[0.85rem] font-semibold text-sourd">Votre prénom</span>
@@ -805,10 +874,12 @@ export default function Questionnaire({ aller }) {
                       />
                     </label>
                   </div>
-                  <p className="text-[0.85rem] leading-relaxed text-sourd">
-                    Écrivez-les comme ils apparaissent sur votre compte Mobile Money : c'est ce nom
-                    qui s'affiche à la réception du paiement.
-                  </p>
+                  {moyen === 'main' && (
+                    <p className="text-[0.85rem] leading-relaxed text-sourd">
+                      Écrivez-les comme ils apparaissent sur votre compte Mobile Money : c'est ce
+                      nom qui s'affiche à la réception du paiement.
+                    </p>
+                  )}
 
                   <label className="block">
                     <span className="text-[0.85rem] font-semibold text-sourd">Votre email</span>
@@ -883,6 +954,7 @@ export default function Questionnaire({ aller }) {
                   </div>
 
                   {/* ------------------------------------------- mobile money */}
+                  {moyen === 'main' && (
                   <div className="rounded-2xl border border-trait bg-papier2/70 p-5">
                     <p className="font-semibold">Depuis quel numéro allez-vous payer ?</p>
                     <p className="mt-1.5 text-[0.88rem] leading-relaxed text-sourd">
@@ -953,22 +1025,30 @@ export default function Questionnaire({ aller }) {
                     )}
 
                     <p className="mt-4 text-[0.85rem] leading-relaxed text-sourd">
-                      Un seul moyen accepté aujourd'hui : MTN MoMo, au Bénin. Si vous
-                      payez depuis un autre pays, écrivez-nous d'abord : ce n'est pas encore
-                      ouvert.
+                      Un seul moyen accepté pour le dépôt à la main : MTN MoMo, au Bénin. Si
+                      vous payez depuis un autre pays, choisissez « Payer en ligne » plus haut.
                     </p>
                   </div>
+                  )}
                 </div>
 
                 <div className="mt-8 rounded-2xl border border-trait bg-creme p-5">
                   <p className="font-semibold">Ce qui se passe ensuite</p>
                   <ol className="mt-3 space-y-2.5 text-[0.93rem] leading-relaxed text-sourd">
-                    {[
-                      "Votre commande part sur le WhatsApp de NEBULA, déjà rédigée. Vous n'avez qu'à appuyer.",
-                      'Vous recevez le numéro à créditer, vous faites le transfert du montant exact.',
-                      'Le paiement est rapproché à la main, puis marqué payé.',
-                      'Sous 24 heures, le lien privé de votre carnet arrive par email, et vous êtes prévenu sur WhatsApp.',
-                    ].map((t, i) => (
+                    {(moyen === 'ligne'
+                      ? [
+                          "Votre commande part sur le WhatsApp de NEBULA, déjà rédigée. Vous n'avez qu'à appuyer.",
+                          'Sur la page suivante, vous payez en ligne : Mobile Money ou carte.',
+                          'Votre paiement nous arrive tout de suite, sans que vous ayez à envoyer une capture.',
+                          'Sous 24 heures, le lien privé de votre carnet arrive par email, et vous êtes prévenu sur WhatsApp.',
+                        ]
+                      : [
+                          "Votre commande part sur le WhatsApp de NEBULA, déjà rédigée. Vous n'avez qu'à appuyer.",
+                          'Vous recevez le numéro à créditer, vous faites le transfert du montant exact.',
+                          'Le paiement est rapproché à la main, puis marqué payé.',
+                          'Sous 24 heures, le lien privé de votre carnet arrive par email, et vous êtes prévenu sur WhatsApp.',
+                        ]
+                    ).map((t, i) => (
                       <li key={i} className="flex gap-3">
                         <Chiffre className="shrink-0 text-brique">{i + 1}</Chiffre>
                         <span>{t}</span>
@@ -976,9 +1056,9 @@ export default function Questionnaire({ aller }) {
                     ))}
                   </ol>
                   <p className="mt-4 text-[0.88rem] leading-relaxed text-sourd">
-                    Aucun paiement ne se fait sur ce site, et rien de ce que vous écrivez ici ne
-                    part sur un serveur : tout passe par la conversation WhatsApp. Votre commande
-                    reste valable 24 heures, ensuite les fiches retournent au stock.
+                    {moyen === 'ligne'
+                      ? "Le paiement se fait sur la page sécurisée de notre opérateur : nous ne voyons jamais votre code ni votre numéro de carte. Votre commande reste valable 24 heures, ensuite les fiches retournent au stock."
+                      : "Aucun paiement ne se fait sur ce site, et rien de ce que vous écrivez ici ne part sur un serveur : tout passe par la conversation WhatsApp. Votre commande reste valable 24 heures, ensuite les fiches retournent au stock."}
                   </p>
                 </div>
 
@@ -1015,7 +1095,9 @@ export default function Questionnaire({ aller }) {
                 </Bouton>
                 {essai && !peutAvancer() && (
                   <p className="mt-3 text-[0.9rem] text-rouge">
-                    Il manque votre nom, votre email, votre WhatsApp ou votre numéro Mobile Money.
+                    {moyen === 'main'
+                      ? 'Il manque votre nom, votre email, votre WhatsApp ou votre numéro Mobile Money.'
+                      : 'Il manque votre nom, votre email ou votre WhatsApp.'}
                   </p>
                 )}
               </div>
