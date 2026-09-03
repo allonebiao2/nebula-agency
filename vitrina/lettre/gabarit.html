@@ -93,100 +93,173 @@ body.ferme{overflow:hidden;height:100vh}
 }
 
 /* =====================================================================
-   1 · LE SEUIL : l'enveloppe et le cachet de cire
-   Signature : le cachet se fend en deux et l'enveloppe s'ouvre.
+   1 · LE SEUIL : l'enveloppe, en vrai
+   Signature : le cachet se FEND et tombe, le rabat s'ouvre en profondeur,
+   et le papier SORT DE L'INTÉRIEUR pour devenir la carte.
+
+   ⚠️ Une enveloppe a un DOS, une POCHE et un RABAT. Sans ces trois plans,
+   le papier ne peut pas sortir « de dedans » : il glisse par-dessus, et ça
+   se voit tout de suite. C'était le défaut de la première version.
    ===================================================================== */
 #seuil{
   position:fixed;inset:0;z-index:50;display:grid;place-items:center;
   background:
-    radial-gradient(ellipse at 50% 38%,var(--nuit-2) 0%,var(--nuit) 62%),
+    radial-gradient(ellipse 70% 50% at 50% 42%,#43151f 0%,var(--nuit) 68%),
     var(--nuit);
-  transition:opacity .9s ease,visibility .9s;
+  transition:opacity .7s ease,visibility .7s;
 }
 #seuil.parti{opacity:0;visibility:hidden}
-.env-zone{display:flex;flex-direction:column;align-items:center;gap:34px;padding:24px}
-
-.enveloppe{
-  position:relative;width:min(78vw,330px);aspect-ratio:1.5/1;
-  background:linear-gradient(168deg,#6d1b26,#571019);
-  border-radius:5px;
-  box-shadow:0 30px 70px -18px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.09);
-  cursor:pointer;border:none;padding:0;
-  transition:transform .8s cubic-bezier(.25,1,.5,1);
-}
-.enveloppe:focus-visible{outline:2px solid var(--or-vif);outline-offset:6px}
-/* les deux pans du bas, qui donnent le pli */
-.enveloppe::before{
-  content:"";position:absolute;inset:0;border-radius:5px;
-  background:
-    linear-gradient(to bottom right,transparent 49.6%,rgba(0,0,0,.16) 50%),
-    linear-gradient(to bottom left,transparent 49.6%,rgba(0,0,0,.16) 50%);
-}
-/* le rabat */
-.rabat{
-  position:absolute;left:0;right:0;top:0;height:56%;
-  background:linear-gradient(180deg,#7b1f2b,#63151f);
-  clip-path:polygon(0 0,100% 0,50% 100%);
-  transform-origin:top center;transform:rotateX(0deg);
-  transition:transform .95s cubic-bezier(.6,-.2,.3,1.3);
-  z-index:3;border-radius:5px 5px 0 0;
-}
-.ouvert .rabat{transform:rotateX(178deg)}
-
-/* le cachet de cire */
-.cachet{
-  position:absolute;left:50%;top:56%;translate:-50% -50%;z-index:5;
-  width:74px;height:74px;
-}
-.demi{
-  position:absolute;inset:0;
-  background:radial-gradient(circle at 36% 30%,var(--or-clair),var(--or) 58%,#6f5323 100%);
-  box-shadow:0 5px 14px rgba(0,0,0,.5);
-  transition:transform .85s cubic-bezier(.35,1.2,.4,1),opacity .85s;
-  border-radius:50%;
-}
-/* bord irrégulier de la cire, fait au clip-path */
-.demi{clip-path:polygon(50% 0,68% 5%,84% 16%,95% 32%,100% 50%,95% 68%,84% 84%,68% 95%,50% 100%,32% 95%,16% 84%,5% 68%,0 50%,5% 32%,16% 16%,32% 5%)}
-.demi.g{clip-path:polygon(50% 0,50% 100%,32% 95%,16% 84%,5% 68%,0 50%,5% 32%,16% 16%,32% 5%)}
-.demi.d{clip-path:polygon(50% 0,68% 5%,84% 16%,95% 32%,100% 50%,95% 68%,84% 84%,68% 95%,50% 100%)}
-.ouvert .demi.g{transform:translate(-46px,26px) rotate(-38deg);opacity:0}
-.ouvert .demi.d{transform:translate(46px,26px) rotate(38deg);opacity:0}
-.initiale{
-  position:absolute;inset:0;display:grid;place-items:center;z-index:6;
-  font-family:var(--script);font-size:31px;color:#5a4319;
-  text-shadow:0 1px 0 rgba(255,255,255,.28);
-  transition:opacity .4s;
-}
-.ouvert .initiale{opacity:0}
-
-/* le papier qui glisse hors de l'enveloppe */
-.glisse{
-  position:absolute;left:8%;right:8%;top:14%;height:74%;
-  background:linear-gradient(180deg,var(--papier),var(--papier-2));
-  border-radius:3px;z-index:2;opacity:0;
-  transform:translateY(0) scale(.97);
-  box-shadow:0 -6px 20px rgba(0,0,0,.25);
-}
-.ouvert .glisse{
-  animation:sortir 1.15s .45s cubic-bezier(.25,1,.5,1) forwards;
-}
-@keyframes sortir{
-  0%{opacity:1;transform:translateY(0) scale(.97)}
-  100%{opacity:1;transform:translateY(-62%) scale(1)}
+.env-zone{
+  display:flex;flex-direction:column;align-items:center;gap:30px;padding:24px;
+  perspective:1400px;perspective-origin:50% 38%;
 }
 
-.touche{
-  font-family:var(--sans);font-size:12px;letter-spacing:.28em;text-transform:uppercase;
-  color:#d9b48c;opacity:.92;
-}
-.touche i{display:inline-block;font-style:normal;animation:respire 2.4s ease-in-out infinite}
-@keyframes respire{0%,100%{opacity:.45}50%{opacity:1}}
+/* le prénom : il s'efface en montant quand l'enveloppe s'ouvre, pour ne
+   JAMAIS se retrouver derrière le rabat. Défaut vu sur capture. */
 .pour-qui{
   font-family:var(--script);font-size:clamp(30px,8vw,44px);color:var(--or-clair);
   text-align:center;line-height:1.15;
+  transition:opacity .55s ease,transform .7s cubic-bezier(.3,1,.4,1);
 }
 .pour-qui small{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.3em;
   text-transform:uppercase;color:#c99a72;opacity:.8;margin-bottom:10px}
+.env-zone.nom-part .pour-qui{opacity:0;transform:translateY(-22px)}
+
+/* ---------- l'enveloppe : quatre plans ---------- */
+.enveloppe{
+  position:relative;width:min(80vw,338px);aspect-ratio:1.46/1;
+  background:none;border:none;padding:0;cursor:pointer;
+  transform-style:preserve-3d;
+  transition:transform .9s cubic-bezier(.3,1,.4,1),opacity .6s ease;
+}
+.enveloppe:focus-visible{outline:2px solid var(--or-vif);outline-offset:10px;border-radius:6px}
+
+/* le dos : le fond de l'enveloppe, derrière le papier */
+.dos{
+  position:absolute;inset:0;border-radius:4px;z-index:1;
+  background:linear-gradient(165deg,#4e131c,#3a0e15);
+  box-shadow:0 34px 70px -20px rgba(0,0,0,.8);
+}
+
+/* le papier : il commence DEDANS, il monte, il devient la carte */
+.papier{
+  position:absolute;left:7%;right:7%;top:9%;height:80%;z-index:2;
+  border-radius:3px;
+  background:linear-gradient(178deg,#fdfaf4 0%,var(--papier) 42%,var(--papier-2) 100%);
+  transform:translateY(6%) translateZ(-2px);
+  transition:transform 1.05s cubic-bezier(.22,.9,.3,1) .5s,box-shadow 1.05s ease .5s;
+  box-shadow:0 2px 6px rgba(0,0,0,.18);
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+/* le pli du papier, qui prouve qu'il a été plié */
+.papier::after{
+  content:"";position:absolute;left:0;right:0;top:38%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(46,38,32,.13) 12%,rgba(46,38,32,.13) 88%,transparent);
+}
+/* la première phrase, visible sur le papier qui sort */
+.amorce{
+  font-family:var(--script);font-size:clamp(15px,3.9vw,19px);color:var(--cire);
+  opacity:0;text-align:center;padding:0 14%;line-height:1.35;
+  transition:opacity .8s ease .95s;
+}
+.ouvert .amorce{opacity:.9}
+.ouvert .papier{
+  transform:translateY(-74%) scale(1.06) translateZ(-2px);
+  box-shadow:0 30px 52px -16px rgba(0,0,0,.6);
+}
+
+/* la poche avant : opaque, elle CACHE le bas du papier. C'est elle qui
+   fait croire que le papier vient de l'intérieur. */
+.devant{
+  position:absolute;inset:0;z-index:3;border-radius:4px;
+  background:linear-gradient(165deg,#6d1b26,#571019);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -18px 30px -18px rgba(0,0,0,.35);
+}
+/* Le V est DESSINE, pas decoupe : deux aretes de pli et l'ombre du rabat.
+   Rien ne traverse, donc le papier ne peut pas depasser. */
+.devant::after{
+  content:"";position:absolute;inset:0;border-radius:4px;
+  background:
+    linear-gradient(to bottom right,transparent calc(50% - .7px),rgba(0,0,0,.26) 50%,transparent calc(50% + .7px)),
+    linear-gradient(to bottom left,transparent calc(50% - .7px),rgba(0,0,0,.26) 50%,transparent calc(50% + .7px)),
+    linear-gradient(180deg,rgba(0,0,0,.28),transparent 34%);
+}
+
+/* le rabat : il tourne en profondeur, et son revers est plus sombre */
+.rabat{
+  position:absolute;left:0;right:0;top:0;height:62%;z-index:4;
+  transform-origin:top center;transform:rotateX(0deg);
+  transform-style:preserve-3d;
+  transition:transform .85s cubic-bezier(.45,.05,.25,1);
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  background:linear-gradient(178deg,#7d2029,#5d131c);
+  box-shadow:0 6px 14px -6px rgba(0,0,0,.5);
+}
+/* le revers, révélé quand il a dépassé 90 degrés */
+.rabat::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(0deg,#3d0f16,#521621);
+  opacity:0;transition:opacity .3s ease .38s;
+  clip-path:inherit;
+}
+.ouvert .rabat{transform:rotateX(-172deg) translateZ(1px)}
+/* Le rabat passe DERRIERE l'enveloppe une fois qu'il a franchi la verticale.
+   Pose par le script a 520 ms, pas en CSS : il doit rester visible PENDANT
+   sa rotation, et disparaitre derriere seulement apres. Sans ca il coupait
+   le papier d'une bande rouge en travers (vu sur capture a 1 000 ms). */
+.rabat-derriere .rabat{z-index:0}
+.ouvert .rabat::after{opacity:1}
+
+/* ---------- le cachet de cire : il se FEND ---------- */
+.cachet{
+  position:absolute;left:50%;top:62%;translate:-50% -50%;z-index:6;
+  width:76px;height:76px;
+}
+.demi{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 34% 26%,rgba(255,255,255,.45) 0 6%,transparent 34%),
+    radial-gradient(circle at 38% 32%,var(--or-clair),var(--or) 54%,#6b5021 100%);
+  box-shadow:0 6px 16px rgba(0,0,0,.55),inset 0 -2px 4px rgba(0,0,0,.3);
+  transition:transform .78s cubic-bezier(.36,.06,.6,1),opacity .5s ease .16s;
+}
+.demi{clip-path:polygon(50% 0,68% 5%,84% 16%,95% 32%,100% 50%,95% 68%,84% 84%,68% 95%,50% 100%,32% 95%,16% 84%,5% 68%,0 50%,5% 32%,16% 16%,32% 5%)}
+.demi.g{clip-path:polygon(49% 0,47% 22%,51% 46%,48% 72%,50% 100%,32% 95%,16% 84%,5% 68%,0 50%,5% 32%,16% 16%,32% 5%)}
+.demi.d{clip-path:polygon(51% 0,68% 5%,84% 16%,95% 32%,100% 50%,95% 68%,84% 84%,68% 95%,50% 100%,52% 72%,49% 46%,53% 22%)}
+/* la cire ne se teleporte pas : elle bascule, tombe, et sort du cadre */
+.ouvert .demi.g{transform:translate(-38px,172px) rotate(-74deg) scale(.86);opacity:0}
+.ouvert .demi.d{transform:translate(40px,186px) rotate(81deg) scale(.86);opacity:0}
+/* la fente, qui apparaît une fraction avant la chute */
+.fente{
+  position:absolute;left:50%;top:8%;bottom:8%;width:2px;translate:-50% 0;z-index:7;
+  background:linear-gradient(180deg,transparent,#3a2a0c 18%,#3a2a0c 82%,transparent);
+  opacity:0;transform:scaleY(0);transform-origin:top;
+}
+.ouvert .fente{animation:fendre .34s ease-out forwards}
+@keyframes fendre{
+  0%{opacity:0;transform:scaleY(0)}
+  40%{opacity:1;transform:scaleY(1)}
+  100%{opacity:0;transform:scaleY(1)}
+}
+.initiale{
+  position:absolute;inset:0;display:grid;place-items:center;z-index:8;
+  font-family:var(--script);font-size:32px;color:#5a4319;
+  text-shadow:0 1px 0 rgba(255,255,255,.3);
+  transition:opacity .28s ease;
+}
+.ouvert .initiale{opacity:0}
+
+/* l'enveloppe s'efface quand le papier prend sa place */
+.env-zone.part .enveloppe{transform:translateY(16px) scale(.96);opacity:0}
+
+.touche{
+  font-family:var(--sans);font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+  color:#d9b48c;opacity:.92;transition:opacity .4s ease;
+}
+.touche i{display:inline-block;font-style:normal;animation:respire 2.4s ease-in-out infinite}
+@keyframes respire{0%,100%{opacity:.45}50%{opacity:1}}
+.ouvert ~ .touche,.env-zone.part .touche{opacity:0}
 
 /* =====================================================================
    2 · LE CODE : l'encre qui refuse
@@ -196,7 +269,9 @@ body.ferme{overflow:hidden;height:100vh}
   position:fixed;inset:0;z-index:52;display:none;place-items:center;padding:22px;
   background:radial-gradient(ellipse at 50% 40%,var(--nuit-2),var(--nuit) 65%);
 }
+#code{opacity:0;transition:opacity .85s ease}
 #code.la{display:grid}
+#code.la.vu{opacity:1}
 #code.parti{opacity:0;visibility:hidden;transition:opacity .8s,visibility .8s}
 .carte-code{
   width:min(92vw,340px);background:linear-gradient(180deg,var(--papier),var(--papier-2));
@@ -421,10 +496,13 @@ section+section{border-top:1px solid rgba(46,38,32,.1)}
   <div class="env-zone">
     <p class="pour-qui"><small id="mention">Une lettre pour</small><span id="destinataire">toi</span></p>
     <button class="enveloppe" id="enveloppe" aria-label="Ouvrir l'enveloppe">
-      <span class="glisse" aria-hidden="true"></span>
+      <span class="dos" aria-hidden="true"></span>
+      <span class="papier" aria-hidden="true"><span class="amorce" id="amorce"></span></span>
+      <span class="devant" aria-hidden="true"></span>
       <span class="rabat" aria-hidden="true"></span>
       <span class="cachet" aria-hidden="true">
         <span class="demi g"></span><span class="demi d"></span>
+        <span class="fente"></span>
         <span class="initiale" id="initiale">M</span>
       </span>
     </button>
@@ -570,15 +648,47 @@ const LETTRE = {
   $("#initiale").textContent = (LETTRE.initiale || (LETTRE.de || "M")[0] || "M").toUpperCase();
 
   const seuil = $("#seuil"), enveloppe = $("#enveloppe");
+  const zone = document.querySelector(".env-zone");
   let ouverte = false;
 
+  // La premiere phrase se lit sur le papier qui sort : on voit le debut du
+  // message avant meme d'etre entre. C'est ce qui fait qu'on a envie d'ouvrir.
+  const amorce = $("#amorce");
+  if (amorce) amorce.textContent = (LETTRE.accueil || "").slice(0, 64);
+
+  /* LA MISE EN SCENE, minutee.
+     ⚠️ L'ancienne version etait finie en moins de 300 ms mesurees : la cire
+     disparaissait au lieu de se fendre, et ca coupait au code. Une enveloppe
+     qu'on ouvre demande du temps, c'est tout le produit.
+       0 ms     la fente apparait dans la cire
+       ~120 ms  les deux moities basculent et tombent
+       380 ms   le prenom monte et s'efface (il ne doit JAMAIS passer
+                derriere le rabat : defaut vu sur capture)
+       420 ms   le rabat s'ouvre en profondeur
+       950 ms   le papier sort de la poche et grandit
+       2050 ms  l'enveloppe s'efface, on enchaine                          */
   function ouvrir(){
     if (ouverte) return;
     ouverte = true;
     enveloppe.classList.add("ouvert");
     enveloppe.disabled = true;
-    // On laisse la cire se fendre et le papier sortir avant d'enchaîner.
-    setTimeout(passerAuCode, doux ? 60 : 1500);
+    if (doux){
+      zone.classList.add("nom-part", "part");
+      setTimeout(passerAuCode, 60);
+      return;
+    }
+    // Le prenom s'efface tot : il ne doit jamais passer derriere le rabat.
+    setTimeout(() => zone.classList.add("nom-part"), 380);
+    // le rabat a franchi la verticale : il va derriere, le papier passe devant
+    setTimeout(() => enveloppe.classList.add("rabat-derriere"), 520);
+    // ⚠️ L'enveloppe ne part QU'APRES que le papier soit sorti. Mesure du
+    // defaut precedent : elle s'effacait a 865 ms, le code arrivait a
+    // 2065 ms, et il y avait 1 200 ms d'ECRAN VIDE entre les deux, le papier
+    // n'ayant jamais eu le temps d'etre vu.
+    setTimeout(() => zone.classList.add("part"), 1780);
+    // On enchaine DANS le meme temps : le code monte en fondu par-dessus
+    // l'enveloppe qui s'en va. Deux mouvements qui se croisent, aucun trou.
+    setTimeout(passerAuCode, 1820);
   }
   enveloppe.addEventListener("click", ouvrir);
 
@@ -601,6 +711,9 @@ const LETTRE = {
     if (!attendu){ entrer(); return; }
     seuil.classList.add("parti");
     boiteCode.classList.add("la");
+    // « la » pose la grille, « vu » lance le fondu a l'image suivante :
+    // sans ces deux temps, la transition d'opacite ne part jamais.
+    requestAnimationFrame(() => requestAnimationFrame(() => boiteCode.classList.add("vu")));
     $("#indice").textContent = LETTRE.indice || "";
     dessinerPoints();
     const cl = $("#clavier");

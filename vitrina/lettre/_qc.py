@@ -16,6 +16,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 
 from playwright.sync_api import sync_playwright
 
@@ -75,6 +76,25 @@ def main():
       not re.search(r"<img\s", src), "une <img> ecrite en dur dans le gabarit")
     t("aucune bibliotheque", not re.search(r'<script[^>]+src=', src))
     t("non indexable", 'content="noindex,nofollow,noarchive"' in src)
+
+    # ⚠️ LE DÉFAUT LE PLUS CHER DE CE FICHIER, et il tenait en UNE frappe :
+    # « --or-clair:#d3ae६8 » portait un CHIFFRE DEVANAGARI au lieu d'un 6.
+    # La couleur devenait invalide, donc le radial-gradient entier était
+    # invalide : le cachet de cire ne s'affichait PAS et le prénom de la
+    # destinataire était illisible. Les deux éléments les plus importants du
+    # premier écran, tués par un caractère sosie que rien ne signalait.
+    sosies = []
+    for i, ch in enumerate(src):
+        if ord(ch) < 128:
+            continue
+        try:
+            n = unicodedata.name(ch)
+        except ValueError:
+            continue
+        if any(a in n for a in ("CYRILLIC", "GREEK", "DEVANAGARI", "FULLWIDTH",
+                                "ARABIC", "MATHEMATICAL", "CHEROKEE")):
+            sosies.append(f"ligne {src[:i].count(chr(10))+1} : {ch!r} ({n})")
+    t("aucun caractere SOSIE d'un autre alphabet", not sosies, " · ".join(sosies[:3]))
 
     exe = glob.glob("/opt/pw-browsers/chromium*/chrome-linux/chrome")
     if not exe:
