@@ -9,7 +9,7 @@
 >
 > **Ce qui ne change jamais :** le label « LE SAVIEZ-VOUS ? », ancre de la rubrique.
 >
-> Version 1.0 · 2026-08-04
+> Version 1.1 · 2026-08-29
 
 ---
 
@@ -1329,7 +1329,344 @@ mieux qu’une conclusion qu’on nous vend.
 
 ---
 
-## 8. Contrôles avant publication
+## 8. Statut n° 6 · « LA VOIE VIDE » · direction « NUIT ÉLECTRIQUE »
+
+**Le thème demandé :** sortir de la masse et passer devant tout le monde.
+
+**Le piège du thème.** Tout le monde traite « sortir de la masse » de la même façon :
+faites-vous remarquer, criez plus fort, publiez plus. Or **crier plus fort, c’est
+exactement ce que fait la masse.** C’est même sa définition. Un statut qui dit ça ne sort
+de rien du tout : il rejoint le tas.
+
+**Le retournement.** On ne passe pas devant en poussant dans la file. **On passe devant en
+prenant la voie où personne n’est.** Et cette voie existe pour de bon : au Bénin, dans la
+plupart des métiers, la concurrence n’est **pas encore** en ligne. Ce n’est pas un argument
+de vente, c’est un fait que le lecteur peut vérifier en cherchant trois de ses concurrents
+ce soir.
+
+### L’image
+
+Un boulevard de Cotonou, la nuit, vu d’un pont. **D’un côté la file : pare-chocs contre
+pare-chocs jusqu’à l’horizon, des dizaines de feux arrière, immobile.** De l’autre côté de
+la ligne blanche, **une voie totalement vide**, l’asphalte encore humide, éclairée d’un
+bleu froid, qui file droit vers le point de fuite.
+
+**Et le détail qui fait tout le post :** la voie vide **n’est pas vide.** Tout au fond,
+minuscule, un seul phare. **Quelqu’un est déjà passé.**
+
+C’est ce point lumineux qui transforme une jolie métaphore en urgence. Sans lui, le post
+dit « il y a de la place ». Avec lui, il dit **« il y a de la place, et elle se prend en
+ce moment. »** L’envie fait travailler un statut bien mieux que la peur, et elle ne coûte
+rien à la confiance.
+
+### Les mots
+
+> **Tout le monde attend** · **Doublez**
+>
+> *La file, c’est le marché. La voie vide, c’est internet.*
+> *Elle est encore vide. Quelqu’un est déjà devant.*
+
+Deux temps, comme la référence : une petite ligne posée sur une barre bleue pleine, puis
+**un seul mot énorme dans un cadre en pointillés.** « Doublez » se lit à 20 %, se comprend
+sans l’image, et c’est un ordre : sur un statut, un verbe à l’impératif vaut dix phrases.
+
+### Pourquoi il vient aujourd’hui, et pas hier
+
+Hier, « L’HEURE DORÉE » vendait. **La règle du document interdit d’enchaîner.** Celui-ci ne
+vend rien : il donne une lecture stratégique, et il demande **un mot**, pas un achat. C’est
+lui qui rachète le droit d’être cru la prochaine fois.
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+"LA VOIE VIDE" — electric night direction
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap
+their roles: swapping them ruins the image.
+
+  THE STYLE REFERENCE = the attachment showing a very dark navy
+     poster with a blue-tinted close-up of a hand moving a chess
+     piece on a board, a small white headline sitting on a solid
+     blue bar that bleeds off the left edge, a much larger white
+     headline inside a DASHED blue rectangle, a logo at the top
+     centre and a website address at the bottom centre.
+     Take from it, and only from it:
+       - the DEEP NAVY / NEAR-BLACK ground and the single cold BLUE
+         light source coming from the upper left
+       - the BLUE DUOTONE photographic treatment: desaturated,
+         high contrast, cinematic, almost monochrome
+       - the ROUNDED GEOMETRIC HEAVY SANS-SERIF lettering
+       - THE TWO-PART HEADLINE DEVICE: a small line on a SOLID
+         electric-blue bar bleeding off the LEFT EDGE, and under it
+         a much larger line inside a DASHED electric-blue rectangle
+       - the logo centred at the top, the address centred at the
+         very bottom
+       - its level of finish
+     Take NOTHING of its subject, its words or its brand. There is
+     NO chess, NO chessboard, NO chess piece, NO hand and NO
+     tabletop anywhere in the new image, and the words "The Zubix"
+     appear nowhere.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with
+     "AGENCY" underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a
+     style reference and never a subject to reinterpret.
+
+  If you hesitate: the attachment with a transparent background and
+  a readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is
+  THE STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp status image for NEBULA Agency, a
+digital studio in Cotonou, Benin, that builds pages and online
+catalogues for West African merchants.
+The idea: everyone is queuing in the same lane; the lane beside it
+is open, and someone is already far down it.
+Cinematic, cold, premium, night. Never cheap, never clip-art.
+
+-----------------------------------------------------------
+THE SCENE — full bleed, it fills the whole canvas
+-----------------------------------------------------------
+A wide city boulevard in Cotonou, Benin, at NIGHT, seen from a
+FOOTBRIDGE ABOVE IT, looking straight down the road toward a distant
+vanishing point.
+
+RIGHT SIDE — THE QUEUE: a dense, unbroken traffic jam. Cars and
+moto-taxis packed bumper to bumper, crowded, identical, stretching
+all the way to the horizon, completely motionless. Rendered DIM: the
+mass is dark, cluttered and slightly out of focus.
+
+LEFT SIDE — THE OPEN LANE: separated only by a painted white line,
+ONE COMPLETELY EMPTY LANE. Wet asphalt reflecting a cold blue light,
+crisp painted markings, running clean and straight to the vanishing
+point. It is the ONLY brightly lit thing in the picture. Nothing on
+it, no vehicle, no obstacle, no person.
+
+FAR AWAY, at the very end of the empty lane, almost at the vanishing
+point, TINY: a single motorcycle silhouette with its headlight on,
+already far ahead. It must be small enough that the eye finds it
+second, after the empty lane, and it must be unmistakable.
+
+SKY: the upper third is a near-black navy sky with one soft cold
+blue glow spilling from the upper left, exactly like the light in
+the reference. Keep it clean and uncluttered: the logo and the
+headline sit on it.
+
+FOREGROUND: the bottom of the frame is dark, empty asphalt. Keep it
+plain: the small lines of text sit there.
+
+-----------------------------------------------------------
+THE COLOUR
+-----------------------------------------------------------
+Blue duotone throughout, exactly as in the reference: deep navy,
+steel blue, cold white highlights, near-black shadows.
+ONE controlled exception: the tail lights of the jam stay red, but
+DIM and desaturated, small points only. They are the only red in the
+image and they must never compete with the blue lane.
+No orange street lamps, no warm tones anywhere else.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place
+it at the TOP of the image, centred, on the dark sky, small, exactly
+as provided, and KEEP that transparency.
+  - it sits DIRECTLY on the sky. NO white box, NO black box, NO
+    coloured plate, NO rounded card, NO badge, NO outline, NO glow,
+    NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - size it so its wordmark stays comfortably readable when the
+    whole image is viewed at 20% of its size.
+A logo pasted on a plate is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a status is covered by the interface
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface ON TOP of the image:
+  - the TOP 220 px are covered (profile picture, name, time)
+  - the BOTTOM 340 px are covered (the "Reply" field)
+The logo, every line of type and the small motorcycle must ALL sit
+between y = 220 px and y = 1580 px. Nothing that matters may fall
+inside those two strips.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+HEADLINE, part 1 — small white bold capitals-and-lowercase text on a
+SOLID ELECTRIC-BLUE BAR that starts off the LEFT EDGE of the canvas
+and stops after the words, exactly the device used in the reference:
+    "Tout le monde attend"
+
+HEADLINE, part 2 — directly under it, MUCH larger, white, the
+loudest element of the whole image, inside a DASHED ELECTRIC-BLUE
+RECTANGLE OUTLINE, exactly the device used in the reference:
+    "Doublez"
+
+THE READING, lower area, over the dark asphalt, two lines, centred,
+medium size, white:
+    "La file, c’est le marché."
+    "La voie vide, c’est internet."
+
+THE STING, one line under it, smaller, in electric blue:
+    "Elle est encore vide. Quelqu’un est déjà devant."
+
+THE ANSWER TO GIVE, one line under it, small, white, semi-bold:
+    "Répondez VOIE à ce statut."
+
+FOOTER, at the very bottom of the safe area, tiny, centred, white at
+reduced opacity:
+    "nebula-agency.online"
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom, all inside the safe band:
+  1. NEBULA logo, centred on the dark sky
+  2. blue bar + "Tout le monde attend"        (bleeds off the left)
+  3. dashed rectangle + "Doublez"             <- loudest zone
+  4. THE ROAD: the jam on the right, the lit empty lane on the left,
+     the tiny motorcycle far away              <- largest zone
+  5. "La file, c’est le marché." / "La voie vide, c’est internet."
+  6. THE STING
+  7. "Répondez VOIE à ce statut."
+  8. nebula-agency.online
+Lines 5 to 8 form ONE tight block over the dark foreground asphalt,
+with generous space between that block and the headline above.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "c’est" (twice), "Quelqu’un".
+- Correct diacritics: "marché", "déjà".
+- The word "VOIE" stays in capitals, exactly as written. Do not turn
+  it into a button, a pill or a badge: it is plain text.
+- "Doublez" must still be readable when the image is viewed at 20%
+  of its size, and it must be the first thing the eye reads.
+- No hashtag, no emoji, no icon, no arrow, no star, no rating, no
+  road sign, no speed limit disc, no number plate, no readable text
+  on any vehicle.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO chess, NO chessboard, NO chess piece, NO hand, NO tabletop.
+  The reference gives the style and NOTHING of its subject.
+- NO price, NO amount, NO currency symbol, NO offer, NO discount,
+  NO percentage.
+- NO invented statistics, follower counts, client counts, ratings or
+  stars. No figures anywhere in the image.
+- NO visible human face and no readable person: the only human
+  presence is the distant motorcycle silhouette.
+- NO recognisable third-party brand, logo, car badge or app, and the
+  words "The Zubix" must not appear.
+- NO watermark, no frame, no border around the image itself.
+- The empty lane stays EMPTY apart from the one distant motorcycle.
+  Filling it destroys the entire idea.
+- One idea, told once.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready, cinematic
+quality, high-fidelity text rendering.
+===========================================================
+```
+
+### Pour le fil Instagram et Facebook (4:5)
+
+Même prompt, en remplaçant le bloc FORMAT. **La ligne « Répondez VOIE à ce statut. »
+disparaît** : sur un fil, on ne répond pas à un statut, on écrit en commentaire ou en
+message. Elle est reprise dans la légende.
+
+```
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. No safe zones: the whole canvas is visible.
+Bring the horizon slightly higher so the road still runs deep into
+the frame, and keep the same top-to-bottom order.
+
+REMOVE ONE LINE: do not render "Répondez VOIE à ce statut." on this
+version. Everything else is unchanged.
+```
+
+### Le texte à écrire sous le statut
+
+```
+La file, ce n’est pas la circulation. C’est le marché.
+
+Tout le monde y est. Tout le monde attend le même client, au même
+endroit, au même moment. Et personne ne regarde la voie d’à côté.
+
+Cherchez trois de vos concurrents ce soir. Tapez leur nom. Regardez
+combien vous en trouvez vraiment.
+
+C’est ça, la voie vide. Elle ne restera pas vide.
+
+Répondez VOIE, je vous dis par où on entre.
+```
+
+**Pourquoi cette légende marche :** elle ne demande pas de croire, **elle demande de
+vérifier**, et la vérification se fait en trente secondes, dans le téléphone qui tient déjà
+le statut. Celui qui cherche ses trois concurrents et n’en trouve aucun vient de se
+convaincre tout seul.
+
+### Ce qu’on répond à « VOIE »
+
+⚠️ **La réponse ne vend pas de vitrine.** Le socle est formel : on entre par le Catalogue.
+La voie vide, dans la conversation, c’est **une adresse où tout ce qu’on vend est rangé**,
+pas un site à 150 000 F.
+
+```
+Bonjour, merci d’avoir répondu.
+
+Une question avant tout : aujourd’hui, quand quelqu’un veut savoir ce que
+vous vendez et à quel prix, vous faites comment ? Vous renvoyez les photos
+une par une sur WhatsApp ?
+
+Si c’est ça, la voie vide commence exactement là. On range tout ce que vous
+vendez à une seule adresse, que vous envoyez en un lien. Vous arrêtez de
+renvoyer les mêmes photos dix fois par semaine, et vous existez là où on
+vous cherche.
+
+Dites-moi votre activité, je vous envoie un exemple dans votre métier.
+```
+
+**On termine par une demande minuscule** (« votre activité »), pas par un prix. Celui qui
+répond son métier a déjà commencé la vente sans le savoir.
+
+### Contrôles propres à ce statut
+
+| Contrôle | Pourquoi |
+|---|---|
+| **La voie vide est vraiment vide** | un seul véhicule dedans, et l’idée est morte |
+| **Le phare lointain est présent et minuscule** | c’est lui qui transforme la métaphore en urgence |
+| L’œil trouve la voie vide avant la file | c’est la lumière qui doit séparer, pas une flèche |
+| Aucun échiquier, aucune main, aucune table | on prend le style de la référence, jamais son sujet |
+| « The Zubix » n’apparaît nulle part | c’est la marque de quelqu’un d’autre |
+| Le rouge des feux reste faible | s’il domine, la file devient le sujet |
+| Rien dans les 220 px du haut ni les 340 px du bas | le phare lointain compte aussi |
+| **Réduire à 20 %** | si « Doublez » ne se lit plus, le statut est mort |
+| **La réponse à « VOIE » est prête avant de publier** | promettre une réponse et la faire attendre coûte plus que se taire |
+| Aucune statistique | règle absolue de la maison |
+
+---
+
+## 9. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -1345,7 +1682,7 @@ mieux qu’une conclusion qu’on nous vend.
 
 ---
 
-## 9. Les prochains statuts
+## 10. Les prochains statuts
 
 Même gabarit : le label, la hiérarchie brutale, les zones mortes, et surtout **la question
 fermée qui se répond d'un caractère**.
