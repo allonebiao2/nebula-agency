@@ -117,6 +117,26 @@ supabase functions deploy piste-paiement-recu --no-verify-jwt
 node --experimental-strip-types _qc_paiement.mjs   # ou : npm run qc:paiement
 ```
 
+### ⛔ « Clé API invalide » sur une clé valable : regarder les fins de ligne
+
+Arrivé le 2026-09-03. Le fichier `secrets/saspay.env` avait été réécrit par un
+outil Windows, donc en **CRLF**. Le lecteur de la sonde coupait sur `'
+'`, le
+`''` restait collé en fin de ligne, et comme « . » ne traverse pas un retour
+chariot en JavaScript, le `$` de sa regex ne s'accrochait plus à rien :
+**aucune ligne lue**, `Bearer undefined` envoyé, et SasPay répondant « Clé API
+invalide » sur six routes d'affilée.
+
+⚠️ **Le message d'erreur accusait la clé, le coupable était un octet
+invisible.** Ce qui a tranché en trois secondes : la même clé, extraite par
+`sed` et envoyée par `curl`, répondait **200**. Quand un outil échoue et qu'un
+autre réussit sur la même donnée, le défaut est dans l'outil.
+
+Le lecteur coupe désormais sur `/?
+/`. ⚠️ Et la règle de la maison sur les
+écritures de fichiers (Node/Python en UTF-8, jamais PowerShell) vaut aussi
+pour les **fins de ligne**, pas seulement pour les accents.
+
 ### Où vit la clé, et où elle ne vit pas
 
 | Endroit | Quoi |

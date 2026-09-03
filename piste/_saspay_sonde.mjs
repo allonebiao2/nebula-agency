@@ -34,8 +34,15 @@ const dodo = (ms) => new Promise((r) => setTimeout(r, ms))
 if (!process.env.SASPAY_CLE_SECRETE) {
   const f = path.join(ICI, '..', 'secrets', 'saspay.env')
   if (fs.existsSync(f)) {
-    for (const l of fs.readFileSync(f, 'utf8').split('\n')) {
-      const m = l.match(/^\s*([A-Z_]+)\s*=\s*(.*)$/)
+    /* ⛔ COUPER SUR /\r?\n/, JAMAIS SUR '\n' SEUL. Un fichier écrit par un
+       outil Windows finit ses lignes en CRLF : le '\r' reste alors collé à la
+       valeur, et comme « . » ne traverse pas un retour chariot en JavaScript,
+       le « $ » ne s'accroche plus à rien. Résultat : AUCUNE ligne lue,
+       `Bearer undefined` envoyé, et SasPay répondant « Clé API invalide » sur
+       une clé parfaitement valable. Un quart d'heure à soupçonner le
+       fournisseur pour une fin de ligne. */
+    for (const l of fs.readFileSync(f, 'utf8').split(/\r?\n/)) {
+      const m = l.match(/^\s*([A-Z_]+)\s*=\s*(.*?)\s*$/)
       if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim()
     }
   }
