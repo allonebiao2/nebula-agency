@@ -139,6 +139,38 @@ Le lecteur coupe désormais sur `/
 écritures de fichiers (Node/Python en UTF-8, jamais PowerShell) vaut aussi
 pour les **fins de ligne**, pas seulement pour les accents.
 
+### ✅ 2026-09-03 · TOUT EST EN LIGNE, sauf le premier franc
+
+| Morceau | État |
+|---|---|
+| `paiement.sql` | **installé** (2 tables + RLS, 4 fonctions, lues sur une vraie commande) |
+| Secrets Supabase | **posés** : `SASPAY_CLE_SECRETE`, `SASPAY_SECRET_WEBHOOK`, `SASPAY_DEVISE` |
+| `piste-paiement` | **déployée**, v1, `verify_jwt=true` |
+| `piste-paiement-recu` | **déployée**, v1, `verify_jwt=false` |
+| Webhook SasPay | **déclaré**, LIVE, actif, 12 abonnements dont `transaction.success` |
+
+**La chaîne a été éprouvée de bout en bout** contre la fonction réellement
+déployée, avec le vrai secret :
+
+| Envoi | Réponse |
+|---|---|
+| sans en-tête | `401 · horodatage` |
+| horodatage vieux de 2 h | `401 · horodatage` |
+| signature fausse | `401 · signature` |
+| **signature valable** | **`200 · {ok:true, nouveau:true, agi:"sans commande"}`** |
+
+Ce dernier essai prouve quatre choses d'un coup : le secret posé chez Supabase
+est bien celui de `secrets/saspay.env`, le schéma de signature
+`horodatage + "." + corps` est le bon, la borne d'âge fonctionne, et
+l'écriture au journal aboutit. ⚠️ La ligne d'essai (`session =
+essai-technique-nebula`) **reste dans `piste.paiement_evenement`** : on ne
+supprime pas des lignes d'un journal de paiement, même de test.
+
+⏳ **Il ne manque plus que le premier encaissement réel** (200 F minimum), qui
+seul peut prouver le dernier maillon : que le champ `transaction` de la session
+de checkout se remplisse, et donc que `referenceParTransaction()` retrouve la
+commande. `SASPAY_PRET` reste `false` jusque-là.
+
 ### ✅ 2026-09-03 · la base est installée, et elle a corrigé deux erreurs
 
 `paiement.sql` est **joué** sur le projet PISTE : 2 tables (RLS activée) et 4
