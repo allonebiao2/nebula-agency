@@ -89,7 +89,8 @@ selon le contexte : viser un repère stable.
 
 ⛔ **Un fichier `.env` réécrit par PowerShell passe en CRLF**, le lecteur JS
 coupait sur `'
-'`, le `''` restait collé, et comme `.` ne traverse pas un
+'`, le `'
+'` restait collé, et comme `.` ne traverse pas un
 retour chariot le `$` n'accrochait plus rien : **aucune ligne lue**,
 `Bearer undefined` envoyé, et SasPay répondant « Clé API invalide » sur six
 routes. ⚠️ Le message accusait la clé, le coupable était un octet invisible.
@@ -143,3 +144,33 @@ prévenu.
 select recu_le, reference, montant, etat_lu, agi
   from piste.paiement_evenement order by id desc limit 10;
 ```
+
+## ⛔ Fin de journée : l'ancien chemin est supprimé
+
+« Il n'y a qu'une seule possibilité, l'ancien on la supprime. » Retiré : le
+numéro Mobile Money, l'opérateur, la consigne sur le nom du compte, le numéro
+NEBULA à créditer, la capture d'écran — **et la redirection WhatsApp**.
+
+⛔ **Elle faisait sortir le client du tunnel juste avant qu'il paie.** Elle
+n'avait de sens que pour le dépôt à la main, où c'est là qu'il recevait le
+numéro à créditer. WhatsApp reste comme recours, plus comme étape.
+
+⚠️ **Les mots héritent de l'ancien monde** : « montant exact **à envoyer** » et
+« **sous 24 heures** » venaient du virement manuel. Rien ne les vérifiait —
+les données se régénèrent, les phrases non.
+
+⚠️ **Les contrôles qui exigeaient l'ancien chemin ont été RETOURNÉS, pas
+supprimés** : ils vérifient maintenant son absence. Un contrôle qu'on efface
+parce qu'il est rouge ne protège plus rien.
+
+**QC 128 verts, 0 rouge.** Déployé et vérifié : le bundle servi est celui
+construit ici, « Continuer vers le paiement » présent, « Envoyer ma commande
+sur WhatsApp » et « créditer » absents.
+
+⚠️ **Le domaine a répondu `000` pendant 45 s au moment de vérifier**, alors que
+l'origine `piste-uex.pages.dev` répondait 200 : réseau local, pas déploiement.
+Vérifier par l'origine avant de conclure qu'un site est cassé.
+
+⏳ **Le premier paiement réel n'a toujours pas eu lieu**, et le filet n'est plus
+le client qui envoie sa capture : c'est Mongazi qui regarde le journal.
+

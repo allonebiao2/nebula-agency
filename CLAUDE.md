@@ -180,9 +180,12 @@
   de conclure.
   ⛔ **LE PREMIER PAIEMENT RÉEL N'A PAS EU LIEU** : c'est le seul essai qui prouve
   le dernier maillon, celui qui relie une notification à une commande.
-  ⏳ Mongazi demande de **supprimer totalement l'ancien chemin** (dépôt à la main +
-  WhatsApp) ; recommandation posée : **faire le test à 200 F d'abord**, sinon un
-  maillon cassé laisse PISTE sans aucun moyen de vendre.
+  ⛔ **L'ANCIEN CHEMIN EST SUPPRIMÉ** (dépôt à la main + redirection WhatsApp) :
+  il n'y a plus qu'un seul moyen de payer. ⚠️ **La redirection WhatsApp faisait
+  sortir le client du tunnel juste avant qu'il paie** ; WhatsApp reste comme
+  moyen de nous joindre, pas comme étape. ⚠️ **Le filet n'est plus le client qui
+  envoie sa capture, c'est Mongazi qui regarde le tableau de bord et le
+  journal** — dit avant de le faire.
   Détail : `piste/PAIEMENT.md` et `_memoire/conversations/2026-09-03-piste-paiement-en-ligne.md`.
 - **Source de vérité : `piste/PRODUCT.md`**, 88 décisions.
 

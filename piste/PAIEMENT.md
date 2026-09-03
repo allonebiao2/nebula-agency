@@ -206,6 +206,37 @@ SasPay et tout est journalisé. Le pire cas est le rapprochement à la main,
 c'est-à-dire exactement ce qui se faisait avant. **Rien n'est perdu, et rien
 n'est promis de faux.**
 
+### ⛔ 2026-09-03 · L'ANCIEN CHEMIN EST SUPPRIMÉ
+
+Décision de Mongazi : « il n'y a qu'une seule possibilité, l'ancien on la
+supprime, on garde juste le paiement avec SasPay ». Disparaissent avec lui
+**toutes les choses qui n'existaient que pour le rapprochement manuel** : le
+numéro Mobile Money, l'opérateur, la consigne d'écrire son nom comme sur son
+compte, le numéro NEBULA à créditer, la capture d'écran à envoyer.
+
+⛔ **Et la redirection WhatsApp au milieu du tunnel.** Elle n'avait de sens que
+pour le dépôt à la main : c'est là que le client recevait le numéro à créditer.
+Avec le paiement en ligne, la commande est déjà en base, le montant est relu
+côté serveur, et c'est le paiement qui la valide. **Envoyer le client sur
+WhatsApp, c'était le faire sortir du tunnel juste avant qu'il paie.** Le bouton
+dit maintenant « Continuer vers le paiement ».
+
+⚠️ **WhatsApp reste, mais comme moyen de NOUS JOINDRE**, pas comme étape.
+
+⚠️ **Les mots héritent de l'ancien monde, et rien ne les vérifie** : « montant
+exact **à envoyer** » venait du virement, « **sous 24 heures** » d'une livraison
+faite à la main. Les données se régénèrent, les phrases non. Un contrôle les
+surveille désormais.
+
+⚠️ **Les contrôles qui exigeaient le dépôt à la main ne sont pas supprimés, ils
+sont RETOURNÉS** : ils vérifient son absence. **Un contrôle qu'on efface parce
+qu'il est rouge ne protège plus rien.**
+
+⛔ **Ce que ça implique, et c'était dit avant de le faire** : le filet n'est
+plus le client qui envoie sa capture, c'est Mongazi qui regarde le tableau de
+bord SasPay et le journal. **Le premier paiement réel n'a toujours pas eu
+lieu** : tant qu'il n'a pas eu lieu, il faut surveiller.
+
 ### ✅ 2026-09-03 · LE CARNET PART TOUT SEUL
 
 *« Même si je dors, et qu'il y a des clients, que ça s'encaisse tout seul. »*
