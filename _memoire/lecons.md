@@ -1864,3 +1864,21 @@ ont été perdues et refaites.
 ⚠️ Et `git merge --ff-only` **échoue en silence** sur une branche divergente : on croit
 travailler sur `main` à jour en étant quatre commits en arrière. Vérifier
 `git log origin/main`, pas seulement le code de retour.
+
+## Regarder sert à repérer, mesurer sert à conclure
+
+**2026-09-03, signature du contrat.** Sur l'aperçu de la page, la signature paraissait grise
+et faible. J'allais renforcer son alpha. Mesurée sur les pixels réellement rendus à 300 dpi :
+trait le plus foncé à **19,25:1** sur la case, trait courant à **12:1**. De l'encre franche.
+
+Le « pâle » venait de l'aperçu **réduit** : un trait d'un pixel moyenné avec du blanc devient
+gris. J'aurais **dénaturé une signature** pour corriger un défaut de ma visionneuse.
+
+⚠️ Le même jour, la faute inverse : une sortie qui avait l'air fausse (0,3 % d'opaques) et
+dont j'ai d'abord soupçonné le mauvais étage. Les deux se règlent pareil : **l'œil désigne
+l'endroit où chercher, la mesure dit ce qui s'y passe**. Conclure depuis l'un ou l'autre seul
+donne une erreur dans un sens ou dans l'autre.
+
+⛔ Et le cas particulier qui rend ça grave ici : **on ne retouche ni la couleur ni l'opacité
+d'une signature**. La rendre « plus belle », c'est la falsifier. Recadrer, oui, ça ne change
+pas le tracé.

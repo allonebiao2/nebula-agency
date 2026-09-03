@@ -300,3 +300,34 @@ travailler sur `main` à jour alors que j'étais 4 commits en arrière. Vérifie
 **Conclusion pratique, à dire à Mongazi plutôt qu'à redécouvrir** : l'exemplaire signé se
 fabrique **sur son PC**, où `secrets/` survit. Une session dans le nuage ne peut le faire que
 dans la minute où la photo arrive, et rien ne garantit qu'elle y sera encore.
+
+## La 3e photo n'était pas une photo : le contrat est signé
+
+Mongazi a fini par envoyer **un PNG déjà transparent**, 412 × 458, tracé noir, 99,6 % de
+pixels vides. Il n'y avait **rien à détourer** : toute la mécanique bleue construite ce
+matin ne s'appliquait pas, et elle aurait répondu « aucune encre bleue trouvée » sur un
+fichier parfait. Le script reconnaît désormais ce cas et se contente de **recadrer au
+trait** (la marge du fichier ferait flotter la signature dans son cadre).
+
+⛔ **On ne retouche ni la couleur ni l'opacité d'une signature.** La rendre « plus belle »,
+c'est la falsifier. Recadrer, oui : ça ne change pas le tracé.
+
+⚠️ **Un alpha PRÉSENT ne veut pas dire détouré** : un JPEG converti en RGBA a un alpha
+plein. On exige que le fond soit réellement vide (> 30 % de transparents).
+
+### ⛔ Mon œil a dit « trop pâle », la mesure a dit 19:1
+
+Sur l'aperçu de la page, la signature paraissait **grise et faible**, et j'allais renforcer
+son alpha. Mesurée sur les pixels réellement rendus à 300 dpi : trait le plus foncé à
+**19,25:1** sur la case, trait courant à **12:1**. De l'encre franche.
+
+Le « pâle » venait de mon aperçu **réduit** : un trait d'un pixel moyenné avec du blanc
+devient gris. J'aurais dénaturé sa signature pour corriger un défaut de ma visionneuse.
+⚠️ **Même famille que la leçon du matin sur le masque** : la sortie avait l'air fausse, la
+cause était ailleurs. Regarder sert à repérer, mesurer sert à conclure.
+
+### État livré
+
+Contrat **1.4**, 13 pages, signature de Mongazi posée, cadre de Romaric vide en attendant
+la sienne. Vierge et signé se superposent à **0,00 pt** sur cinq repères. L'exemplaire signé
+est sorti dans `pdf/signe/`, **hors git**, et envoyé directement à Mongazi.
