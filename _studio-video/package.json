@@ -9,7 +9,8 @@
     "rendu": "npm run rendu:prix && npm run rendu:besoin && npm run rendu:logiciel",
     "rendu:prix": "remotion render src/index.ts oui-non-1-prix out/oui-non-1-prix.mp4",
     "rendu:besoin": "remotion render src/index.ts oui-non-2-besoin out/oui-non-2-besoin.mp4",
-    "rendu:logiciel": "remotion render src/index.ts oui-non-3-logiciel out/oui-non-3-logiciel.mp4"
+    "rendu:logiciel": "remotion render src/index.ts oui-non-3-logiciel out/oui-non-3-logiciel.mp4",
+    "rendu:minuit": "remotion render src/index.ts minuit-demo out/minuit-demo.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",

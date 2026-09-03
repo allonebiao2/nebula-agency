@@ -9,7 +9,7 @@ Manuel d'exploitation : `_plans/2026-08-28-minuit-manuel.html`
 
 ---
 
-## Ce qui existe, au 2026-09-02
+## Ce qui existe, au 2026-09-03
 
 | Brique | État |
 |---|---|
@@ -20,9 +20,24 @@ Manuel d'exploitation : `_plans/2026-08-28-minuit-manuel.html`
 | Alertes WhatsApp et Telegram | ✅ dans `vitrina/`, variables à poser |
 | **Livraison à l'heure choisie** | ⏳ **reste à faire**, avec n8n |
 | **Serveur en ligne** | ⏳ **reste à faire**, un service Render |
+| **La vidéo de démonstration** | ✅ construite le 2026-09-03, ⛔ **à ne pas publier encore** |
 
 Le manuel disait : *« un gabarit irréprochable, la sauvegarde du formulaire, la
 livraison à l'heure choisie, dans cet ordre »*. Les deux premiers sont faits.
+
+### La vidéo de démonstration
+
+`_studio-video/`, composition **`minuit-demo`** : 1080x1920, 30 s.
+`cd _studio-video && npm run rendu:minuit`.
+
+Les **six signatures ci-dessous sont rejouées en React**, pas photographiées :
+une capture ne montre pas un cachet qui se brise. Les couleurs, le texte de la
+lettre et le prix y sont lus depuis **ce dossier**, recopiés une seule fois
+dans `_studio-video/src/minuit/donnees.ts`.
+
+⛔ **Elle n'est pas publiable en l'état.** Elle promet « Elle l'ouvre à minuit
+pile. Pas avant. » et affiche `nebula-agency.online/minuit` : les deux lignes
+⏳ du tableau ci-dessus. La vidéo est prête, la promesse ne l'est pas.
 
 ---
 

@@ -29,7 +29,17 @@
   la version est figée, ne pas faire `npm update` sans la relire.
   ⚠️ Sur ce PC, garder `setDelayRenderTimeoutInMilliseconds(120000)` dans
   `remotion.config.ts` : à 30 s le rendu meurt avant que Chrome ait démarré.
-  Détail : `_studio-video/README.md`.
+  ⛔ **Ce réglage ne couvre PAS le démarrage du navigateur**, qui a son propre
+  délai de 25 s **écrit en dur** dans `@remotion/renderer/dist/open-browser.js`
+  et qu'aucune configuration n'atteint. Au premier rendu après une
+  réinstallation, lancer une fois
+  `node_modules/.remotion/chrome-headless-shell/win64/chrome-headless-shell-win64/chrome-headless-shell.exe`
+  à la main : Defender scanne les 270 Mo, retient son verdict, et tous les
+  rendus suivants passent. ⚠️ **`rotate: 12` en nombre nu sort en `rotate:12px`,
+  donc invalide et ignoré sans un mot** (React n'a que `scale` dans sa table
+  des valeurs sans unité) : toute rotation s'écrit avec son `deg`.
+  Le studio porte aussi **la démonstration vidéo de MINUIT** (`minuit-demo`,
+  30 s, six plans). Détail : `_studio-video/README.md`.
 - WhatsApp : Twilio
 - Base de données : Supabase
 - Hébergement vitrines : Netlify
@@ -256,6 +266,18 @@
   passages d'affilée. ⏳ Restent **la livraison à l'heure choisie** (n8n, la
   fonction qui donne son nom au produit et qu'aucun concurrent ne propose) et
   **le serveur en ligne** (Render).
+- **Fait le 2026-09-03** : **la vidéo de démonstration**, composition
+  `minuit-demo` dans `_studio-video/` (1080x1920, 30 s, `npm run rendu:minuit`).
+  Six plans, **les six signatures du produit rejouées en React** et non
+  photographiées : une capture ne montre pas un cachet qui se brise. ⛔ **Ne pas
+  la publier en l'état** : elle promet « Elle l'ouvre à minuit pile. Pas
+  avant. » et affiche `nebula-agency.online/minuit`, or **ni la remise à
+  l'heure dite ni le serveur n'existent** au 2026-09-03. La vidéo est prête,
+  la promesse ne l'est pas. ⛔ **Jamais de fondu enchaîné entre deux plans qui
+  montrent du papier** : mesuré, deux feuilles à 50 % l'une sur l'autre
+  ressemblent à une panne, pas à une transition (les plans partagent le même
+  fond de nuit, donc la coupe est déjà invisible).
+  Détail : `_memoire/conversations/2026-09-03-minuit-video-demo.md`.
 - ⛔ **`</script>` écrit par un acheteur TUE la page** : les données atterrissent
   dans un bloc `<script>`, et **`json.dumps` ne protège pas de ça**. Toute
   sérialisation passe par **`minuit/_injecter.py`**, seul endroit, qui neutralise
