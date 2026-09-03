@@ -10,16 +10,23 @@
 > Pour les premiers partenaires il fait le travail. Au-delà d'une trentaine de partenaires,
 > faites-le relire par un juriste béninois.
 >
-> **Version 1.3 · 2026-09-02.** Ce qui change depuis la 1.2, **sans toucher à un seul
-> taux de commission** : le **périmètre de vente du Partenaire** est écrit noir sur blanc
-> (art. 4.4), les **frais de réactivation sont chiffrés à 5 000 F** (art. 4.1 et 6.2 bis),
-> et l'article 14 sur les données personnelles est complété.
+> **Version 1.4 · 2026-09-03.** Un seul changement depuis la 1.3 : le contrat est
+> **cosigné, pour NEBULA, par le responsable du réseau partenaires**. Il y a donc
+> **trois signatures pour deux parties**, et l'interlocuteur quotidien du Partenaire
+> figure au contrat qu'il fait appliquer.
+>
+> **Aucune commission ne change entre la 1.3 et la 1.4**, et aucun article n'est
+> retouché : seuls l'identification des parties et le bloc des signatures évoluent.
+>
+> *Version 1.3 du 2026-09-02 :* le **périmètre de vente du Partenaire** écrit noir sur
+> blanc (art. 4.4), les **frais de réactivation chiffrés à 5 000 F** (art. 4.1 et
+> 6.2 bis), et l'article 14 sur les données personnelles complété.
 >
 > **Aucune commission ne baisse entre la 1.2 et la 1.3.** Le préavis de l'article 6.7 n'a
 > donc pas lieu de jouer : un partenaire en 1.2 ne perd rien au passage en 1.3.
 >
 > ⚠️ **Pour un partenaire encore sous contrat en version 1.1**, l'article 6.7 impose un
-> **préavis écrit de 30 jours** avant toute baisse de barème. Faites-lui signer la 1.3 ou
+> **préavis écrit de 30 jours** avant toute baisse de barème. Faites-lui signer la 1.4 ou
 > notifiez-lui le changement par écrit, daté.
 >
 > *Pour mémoire, la 1.2 du 2026-08-02 avait apporté :* la grille **30 % / 40 %** (art. 6.1),
@@ -40,6 +47,12 @@ dès leur obtention,
 téléphone **+229 96 74 07 32**, site **www.nebula-agency.online**,
 
 ci-après dénommé **« NEBULA »**,
+
+Le présent contrat est **cosigné pour NEBULA par Monsieur Romaric DJANKAKI**,
+responsable du réseau partenaires, qui suit l'exécution du contrat au quotidien et
+constitue l'interlocuteur habituel du Partenaire.
+Cette cosignature engage **NEBULA**, et non Monsieur Romaric DJANKAKI à titre personnel :
+NEBULA demeure seule tenue des obligations du présent contrat.
 
 **Et d'autre part,**
 
@@ -428,25 +441,42 @@ Les parties s'engagent à rechercher une solution amiable. À défaut, le litige
 
 Fait à **Cotonou**, le **[date]**, en deux exemplaires originaux.
 
-Le présent contrat est signé à la main par les deux parties. Le Partenaire en renvoie une
+Le présent contrat est signé à la main par les deux parties : **deux signatures pour NEBULA**, une pour le Partenaire. Le Partenaire en renvoie une
 photographie lisible à NEBULA par WhatsApp. **Les accès à l'espace partenaire ne sont créés
 qu'après réception de cette signature.**
 
 <div class="sigs">
-  <div class="sigbox">
-    <div class="sigwho">Pour NEBULA Agency</div>
-    <div class="signame">Mongazi BIAO, fondateur</div>
-    <div class="sigslot"><!--SIGNATURE-NEBULA--></div>
-    <div class="sigrule"></div>
-    <div class="sigmention">Signature</div>
+  <div class="sigcote">
+    <div class="sigcote-t">Pour NEBULA Agency</div>
+    <div class="sigrang">
+      <div class="sigbox">
+        <div class="signame">Mongazi BIAO</div>
+        <div class="sigrole">Fondateur</div>
+        <div class="sigslot"><!--SIGNATURE-NEBULA--></div>
+        <div class="sigrule"></div>
+        <div class="sigmention">Signature</div>
+      </div>
+      <div class="sigbox">
+        <div class="signame">Romaric DJANKAKI</div>
+        <div class="sigrole">Responsable du réseau partenaires</div>
+        <div class="sigslot"><!--SIGNATURE-ROMARIC--></div>
+        <div class="sigrule"></div>
+        <div class="sigmention">Signature</div>
+      </div>
+    </div>
   </div>
-  <div class="sigbox">
-    <div class="sigwho">Le Partenaire</div>
-    <div class="signame">[Nom et prénoms]</div>
-    <div class="sigslot"></div>
-    <div class="sigrule"></div>
-    <div class="sigmention">Signature, précédée de la mention manuscrite
-      <strong>« Lu et approuvé »</strong></div>
+  <div class="sigcote">
+    <div class="sigcote-t">Le Partenaire</div>
+    <div class="sigrang">
+      <div class="sigbox">
+        <div class="signame">[Nom et prénoms]</div>
+        <div class="sigrole">&nbsp;</div>
+        <div class="sigslot"></div>
+        <div class="sigrule"></div>
+        <div class="sigmention">Signature, précédée de la mention manuscrite
+          <strong>« Lu et approuvé »</strong></div>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -1808,3 +1808,59 @@ n'existe plus.
 est opérationnelle, et il faut la dire au lieu de la découvrir : une session dans le nuage ne
 peut produire un document signé **que dans la séance où la photo est envoyée**. Sur le PC de
 Mongazi, `secrets/` survit et le document se refait quand il veut.
+
+## Une constante mesurée sur un échantillon est un réglage, pas une loi
+
+**2026-09-03, détourage de la signature.** La 2e photo sortait à 0,3 % de pixels opaques :
+une signature fantôme. J'ai soupçonné le repérage. Faux : regardée, la planche des masques
+montrait un détourage impeccable.
+
+C'était la **rampe d'alpha**, fixe à 60 niveaux au-dessus du seuil, calibrée sur une 1re
+photo dont l'encre montait à B-R = 90. La 2e, prise dans une pièce plus sombre, plafonne à
+42 : la même formule rendait l'encre à 0,20 d'opacité.
+
+⚠️ Le **seuil de détection** (B-R > 30) a très bien tenu d'une photo à l'autre. C'est la
+**normalisation** qui ne pouvait pas tenir, parce qu'elle encodait la luminosité d'une pièce.
+Un seuil qui sépare deux matières se transporte ; une échelle qui suppose une intensité, non.
+Elle se recalcule sur l'échantillon traité, ici au 85e centile de l'encre trouvée.
+
+⚠️ Et le corollaire de diagnostic : **quand la sortie est mauvaise, séparer « ai-je trouvé la
+bonne chose » de « l'ai-je bien rendue »**. Les deux se corrigent à des endroits opposés du
+code, et regarder le masque tranche en une image.
+
+## Une valeur par défaut qui se trompe une fois sur deux ne doit pas exister
+
+La rotation du détourage valait « quart de tour horaire », constatée sur la 1re photo. La 2e,
+prise au même endroit sur le même carrelage, sortait **déjà droite** d'`exif_transpose` : le
+même quart de tour la remettait sur le flanc.
+
+⚠️ Un défaut n'est légitime que s'il est **bon la plupart du temps**. À 50 %, il ne fait
+qu'imposer une erreur silencieuse à qui ne vérifie pas. Mieux vaut **pas de valeur**, un
+paramètre explicite, et un avertissement quand la mesure est suspecte (ici : boîte plus haute
+que large = signature couchée).
+
+## Trois signatures ne font pas trois parties
+
+Le contrat gagne un cosignataire : le responsable du réseau partenaires, qui signe **pour
+NEBULA**. Deux pièges, tous deux de sens et non de code.
+
+⚠️ **Trois cadres alignés se lisent comme trois parties.** Les cadres d'une même partie se
+groupent sous un intitulé commun, et le cadre isolé garde la largeur des autres au lieu de
+s'étaler.
+
+⚠️ **Un troisième nom au bas d'un contrat se lit comme un troisième engagé.** Il faut écrire
+en toutes lettres que la cosignature engage la société et non la personne, sinon on crée une
+obligation solidaire sans l'avoir voulu. Une mise en page qui change qui doit quoi n'est plus
+une mise en page.
+
+## Commiter après chaque étape quand la machine peut disparaître
+
+Le conteneur s'est réinitialisé **deux fois dans un seul échange**, dont une au milieu d'un
+détourage : les corrections d'un script, qui attendaient un commit groupé de fin de tâche,
+ont été perdues et refaites.
+
+⚠️ Un commit groupé suppose que la machine survit jusqu'au groupe. Quand ce n'est pas acquis,
+**l'unité de sauvegarde est l'étape**, pas la tâche.
+⚠️ Et `git merge --ff-only` **échoue en silence** sur une branche divergente : on croit
+travailler sur `main` à jour en étant quatre commits en arrière. Vérifier
+`git log origin/main`, pas seulement le code de retour.

@@ -48,6 +48,15 @@ CHROME = _trouver_chrome()
 # signe sort donc dans pdf/signe/, lui aussi hors de git.
 REPO = os.path.abspath(os.path.join(ROOT, "..", "..", ".."))
 SIGNATURE = os.path.join(REPO, "secrets", "signature-mongazi.png")
+# Le contrat 1.4 est cosigne par le responsable du reseau partenaires. Sa
+# signature est FACULTATIVE : tant qu'elle n'est pas la, son cadre reste vide
+# et il signe a la main sur l'exemplaire imprime. L'absence d'une signature ne
+# doit jamais empecher de produire l'exemplaire de l'autre.
+SIGNATURES = {
+    "<!--SIGNATURE-NEBULA-->":  (SIGNATURE, "Mongazi BIAO"),
+    "<!--SIGNATURE-ROMARIC-->": (os.path.join(REPO, "secrets", "signature-romaric.png"),
+                                 "Romaric DJANKAKI"),
+}
 OUT_SIGNE = os.path.join(OUT, "signe")
 
 # Documents qui existent en deux etats : un exemplaire vierge, versionne, et un
@@ -55,14 +64,14 @@ OUT_SIGNE = os.path.join(OUT, "signe")
 A_SIGNER = {"09-CONTRAT-PARTENAIRE.md"}
 
 
-def _signature_html():
+def _signature_html(chemin, qui):
     """La signature en base64, ou None si le fichier n'est pas sur la machine."""
-    if not os.path.exists(SIGNATURE):
+    if not os.path.exists(chemin):
         return None
     import base64
-    with open(SIGNATURE, "rb") as fh:
+    with open(chemin, "rb") as fh:
         b64 = base64.b64encode(fh.read()).decode("ascii")
-    return "<img alt='Signature de Mongazi BIAO' src='data:image/png;base64,%s'>" % b64
+    return ("<img alt='Signature de %s' src='data:image/png;base64,%s'>" % (qui, b64))
 
 # Documents destinés aux partenaires (le socle 00 et l'avis 01 restent internes,
 # mais on les génère aussi : ils servent à Mongazi).
@@ -167,12 +176,20 @@ pre code{background:none;color:inherit;padding:0;font-size:9.3pt}
    millimetre avec ca, le texte du contrat bougera encore. La page des
    signatures commence donc toujours a neuf, titre et cadres ensemble. */
 .siglead{page-break-before:always}
-.sigs{display:flex;gap:8mm;margin:7mm 0 2mm;page-break-inside:avoid}
-.sigbox{flex:1 1 0;border:.8pt solid #D7DCEA;border-radius:2.5mm;
-  padding:4mm 5mm 3.5mm;background:#FBFCFE}
-.sigwho{font-size:8.4pt;letter-spacing:.16em;text-transform:uppercase;
-  color:#6B76A0;margin-bottom:1.6mm}
-.signame{font-size:11pt;font-weight:700;color:#14112E;margin-bottom:1mm}
+/* Trois signataires, mais DEUX PARTIES. Trois cadres alignes se liraient comme
+   trois parties : les deux cadres NEBULA sont donc groupes sous un seul
+   intitule, et le cadre du Partenaire ouvre son propre groupe. Le cadre seul
+   garde la largeur d'un cadre du haut, sinon il s'etale et desequilibre. */
+.sigs{margin:7mm 0 2mm;page-break-inside:avoid}
+.sigcote{margin-bottom:5.5mm}
+.sigcote-t{font-size:8.4pt;letter-spacing:.16em;text-transform:uppercase;
+  color:#6B76A0;margin-bottom:2.2mm;padding-bottom:1.2mm;
+  border-bottom:.6pt solid #E4E8F2}
+.sigrang{display:flex;gap:8mm}
+.sigbox{flex:0 0 calc((100% - 8mm) / 2);border:.8pt solid #D7DCEA;
+  border-radius:2.5mm;padding:4mm 5mm 3.5mm;background:#FBFCFE}
+.signame{font-size:11pt;font-weight:700;color:#14112E;margin-bottom:.4mm}
+.sigrole{font-size:8.6pt;color:#6B76A0;margin-bottom:1mm}
 .sigslot{height:26mm;display:flex;align-items:flex-end;justify-content:flex-start;
   overflow:hidden}
 .sigslot img{max-height:25mm;max-width:100%}
@@ -208,12 +225,17 @@ def build(md_name, title, signer=False):
         "<h2>SIGNATURES</h2>", '<h2 class="siglead">SIGNATURES</h2>')
 
     if signer:
-        sig = _signature_html()
-        if sig is None:
-            print("    signature absente (%s), exemplaire signe non produit"
-                  % os.path.basename(SIGNATURE))
+        posees = 0
+        for marqueur, (chemin, qui) in SIGNATURES.items():
+            sig = _signature_html(chemin, qui)
+            if sig is None:
+                print("    %-18s pas de fichier, cadre laisse vide" % qui)
+                continue
+            html_body = html_body.replace(marqueur, sig)
+            posees += 1
+        if not posees:
+            print("    aucune signature sur la machine, exemplaire signe non produit")
             return None
-        html_body = html_body.replace("<!--SIGNATURE-NEBULA-->", sig)
 
     conf = (CONF_PUBLIC if md_name in PUBLICS else
             "Document confidentiel &middot; réservé aux partenaires actifs de NEBULA "
