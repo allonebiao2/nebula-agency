@@ -35,13 +35,37 @@ function env(cle: string, defaut = ''): string {
 
 export function reglages() {
   return {
-    /* ⚠️ À CONFIRMER dans docs.saspay.me — les quatre lignes qui suivent sont
-       des hypothèses raisonnables, pas des faits. */
+    /* ✅ LU DANS LA DOC LE 2026-09-03, plus des hypothèses. `docs.saspay.me`
+       répond depuis le PC de Cotonou (403 depuis le nuage, d'où l'ancienne
+       version à l'aveugle) et publie son OpenAPI : le serveur déclaré est
+       `https://api.saspay.me/api/v1`, et la création de session est un POST
+       sur `/checkout-sessions/` — avec le `/api` ET la barre finale, les deux
+       manquaient. Ils restent des réglages : une API bouge, un défaut n'est
+       qu'un point de départ. */
     base:      env('SASPAY_BASE', 'https://api.saspay.me'),
-    chemin:    env('SASPAY_CHEMIN_SESSION', '/v1/checkout/sessions'),
+    chemin:    env('SASPAY_CHEMIN_SESSION', '/api/v1/checkout-sessions/'),
     entete:    env('SASPAY_ENTETE_CLE', 'Authorization'),
     prefixe:   env('SASPAY_PREFIXE_CLE', 'Bearer '),
-    enteteSig: env('SASPAY_ENTETE_SIGNATURE', 'x-saspay-signature'),
+
+    /* ✅ Trois en-têtes, confirmés : `X-Webhook-Signature` (hex SHA-256 en
+       minuscules), `X-Webhook-Timestamp` (Unix, secondes), `X-Webhook-Event`.
+       ⛔ LA SIGNATURE NE COUVRE PAS QUE LE CORPS : elle couvre
+       `horodatage + "." + corps`. Signer le corps seul refusait tout. */
+    enteteSig: env('SASPAY_ENTETE_SIGNATURE', 'x-webhook-signature'),
+    enteteTs:  env('SASPAY_ENTETE_HORODATAGE', 'x-webhook-timestamp'),
+
+    /* ⛔ L'ÂGE EST UN CONTRÔLE À PART ENTIÈRE, pas un confort. Une signature ne
+       périme jamais : sans cette borne, un message légitime intercepté reste
+       rejouable pour toujours. SasPay recommande 5 minutes, et l'horodatage
+       étant DANS la signature, on ne peut pas le rajeunir. */
+    toleranceSig: Number(env('SASPAY_TOLERANCE_SIGNATURE', '300')) || 300,
+
+    /* ⚠️ `customer_email` et `customer_name` sont REQUIS par SasPay. PISTE ne
+       demande aujourd'hui ni l'un ni l'autre au moment de payer : sans valeur
+       de repli, la session ne s'ouvre même pas. Ces deux-là ne servent qu'à
+       ça, et le vrai client les corrige sur la page de paiement. */
+    emailDefaut: env('SASPAY_EMAIL_DEFAUT', 'paiement@nebula-agency.online'),
+    nomDefaut:   env('SASPAY_NOM_DEFAUT', 'Client PISTE'),
 
     cle:       env('SASPAY_CLE_SECRETE'),
     secretSig: env('SASPAY_SECRET_WEBHOOK'),
@@ -68,6 +92,13 @@ export function reglages() {
        montant cent fois trop grand, ce réglage passe à 100 : c'est le
        refus de paiement qui l'aura dit, en affichant les deux montants. */
     multiple:  Number(env('SASPAY_MONTANT_MULTIPLIE', '1')) || 1,
+
+    /* ✅ MESURÉ SUR LE VRAI COMPTE le 2026-09-03 : une session à 100 F est
+       refusée, « Le montant minimum est de 200 XOF ». PISTE vend au minimum
+       10 fiches à 100 F, donc 1 000 F : la borne ne gêne aucune vente réelle.
+       Elle est ici pour que le refus soit lisible chez nous plutôt qu'un 400
+       brut venu d'eux. */
+    montantMini: Number(env('SASPAY_MONTANT_MINIMUM', '200')) || 200,
 
     retour:    env('SASPAY_RETOUR', 'https://piste.nebula-agency.online/#/merci'),
     annule:    env('SASPAY_ANNULE', 'https://piste.nebula-agency.online/#/paiement'),
@@ -149,9 +180,20 @@ export function lireNotification(corps: unknown): Notification {
   ])
   const n = Number(texte(montantBrut).replace(/\s/g, '').replace(',', '.'))
 
+  /* ⛔ « reference » EST UN NOM QUI APPARTIENT AUX DEUX. Chez SasPay,
+     `data.reference` vaut « TXN-2026-000456 » : c'est LEUR numéro. Le nôtre,
+     quand il revient, est dans `metadata`. Or la recherche va en largeur
+     d'abord : `data.reference` (2 niveaux) l'emporterait sur
+     `data.metadata.reference` (3 niveaux), et notre code serait remplacé par
+     le leur sans un mot. On regarde donc DANS `metadata` en premier. */
+  const meta = chercher(corps, ['metadata', 'meta', 'custom_data', 'custom_fields'])
+  const refMeta = meta && typeof meta === 'object'
+    ? texte(chercher(meta, ['reference', 'ref', 'commande', 'order_id']))
+    : ''
+
   return {
     evenementId: texte(chercher(corps, ['event_id', 'eventId', 'id', 'uuid', 'reference_id'])),
-    reference: texte(chercher(corps, [
+    reference: refMeta || texte(chercher(corps, [
       'merchant_reference', 'reference_marchand', 'external_id', 'externalId',
       'metadata_reference', 'order_id', 'orderId', 'commande', 'reference',
     ])),
@@ -185,12 +227,18 @@ export function lireNotification(corps: unknown): Notification {
   ⛔ Comparaison à temps constant. Comparer deux signatures avec `===` laisse
      fuir, octet par octet, de quoi en fabriquer une bonne.
 */
-export async function signer(corpsBrut: string, secret: string): Promise<{ hex: string; b64: string }> {
+export async function signer(
+  corpsBrut: string, secret: string, horodatage = '',
+): Promise<{ hex: string; b64: string }> {
   const enc = new TextEncoder()
   const cle = await crypto.subtle.importKey(
     'raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'],
   )
-  const sig = new Uint8Array(await crypto.subtle.sign('HMAC', cle, enc.encode(corpsBrut)))
+  /* ✅ `${horodatage}.${corps}`, confirmé par la doc. Sans horodatage on signe
+     le corps seul : c'est ce que faisait la version écrite à l'aveugle, gardé
+     pour qu'un autre fournisseur ne demande pas de réécrire cette fonction. */
+  const signe = horodatage ? `${horodatage}.${corpsBrut}` : corpsBrut
+  const sig = new Uint8Array(await crypto.subtle.sign('HMAC', cle, enc.encode(signe)))
   const hex = [...sig].map((b) => b.toString(16).padStart(2, '0')).join('')
   const b64 = btoa(String.fromCharCode(...sig))
   return { hex, b64 }
@@ -203,8 +251,20 @@ export function memeChaine(a: string, b: string): boolean {
   return d === 0
 }
 
+/*
+  ⛔ L'ÂGE SE VÉRIFIE AVANT LA SIGNATURE, et il se vérifie même quand la
+  signature est bonne : les deux contrôles répondent à deux attaques
+  différentes. Un horodatage absent ou illisible est un refus, jamais un
+  laissez-passer — c'est la faute qui transforme un garde-fou en décoration.
+*/
+export function horodatageFrais(brut: string, tolerance = 300, maintenant = Date.now()): boolean {
+  const t = Number(String(brut || '').trim())
+  if (!Number.isFinite(t) || t <= 0) return false
+  return Math.abs(Math.floor(maintenant / 1000) - t) <= tolerance
+}
+
 export async function verifierSignature(
-  corpsBrut: string, enteteRecu: string, secret: string,
+  corpsBrut: string, enteteRecu: string, secret: string, horodatage = '',
 ): Promise<boolean> {
   if (!secret) return false
   const brut = (enteteRecu || '').trim()
@@ -223,7 +283,7 @@ export async function verifierSignature(
     if (m) candidats.add(m[1])
   }
 
-  const { hex, b64 } = await signer(corpsBrut, secret)
+  const { hex, b64 } = await signer(corpsBrut, secret, horodatage)
   for (const c of candidats) {
     if (memeChaine(c.toLowerCase(), hex) || memeChaine(c, b64)) return true
   }
@@ -245,20 +305,36 @@ export async function ouvrirSession(
   a: { reference: string; montant: number; description: string; client?: { nom?: string; email?: string; tel?: string } },
 ): Promise<Session> {
   if (!r.cle) return { ok: false, erreur: 'clé absente' }
+  if (a.montant < r.montantMini) {
+    return { ok: false, erreur: `montant sous le minimum SasPay : ${a.montant} < ${r.montantMini} ${r.devise}` }
+  }
+
+  /* ⛔ LE MONTANT PART EN CHAÎNE DÉCIMALE, PAS EN NOMBRE. SasPay déclare
+     `amount` en `string` / `format: decimal` (« 5000.00 »). Un nombre nu est
+     le genre de détail qui rend un 400 illisible pendant une heure. */
+  const montant = (a.montant * r.multiple).toFixed(2)
 
   const corps = {
-    amount: a.montant * r.multiple,
+    amount: montant,
     currency: r.devise,
-    description: a.description,
-    reference: a.reference,            // notre code, qu'on espère voir revenir
+
+    /* ⚠️ NOTRE CODE VOYAGE À DEUX ENDROITS, ET PAS PAR PRUDENCE : la
+       notification `transaction.success` ne porte NI `metadata` NI le numéro
+       de session, seulement la référence de SasPay. `description` est le seul
+       champ que nous remplissons et qu'on retrouve sur la transaction. */
+    description: `${a.reference} · ${a.description}`.slice(0, 255),
     metadata: { reference: a.reference },
-    customer: {
-      name: a.client?.nom || undefined,
-      email: a.client?.email || undefined,
-      phone: a.client?.tel || undefined,
-    },
-    success_url: r.retour,
-    cancel_url: r.annule,
+
+    /* ⛔ REQUIS PAR SASPAY, les deux. Voir `emailDefaut` / `nomDefaut`. */
+    customer_email: a.client?.email || r.emailDefaut,
+    customer_name:  a.client?.nom   || r.nomDefaut,
+    customer_phone: a.client?.tel || '',
+
+    /* ⚠️ UNE SEULE ADRESSE DE RETOUR, ET SEULEMENT SUR SUCCÈS. `cancel_url`
+       n'existe pas chez eux : un paiement échoué laisse le client sur la page
+       SasPay avec un bouton « Réessayer ». Le réglage `annule` reste, il sert
+       au bouton de retour de notre côté. */
+    return_url: r.retour,
   }
 
   let rep: Response
@@ -286,6 +362,8 @@ export async function ouvrirSession(
     return { ok: false, erreur: `HTTP ${rep.status} · ${txt.slice(0, 400)}`, brut: json }
   }
 
+  /* ✅ `checkout_url` et `id` sont les noms réels de la réponse 201. Les
+     suivants restent : ils ne coûtent rien et couvrent un renommage. */
   const url = texte(chercher(json, [
     'checkout_url', 'checkoutUrl', 'payment_url', 'paymentUrl', 'redirect_url',
     'redirectUrl', 'link', 'lien', 'url',
@@ -333,4 +411,60 @@ export function decider(n: Notification, cmd: Attendu | null, r: Reglages): Deci
 
   if (cmd.etat === 'payee' || cmd.etat === 'livree') return { payer: false, agi: 'déjà payée' }
   return { payer: true, agi: 'payee' }
+}
+
+/* ----------------------------------------- retrouver la commande, sinon rien */
+
+/*
+  ⛔ LA NOTIFICATION NE DIT PAS QUELLE COMMANDE ELLE PAIE. Mesuré le
+  2026-09-03 : `transaction.success` porte l'identifiant de la transaction, la
+  référence de SasPay (« TXN-… »), les montants et le réseau. Ni `metadata`,
+  ni le numéro de session, ni la description. Rien qui soit à nous.
+
+  Ce qui rattrape le lien : la session de checkout, elle, garde `metadata` et
+  `description` (vérifié en relisant trois sessions réelles), et son champ
+  `transaction` se remplit quand elle est payée. On liste donc les sessions
+  récentes et on prend celle qui porte cette transaction.
+
+  ⚠️ Le remplissage de `transaction` n'a PAS pu être vérifié : il demande un
+  paiement réel, et aucun franc n'est encore passé. Tant que ce n'est pas
+  prouvé, cette fonction est un secours, pas le chemin principal — et son échec
+  laisse la commande « sans commande » dans le journal, ce qui est le bon
+  comportement : on ne livre pas sur une supposition.
+*/
+export async function referenceParTransaction(
+  r: Reglages, transactionId: string, limite = 50,
+): Promise<string> {
+  if (!r.cle || !transactionId) return ''
+
+  let json: unknown
+  try {
+    const rep = await fetch(
+      r.base.replace(/\/$/, '') + r.chemin + `?limit=${limite}`,
+      { headers: { Accept: 'application/json', [r.entete]: r.prefixe + r.cle } },
+    )
+    if (!rep.ok) return ''
+    json = JSON.parse(await rep.text())
+  } catch (_e) {
+    return ''
+  }
+
+  /* L'enveloppe réelle est `{success, data:{results:[…]}}`, mais une liste nue
+     et un `{data:[…]}` se rencontrent aussi : on prend le premier tableau. */
+  const liste = chercher(json, ['results', 'data', 'items', 'sessions'])
+  const sessions = Array.isArray(liste) ? liste : Array.isArray(json) ? json : []
+
+  for (const brut of sessions) {
+    const o = brut as Record<string, unknown>
+    if (!o || typeof o !== 'object') continue
+    const t = texte(typeof o.transaction === 'string' ? o.transaction : chercher(o.transaction, ['id']))
+    if (!t || t !== transactionId) continue
+    const ref = texte(chercher(o.metadata, ['reference', 'ref', 'commande']))
+    if (ref) return ref
+    /* ⚠️ Repli sur la description, où notre code est écrit en tête : c'est le
+       seul champ que nous remplissons et qui suit la transaction. */
+    const m = texte(o.description).match(/^(PISTE-[A-Z0-9]{4})/i)
+    return m ? m[1].toUpperCase() : ''
+  }
+  return ''
 }

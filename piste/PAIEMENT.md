@@ -43,10 +43,23 @@ changé : ne rien promettre avant d'avoir envoyé 1 000 F.
 XAF et d'autres. Le CDF vu sur la première capture n'était donc que la devise
 sélectionnée par défaut, pas la seule disponible. Le doute commercial est levé.
 
-**⏳ Ce qui reste : le vrai encaissement de 1 000 F**, et la forme technique de
-leur API (adresse, noms de champs), que la sonde ci-dessous va chercher. Tant
-que le premier franc n'est pas arrivé, **`SASPAY_PRET` reste `false`** dans
-`src/donnees.js`.
+**✅ La forme technique de leur API est trouvée** (2026-09-03, depuis le PC) :
+adresse, en-tête, noms de champs, schéma de signature. La sonde a ouvert une
+vraie session de checkout, **HTTP 201**, avec la clé de `secrets/saspay.env`.
+Détail des cinq écarts au §5. Les trois sessions d'essai ont été annulées.
+
+**⏳ Ce qui reste : le vrai encaissement.** Tant que le premier franc n'est pas
+arrivé, **`SASPAY_PRET` reste `false`** dans `src/donnees.js`. Deux choses
+n'ont pas pu être vérifiées sans payer :
+
+1. **le lien entre la notification et la commande** (§5) — la seule inconnue
+   qui empêche encore l'encaissement automatique de fonctionner ;
+2. **le secret de signature**, qui est encore un gabarit dans
+   `secrets/saspay.env` : il se copie depuis le dashboard SasPay, onglet
+   Webhooks, et **ne se réaffiche jamais** après sa création.
+
+⚠️ **Le montant minimum est de 200 XOF**, mesuré. Sans conséquence : PISTE vend
+au minimum 10 fiches à 100 F, donc 1 000 F.
 
 ⚠️ **Un compte multi-pays n'est pas un compte multi-devises pour PISTE.** Le
 verrou reste `XOF`, ce qui couvre exactement les trois marchés du vivier
@@ -65,7 +78,7 @@ PISTE ne vend pas de fiches dans ces pays.
 | `supabase/functions/piste-paiement-recu/` | reçoit la notification, vérifie, marque « payée » |
 | `src/donnees.js` → `SASPAY_PRET` | l'interrupteur. `false` = le site ne montre rien |
 | `src/composants/Paiement.jsx` → `EnLigne` | le bouton, au-dessus du Mobile Money à la main |
-| `_qc_paiement.mjs` | **64 contrôles, sans clé, sans réseau, sans base** |
+| `_qc_paiement.mjs` | **89 contrôles, sans clé, sans réseau, sans base** |
 
 ⚠️ **Ces fichiers sont la source.** Comme `piste-cockpit`, ils tournent chez
 Supabase mais ils vivent ici. Ce qui n'est écrit que dans l'éditeur Supabase
@@ -90,6 +103,8 @@ node _saspay_sonde.mjs
 supabase secrets set SASPAY_CLE_SECRETE=...        # la clé secrète SasPay
 supabase secrets set SASPAY_SECRET_WEBHOOK=...     # le secret de signature
 supabase secrets set SASPAY_DEVISE=XOF
+#    Les autres réglages ont désormais le bon défaut dans le code : rien à
+#    poser, sauf si SasPay change quelque chose (table du §5).
 
 # 3. les fonctions
 supabase functions deploy piste-paiement
@@ -133,13 +148,60 @@ adresse, aucun nom de champ n'a donc pu être vérifié.
 D'où la façon dont c'est écrit : **chaque valeur incertaine est un réglage**.
 Corriger une hypothèse, c'est une commande, pas une modification de code.
 
+### ✅ 2026-09-03, depuis le PC de Cotonou : ce n'est plus une hypothèse
+
+`docs.saspay.me` répond **200 depuis le PC** — le 403 était un filtre du nuage,
+pas une absence. La doc publie son OpenAPI (`/api-reference/openapi.json`) et
+un `llms-full.txt`. Puis la sonde a **vraiment ouvert une session** avec la
+clé du dossier `secrets/` : **HTTP 201**.
+
+⚠️ **Le pari du « tout est réglable » a payé, mais pas partout.** Adresse,
+en-tête et préfixe se sont corrigés par des réglages. Cinq choses ont demandé
+du code, parce qu'elles ne sont pas des valeurs mais des **formes** :
+
+| Ce qu'on supposait | Ce qui est vrai |
+|---|---|
+| `POST /v1/checkout/sessions` | **`POST /api/v1/checkout-sessions/`** — le `/api` et la barre finale |
+| `amount` est un nombre | **une chaîne décimale** : `"5000.00"` |
+| `success_url` + `cancel_url` | **`return_url` seule**, et seulement sur succès |
+| le client est optionnel | **`customer_email` et `customer_name` sont REQUIS** |
+| la signature couvre le corps | elle couvre **`horodatage + "." + corps`** |
+
+⛔ **Et une chose qu'aucun réglage n'aurait rattrapée : la notification ne dit
+pas quelle commande elle paie.** `transaction.success` porte l'identifiant de
+la transaction, la référence de SasPay (« TXN-… »), les montants et le réseau.
+**Ni `metadata`, ni le numéro de session, ni la description.** Pire, son champ
+s'appelle `reference` comme le nôtre : la recherche allant en largeur d'abord,
+le numéro de SasPay écrasait le nôtre sans un mot.
+
+Ce qui rattrape le lien : **la session de checkout garde `metadata` et
+`description`** (relu sur trois sessions réelles) et son champ `transaction` se
+remplit quand elle est payée. `referenceParTransaction()` repart donc de
+l'identifiant de transaction pour retrouver la session, donc la commande.
+
+⏳ **Ce point reste le seul non prouvé** : que `transaction` se remplisse
+vraiment demande un paiement réel. En attendant, l'échec de cette route ne
+fait rien d'autre qu'écrire « sans commande » au journal. **On ne livre pas sur
+une supposition.**
+
+⚠️ Deux écarts entre la doc et la réalité, relevés au passage : la réponse est
+enveloppée dans `{success, data:{…}}` (l'exemple de la doc montre l'objet nu),
+et l'adresse de paiement est sur **`checkout.saspay.me`**, pas `pay.saspay.me`.
+Les deux sont sans conséquence ici — on lit les champs par leur nom, à
+n'importe quelle profondeur — mais c'est le rappel que **la doc est un indice,
+la réponse est la preuve**.
+
 | Réglage | Défaut supposé | À corriger si… |
 |---|---|---|
-| `SASPAY_BASE` | `https://api.saspay.me` | la doc donne une autre adresse |
-| `SASPAY_CHEMIN_SESSION` | `/v1/checkout/sessions` | le chemin diffère |
-| `SASPAY_ENTETE_CLE` | `Authorization` | la clé se présente autrement |
-| `SASPAY_PREFIXE_CLE` | `Bearer ` | pas de préfixe → poser une chaîne vide |
-| `SASPAY_ENTETE_SIGNATURE` | `x-saspay-signature` | l'en-tête porte un autre nom |
+| `SASPAY_BASE` | `https://api.saspay.me` | ✅ confirmé |
+| `SASPAY_CHEMIN_SESSION` | `/api/v1/checkout-sessions/` | ✅ confirmé (le `/api` et la barre finale manquaient) |
+| `SASPAY_ENTETE_CLE` | `Authorization` | ✅ confirmé |
+| `SASPAY_PREFIXE_CLE` | `Bearer ` | ✅ confirmé (sans lui : 401) |
+| `SASPAY_ENTETE_SIGNATURE` | `x-webhook-signature` | ✅ confirmé |
+| `SASPAY_ENTETE_HORODATAGE` | `x-webhook-timestamp` | ✅ confirmé |
+| `SASPAY_TOLERANCE_SIGNATURE` | `300` | 5 minutes, recommandation SasPay |
+| `SASPAY_MONTANT_MINIMUM` | `200` | ✅ mesuré : 100 F est refusé |
+| `SASPAY_EMAIL_DEFAUT` / `SASPAY_NOM_DEFAUT` | valeurs NEBULA | requis par SasPay, le client les corrige sur leur page |
 | `SASPAY_DEVISE` | `XOF` | ⛔ ne jamais mettre autre chose sans avoir relu le §2 |
 | `SASPAY_DEVISE_SI_ABSENTE` | *(vide)* | ⛔ vide = une notification sans devise est **refusée**. N'y poser `XOF` qu'après avoir LU dans le journal que SasPay omet vraiment le champ |
 | `SASPAY_MONTANT_MULTIPLIE` | `1` | SasPay compte en centimes → `100` |

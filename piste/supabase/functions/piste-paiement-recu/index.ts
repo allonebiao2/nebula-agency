@@ -1,5 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
-import { decider, lireNotification, reglages, verifierSignature } from '../_shared/saspay.ts'
+import { decider, lireNotification, reglages, verifierSignature, horodatageFrais, referenceParTransaction } from '../_shared/saspay.ts'
 
 /*
   PISTE · la notification de paiement (webhook SasPay).
@@ -42,7 +42,21 @@ Deno.serve(async (req: Request) => {
   const obligatoire = (Deno.env.get('SASPAY_SIGNATURE_OBLIGATOIRE') ?? '1') !== '0'
   const entete = req.headers.get(r.enteteSig) || req.headers.get('x-signature')
              || req.headers.get('signature') || ''
-  const signe = await verifierSignature(brut, entete, r.secretSig)
+
+  /* ✅ La signature couvre `horodatage + "." + corps`. L'en-tête est donc
+     nécessaire pour la RECALCULER, pas seulement pour juger de son âge. */
+  const horodatage = req.headers.get(r.enteteTs) || req.headers.get('x-timestamp') || ''
+
+  /* ⛔ DEUX CONTRÔLES, PAS UN. Une signature ne périme jamais : sans la borne
+     d'âge, un message légitime intercepté se rejoue indéfiniment et paie la
+     même commande autant de fois qu'on veut. */
+  const frais = horodatageFrais(horodatage, r.toleranceSig)
+  if (!frais && obligatoire) {
+    console.error('saspay webhook · horodatage refusé', horodatage.slice(0, 24))
+    return ok({ ok: false, erreur: 'horodatage' }, 401)
+  }
+
+  const signe = await verifierSignature(brut, entete, r.secretSig, horodatage)
 
   if (!signe && obligatoire) {
     /* Rien n'est écrit : sans cette règle, n'importe qui remplirait le journal
@@ -68,6 +82,19 @@ Deno.serve(async (req: Request) => {
     const { data } = await db.rpc('piste_paiement_par_session', { p_session: n.session })
     const s = Array.isArray(data) ? data[0] : data
     if (s?.reference) reference = String(s.reference)
+  }
+
+  /* ⛔ DERNIER RECOURS, ET IL EST NÉCESSAIRE : mesurée le 2026-09-03, la
+     notification de SasPay ne porte NI notre référence NI le numéro de session
+     — les deux chemins ci-dessus restent donc vides. On repart de
+     l'identifiant de transaction et on retrouve la session de checkout qui le
+     porte, car elle, elle a gardé notre `metadata`.
+     ⚠️ Un appel réseau de plus, sur le chemin d'un webhook : il n'a lieu que
+     si les deux autres routes ont échoué, et son échec ne fait rien d'autre
+     que laisser « sans commande » dans le journal. */
+  if (!reference && n.session) {
+    const trouvee = await referenceParTransaction(r, n.session)
+    if (/^PISTE-[A-Z0-9]{4}$/.test(trouvee.toUpperCase())) reference = trouvee.toUpperCase()
   }
 
   const journal = async (agi: string, code = 200) => {

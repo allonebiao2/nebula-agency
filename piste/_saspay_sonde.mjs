@@ -75,18 +75,18 @@ if (/ta_nouvelle_cle|xxxx+|^sk_live_\.\.\.|_de_l_onglet_/i.test(CLE)) {
 console.log(`\n  Clé : …${CLE.slice(-4)}  ·  montant d'essai : ${MONTANT} F\n`)
 
 /* ── ce qu'on essaie ──────────────────────────────────────────────────────── */
+/* ✅ L'ADRESSE EST CONNUE DEPUIS LE 2026-09-03 : `docs.saspay.me` répond depuis
+   le PC (403 depuis le nuage) et publie son OpenAPI, qui déclare le serveur
+   `https://api.saspay.me/api/v1`. Le balayage reste : il ne coûte rien, et
+   c'est lui qui dira le jour où l'adresse aura bougé.
+   ⚠️ `app.saspay.me` répondait 405 sur TOUS les chemins — un nginx qui refuse
+   le POST, pas une API. Un 405 partout vaut moins qu'un 404 ciblé. */
 const BASES = [
   process.env.SASPAY_BASE || 'https://api.saspay.me',
-  'https://app.saspay.me/api',
-  'https://saspay.me/api',
 ]
 const CHEMINS = [
-  process.env.SASPAY_CHEMIN_SESSION || '/v1/checkout/sessions',
-  '/v1/checkout-sessions',
-  '/v1/payment-links',
-  '/v1/payments',
-  '/v1/transactions',
-  '/checkout/sessions',
+  process.env.SASPAY_CHEMIN_SESSION || '/api/v1/checkout-sessions/',
+  '/api/v1/payment-links/',
 ]
 const ENTETES = [
   ['Authorization', 'Bearer '],
@@ -95,14 +95,18 @@ const ENTETES = [
   ['x-secret-key', ''],
 ]
 
+/* ✅ LES CHAMPS RÉELS. `amount` est une CHAÎNE décimale, `customer_email` et
+   `customer_name` sont REQUIS, et l'adresse de retour s'appelle `return_url`
+   (il n'y a pas de `cancel_url` chez eux). */
 const CORPS = {
-  amount: MONTANT,
+  amount: Number(MONTANT).toFixed(2),
   currency: process.env.SASPAY_DEVISE || 'XOF',
-  description: 'PISTE · sonde technique',
-  reference: 'PISTE-SOND',
+  description: 'PISTE-SOND · sonde technique',
+  country: 'BJ',
+  customer_email: 'paiement@nebula-agency.online',
+  customer_name: 'Sonde PISTE',
   metadata: { reference: 'PISTE-SOND' },
-  success_url: 'https://piste.nebula-agency.online/#/merci',
-  cancel_url: 'https://piste.nebula-agency.online/#/paiement',
+  return_url: 'https://piste.nebula-agency.online/#/merci',
 }
 
 async function essai(base, chemin, [nom, prefixe]) {
