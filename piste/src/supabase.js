@@ -296,3 +296,31 @@ export async function lireTableau(jours = 30) {
     return { ok: false, erreur: 'réseau' }
   }
 }
+
+/*
+  ══════════════════════════════════════════ OUVRIR UN PAIEMENT EN LIGNE ═══
+
+  Le navigateur n'envoie QUE la référence. Ni le montant, ni la devise : le
+  serveur les relit sur la commande. S'il pouvait les annoncer, on paierait
+  100 F pour 10 000 F de fiches.
+
+  ⚠️ Et il ne rend qu'une adresse. Rien de ce qui revient d'ici ne prouve un
+  paiement : c'est la notification signée reçue par `piste-paiement-recu` qui
+  fait foi. Une page de retour se visite à la main.
+*/
+export async function ouvrirPaiement(reference) {
+  try {
+    const r = await fetch(`${URL_BASE}/functions/v1/piste-paiement`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CLE_PUBLIQUE,
+        Authorization: `Bearer ${CLE_PUBLIQUE}`,
+      },
+      body: JSON.stringify({ reference }),
+    })
+    return await r.json()
+  } catch (e) {
+    return { ok: false, erreur: 'réseau' }
+  }
+}

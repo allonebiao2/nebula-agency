@@ -77,6 +77,25 @@ export const MOMO_TITULAIRE = 'BIAO Mongazi Yan Karl'
 
 export const MOMO_PRET = MOBILE_MONEY.some((m) => m.numero)
 
+/*
+  ⚠️ LE PAIEMENT EN LIGNE (SasPay) EST FERMÉ TANT QUE CE DRAPEAU EST `false`.
+
+  Décision 27 : jusqu'ici, Mongazi regarde son application Mobile Money et
+  rapproche lui-même. SasPay permettrait au client de payer depuis la page, et
+  à la commande de se marquer « payée » toute seule.
+
+  ⛔ NE PASSER À `true` QU'APRÈS AVOIR ENCAISSÉ 1 000 F POUR DE VRAI, en FCFA,
+  sur un compte béninois. Le tableau de bord SasPay du 2026-09-03 proposait des
+  montants en CDF (franc congolais) : tant que le XOF n'est pas confirmé de
+  bout en bout, afficher un bouton « payer » promettrait un encaissement qui
+  n'arrive pas. C'est la même règle que pour Moov Flooz, retiré le 2026-08-04.
+
+  ⚠️ Le chemin Mobile Money à la main NE DISPARAÎT PAS quand ce drapeau passe
+  à `true` : il reste dessous, en second. Un moyen de paiement neuf se met à
+  côté de celui qui marche, jamais à sa place.
+*/
+export const SASPAY_PRET = false
+
 /* Le code de commande, décision 26. Ni O ni 0, ni I ni 1 : il se lit à voix
    haute au téléphone sans qu'on se trompe. */
 export function nouvelleReference() {

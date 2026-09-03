@@ -7,10 +7,12 @@ import {
   MOMO_PRET,
   NEBULA_WHATSAPP,
   NEBULA_WHATSAPP_JOLI,
+  SASPAY_PRET,
   VILLES,
 } from '../donnees.js'
 import { fcfa } from '../prix.js'
 import { resteEn } from '../stockage.js'
+import { ouvrirPaiement } from '../supabase.js'
 import { Bouton, Chiffre } from './Ui.jsx'
 
 /*
@@ -21,6 +23,60 @@ import { Bouton, Chiffre } from './Ui.jsx'
   temps qu'il lui reste, parce qu'une commande non payée rend ses fiches au
   stock au bout de 24 heures.
 */
+
+/*
+  Payer depuis la page (SasPay).
+
+  ⚠️ FERMÉ TANT QUE `SASPAY_PRET` VAUT `false` : voir le commentaire dans
+  `donnees.js`. Quand il s'ouvrira, il se posera AU-DESSUS du Mobile Money à la
+  main, sans le remplacer. Un moyen de paiement neuf se met à côté de celui qui
+  marche.
+
+  ⚠️ Le navigateur n'envoie que la référence : le montant est relu en base par
+  le serveur. Et revenir sur le site ne prouve rien — c'est la notification
+  signée qui marque la commande payée. Le texte le dit, plutôt que de laisser
+  croire qu'un retour vaut quittance.
+*/
+function EnLigne({ reference, total }) {
+  const [etat, setEtat] = useState('pret')
+  const [souci, setSouci] = useState('')
+
+  const partir = async () => {
+    setEtat('ouvre')
+    setSouci('')
+    const r = await ouvrirPaiement(reference)
+    if (r?.ok && r.url) {
+      window.location.href = r.url
+      return
+    }
+    setEtat('pret')
+    setSouci(
+      r?.erreur === 'commande déjà traitée'
+        ? 'Cette commande est déjà réglée. Écrivez-nous sur WhatsApp si ce n’est pas le cas.'
+        : 'Le paiement en ligne n’a pas répondu. Le Mobile Money ci-dessous marche, lui.'
+    )
+  }
+
+  return (
+    <div className="mt-8 rounded-2xl border-2 border-braise/45 bg-braise/8 p-6">
+      <p className="font-display text-[1.2rem] font-bold">Payer maintenant, depuis cette page.</p>
+      <p className="mt-2 text-[0.95rem] leading-relaxed text-sable">
+        {fcfa(total)} en Mobile Money ou par carte. Votre commande se marque payée toute
+        seule, et le carnet part sans attendre qu’on rapproche votre virement à la main.
+      </p>
+      <div className="mt-4">
+        <Bouton ton="pleinClair" onClick={partir} disabled={etat === 'ouvre'}>
+          {etat === 'ouvre' ? 'Un instant…' : 'Payer ' + fcfa(total)}
+        </Bouton>
+      </div>
+      {souci && <p className="mt-3 text-[0.9rem] leading-relaxed text-rougeclair">{souci}</p>}
+      <p className="mt-3 text-[0.85rem] leading-relaxed text-sable">
+        Vous serez ramené ici après le paiement. Ce retour ne vaut pas reçu : c’est la
+        confirmation de l’opérateur qui compte, et elle arrive en quelques secondes.
+      </p>
+    </div>
+  )
+}
 
 function Rebours({ date }) {
   const [t, setT] = useState(() => resteEn(date))
@@ -88,6 +144,8 @@ export default function Paiement({ commande, aller }) {
             <span className="text-braise">et c'est à vous.</span>
           </h1>
         </div>
+
+        {SASPAY_PRET && <EnLigne reference={commande.ref} total={commande.total} />}
 
         {/* ------------------------------------------------ code et montant */}
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
