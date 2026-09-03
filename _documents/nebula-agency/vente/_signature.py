@@ -64,12 +64,54 @@ def _charger(chemin):
                 "Photo HEIC (iPhone) et pillow_heif absent : pip install pillow-heif"
             )
     im = Image.open(chemin)
-    im = ImageOps.exif_transpose(im)             # sinon la photo arrive couchée
-    return im.convert("RGB")
+    return ImageOps.exif_transpose(im)           # sinon la photo arrive couchée
+
+
+def _deja_detoure(im):
+    """L'alpha, si le fichier est DÉJÀ une signature détourée. Sinon None.
+
+    Mongazi a envoyé son trait en PNG transparent : il n'y avait rien à
+    détourer, et la chaîne calibrée pour une photo d'encre bleue sur papier
+    aurait répondu « aucune encre bleue trouvée » sur un fichier parfait.
+    ⚠️ Un alpha PRÉSENT ne veut pas dire détouré : un JPEG converti en RGBA a
+    un alpha plein. On exige que le fond soit réellement vide.
+    """
+    if "A" not in im.getbands():
+        return None
+    al = np.asarray(im.convert("RGBA"))[..., 3]
+    return al if (al < 250).mean() > 0.30 else None
+
+
+def _recadrer(im, masque, marge, rotation):
+    """Coupe au trait, applique la rotation demandée, et rend les mesures."""
+    ys, xs = np.nonzero(masque)
+    h, l = im.size[1], im.size[0]
+    y0, y1 = max(0, int(ys.min()) - marge), min(h - 1, int(ys.max()) + marge)
+    x0, x1 = max(0, int(xs.min()) - marge), min(l - 1, int(xs.max()) + marge)
+    out = im.crop((x0, y0, x1 + 1, y1 + 1))
+    if rotation is not None:
+        out = out.transpose(rotation)
+    return out, (x1 - x0 + 1, y1 - y0 + 1)
 
 
 def detourer(chemin, marge=MARGE, rotation=None):
     im = _charger(chemin)
+
+    # Cas 1 : le fichier est déjà détouré. On recadre au trait (la marge du
+    # fichier ferait flotter la signature dans son cadre) et on ne touche à
+    # RIEN d'autre : ni la couleur, ni l'opacité. Une signature n'est pas une
+    # image à corriger.
+    al = _deja_detoure(im)
+    if al is not None:
+        rgba = im.convert("RGBA")
+        out, boite = _recadrer(rgba, al > 8, 0, rotation)
+        a8 = np.asarray(out)[..., 3] / 255.0
+        return out, {"photo": im.size, "boite": boite, "sortie": out.size,
+                     "part": float((al > 8).mean()),
+                     "opaque": float((a8 > 0.5).mean()),
+                     "voie": "déjà détourée"}, None
+
+    im = im.convert("RGB")
     a = np.asarray(im).astype(np.int16)
     R, G, B = a[..., 0], a[..., 1], a[..., 2]
 
@@ -135,6 +177,7 @@ def detourer(chemin, marge=MARGE, rotation=None):
         out = out.transpose(rotation)
 
     infos = {
+        "voie": "photo, encre bleue",
         "photo": im.size,
         "boite": (x1 - x0 + 1, y1 - y0 + 1),
         "sortie": out.size,
@@ -172,11 +215,15 @@ if __name__ == "__main__":
         raise SystemExit("--rot doit valoir : " + " | ".join(ROTATIONS))
 
     img, infos, _ = detourer(args[0], rotation=ROTATIONS[nom_rot])
-    print("  photo   %d x %d" % infos["photo"])
+    print("  voie    %s" % infos["voie"])
+    print("  entrée  %d x %d" % infos["photo"])
     print("  boîte   %d x %d  (%.2f %% de la photo est de l'encre)"
           % (infos["boite"][0], infos["boite"][1], infos["part"] * 100))
     print("  sortie  %d x %d  (rotation : %s)" % (infos["sortie"] + (nom_rot,)))
-    if infos["sortie"][1] > infos["sortie"][0]:
+    # ⚠️ L'avertissement ne vaut que pour une PHOTO. Un fichier déjà détouré
+    # arrive dans le sens que son expéditeur a choisi : le signaler comme
+    # suspect ferait douter d'une signature parfaitement droite.
+    if infos["voie"].startswith("photo") and infos["sortie"][1] > infos["sortie"][0]:
         print("  ⚠️  plus HAUTE que large : une signature est presque toujours\n"
               "      couchée dans ce cas. Regarder la planche avant de conclure.")
     print("  opaque  %.1f %% des pixels au-dessus de 50 %% d'alpha"
