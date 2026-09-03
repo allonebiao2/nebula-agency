@@ -232,3 +232,71 @@ survit, et l'exemplaire signé se refait quand il veut.
 
 Le PDF **vierge** en 1.3, lui, est versionné : il est livré, à jour, et c'est sur lui que la
 signature se posera sans rien déplacer.
+
+---
+
+# 2026-09-03 · la 1.4, et la signature qui a failli passer pour un fantôme
+
+## Trois signatures, deux parties
+
+Mongazi : *« il doit signé aussi car lui il se charges de gérer tout les partenaires »*.
+**Romaric DJANKAKI**, son second, cosigne désormais le contrat qu'il fait appliquer.
+
+⚠️ **Trois cadres alignés se lisent comme trois parties.** Les deux cadres NEBULA sont donc
+groupés sous un seul intitulé, le cadre du Partenaire ouvre le sien, et le cadre seul garde
+**la largeur d'un cadre du haut** (sinon il s'étale sur toute la page et déséquilibre).
+
+⚠️ **Un troisième nom au bas d'un contrat se lit comme un troisième engagé.** La cosignature
+est donc qualifiée dans l'identification des parties : elle **engage NEBULA, pas Romaric à
+titre personnel**. Sans cette phrase, on créait une obligation solidaire sans le vouloir.
+⏳ **À confirmer par Mongazi** : le titre « responsable du réseau partenaires » est ma
+reformulation de ce qu'il a décrit, et cette phrase de non-engagement personnel est un choix
+juridique, pas une évidence. S'il veut Romaric engagé, c'est une autre clause.
+
+La chaîne PDF accepte maintenant **deux emplacements de signature, chacun facultatif** :
+l'absence de la signature de l'un n'empêche jamais de produire l'exemplaire portant celle de
+l'autre. Le cadre vide se signe à la main sur l'imprimé.
+
+## ⛔ Le masque était parfait, l'alpha était faux
+
+La 2e photo sortait à **0,3 % de pixels opaques**. J'ai d'abord soupçonné le repérage. Faux :
+la planche des masques, regardée, montrait un détourage **impeccable**.
+
+C'est la **rampe d'alpha** qui était fausse. Elle était fixe (60 niveaux au-dessus du seuil),
+calibrée sur la 1re photo dont l'encre montait à **B-R = 90**. Cette photo-ci, prise dans une
+pièce plus sombre, **plafonne à 42** : `t = (42-30)/60 = 0,20`. Une signature à 20 %
+d'opacité. La rampe se cale désormais sur le **85e centile de la teinte trouvée dans la photo
+traitée** : 0,3 % → **2,7 %** d'opaques.
+
+⚠️ **Une constante mesurée sur un échantillon devient un réglage, pas une loi.** Le seuil de
+détection (B-R > 30) a très bien tenu d'une photo à l'autre ; c'est la NORMALISATION qui ne
+pouvait pas tenir, parce qu'elle encodait la luminosité d'une pièce.
+
+## ⛔ La rotation par défaut se trompait une fois sur deux
+
+La 1re photo arrivait couchée et demandait un quart de tour horaire. **La 2e sortait déjà
+droite d'`exif_transpose`**, et ce même quart de tour la remettait sur le flanc. La rotation
+n'a donc plus de valeur par défaut : on regarde la planche, on passe `--rot`. Le script
+prévient quand la boîte est plus haute que large.
+
+Mesures de la 2e photo, pour mémoire : boîte **1241 × 475**, **aucune rotation**, encre
+médiane R 50 / G 49 / B 93, luminance 54, papier à 205.
+
+Un reflet bleuté du carrelage étirait aussi la boîte de **1241 à 1911 px** : on ne garde que
+la **plus grosse tache** d'encre.
+
+## ⛔ La photo est reperdue, et c'est la deuxième fois dans la journée
+
+Le conteneur s'est réinitialisé **deux fois pendant ce seul échange**, dont une au milieu du
+détourage. `/root/.claude/uploads/` revient à un instantané du 20 août : la photo envoyée
+il y a quelques minutes n'y est plus.
+
+⚠️ **Méthode adoptée : commiter après CHAQUE étape**, pas en fin de tâche. Les corrections de
+`_signature.py` ont été perdues une fois parce qu'elles attendaient un commit groupé.
+⚠️ **`git merge --ff-only` a échoué en silence** sur une branche divergente, et j'ai cru
+travailler sur `main` à jour alors que j'étais 4 commits en arrière. Vérifier
+`git log origin/main`, pas seulement le code de retour.
+
+**Conclusion pratique, à dire à Mongazi plutôt qu'à redécouvrir** : l'exemplaire signé se
+fabrique **sur son PC**, où `secrets/` survit. Une session dans le nuage ne peut le faire que
+dans la minute où la photo arrive, et rien ne garantit qu'elle y sera encore.
