@@ -157,6 +157,17 @@
 - **Le contrôle** : `_qc.js` + `_qc_generateur.js` + `_qc_carnet.mjs`, tous
   verts avant déploiement. ⚠️ Ils LISENT le stock et les libellés dans les
   données : ne jamais y recopier un chiffre ou un nom de métier.
+- **Le paiement en ligne (SasPay)** : écrit le 2026-09-03, **fermé**
+  (`SASPAY_PRET=false`). L'API est trouvée et **la clé fonctionne** (session de
+  checkout ouverte en 201 depuis le PC). ⚠️ `docs.saspay.me` répond **200 depuis
+  le PC et 403 depuis le nuage** : un refus réseau appartient à la machine qui
+  l'a reçu, pas au service. ⛔ **La notification ne dit pas quelle commande elle
+  paie** — `transaction.success` ne porte ni `metadata` ni numéro de session, et
+  son champ `reference` est celui de SasPay, qui écrasait le nôtre en silence ;
+  le lien se rattrape par la session de checkout, **et ce maillon n'est pas
+  encore prouvé**. ⚠️ Minimum **200 XOF**. ⏳ Reste : le **secret de signature**
+  (gabarit dans `secrets/saspay.env`, ⚠️ il ne se réaffiche jamais chez eux) et
+  le premier encaissement réel. Détail : `piste/PAIEMENT.md`.
 - **Source de vérité : `piste/PRODUCT.md`**, 88 décisions.
 
 ### MON BÉNIN — l'expérience du pays  *(objet éditorial, pas un SaaS)*
