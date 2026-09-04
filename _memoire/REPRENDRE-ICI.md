@@ -1,9 +1,62 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-29
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-03
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 septies. LE 2026-09-03 — PISTE ENCAISSE ET LIVRE TOUT SEUL
+
+**Le paiement en ligne (SasPay) est ouvert, et il n'y a plus qu'un seul moyen
+de payer.** Un client paie par Mobile Money ou par carte, et le carnet part
+tout seul : `piste-paiement-recu` vérifie l'âge, la signature, la devise et le
+montant, marque la commande payée, puis appelle `piste-livrer` — à trois heures
+du matin comme à midi.
+
+### ⛔ CE QUI BLOQUE, ET C'EST LA SEULE CHOSE
+
+**Le premier paiement réel n'a pas eu lieu.** Aucune simulation ne le remplace :
+il prouvera le dernier maillon, celui qui relie une notification à une
+commande (`referenceParTransaction`). SasPay n'envoie ni notre référence ni le
+numéro de session, seulement le sien — le lien se refait en relisant la session
+de checkout, et ça ne se vérifie qu'en encaissant.
+
+⚠️ **Et le filet a changé.** Le dépôt à la main et la redirection WhatsApp sont
+supprimés : ce n'est plus le client qui envoie sa capture, c'est Mongazi qui
+regarde. Tant que le premier franc n'est pas passé :
+
+```sql
+select recu_le, reference, montant, etat_lu, agi
+  from piste.paiement_evenement order by id desc limit 10;
+```
+
+Une ligne « sans commande » veut dire que quelqu'un a payé et que personne n'a
+été prévenu. **Minimum SasPay : 200 XOF.**
+
+### Par quoi commencer
+
+1. **Faire le paiement d'essai à 200 F** et regarder si la commande bascule et
+   si le carnet part.
+2. Si le maillon rate : tout est journalisé, rien n'est perdu, et la commande
+   se marque payée depuis le cockpit.
+
+### Ce qu'il faut savoir avant d'y toucher
+
+- ⚠️ **`docs.saspay.me` répond 200 depuis le PC et 403 depuis le nuage.** Un
+  refus réseau appartient à la machine qui l'a reçu, pas au service.
+- ⚠️ **Les listes de leur API sont paginées et le `limit` est ignoré** : 61
+  réseaux annoncés, 20 rendus. Vérifier `count` et `next`.
+- ⚠️ **Un seul projet Supabase** (`xukduhqqfzogisoimhyo`, affiché **`boussole`**)
+  porte `piste`, `naff` et Boussole. Le mettre en pause les fait tomber tous.
+- ⛔ **La base n'accepte que `attente/paye/livre/expire/annule`** — pas `payee`.
+  Le cockpit emploie encore `payee`/`livree`/`annulee` : **à vérifier**, son
+  bouton « Marquer payé » n'a peut-être jamais fonctionné.
+- ⚠️ Contrôles : `npm run qc` (**128 verts**) et `npm run qc:paiement`
+  (**96 verts**, ⚠️ avec `--experimental-strip-types`, déjà dans le script npm).
+- Détail complet : `piste/PAIEMENT.md` et
+  `_memoire/conversations/2026-09-03-piste-paiement-en-ligne.md`.
 
 ---
 
