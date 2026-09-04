@@ -165,6 +165,49 @@
 .dosvue figcaption{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
   color:#7A6E63;white-space:nowrap}
 
+/* ==================================================================
+   LES CHAMPS OBLIGATOIRES (2026-09-04)
+   ==================================================================
+   Hillary a donné la liste de ce qu'elle doit savoir avant de couper :
+   nom, prénom, numéro, lieu de résidence, lieu de livraison. Quatre de
+   ces champs sont donc obligatoires, et ça doit se voir AVANT le clic
+   sur un bouton grisé.
+   ================================================================== */
+
+/* ⚠️ L'ÉTOILE EST DÉCORATIVE, LE MOT NE L'EST PAS. Une étoile seule ne
+   dit rien à qui écoute la page : le libellé porte « (obligatoire) »
+   pour le lecteur d'écran, invisible à l'œil. */
+.req{color:var(--rose-f,#c9006c);font-weight:700;margin-left:2px}
+.vhs{position:absolute!important;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+
+/* La puce « J'habite à … » : le lieu de résidence n'est pas le lieu de
+   livraison, mais c'est le même dans la plupart des commandes. On le
+   propose au lieu de le supposer. */
+.chip{margin-top:9px;min-height:34px;padding:0 13px;cursor:pointer;
+  border:1px solid var(--ligne);background:#fff;color:var(--gris);
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;border-radius:999px;
+  transition:border-color .25s,color .25s,background-color .25s}
+/* ⚠️ LE ROSE DE LA MARQUE NE PORTE PAS DE TEXTE. `--rose` sur `--rose-p`
+   mesure 3,91:1, sous le seuil. C'est la quatrieme fois que ce piege se
+   presente sur ce site (etiquette du carrousel, badge, bouton WhatsApp) :
+   le trait garde `--rose`, la lettre prend `--rose-f` (5,4:1). */
+.chip:hover,.chip:focus-visible{border-color:var(--rose);color:var(--rose-f,#c9006c);
+  background:var(--rose-p)}
+
+/* ⚠️ « CE QU'IL MANQUE » N'EST PAS UNE ERREUR. Le rouge d'`.err` accuse ;
+   ici la cliente n'a encore rien fait de mal, elle est en train de
+   remplir. Même boîte, ton neutre. */
+.err.doux{color:var(--gris);font-weight:500}
+
+/* La suite des évènements, sur l'écran d'envoi : ce qui se passe APRÈS
+   que la cliente a quitté le site. C'est le seul endroit où elle se
+   demande « et maintenant ? ». */
+.fin .suite{font-size:14px;color:var(--gris);margin-top:14px;
+  background:var(--rose-p);padding:14px 16px;line-height:1.6}
+.fin .suite b{color:#7A0044}
+
 /* ── LE BOUTON DE SON ─────────────────────────────────────────────
    Il doit être visible dès la première seconde : un son qu'on ne peut
    pas couper est un son qu'on subit. Posé en bas à gauche, à l'opposé

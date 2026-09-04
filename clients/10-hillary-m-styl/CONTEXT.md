@@ -1179,3 +1179,150 @@ encore la Robe d'été sans photo, alors qu'elle en a une depuis. Depuis le PC :
 cd clients/10-hillary-m-styl && python3 _predeploy.py
 npx -y wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main
 ```
+
+---
+
+## 2026-09-04 — CE QU'HILLARY DOIT SAVOIR AVANT DE COUPER
+
+**Sa demande, mot pour mot** :
+
+> Les informations dont j'ai besoin… Lieu de résidence · Nom · Prénom · Numéro
+> de téléphone · Lieu d'expédition ou de livraison… Ou la cliente passera à
+> l'atelier récupérer. De toute façon quand la tenue de la cliente sera prête on
+> lui enverra un message ou on l'appellera en direct… De même qu'un message lui
+> sera envoyé dès que sa commande est validée.
+
+### L'écart mesuré avant de toucher au code
+
+| Ce qu'elle demande | Ce que le site faisait |
+|---|---|
+| Lieu de résidence | ⛔ **n'existait pas** — seule la ville de *livraison* était demandée, et seulement en expédition |
+| Nom | ⚠️ présent mais **facultatif** |
+| Prénom | ✅ obligatoire |
+| Numéro de téléphone | ⛔ **remplaçable par un email** (`tel ‖ mail`) |
+| Lieu d'expédition ou de livraison | ⚠️ pays obligatoire, **ville non**, aucun repère |
+| Retrait à l'atelier | ✅ en place |
+| Un message à la validation | ⛔ dit nulle part |
+| Un message ou un appel quand c'est prêt | ⛔ dit nulle part |
+
+⛔ **Une commande pouvait donc arriver à l'atelier sans aucun moyen d'appeler la
+cliente**, alors qu'Hillary annonce précisément qu'elle appellera. Et une autre
+pouvait partir avec « Côte d'Ivoire » pour toute adresse de livraison.
+
+### Ce qui est en place
+
+**Étape 1 — Comment la recevoir ?**
+- la **ville de livraison devient obligatoire** en expédition (le pays seul est
+  une zone tarifaire, pas une adresse) ;
+- nouveau champ **« Quartier ou point de repère »**, facultatif. ⚠️ **Au Bénin,
+  une adresse est un repère, pas une rue** : demander « votre adresse » ne donne
+  rien d'exploitable. Facultatif parce que le numéro, lui, est obligatoire :
+  l'atelier peut toujours préciser au téléphone, et un champ de plus avant le
+  bouton coûte des commandes.
+
+**Étape 2 — Vos coordonnées**
+- **quatre champs obligatoires** : Prénom, Nom, **Numéro de téléphone**, **Lieu
+  de résidence**. L'email passe en *facultatif*, et la note reste libre ;
+- ⚠️ **le numéro ne peut plus être remplacé par un email.** Ça n'exclut personne :
+  qui n'a pas WhatsApp a un téléphone, et c'est précisément celui-là qu'on
+  appellera. L'email reste offert **en plus**, jamais **à la place** ;
+- ⚠️ **le lieu de résidence n'est pas le lieu de livraison**, et Hillary demande
+  les deux. Le plus souvent ils se confondent, mais pas toujours (une cliente de
+  Cotonou fait livrer sa sœur à Abidjan) : on ne le **suppose** pas, une puce
+  **« J'habite à Abidjan »** propose de le recopier en un geste ;
+- **les deux messages promis** sont écrits au-dessus du récapitulatif :
+  « Vous serez prévenue deux fois. Un message dès que votre commande est validée,
+  puis un message ou un appel dès que votre tenue est prête. C'est ce numéro que
+  l'atelier utilisera. » C'est ce qui **justifie** le champ obligatoire.
+
+**Étape 3 — Envoi** : la même promesse, redite là où la cliente quitte le site.
+
+**La FAQ** porte une septième question, « Comment saurai-je où en est ma
+commande ? ». ⚠️ Elle va dans **deux fichiers au même rang** (`markup.html` et le
+`JSON_LD` de `_assembler.py`) : le balisage FAQPage est comparé **à la lettre et
+dans l'ordre** aux questions visibles.
+
+**Le message WhatsApp** porte les cinq informations, **chacune sous son nom** :
+
+```
+*CLIENT*
+Nom : SOGLO
+Prénom : Ama
+Téléphone : +229 01 97 00 00 00
+Lieu de résidence : Abidjan, Riviera 2
+```
+
+⚠️ Plus de `Prénom Nom` collés : Hillary recopie ces lignes dans son carnet, et
+un nom composé rend le collage indéchiffrable. Le bloc `*LIVRAISON*` porte le
+pays, la ville et le repère, ou « Retrait à l'atelier — gratuit ».
+
+### ⛔ Le défaut vu sur une capture, pas dans le code
+
+À l'étape 1, choisir un pays sans remplir la ville laissait **« CONTINUER » gris
+et muet**. L'étoile rouge est sur l'étiquette, mais rien ne reliait le bouton
+mort au champ qui manque.
+
+C'est exactement ce que la ligne **« Encore : … »** corrige à l'étape 2 — et elle
+n'y était qu'à l'étape 2. **Une règle appliquée à un seul endroit n'est pas une
+règle** : la ligne est devenue commune aux deux étapes.
+
+⚠️ **« A commencé » n'est pas « a choisi un mode ».** Le premier jet allumait la
+ligne dès le clic sur « Expédition », c'est-à-dire au-dessus de deux champs
+encore vides que la cliente s'apprêtait à remplir : on lui reprochait de ne pas
+avoir fait ce qu'elle était en train de faire.
+
+⚠️ **La ligne n'écrit que ce qu'elle montre.** `innerText` d'un élément en
+`display:none` renvoie quand même son contenu : le contrôle lisait un message que
+personne ne voit et accusait le site. La sonde était fausse — mais plutôt que de
+corriger la seule sonde, texte et visibilité ont été rendus solidaires.
+
+### ⛔ Le contraste de la modale n'était mesuré par rien
+
+Ce QC vérifie qu'aucune variable CSS n'est utilisée sans être définie, mais
+**aucun contrôle ne lisait une couleur de texte contre son fond dans le tunnel**.
+C'est pourtant là que le rose de la marque a déjà été posé sur du texte **trois
+fois** (étiquette du carrousel, badge, bouton WhatsApp) — et une **quatrième**
+ici : la puce de recopie au survol mesurait **3,91:1**, trouvée à la main.
+
+⚠️ **Le rose `--rose` ne porte pas de lettres.** Le trait le garde, le texte prend
+`--rose-f` (4,93:1). Le contrôle mesure désormais les **pixels rendus** en
+remontant jusqu'au premier ancêtre vraiment opaque, pour la puce (repos **et**
+survol), les deux blocs de promesse et l'écran d'envoi.
+
+### ⛔ `_predeploy.py` ne lançait pas l'assembleur
+
+Le site se monte en deux temps : `_v4/_assembler.py` recompose
+`_vitrine_src.html`, puis `_build.py` en tire `vitrine.html`. **`_predeploy.py` ne
+faisait que le second.** Qui modifiait un morceau de `_v4/` puis lançait ce
+script déployait un livrable bâti sur une source **périmée** : tout vert, tout en
+ligne, et le changement absent, sans un mot. Le défaut était noté dans CLAUDE.md
+depuis le 2026-08-16 et n'avait jamais été refermé. Il l'est.
+
+### Contrôles : 150 → 192
+
+Dont un par champ obligatoire **rempli un à un** (un contrôle qui remplit tout
+d'un coup ne prouve rien), la ligne « encore » aux deux étapes, la puce de
+recopie et son absence en retrait, les cinq lignes du message, le repère, les
+deux promesses et leur contraste.
+
+⚠️ **Un contrôle qui devient faux n'est pas un contrôle qu'on supprime.** Celui
+qui disait « email seul suffit pour valider » protégeait une vraie décision : ne
+pas exclure qui n'a pas WhatsApp. Cette décision tient toujours, mais elle passe
+désormais par le **téléphone**, qui sert aussi bien à appeler. Le contrôle a été
+**retourné**, pas retiré.
+
+⚠️ **La page se souvient.** `cmd` et `memoire()` reportent les coordonnées d'une
+commande sur la suivante — c'est voulu. Le contrôle « email seul ne suffit plus »
+mesurait un numéro **déjà rempli par le parcours précédent** et concluait
+l'inverse de la vérité. Il vide maintenant les champs avant de mesurer, et
+vérifie au passage que le souvenir fonctionne, ce que personne ne contrôlait.
+
+### Nouvel outil
+
+`python _vues_commande.py` photographie les **dix écrans** du tunnel en 390 et
+1440. ⚠️ **Ni `full_page` ni `.sheet`** : le premier photographie les 28 000 px du
+catalogue qui dort derrière la modale, et le second est trompeur parce que la
+barre et le pied sont `sticky` — ils se repeignent au bord de la fenêtre et
+**cachent tout ce qui suit**. Sur les deux premières planches, les deux messages
+promis et le récapitulatif étaient **absents de l'image sans que rien ne le
+signale**. La fenêtre est donc haute, et toute la modale y tient.

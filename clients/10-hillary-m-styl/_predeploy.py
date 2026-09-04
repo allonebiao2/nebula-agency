@@ -9,7 +9,8 @@ HILLARY M. STYL — le garde-fou avant mise en ligne.
 Il enchaîne, et il S'ARRÊTE au premier problème :
 
   1. la V4 est-elle bien là ?      (sinon on déploierait l'ancienne version)
-  2. `_build.py`                    source -> vitrine.html
+  2. `_v4/_assembler.py`            morceaux de _v4/ -> _vitrine_src.html
+     puis `_build.py`               source -> vitrine.html
   3. `_qc.py`                       71 contrôles, tous verts obligatoires
   4. aucun reliquat public          numéro de test, « à confirmer », placeholders
   5. `_dist/index.html` préparé     et la commande de déploiement affichée
@@ -87,7 +88,21 @@ def main():
     print("       ✅ source V4 « LA COUPE » confirmée, moteur inclus")
 
     # ---------- 2. construire ----------
-    etape(2, "construction du livrable")
+    # ⛔ L'ASSEMBLEUR D'ABORD. Le site se monte en deux temps : `_assembler.py`
+    #    recompose `_vitrine_src.html` depuis les morceaux de `_v4/`, puis
+    #    `_build.py` en tire `vitrine.html`. Cette étape ne faisait que le
+    #    second : qui modifiait un morceau de `_v4/` puis lançait ce script
+    #    déployait un livrable bâti sur une source PÉRIMÉE — tout vert, tout
+    #    en ligne, et le changement absent, sans un mot.
+    #    ⚠️ L'assembleur refuse d'écrire si l'un des 18 identifiants du moteur
+    #       manque : ce garde-fou entre donc aussi dans le chemin de déploiement.
+    etape(2, "assemblage de la source, puis construction du livrable")
+    r = subprocess.run([sys.executable, str(ICI / "_v4" / "_assembler.py")],
+                       cwd=ICI, capture_output=True, text=True)
+    if r.returncode != 0:
+        echec("`_v4/_assembler.py` a échoué : la source n'est pas à jour.",
+              r.stdout + r.stderr)
+    print("       ✅ _vitrine_src.html réassemblé depuis _v4/")
     r = subprocess.run([sys.executable, "_build.py"], cwd=ICI,
                        capture_output=True, text=True)
     if r.returncode != 0:

@@ -1,0 +1,4 @@
+# Les captures de travail : elles se refabriquent en une commande
+# (`python _vues_commande.py`) et ne regardent que la session qui les a prises.
+# Même convention que les clients 09 et 11.
+_vues/

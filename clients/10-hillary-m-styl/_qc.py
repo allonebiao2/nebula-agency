@@ -49,6 +49,34 @@ def ok(c, m):
     (NOTES if c else FAILS).append(("OK  " if c else "FAIL") + "  " + m)
 
 VIEWPORTS = [(390, 844, True), (768, 1024, True), (1440, 900, False)]
+JS_CONTRASTE = r"""
+(sel) => {
+  const el = document.querySelector(sel);
+  if (!el) return null;
+  const lin = c => (c /= 255) <= .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4);
+  const lum = ([r, g, b]) => .2126 * lin(r) + .7152 * lin(g) + .0722 * lin(b);
+  const rgb = s => (s.match(/[\d.]+/g) || []).map(Number);
+  /* ⚠️ le fond se cherche chez les ANCETRES : un texte dans une boite
+     transparente prend le fond de ce qui est derriere, et lire
+     `background-color` sur l'element lui-meme rend `rgba(0,0,0,0)`. */
+  let n = el, fond = null;
+  while (n && n !== document.documentElement) {
+    const c = rgb(getComputedStyle(n).backgroundColor);
+    if (c.length >= 3 && (c[3] === undefined || c[3] > .95)) { fond = c.slice(0, 3); break; }
+    n = n.parentElement;
+  }
+  if (!fond) fond = [255, 255, 255];
+  const fg = rgb(getComputedStyle(el).color).slice(0, 3);
+  const a = lum(fg), b = lum(fond);
+  return {
+    ratio: Math.round(((Math.max(a, b) + .05) / (Math.min(a, b) + .05)) * 100) / 100,
+    fg: fg, bg: fond,
+    taille: parseFloat(getComputedStyle(el).fontSize),
+    gras: parseInt(getComputedStyle(el).fontWeight, 10) >= 600
+  };
+}
+"""
+
 
 async def overflow(page, label):
     r = await page.evaluate("()=>({s:document.documentElement.scrollWidth,c:document.documentElement.clientWidth})")
@@ -553,8 +581,23 @@ async def main():
         ok((await page.inner_text("#panN")).strip() == "1", "la pastille du panier affiche 1")
         await page.click('[data-pan="commander"]')
         await page.click('[data-mode="expedition"]')
+        # ⛔ UN BOUTON GRIS DOIT DIRE POURQUOI (defaut vu sur une capture le
+        #    2026-09-04 : choisir un pays sans ville laissait « CONTINUER »
+        #    mort et muet). La meme ligne « Encore : … » qu'a l'etape 2.
+        ok((await page.inner_text("#err")).strip() == "",
+           "livraison : rien ne manque tant que le mode vient d'etre choisi")
         await page.select_option("#f_pays", "ci")
+        bloque = await page.get_attribute('[data-nav="suiv"]', "disabled")
+        ok(bloque is not None, "livraison : le pays seul ne suffit pas")
+        ligne = (await page.inner_text("#err")).lower()
+        ok("ville de livraison" in ligne,
+           f"la ligne « encore » nomme la ville manquante — vu « {ligne} »")
         await page.fill("#f_ville", "Abidjan")
+        ok(await page.get_attribute('[data-nav="suiv"]', "disabled") is None,
+           "livraison : pays + ville, on peut avancer")
+        ok((await page.inner_text("#err")).strip() == "",
+           "livraison : la ligne « encore » se tait une fois la ville donnee")
+        await page.fill("#f_repere", "Cocody, en face du lycée")
         dispo = (await page.locator(".dispo p").inner_text()).strip()
         ok(len(dispo) > 6, f"date de disponibilite affichee des le choix de la livraison : « {dispo} »")
         j = await page.evaluate("()=>joursTotal()")
@@ -563,8 +606,54 @@ async def main():
         attendu_d = datetime.date.today() + datetime.timedelta(days=att_j)
         ok(str(attendu_d.day) in dispo, f"la date correspond bien a J+{att_j} ({attendu_d})")
         await page.click('[data-nav="suiv"]')          # coordonnees
-        await page.fill("#f_prenom", "Ama")
-        await page.fill("#f_tel", "+22997000000")
+        # ⚠️ LES QUATRE CHAMPS D'HILLARY, UN PAR UN. On remplit dans l'ordre
+        #    et on verifie qu'on ne peut PAS avancer tant qu'il en manque un :
+        #    un controle qui remplit tout d'un coup ne prouve rien.
+        for champ, valeur, reste in [("#f_prenom", "Ama", "votre nom"),
+                                     ("#f_nom", "SOGLO", "votre num"),
+                                     ("#f_tel", "+22997000000", "lieu de r")]:
+            await page.fill(champ, valeur)
+            bloque = await page.get_attribute('[data-nav="suiv"]', "disabled")
+            ok(bloque is not None,
+               f"coordonnees : impossible d'avancer sans {reste}")
+            ligne = (await page.inner_text("#err")).lower()
+            ok(reste.lower() in ligne,
+               f"la ligne « encore » nomme ce qui manque ({reste}) — vu « {ligne} »")
+        # la puce de recopie : le lieu de residence n'est pas suppose, il est propose
+        ok(await page.locator("#btMemeLieu").count() == 1,
+           "expedition : la puce « J'habite a <ville> » est proposee")
+        await page.click("#btMemeLieu")
+        ok(await page.input_value("#f_residence") == "Abidjan",
+           "la puce recopie la ville de livraison dans le lieu de residence")
+        # ⛔ LE CONTRASTE DU TUNNEL, MESURE SUR LES PIXELS RENDUS. Rien ne le
+        #    verifiait, et le rose de la marque avait deja ete pose sur du
+        #    texte trois fois. La puce au repos ET au survol.
+        await page.evaluate("()=>{cmd.residence='';dessiner();}")
+        for sel, etat in [(".chip", "au repos")]:
+            c = await page.evaluate(JS_CONTRASTE, sel)
+            seuil = 3.0 if (c["taille"] >= 24 or (c["gras"] and c["taille"] >= 18.66)) else 4.5
+            ok(c["ratio"] >= seuil,
+               f"contraste puce de recopie {etat} : {c['ratio']}:1 (seuil {seuil})")
+        await page.locator(".chip").hover()
+        await page.wait_for_timeout(320)
+        c = await page.evaluate(JS_CONTRASTE, ".chip")
+        ok(c["ratio"] >= 4.5,
+           f"contraste puce de recopie au survol : {c['ratio']}:1 (seuil 4.5)")
+        await page.click("#btMemeLieu")
+        dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
+        ok(dis is None, "les 4 champs remplis, la commande peut avancer")
+        ok((await page.locator("#err.on").count()) == 0,
+           "plus rien ne manque : la ligne « encore » se tait")
+        # les deux messages promis par Hillary, et leur lisibilite
+        promesse = await page.locator(".momo").first.inner_text()
+        for mot in ["prévenue deux fois", "validée", "appel", "prête"]:
+            ok(mot in promesse,
+               f"l'etape des coordonnees promet ce qu'Hillary fait ({mot})")
+        for sel in [".momo strong", ".momo span"]:
+            c = await page.evaluate(JS_CONTRASTE, sel)
+            seuil = 3.0 if (c["taille"] >= 24 or (c["gras"] and c["taille"] >= 18.66)) else 4.5
+            ok(c["ratio"] >= seuil,
+               f"contraste {sel} : {c['ratio']}:1 (seuil {seuil})")
         tot = (await page.locator(".recap .tt span").last.inner_text()).strip()
         att_t = P["prix"] + 12000 + P["exp"]          # piece + expedition CI + express
         att_s = f"{att_t:,}".replace(",", " ") + " F"
@@ -574,11 +663,30 @@ async def main():
         await page.click('[data-nav="suiv"]')
         href = await page.get_attribute("#btWa", "href")
         ok(href.startswith("https://wa.me/"), "lien WhatsApp genere")
+        # l'ecran d'envoi dit ce qui se passe APRES : c'est le seul moment ou
+        # la cliente quitte le site sans savoir ou elle en est
+        suite = await page.locator(".fin .suite").inner_text()
+        for mot in ["validée", "message", "appel", "prête"]:
+            ok(mot in suite, f"l'ecran d'envoi annonce la suite ({mot})")
+        for sel in [".fin .suite", ".fin .suite b"]:
+            c = await page.evaluate(JS_CONTRASTE, sel)
+            seuil = 3.0 if (c["taille"] >= 24 or (c["gras"] and c["taille"] >= 18.66)) else 4.5
+            ok(c["ratio"] >= seuil,
+               f"contraste {sel} : {c['ratio']}:1 (seuil {seuil})")
         msg = await page.evaluate("()=>message()")
         if P["type"]:
             ok("MESURES" in msg, "les mesures figurent dans le message")
         else:
             ok("Taille" in msg, "la taille figure dans le message")
+        # ⚠️ LA LISTE D'HILLARY, MOT POUR MOT (2026-09-04). Chaque ligne porte
+        #    son nom : elle les recopie dans son carnet.
+        for ligne in ["Nom : SOGLO", "Prénom : Ama", "Téléphone : +22997000000",
+                      "Lieu de résidence : Abidjan"]:
+            ok(ligne in msg, f"le message porte « {ligne} »")
+        ok("Expédition — Côte d'Ivoire, Abidjan" in msg,
+           "le message porte le lieu de livraison, pays ET ville")
+        ok("Repère : Cocody, en face du lycée" in msg,
+           "le point de repere voyage jusqu'au message (au Benin, l'adresse EST un repere)")
         # ⚠️ ne PAS recopier « mailto: » ici : tant qu'Hillary n'a pas donne son
         #    adresse, EMAIL est vide et le repli est un appel. Ce qui compte,
         #    c'est qu'il mene QUELQUE PART DE REEL. Une adresse inventee est
@@ -629,10 +737,34 @@ async def main():
         lab = await page.locator(".dispo b").inner_text()
         ok("retirer" in lab.lower(), f"libelle adapte au retrait (« {lab} »)")
         await page.click('[data-nav="suiv"]')          # coordonnees
+        # ⚠️ LA PAGE SE SOUVIENT. `cmd` et `memoire()` reportent les
+        #    coordonnees d'une commande sur la suivante : la cliente qui
+        #    repasse commande ne retape pas son numero. On le VERIFIE ici,
+        #    puis on vide, sinon le controle suivant mesurerait un champ
+        #    rempli par le parcours precedent et conclurait le contraire de
+        #    la verite.
+        ok(await page.input_value("#f_tel") == "+22997000000",
+           "la commande suivante retrouve le numero de la precedente")
+        ok(await page.input_value("#f_residence") == "Abidjan",
+           "la commande suivante retrouve le lieu de residence")
+        await page.fill("#f_tel", "")
+        await page.fill("#f_residence", "")
         await page.fill("#f_prenom", "Koffi")
+        await page.fill("#f_nom", "ADJOVI")
         await page.fill("#f_mail", "koffi@gmail.com")
+        # ⛔ CONTROLE RETOURNE LE 2026-09-04. Avant, un email suffisait et le
+        #    numero etait facultatif : une commande arrivait a l'atelier sans
+        #    moyen d'appeler, alors qu'Hillary annonce qu'elle appellera.
+        #    L'email reste offert, EN PLUS, jamais A LA PLACE.
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
-        ok(dis is None, "email seul (sans WhatsApp) suffit pour valider")
+        ok(dis is not None, "email seul ne suffit plus : le numero est exige")
+        await page.fill("#f_tel", "+22996000000")
+        await page.fill("#f_residence", "Cotonou, Fidjrossè")
+        # en retrait, aucune ville de livraison n'a ete saisie : rien a recopier
+        ok(await page.locator("#btMemeLieu").count() == 0,
+           "retrait : aucune puce de recopie (il n'y a pas de ville de livraison)")
+        dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
+        ok(dis is None, "numero + residence donnes, la commande peut avancer")
         tot = (await page.locator(".recap .tt span").last.inner_text()).strip()
         der_prix = der["prix"]
         att2 = f"{der_prix:,}".replace(",", " ") + " F"
@@ -642,6 +774,10 @@ async def main():
         manq = att_m - moitie
         ok(f"{manq}" in msg or "à prendre ensemble" in msg,
            f"les {manq} mesures manquantes sont signalees dans le message")
+        ok("Lieu de résidence : Cotonou, Fidjrossè" in msg,
+           "retrait aussi : le lieu de residence part dans le message")
+        ok("Retrait à l'atelier" in msg,
+           "le message dit que la cliente vient chercher sa tenue")
         await page.click("#btX")
         await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
 

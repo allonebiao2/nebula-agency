@@ -1184,6 +1184,49 @@ section{overflow-x:clip}
 .dosvue figcaption{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
   color:#7A6E63;white-space:nowrap}
 
+/* ==================================================================
+   LES CHAMPS OBLIGATOIRES (2026-09-04)
+   ==================================================================
+   Hillary a donné la liste de ce qu'elle doit savoir avant de couper :
+   nom, prénom, numéro, lieu de résidence, lieu de livraison. Quatre de
+   ces champs sont donc obligatoires, et ça doit se voir AVANT le clic
+   sur un bouton grisé.
+   ================================================================== */
+
+/* ⚠️ L'ÉTOILE EST DÉCORATIVE, LE MOT NE L'EST PAS. Une étoile seule ne
+   dit rien à qui écoute la page : le libellé porte « (obligatoire) »
+   pour le lecteur d'écran, invisible à l'œil. */
+.req{color:var(--rose-f,#c9006c);font-weight:700;margin-left:2px}
+.vhs{position:absolute!important;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+
+/* La puce « J'habite à … » : le lieu de résidence n'est pas le lieu de
+   livraison, mais c'est le même dans la plupart des commandes. On le
+   propose au lieu de le supposer. */
+.chip{margin-top:9px;min-height:34px;padding:0 13px;cursor:pointer;
+  border:1px solid var(--ligne);background:#fff;color:var(--gris);
+  font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;border-radius:999px;
+  transition:border-color .25s,color .25s,background-color .25s}
+/* ⚠️ LE ROSE DE LA MARQUE NE PORTE PAS DE TEXTE. `--rose` sur `--rose-p`
+   mesure 3,91:1, sous le seuil. C'est la quatrieme fois que ce piege se
+   presente sur ce site (etiquette du carrousel, badge, bouton WhatsApp) :
+   le trait garde `--rose`, la lettre prend `--rose-f` (5,4:1). */
+.chip:hover,.chip:focus-visible{border-color:var(--rose);color:var(--rose-f,#c9006c);
+  background:var(--rose-p)}
+
+/* ⚠️ « CE QU'IL MANQUE » N'EST PAS UNE ERREUR. Le rouge d'`.err` accuse ;
+   ici la cliente n'a encore rien fait de mal, elle est en train de
+   remplir. Même boîte, ton neutre. */
+.err.doux{color:var(--gris);font-weight:500}
+
+/* La suite des évènements, sur l'écran d'envoi : ce qui se passe APRÈS
+   que la cliente a quitté le site. C'est le seul endroit où elle se
+   demande « et maintenant ? ». */
+.fin .suite{font-size:14px;color:var(--gris);margin-top:14px;
+  background:var(--rose-p);padding:14px 16px;line-height:1.6}
+.fin .suite b{color:#7A0044}
+
 /* ── LE BOUTON DE SON ─────────────────────────────────────────────
    Il doit être visible dès la première seconde : un son qu'on ne peut
    pas couper est un son qu'on subit. Posé en bas à gauche, à l'opposé
@@ -1679,6 +1722,10 @@ section{overflow-x:clip}
         <div class="faq-r"><p>Deux semaines en confection normale, 2 à 5 jours en express selon la pièce. La date exacte de disponibilité s'affiche avant que vous ne validiez, acheminement compris.</p></div>
       </details>
       <details class="faq-q">
+        <summary>Comment saurai-je où en est ma commande&nbsp;?</summary>
+        <div class="faq-r"><p>Vous recevez un message dès que votre commande est validée. Puis, quand votre tenue est prête, l'atelier vous envoie un message ou vous appelle directement. C'est pour cela que votre numéro de téléphone est demandé au moment de la commande.</p></div>
+      </details>
+      <details class="faq-q">
         <summary>Et si je ne sais pas prendre une mesure&nbsp;?</summary>
         <div class="faq-r"><p>Laissez le champ vide. Elle part en « à prendre ensemble » dans votre commande et l'atelier vous rappelle. La moitié des mesures suffit pour envoyer une commande.</p></div>
       </details>
@@ -1818,6 +1865,7 @@ section{overflow-x:clip}
  {"@type":"FAQPage","mainEntity":[
   {"@type":"Question","name":"Faites-vous du sur-mesure ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Les mesures demandées dépendent du type de vêtement, pas du genre : une robe coupée à la taille en demande 9, une robe droite 15, une robe ovale 11, un pantalon 6, un haut 8."}},
   {"@type":"Question","name":"En combien de temps ma tenue est-elle prête ?","acceptedAnswer":{"@type":"Answer","text":"Deux semaines en confection normale, 2 à 5 jours en express selon la pièce. La date exacte de disponibilité s'affiche avant que vous ne validiez, acheminement compris."}},
+  {"@type":"Question","name":"Comment saurai-je où en est ma commande ?","acceptedAnswer":{"@type":"Answer","text":"Vous recevez un message dès que votre commande est validée. Puis, quand votre tenue est prête, l'atelier vous envoie un message ou vous appelle directement. C'est pour cela que votre numéro de téléphone est demandé au moment de la commande."}},
   {"@type":"Question","name":"Et si je ne sais pas prendre une mesure ?","acceptedAnswer":{"@type":"Answer","text":"Laissez le champ vide. Elle part en « à prendre ensemble » dans votre commande et l'atelier vous rappelle. La moitié des mesures suffit pour envoyer une commande."}},
   {"@type":"Question","name":"Comment se fait le règlement ?","acceptedAnswer":{"@type":"Answer","text":"Par Mobile Money uniquement. Aucun paiement ne se fait sur ce site : la commande part sur WhatsApp et le règlement se convient directement avec l'atelier."}},
   {"@type":"Question","name":"Livrez-vous en dehors du Bénin ?","acceptedAnswer":{"@type":"Answer","text":"Oui : Togo, Côte d'Ivoire, Nigeria, Sénégal, Burkina Faso, Mali, Niger, Cameroun, Gabon et France. Les frais et les jours d'acheminement s'affichent quand vous choisissez votre pays."}},
@@ -2448,9 +2496,17 @@ function totaux(){
   return t;
 }
 
+/* ⚠️ 2026-09-04 — CE QU'HILLARY DOIT SAVOIR AVANT DE LANCER UNE COUPE.
+   Sa liste, mot pour mot : lieu de résidence, nom, prénom, numéro de
+   téléphone, lieu d'expédition ou de livraison — ou le retrait à l'atelier.
+   Trois d'entre elles manquaient ou étaient facultatives : le nom pouvait
+   rester vide, le numéro pouvait être remplacé par un email, et le lieu de
+   résidence n'existait pas (seule la ville de LIVRAISON était demandée, et
+   seulement en expédition). Une commande arrivait donc à l'atelier sans
+   moyen d'appeler la cliente, alors qu'Hillary annonce l'appeler. */
 var cmd = {
-  actif:false, etape:1, mode:null, pays:null, ville:"",
-  prenom:"", nom:"", tel:"", mail:"", note:""
+  actif:false, etape:1, mode:null, pays:null, ville:"", repere:"",
+  prenom:"", nom:"", tel:"", mail:"", residence:"", note:""
 };
 
 function fraisLivraison(){
@@ -2849,6 +2905,7 @@ function ouvrirCommande(){
   cmd.tel    = cmd.tel    || m.tel    || "";
   cmd.mail   = cmd.mail   || m.mail   || "";
   cmd.ville  = cmd.ville  || m.ville  || "";
+  cmd.residence = cmd.residence || m.residence || "";
   etat = null;
   fermerPanier();
   var t = totaux();
@@ -2858,6 +2915,10 @@ function ouvrirCommande(){
   montrerModale();
   dessiner();
 }
+
+/* la marque discrète d'un champ obligatoire : une étoile, et son sens dit
+   à voix haute pour qui n'a que le lecteur d'écran */
+var REQ = ' <span class="req" aria-hidden="true">*</span><span class="vhs"> (obligatoire)</span>';
 
 function vueLivraison(){
   var h = '<div class="stitle">Comment la recevoir ?</div>'+
@@ -2884,8 +2945,20 @@ function vueLivraison(){
       h += '<div class="warn" style="margin-top:14px">Nous n\'expédions pas encore automatiquement vers ce pays. '+
            'Envoyez-nous quand même la commande : nous vous donnerons le tarif exact avant tout règlement.</div>';
     }
-    h += '<div class="fd" style="margin-top:12px"><label for="f_ville">Ville de livraison</label>'+
+    /* ⚠️ LA VILLE EST OBLIGATOIRE DEPUIS LE 2026-09-04. Avant, choisir un
+       pays suffisait pour avancer : une commande pouvait partir avec
+       « Côte d'Ivoire » pour toute adresse. Hillary demande le lieu de
+       livraison, pas la zone tarifaire. */
+    h += '<div class="fd" style="margin-top:12px"><label for="f_ville">Ville de livraison'+REQ+'</label>'+
          '<input id="f_ville" type="text" placeholder="Cotonou, Abidjan, Dakar…" value="'+esc(cmd.ville)+'"></div>';
+    /* ⚠️ AU BÉNIN, UNE ADRESSE EST UN REPÈRE, PAS UNE RUE. Demander « votre
+       adresse » ne donne rien d'exploitable ; demander le quartier et ce
+       qu'on voit depuis la porte donne une livraison qui arrive. Facultatif :
+       le numéro est obligatoire, l'atelier peut toujours préciser au
+       téléphone, et un champ de plus avant le bouton coûte des commandes. */
+    h += '<div class="fd" style="margin-top:12px"><label for="f_repere">Quartier ou point de repère '+
+         '<span style="font-weight:500;text-transform:none">(facultatif)</span></label>'+
+         '<input id="f_repere" type="text" placeholder="Fidjrossè, en face de la pharmacie" value="'+esc(cmd.repere)+'"></div>';
   }
   if(cmd.mode === "retrait"){
     h += '<div class="momo" style="margin-top:16px"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>'+
@@ -2907,23 +2980,95 @@ function vueLivraison(){
            '</div>';
     }
   }
-  return h;
+  return h + ligneManque();
+}
+
+/* ⚠️ CE QUI MANQUE ENCORE, EN TOUTES LETTRES.
+   Un bouton grisé sans explication laisse la cliente chercher lequel des
+   champs le retient. On nomme ce qui manque, dans l'ordre où les champs se
+   lisent, aux DEUX étapes qui en ont : la livraison et les coordonnées.
+   ⛔ La première version ne le faisait qu'à l'étape 2, et l'étape 1 gardait
+      son bouton mort et muet. Ça s'est vu sur une capture, pas dans le code. */
+function manqueLivraison(){
+  var m = [];
+  if(cmd.mode === "expedition"){
+    if(!cmd.pays)          m.push("votre pays");
+    if(!cmd.ville.trim())  m.push("la ville de livraison");
+  }
+  return m;
+}
+
+/* ce qui manque à l'étape affichée, quelle qu'elle soit */
+function manqueEtape(){
+  if(!cmd.actif) return [];
+  if(cmd.etape === 1) return cmd.mode ? manqueLivraison() : [];
+  if(cmd.etape === 2) return manqueCoord();
+  return [];
+}
+
+/* ⚠️ « COMMENCE » N'EST PAS « A CHOISI UN MODE ». Le premier jet allumait la
+   ligne dès le clic sur « Expédition », c'est-à-dire au-dessus de deux champs
+   encore vides que la cliente s'apprête à remplir : on lui reprochait de ne
+   pas avoir fait ce qu'elle était en train de faire. Elle a commencé quand
+   elle a rempli QUELQUE CHOSE. */
+function commenceEtape(){
+  if(cmd.etape === 1) return !!cmd.pays || !!cmd.ville.trim();
+  if(cmd.etape === 2) return manqueCoord().length < 4;
+  return false;
+}
+
+/* la ligne se tait tant que la cliente n'a rien commencé : accueillir
+   quelqu'un par la liste de ce qu'il n'a pas fait est une façon de le faire
+   partir. « Commencé » = avoir choisi un mode, ou rempli un champ. */
+function ligneManque(){
+  var dit = commenceEtape() && manqueEtape().length ? texteManque() : "";
+  return '<div class="err doux'+(dit ? " on" : "")+'" id="err">'+esc(dit)+'</div>';
+}
+function texteManque(){
+  var m = manqueEtape();
+  return m.length ? "Encore : " + m.join(" · ") : "";
+}
+
+function manqueCoord(){
+  var m = [];
+  if(!cmd.prenom.trim())    m.push("votre prénom");
+  if(!cmd.nom.trim())       m.push("votre nom");
+  if(!cmd.tel.trim())       m.push("votre numéro");
+  if(!cmd.residence.trim()) m.push("votre lieu de résidence");
+  return m;
 }
 
 function vueCoord(){
+  /* ⚠️ LE LIEU DE RÉSIDENCE N'EST PAS LE LIEU DE LIVRAISON, et Hillary
+     demande les deux. Le plus souvent ils se confondent, mais pas toujours :
+     une cliente de Cotonou peut faire livrer sa sœur à Abidjan. On ne le
+     suppose donc pas, on propose de le recopier en un geste. */
+  var repique = (cmd.mode === "expedition" && cmd.ville.trim()
+                 && cmd.residence.trim() !== cmd.ville.trim())
+    ? '<button class="chip" type="button" id="btMemeLieu">J\'habite à '+esc(cmd.ville.trim())+'</button>'
+    : '';
+
   return '<div class="stitle">Vos coordonnées</div>'+
     '<div class="sdesc">Pour vous confirmer la commande et vous prévenir dès que la tenue est prête.</div>'+
     '<div class="mes">'+
-      '<div class="fd"><label for="f_prenom">Prénom</label><input id="f_prenom" type="text" value="'+esc(cmd.prenom)+'" placeholder="Votre prénom"></div>'+
-      '<div class="fd"><label for="f_nom">Nom</label><input id="f_nom" type="text" value="'+esc(cmd.nom)+'" placeholder="Votre nom"></div>'+
-      '<div class="fd"><label for="f_tel">Numéro WhatsApp</label><input id="f_tel" type="tel" inputmode="tel" value="'+esc(cmd.tel)+'" placeholder="+229 01 …"></div>'+
-      '<div class="fd"><label for="f_mail">Email <span style="font-weight:500;text-transform:none">(si vous n\'avez pas WhatsApp)</span></label><input id="f_mail" type="email" inputmode="email" value="'+esc(cmd.mail)+'" placeholder="vous@gmail.com"></div>'+
+      '<div class="fd"><label for="f_prenom">Prénom'+REQ+'</label><input id="f_prenom" type="text" autocomplete="given-name" value="'+esc(cmd.prenom)+'" placeholder="Votre prénom"></div>'+
+      '<div class="fd"><label for="f_nom">Nom'+REQ+'</label><input id="f_nom" type="text" autocomplete="family-name" value="'+esc(cmd.nom)+'" placeholder="Votre nom"></div>'+
+      '<div class="fd"><label for="f_tel">Numéro de téléphone'+REQ+'</label><input id="f_tel" type="tel" inputmode="tel" autocomplete="tel" value="'+esc(cmd.tel)+'" placeholder="+229 01 …"></div>'+
+      '<div class="fd"><label for="f_residence">Lieu de résidence'+REQ+'</label><input id="f_residence" type="text" value="'+esc(cmd.residence)+'" placeholder="Cotonou, Fidjrossè">'+repique+'</div>'+
+      '<div class="fd full"><label for="f_mail">Email <span style="font-weight:500;text-transform:none">(facultatif)</span></label><input id="f_mail" type="email" inputmode="email" autocomplete="email" value="'+esc(cmd.mail)+'" placeholder="vous@gmail.com"></div>'+
       '<div class="fd full"><label for="f_note">Un mot pour l\'atelier ?</label><textarea id="f_note" placeholder="Optionnel">'+esc(cmd.note)+'</textarea></div>'+
     '</div>'+
+    /* LES DEUX MESSAGES QU'HILLARY S'ENGAGE À ENVOYER. C'est sa phrase, et
+       c'est ce qui rend le numéro obligatoire : le dire ici vaut mieux que
+       de laisser la cliente se demander pourquoi on le lui réclame. */
+    '<div class="momo"><svg viewBox="0 0 24 24"><path d="M4 5.5h16v11H9.5L5.5 20v-3.5H4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg>'+
+    '<span><strong>Vous serez prévenue deux fois.</strong> Un message dès que votre commande '+
+    'est validée, puis un message ou un appel dès que votre tenue est prête. C\'est ce numéro '+
+    'que l\'atelier utilisera.</span></div>'+
     '<div class="momo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h6M9 14h6M12 7v10"/></svg>'+
     '<span><strong>Règlement par Mobile Money uniquement.</strong> Le numéro vous sera communiqué au message de confirmation. Aucun paiement ne se fait sur ce site.</span></div>'+
     recapCommande()+
-    '<div class="err" id="err"></div>';
+    ligneManque();
 }
 
 function vueEnvoi(){
@@ -2932,6 +3077,10 @@ function vueEnvoi(){
     '<h3>Votre commande est prête à partir</h3>'+
     '<p>Le bouton ci-dessous ouvre WhatsApp avec votre commande déjà écrite : chaque pièce, vos mesures, '+
     'la livraison, le délai et le total. Vous n\'avez qu\'à appuyer sur envoyer.</p>'+
+    /* LES DEUX MESSAGES D'HILLARY, redits à l'endroit où la cliente quitte le
+       site. C'est le seul moment où elle se demande « et maintenant ? ». */
+    '<p class="suite"><b>Ensuite :</b> vous recevez un message dès que votre commande '+
+    'est validée, puis un message ou un appel dès que votre tenue est prête.</p>'+
     recapCommande()+
     '<a class="alt" id="altMail" href="#">Je n\'ai pas WhatsApp — envoyer par email</a>'+
     '</div>';
@@ -2950,7 +3099,8 @@ function recapCommande(){
   if(cmd.mode === "retrait") h += '<div class="li"><span>Retrait à l\'atelier</span><span>Gratuit</span></div>';
   if(cmd.mode === "expedition"){
     var f = fraisLivraison();
-    h += '<div class="li"><span>Expédition '+esc(cmd.pays?cmd.pays.nom:"")+'</span><span>'+
+    h += '<div class="li"><span>Expédition '+esc(cmd.pays?cmd.pays.nom:"")+
+         (cmd.ville.trim() ? ", "+esc(cmd.ville.trim()) : "")+'</span><span>'+
          (f === null ? "À confirmer" : fcfa(f))+'</span></div>';
   }
   var j = joursTotal();
@@ -2991,10 +3141,17 @@ function peutAvancer(){
   if(cmd.actif){
     if(cmd.etape === 1){
       if(cmd.mode === "retrait") return true;
-      if(cmd.mode === "expedition") return !!cmd.pays;
+      /* la ville avec le pays : sans elle, « Côte d'Ivoire » serait toute
+         l'adresse de livraison */
+      if(cmd.mode === "expedition") return !!cmd.pays && !!cmd.ville.trim();
       return false;
     }
-    if(cmd.etape === 2) return !!(cmd.prenom.trim() && (cmd.tel.trim() || cmd.mail.trim()));
+    /* ⚠️ LE NUMÉRO NE PEUT PLUS ÊTRE REMPLACÉ PAR UN EMAIL. Hillary annonce
+       qu'elle enverra un message OU qu'elle appellera : sans numéro elle ne
+       peut faire ni l'un ni l'autre. Ça n'exclut personne — qui n'a pas
+       WhatsApp a un téléphone, et c'est précisément lui qu'on appellera.
+       L'email reste offert, en plus, jamais à la place. */
+    if(cmd.etape === 2) return manqueCoord().length === 0;
     return true;
   }
   var p = etat.piece;
@@ -3054,8 +3211,16 @@ function brancher(){
   });
 
   lieEtat("f_tissu","tissu"); lieEtat("f_det","details");
-  lieCmd("f_ville","ville"); lieCmd("f_prenom","prenom"); lieCmd("f_nom","nom");
-  lieCmd("f_tel","tel"); lieCmd("f_mail","mail"); lieCmd("f_note","note");
+  lieCmd("f_ville","ville"); lieCmd("f_repere","repere");
+  lieCmd("f_prenom","prenom"); lieCmd("f_nom","nom");
+  lieCmd("f_tel","tel"); lieCmd("f_residence","residence");
+  lieCmd("f_mail","mail"); lieCmd("f_note","note");
+
+  var mm = document.getElementById("btMemeLieu");
+  if(mm) mm.addEventListener("click", function(){
+    cmd.residence = cmd.ville.trim();
+    dessiner();
+  });
 
   $$("[data-nav]", document.getElementById("shFt")).forEach(function(b){
     b.addEventListener("click", function(){
@@ -3071,7 +3236,8 @@ function brancher(){
         if(cmd.actif){
           if(cmd.etape === 2){
             memorise({prenom:cmd.prenom.trim(), nom:cmd.nom.trim(), tel:cmd.tel.trim(),
-                      mail:cmd.mail.trim(), ville:cmd.ville.trim()});
+                      mail:cmd.mail.trim(), ville:cmd.ville.trim(),
+                      residence:cmd.residence.trim()});
           }
           cmd.etape = Math.min(3, cmd.etape + 1);
         }else{
@@ -3110,6 +3276,15 @@ function lieCmd(id, cle){
 function majSuiv(){
   var b = document.querySelector('[data-nav="suiv"]');
   if(b) b.disabled = !peutAvancer();
+  /* ⚠️ ELLE SE MET À JOUR À LA FRAPPE, PAS AU REDESSIN. `dessiner()` refait
+     tout le corps de la modale : l'appeler à chaque touche ferait perdre le
+     curseur et le clavier du téléphone. La ligne se réécrit toute seule. */
+  var e = document.getElementById("err");
+  if(e && cmd.actif){
+    var dit = commenceEtape() && manqueEtape().length ? texteManque() : "";
+    e.textContent = dit;
+    e.classList.toggle("on", !!dit);
+  }
 }
 
 /* ---------- la pièce tombe dans le panier ----------------------- */
@@ -3311,6 +3486,7 @@ function message(){
   }else{
     var f = fraisLivraison();
     L.push("Expédition — "+(cmd.pays?cmd.pays.nom:"")+(cmd.ville.trim()? ", "+cmd.ville.trim() : ""));
+    if(cmd.repere.trim()) L.push("Repère : "+cmd.repere.trim());
     L.push("Frais : "+(f===null ? "à confirmer" : fcfa(f)));
   }
 
@@ -3333,12 +3509,18 @@ function message(){
   }
   L.push("_Règlement par Mobile Money._");
 
+  /* ⚠️ LES CINQ INFORMATIONS QU'HILLARY A DEMANDÉES, chacune sur sa ligne
+     et sous son nom. Elle les recopie dans son carnet : un « Prénom Nom »
+     collé oblige à deviner où l'un finit, et la ville de livraison n'est pas
+     le lieu de résidence. Les quatre premières sont obligatoires, donc
+     toujours présentes ; on ne teste que les facultatives. */
   L.push("");
   L.push("*CLIENT*");
-  L.push((cmd.prenom.trim()+" "+cmd.nom.trim()).trim());
-  if(cmd.tel.trim())  L.push("WhatsApp : "+cmd.tel.trim());
+  L.push("Nom : "+cmd.nom.trim());
+  L.push("Prénom : "+cmd.prenom.trim());
+  L.push("Téléphone : "+cmd.tel.trim());
+  L.push("Lieu de résidence : "+cmd.residence.trim());
   if(cmd.mail.trim()) L.push("Email : "+cmd.mail.trim());
-  if(cmd.ville.trim())L.push("Ville : "+cmd.ville.trim());
   if(cmd.note.trim()){ L.push(""); L.push("*Note :* "+cmd.note.trim()); }
 
   return L.join("\n");
