@@ -9,7 +9,7 @@
 >
 > **Ce qui ne change jamais :** le label « LE SAVIEZ-VOUS ? », ancre de la rubrique.
 >
-> Version 1.2 · 2026-08-30
+> Version 1.3 · 2026-08-31
 
 ---
 
@@ -1740,7 +1740,10 @@ se referme du mauvais côté.
 tout le statut. **Les deux réponses possibles doivent être prêtes avant de publier**, y
 compris celle du cas où le commerçant apparaît bien.
 
-### LE PROMPT
+### Version 1 · direction « NUIT ÉLECTRIQUE » · le prompt
+
+*Gardée : c’est la variante sombre du même message. La version publiée est la
+**version 2** plus bas, « PLEIN SOLEIL ».*
 
 ```
 ===========================================================
@@ -2039,6 +2042,336 @@ marche.
 
 ⚠️ **Le prochain statut ne fait pas peur.** Deux peurs d’affilée et on devient la personne
 qui angoisse tout le monde ; celui d’après doit donner quelque chose sans rien demander.
+
+---
+
+### Version 2 · direction « PLEIN SOLEIL » · **c’est celle à publier**
+
+Référence : `references/REF-plein-soleil.jpg` (affiche « scale. Your Vision », mur teal et
+sol ocre séparés par une arête nette, plein soleil, deux hommes en costume orange assis,
+minuscules dans un mur immense et vide).
+
+**Même message, même mécanisme, même « TEST ». Tout le reste change.**
+
+#### Pourquoi une image ensoleillée fait plus peur qu’une image sombre
+
+Le premier réflexe serait de refuser : cette référence est calme, lumineuse, presque
+amusante, et le texte parle d’argent perdu. **C’est justement ce qui la rend meilleure.**
+
+Une image sombre annonce la couleur : le lecteur voit qu’on va lui faire peur, il met sa
+garde, il passe. **Une belle journée ensoleillée, un mur propre, un homme tranquille assis
+au soleil : c’est un mardi ordinaire.** Et c’est exactement ce que dit le post, il ne se
+passe rien de visible, et c’est là que ça se passe. La phrase brutale posée sur une image
+paisible ne se voit pas venir, et **elle ne peut pas être classée comme « une pub qui fait
+peur »**, donc elle n’est pas filtrée.
+
+#### Ce que la référence donne, et qu’aucune autre n’avait
+
+**Elle contient déjà le dispositif de comparaison : deux hommes identiques, côte à côte,
+même costume, même posture, même soleil.** Il n’y a rien à inventer, il suffit de mettre
+**une seule différence** entre eux, et elle devient énorme parce que tout le reste est
+rigoureusement pareil.
+
+**Et cette différence, la référence la fournit aussi : les ombres.** Le sol ocre en plein
+soleil, avec ses longues ombres géométriques, est la signature de l’image. On s’en sert
+pour dire la chose invisible du post.
+
+> **À droite :** un homme, et sur le sol, en plus de la sienne, **cinq ou six longues ombres
+> de gens debout qui montent vers lui.**
+> **À gauche :** le même homme, le même costume, la même posture, et **rien**. Le sol autour
+> de lui est nu.
+
+Même métier, même jour, même soleil. **Pas les mêmes clients.** Et celui de gauche ne verra
+jamais ce qui lui manque, puisqu’une ombre qui n’est pas venue ne fait pas de bruit.
+
+⛔ **Aucun personnage ne doit avoir de corps dans les ombres.** Ce sont des ombres seules,
+qui entrent par le bas du cadre. Des gens dessinés à côté et le post redevient une
+illustration.
+
+#### Le texte, dans la typographie de la référence
+
+La référence empile quatre niveaux, et ils se remplissent un par un :
+
+| Niveau de la référence | Chez nous |
+|---|---|
+| le mot énorme en bas de casse avec un point (*scale.*) | **« introuvable. »** |
+| la ligne grasse dessous (*Your Vision*) | **« en ce moment »** |
+| les trois mots très espacés (*FOCUS. DEPTH, IMPACT.*) | **« CHERCHÉ. RIEN. AILLEURS. »** |
+| le petit paragraphe justifié en capitales | la phrase qui coupe |
+
+**« introuvable. »** est le seul mot lisible à 20 %, et il dit déjà tout : c’est la
+définition du problème en un mot. Les **trois mots espacés** racontent la vente perdue en
+trois temps, à la place des trois vertus de la référence. Ce détournement est le cœur de
+l’adaptation : **le gabarit de la référence sert à énumérer une perte au lieu d’énumérer des
+qualités.**
+
+⚠️ **Pas de pastille « vérifié ».** La référence en porte une à côté de son nom. Un badge de
+vérification imité est un mensonge de plateforme, et il ne coûte rien à retirer : le logo se
+pose directement sur le mur, il est plus beau comme ça.
+
+⚠️ **Le teal est gardé.** Sur un bleu indigo, le logo NEBULA (violet et bleu) se noierait ;
+sur le teal profond de la référence il ressort, et la vibe est intacte.
+
+#### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+"INTROUVABLE" — full sun, colour-block direction
+===========================================================
+
+ATTACHED INPUTS — TWO attachments, IN THIS ORDER:
+  1st = THE STYLE REFERENCE
+  2nd = THE NEBULA LOGO
+Never swap their roles: swapping them ruins the image. If the order
+is ever unclear, fall back on their content, described below.
+
+  THE STYLE REFERENCE (first attachment) = a bright editorial poster
+     with a deep TEAL wall filling the upper two thirds, a saturated
+     OCHRE YELLOW ground filling the lower third, a thin orange lip
+     between them, hard sunlight casting sharp geometric shadows,
+     and two small men in identical bright orange suits sitting on
+     the ledge with laptops. Its type is centred on the empty wall:
+     one huge lowercase word with a full stop, a bold line under it,
+     a row of three widely spaced bold capitalised words, and a
+     small justified all-caps paragraph.
+     REPRODUCE ITS DESIGN SYSTEM COMPLETELY AND FAITHFULLY:
+       - the FLAT COLOUR BLOCKING: one large deep TEAL field above,
+         one saturated OCHRE YELLOW field below, divided by a clean
+         straight architectural ledge with a thin ORANGE lip
+       - HARD DIRECT SUNLIGHT from the upper left, with crisp
+         geometric shadows and one large diagonal shadow shape on
+         the teal wall
+       - the enormous EMPTY WALL: the human figures are small and
+         the emptiness around them is most of the picture
+       - editorial architectural photography, matte surfaces,
+         slight wall texture, no gloss, no gradient
+       - the TYPOGRAPHY SYSTEM described below, in a clean heavy
+         GEOMETRIC SANS-SERIF, all type in white
+       - its exact level of polish and finish
+     Take NOTHING of its words and NOTHING of its branding. The
+     words "scale", "Your Vision", "FOCUS", "DEPTH", "IMPACT" and
+     "bizzjum" appear NOWHERE, and there is NO verified tick, NO
+     white brand chip and NO social badge anywhere in the image.
+
+  THE LOGO (second attachment) = the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with
+     "AGENCY" underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a
+     style reference and never a subject to reinterpret.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp status image for NEBULA Agency, a
+digital studio in Cotonou, Benin, that builds pages and online
+catalogues for West African merchants.
+Two identical men, the same day, the same sun. One of them has
+customers coming. The other one does not, and cannot see it.
+Bright, calm, editorial, expensive. The image must look like an
+ordinary sunny afternoon, never like an advertisement about fear.
+
+-----------------------------------------------------------
+THE SCENE — full bleed
+-----------------------------------------------------------
+A clean modern wall in hard sunlight, photographed straight on.
+  - the UPPER TWO THIRDS: one flat DEEP TEAL wall, matte, softly
+    textured, almost entirely empty. A large soft-edged diagonal
+    shadow falls across its left side, exactly as in the reference.
+  - a straight horizontal LEDGE crossing the frame, with a thin
+    bright ORANGE lip along its front edge
+  - the LOWER THIRD: a flat saturated OCHRE YELLOW ground in full
+    sun, plain and open
+
+SEATED ON THE LEDGE, small in the frame exactly like the reference:
+TWO MEN, deliberately IDENTICAL. Same bright orange suit, same
+build, same shoes, same posture: seated, knees apart, forearms on
+the thighs, head lowered over a mobile phone held in both hands.
+Dark brown skin. Heads down, faces not readable, no recognisable
+identity, no hat, no jewellery, no visible logo on the clothing.
+They are placed apart from each other with a clear gap of empty
+ledge between them: one in the LEFT half, one in the RIGHT half.
+Nothing distinguishes them. That is the point.
+
+-----------------------------------------------------------
+THE SHADOWS — this is the whole message, get it right
+-----------------------------------------------------------
+On the sunlit ochre ground, the sunlight casts long crisp shadows.
+
+UNDER THE MAN ON THE RIGHT: his own long shadow, AND, converging
+toward him, FIVE OR SIX LONG ELONGATED SHADOWS OF STANDING PEOPLE.
+They enter from the BOTTOM EDGE of the frame and stretch up toward
+him, as if a small group were standing in front of him just outside
+the picture. They are SHADOWS ONLY: no bodies, no heads, no figures
+anywhere in the frame, only their dark shapes on the yellow ground.
+
+UNDER THE MAN ON THE LEFT: his own shadow, and NOTHING ELSE. The
+ochre ground around him is completely bare and evenly lit.
+
+The difference between the two sides must be obvious at a glance,
+and it must be the ONLY difference in the entire picture.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place
+it in the UPPER RIGHT of the teal wall, small, exactly as provided,
+and KEEP that transparency.
+  - it sits DIRECTLY on the teal wall. NO white chip, NO rounded
+    pill, NO plate, NO badge, NO outline, NO glow, NO drop shadow,
+    and above all NO VERIFIED TICK of any kind.
+  - keep the wall behind it clean and evenly lit, with no shadow
+    edge crossing it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - size it so its wordmark stays comfortably readable when the
+    whole image is viewed at 20% of its size.
+Directly UNDER the logo, in small white type:
+    "nebula-agency.online"
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a status is covered by the interface
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface ON TOP of the image:
+  - the TOP 220 px are covered (profile picture, name, time)
+  - the BOTTOM 340 px are covered (the "Reply" field)
+The logo, every line of type, both men and ALL the shadows must sit
+between y = 220 px and y = 1580 px. The extra height compared with
+the reference goes into MORE EMPTY TEAL WALL above the type: the
+emptiness is the luxury of this layout, do not fill it.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+All type is WHITE, centred on the teal wall, in a clean geometric
+sans-serif, arranged exactly like the reference:
+
+THE HUGE WORD — lowercase, very heavy, enormous, with a full stop,
+the single loudest element of the image, exactly like the big word
+in the reference:
+    "introuvable."
+
+THE BOLD LINE — directly under it, clearly smaller but still bold:
+    "en ce moment"
+
+THE THREE BEATS — one line further down, three short words in bold
+capitals, spread WIDELY APART across the full width with large
+even gaps between them, exactly the device used in the reference:
+    "CHERCHÉ."        "RIEN."        "AILLEURS."
+
+THE PARAGRAPH — under it, small, light weight, ALL CAPITALS, set
+JUSTIFIED to both margins with exaggerated word spacing so the
+lines align on both edges, exactly like the small paragraph in the
+reference, two lines:
+    "VOUS PERDEZ DES CLIENTS SANS LE SAVOIR. UN CLIENT QUI NE VOUS
+    A PAS TROUVÉ NE DIT RIEN."
+
+THE ANSWER TO GIVE — one line lower on the teal wall, just above
+the seated men, small, white, semi-bold, centred:
+    "Répondez TEST à ce statut."
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom, all inside the safe band:
+  1. empty teal wall
+  2. NEBULA logo, upper right, and "nebula-agency.online" under it
+  3. "introuvable."                          <- loudest zone
+  4. "en ce moment"
+  5. "CHERCHÉ."  "RIEN."  "AILLEURS."
+  6. the justified two-line paragraph
+  7. "Répondez TEST à ce statut."
+  8. THE LEDGE, THE TWO IDENTICAL SEATED MEN
+  9. THE OCHRE GROUND AND THE SHADOWS      <- second largest zone
+No text at all sits on the ochre ground or over the men: everything
+written lives on the empty teal wall, exactly as in the reference.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- THERE IS NO APOSTROPHE ANYWHERE IN THIS IMAGE. If an apostrophe
+  appears, a word has been invented and the image is wrong.
+- Keep the accents ON THE CAPITAL LETTERS, as French requires:
+  "CHERCHÉ.", "TROUVÉ". Never "CHERCHE", never "TROUVE".
+- "introuvable." stays lowercase and keeps its full stop.
+- Each of the three beats keeps its own full stop: "CHERCHÉ."
+  "RIEN." "AILLEURS."
+- The word "TEST" stays in capitals, exactly as written. Do not turn
+  it into a button, a pill or a badge: it is plain text.
+- "introuvable." must still be readable when the image is viewed at
+  20% of its size, and it must be the first thing the eye reads.
+- No hashtag, no emoji, no icon, no arrow, no star, no rating, no
+  percentage sign, no verified tick.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- The TWO MEN ARE IDENTICAL. Same suit, same colour, same posture,
+  same build. If they differ in any way other than their shadows,
+  the image has failed.
+- The shadows of the crowd are SHADOWS ONLY: no bodies, no heads,
+  no drawn people anywhere in the frame.
+- NO verified tick, NO white brand chip, NO social badge, NO
+  follower count, NO app interface.
+- NO laptop brand, NO phone brand, NO visible screen content, NO
+  readable text on any device.
+- NO price, NO amount, NO currency symbol, NO offer, NO discount.
+- NO invented statistics, client counts, ratings or stars. No
+  figures anywhere in the image.
+- NO readable face and no recognisable person: heads stay lowered.
+- NO watermark, no frame, no border around the image itself.
+- The teal wall stays FLAT and mostly EMPTY: no pattern, no poster,
+  no window, no plant, no second object. The emptiness is the
+  subject.
+- One difference, told once.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready, editorial
+photographic quality, high-fidelity text rendering.
+===========================================================
+```
+
+#### Pour le fil Instagram et Facebook (4:5)
+
+C’est le format natif de la référence, donc c’est là qu’elle est la plus juste.
+
+```
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. No safe zones: the whole canvas is visible.
+This is the reference's own proportion: follow its composition
+exactly, with the teal wall filling the upper two thirds and the
+ochre ground the lower third.
+
+REMOVE ONE LINE: do not render "Répondez TEST à ce statut." on this
+version. Everything else is unchanged.
+```
+
+**La légende et les deux réponses préparées ne changent pas** : ce sont celles du § 9,
+elles servent aux deux versions.
+
+#### Contrôles propres à cette version
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Les deux hommes sont vraiment identiques** | une seule différence ailleurs, et la comparaison ne veut plus rien dire |
+| **Les ombres de foule sont des ombres seules** | des gens dessinés, et c’est une illustration, plus une photo |
+| **Le sol est nu à gauche** | s’il y traîne une ombre, le post ne dit plus rien |
+| Aucune pastille « vérifié », aucun jeton blanc | imiter un badge de plateforme est un mensonge, et ça se voit |
+| Le mur teal reste vide | c’est le vide qui fait le luxe et qui porte le texte |
+| Accents gardés sur les capitales | « CHERCHE » au lieu de « CHERCHÉ » et tout le bloc a l’air bâclé |
+| Aucune apostrophe sur l’image | il n’y en a pas une seule ; s’il en apparaît une, un mot a été inventé |
+| Aucun texte sur le sol ocre | tout vit sur le mur, comme dans la référence |
+| **Réduire à 20 %** | si « introuvable. » ne se lit plus, le statut est mort |
+| **Les DEUX réponses à « TEST » sont prêtes** | inchangé, voir plus haut |
 
 ---
 
