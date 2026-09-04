@@ -939,3 +939,53 @@ panneau qu'il faudrait faire défiler est refusé.
 avec un vrai `User-Agent` : `app.css` et `app.js` **identiques au disque en MD5**,
 `index.html` porte les deux boutons, **aucune trace de `hero-plan`**, 404 sur un
 fichier absent.
+
+---
+
+## 2026-09-04, second temps — la barre redevient visible, le bouton flottant s'ajoute
+
+**Mongazi, après avoir vu la version du matin :** « il y avait directement tout qui
+était visible, remets ça ».
+
+### Ce qui était faux
+
+Le bouton unique avait **remplacé** les liens de la barre. La demande d'Angélique
+(« voir d'un coup d'œil ce que le site contient ») venait de son usage **téléphone**,
+et la réponse l'avait appliquée **à toutes les largeurs**. Sur ordinateur, où la place
+ne manque pas, on avait retiré une navigation qu'on VOIT pour une navigation qu'on
+OUVRE : un geste de plus pour tout le monde, pour un problème de petit écran.
+
+⚠️ **Une contrainte de téléphone ne se généralise pas à l'ordinateur.**
+
+### Ce qui est en place
+
+- la barre retrouve ses **6 entrées + WhatsApp**, le **burger reste sur téléphone** ;
+- le **sommaire du héros revient** (6 entrées, dans le flux) ;
+- le **bouton flottant s'AJOUTE au lieu de remplacer** : il ouvre le même panneau, à
+  toutes les largeurs. **Trois portes, trois habitudes, un seul mécanisme** — ouvrir
+  l'une referme l'autre, et chacune gèle ce qui n'est pas elle ;
+- ⚠️ **les deux instruments flottants partagent UN couloir réservé, pas deux** ;
+- **sans JS** le bouton flottant se retire, la barre cesse de flotter.
+
+### ⛔ Un recouvrement se CALCULE, il ne s'échantillonne pas
+
+Premier jet : défiler par paliers de 400 px et comparer les boîtes. Trois cibles
+trouvées, réservées, **contrôle vert — et il en restait une** : « ÉQUIPER UN LIEU »,
+**54 px de recouvrement à 390 px**. Sa fenêtre de croisement fait **102 px** : un pas
+de 400 la manque **quatre fois sur cinq**.
+
+**Un contrôle qui dépend de l'endroit où l'on regarde n'est pas un contrôle.**
+
+Le bouton est **fixe**, la cible **défile** : on résout l'intervalle de défilement où
+les deux se croisent. Exact, instantané, sans faire bouger la page. ⚠️ On écarte ce
+qui ne défile pas (un ancêtre `fixed` ne passera jamais sous le bouton).
+
+### ⚠️ Le `?v=` n'avait pas été bumpé
+
+Feuille et script changés de 307 et 107 lignes, marque restée `20260904a` — **déjà
+servie le matin avec l'ancien contenu**, et nos assets portent `immutable` un an.
+Tous ceux qui avaient ouvert le site dans la matinée, **Mongazi le premier**, seraient
+restés sur l'ancienne version. → `?v=20260904b`. Défaut du 2026-08-08 à l'identique :
+**le cache du navigateur ne se voit pas depuis le serveur, et le QC ne le dit pas.**
+
+### Contrôles : 188 → 209

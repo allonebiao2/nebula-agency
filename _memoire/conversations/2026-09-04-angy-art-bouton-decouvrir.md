@@ -135,3 +135,76 @@ wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch
 Vérifié en ligne avec un vrai `User-Agent` : `app.css` et `app.js` **identiques au
 disque en MD5**, `index.html` porte les deux boutons et le nouveau `?v=`, plus
 **aucune trace de `hero-plan`**, un fichier absent répond **404**.
+
+---
+
+# Second temps du 2026-09-04 — la barre redevient visible, le bouton flottant s'ajoute
+
+**Demande de Mongazi**, après avoir vu la version du matin en ligne : « il y avait
+directement tout qui était visible, remets ça ».
+
+`?v=20260904b` · **209 contrôles verts** · déployé et vérifié.
+
+## Ce qui était faux dans la version du matin
+
+Le bouton unique avait **remplacé** les liens de la barre par un panneau à ouvrir.
+La demande d'Angélique (« voir d'un coup d'œil ce que le site contient ») venait de
+son usage **téléphone**, et la réponse l'avait appliquée **à toutes les largeurs** :
+sur ordinateur, où la place ne manque pas, on avait retiré une navigation qu'on VOIT
+pour la remplacer par une navigation qu'on OUVRE. Un geste de plus pour tout le monde,
+pour résoudre un problème qui n'existait que sur petit écran.
+
+⚠️ **Une contrainte de téléphone ne se généralise pas à l'ordinateur.** C'est la même
+famille que « la barre portait des libellés raccourcis faute de place à 1024 px » :
+la place disponible fait partie du problème, pas seulement le libellé.
+
+## Ce qui est en place
+
+- **la barre retrouve ses 6 entrées + WhatsApp**, le burger reste sur téléphone ;
+- **le sommaire du héros revient** (6 entrées, dans le flux) ;
+- **le bouton flottant s'AJOUTE au lieu de remplacer** : il ouvre le même panneau,
+  à toutes les largeurs. Trois portes, trois habitudes, un seul mécanisme — ouvrir
+  l'une referme l'autre, et chacune gèle ce qui n'est pas elle (sinon une tabulation
+  sort du panneau vers des liens qu'on ne voit pas) ;
+- ⚠️ **les deux instruments flottants partagent UN couloir réservé, pas deux**
+  (règle née sur Mon Bénin, payée le 27/08 avec le bouton du son posé sur
+  « DÉCOUVRIR LES ŒUVRES ») ;
+- **sans JS** le bouton flottant se retire au lieu de ne rien faire, et la barre
+  cesse de flotter.
+
+## ⛔ La leçon de contrôle : un recouvrement se CALCULE, il ne s'échantillonne pas
+
+Premier jet du contrôle « le bouton flottant ne vole aucun clic » : faire défiler la
+page par paliers de 400 px et comparer les boîtes à chaque palier. Il a trouvé trois
+cibles, on les a réservées, **il est passé au vert — et il en restait une** :
+« ÉQUIPER UN LIEU », **54 px de recouvrement à 390 px**.
+
+Elle ne tombait simplement sur aucun palier. La fenêtre de défilement où elle croise
+le bouton fait **102 px** ; un pas de 400 la manque **quatre fois sur cinq**.
+
+**Un contrôle qui dépend de l'endroit où l'on regarde n'est pas un contrôle.**
+
+Le remède : le bouton est **fixe**, la cible **défile**. On résout donc l'intervalle
+de défilement où les deux se croisent, et on le compare à ce que la page permet.
+Exact, instantané, et sans faire bouger la page. ⚠️ On écarte ce qui ne défile pas
+(un ancêtre en `position:fixed` ne passera jamais sous le bouton).
+
+Même famille que les leçons du 20/08 (les pastilles mesurées pendant leur transition)
+et du 18/08 (« on échantillonne au lieu de comparer deux instantanés ») : ici c'est
+l'inverse qui vaut, **quand la géométrie est calculable, on la calcule**.
+
+## ⚠️ Le `?v=` n'avait pas été bumpé
+
+La feuille et le script avaient changé de 307 et 107 lignes, et gardaient
+`?v=20260904a` — la marque **déjà servie le matin avec l'ancien contenu**. Nos assets
+portent `immutable` pour un an : tous ceux qui avaient ouvert le site dans la matinée,
+**Mongazi le premier**, auraient gardé l'ancienne version. Bumpé en `20260904b`.
+
+C'est le défaut du 2026-08-08 à l'identique (« Mongazi voyait encore l'ancienne image
+alors que le serveur envoyait la vraie ») : **le cache du navigateur ne se voit pas
+depuis le serveur**, et un QC vert ne le dit pas non plus.
+
+## Fichiers touchés
+
+`clients/11-angy-art/index.html` · `assets/app.css` · `assets/app.js` · `_qc.py`
+· `_audit.py` · `_vue_decouvrir.py`.
