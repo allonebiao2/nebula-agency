@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260826a">
+<link rel="stylesheet" href="assets/app.css?v=20260904a">
 <script>document.documentElement.className+=' js';</script>
 </head>
 <body>
@@ -51,29 +51,49 @@
     <img class="nav-g" src="assets/images/logos/marque.webp?v=20260826a" alt="" width="284" height="220">
     <span>Angy&nbsp;Art</span>
   </a>
-  <nav class="nav-c" id="navC" aria-label="Navigation principale">
-    <!-- ⚠️ « ACCUEIL » est dans SA liste, alors il y est. Le logo tenait déjà le
-         rôle, mais une entrée nommée se cherche moins qu'un logo. Mesuré avant
-         de l'ajouter : à 1024 px la barre garde 31 px de marge de chaque côté,
-         101 à 309 px au-delà, et le tiroir du téléphone a la place. Le libellé
-         du sur-mesure reste court (« SUR MESURE ») : sa formule complète,
-         « CRÉATIONS SUR MESURE », déborderait à 1024 px et se lit deux fois
-         plus bas, sur la section et sur le bouton. -->
+  <!-- ⚠️ LE PANNEAU, C'EST LE SOMMAIRE D'ANGÉLIQUE, ENTIER.
+       Mongazi, 2026-09-04 : « je veux que tous ces points se voient quand on
+       clique sur un seul bouton, découvrir, et qui reste visible partout sur
+       la page, surtout sur mobile ». Le sommaire qu'elle avait demandé le
+       2026-08-27 ne se voyait qu'au bas du héros : passé la première section,
+       il n'existait plus. Il ne perd rien — ses formules sont ici mot pour mot,
+       « DÉCOUVRIR LES ŒUVRES » comprise — et il gagne d'être atteignable
+       depuis n'importe quel endroit de la page.
+       ⚠️ Les libellés courts de la barre (« LA COLLECTION », « SUR MESURE »)
+       étaient un compromis de largeur : la barre débordait à 1024 px. Dans un
+       panneau la contrainte tombe, donc on écrit ses formules complètes.
+       ⚠️ « DANS UN LIEU » manquait à la barre et était au sommaire : les deux
+       listes sont réunies, rien n'est perdu au passage. -->
+  <nav class="nav-c" id="navC" tabindex="-1" aria-label="Sommaire du site">
+    <p class="nav-c-t">SOMMAIRE</p>
     <a href="#haut">ACCUEIL</a>
     <a href="#demarche">L'ARTISTE</a>
-    <a href="#oeuvres">LA COLLECTION</a>
+    <a href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a>
     <a href="#atelier">LE JOURNAL</a>
-    <a href="#personnalise">SUR MESURE</a>
+    <a href="#portfolio">DANS UN LIEU</a>
+    <a href="#personnalise">CRÉATIONS SUR MESURE</a>
     <a href="#visite">CONTACT</a>
     <a class="nav-m" href="https://wa.me/2290152006490" data-wa="direct">ÉCRIRE SUR WHATSAPP</a>
   </nav>
   <button class="nav-cta" data-modale>DEMANDER UNE VISITE
     <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
   </button>
-  <button class="burger" id="burger" aria-expanded="false" aria-controls="navC" aria-label="Ouvrir le menu">
-    <i></i><i></i>
+  <!-- ⚠️ IL PORTE SON NOM. Un burger ne dit pas ce qu'il ouvre, et c'est
+       précisément le reproche qu'Angélique faisait au sien sur téléphone.
+       Celui-ci s'appelle « DÉCOUVRIR », comme celui du héros, parce que c'est
+       le même bouton : celui de la barre s'efface tant que celui du héros est
+       à l'écran, et prend le relais dès qu'il en sort. Un seul se voit à la
+       fois, et il y en a toujours un. -->
+  <button class="dec" id="dec" data-dec aria-expanded="false" aria-controls="navC">
+    <span>DÉCOUVRIR</span>
+    <span class="dec-b" aria-hidden="true"><i></i><i></i></span>
   </button>
 </header>
+
+<!-- ⚠️ Le voile n'existe que pour le panneau. Fermé, il est en
+     `pointer-events:none` : un voile qui garde ses clics 350 ms après sa
+     fermeture rend la page morte au toucher (leçon Hillary, 2026-08-16). -->
+<div class="voile" id="voile" aria-hidden="true"></div>
 
 <main id="haut">
 
@@ -119,29 +139,24 @@
     <li><b>ATELIER</b><i>·</i><span>COTONOU</span></li>
   </ul>
 
-  <!-- ⚠️ LE SOMMAIRE REMPLACE LE BOUTON « DÉCOUVRIR LES ŒUVRES ».
-       Angélique, 2026-08-27 : elle regarde le site SUR TÉLÉPHONE, et là le
-       menu burger ne lui suffit pas — elle veut voir d'un coup d'œil ce que
-       le site contient et y accéder directement. Le nom change parce que ce
-       n'est plus seulement les œuvres.
-       ⚠️ IL EST DANS LE FLUX, pas en position absolue comme l'ancien bouton.
-       Celui-ci se posait SUR la ligne des métriques dès que le héros passait
-       sur une colonne (« DÉCOUVRIR L'ATELIER » barrait « PIÈCES · UNIQUES »
-       à 768 px, corrigé le 2026-08-08). Le héros est une colonne flex : le
-       sommaire y prend sa place, et rien ne peut le recouvrir.
-       ⚠️ « DÉCOUVRIR LES ŒUVRES » reste le libellé de l'entrée qui mène à la
-       collection : c'est sa formule, elle l'a nommée telle quelle. -->
-  <nav class="hero-plan" aria-label="Sommaire du site">
-    <p class="hero-plan-t">SOMMAIRE</p>
-    <ul>
-      <li><a href="#demarche">L'ARTISTE</a></li>
-      <li><a href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a></li>
-      <li><a href="#atelier">LE JOURNAL</a></li>
-      <li><a href="#portfolio">DANS UN LIEU</a></li>
-      <li><a href="#personnalise">CRÉATIONS SUR MESURE</a></li>
-      <li><a href="#visite">CONTACT</a></li>
-    </ul>
-  </nav>
+  <!-- ⚠️ UN SEUL BOUTON, ET IL EST DANS LE FLUX.
+       Il remplace le sommaire du 2026-08-27, dont les six entrées sont
+       maintenant dans le panneau qu'il ouvre — et qui s'ouvre aussi depuis la
+       barre, donc de partout. Ce que le sommaire donnait (voir le site d'un
+       coup d'œil sur téléphone) est conservé ; ce qu'il n'avait pas (exister
+       ailleurs qu'en haut de page) est gagné.
+       ⚠️ DANS LE FLUX, jamais en position absolue : l'ancien bouton unique se
+       posait sur la ligne des métriques dès que le héros passait sur une
+       colonne (« DÉCOUVRIR L'ATELIER » barrait « PIÈCES · UNIQUES » à 768 px,
+       corrigé le 2026-08-08). Le héros est une colonne flex, le bouton y prend
+       sa place, et rien ne peut le recouvrir. -->
+  <div class="hero-dec-w">
+    <button class="hero-dec" id="heroDec" data-dec aria-expanded="false" aria-controls="navC"
+            data-cur="OUVRIR">
+      <span>DÉCOUVRIR</span>
+      <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M1 1l10 9 10-9"/></svg>
+    </button>
+  </div>
 
 </section>
 
@@ -929,6 +944,6 @@
 ]}
 </script>
 
-<script src="assets/app.js?v=20260826a"></script>
+<script src="assets/app.js?v=20260904a"></script>
 </body>
 </html>

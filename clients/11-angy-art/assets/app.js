@@ -388,22 +388,67 @@
 
   /* ---------- 9. La barre de navigation ------------------------------ */
   (function navigation() {
-    var nav = $('#nav'), b = $('#burger'), l = $('#navC');
+    var nav = $('#nav'), l = $('#navC'), voile = $('#voile');
     addEventListener('scroll', function () {
       if (nav) nav.classList.toggle('pose', scrollY > 40);
     }, { passive: true });
-    if (!b || !l) return;
-    function basculer(o) {
-      b.setAttribute('aria-expanded', o ? 'true' : 'false');
-      b.setAttribute('aria-label', o ? 'Fermer le menu' : 'Ouvrir le menu');
-      l.classList.toggle('ouvert', o);
-      document.body.classList.toggle('fige', o);
+
+    /* UN SEUL BOUTON, DEUX PLACES. Celui du héros pendant qu'on le voit, celui
+       de la barre partout ailleurs : ils portent le même nom et ouvrent le même
+       panneau, et il n'y en a jamais deux à l'écran ni jamais zéro. */
+    var boutons = $$('[data-dec]'), barre = $('#dec'), heros = $('#heroDec');
+    if (!l || !boutons.length) return;
+
+    var herosVu = false, dernier = null;
+
+    function majBarre() {
+      /* ⚠️ OUVERT, LE BOUTON DE LA BARRE REVIENT TOUJOURS : c'est la seule
+         croix du panneau. Le bouton du héros, lui, passe sous le voile. */
+      if (barre) barre.classList.toggle('cache', herosVu && !l.classList.contains('ouvert'));
     }
-    b.addEventListener('click', function () { basculer(b.getAttribute('aria-expanded') !== 'true'); });
-    l.addEventListener('click', function (e) { if (e.target.closest('a')) basculer(false); });
-    addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') { basculer(false); b.focus(); }
+
+    function basculer(o, src) {
+      if (o) dernier = src || dernier;
+      boutons.forEach(function (b) { b.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+      l.classList.toggle('ouvert', o);
+      if (voile) voile.classList.toggle('on', o);
+      document.body.classList.toggle('fige', o);
+      /* ⚠️ Le reste de la page devient inerte pendant que le panneau est
+         ouvert : sans ça, une tabulation sort du panneau vers des liens qu'on
+         ne voit pas, et un lecteur d'écran lit la page cachée derrière (leçon
+         Hillary, 2026-08-25). La barre, elle, reste atteignable : c'est là
+         qu'est la croix. */
+      var m = $('#haut'), pied = $('.pied'), son = $('#fabSon');
+      [m, pied, son].forEach(function (el) { if (el) el.inert = o; });
+      majBarre();
+      /* ⚠️ LE PANNEAU, PAS SON PREMIER LIEN. Au toucher, « ACCUEIL » se
+         retrouvait entouré du cadre de focus alors que personne n'avait de
+         clavier ; et pour qui tabule, partir du panneau mène au premier lien
+         au coup suivant. Le focus doit entrer, il n'a pas à désigner. */
+      if (o) l.focus({ preventScroll: true });
+      else if (dernier) dernier.focus({ preventScroll: true });
+    }
+
+    boutons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        basculer(b.getAttribute('aria-expanded') !== 'true', b);
+      });
     });
+    l.addEventListener('click', function (e) { if (e.target.closest('a')) basculer(false); });
+    if (voile) voile.addEventListener('click', function () { basculer(false); });
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && l.classList.contains('ouvert')) basculer(false);
+    });
+
+    /* ⚠️ PAR DÉFAUT, LE BOUTON DE LA BARRE EST VISIBLE. L'observateur ne fait
+       que l'effacer quand celui du héros est à l'écran : s'il n'existe pas, ou
+       s'il meurt, il reste un bouton — jamais aucun. */
+    if (barre && heros && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        herosVu = es[es.length - 1].isIntersecting;
+        majBarre();
+      }, { threshold: 0 }).observe(heros);
+    }
   })();
 
   /* ---------- 10. LE CARROUSEL --------------------------------------- */

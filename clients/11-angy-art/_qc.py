@@ -232,6 +232,48 @@ JS_CIBLES = """
 }
 """
 
+# ── LE BOUTON UNIQUE, ET CE QU'IL OUVRE ───────────────────────────────────
+# « Visible » ne veut pas dire « présent dans le document » : un bouton peut
+# avoir une boîte, un texte, et être effacé (opacité), masqué (`visibility`) ou
+# simplement hors de l'écran. Les trois cas se produisent ici, et c'est le
+# troisième qui compte le plus : celui du héros existe encore quand on est en
+# bas de page, il n'est juste plus là où on regarde.
+JS_DEC = """
+() => {
+  const vu = el => {
+    const cs = getComputedStyle(el), r = el.getBoundingClientRect();
+    return cs.display !== 'none' && cs.visibility !== 'hidden'
+      && parseFloat(cs.opacity) > .5 && r.width > 0 && r.height > 0
+      && r.bottom > 0 && r.top < innerHeight;
+  };
+  const b = [...document.querySelectorAll('[data-dec]')];
+  return { total: b.length, vus: b.filter(vu).map(e => e.id) };
+}
+"""
+
+JS_PANNEAU = """
+() => {
+  const l = document.querySelector('#navC');
+  if (!l) return { ouvert: false, total: 0, dedans: 0, dehors: ['pas de panneau'],
+                   coupe: true, deborde: 0, inerte: false };
+  const as = [...l.querySelectorAll('a')], dehors = [];
+  for (const a of as) {
+    const r = a.getBoundingClientRect();
+    const dedans = r.width > 0 && r.height > 0 && r.top > -1 && r.bottom < innerHeight + 1
+      && r.left > -1 && r.right < innerWidth + 1;
+    if (!dedans) dehors.push(a.textContent.trim() + ' [' + Math.round(r.top) + '→'
+      + Math.round(r.bottom) + ']');
+  }
+  return {
+    ouvert: l.classList.contains('ouvert'),
+    total: as.length, dedans: as.length - dehors.length, dehors: dehors.slice(0, 4),
+    coupe: l.scrollHeight > l.clientHeight + 1,
+    deborde: Math.max(0, l.scrollHeight - l.clientHeight),
+    inerte: !!document.querySelector('#haut').inert
+  };
+}
+"""
+
 JS_FANTOMES = """
 () => {
   const f = [];
@@ -314,12 +356,94 @@ def main():
                 petits = page.evaluate(JS_CIBLES)
                 bon("cibles tactiles : toutes au moins 40 px") if not petits \
                     else mauvais(f"cibles trop petites : {petits}")
-                b = page.evaluate("""() => {
-                  const b = document.querySelector('#burger');
-                  return b && getComputedStyle(b).display !== 'none';
-                }""")
-                bon("le menu burger apparaît sur téléphone") if b else mauvais("pas de burger sur téléphone")
                 if VOIR: capturer(page, "tel")
+
+            # ══ LE BOUTON UNIQUE « DÉCOUVRIR » ═══════════════════════════════
+            # Mongazi, 2026-09-04 : « je veux que tous ces points se voient
+            # quand on clique sur un seul bouton, découvrir, et qui reste
+            # visible partout sur la page, surtout sur mobile ».
+            # ⚠️ TROIS CHOSES À PROUVER, ET AUCUNE NE DÉCOULE DES AUTRES :
+            #    il y en a TOUJOURS un de visible (sinon la page n'a plus de
+            #    navigation), il n'y en a JAMAIS deux (sinon « un seul bouton »
+            #    est faux), et ce qu'il ouvre porte VRAIMENT toutes les entrées.
+            #    Le premier contrôle seul laisserait passer un site où les deux
+            #    boutons s'affichent ensemble ; le deuxième seul laisserait
+            #    passer un site où aucun ne s'affiche.
+            titre(f"{nom} : le bouton « DÉCOUVRIR »")
+            noms_ = page.evaluate("""() => [...document.querySelectorAll('[data-dec]')]
+                .map(e => e.textContent.trim().split(/[^A-Za-zÀ-ÿ]+/).join(' ').trim())""")
+            bon(f"{nom} : les {len(noms_)} boutons portent le même nom") \
+                if noms_ and all("DÉCOUVRIR" in n.upper() for n in noms_) \
+                else mauvais(f"{nom} : un bouton ne s'appelle pas « DÉCOUVRIR » -> {noms_}")
+
+            for etage_, js_ in [("en haut", "0"),
+                                ("au milieu", "document.body.scrollHeight / 2"),
+                                ("en bas", "document.body.scrollHeight")]:
+                page.evaluate(f"() => window.scrollTo(0, {js_})")
+                page.wait_for_timeout(900)
+                v_ = page.evaluate(JS_DEC)
+                if len(v_["vus"]) == 1:
+                    bon(f"{nom}, {etage_} : un seul bouton « DÉCOUVRIR » visible "
+                        f"(#{v_['vus'][0]})")
+                else:
+                    mauvais(f"{nom}, {etage_} : {len(v_['vus'])} bouton(s) visible(s) "
+                            f"sur {v_['total']} -> {v_['vus']}")
+
+            # On ouvre depuis le BAS de la page : c'est là que le sommaire
+            # d'avant n'existait plus, et c'est tout l'objet de la demande.
+            page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
+            page.wait_for_timeout(900)
+            ouvreur_ = page.evaluate("""() => {
+              const b = [...document.querySelectorAll('[data-dec]')].find(e => {
+                const cs = getComputedStyle(e);
+                return cs.display !== 'none' && cs.visibility !== 'hidden';
+              });
+              if (!b) return null;
+              b.click();
+              return b.id;
+            }""")
+            page.wait_for_timeout(900)
+            if not ouvreur_:
+                mauvais(f"{nom} : aucun bouton « DÉCOUVRIR » à cliquer en bas de page")
+            else:
+                pan_ = page.evaluate(JS_PANNEAU)
+                bon(f"{nom} : le panneau s'ouvre depuis le bas de la page") if pan_["ouvert"] \
+                    else mauvais(f"{nom} : le bouton n'ouvre rien en bas de page")
+                # ⚠️ « SE VOIT » SE MESURE : une entrée peut exister, avoir une
+                #    boîte, et être repoussée hors de l'écran par les autres. On
+                #    compte celles qui tiennent VRAIMENT dans la fenêtre, et on
+                #    refuse un panneau qu'il faudrait faire défiler pour lire.
+                if pan_["dedans"] == pan_["total"]:
+                    bon(f"{nom} : les {pan_['total']} points du sommaire se voient tous")
+                else:
+                    mauvais(f"{nom} : {pan_['dedans']} points visibles sur {pan_['total']} "
+                            f"-> {pan_['dehors']}")
+                bon(f"{nom} : le panneau ne cache rien derrière un défilement") \
+                    if not pan_["coupe"] \
+                    else mauvais(f"{nom} : le panneau déborde de {pan_['deborde']} px, "
+                                 "les dernières entrées se cherchent")
+                # Le reste de la page devient inerte : sinon la tabulation sort
+                # du panneau vers des liens qu'on ne voit pas (leçon Hillary).
+                bon(f"{nom} : la page derrière le panneau est inerte") if pan_["inerte"] \
+                    else mauvais(f"{nom} : la page reste au clavier derrière le panneau")
+
+                page.keyboard.press("Escape")
+                page.wait_for_timeout(900)
+                fin_ = page.evaluate("""() => ({
+                  ouvert: document.querySelector('#navC').classList.contains('ouvert'),
+                  focus: document.activeElement ? document.activeElement.id : '',
+                  inerte: !!document.querySelector('#haut').inert
+                })""")
+                bon(f"{nom} : Échap referme le panneau") if not fin_["ouvert"] \
+                    else mauvais(f"{nom} : Échap ne referme pas le panneau")
+                bon(f"{nom} : le focus revient sur le bouton (#{fin_['focus']})") \
+                    if fin_["focus"] == ouvreur_ \
+                    else mauvais(f"{nom} : le focus part ailleurs après la fermeture "
+                                 f"(#{fin_['focus']} au lieu de #{ouvreur_})")
+                bon(f"{nom} : la page redevient atteignable au clavier") if not fin_["inerte"] \
+                    else mauvais(f"{nom} : la page reste inerte après la fermeture")
+            page.evaluate("() => window.scrollTo(0, 0)")
+            page.wait_for_timeout(700)
 
             # Le défilement est écrit à la main, donc `scroll-margin-top` doit
             # être retranché explicitement. Quand on l'oublie, l'étiquette de
@@ -339,14 +463,14 @@ def main():
             #    plantaient pas — le contrôle rend `None` et annonce « absent à
             #    cette taille » — mais un contrôle qui décrit un élément
             #    disparu ne protège plus rien et fait croire qu'il veille.
-            # ⚠️ `.son` CONTRE LE SOMMAIRE : le bouton du son est en
-            #    `position:fixed` en bas à droite, et il se posait sur
+            # ⚠️ `.son` CONTRE LE BOUTON DU HÉROS : le bouton du son est en
+            #    `position:fixed` en bas à droite, et il s'était posé sur
             #    « DÉCOUVRIR LES ŒUVRES » — 11 × 34 px, à 390 px seulement,
             #    c'est-à-dire pile la pastille qu'Angélique a nommée et pile
             #    la largeur où elle regarde. Un instrument flottant ne
             #    recouvre jamais du texte (règle née sur Mon Bénin).
             for a_, b_ in [(".hero-lg", ".cadre"), (".hero-mx li", ".cadre"),
-                           (".son", ".hero-plan a")]:
+                           (".son", ".hero-dec")]:
                 croise = page.evaluate("""([sa, sb]) => {
                   const A = document.querySelector(sa);
                   const Bs = [...document.querySelectorAll(sb)];
@@ -827,6 +951,30 @@ def main():
                     "ÉNERGIES", "Votre histoire"]:
             bon(f"sans JS : « {att} » reste lisible") if att in txt \
                 else mauvais(f"sans JS : « {att} » a disparu")
+        # ⚠️ SANS SCRIPT, LE PANNEAU NE S'OUVRE PAS : le bouton « DÉCOUVRIR »
+        #    se retire, et le sommaire redevient une rangée de liens dans une
+        #    barre qui ne flotte plus. Ce qui se contrôle ici, c'est qu'il
+        #    reste une navigation, pas qu'elle soit belle.
+        sansjs_ = page.evaluate("""() => {
+          const as = [...document.querySelectorAll('.nav-c a')].filter(a => {
+            const r = a.getBoundingClientRect();
+            return r.width > 0 && r.height > 0 && r.right <= innerWidth + 1 && r.left > -1;
+          });
+          const b = document.querySelector('#dec');
+          return { liens: as.length,
+                   bouton: b ? getComputedStyle(b).display : 'absent',
+                   flotte: getComputedStyle(document.querySelector('#nav')).position };
+        }""")
+        bon(f"sans JS : les {sansjs_['liens']} entrées du sommaire restent atteignables") \
+            if sansjs_["liens"] >= 7 \
+            else mauvais(f"sans JS : plus que {sansjs_['liens']} entrées atteignables")
+        bon("sans JS : le bouton « DÉCOUVRIR » se retire au lieu de ne rien faire") \
+            if sansjs_["bouton"] == "none" \
+            else mauvais(f"sans JS : le bouton reste ({sansjs_['bouton']}) et n'ouvre rien")
+        bon("sans JS : la barre ne flotte pas au-dessus du texte") \
+            if sansjs_["flotte"] == "static" \
+            else mauvais(f"sans JS : la barre est en {sansjs_['flotte']} sans fond posé")
+
         h = page.get_attribute('.split-t .sous', 'href')
         bon("sans JS : les liens WhatsApp fonctionnent") if h and "wa.me" in h \
             else mauvais(f"sans JS : lien WhatsApp cassé ({h})")

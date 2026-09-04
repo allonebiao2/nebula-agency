@@ -851,3 +851,91 @@ contrairement à `.demarche`, `.temps` et `.folio`.
 son récapitulatif du 21/08, ce qui est en ligne, et ce qui colle au contenu :
 « les forces invisibles : la lumière, les liens, la résilience… »). Mongazi :
 **« non ça va »** — le pluriel reste.
+
+---
+
+## 2026-09-04 — UN SEUL BOUTON « DÉCOUVRIR », ET IL NE QUITTE PLUS L'ÉCRAN
+
+**Mongazi** : « je veux que tous ces points se voient quand on clique sur un seul
+bouton, découvrir, et qui reste visible partout sur la page, surtout sur mobile ».
+
+Le sommaire du 2026-08-27 faisait son travail **au bas du héros, et nulle part
+ailleurs**. Passée la première section, il ne restait que le burger : exactement ce
+dont Angélique se plaignait. **Ce n'est pas la liste qui manquait, c'est sa présence.**
+
+### Un seul contrôle, deux places, jamais deux à l'écran
+
+- **héros** : pastille crème « DÉCOUVRIR », **dans le flux**, à la place du sommaire ;
+- **barre** : la même en pilule, à **toutes les largeurs**, elle remplace le burger ;
+- celle de la barre **s'efface tant que celle du héros est à l'écran**
+  (`IntersectionObserver`, seuil 0) et prend le relais dès qu'elle en sort.
+  ⚠️ **Par défaut elle est VISIBLE** : si l'observateur meurt, il reste un bouton,
+  jamais zéro.
+
+Mesuré : à **390 px** le bouton du héros est **sous la ligne de flottaison** à
+l'arrivée, donc c'est celui de la barre qu'on voit tout de suite ; à 768 et 1440 c'est
+l'inverse. Dans les deux cas, **un et un seul**.
+
+### Le panneau porte SON sommaire, entier
+
+ACCUEIL · L'ARTISTE · **DÉCOUVRIR LES ŒUVRES** · LE JOURNAL · **DANS UN LIEU** ·
+**CRÉATIONS SUR MESURE** · CONTACT · ÉCRIRE SUR WHATSAPP.
+
+⚠️ **Les deux listes ont fusionné.** La barre portait des libellés **raccourcis**
+(« LA COLLECTION », « SUR MESURE ») parce qu'elle débordait à 1024 px avec les vrais,
+et « DANS UN LIEU » n'y était pas. Dans un panneau la contrainte de largeur tombe :
+ses formules complètes reviennent.
+
+### ⚠️ Pourquoi la barre et pas une pastille flottante
+
+Une pastille flottante serait plus près du pouce, et elle est **interdite** : un
+instrument flottant ne recouvre jamais du texte. Ce site l'a payé le **2026-08-27**
+(le bouton du son sur « DÉCOUVRIR LES ŒUVRES », 11 × 34 px, à 390 px seulement). La
+barre du haut est **la seule chose de ce site qui ait le droit de passer devant une
+phrase**, parce qu'elle est **vraiment opaque** (vérifié par `_audit.py`).
+
+### ⛔ Trois défauts vus SUR LES CAPTURES, le QC étant vert
+
+Trouvés dans `_vues/dec-*.png` (nouveau `python _vue_decouvrir.py` : héros, panneau
+ouvert, barre en cours de page, en 390 et 1440).
+
+1. ⛔ **Le panneau recouvrait le bouton qui venait de l'ouvrir** — plus aucune croix
+   à l'écran. Le panneau est un **enfant de la barre** : son `z-index` se compte **à
+   l'intérieur** de la barre. → `position:relative;z-index:2` sur le bouton.
+   ⚠️ Même famille que la leçon Hillary du 2026-08-21 : « il change de parent, pas de
+   style ».
+2. ⛔ **« DEMANDER UNE VISITE » coupé en deux** par le bord du panneau (« DEM… ») :
+   elle se retire tant que le panneau est ouvert.
+3. ⚠️ **Cadre de focus sur le premier lien au simple toucher** : le focus va
+   maintenant **sur le panneau** (`tabindex="-1"`), qui n'a pas à désigner une entrée.
+
+### Ce qui a été tenu
+
+- **Sans JS** : le bouton **se retire** (il n'ouvrirait rien), le panneau redevient la
+  **rangée de liens** repliée sur plusieurs lignes, et **la barre cesse de flotter**
+  (`position:static`) — son fond n'arrive qu'au défilement, par le script.
+- **Au clavier** : le reste de la page devient **inerte**, Échap referme, **le focus
+  revient sur le bouton qui a ouvert**.
+- **Le voile** est en `pointer-events:none` fermé, dans le même état que son opacité
+  (chez Hillary il avalait les clics 350 ms après sa fermeture).
+- **Panneau centré par marges automatiques, pas `justify-content:center`** : quand ça
+  déborde, une marge automatique retombe à zéro, là où `center` **coupe le début** et
+  le rend inatteignable.
+
+### Contrôles : 150 → 188 (et `_audit.py` toujours 22 verts)
+
+Trente aux trois largeurs, plus trois sans JavaScript. ⚠️ **« toujours un » et
+« jamais deux » sont deux contrôles distincts** : le premier seul laisserait passer
+deux boutons ensemble, le second seul une page qui n'en a plus aucun. Et **« se voit »
+se mesure** : les 8 entrées sont comptées en boîtes réellement dans la fenêtre, et un
+panneau qu'il faudrait faire défiler est refusé.
+
+⚠️ **Le contrôle du couloir du son visait `.hero-plan a`**, qui n'existe plus : il vise
+`.hero-dec`.
+
+### En ligne
+
+`?v=20260904a` (feuille et script seulement, les images n'ont pas changé). Vérifié
+avec un vrai `User-Agent` : `app.css` et `app.js` **identiques au disque en MD5**,
+`index.html` porte les deux boutons, **aucune trace de `hero-plan`**, 404 sur un
+fichier absent.
