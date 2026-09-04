@@ -132,3 +132,27 @@ l'affiche imprimée**, pas sur le fichier QR isolé.
 **Corollaire sur les diagnostics :** quand une requête échoue, regarder si elle **apparaît
 dans les journaux**. Si elle n'y est pas, le problème est en amont du code, et chercher dans
 le code fait perdre des heures.
+
+## 2026-09-04 — Trois changements de méthode
+
+**1. On photographie les ÉTATS d'un tunnel, pas seulement ses écrans.**
+Nouvel outil `_vues_commande.py` chez Hillary : dix captures, en 390 et 1440,
+formulaire vide, un champ rempli, bouton grisé, chaque mode de livraison. Les
+deux vrais défauts du jour sont sortis d'un **état intermédiaire**, pas d'un
+écran plein. ⚠️ Et il a fallu **deux essais ratés d'instrument** avant d'obtenir
+une image honnête : `full_page` noie la modale dans 28 000 px, et une capture
+d'élément laisse les `sticky` recouvrir ce qu'on vient vérifier.
+
+**2. Un contrôle qui devient rouge se RETOURNE avant d'être supprimé.**
+Retrouver ce qu'il protégeait. Chez Hillary, « email seul suffit » protégeait
+« ne pas exclure qui n'a pas WhatsApp » : la protection reste valable, seul le
+chemin a changé (le téléphone sert aussi bien à appeler). Le contrôle a été
+inversé, pas retiré.
+
+**3. Avant de conclure d'une mesure, vérifier la sonde.**
+Trois sondes ont menti le même jour, sur des sites sains : `innerText` d'un
+élément `display:none` renvoie quand même son texte · un parcours de contrôle
+laisse un état derrière lui (la page se souvient, et le contrôle suivant mesure
+des champs déjà remplis) · un instrument de capture peut cacher exactement ce
+qu'on lui demande de montrer. **On mesure ce que le client VOIT, pas ce que le
+DOM contient.**

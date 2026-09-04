@@ -18,6 +18,47 @@
 
 ---
 
+## 🔒 LE PARC : 10 SITES SUR 15 N'ONT PAS DE `_headers`
+
+**Mesuré le 2026-09-04, sur les fichiers ET sur les en-têtes réellement servis.**
+
+| A un `_headers` | N'en a pas |
+|---|---|
+| Djambar Team · Miss cakes · Angy Art · Boussole · PISTE | Grain d'Esthétique · Little Sun Pearls · WECS · Luxury Skin Clinic · Speed×Weinkeller · HH Design · **Au Braisé d'Or** · **Hillary M. Styl** · site NEBULA · **Mon Bénin** |
+
+Vérifié en ligne, ce ne sont pas que des fichiers absents :
+
+```
+angy-art.pages.dev         XFO=1 HSTS=1     ← a un _headers
+miss-cakes.pages.dev       XFO=1 HSTS=1     ← a un _headers
+hillary-m-styl.pages.dev   XFO=0 HSTS=0
+au-braise-dor.pages.dev    XFO=0 HSTS=0
+mon-benin.pages.dev        XFO=0 HSTS=0
+```
+
+**Ce que ça coûte, concrètement :**
+
+1. **Aucune protection contre le détournement en cadre** (`X-Frame-Options`) ni
+   **HSTS**. Cloudflare ajoute `X-Content-Type-Options` tout seul, rien d'autre.
+2. **Aucun cache sur les images.** Sans `_headers`, Cloudflare Pages sert
+   `max-age=0, must-revalidate` sur **tout** : chez Hillary, les **31 images** de
+   la page sont revalidées à chaque visite, sur la 3G de Cotonou.
+
+⚠️ **Les deux réglages vont ensemble, et dans les deux sens** : poser
+`immutable` sur `/assets/*` fait gagner le cache **et rend obligatoire le bump du
+`?v=` à chaque modification d'un asset** — sans quoi le client reste un an sur
+l'ancienne version (Angy Art, 08/08 et 04/09). Ajouter un `_headers` à un site
+qui ne versionne pas ses images **crée** le piège du cache périmé.
+
+⛔ **Rien n'a été corrigé** : ce serait un déploiement vers dix sites clients en
+ligne. **Mongazi tranche.** L'ordre le plus utile s'il dit oui : les trois qui
+prennent des commandes (**Hillary**, **Au Braisé d'Or**, Speed×Weinkeller), en
+posant `?v=` sur les assets **avant** `immutable`.
+
+Le gabarit à recopier : `clients/11-angy-art/_headers`.
+
+---
+
 ## 🌍 MON BÉNIN — https://mon-benin.pages.dev
 
 > **La liste complète de ce que Mongazi doit apporter, avec les formats exacts

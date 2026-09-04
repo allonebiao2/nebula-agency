@@ -407,6 +407,17 @@ toucher. ⚠️ **L'auto-déploiement Render ne marche pas** (dépôt branché p
 `POST /v1/services/{id}/deploys`. Clés dans `secrets/` : `render.env`, `supabase.env`,
 `nebula-affilies.env` (miroir des variables du service), `cloudflare.env`.
 
+⚠️ **10 SITES SUR 15 N'ONT PAS DE `_headers`** (mesuré le 2026-09-04, fichiers **et**
+en-têtes servis) : ni `X-Frame-Options`, ni HSTS, et **aucun cache sur les assets** —
+Cloudflare Pages sert alors `max-age=0, must-revalidate` sur tout, donc les 31 images
+d'Hillary sont revalidées à chaque visite sur la 3G de Cotonou. En ont un : Djambar, Miss
+cakes, Angy Art, Boussole, PISTE. ⚠️ **Les deux réglages vont ensemble** : poser
+`immutable` sur `/assets/*` gagne le cache **et rend obligatoire le bump du `?v=`** à
+chaque modification d'un asset — l'ajouter à un site qui ne versionne pas ses images
+**crée** le piège du cache périmé. ⛔ Rien n'est corrigé, **Mongazi tranche** : c'est un
+déploiement vers dix sites clients. Gabarit : `clients/11-angy-art/_headers`, détail dans
+`_memoire/RESTE-A-FAIRE.md`.
+
 **Les robots des IA sont autorisés** sur les 4 domaines depuis le 2026-08-02. Cloudflare les
 bloque **par défaut** ; le réglage `ai_bots_protection` n'existe nulle part dans le tableau de
 bord, il faut `PUT /zones/{zone}/bot_management` avec un jeton portant `Zone · Bot Management`.

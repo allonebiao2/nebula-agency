@@ -164,6 +164,44 @@ par écran** :
 émulation ignore le `meta viewport`, rend à 800 px et fait croire à des débordements qui
 n'existent pas.
 
+### 5 bis. Photographier une MODALE : deux façons évidentes, deux images fausses
+
+*(leçon Hillary du 2026-09-04 — vaut pour toute modale, tout tiroir, tout panneau)*
+
+- ⛔ **`full_page=True`** photographie tout le document. Une modale est un
+  `position:fixed` posé au-dessus d'un catalogue qui peut faire **28 000 px** : elle y est
+  un timbre-poste.
+- ⛔ **La capture de l'élément** (`.sheet`, `.modale`…) a l'air d'être la bonne réponse, et
+  c'est pire. Une barre ou un pied `position:sticky` **se repeint au bord de la fenêtre**
+  et recouvre tout ce qui suit. Sur les deux premières planches, les blocs que je venais
+  précisément vérifier **étaient absents de l'image, sans le moindre signal**.
+- ✅ **Une fenêtre assez haute pour que toute la modale y tienne** (390 × 2600,
+  1440 × 2000) et une capture de fenêtre ordinaire. La **largeur** reste réelle : c'est
+  elle qui fait la mise en page, et le débordement horizontal reste mesuré par le QC aux
+  vraies hauteurs.
+
+⚠️ **Photographier chaque ÉTAT, pas seulement l'état plein** : formulaire vide, un seul
+champ rempli, bouton grisé. C'est dans l'état intermédiaire que se cachait le vrai défaut
+du jour — un bouton désactivé qui ne disait pas pourquoi.
+
+### 5 ter. L'angle mort : le contraste DANS une modale
+
+Les contrôles de contraste lisent `background-color` **sur l'élément qui porte le texte**.
+Dans une modale, cet élément est presque toujours transparent : la couleur vient d'un
+ancêtre. Ils lisent `rgba(0,0,0,0)` et **ne mesurent rien**.
+
+→ **Remonter jusqu'au premier ancêtre dont le fond est vraiment opaque**, puis choisir le
+seuil sur la taille réelle lue dans `getComputedStyle` (3,0 au-delà de 24 px ou 18,66 px
+en gras, 4,5 sinon).
+
+⛔ **La couleur de marque sert au TRAIT, jamais à la LETTRE.** Chez Hillary, le rose
+`--rose` a été posé sur du texte **quatre fois** (étiquette du carrousel, badge, bouton
+WhatsApp, puce de recopie à 3,91:1). Prévoir dès la palette **deux valeurs** : la vive pour
+les contours et les aplats, une foncée pour tout ce qui se lit.
+
+⚠️ Ça ne vaut **pas** pour un texte posé sur une photo : là, on masque le texte, on
+photographie, et on prend le décile le plus clair (leçon Angy Art du 2026-08-08).
+
 ---
 
 ## 6. Le luxe ne s'achète pas en images par seconde
@@ -196,6 +234,31 @@ Gabarits prêts à copier : `_memoire/procedure-vitrine/templates/`.
 
 Sans ça : un HTML illisible où le code utile est noyé dans 75 Ko de base64, et l'invitation
 à dupliquer le logo — c'est ce qui avait fait un fichier de 681 Ko sur la première version.
+
+### 7 bis. Une chaîne en deux temps se lance en deux temps
+
+Quand un site gagne un assembleur (Hillary : `_v4/_assembler.py` recompose la source à
+partir de morceaux, **puis** `_build.py` en tire le livrable), **le script de déploiement
+doit partir de la source la plus amont**.
+
+⛔ Celui d'Hillary ne lançait que le build. Modifier un morceau puis déployer publiait un
+livrable bâti sur une source **périmée** : QC vert, déploiement réussi, changement absent
+du site — **sans un mot**. Le défaut était noté dans la documentation depuis le 2026-08-16
+et n'avait jamais été refermé : **un défaut écrit dans une phrase n'est pas un défaut
+corrigé.**
+
+### 7 ter. Le `?v=` et le `_headers` vont ensemble
+
+- **Avec** un `_headers` qui pose `immutable` sur `/assets/*` : les fichiers sont mis en
+  cache **un an**, donc **toute modification d'un asset exige de bumper son `?v=`**. Oublier
+  le bump laisse le client sur l'ancienne version, et ça **ne se voit ni depuis le serveur,
+  ni dans un QC, ni dans une comparaison MD5 de la page servie** (Angy Art, 08/08 et 04/09).
+- **Sans `_headers`** : Cloudflare Pages sert `max-age=0, must-revalidate` sur tout. Aucun
+  risque de cache périmé, mais **aucun cache non plus** — chaque visite revalide toutes les
+  images, sur la 3G de Cotonou. Et **aucun en-tête de sécurité**.
+
+⚠️ **Mesuré le 2026-09-04 : 10 sites du parc sur 15 n'ont pas de `_headers`.** Voir
+`_memoire/RESTE-A-FAIRE.md`.
 
 ---
 
