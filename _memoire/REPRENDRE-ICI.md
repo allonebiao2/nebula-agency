@@ -1,9 +1,74 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-03
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-04
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 octies. LE 2026-09-04 — DEUX VITRINES REMISES À JOUR ET PUBLIÉES
+
+Journée de vitrines, pas de produit. **Rien ne bloque, rien n'attend de moi.**
+Ce qui reste attend une réponse d'Hillary ou d'Angélique.
+
+### HILLARY — les cinq informations qu'elle exige avant de couper
+
+Sa liste : **lieu de résidence · nom · prénom · numéro de téléphone · lieu de
+livraison, ou retrait à l'atelier.** Plus deux promesses : un message dès que la
+commande est validée, un message **ou un appel** dès que la tenue est prête.
+
+⛔ **Trois des cinq n'étaient pas tenues.** Le lieu de résidence n'existait pas
+(seule la ville de LIVRAISON était demandée, et seulement en expédition), le nom
+était facultatif, et le numéro était remplaçable par un email : **une commande
+pouvait arriver à l'atelier sans aucun moyen d'appeler la cliente.**
+
+En place : 4 champs obligatoires, ville de livraison exigée, « quartier ou point
+de repère » ajouté, les deux promesses écrites sur le site, une 7e question de
+FAQ, et le message WhatsApp qui porte les 5 informations **chacune sous son
+nom**. **QC 150 → 192**, déployé et vérifié en MD5.
+
+⛔ **`_predeploy.py` ne lançait pas l'assembleur** — défaut noté dans CLAUDE.md
+depuis le 2026-08-16, jamais refermé : éditer `_v4/` puis déployer publiait un
+livrable bâti sur une source **périmée**, tout vert et le changement absent,
+sans un mot. **Corrigé.** Si une session touche `_v4/`, `python _predeploy.py`
+suffit désormais.
+
+⏳ **Ce qui attend Hillary** (inchangé depuis août) : les **11 mesures de la
+robe ovale**, la matière de chaque pièce, le libellé « Robe de ville », et
+**l'adresse** — c'est elle qui bloque la fiche Google.
+
+### ANGY ART — la barre garde ses liens
+
+Mongazi, après avoir vu la version du matin : « il y avait directement tout qui
+était visible, remets ça ». Le bouton unique avait **remplacé** les liens de la
+barre ; désormais le **bouton flottant s'ajoute** au lieu de remplacer.
+**QC 188 → 209**, déployé.
+
+⚠️ **Le `?v=` n'avait pas été bumpé** alors que la feuille et le script avaient
+changé de 307 et 107 lignes : nos assets portent `immutable` un an, tous ceux
+qui avaient ouvert le site le matin seraient restés sur l'ancienne version.
+→ `?v=20260904b`. **Bumper la marque fait partie du changement, pas du
+déploiement.**
+
+⏳ **Ce qui attend Angélique** : les photos des œuvres seules (fond neutre,
+titre, dimensions), l'adresse, de vrais avis, et **tester le numéro WhatsApp**.
+
+### Deux leçons de contrôle à retenir avant de toucher un QC
+
+- ⛔ **Un recouvrement se CALCULE, il ne s'échantillonne pas.** Le balayage par
+  paliers de 400 px est passé au vert en laissant une collision de 54 px
+  (fenêtre de croisement : 102 px). Un contrôle qui dépend de l'endroit où l'on
+  regarde n'est pas un contrôle.
+- ⚠️ **Un contrôle qui devient faux se RETOURNE, il ne se supprime pas** — il
+  protégeait une vraie décision. Et vérifier sa sonde avant d'accuser le
+  produit : `innerText` d'un élément `display:none` renvoie quand même son
+  texte, et une page qui **se souvient** fausse le parcours suivant.
+
+### ⚠️ Ce qui reste vrai depuis hier
+
+**PISTE attend toujours son premier paiement réel** (section 0 septies
+ci-dessous) : c'est la seule chose qui bloque sur le dépôt.
 
 ---
 

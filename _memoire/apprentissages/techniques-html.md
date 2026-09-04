@@ -468,6 +468,23 @@ repère de ses descendants `position: fixed`. Même une **matrice identité** su
 Voir le détail + le patron de test automatisé dans
 `_memoire/apprentissages/2026-07-25-boussole-app-metier-perf-animations.md`.
 
+## Photographier et mesurer une modale (2026-09-04)
+
+⛔ **Ni `full_page` ni la capture d'élément.** Le premier photographie tout le
+document (28 000 px chez Hillary), le second est pire : une barre ou un pied
+`sticky` **se repeint au bord de la fenêtre** et cache tout ce qui suit — les
+blocs que je venais vérifier étaient absents de l'image, sans un signal.
+→ **fenêtre haute** (390×2600) + capture de fenêtre ordinaire.
+
+⛔ **Le contraste dans une modale se mesure en remontant aux ancêtres** :
+l'élément qui porte le texte est presque toujours transparent, et un contrôle
+qui lit son `background-color` lit `rgba(0,0,0,0)` et ne mesure rien.
+
+⚠️ **Le rose de marque sert au trait, jamais à la lettre** : quatre fois posé
+sur du texte chez Hillary. Contour `--rose`, texte `--rose-f`.
+
+Détail : `_memoire/apprentissages/2026-09-04-photographier-et-mesurer-une-modale.md`
+
 ## Autres techniques à documenter
 
 - Variables CSS pour palette client

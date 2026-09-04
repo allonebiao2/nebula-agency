@@ -2,7 +2,51 @@
 
 > **Ce fichier ne contient QUE ce que Mongazi a demandé, mot pour mot ou au
 > plus près.** Il ne dit pas ce qui reste à faire : voir `RESTE-A-FAIRE.md`.
-> Tenu à jour à chaque demande. Dernière mise à jour : 2026-08-11.
+> Tenu à jour à chaque demande. Dernière mise à jour : 2026-09-04.
+
+---
+
+## Session du 2026-09-04
+
+### HILLARY M. STYL — les informations dont l'atelier a besoin
+
+> « Concernant Hillary m style, voici les éléments qu'elle cherche à connaître
+> avant de prendre une commande, donc réfléchis, analyse en profondeur et
+> intègre cela de la plus belle et adaptée des manières :
+>
+> Les informations dont j'ai besoin… Lieu de résidence · Nom · Prénom · Numéro
+> de téléphone · Lieu d'expédition ou de livraison… Ou la cliente passera à
+> l'atelier récupérer. De toute façon quand la tenue de la cliente sera prête on
+> lui enverra un message ou on l'appellera en direct… De même qu'un message lui
+> sera envoyé dès que sa commande est validée. »
+
+| # | Demande | État |
+|---|---|---|
+| 1 | Lieu de résidence | ✅ champ neuf, **obligatoire** (n'existait pas) |
+| 2 | Nom | ✅ devenu **obligatoire** (était facultatif) |
+| 3 | Prénom | ✅ déjà obligatoire |
+| 4 | Numéro de téléphone | ✅ devenu **obligatoire** (était remplaçable par un email) |
+| 5 | Lieu d'expédition ou de livraison | ✅ ville **exigée** + « quartier ou point de repère » |
+| 6 | Ou retrait à l'atelier | ✅ déjà en place |
+| 7 | Un message dès que la commande est validée | ✅ écrit à l'étape 2, à l'envoi, et en FAQ |
+| 8 | Un message ou un appel quand la tenue est prête | ✅ idem |
+
+**QC 150 → 192.** Déployé et vérifié en MD5.
+
+### ANGY ART — la navigation visible
+
+> « il y avait directement tout qui était visible, remets ça »
+
+| # | Demande | État |
+|---|---|---|
+| 1 | Remettre les liens visibles dans la barre | ✅ 6 entrées + WhatsApp, burger sur téléphone |
+| 2 | Garder l'accès rapide au sommaire | ✅ bouton flottant qui **s'ajoute** au lieu de remplacer |
+
+> « Commit les derniers ajouts actuels de Angy art, commit push et dispatch en
+> mémoire et sur Obsidian aussi »
+
+✅ Commité, poussé, déployé, et la mémoire dispatchée. ⚠️ Le vault Obsidian
+**est** le dépôt (`.obsidian` à la racine) : écrire dans `_memoire/` suffit.
 
 ---
 

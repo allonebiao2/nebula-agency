@@ -3,7 +3,7 @@
 > **Ce fichier ne contient QUE ce qui n'est pas fait.** Ce que Mongazi a
 > demandé est dans `DEMANDES-MONGAZI.md`. Quand une ligne est faite, on la
 > retire d'ici et on la marque là-bas.
-> Dernière mise à jour : 2026-08-11.
+> Dernière mise à jour : 2026-09-04.
 
 ---
 
@@ -14,7 +14,7 @@
 | **Les 11 mesures de la robe ovale**, jamais validées par l'atelier depuis le 2026-08-06 | Trois des cinq robes d'Hillary en dépendent. Une mesure qui manque, c'est une pièce coupée faux ; une de trop, c'est une cliente qui abandonne le formulaire. Le message est prêt : `clients/10-hillary-m-styl/MESSAGE-MESURES-HILLARY.md` | **Hillary** |
 | **Le jeu `haut_pantalon`**, créé le 2026-08-11, encore moins validé | Deux robes l'utilisent. Et « Longueur pantalon » sur une robe se lit mal pour une cliente : à faire reformuler | **Hillary** |
 | **Le prix en dollar de la Robe de ville bleue** : 67 $ pour 30 000 F, soit 448 F/$ quand tout le reste du site suit 556 F/$ | Un écart de +24 %. Et 67 est exactement le prix express en euro de la même pièce : ça sent la valeur qui a glissé d'une case à l'autre. **Non corrigé** : ses prix sont les siens | **Mongazi / Hillary** |
-| **Le disque de la machine est saturé** : 459 Mo libres sur 271 Go | Bloque l'installation des outils, le démarrage du navigateur de test, et les déploiements. Nettoyé trois fois dans la session, il se remplit à nouveau | **Mongazi** |
+| ~~**Le disque de la machine est saturé**~~ · **mesuré 19 Go libres sur 271 Go le 2026-09-04** | Plus bloquant pour l'instant : les navigateurs de test tournent, les déploiements passent. ⚠️ **À regarder avant chaque gros build** : c'est descendu à zéro octet en pleine fusion git le 19/08, et l'image de machine virtuelle de Claude (11,9 Go) grossit | **Mongazi** |
 
 ---
 

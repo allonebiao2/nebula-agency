@@ -676,3 +676,67 @@ en plein vol.
   celui du Braisé, sur ce poste.
 - ⚠️ **L'image de machine virtuelle n'est pas à moi.** C'est l'environnement de
   Claude sur ce PC : la supprimer se décide, ne se déduit pas.
+
+## 2026-09-04 · HILLARY : le numéro de téléphone devient obligatoire
+
+- **Décidé par** : Hillary (cliente), transmis par Mongazi
+- **Portée** : le tunnel de commande de `hillary-m-styl.pages.dev`
+
+**Sa demande, mot pour mot** :
+
+> Les informations dont j'ai besoin… Lieu de résidence · Nom · Prénom · Numéro
+> de téléphone · Lieu d'expédition ou de livraison… Ou la cliente passera à
+> l'atelier récupérer. De toute façon quand la tenue de la cliente sera prête on
+> lui enverra un message ou on l'appellera en direct… De même qu'un message lui
+> sera envoyé dès que sa commande est validée.
+
+**Ce qui change** : quatre champs deviennent obligatoires — **prénom, nom,
+numéro de téléphone, lieu de résidence** — et la **ville de livraison** est
+exigée en expédition.
+
+**⚠️ Ce qui est revenu sur une décision antérieure** : le 2026-07-31, le moteur
+avait été posé avec la règle **« WhatsApp OU email, un des deux suffit »**, pour
+ne pas exclure qui n'a pas WhatsApp. Cette règle est **annulée**.
+
+**Raison** : Hillary annonce qu'elle **appellera** ou enverra un message. Sans
+numéro, elle ne peut faire ni l'un ni l'autre — une commande arrivait à
+l'atelier sans aucun moyen de joindre la cliente.
+
+**Ce qui ne change pas** : l'intention d'origine tient. Qui n'a pas WhatsApp a
+un téléphone, et c'est justement celui-là qu'on appelle. **L'email reste offert
+en plus, jamais à la place**, et le repli « Je n'ai pas WhatsApp » mène toujours
+quelque part de réel.
+
+**Deux promesses écrites sur le site**, parce qu'elles justifient le champ
+obligatoire au lieu de le faire deviner : un message dès que la commande est
+validée, puis un message ou un appel dès que la tenue est prête.
+
+⚠️ **Le lieu de résidence n'est pas le lieu de livraison**, et elle demande les
+deux : une cliente de Cotonou peut faire livrer sa sœur à Abidjan. On ne le
+suppose donc pas, une puce le recopie en un geste.
+
+⏳ **Reste à confirmer par Hillary** (inchangé) : les 11 mesures de la robe
+ovale, la matière de chaque pièce, le libellé « Robe de ville », et l'adresse
+pour la fiche Google.
+
+## 2026-09-04 · ANGY ART : la barre garde ses liens, le bouton flottant s'ajoute
+
+- **Décidé par** : Mongazi, après avoir vu la version du matin en ligne
+- **Portée** : la navigation de `angy-art.pages.dev`
+
+**Mot pour mot** : « il y avait directement tout qui était visible, remets ça ».
+
+**Contexte** : le matin même, la demande d'Angélique (« voir d'un coup d'œil ce
+que le site contient ») avait été traduite par **un bouton unique qui REMPLACE
+les liens de la barre**, à toutes les largeurs.
+
+**Ce qui change** : la barre retrouve ses six entrées plus WhatsApp, le burger
+reste sur téléphone, le sommaire du héros revient, et le **bouton flottant
+s'ajoute au lieu de remplacer** — trois portes, un seul mécanisme.
+
+**Raison** : la demande d'Angélique venait de son usage **téléphone**.
+L'appliquer à l'ordinateur, où la place ne manque pas, revenait à retirer une
+navigation qu'on VOIT pour une navigation qu'on OUVRE.
+
+⚠️ **La règle des instruments flottants tient** : les deux (bouton et son)
+partagent **un seul couloir réservé**, pas deux, et aucun ne recouvre du texte.

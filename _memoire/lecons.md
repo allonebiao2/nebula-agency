@@ -1913,9 +1913,162 @@ moyen ». Et surtout : que voit le client APRÈS le bouton.**
 
 Six routes d'API répondaient « Clé API invalide » sur une clé parfaitement
 valable. La même clé envoyée par `curl` répondait 200. Le coupable était un
-`` : le fichier `.env` avait été réécrit par un outil Windows, donc en CRLF,
+`
+` : le fichier `.env` avait été réécrit par un outil Windows, donc en CRLF,
 et la regex du lecteur JS n'accrochait plus rien.
 
 ⚠️ **Le message d'erreur accusait la donnée, le défaut était dans l'outil.**
 Avant de soupçonner un fournisseur, refaire le même appel avec un autre outil.
 
+## 2026-09-04 · Un recouvrement se calcule, il ne s'échantillonne pas
+
+Angy Art. Contrôle « le bouton flottant ne vole aucun clic » : premier jet, on
+faisait défiler la page par paliers de 400 px et on comparait les boîtes à
+chaque arrêt. Il a trouvé trois cibles, on les a réservées, **il est passé au
+vert — et il en restait une** : « ÉQUIPER UN LIEU », 54 px de recouvrement à
+390 px. Sa fenêtre de croisement fait **102 px** : un pas de 400 la manque
+quatre fois sur cinq.
+
+Le bouton est **fixe**, la cible **défile** : on résout donc l'intervalle de
+défilement où les deux se croisent, et on le compare à ce que la page permet.
+Exact, instantané, sans faire bouger la page. ⚠️ En écartant ce qui ne défile
+pas — un ancêtre en `position:fixed` ne passera jamais sous le bouton.
+
+⚠️ **Un contrôle qui dépend de l'endroit où l'on regarde n'est pas un
+contrôle**, et celui-là mentait dans le sens le plus cher : il rassurait.
+
+⚠️ La règle inverse vaut quand la grandeur est **animée** et non géométrique :
+là on échantillonne plusieurs fois au lieu de comparer deux instantanés (leçon
+du 20/08 sur les pastilles mesurées en pleine transition). **Calculer ce qui se
+calcule, échantillonner ce qui bouge tout seul.**
+
+## 2026-09-04 · Une contrainte de téléphone ne se généralise pas à l'ordinateur
+
+Angélique demandait à voir d'un coup d'œil ce que le site contient — depuis son
+**téléphone**, où le burger anonyme ne le lui dit pas. La réponse du matin a
+appliqué sa demande **à toutes les largeurs** : sur ordinateur, où la place ne
+manque pas, on a retiré une navigation qu'on VOIT pour une navigation qu'on
+OUVRE. Un geste de plus pour tout le monde, pour résoudre un problème qui
+n'existait que sur petit écran. Mongazi, en voyant le résultat : « il y avait
+directement tout qui était visible, remets ça ».
+
+⚠️ **La place disponible fait partie du problème.** Avant de généraliser une
+demande, demander sur quel écran elle a été formulée.
+
+## 2026-09-04 · Une liste de champs est une règle métier
+
+Hillary a donné « les informations dont j'ai besoin » : lieu de résidence, nom,
+prénom, numéro de téléphone, lieu de livraison ou retrait. Cinq lignes qui
+décrivent son travail — appeler, livrer, situer une cliente.
+
+**Trois n'étaient pas tenues** : le lieu de résidence n'existait pas (seule la
+ville de LIVRAISON était demandée, et seulement en expédition), le nom était
+facultatif, le numéro était remplaçable par un email. ⛔ Une commande pouvait
+arriver à l'atelier **sans aucun moyen d'appeler la cliente**, alors que sa
+phrase disait précisément « on lui enverra un message ou on l'appellera ».
+
+⚠️ **Ajouter les champs manquants ne suffit pas : il faut relire ce qui est
+EXIGÉ, champ par champ.** Un champ présent mais facultatif est un champ absent
+une fois sur deux, et le QC reste vert.
+
+⚠️ **Rendre un champ obligatoire n'exclut personne quand on vérifie POURQUOI
+l'alternative existait.** Le repli « email au lieu du téléphone » protégeait qui
+n'a pas WhatsApp — or cette personne a un téléphone, et c'est justement celui
+qu'on appelle. L'alternative devient un **plus**, jamais un **à la place**.
+
+⚠️ Et chaque champ rendu obligatoire doit dire **quelle promesse il sert**, à
+l'endroit où on le réclame : « Vous serez prévenue deux fois… c'est ce numéro
+que l'atelier utilisera ». C'est ce qui transforme une contrainte en raison.
+
+## 2026-09-04 · Un contrôle qui devient faux se retourne, il ne se supprime pas
+
+Le contrôle d'Hillary disait « email seul (sans WhatsApp) suffit pour valider ».
+En rendant le téléphone obligatoire, il devenait rouge. La tentation est de le
+retirer : il gênait.
+
+Il protégeait pourtant une vraie décision — **ne pas exclure qui n'a pas
+WhatsApp** — et cette décision tient toujours, elle passe simplement par le
+téléphone. Le contrôle a donc été **retourné** : on vérifie qu'un email seul NE
+suffit PLUS, et que le repli sans WhatsApp mène toujours quelque part de réel.
+
+⚠️ **Avant de supprimer un contrôle devenu rouge, retrouver ce qu'il
+protégeait.** Souvent la protection reste valable et c'est seulement le chemin
+qui a changé.
+
+## 2026-09-04 · Une sonde peut mesurer une page qui se souvient
+
+Le contrôle « email seul ne suffit plus » échouait sur un site parfaitement
+sain. Cause : entre deux commandes, `cmd` et `memoire()` reportent les
+coordonnées de la précédente — une cliente qui repasse commande ne retape pas
+son numéro, c'est voulu. Le contrôle ouvrait donc la deuxième commande avec le
+numéro **déjà rempli par la première** et concluait « le numéro n'est pas
+exigé », l'inverse de la vérité.
+
+⚠️ **Un parcours de contrôle laisse un état derrière lui.** Vider explicitement
+ce qu'on va mesurer — et en profiter pour vérifier que le souvenir fonctionne,
+ce que personne ne contrôlait.
+
+## 2026-09-04 · `innerText` d'un élément caché renvoie quand même son texte
+
+La ligne « Encore : … » est masquée par `display:none` tant qu'elle n'a rien à
+dire. Le contrôle lisait `inner_text("#err")`, y trouvait « Encore : votre
+pays… », et accusait le site d'afficher un reproche prématuré. **Personne ne
+voyait cette ligne.**
+
+Plutôt que de corriger la seule sonde, texte et visibilité ont été rendus
+**solidaires** : la ligne n'écrit que ce qu'elle montre. Un seul état, plus rien
+à désynchroniser.
+
+⚠️ **Mesurer ce que le client VOIT, pas ce que le DOM CONTIENT.** Et quand une
+sonde révèle deux vérités possibles pour le même élément, c'est souvent le
+produit qu'il faut simplifier, pas la sonde qu'il faut ruser.
+
+## 2026-09-04 · Un outil de capture peut cacher exactement ce qu'on vient vérifier
+
+Pour relire le tunnel de commande d'Hillary, deux tentatives ont donné des
+images fausses **sans le moindre signal** :
+
+- `full_page=True` photographie les **28 000 px du catalogue** qui dort derrière
+  la modale, où la modale est un timbre-poste ;
+- l'élément `.sheet` a l'air d'être la bonne réponse, mais sa barre et son pied
+  sont `sticky` : ils se repeignent au bord de la **fenêtre** et **cachent tout
+  ce qui suit**. Les deux messages promis et le récapitulatif étaient absents de
+  l'image — c'est-à-dire précisément ce que j'étais en train de vérifier.
+
+Remède : une **fenêtre assez haute** pour que toute la modale y tienne
+(390×2600), et une capture de fenêtre ordinaire.
+
+⚠️ **Vérifier que l'instrument montre bien ce qu'on lui demande avant de
+conclure de ce qu'il montre.** Famille des sondes qui mentent : celle du 20/08
+(poids mesuré sur localhost), celle du 08/08 (animation mesurée avec des
+attentes empilées autour de captures).
+
+## 2026-09-04 · Une chaîne de construction en deux temps se lance en deux temps
+
+Le site d'Hillary se monte ainsi : `_v4/_assembler.py` recompose
+`_vitrine_src.html` à partir des morceaux de `_v4/`, puis `_build.py` en tire
+`vitrine.html`. **`_predeploy.py` ne faisait que le second.**
+
+Qui modifiait un morceau de `_v4/` puis lançait le script de déploiement
+publiait un livrable bâti sur une source **périmée** : QC vert, déploiement
+réussi, et le changement absent du site — **sans un mot**. Le défaut était noté
+dans CLAUDE.md depuis le 2026-08-16 et n'avait jamais été refermé.
+
+⚠️ **Un script de déploiement doit partir de la SOURCE la plus amont, pas du
+milieu de la chaîne.** Et un défaut noté dans la documentation n'est pas un
+défaut corrigé : tant qu'il vit dans une phrase, il attend son tour.
+
+## 2026-09-04 · Le `?v=` non bumpé se voit chez le client, jamais chez soi
+
+Angy Art : la feuille et le script avaient changé de 307 et 107 lignes, et
+gardaient `?v=20260904a` — la marque **déjà servie le matin avec l'ancien
+contenu**. Nos assets portent `immutable` pour un an : tous ceux qui avaient
+ouvert le site dans la matinée, **Mongazi le premier**, seraient restés sur
+l'ancienne version.
+
+C'est le défaut du 2026-08-08 à l'identique (« Mongazi voyait encore l'ancienne
+image alors que le serveur envoyait la vraie »).
+
+⚠️ **Le cache du navigateur ne se voit ni depuis le serveur, ni dans un QC, ni
+dans une vérification MD5 de la page servie.** Bumper la marque fait partie du
+changement, pas du déploiement.
