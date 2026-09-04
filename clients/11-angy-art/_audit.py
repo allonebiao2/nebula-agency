@@ -169,6 +169,14 @@ def avec_navigateur(url):
         # ══ 3. LES CIBLES AU DOIGT ═══════════════════════════════════
         # ⚠️ On ne mesure QUE ce qui est visible : un bouton de menu replié a
         #    une boîte de zéro, ce n'est pas une cible trop petite.
+        # ⚠️ « UNE BOÎTE DE ZÉRO » NE SUFFISAIT PAS. Un panneau fermé par
+        #    `visibility:hidden` garde une boîte, et s'il se ferme en
+        #    `scale(.96)` ses liens se mesurent 4 % plus petits : le contrôle a
+        #    accusé « ÉCRIRE SUR WHATSAPP » de faire 42 px alors qu'il en fait
+        #    44 une fois ouvert (2026-09-04). L'instrument mesurait sa propre
+        #    animation, pas le site — même famille que le débordement mesuré
+        #    sur un `transform` chez Au Braisé d'Or. `visibility` s'hérite,
+        #    donc lire celle de l'élément suffit à écarter tout un panneau.
         # ⚠️ ET ON EXCLUT LES LIENS DANS UNE PHRASE. « Site conçu par NEBULA
         #    Agency, Cotonou » porte un lien de 89 × 15 px : c'est du texte
         #    courant, et la règle des 44 px l'exempte explicitement. Sans cette
@@ -184,6 +192,7 @@ def avec_navigateur(url):
             };
             return [...document.querySelectorAll(
                 'a[href],button,[role=button],input,select,summary')]
+              .filter(e => getComputedStyle(e).visibility !== 'hidden')
               .filter(e => !dansUnePhrase(e))
               .map(e => { const r = e.getBoundingClientRect();
                           return { t: (e.getAttribute('aria-label') || e.textContent || '')

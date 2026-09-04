@@ -51,42 +51,32 @@
     <img class="nav-g" src="assets/images/logos/marque.webp?v=20260826a" alt="" width="284" height="220">
     <span>Angy&nbsp;Art</span>
   </a>
-  <!-- ⚠️ LE PANNEAU, C'EST LE SOMMAIRE D'ANGÉLIQUE, ENTIER.
-       Mongazi, 2026-09-04 : « je veux que tous ces points se voient quand on
-       clique sur un seul bouton, découvrir, et qui reste visible partout sur
-       la page, surtout sur mobile ». Le sommaire qu'elle avait demandé le
-       2026-08-27 ne se voyait qu'au bas du héros : passé la première section,
-       il n'existait plus. Il ne perd rien — ses formules sont ici mot pour mot,
-       « DÉCOUVRIR LES ŒUVRES » comprise — et il gagne d'être atteignable
-       depuis n'importe quel endroit de la page.
-       ⚠️ Les libellés courts de la barre (« LA COLLECTION », « SUR MESURE »)
-       étaient un compromis de largeur : la barre débordait à 1024 px. Dans un
-       panneau la contrainte tombe, donc on écrit ses formules complètes.
-       ⚠️ « DANS UN LIEU » manquait à la barre et était au sommaire : les deux
-       listes sont réunies, rien n'est perdu au passage. -->
-  <nav class="nav-c" id="navC" tabindex="-1" aria-label="Sommaire du site">
-    <p class="nav-c-t">SOMMAIRE</p>
+  <nav class="nav-c" id="navC" tabindex="-1" aria-label="Navigation principale">
+    <!-- ⚠️ « ACCUEIL » est dans SA liste, alors il y est. Le logo tenait déjà le
+         rôle, mais une entrée nommée se cherche moins qu'un logo. Mesuré avant
+         de l'ajouter : à 1024 px la barre garde 31 px de marge de chaque côté,
+         101 à 309 px au-delà, et le tiroir du téléphone a la place. Le libellé
+         du sur-mesure reste court (« SUR MESURE ») : sa formule complète,
+         « CRÉATIONS SUR MESURE », déborderait à 1024 px et se lit deux fois
+         plus bas, sur la section et sur le bouton.
+         ⚠️ 2026-09-04 : cette rangée a été retirée pendant une heure au profit
+         d'un panneau unique. Mongazi : « il y avait directement tout qui était
+         visible, remets ça ». Sur ordinateur, une navigation qu'on VOIT vaut
+         mieux qu'une navigation qu'on ouvre. Le bouton flottant, lui, s'ajoute
+         au lieu de remplacer. -->
     <a href="#haut">ACCUEIL</a>
     <a href="#demarche">L'ARTISTE</a>
-    <a href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a>
+    <a href="#oeuvres">LA COLLECTION</a>
     <a href="#atelier">LE JOURNAL</a>
-    <a href="#portfolio">DANS UN LIEU</a>
-    <a href="#personnalise">CRÉATIONS SUR MESURE</a>
+    <a href="#personnalise">SUR MESURE</a>
     <a href="#visite">CONTACT</a>
     <a class="nav-m" href="https://wa.me/2290152006490" data-wa="direct">ÉCRIRE SUR WHATSAPP</a>
   </nav>
   <button class="nav-cta" data-modale>DEMANDER UNE VISITE
     <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg>
   </button>
-  <!-- ⚠️ IL PORTE SON NOM. Un burger ne dit pas ce qu'il ouvre, et c'est
-       précisément le reproche qu'Angélique faisait au sien sur téléphone.
-       Celui-ci s'appelle « DÉCOUVRIR », comme celui du héros, parce que c'est
-       le même bouton : celui de la barre s'efface tant que celui du héros est
-       à l'écran, et prend le relais dès qu'il en sort. Un seul se voit à la
-       fois, et il y en a toujours un. -->
-  <button class="dec" id="dec" data-dec aria-expanded="false" aria-controls="navC">
-    <span>DÉCOUVRIR</span>
-    <span class="dec-b" aria-hidden="true"><i></i><i></i></span>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="navC" aria-label="Ouvrir le menu">
+    <i></i><i></i>
   </button>
 </header>
 
@@ -139,24 +129,29 @@
     <li><b>ATELIER</b><i>·</i><span>COTONOU</span></li>
   </ul>
 
-  <!-- ⚠️ UN SEUL BOUTON, ET IL EST DANS LE FLUX.
-       Il remplace le sommaire du 2026-08-27, dont les six entrées sont
-       maintenant dans le panneau qu'il ouvre — et qui s'ouvre aussi depuis la
-       barre, donc de partout. Ce que le sommaire donnait (voir le site d'un
-       coup d'œil sur téléphone) est conservé ; ce qu'il n'avait pas (exister
-       ailleurs qu'en haut de page) est gagné.
-       ⚠️ DANS LE FLUX, jamais en position absolue : l'ancien bouton unique se
-       posait sur la ligne des métriques dès que le héros passait sur une
-       colonne (« DÉCOUVRIR L'ATELIER » barrait « PIÈCES · UNIQUES » à 768 px,
-       corrigé le 2026-08-08). Le héros est une colonne flex, le bouton y prend
-       sa place, et rien ne peut le recouvrir. -->
-  <div class="hero-dec-w">
-    <button class="hero-dec" id="heroDec" data-dec aria-expanded="false" aria-controls="navC"
-            data-cur="OUVRIR">
-      <span>DÉCOUVRIR</span>
-      <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M1 1l10 9 10-9"/></svg>
-    </button>
-  </div>
+  <!-- ⚠️ LE SOMMAIRE REMPLACE LE BOUTON « DÉCOUVRIR LES ŒUVRES ».
+       Angélique, 2026-08-27 : elle regarde le site SUR TÉLÉPHONE, et là le
+       menu burger ne lui suffit pas — elle veut voir d'un coup d'œil ce que
+       le site contient et y accéder directement. Le nom change parce que ce
+       n'est plus seulement les œuvres.
+       ⚠️ IL EST DANS LE FLUX, pas en position absolue comme l'ancien bouton.
+       Celui-ci se posait SUR la ligne des métriques dès que le héros passait
+       sur une colonne (« DÉCOUVRIR L'ATELIER » barrait « PIÈCES · UNIQUES »
+       à 768 px, corrigé le 2026-08-08). Le héros est une colonne flex : le
+       sommaire y prend sa place, et rien ne peut le recouvrir.
+       ⚠️ « DÉCOUVRIR LES ŒUVRES » reste le libellé de l'entrée qui mène à la
+       collection : c'est sa formule, elle l'a nommée telle quelle. -->
+  <nav class="hero-plan" aria-label="Sommaire du site">
+    <p class="hero-plan-t">SOMMAIRE</p>
+    <ul>
+      <li><a href="#demarche">L'ARTISTE</a></li>
+      <li><a href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a></li>
+      <li><a href="#atelier">LE JOURNAL</a></li>
+      <li><a href="#portfolio">DANS UN LIEU</a></li>
+      <li><a href="#personnalise">CRÉATIONS SUR MESURE</a></li>
+      <li><a href="#visite">CONTACT</a></li>
+    </ul>
+  </nav>
 
 </section>
 
@@ -659,6 +654,47 @@
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/>
     <path class="o1" d="M16.5 8.5a5 5 0 0 1 0 7"/><path class="o2" d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
 </button>
+
+<!-- ============ LE BOUTON FLOTTANT, ET TOUT CE QU'IL OUVRE ============
+     Angélique navigue sur téléphone, ses clientes aussi. Elle veut une porte
+     qui ne s'en va jamais : elle est là au premier écran comme au dernier, elle
+     s'anime pour se faire remarquer, et elle ouvre TOUT.
+     ⚠️ ELLE S'AJOUTE, ELLE NE REMPLACE RIEN : la rangée de liens reste sur
+     ordinateur, le hamburger reste sur téléphone. Trois portes, trois habitudes.
+     ⚠️ SON PROPRE PANNEAU, pas celui de la barre : sur ordinateur le menu de la
+     barre est une rangée en ligne, il n'y a rien à ouvrir. Un bouton qui n'aurait
+     rien fait au-delà de 880 px n'aurait pas été « visible tout le temps ».
+     ⚠️ LE HALO QUI RESPIRE VIENT D'ELLE : « Aura » est le titre d'une de ses six
+     œuvres, et le rayonnement est le sujet de la collection ÉNERGIES. Une
+     animation de ce site se tire de son travail, jamais d'un catalogue d'effets.
+     ⚠️ IL EST DANS LA MÊME COLONNE QUE LE BOUTON DU SON, au-dessus de lui : deux
+     instruments flottants font UN couloir réservé, pas deux (règle née sur Mon
+     Bénin, payée ici le 2026-08-27).
+     ⚠️ CE QUI RESTE INTRANSIGEANT : il ne se pose sur AUCUN lien ni aucun bouton.
+     Un texte recouvert se lit en défilant d'un pouce ; un clic volé ne se
+     rattrape pas. Un contrôle balaie la page entière par paliers de 400 px, aux
+     trois largeurs, et refuse la moindre cible prise. -->
+<div class="fab-z">
+  <button class="fab" id="fab" aria-expanded="false" aria-controls="plan"
+          aria-label="Ouvrir le sommaire du site">
+    <span class="fab-halo" aria-hidden="true"></span>
+    <span class="fab-i" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="fab-t">SOMMAIRE</span>
+  </button>
+
+  <nav class="plan" id="plan" tabindex="-1" aria-label="Sommaire complet du site">
+    <p class="plan-t">TOUT LE SITE</p>
+    <a href="#haut">ACCUEIL</a>
+    <a href="#demarche">L'ARTISTE</a>
+    <a href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a>
+    <a href="#atelier">LE JOURNAL</a>
+    <a href="#portfolio">DANS UN LIEU</a>
+    <a href="#personnalise">CRÉATIONS SUR MESURE</a>
+    <a href="#visite">CONTACT</a>
+    <button class="plan-v" data-modale>DEMANDER UNE VISITE</button>
+    <a class="plan-w" href="https://wa.me/2290152006490" data-wa="flottant">ÉCRIRE SUR WHATSAPP</a>
+  </nav>
+</div>
 
 <!-- ============ MODALE : la demande de visite ============ -->
 <dialog class="mod" id="mod" aria-labelledby="modT">

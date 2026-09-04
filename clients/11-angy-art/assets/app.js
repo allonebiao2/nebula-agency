@@ -386,69 +386,72 @@
     })();
   }
 
-  /* ---------- 9. La barre de navigation ------------------------------ */
+  /* ---------- 9. La barre, le tiroir et le bouton flottant ----------- */
   (function navigation() {
-    var nav = $('#nav'), l = $('#navC'), voile = $('#voile');
+    var nav = $('#nav'), voile = $('#voile');
     addEventListener('scroll', function () {
       if (nav) nav.classList.toggle('pose', scrollY > 40);
     }, { passive: true });
 
-    /* UN SEUL BOUTON, DEUX PLACES. Celui du héros pendant qu'on le voit, celui
-       de la barre partout ailleurs : ils portent le même nom et ouvrent le même
-       panneau, et il n'y en a jamais deux à l'écran ni jamais zéro. */
-    var boutons = $$('[data-dec]'), barre = $('#dec'), heros = $('#heroDec');
-    if (!l || !boutons.length) return;
+    /* DEUX PORTES, UN SEUL MÉCANISME.
+       - le hamburger ouvre le tiroir de la barre, sur téléphone ;
+       - le bouton flottant ouvre SON panneau, à toutes les largeurs.
+       Elles s'excluent : ouvrir l'une referme l'autre. Chacune gèle ce qui
+       n'est pas elle, sinon une tabulation sort du panneau vers des liens
+       qu'on ne voit pas et un lecteur d'écran lit la page cachée derrière
+       (leçon Hillary, 2026-08-25). */
+    var portes = [];
 
-    var herosVu = false, dernier = null;
-
-    function majBarre() {
-      /* ⚠️ OUVERT, LE BOUTON DE LA BARRE REVIENT TOUJOURS : c'est la seule
-         croix du panneau. Le bouton du héros, lui, passe sous le voile. */
-      if (barre) barre.classList.toggle('cache', herosVu && !l.classList.contains('ouvert'));
-    }
-
-    function basculer(o, src) {
-      if (o) dernier = src || dernier;
-      boutons.forEach(function (b) { b.setAttribute('aria-expanded', o ? 'true' : 'false'); });
-      l.classList.toggle('ouvert', o);
-      if (voile) voile.classList.toggle('on', o);
-      document.body.classList.toggle('fige', o);
-      /* ⚠️ Le reste de la page devient inerte pendant que le panneau est
-         ouvert : sans ça, une tabulation sort du panneau vers des liens qu'on
-         ne voit pas, et un lecteur d'écran lit la page cachée derrière (leçon
-         Hillary, 2026-08-25). La barre, elle, reste atteignable : c'est là
-         qu'est la croix. */
-      var m = $('#haut'), pied = $('.pied'), son = $('#fabSon');
-      [m, pied, son].forEach(function (el) { if (el) el.inert = o; });
-      majBarre();
-      /* ⚠️ LE PANNEAU, PAS SON PREMIER LIEN. Au toucher, « ACCUEIL » se
-         retrouvait entouré du cadre de focus alors que personne n'avait de
-         clavier ; et pour qui tabule, partir du panneau mène au premier lien
-         au coup suivant. Le focus doit entrer, il n'a pas à désigner. */
-      if (o) l.focus({ preventScroll: true });
-      else if (dernier) dernier.focus({ preventScroll: true });
-    }
-
-    boutons.forEach(function (b) {
-      b.addEventListener('click', function () {
-        basculer(b.getAttribute('aria-expanded') !== 'true', b);
+    function porte(bouton, panneau, geler) {
+      if (!bouton || !panneau) return null;
+      var p = {
+        b: bouton, p: panneau,
+        ouvert: function () { return panneau.classList.contains('ouvert'); },
+        poser: function (o) {
+          if (o) portes.forEach(function (a) { if (a !== p && a.ouvert()) a.poser(false); });
+          bouton.setAttribute('aria-expanded', o ? 'true' : 'false');
+          panneau.classList.toggle('ouvert', o);
+          if (voile) {
+            voile.classList.toggle('on', portes.some(function (a) { return a.ouvert(); }));
+            /* le voile passe devant la barre pour le panneau flottant, jamais
+               pour le tiroir : celui-ci vit DANS la barre. */
+            voile.classList.toggle('haut', panneau.id === 'plan' && o);
+          }
+          document.body.classList.toggle('plan-ouvert', panneau.id === 'plan' && o);
+          document.body.classList.toggle('fige', portes.some(function (a) { return a.ouvert(); }));
+          geler.forEach(function (s) {
+            var el = $(s);
+            if (el) el.inert = o;
+          });
+          if (o) panneau.focus({ preventScroll: true });
+          else bouton.focus({ preventScroll: true });
+        }
+      };
+      bouton.addEventListener('click', function () { p.poser(!p.ouvert()); });
+      panneau.addEventListener('click', function (e) {
+        if (e.target.closest('a') || e.target.closest('[data-modale]')) p.poser(false);
       });
-    });
-    l.addEventListener('click', function (e) { if (e.target.closest('a')) basculer(false); });
-    if (voile) voile.addEventListener('click', function () { basculer(false); });
-    addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && l.classList.contains('ouvert')) basculer(false);
-    });
-
-    /* ⚠️ PAR DÉFAUT, LE BOUTON DE LA BARRE EST VISIBLE. L'observateur ne fait
-       que l'effacer quand celui du héros est à l'écran : s'il n'existe pas, ou
-       s'il meurt, il reste un bouton — jamais aucun. */
-    if (barre && heros && 'IntersectionObserver' in window) {
-      new IntersectionObserver(function (es) {
-        herosVu = es[es.length - 1].isIntersecting;
-        majBarre();
-      }, { threshold: 0 }).observe(heros);
+      portes.push(p);
+      return p;
     }
+
+    porte($('#burger'), $('#navC'), ['#haut', '.pied', '#fabSon', '.fab-z']);
+    porte($('#fab'), $('#plan'), ['#haut', '.pied', '#fabSon', '#nav']);
+
+    if (voile) voile.addEventListener('click', function () {
+      portes.forEach(function (p) { if (p.ouvert()) p.poser(false); });
+    });
+    addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      portes.forEach(function (p) { if (p.ouvert()) p.poser(false); });
+    });
+    /* ⚠️ Le tiroir de la barre n'existe que sous 880 px. S'il reste ouvert
+       pendant qu'on élargit la fenêtre, ses liens repassent en ligne dans la
+       barre et le voile reste posé sur une page qu'on ne peut plus toucher. */
+    addEventListener('resize', function () {
+      var t = portes[0];
+      if (t && t.ouvert() && innerWidth > 880) t.poser(false);
+    }, { passive: true });
   })();
 
   /* ---------- 10. LE CARROUSEL --------------------------------------- */

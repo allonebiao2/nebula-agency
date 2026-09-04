@@ -32,7 +32,7 @@
   /* --grain a ete retire avec le calque plein ecran du 2026-08-26 : plus personne ne l'utilise. Voir la note plus bas. */
   --lin:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23t)' opacity='.6'/%3E%3C/svg%3E");
 
-  --z-scene:0; --z-corps:1; --z-son:40; --z-voile:45; --z-nav:50; --z-cur:70; --z-mod:90;
+  --z-scene:0; --z-corps:1; --z-son:40; --z-voile:45; --z-fab:46; --z-nav:50; --z-cur:70; --z-mod:90;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -171,21 +171,17 @@ html:not(.js) .sec::before,html:not(.js) .cit::before{display:none}
   display:inline-flex;align-items:center;gap:11px;min-height:44px;flex:0 0 auto;
   margin-right:auto}
 .nav-g{width:auto;height:26px;flex:0 0 auto}
-/* ── LE PANNEAU (le sommaire d'Angélique) ─────────────────────────────
-   Il s'ouvre par « DÉCOUVRIR », de partout, à toutes les largeurs. Ce n'est
-   plus la rangée de liens de la barre : celle-ci imposait des libellés courts
-   (elle débordait à 1024 px avec les vrais), et sur téléphone elle se cachait
-   derrière un burger anonyme.
-   ⚠️ LE REPLI SANS JAVASCRIPT EST LA RANGÉE. Le tiroir ne peut pas s'ouvrir
-   sans script : sans le `.js`, le panneau redevient une simple rangée de liens
-   dans une barre qui, elle aussi, cesse de flotter (voir plus bas). Un visiteur
-   sans script garde donc sa navigation.
-   ⚠️ `justify-content:flex-start`, pas `center` : un conteneur qui défile et
-   qui centre coupe le HAUT de son contenu, et ce qui est coupé là devient
-   inatteignable. Huit entrées à 390 x 844 tiennent sans défilement (mesuré par
-   le QC), mais le jour où il y en aura neuf, elles se liront quand même. */
+/* ── LA RANGÉE DE LIENS DE LA BARRE ──────────────────────────────────
+   ⚠️ 2026-09-04 : elle a été remplacée une heure par un panneau unique, puis
+   remise. Mongazi : « il y avait directement tout qui était visible, remets
+   ça ». Sur ordinateur, une navigation qu'on VOIT ne se remplace pas par une
+   navigation qu'on ouvre. Ce qui manquait n'était pas ici, c'était une porte
+   qui suive le visiteur : c'est le bouton flottant, plus bas, et il s'ajoute.
+   ⚠️ LE TIROIR RESTE UNE AFFAIRE DE LARGEUR (880 px) et il est réservé au
+   hamburger. Le bouton flottant a SON panneau : sur ordinateur, cette rangée
+   est en ligne, il n'y aurait rien à ouvrir. */
 .nav-c{margin:0 auto;display:flex;align-items:center;gap:clamp(18px,2.4vw,38px)}
-.nav-c-t{display:none}
+.nav-c:focus{outline:none}
 .nav-c a{font-size:10.5px;font-weight:500;letter-spacing:.15em;color:var(--tx-n);
   min-height:44px;display:inline-flex;align-items:center;position:relative;
   transition:color .35s var(--e)}
@@ -195,43 +191,27 @@ html:not(.js) .sec::before,html:not(.js) .cit::before{display:none}
 .nav-c a:hover{color:var(--blanc)}
 .nav-c a:hover::after{transform:scaleX(1)}
 .nav-c a.nav-m{display:none}
-.js .nav-c{position:fixed;inset:0 0 0 auto;width:min(390px,90vw);margin:0;z-index:1;
-  background:var(--noir-2);flex-direction:column;align-items:stretch;
-  justify-content:flex-start;gap:0;
-  padding:clamp(92px,13vh,112px) clamp(24px,4vw,34px) calc(34px + env(safe-area-inset-bottom));
-  transform:translateX(101%);transition:transform .55s var(--e-x);overflow-y:auto}
-.js .nav-c.ouvert{transform:none;box-shadow:-40px 0 80px -40px rgba(0,0,0,.9)}
-/* Le panneau reçoit le focus à l'ouverture, pas son premier lien : au toucher,
-   le lien se retrouvait entouré d'un cadre alors que personne n'avait de
-   clavier. Le cadre reste, lui, sur tout ce qu'on atteint en tabulant. */
-.js .nav-c:focus{outline:none}
-/* ⚠️ CENTRÉ PAR DES MARGES AUTOMATIQUES, PAS PAR `justify-content:center`.
-   Le résultat est le même tant que ça tient, mais quand ça déborde une marge
-   automatique retombe à zéro et le contenu reste lisible depuis le haut, là où
-   `center` coupe le début et le rend inatteignable. */
-.js .nav-c-t{display:block;font-size:10px;font-weight:600;letter-spacing:.2em;
-  color:var(--or);margin:auto 0 14px}
-.js .nav-c a:last-child{margin-bottom:auto}
-.js .nav-c a{font-family:var(--ff-d);font-size:clamp(1.22rem,4.4vw,1.6rem);letter-spacing:-.01em;
-  color:var(--blanc);min-height:52px;padding:13px 0;
-  border-bottom:1px solid rgba(255,255,255,.09)}
-.js .nav-c a::after{display:none}
-.js .nav-c a:hover,.js .nav-c a:focus-visible{color:var(--or)}
-.js .nav-c a.nav-m{display:inline-flex;color:var(--or);border-bottom-color:transparent}
-/* Le voile assombrit ce que le panneau couvre. Fermé, il ne prend aucun clic :
-   `pointer-events` dans le même état que l'opacité, jamais une `visibility`
-   qui bascule à la fin de la transition (Hillary, 2026-08-16 : le voile
-   avalait les clics 350 ms après sa fermeture).
-   ⚠️ Aucun `backdrop-filter` : rien d'infini ne doit tourner dessous, et ici
-   il n'apporterait rien qu'un aplat ne donne déjà. */
+/* Le voile sert au tiroir du hamburger ET au panneau du bouton flottant.
+   Fermé, il ne prend aucun clic : `pointer-events` dans le même état que
+   l'opacité, jamais une `visibility` qui bascule à la fin de la transition
+   (Hillary, 2026-08-16 : le voile avalait les clics 350 ms après sa fermeture).
+   ⚠️ Aucun `backdrop-filter` : un aplat suffit, et rien d'infini ne doit
+   tourner dessous. */
 .voile{position:fixed;inset:0;z-index:var(--z-voile);background:rgba(6,6,6,.72);
   opacity:0;pointer-events:none;transition:opacity .45s var(--e)}
 .voile.on{opacity:1;pointer-events:auto}
+/* ⚠️ LE VOILE MONTE AU-DESSUS DE LA BARRE, MAIS SEULEMENT POUR LE PANNEAU DU
+   BOUTON FLOTTANT. Vu sur la capture : tout s'assombrissait sauf la barre, qui
+   restait éclairée et invitait à cliquer un hamburger devenu inerte. Il ne peut
+   pas monter tout le temps : le tiroir du hamburger VIT dans la barre, un voile
+   au-dessus le couvrirait lui aussi. La hauteur du voile suit donc la porte
+   ouverte, et le bouton flottant repasse devant. */
+.voile.haut{z-index:55}
+body.plan-ouvert .fab-z{z-index:60}
 html:not(.js) .voile{display:none}
-/* ⚠️ SANS SCRIPT, LA RANGÉE DOIT TENIR SUR UN TÉLÉPHONE. Huit entrées en ligne
-   à 390 px sortent de l'écran, et `overflow-x:hidden` les rendrait
-   inatteignables au lieu de les montrer : elle se replie sur plusieurs lignes,
-   et le lien WhatsApp s'y montre comme les autres. */
+/* ⚠️ SANS SCRIPT, LA RANGÉE DOIT TENIR SUR UN TÉLÉPHONE. Le tiroir ne peut pas
+   s'ouvrir sans script : la rangée se replie alors sur plusieurs lignes plutôt
+   que de sortir de l'écran, et le lien WhatsApp s'y montre comme les autres. */
 html:not(.js) .nav-c{flex-wrap:wrap;gap:4px clamp(14px,2.4vw,38px)}
 html:not(.js) .nav-c a.nav-m{display:inline-flex;color:var(--or)}
 .nav-cta{display:inline-flex;align-items:center;gap:10px;flex:0 0 auto;
@@ -246,44 +226,17 @@ html:not(.js) .nav-c a.nav-m{display:inline-flex;color:var(--or)}
    panneau, sous « CONTACT ». */
 .js .nav-c.ouvert ~ .nav-cta{opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .3s ease,visibility 0s linear .3s}
-/* ── « DÉCOUVRIR », DANS LA BARRE ─────────────────────────────────────
-   Il remplace le burger, à TOUTES les largeurs, et il porte son nom.
-   ⚠️ POURQUOI DANS LA BARRE ET PAS EN PASTILLE FLOTTANTE : un instrument
-   flottant ne recouvre jamais du texte (règle née sur Mon Bénin, et payée ici
-   même le 2026-08-27, où le bouton du son se posait sur « DÉCOUVRIR LES
-   ŒUVRES »). La barre est la seule chose de ce site qui ait le droit de passer
-   devant une phrase, parce qu'elle est une bande de bord vraiment opaque.
-   ⚠️ IL S'EFFACE TANT QUE CELUI DU HÉROS EST À L'ÉCRAN : un seul bouton se
-   voit à la fois. Par défaut il est VISIBLE — si l'observateur meurt ou
-   n'existe pas, on garde un bouton, jamais zéro.
-   ⚠️ `visibility` en plus de `opacity` : un bouton invisible qui garde le
-   focus au clavier est un piège (leçon Hillary, 2026-08-25). Elle bascule à la
-   FIN de la disparition et TOUT DE SUITE au retour. */
-/* ⚠️ AU-DESSUS DU PANNEAU, ET C'EST TOUT L'INTÉRÊT. Le panneau est un enfant
-   de la barre, donc son `z-index` se compte À L'INTÉRIEUR de la barre : sans
-   ces deux lignes il recouvrait le bouton qui venait de l'ouvrir, et il ne
-   restait plus aucune croix à l'écran (vu sur la capture du 2026-09-04, aux
-   deux largeurs). Même famille que la barre d'Hillary : un élément change de
-   parent, pas de style, et son empilement change avec lui. */
-.dec{position:relative;z-index:2;display:inline-flex;align-items:center;gap:12px;flex:0 0 auto;
-  min-height:44px;padding:11px 20px;border-radius:999px;
-  border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);
-  font-size:10.5px;font-weight:600;letter-spacing:.15em;color:var(--blanc);
-  transition:background-color .35s var(--e),border-color .35s var(--e),
-    color .35s var(--e),opacity .3s ease,transform .3s var(--e),visibility 0s}
-.dec:hover,.dec:focus-visible{background:var(--or);border-color:var(--or);color:var(--noir)}
-.dec-b{display:flex;flex-direction:column;gap:5px;flex:0 0 auto}
-.dec-b i{display:block;width:20px;height:1px;background:currentColor;
-  transition:transform .4s var(--e)}
-.dec[aria-expanded="true"] .dec-b i:first-child{transform:translateY(3px) rotate(45deg)}
-.dec[aria-expanded="true"] .dec-b i:last-child{transform:translateY(-3px) rotate(-45deg)}
-.dec.cache{opacity:0;visibility:hidden;transform:translateY(-8px);pointer-events:none;
-  transition:opacity .3s ease,transform .3s var(--e),visibility 0s linear .3s}
-html:not(.js) .dec{display:none}
+.burger{display:none;width:46px;height:46px;flex-direction:column;justify-content:center;
+  align-items:flex-end;gap:6px;flex:0 0 auto}
+.burger i{display:block;width:24px;height:1px;background:var(--blanc);
+  transition:transform .4s var(--e),opacity .25s ease}
+.burger[aria-expanded="true"] i:first-child{transform:translateY(3.5px) rotate(45deg)}
+.burger[aria-expanded="true"] i:last-child{transform:translateY(-3.5px) rotate(-45deg)}
 /* Sans script, la barre ne flotte pas. Son fond n'arrive qu'au défilement, et
    il est posé par le script : une bande de bord translucide qui passe devant
    du texte est exactement ce que la maison s'interdit. */
 html:not(.js) .nav{position:static;background:var(--noir);flex-wrap:wrap}
+html:not(.js) .burger{display:none}
 
 /* ---------- BOUTONS PILULE --------------------------------------- */
 .pill{display:inline-flex;align-items:center;justify-content:center;
@@ -332,41 +285,34 @@ html:not(.js) .nav{position:static;background:var(--noir);flex-wrap:wrap}
 .lab--n{color:var(--tx-n)}
 .lab--n b{background:var(--fil-n)}
 
-/* ── « DÉCOUVRIR », DANS LE HÉROS ─────────────────────────────────────
-   Le sommaire d'Angélique (2026-08-27) tenait ici six pastilles ; elles sont
-   passées ENTIÈRES dans le panneau, et ce bouton l'ouvre. Ce qu'elle voulait
-   (voir tout le site d'un coup d'œil sur téléphone) est gardé ; ce qui manquait
-   (y accéder ailleurs qu'en haut de page) est gagné : le même bouton attend
-   dans la barre partout ailleurs.
-   ⚠️ Un conteneur à la largeur du contenu, comme le sommaire qu'il remplace :
-   sans lui le bouton se collerait au bord de l'écran au lieu de s'aligner sur
-   le titre, sur les grandes largeurs. */
-.hero-dec-w{max-width:var(--max);width:100%;margin:clamp(24px,3.2vh,38px) auto 0}
-.hero-dec{display:inline-flex;align-items:center;gap:14px;
-  min-height:52px;padding:15px 30px;border-radius:999px;
-  background:var(--creme);color:var(--noir);border:1px solid var(--creme);
-  font-size:11px;font-weight:600;letter-spacing:.16em;
-  transition:background-color .4s var(--e),color .4s var(--e),border-color .4s var(--e)}
-.hero-dec svg{width:22px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;
-  stroke-linecap:round;stroke-linejoin:round;transition:transform .45s var(--e-x)}
-.hero-dec:hover,.hero-dec:focus-visible{background:transparent;color:var(--blanc);
-  border-color:var(--fil-n)}
-.hero-dec:hover svg,.hero-dec:focus-visible svg{transform:translateY(3px)}
-.js .hero-dec-w{opacity:0;transition:opacity .8s ease 1.05s}
-.js .hero.ouvert .hero-dec-w{opacity:1}
-/* Sans script, il n'ouvrirait rien : c'est la rangée de liens de la barre qui
-   tient alors le rôle du sommaire. Un bouton qui ne fait rien est pire que pas
-   de bouton. */
-html:not(.js) .hero-dec-w{display:none}
-/* ⚠️ LE BOUTON DU SON A SON COULOIR. Il est en `position:fixed` en bas à
-   droite (46 px à 16 px du bord) et il se posait SUR « DÉCOUVRIR LES ŒUVRES »
-   — mesuré 11 × 34 px de recouvrement, à 390 px et nulle part ailleurs.
-   C'est-à-dire exactement la pastille qu'Angélique avait nommée, exactement à
-   la largeur où elle regarde. La règle de la maison est nette depuis Mon
-   Bénin : un instrument flottant ne recouvre jamais du texte. Le bouton reste
-   donc à gauche et n'entre jamais dans la colonne réservée. */
+/* ── LE SOMMAIRE DU HÉROS ────────────────────────────────────────────
+   Il remplace le bouton unique : sur téléphone elle veut voir tout le
+   site d'un coup d'œil, le burger ne lui suffit pas. Cibles de 44 px,
+   contour plutôt que plein — six pastilles blanches pleines feraient un
+   mur au bas du héros. */
+.hero-plan{max-width:var(--max);width:100%;margin:clamp(24px,3.2vh,38px) auto 0}
+.hero-plan-t{font-size:10px;font-weight:500;letter-spacing:.2em;
+  color:var(--or);margin:0 0 12px}
+.hero-plan ul{display:flex;flex-wrap:wrap;gap:9px;list-style:none;margin:0;padding:0}
+.hero-plan a{display:flex;align-items:center;min-height:44px;padding:0 17px;
+  border:1px solid rgba(255,255,255,.24);border-radius:999px;
+  font-size:11px;font-weight:500;letter-spacing:.13em;color:var(--blanc);
+  text-decoration:none;white-space:nowrap;
+  transition:border-color .32s ease,color .32s ease}
+.hero-plan a:hover,.hero-plan a:focus-visible{border-color:var(--or);color:var(--or)}
+.js .hero-plan{opacity:0;transition:opacity .8s ease 1.05s}
+.js .hero.ouvert .hero-plan{opacity:1}
+/* ⚠️ LES DEUX INSTRUMENTS FLOTTANTS ONT UN SEUL COULOIR. Le bouton du son est
+   en bas à droite (46 px à 16 px du bord), le bouton flottant est juste
+   au-dessus, dans la MÊME colonne : c'est un couloir à réserver, pas deux. Le
+   son s'était posé sur « DÉCOUVRIR LES ŒUVRES » — mesuré 11 × 34 px, à 390 px
+   et nulle part ailleurs, c'est-à-dire pile la pastille qu'Angélique a nommée
+   et pile la largeur où elle regarde.
+   ⚠️ Un `padding-right` sur la LISTE, pas une marge sur la dernière pastille :
+   les boutons sont fixés à l'écran, ils passent devant n'importe quelle ligne
+   selon le défilement. */
 @media (max-width:768px){
-  .hero-dec{max-width:calc(100% - 70px)}
+  .hero-plan ul{padding-right:70px}
 }
 
 /* La phrase suit le nom, elle ne le couvre plus.
@@ -677,7 +623,16 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .cars-t.chg{opacity:0;transform:translateY(calc(-50% + 12px))}
 .cars-t{transition:opacity .45s var(--e),transform .45s var(--e)}
 
-.cars-b{max-width:var(--max);margin:clamp(24px,2.8vw,40px) auto 0;padding:0 var(--pad);
+/* ⚠️ LE COULOIR DU BOUTON FLOTTANT PASSE ICI. Le balayage de la page entière
+   (contrôle « il ne recouvre aucun lien ni aucun bouton ») a trouvé trois
+   cibles qui passaient sous lui : ce lien-ci sur ordinateur, et les deux
+   appels du sur-mesure sur téléphone. Un texte recouvert se lit en défilant
+   d'un pouce, un CLIC VOLÉ ne se rattrape pas. On réserve donc 78 px (16 de
+   bord + 58 de bouton, arrondi) LÀ OÙ LA COLLISION EST MESURÉE, et nulle part
+   ailleurs : réserver sur toute la page aurait déplacé tout le site pour trois
+   boutons. */
+.cars-b{max-width:var(--max);margin:clamp(24px,2.8vw,40px) auto 0;
+  padding:0 calc(var(--pad) + 78px) 0 var(--pad);
   display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
 .cars-n{display:flex;align-items:center;gap:14px}
 .rond{width:44px;height:44px;border-radius:50%;border:1px solid var(--fil-n);
@@ -718,7 +673,13 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .plein-in--c{text-align:center;display:flex;flex-direction:column;align-items:center}
 .plein-t{max-width:16ch}
 .plein-in--c .plein-t{max-width:14ch}
-.plein-b{max-width:var(--max);width:100%;margin:clamp(50px,7vh,96px) auto 0;margin-top:auto;padding-top:clamp(50px,7vh,96px);
+/* ⚠️ LE COULOIR DU BOUTON FLOTTANT PASSE ICI AUSSI. « ÉQUIPER UN LIEU » est
+   le dernier élément d'une grille alignée à droite sur ordinateur, et un
+   bouton étiré sur toute la largeur sur téléphone : dans les deux cas son bord
+   droit entrait dans la colonne du bouton flottant (mesuré 54 px à 390, 42 à
+   768, 14 à 1440). C'est la troisième et dernière collision du site. */
+.plein-b{max-width:var(--max);width:100%;margin:clamp(50px,7vh,96px) auto 0;margin-top:auto;
+  padding-top:clamp(50px,7vh,96px);padding-right:78px;
   display:grid;gap:26px clamp(30px,5vw,70px);
   grid-template-columns:minmax(0,1fr) auto auto;align-items:end}
 /* Le bas d'un plein écran porte du texte long, et il se pose sur ce que la
@@ -778,6 +739,92 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .pied-b i{font-style:normal;color:var(--or)}
 .pied-b a{border-bottom:1px solid rgba(201,185,154,.5)}
 .pied-b a:hover{color:var(--or)}
+
+/* ==================================================================
+   LE BOUTON FLOTTANT — la porte qui suit le visiteur
+   Angélique navigue sur téléphone, ses clientes aussi : elle veut une porte
+   qui ne s'en va jamais, qui se remarque, et qui ouvre TOUT. Elle s'AJOUTE à
+   la rangée de liens (ordinateur) et au hamburger (téléphone).
+   ⚠️ UN SEUL COULOIR POUR DEUX INSTRUMENTS : il se pose au-dessus du bouton du
+   son, dans la même colonne de droite. Deux coins occupés auraient fait deux
+   couloirs à réserver sur toute la hauteur du site.
+   ⚠️ LE HALO VIENT D'ELLE. « Aura » est le titre d'une de ses six œuvres et le
+   rayonnement est le sujet de la collection ÉNERGIES. Il n'anime que
+   `transform` et `opacity` sur un pseudo-calque de 58 px : le compositeur s'en
+   charge, la page ne recalcule rien (leçon du 2026-08-26 sur le grain).
+   ================================================================== */
+.fab-z{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));
+  z-index:var(--z-fab)}
+.fab{position:relative;display:grid;place-items:center;width:58px;height:58px;
+  border-radius:50%;border:1px solid var(--or);background:var(--noir-2);color:var(--or);
+  box-shadow:0 14px 34px -12px rgba(0,0,0,.92);
+  transition:background-color .4s var(--e),color .4s var(--e),transform .4s var(--e-x)}
+.fab:hover,.fab:focus-visible{background:var(--or);color:var(--noir);transform:translateY(-2px)}
+/* trois traits : un sommaire, pas un hamburger de plus */
+.fab-i{display:flex;flex-direction:column;align-items:flex-end;gap:5px;width:22px}
+.fab-i i{display:block;height:1px;width:100%;background:currentColor;
+  transition:transform .45s var(--e-x),opacity .3s ease,width .45s var(--e-x)}
+.fab-i i:nth-child(2){width:70%}
+.fab-i i:nth-child(3){width:44%}
+.fab[aria-expanded="true"] .fab-i i{width:100%}
+.fab[aria-expanded="true"] .fab-i i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.fab[aria-expanded="true"] .fab-i i:nth-child(2){opacity:0}
+.fab[aria-expanded="true"] .fab-i i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+/* le halo qui respire — il se tait dès que le panneau est ouvert : ce qui
+   attirait l'œil a fait son travail. */
+.fab-halo{position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--or);
+  opacity:0;pointer-events:none;animation:aura 4.6s var(--e) infinite}
+@keyframes aura{
+  0%{transform:scale(1);opacity:.6}
+  65%{transform:scale(1.7);opacity:0}
+  100%{transform:scale(1.7);opacity:0}
+}
+.fab[aria-expanded="true"] .fab-halo{animation:none}
+/* l'étiquette sort au survol, sur les écrans qui en ont un */
+.fab-t{position:absolute;right:calc(100% + 12px);top:50%;
+  transform:translateY(-50%) translateX(8px);white-space:nowrap;
+  font-size:10px;font-weight:600;letter-spacing:.18em;color:var(--blanc);
+  background:var(--noir-2);border:1px solid var(--fil-n);
+  padding:9px 14px;border-radius:999px;opacity:0;pointer-events:none;
+  transition:opacity .3s ease,transform .35s var(--e)}
+.fab:hover .fab-t,.fab:focus-visible .fab-t{opacity:1;transform:translateY(-50%) translateX(0)}
+@media (hover:none){ .fab-t{display:none} }
+
+/* ── SON PANNEAU ─────────────────────────────────────────────────────
+   Ancré au bouton, il monte depuis lui. ⚠️ `visibility` en plus de l'opacité :
+   un panneau invisible qui garde ses liens dans l'ordre de tabulation est un
+   piège (leçon Hillary, 2026-08-25). Elle bascule à la FIN de la fermeture et
+   TOUT DE SUITE à l'ouverture. */
+.plan{position:absolute;right:0;bottom:calc(100% + 14px);
+  width:min(320px,calc(100vw - 32px));
+  /* ⚠️ 240 px, pas 190 : mesuré à 390 x 640, le panneau montait jusqu'à 44 px
+     du haut et passait SOUS la barre, qui lui mangeait ses premières entrées.
+     Ce qu'on retranche, c'est la place du bouton (146) plus celle de la barre. */
+  max-height:min(600px,calc(100dvh - 240px));overflow-y:auto;
+  background:var(--noir-2);border:1px solid rgba(255,255,255,.1);border-radius:20px;
+  padding:20px 20px 18px;display:flex;flex-direction:column;
+  box-shadow:0 30px 70px -30px rgba(0,0,0,.95);
+  opacity:0;visibility:hidden;transform:translateY(14px) scale(.96);transform-origin:100% 100%;
+  transition:opacity .3s ease,transform .42s var(--e-x),visibility 0s linear .42s}
+.plan.ouvert{opacity:1;visibility:visible;transform:none;
+  transition:opacity .3s ease,transform .42s var(--e-x),visibility 0s}
+.plan:focus{outline:none}
+.plan-t{font-size:10px;font-weight:600;letter-spacing:.2em;color:var(--or);margin:0 0 10px}
+.plan a{display:flex;align-items:center;min-height:48px;
+  font-family:var(--ff-d);font-size:1.12rem;letter-spacing:-.01em;color:var(--blanc);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  transition:color .3s var(--e),padding-left .35s var(--e)}
+.plan a:hover,.plan a:focus-visible{color:var(--or);padding-left:6px}
+.plan-v{margin-top:16px;min-height:48px;border-radius:999px;
+  background:var(--creme);color:var(--noir);
+  font-size:10px;font-weight:600;letter-spacing:.16em;
+  transition:background-color .35s var(--e)}
+.plan-v:hover,.plan-v:focus-visible{background:var(--or)}
+.plan a.plan-w{color:var(--or);border-bottom:0;min-height:44px;margin-top:4px;
+  font-size:.98rem}
+/* Sans script, il n'ouvrirait rien : la rangée de liens de la barre tient seule
+   le rôle. Un bouton qui ne fait rien est pire que pas de bouton. */
+html:not(.js) .fab-z{display:none}
 
 /* ---------- AMBIANCE SONORE -------------------------------------- */
 .son{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));
@@ -966,7 +1013,11 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 @media (max-width:900px){
   .perso-in{grid-template-columns:1fr}
   .ent{max-width:100%}
-  .perso-go{align-items:stretch}
+  /* ⚠️ Les deux appels passent en pleine largeur ici, donc leur bord droit
+     touche celui de l'écran, donc ils passaient sous le bouton flottant
+     (mesuré : 33 px et 23 px de recouvrement à 390, 41 px à 768). Le couloir
+     leur est retiré. */
+  .perso-go{align-items:stretch;padding-right:78px}
   .perso-go .pill{width:100%}
 }
 
@@ -1089,10 +1140,20 @@ html:not(.js) .cars,html:not(.js) .cur{display:none}
   .pied-r{justify-content:flex-start}
 }
 @media (max-width:880px){
-  /* Le tiroir n'est plus une affaire de largeur : il est le panneau, partout.
-     Ne reste ici que ce qui dépend vraiment de la place — la demande de visite
-     se lit alors dans le pied de page et dans les sections. */
+  /* ⚠️ Sous `.js` seulement : sans script le tiroir ne peut pas s'ouvrir, et la
+     rangée repliée reste la seule navigation du visiteur. */
+  .js .nav-c{position:fixed;inset:0 0 0 auto;width:min(340px,88vw);margin:0;
+    background:var(--noir-2);flex-direction:column;align-items:stretch;justify-content:center;
+    gap:2px;padding:88px 30px calc(34px + env(safe-area-inset-bottom));
+    transform:translateX(101%);transition:transform .55s var(--e-x);overflow-y:auto}
+  .js .nav-c.ouvert{transform:none;box-shadow:-40px 0 80px -40px rgba(0,0,0,.9)}
+  .js .nav-c a{font-family:var(--ff-d);font-size:1.6rem;letter-spacing:-.01em;color:var(--blanc);
+    padding:14px 0;border-bottom:1px solid rgba(255,255,255,.09)}
+  .js .nav-c a::after{display:none}
+  .js .nav-c a.nav-m{display:inline-flex;color:var(--or)}
   .nav-cta{display:none}
+  .burger{display:flex;margin-left:auto}
+  .nav-logo{margin-right:auto}
 }
 @media (max-width:640px){
   body{font-size:15px}
@@ -1119,7 +1180,7 @@ html:not(.js) .cars,html:not(.js) .cur{display:none}
   .cadre{animation:none;transform:none}
   .rai{animation:none;transform:translate3d(30%,0,0) rotate(8deg)}
   .js .lev > span,.js .mot > span{transform:none;opacity:1}
-  .js .rv,.js .hero-d,.js .hero-img,.js .hero-mx li,.js .hero-dec-w{opacity:1;transform:none}
+  .js .rv,.js .hero-d,.js .hero-img,.js .hero-mx li,.js .hero-plan{opacity:1;transform:none}
   .js .tp,.js .temps-d{opacity:1;transform:none}
   .js .scene-p--peint{opacity:1}
   .tp-n::after{transform:scaleX(1)}

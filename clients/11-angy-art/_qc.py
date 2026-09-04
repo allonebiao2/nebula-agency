@@ -232,31 +232,79 @@ JS_CIBLES = """
 }
 """
 
-# ── LE BOUTON UNIQUE, ET CE QU'IL OUVRE ───────────────────────────────────
-# « Visible » ne veut pas dire « présent dans le document » : un bouton peut
-# avoir une boîte, un texte, et être effacé (opacité), masqué (`visibility`) ou
-# simplement hors de l'écran. Les trois cas se produisent ici, et c'est le
-# troisième qui compte le plus : celui du héros existe encore quand on est en
-# bas de page, il n'est juste plus là où on regarde.
-JS_DEC = """
+# ── LE BOUTON FLOTTANT, ET CE QU'IL OUVRE ─────────────────────────────────
+# « Visible » ne veut pas dire « présent dans le document » : un élément peut
+# avoir une boîte, un texte, et être effacé, masqué, ou simplement hors écran.
+JS_FAB = """
 () => {
-  const vu = el => {
-    const cs = getComputedStyle(el), r = el.getBoundingClientRect();
-    return cs.display !== 'none' && cs.visibility !== 'hidden'
-      && parseFloat(cs.opacity) > .5 && r.width > 0 && r.height > 0
-      && r.bottom > 0 && r.top < innerHeight;
+  const f = document.querySelector('#fab'), s = document.querySelector('#fabSon');
+  const cs = getComputedStyle(f), r = f.getBoundingClientRect();
+  const halo = getComputedStyle(document.querySelector('.fab-halo'));
+  let surSon = 0;
+  if (s) {
+    const b = s.getBoundingClientRect();
+    const x = Math.min(r.right, b.right) - Math.max(r.left, b.left);
+    const y = Math.min(r.bottom, b.bottom) - Math.max(r.top, b.top);
+    if (x > 0 && y > 0) surSon = Math.round(Math.min(x, y));
+  }
+  return {
+    vu: cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > .5
+        && r.width > 0 && r.bottom > 0 && r.top < innerHeight,
+    b: { w: Math.round(r.width), h: Math.round(r.height) },
+    anime: halo.animationIterationCount.includes('infinite')
+           && parseFloat(halo.animationDuration) > .1,
+    surSon: surSon
   };
-  const b = [...document.querySelectorAll('[data-dec]')];
-  return { total: b.length, vus: b.filter(vu).map(e => e.id) };
+}
+"""
+
+# ⛔ LE BOUTON FLOTTANT NE VOLE AUCUN CLIC — ET ÇA SE CALCULE, ça ne
+# s'échantillonne pas. Premier jet : on faisait défiler la page par paliers de
+# 400 px et on comparait les boîtes. Il a trouvé trois cibles, on les a
+# réservées, il est passé au vert — et il en RESTAIT UNE (« ÉQUIPER UN LIEU »,
+# 54 px de recouvrement à 390 px). Elle ne tombait simplement sur aucun palier :
+# la fenêtre où elle croise le bouton fait 102 px de défilement, un pas de 400
+# la manque quatre fois sur cinq. Un contrôle qui dépend de l'endroit où l'on
+# regarde n'est pas un contrôle.
+# Le bouton est FIXE, la cible DÉFILE : on résout donc l'intervalle de
+# défilement où les deux se croisent, et on le compare à ce que la page permet.
+# Exact, instantané, et sans faire bouger la page.
+# ⚠️ On écarte ce qui ne défile pas (un ancêtre en `position:fixed` ne passera
+#    jamais sous le bouton) et ce qui vit dans un `dialog` (il s'ouvre par
+#    dessus, dans la couche du haut).
+JS_FAB_CIBLES = """
+() => {
+  const f = document.querySelector('#fab').getBoundingClientRect();
+  const maxS = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  const y0 = scrollY, pris = [];
+  for (const el of document.querySelectorAll('main a[href], main button, .pied a[href]')) {
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+    if (el.closest('dialog')) continue;
+    let p = el, fixe = false;
+    while (p && p !== document.body) {
+      if (getComputedStyle(p).position === 'fixed') { fixe = true; break; }
+      p = p.parentElement;
+    }
+    if (fixe) continue;
+    const b = el.getBoundingClientRect();
+    if (!b.width || !b.height) continue;
+    const x = Math.min(f.right, b.right) - Math.max(f.left, b.left);
+    if (x <= 2) continue;
+    const dt = b.top + y0, db = b.bottom + y0;
+    const d = Math.max(0, dt - f.bottom + 2), a = Math.min(maxS, db - f.top - 2);
+    if (a > d) pris.push(((el.textContent || '').trim().slice(0, 24) || el.className)
+      + ' [defilement ' + Math.round(d) + '-' + Math.round(a) + ', ' + Math.round(x) + ' px]');
+  }
+  return { cibles: document.querySelectorAll('main a[href], main button, .pied a[href]').length,
+           pris: pris.slice(0, 6) };
 }
 """
 
 JS_PANNEAU = """
 () => {
-  const l = document.querySelector('#navC');
-  if (!l) return { ouvert: false, total: 0, dedans: 0, dehors: ['pas de panneau'],
-                   coupe: true, deborde: 0, inerte: false };
-  const as = [...l.querySelectorAll('a')], dehors = [];
+  const l = document.querySelector('#plan');
+  const as = [...l.querySelectorAll('a, button')], dehors = [];
   for (const a of as) {
     const r = a.getBoundingClientRect();
     const dedans = r.width > 0 && r.height > 0 && r.top > -1 && r.bottom < innerHeight + 1
@@ -264,13 +312,48 @@ JS_PANNEAU = """
     if (!dedans) dehors.push(a.textContent.trim() + ' [' + Math.round(r.top) + '→'
       + Math.round(r.bottom) + ']');
   }
+  const halo = getComputedStyle(document.querySelector('.fab-halo'));
   return {
     ouvert: l.classList.contains('ouvert'),
     total: as.length, dedans: as.length - dehors.length, dehors: dehors.slice(0, 4),
     coupe: l.scrollHeight > l.clientHeight + 1,
     deborde: Math.max(0, l.scrollHeight - l.clientHeight),
-    inerte: !!document.querySelector('#haut').inert
+    inerte: !!document.querySelector('#haut').inert,
+    anime: halo.animationName !== 'none' && !halo.animationName.includes('none')
   };
+}
+"""
+
+JS_APRES = """
+() => ({
+  ouvert: document.querySelector('#plan').classList.contains('ouvert'),
+  focus: document.activeElement ? document.activeElement.id : '',
+  inerte: !!document.querySelector('#haut').inert
+})
+"""
+
+JS_BARRE = """
+() => {
+  const vus = [...document.querySelectorAll('#navC a[href^="#"]')].filter(a => {
+    const cs = getComputedStyle(a), r = a.getBoundingClientRect();
+    return cs.display !== 'none' && cs.visibility !== 'hidden'
+      && r.width > 0 && r.top > -1 && r.bottom < innerHeight + 1
+      && r.left > -1 && r.right < innerWidth + 1;
+  }).length;
+  const b = document.querySelector('#burger');
+  return { vus: vus, burger: !!b && getComputedStyle(b).display !== 'none' };
+}
+"""
+
+JS_TIROIR = """
+() => {
+  const l = document.querySelector('#navC');
+  const dedans = [...l.querySelectorAll('a')].filter(a => {
+    const r = a.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.top > -1 && r.bottom < innerHeight + 1
+      && r.right < innerWidth + 1;
+  }).length;
+  return { ouvert: l.classList.contains('ouvert'), dedans: dedans };
 }
 """
 
@@ -358,92 +441,114 @@ def main():
                     else mauvais(f"cibles trop petites : {petits}")
                 if VOIR: capturer(page, "tel")
 
-            # ══ LE BOUTON UNIQUE « DÉCOUVRIR » ═══════════════════════════════
-            # Mongazi, 2026-09-04 : « je veux que tous ces points se voient
-            # quand on clique sur un seul bouton, découvrir, et qui reste
-            # visible partout sur la page, surtout sur mobile ».
-            # ⚠️ TROIS CHOSES À PROUVER, ET AUCUNE NE DÉCOULE DES AUTRES :
-            #    il y en a TOUJOURS un de visible (sinon la page n'a plus de
-            #    navigation), il n'y en a JAMAIS deux (sinon « un seul bouton »
-            #    est faux), et ce qu'il ouvre porte VRAIMENT toutes les entrées.
-            #    Le premier contrôle seul laisserait passer un site où les deux
-            #    boutons s'affichent ensemble ; le deuxième seul laisserait
-            #    passer un site où aucun ne s'affiche.
-            titre(f"{nom} : le bouton « DÉCOUVRIR »")
-            noms_ = page.evaluate("""() => [...document.querySelectorAll('[data-dec]')]
-                .map(e => e.textContent.trim().split(/[^A-Za-zÀ-ÿ]+/).join(' ').trim())""")
-            bon(f"{nom} : les {len(noms_)} boutons portent le même nom") \
-                if noms_ and all("DÉCOUVRIR" in n.upper() for n in noms_) \
-                else mauvais(f"{nom} : un bouton ne s'appelle pas « DÉCOUVRIR » -> {noms_}")
-
+            # ══ LE BOUTON FLOTTANT ═══════════════════════════════════════════
+            # Mongazi, 2026-09-04 : « Angélique navigue plus sur portable, ses
+            # clients aussi ; elle veut que tout soit accessible à travers un
+            # bouton flottant, en plus du menu en hamburger, visible tout le
+            # temps, et qui s'animera. »
+            # ⚠️ « VISIBLE TOUT LE TEMPS » NE SE DÉDUIT PAS D'UNE SEULE MESURE :
+            #    on regarde en haut, au milieu ET en bas de page. Un bouton fixe
+            #    qui disparaît au premier défilement passerait un contrôle pris
+            #    au repos.
+            titre(f"{nom} : le bouton flottant")
             for etage_, js_ in [("en haut", "0"),
                                 ("au milieu", "document.body.scrollHeight / 2"),
                                 ("en bas", "document.body.scrollHeight")]:
                 page.evaluate(f"() => window.scrollTo(0, {js_})")
-                page.wait_for_timeout(900)
-                v_ = page.evaluate(JS_DEC)
-                if len(v_["vus"]) == 1:
-                    bon(f"{nom}, {etage_} : un seul bouton « DÉCOUVRIR » visible "
-                        f"(#{v_['vus'][0]})")
-                else:
-                    mauvais(f"{nom}, {etage_} : {len(v_['vus'])} bouton(s) visible(s) "
-                            f"sur {v_['total']} -> {v_['vus']}")
+                page.wait_for_timeout(800)
+                v_ = page.evaluate(JS_FAB)
+                bon(f"{nom}, {etage_} : le bouton flottant est là "
+                    f"({v_['b']['w']}×{v_['b']['h']} px)") if v_["vu"] \
+                    else mauvais(f"{nom}, {etage_} : le bouton flottant n'est pas visible")
+                # Deux instruments flottants, UN couloir : ils se suivent dans la
+                # même colonne, ils ne se chevauchent jamais.
+                bon(f"{nom}, {etage_} : il ne touche pas le bouton du son") \
+                    if not v_["surSon"] \
+                    else mauvais(f"{nom}, {etage_} : il chevauche le bouton du son "
+                                 f"de {v_['surSon']} px")
 
-            # On ouvre depuis le BAS de la page : c'est là que le sommaire
-            # d'avant n'existait plus, et c'est tout l'objet de la demande.
+            bon(f"{nom} : le halo du bouton flottant s'anime") if v_["anime"] \
+                else mauvais(f"{nom} : le halo ne s'anime pas ({v_['anime']})")
+
+            # ⛔ UN INSTRUMENT FLOTTANT NE RECOUVRE JAMAIS UNE CIBLE. La règle de
+            #    la maison (Mon Bénin) dit « jamais de texte » ; Mongazi a
+            #    tranché pour un bouton flottant, donc ce qui reste
+            #    INTRANSIGEANT, c'est qu'il ne se pose sur AUCUN lien ni aucun
+            #    bouton : là, ce n'est plus une gêne de lecture, c'est un clic
+            #    volé. On balaie la page entière, pas deux ou trois positions.
+            # ⚠️ La page se déplie une fois avant la mesure : les révélations au
+            #    défilement posent leur mise en page, et une boîte mesurée avant
+            #    de s'être posée ment sur l'endroit où elle sera.
             page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
-            page.wait_for_timeout(900)
-            ouvreur_ = page.evaluate("""() => {
-              const b = [...document.querySelectorAll('[data-dec]')].find(e => {
-                const cs = getComputedStyle(e);
-                return cs.display !== 'none' && cs.visibility !== 'hidden';
-              });
-              if (!b) return null;
-              b.click();
-              return b.id;
-            }""")
-            page.wait_for_timeout(900)
-            if not ouvreur_:
-                mauvais(f"{nom} : aucun bouton « DÉCOUVRIR » à cliquer en bas de page")
-            else:
-                pan_ = page.evaluate(JS_PANNEAU)
-                bon(f"{nom} : le panneau s'ouvre depuis le bas de la page") if pan_["ouvert"] \
-                    else mauvais(f"{nom} : le bouton n'ouvre rien en bas de page")
-                # ⚠️ « SE VOIT » SE MESURE : une entrée peut exister, avoir une
-                #    boîte, et être repoussée hors de l'écran par les autres. On
-                #    compte celles qui tiennent VRAIMENT dans la fenêtre, et on
-                #    refuse un panneau qu'il faudrait faire défiler pour lire.
-                if pan_["dedans"] == pan_["total"]:
-                    bon(f"{nom} : les {pan_['total']} points du sommaire se voient tous")
-                else:
-                    mauvais(f"{nom} : {pan_['dedans']} points visibles sur {pan_['total']} "
-                            f"-> {pan_['dehors']}")
-                bon(f"{nom} : le panneau ne cache rien derrière un défilement") \
-                    if not pan_["coupe"] \
-                    else mauvais(f"{nom} : le panneau déborde de {pan_['deborde']} px, "
-                                 "les dernières entrées se cherchent")
-                # Le reste de la page devient inerte : sinon la tabulation sort
-                # du panneau vers des liens qu'on ne voit pas (leçon Hillary).
-                bon(f"{nom} : la page derrière le panneau est inerte") if pan_["inerte"] \
-                    else mauvais(f"{nom} : la page reste au clavier derrière le panneau")
+            page.wait_for_timeout(1400)
+            page.evaluate("() => window.scrollTo(0, 0)")
+            page.wait_for_timeout(800)
+            cibles_ = page.evaluate(JS_FAB_CIBLES)
+            bon(f"{nom} : sur les {cibles_['cibles']} liens et boutons de la page, "
+                "il n'en recouvre aucun") if not cibles_["pris"] \
+                else mauvais(f"{nom} : il recouvre {len(cibles_['pris'])} cible(s) "
+                             f"-> {cibles_['pris'][:3]}")
 
-                page.keyboard.press("Escape")
-                page.wait_for_timeout(900)
-                fin_ = page.evaluate("""() => ({
-                  ouvert: document.querySelector('#navC').classList.contains('ouvert'),
-                  focus: document.activeElement ? document.activeElement.id : '',
-                  inerte: !!document.querySelector('#haut').inert
-                })""")
-                bon(f"{nom} : Échap referme le panneau") if not fin_["ouvert"] \
-                    else mauvais(f"{nom} : Échap ne referme pas le panneau")
-                bon(f"{nom} : le focus revient sur le bouton (#{fin_['focus']})") \
-                    if fin_["focus"] == ouvreur_ \
-                    else mauvais(f"{nom} : le focus part ailleurs après la fermeture "
-                                 f"(#{fin_['focus']} au lieu de #{ouvreur_})")
-                bon(f"{nom} : la page redevient atteignable au clavier") if not fin_["inerte"] \
-                    else mauvais(f"{nom} : la page reste inerte après la fermeture")
+            page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
+            page.wait_for_timeout(800)
+            page.evaluate("() => document.querySelector('#fab').click()")
+            page.wait_for_timeout(900)
+            pan_ = page.evaluate(JS_PANNEAU)
+            bon(f"{nom} : le panneau s'ouvre depuis le bas de la page") if pan_["ouvert"] \
+                else mauvais(f"{nom} : le bouton flottant n'ouvre rien en bas de page")
+            # ⚠️ « MONTRER TOUT » SE MESURE : une entrée peut exister, avoir une
+            #    boîte, et être repoussée hors de l'écran par les autres.
+            if pan_["dedans"] == pan_["total"]:
+                bon(f"{nom} : les {pan_['total']} entrées du panneau se voient toutes")
+            else:
+                mauvais(f"{nom} : {pan_['dedans']} entrées visibles sur {pan_['total']} "
+                        f"-> {pan_['dehors']}")
+            bon(f"{nom} : le panneau ne cache rien derrière un défilement") \
+                if not pan_["coupe"] \
+                else mauvais(f"{nom} : le panneau déborde de {pan_['deborde']} px")
+            bon(f"{nom} : la page derrière le panneau est inerte") if pan_["inerte"] \
+                else mauvais(f"{nom} : la page reste au clavier derrière le panneau")
+            bon(f"{nom} : le halo se tait pendant que le panneau est ouvert") \
+                if not pan_["anime"] \
+                else mauvais(f"{nom} : le halo continue de battre sous le panneau ouvert")
+
+            page.keyboard.press("Escape")
+            page.wait_for_timeout(900)
+            fin_ = page.evaluate(JS_APRES)
+            bon(f"{nom} : Échap referme le panneau") if not fin_["ouvert"] \
+                else mauvais(f"{nom} : Échap ne referme pas le panneau")
+            bon(f"{nom} : le focus revient sur le bouton flottant") \
+                if fin_["focus"] == "fab" \
+                else mauvais(f"{nom} : le focus part ailleurs (#{fin_['focus']})")
+            bon(f"{nom} : la page redevient atteignable au clavier") if not fin_["inerte"] \
+                else mauvais(f"{nom} : la page reste inerte après la fermeture")
+
+            # ⚠️ LE BOUTON FLOTTANT S'AJOUTE, IL NE REMPLACE RIEN. Mongazi,
+            #    2026-09-04 : « il y avait directement tout qui était visible,
+            #    remets ça ». Sur ordinateur la rangée de liens se voit ; sur
+            #    téléphone c'est le hamburger qui la tient.
             page.evaluate("() => window.scrollTo(0, 0)")
             page.wait_for_timeout(700)
+            barre_ = page.evaluate(JS_BARRE)
+            if larg > 880:
+                bon(f"{nom} : la rangée de la barre montre ses {barre_['vus']} liens") \
+                    if barre_["vus"] >= 6 \
+                    else mauvais(f"{nom} : la barre ne montre que {barre_['vus']} liens")
+                bon(f"{nom} : pas de hamburger sur ordinateur") if not barre_["burger"] \
+                    else mauvais(f"{nom} : le hamburger apparaît sur ordinateur")
+            else:
+                bon(f"{nom} : le hamburger est là") if barre_["burger"] \
+                    else mauvais(f"{nom} : pas de hamburger sous 880 px")
+                page.evaluate("() => document.querySelector('#burger').click()")
+                page.wait_for_timeout(900)
+                tir_ = page.evaluate(JS_TIROIR)
+                bon(f"{nom} : le hamburger ouvre le tiroir et ses {tir_['dedans']} liens") \
+                    if tir_["ouvert"] and tir_["dedans"] >= 6 \
+                    else mauvais(f"{nom} : le tiroir montre {tir_['dedans']} liens "
+                                 f"(ouvert={tir_['ouvert']})")
+                page.keyboard.press("Escape")
+                page.wait_for_timeout(700)
+
 
             # Le défilement est écrit à la main, donc `scroll-margin-top` doit
             # être retranché explicitement. Quand on l'oublie, l'étiquette de
@@ -463,14 +568,15 @@ def main():
             #    plantaient pas — le contrôle rend `None` et annonce « absent à
             #    cette taille » — mais un contrôle qui décrit un élément
             #    disparu ne protège plus rien et fait croire qu'il veille.
-            # ⚠️ `.son` CONTRE LE BOUTON DU HÉROS : le bouton du son est en
-            #    `position:fixed` en bas à droite, et il s'était posé sur
+            # ⚠️ LES DEUX FLOTTANTS CONTRE LE SOMMAIRE : le bouton du son et
+            #    le bouton flottant sont en `position:fixed` dans la même
+            #    colonne de droite, et le son s'était posé sur
             #    « DÉCOUVRIR LES ŒUVRES » — 11 × 34 px, à 390 px seulement,
             #    c'est-à-dire pile la pastille qu'Angélique a nommée et pile
             #    la largeur où elle regarde. Un instrument flottant ne
             #    recouvre jamais du texte (règle née sur Mon Bénin).
             for a_, b_ in [(".hero-lg", ".cadre"), (".hero-mx li", ".cadre"),
-                           (".son", ".hero-dec")]:
+                           (".son", ".hero-plan a"), (".fab", ".hero-plan a")]:
                 croise = page.evaluate("""([sa, sb]) => {
                   const A = document.querySelector(sa);
                   const Bs = [...document.querySelectorAll(sb)];
@@ -960,7 +1066,7 @@ def main():
             const r = a.getBoundingClientRect();
             return r.width > 0 && r.height > 0 && r.right <= innerWidth + 1 && r.left > -1;
           });
-          const b = document.querySelector('#dec');
+          const b = document.querySelector('.fab-z');
           return { liens: as.length,
                    bouton: b ? getComputedStyle(b).display : 'absent',
                    flotte: getComputedStyle(document.querySelector('#nav')).position };
@@ -968,7 +1074,7 @@ def main():
         bon(f"sans JS : les {sansjs_['liens']} entrées du sommaire restent atteignables") \
             if sansjs_["liens"] >= 7 \
             else mauvais(f"sans JS : plus que {sansjs_['liens']} entrées atteignables")
-        bon("sans JS : le bouton « DÉCOUVRIR » se retire au lieu de ne rien faire") \
+        bon("sans JS : le bouton flottant se retire au lieu de ne rien faire") \
             if sansjs_["bouton"] == "none" \
             else mauvais(f"sans JS : le bouton reste ({sansjs_['bouton']}) et n'ouvre rien")
         bon("sans JS : la barre ne flotte pas au-dessus du texte") \

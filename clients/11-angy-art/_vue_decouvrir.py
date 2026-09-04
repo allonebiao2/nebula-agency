@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-"""ANGY ART — photographier le bouton « DÉCOUVRIR » et ce qu'il ouvre.
+"""ANGY ART — photographier le bouton flottant et ce qu'il ouvre.
 
     python _vue_decouvrir.py
 
-Six images dans `_vues/` : le héros (bouton fermé), le panneau ouvert, et la
-même page en bas d'écran où seul le bouton de la barre reste, en 390 et en 1440.
+Huit images dans `_vues/` : le héros avec son sommaire, le bouton flottant en
+plein milieu de page, son panneau ouvert, et le tiroir du hamburger — en 390 et
+en 1440.
 
 ⚠️ CES IMAGES SE REGARDENT. Un QC vert dit que rien n'est cassé, pas que c'est
-lisible : les quatre défauts du 2026-08-26 chez Au Braisé d'Or et les trois du
-2026-08-21 ici ont tous été trouvés sur des captures, jamais dans le code.
+lisible : les trois défauts du 2026-09-04 (le panneau qui recouvrait le bouton
+qui l'ouvrait, la demande de visite coupée en deux, le cadre de focus au simple
+toucher) ont tous été trouvés là, jamais dans le code.
 """
 import functools, http.server, os, socketserver, threading
 
@@ -47,19 +49,26 @@ def main():
 
             page.screenshot(path=os.path.join(SORTIE, f"dec-{larg}-1-heros.png"))
 
-            page.evaluate("() => document.querySelector('#heroDec').click()")
+            page.evaluate("() => window.scrollTo(0, document.body.scrollHeight * 0.55)")
+            page.wait_for_timeout(1400)
+            page.screenshot(path=os.path.join(SORTIE, f"dec-{larg}-2-flottant.png"))
+
+            page.evaluate("() => document.querySelector('#fab').click()")
             page.wait_for_timeout(900)
-            page.screenshot(path=os.path.join(SORTIE, f"dec-{larg}-2-panneau.png"))
+            page.screenshot(path=os.path.join(SORTIE, f"dec-{larg}-3-panneau.png"))
 
             page.keyboard.press("Escape")
             page.wait_for_timeout(700)
-            page.evaluate("() => window.scrollTo(0, document.body.scrollHeight * 0.55)")
-            page.wait_for_timeout(1400)
-            page.screenshot(path=os.path.join(SORTIE, f"dec-{larg}-3-barre.png"))
+            page.evaluate("() => window.scrollTo(0, 0)")
+            page.wait_for_timeout(900)
+            if larg <= 880:
+                page.evaluate("() => document.querySelector('#burger').click()")
+                page.wait_for_timeout(900)
+            page.screenshot(path=os.path.join(SORTIE, f"dec-{larg}-4-barre.png"))
             ctx.close()
         nav.close()
     srv.shutdown()
-    print(f"six images -> _vues/dec-*.png")
+    print("huit images -> _vues/dec-*.png")
 
 
 if __name__ == "__main__":
