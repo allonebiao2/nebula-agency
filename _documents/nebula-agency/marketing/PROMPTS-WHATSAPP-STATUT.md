@@ -9,7 +9,7 @@
 >
 > **Ce qui ne change jamais :** le label « LE SAVIEZ-VOUS ? », ancre de la rubrique.
 >
-> Version 1.1 · 2026-08-29
+> Version 1.2 · 2026-08-30
 
 ---
 
@@ -1666,7 +1666,383 @@ répond son métier a déjà commencé la vente sans le savoir.
 
 ---
 
-## 9. Contrôles avant publication
+## 9. Statut n° 7 · « EN CE MOMENT » · la peur, poussée au maximum
+
+**Ce qui est demandé :** l’urgence et la peur en avant, et l’envie d’acheter dès la dernière
+ligne lue. C’est le statut le plus agressif du document, et il n’est publiable **que parce
+que celui d’hier n’a rien vendu du tout.**
+
+### La peur qui marche, et les trois qui ne marchent pas
+
+**Ne marchent pas :** la peur inventée (« il ne reste que 3 places »), la peur générale
+(« le monde se digitalise »), la peur qui accuse (« vous êtes en retard »). La première se
+démonte, la deuxième glisse, la troisième vexe. Un commerçant vexé ne répond pas, il ferme
+le statut.
+
+**Marche :** **la perte qu’on ne voit pas.** Un client qui vous cherche et ne vous trouve
+pas ne se plaint jamais. Il n’écrit pas, il ne râle pas, il ne dit rien. **Il achète
+ailleurs, et vous ne saurez jamais qu’il a existé.**
+
+C’est la seule peur de la liste qui soit **vraie, invisible et sans reproche**. Le lecteur
+ne peut pas la contredire, et surtout : **il ne peut pas se rassurer tout seul.** Il n’a
+aucun moyen de vérifier que ça ne lui arrive pas. Une inquiétude qu’on ne peut pas éteindre
+soi-même cherche une sortie, et la sortie, c’est nous.
+
+### L’urgence, sans faux compte à rebours
+
+Rien n’expire, rien n’est limité, aucune place n’est comptée. **L’urgence est que la perte
+est continue et définitive.** Les clients d’hier ne reviennent pas, ceux de demain seront
+plus nombreux. C’est vrai, ça ne se démonte pas, et ça ne s’use pas.
+
+> **« Demain, ils seront plus nombreux. »**
+
+### Les mots
+
+> **Vous perdez des clients** · **en ce moment**
+>
+> *Ils ont cherché. Ils n’ont pas trouvé.*
+> *Ils ont acheté ailleurs, et vous ne le saurez jamais.*
+> *Demain, ils seront plus nombreux.*
+
+**« en ce moment » est le mot énorme du cadre en pointillés.** Trois mots, présent, aucun
+verbe : à 20 % il se lit encore, et il fait relever les yeux vers la petite ligne au-dessus.
+La peur est au présent ou elle n’est pas.
+
+⚠️ **C’est la ligne la plus dure jamais écrite ici.** Elle est défendable : pour un
+commerçant absent d’internet, quelqu’un cherche en ce moment ce qu’il vend. Ce n’est pas une
+statistique, c’est l’ordinaire, et le statut donne le moyen de le vérifier. Si elle paraît
+trop frontale un jour, la remplacer par **« sans le savoir »** dans le cadre. Le reste ne
+bouge pas.
+
+### L’image
+
+**Une main serrée, en très gros plan, et du sable lumineux qui coule entre les doigts** et
+se perd dans le noir. Chaque grain est un client parti sans rien dire.
+
+Pourquoi le sable : il **tombe tout seul**, on ne peut pas le rattraper, et il compte le
+temps. Trois idées du post dans un seul objet. Et pourquoi lumineux : dans la direction de
+la référence, **c’est la lumière qui désigne le sujet**, et une main qui se vide de sa
+lumière raconte la perte sans une flèche ni un graphique.
+
+C’est la même direction que « LA VOIE VIDE » (fond navy, duotone bleu, barre pleine et
+cadre en pointillés), avec **une scène diamétralement différente** : hier un boulevard vu de
+loin, aujourd’hui un macro serré. Deux statuts reconnaissables comme venant de la même
+maison, sans se ressembler. C’est ce qui fait une direction, et plus une référence.
+
+### Ce que le statut demande, et ce que ça engage
+
+**« Répondez TEST à ce statut. »** On cherche leur commerce devant eux et on leur envoie ce
+qu’on trouve. C’est gratuit, ça prend deux minutes, et **c’est la démonstration la plus
+convaincante qui existe** : le doute qu’on vient d’installer, ils le lèvent eux-mêmes, et il
+se referme du mauvais côté.
+
+⚠️ **Ça engage vraiment.** Promettre une recherche et la faire attendre coûte plus cher que
+tout le statut. **Les deux réponses possibles doivent être prêtes avant de publier**, y
+compris celle du cas où le commerçant apparaît bien.
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+"EN CE MOMENT" — electric night direction
+===========================================================
+
+ATTACHED INPUTS — TWO attachments, IN THIS ORDER:
+  1st = THE STYLE REFERENCE
+  2nd = THE NEBULA LOGO
+Never swap their roles: swapping them ruins the image. If the order
+is ever unclear, fall back on their content, described below.
+
+  THE STYLE REFERENCE (first attachment) = a very dark navy poster
+     showing a blue-tinted dramatic close-up of a hand moving a
+     chess piece on a board, with a small white headline sitting on
+     a SOLID BLUE BAR that bleeds off the left edge, a much larger
+     white headline inside a DASHED BLUE RECTANGLE, a logo at the
+     top centre and a website address at the bottom centre.
+     REPRODUCE ITS DESIGN SYSTEM COMPLETELY AND FAITHFULLY:
+       - the DEEP NAVY / NEAR-BLACK ground
+       - ONE single cold BLUE light source from the UPPER LEFT,
+         hard, raking, leaving most of the frame in shadow
+       - the BLUE DUOTONE photographic treatment: desaturated,
+         high contrast, cinematic, almost monochrome
+       - a TIGHT DRAMATIC CLOSE-UP OF A HAND as the central subject,
+         filling the middle of the frame, at the same scale and with
+         the same theatrical lighting as in the reference
+       - the ROUNDED GEOMETRIC HEAVY SANS-SERIF lettering
+       - THE TWO-PART HEADLINE DEVICE: a small line on a SOLID
+         electric-blue bar bleeding off the LEFT EDGE, and under it
+         a much larger line inside a DASHED electric-blue rectangle
+       - the logo centred at the top, the address centred at the
+         very bottom
+       - its exact level of polish and finish
+     Take NOTHING of its subject and none of its words. There is NO
+     chess, NO chessboard, NO chess piece and NO game anywhere in
+     the new image, and the words "The Zubix" appear nowhere.
+
+  THE LOGO (second attachment) = the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with
+     "AGENCY" underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a
+     style reference and never a subject to reinterpret.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp status image for NEBULA Agency, a
+digital studio in Cotonou, Benin, that builds pages and online
+catalogues for West African merchants.
+The idea: something valuable is running out of a closed hand, right
+now, silently, and it cannot be caught again.
+Cinematic, cold, tense, premium. Never cheap, never clip-art.
+
+-----------------------------------------------------------
+THE SUBJECT — extreme close-up, same scale as the reference
+-----------------------------------------------------------
+A HUMAN HAND in the centre of the frame, dark brown skin, seen very
+close, held horizontally and CLENCHED into a loose fist, knuckles
+up, tilted slightly toward the camera.
+FROM BETWEEN THE FINGERS, FINE SAND IS POURING OUT in a thin
+continuous stream, falling into the darkness below and dispersing.
+THE SAND IS LUMINOUS: each grain glows cold electric blue, so the
+falling stream is the BRIGHTEST THING in the picture, and the hand
+that holds it is already darker than the sand escaping it.
+Some grains catch the light on the way down and scatter like sparks.
+The stream lands on a dark, matte, textured surface at the bottom
+and disappears into shadow: no pile, no heap, nothing recovered.
+The hand is straining slightly, tendons visible: it is trying to
+hold, and it is losing.
+
+Skin, sleeve and background all fall into the blue duotone. NO warm
+tones anywhere. NO jewellery, NO watch, NO ring, NO tattoo, NO
+sleeve logo.
+
+-----------------------------------------------------------
+THE LIGHT AND THE FRAME
+-----------------------------------------------------------
+One hard cold blue key light from the upper left, exactly as in the
+reference, raking across the knuckles and the falling sand.
+Everything else falls to near-black. The upper part of the frame is
+clean empty darkness: the logo and the headline sit on it.
+The lower part of the frame is dark, plain and uncluttered: the
+small lines of text sit there.
+Shallow depth of field, cinematic macro, visible skin texture and
+individual grains in the lit area.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place
+it at the TOP of the image, centred, on the dark background, small,
+exactly as provided, and KEEP that transparency.
+  - it sits DIRECTLY on the dark background. NO white box, NO black
+    box, NO coloured plate, NO rounded card, NO badge, NO outline,
+    NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - size it so its wordmark stays comfortably readable when the
+    whole image is viewed at 20% of its size.
+A logo pasted on a plate is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a status is covered by the interface
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface ON TOP of the image:
+  - the TOP 220 px are covered (profile picture, name, time)
+  - the BOTTOM 340 px are covered (the "Reply" field)
+The logo, every line of type, the hand and the falling sand must ALL
+sit between y = 220 px and y = 1580 px. Nothing that matters may
+fall inside those two strips.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+HEADLINE, part 1 — small white bold text on a SOLID ELECTRIC-BLUE
+BAR that starts off the LEFT EDGE of the canvas and stops after the
+words, exactly the device used in the reference:
+    "Vous perdez des clients"
+
+HEADLINE, part 2 — directly under it, MUCH larger, white, the
+loudest element of the whole image, inside a DASHED ELECTRIC-BLUE
+RECTANGLE OUTLINE, exactly the device used in the reference:
+    "en ce moment"
+
+THE MECHANISM, lower area, over the dark background, two lines,
+centred, medium size, white:
+    "Ils ont cherché. Ils n’ont pas trouvé."
+    "Ils ont acheté ailleurs, et vous ne le saurez jamais."
+
+THE URGENCY, one line under it, smaller, in electric blue:
+    "Demain, ils seront plus nombreux."
+
+THE ANSWER TO GIVE, one line under it, small, white, semi-bold:
+    "Répondez TEST à ce statut."
+
+FOOTER, at the very bottom of the safe area, tiny, centred, white at
+reduced opacity:
+    "nebula-agency.online"
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom, all inside the safe band:
+  1. NEBULA logo, centred on the dark background
+  2. blue bar + "Vous perdez des clients"   (bleeds off the left)
+  3. dashed rectangle + "en ce moment"      <- loudest zone
+  4. THE CLENCHED HAND AND THE FALLING LUMINOUS SAND  <- largest
+  5. the two lines of THE MECHANISM
+  6. THE URGENCY
+  7. "Répondez TEST à ce statut."
+  8. nebula-agency.online
+Lines 5 to 8 form ONE tight block over the dark lower area, with
+generous space between that block and the hand above.
+No text may cross the falling sand: the stream must stay clean and
+unbroken from the fingers to the bottom of the subject area.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "n’ont".
+- Correct diacritics: "cherché", "acheté", "à".
+- The word "TEST" stays in capitals, exactly as written. Do not turn
+  it into a button, a pill or a badge: it is plain text.
+- "en ce moment" must still be readable when the image is viewed at
+  20% of its size, and it must be the first thing the eye reads.
+- No hashtag, no emoji, no icon, no arrow, no clock, no hourglass,
+  no countdown, no timer, no star, no rating, no percentage sign.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO chess, NO chessboard, NO chess piece, NO game.
+  The reference gives the design system and NOTHING of its subject.
+- NO hourglass and NO clock anywhere: the sand alone tells the time.
+- NO price, NO amount, NO currency symbol, NO offer, NO discount,
+  NO percentage.
+- NO invented statistics, follower counts, client counts, ratings or
+  stars. No figures anywhere in the image.
+- NO visible human face, NO head, NO body: one hand and part of a
+  forearm only.
+- NO coins, NO banknotes, NO money of any kind falling from the
+  hand: it is sand, and only sand.
+- NO recognisable third-party brand, logo or app, and the words
+  "The Zubix" must not appear.
+- NO watermark, no frame, no border around the image itself.
+- One idea, told once. No second object, no second message.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready, cinematic
+quality, high-fidelity text rendering.
+===========================================================
+```
+
+### Pour le fil Instagram et Facebook (4:5)
+
+Même prompt, en remplaçant le bloc FORMAT. **La ligne « Répondez TEST à ce statut. »
+disparaît** : sur un fil on ne répond pas à un statut. Elle passe dans la légende.
+
+```
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. No safe zones: the whole canvas is visible.
+Crop tighter on the hand so it fills more of the frame, and keep the
+same top-to-bottom order.
+
+REMOVE ONE LINE: do not render "Répondez TEST à ce statut." on this
+version. Everything else is unchanged.
+```
+
+### Le texte à écrire sous le statut
+
+```
+Un client mécontent, vous le savez. Il vous le dit, il râle, il revient
+se plaindre.
+
+Un client qui ne vous a pas trouvé ne dit rien.
+
+Il a cherché votre commerce, il n’a rien vu, il a acheté ailleurs et il
+n’y a plus jamais repensé. Vous n’avez reçu aucun message. Vous n’avez
+rien vu passer. Pour vous, cette vente n’a jamais existé.
+
+C’est le seul argent qu’on perd sans jamais l’apprendre.
+
+Répondez TEST : je cherche votre commerce devant vous, et je vous envoie
+exactement ce que votre client voit. C’est gratuit et ça prend deux
+minutes.
+```
+
+**Pourquoi ça convertit :** le statut installe un doute que le lecteur **ne peut pas lever
+tout seul**, puis lui tend le seul moyen de le lever. Répondre devient plus confortable que
+ne pas répondre. C’est tout le mécanisme, et il est honnête : le test est réel et gratuit.
+
+### Les deux réponses à préparer avant de publier
+
+⚠️ **Il y a deux cas, et le second arrive souvent.** N’en préparer qu’un, c’est se
+retrouver muet devant la moitié des réponses.
+
+**Cas 1 · on ne le trouve pas.**
+
+```
+J’ai cherché [nom du commerce] comme le ferait un client. Voilà exactement
+ce qui apparaît. [capture]
+
+Ce n’est pas un problème de qualité, ni de prix, ni de réputation. C’est un
+problème d’adresse : il n’y a rien à trouver.
+
+La première marche est simple : on range tout ce que vous vendez à une seule
+adresse, que vous envoyez en un lien. Dites-moi votre activité, je vous
+envoie un exemple dans votre métier.
+```
+
+**Cas 2 · on le trouve, mais mal.**
+
+```
+Bonne nouvelle : on vous trouve. [capture]
+
+Regardez maintenant ce que le client voit vraiment : pas de prix, pas de
+liste de ce que vous vendez, la dernière publication date d’il y a
+longtemps. Il a l’information qu’il vous cherchait, pas celle qui le fait
+acheter.
+
+Vous existez. Il manque l’endroit où on voit ce que vous vendez et combien.
+Dites-moi votre activité, je vous envoie un exemple dans votre métier.
+```
+
+**Dans les deux cas on finit sur une demande minuscule** (« votre activité »), jamais sur un
+prix : le socle veut qu’on entre par le Catalogue, et c’est la conversation qui décide de la
+marche.
+
+### Contrôles propres à ce statut
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Le sable est plus lumineux que la main** | c’est la perte qui doit briller, pas celui qui perd |
+| **Rien ne se dépose en bas** | un petit tas, et on croit que ça se rattrape |
+| Aucun sablier, aucune horloge, aucun compte à rebours | le sable dit déjà le temps ; un sablier fait publicité |
+| **Aucune pièce, aucun billet** | de l’argent qui tombe d’une main, c’est un autre post et une autre promesse |
+| Aucun échiquier, aucune main sur une table | on prend le système de la référence, jamais son sujet |
+| Aucun texte ne traverse le filet de sable | c’est la seule chose que l’œil doit suivre |
+| Rien dans les 220 px du haut ni les 340 px du bas | |
+| **Réduire à 20 %** | si « en ce moment » ne se lit plus, le statut est mort |
+| **Les DEUX réponses à « TEST » sont prêtes** | la moitié des gens sont dans le cas 2 |
+| **Faire le test le jour même** | promettre une recherche et la faire attendre coûte plus que tout le statut |
+| Aucune statistique | règle absolue de la maison |
+
+⚠️ **Le prochain statut ne fait pas peur.** Deux peurs d’affilée et on devient la personne
+qui angoisse tout le monde ; celui d’après doit donner quelque chose sans rien demander.
+
+---
+
+## 10. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -1682,18 +2058,19 @@ répond son métier a déjà commencé la vente sans le savoir.
 
 ---
 
-## 10. Les prochains statuts
+## 11. Les prochains statuts
 
 Même gabarit : le label, la hiérarchie brutale, les zones mortes, et surtout **la question
 fermée qui se répond d'un caractère**.
 
 | Statut | L'accroche | Ce qu'on demande de répondre |
 |---|---|---|
-| **Introuvable** | « ILS ONT CHERCHÉ VOTRE COMMERCE. RIEN. » | « TEST », et on fait la recherche pour eux |
 | **Le prix caché** | « CE N'EST PAS VOTRE PRIX QUI FAIT FUIR. » | « OUI » ou « NON » : affichez-vous vos prix ? |
 | **L'heure du soir** | « ON VOUS ÉCRIT QUAND VOUS DORMEZ. » | l'heure à laquelle ils reçoivent le plus de messages |
 
-*Le statut « Introuvable » a son prompt complet dans `POST-DU-JOUR-MULTICANAL.md`.*
+*Le statut « Introuvable » qui était prévu ici est **fait** : c’est le § 9,
+« EN CE MOMENT ». Une première version plus ancienne existe aussi dans
+`POST-DU-JOUR-MULTICANAL.md`.*
 
 ⚠️ **Ne jamais enchaîner deux statuts qui font peur.** Entre deux, en publier un qui ne
 vend rien et donne un savoir utile. C'est lui qui achète le droit d'être cru la fois
