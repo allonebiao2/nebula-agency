@@ -650,6 +650,63 @@ seul en **7 jours au maximum** — revérifier après le **2026-09-12**.
 `graindesthetique.com`) : il n'en connaissait qu'une, et ne savait donc pas
 purger ce site.
 
+### PASSE SEO du 2026-09-05 (mesurée sur le site en ligne, pas supposée)
+
+⛔ **CLS 0,52 sur la clinique et 0,51 sur Cozy** (le seuil de Google est 0,1),
+et **0,19 sur INA**. Trois causes, toutes trouvées en relevant les *sources*
+du décalage et non en devinant :
+
+1. **Mon rai de lumière s'animait en `left`** — donc chaque image comptait
+   comme un décalage de mise en page, et l'élément fait 800 px de haut : à lui
+   seul **0,49**. Passé en `transform: translateX()` : même mouvement, zéro
+   décalage, et c'est le compositeur qui travaille. *Règle : on anime
+   `transform` et `opacity`, jamais une propriété qui touche la mise en page.*
+2. **Cozy : la rangée de filtres était construite en JavaScript** — elle
+   passait de 0 à 58 px et poussait tout ce qui suit (**0,28**). Réserver une
+   hauteur ne suffisait pas (il restait 14 px) : **les 4 catégories sont
+   maintenant écrites dans la page**, et `buildFilters()` les remplace à
+   l'identique. Bonus : leurs noms deviennent lisibles par un moteur.
+3. **INA : le menu latéral et la grille sont construits en JavaScript** — le
+   pied de page sautait de 600 px (**0,19**). `#accordion{min-height:640px}` et
+   `#grid{min-height:70vh}`, hauteurs **mesurées** (663 px à 1440, 647 à 390).
+
+**Mesuré après : 0,003 · 0,002 · 0,010 · 0,002.**
+
+⛔ **La page INA pesait 1,5 Mo.** Vingt-six photos produits sortaient en
+**1179 px** (l'export brut d'un téléphone) et pesaient jusqu'à 350 Ko, quand
+les vingt-cinq autres — normalisées en mai — font 28 Ko. `_outils/_alleger.py`
+les ramène à 700 px / q80 : **3 287 Ko → 725 Ko (−78 %)**, et l'avant/après
+est **indiscernable à la taille réelle d'affichage** (la carte fait 330 px).
+**INA : 1 508 Ko → 450 Ko.** ⚠️ Les originaux restent dans git.
+
+**Le balisage de la clinique est LU dans la page** (`_outils/_jsonld.py`, à
+relancer après toute modification des tarifs) : `HealthAndBeautyBusiness` +
+**les horaires** (lundi→samedi 10h-17h, qui venaient de changer et
+n'apparaissaient nulle part) + **les 11 soins en `Offer`** avec leur prix en
+XOF + la fourchette réelle « 15 000 - 150 000 FCFA » + Mme Sabrina en
+`employee`. ⛔ Aucune note, aucun avis, **aucune adresse de rue** : Gloria ne
+l'a jamais donnée, et une adresse inventée dans un balisage local est pire
+qu'une adresse absente.
+
+**Aussi** : les 3 pages d'impression (2 affiches + carte de visite) étaient
+**indexables** → `noindex,nofollow` (les 4 pages internes l'étaient déjà) ·
+le `sitemap.xml` datait du **12 juillet** → 5 septembre · le saut de niveau
+**H1→H3** d'INA et de Cozy est comblé par un titre de région réservé aux
+lecteurs d'écran (`.sr-titre`).
+
+**Ce qui était déjà bon** : un H1 par page · titres 49-57 caractères ·
+descriptions 119-152 · canonical et `og:url` en URL propres sur les 4 pages ·
+`og:image` partout · `lang="fr"` · robots.txt et sitemap servis · aucune image
+sans attribut `alt` · HTTPS et HSTS.
+
+⏳ **Ce qui ne se fait pas d'ici** : la **fiche Google Business Profile** (le
+compte de Gloria), la vérification dans **Search Console** + l'envoi du
+sitemap, et l'**adresse exacte de l'institut** — c'est elle qui débloque le
+référencement local, et personne ne peut la donner à sa place.
+⏳ **À confirmer avec Gloria** : « lundi→samedi 10h-17h » est-il l'horaire de
+la maison entière, ou seulement celui des rendez-vous de Mme Sabrina ? Les
+horaires ne sont pour l'instant balisés que sur la page de la clinique.
+
 ### Reste à faire
 
 - ⏳ recharger WaveSpeed → `python _outils/_gen_soins.py` (≈ 0,70 $)

@@ -78,12 +78,23 @@ textarea:focus-visible,select:focus-visible,summary:focus-visible{
   to{transform:scale(1.13) translate3d(-1.4%,-1.4%,0);}}
 .hero-voile{position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(253,246,243,.86) 0%,rgba(253,246,243,.72) 42%,rgba(253,246,243,.94) 100%);}
-.hero-rai{position:absolute;top:-30%;bottom:-30%;width:32%;left:-40%;pointer-events:none;
+/* ⛔ `left` anime = decalage de mise en page a chaque image (CLS mesure a
+   0,51 le 2026-09-05). `transform` fait le meme mouvement sans y toucher. */
+.hero-rai{position:absolute;top:-30%;bottom:-30%;width:32%;left:0;pointer-events:none;
   background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);
-  transform:skewX(-14deg);animation:cozyRai 9s ease-in-out 1.2s infinite;}
-@keyframes cozyRai{0%{left:-40%;opacity:0;}8%{opacity:.9;}26%{left:112%;opacity:0;}100%{left:112%;opacity:0;}}
+  transform:skewX(-14deg) translateX(-140%);will-change:transform;
+  animation:cozyRai 9s ease-in-out 1.2s infinite;}
+@keyframes cozyRai{
+  0%{transform:skewX(-14deg) translateX(-140%);opacity:0;}
+  8%{opacity:.9;}
+  26%,100%{transform:skewX(-14deg) translateX(360%);opacity:0;}}
 
 
+/* ⚠️ Les quatre categories sont ECRITES DANS LA PAGE (elles sont fixes) et
+   non plus creees en JavaScript : la rangee passait de 0 a 58 px et poussait
+   tout ce qui suit (0,28 de CLS mesure). Reserver une hauteur ne suffisait
+   pas — il restait 14 px d'ecart. `buildFilters()` les remplace ensuite par
+   des boutons identiques, sans rien deplacer. */
 .cat-band{position:relative;overflow:hidden;border-radius:18px;margin:6px 0 20px;
   min-height:clamp(120px,15vw,180px);display:flex;align-items:flex-end;
   background:var(--rose-pale);box-shadow:0 26px 50px -34px rgba(60,42,48,.4);}
@@ -503,6 +514,7 @@ button,a.btn,a[class*="-cta"],a[class*="chip"],a[class*="-btn"],a[class*="-wa"],
 .btn-add,.btn-wa,.card-cta,#helpWa,.help-strip a{min-height:44px;display:inline-flex;align-items:center;}
 /* la note du heros est posee sur une pastille rose pale : 4,39:1, il en faut 4,5 */
 .hero-note{color:#8e4a5e;}
+.sr-titre{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
 </style>
 </head>
 <body>
@@ -561,13 +573,19 @@ button,a.btn,a[class*="-cta"],a[class*="chip"],a[class*="-btn"],a[class*="-wa"],
           </button>
         </div>
       </div>
-      <div class="filters" id="filters"></div>
+      <div class="filters" id="filters">
+        <button class="fpill active" type="button">Tout Cozy</button>
+        <button class="fpill" type="button">Hygiène intime</button>
+        <button class="fpill" type="button">SELFCARE</button>
+        <button class="fpill" type="button">Produits raffermissants</button>
+      </div>
       <div class="cat-band" id="catBand">
         <img src="assets/images/ambiances/cozy-heros.webp" alt="" loading="lazy" decoding="async" width="1800" height="1005">
         <span class="cb-voile"></span>
         <span class="cb-glisse"></span>
         <span class="cb-mot">Toute la maison Cozy</span>
       </div>
+      <h2 class="sr-titre">Les produits Cozy</h2>
       <div class="grid-meta" id="gridMeta"></div>
       <div class="grid" id="grid"></div>
 

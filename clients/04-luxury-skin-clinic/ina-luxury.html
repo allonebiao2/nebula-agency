@@ -213,6 +213,14 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
   display:flex;flex-direction:column;justify-content:flex-end;gap:5px;
   border:1px solid rgba(201,168,76,.2);transition:transform .5s var(--ease),border-color .4s;}
 .fam-card:hover{transform:translateY(-8px);border-color:rgba(236,217,164,.5);}
+/* ⚠️ TOUT EST CONSTRUIT EN JAVASCRIPT ICI : le menu lateral et la grille
+   passent de rien a leur hauteur d'un coup, et poussent le pied de page de
+   600 px. Mesure du 2026-09-05 sur le site en ligne : CLS 0,19, quand le
+   seuil est 0,1. On reserve la place AVANT que le script ne la remplisse.
+   Les hauteurs viennent d'une mesure (menu 663 px a 1440, 647 a 390 ;
+   la grille depasse toujours largement un ecran). */
+#accordion{min-height:640px;}
+#grid{min-height:70vh;}
 .back-hub{min-height:44px;padding:6px 2px;}
 .cart-btn{min-height:44px;min-width:44px;justify-content:center;}
 .q-dec,.q-inc{min-width:44px;}
@@ -715,6 +723,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
   .rev-mini{font-size:.7rem;padding:4px 9px;letter-spacing:.06em;}
   .card-reviews{gap:7px;}
 }
+.sr-titre{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
 </style>
 </head>
 <body>
@@ -1654,6 +1663,8 @@ function renderRoutines(){
   });
 }
 function renderFamCards(){
+  const titre=document.createElement('h2');titre.className='sr-titre';
+  titre.textContent='Les univers INA Luxury';
   const wrap=document.createElement('div');wrap.className='fam-cards';
   FAMILIES.forEach(f=>{
     const cnt=PRODUCTS.filter(p=>p.f===f.key).length;
@@ -1665,7 +1676,7 @@ function renderFamCards(){
     card.addEventListener('click',()=>select(f.key,null,null));
     wrap.appendChild(card);
   });
-  famCardsWrap.innerHTML='';famCardsWrap.appendChild(wrap);
+  famCardsWrap.innerHTML='';famCardsWrap.appendChild(titre);famCardsWrap.appendChild(wrap);
 }
 function renderGrid(){
   // mode recherche : recherche cross-marque (INA + Cozy + Skin Clinic)
