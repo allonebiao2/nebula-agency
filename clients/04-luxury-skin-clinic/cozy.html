@@ -63,6 +63,44 @@ textarea:focus-visible,select:focus-visible,summary:focus-visible{
   var(--blanc);}
 #particles{position:fixed;inset:0;z-index:1;pointer-events:none;}
 
+/* ===== LA SOIE DE COZY (2026-09-05) =====================================
+   Le heros garde sa lumiere : la soie passe SOUS un voile clair, le texte
+   reste a l'encre. Et la bande de matiere suit la categorie choisie — le
+   voile glisse d'une matiere a l'autre, c'est la signature de la page.
+   ==================================================================== */
+.hero{position:relative;isolation:isolate;overflow:hidden;
+  padding:clamp(70px,10vw,104px) 26px clamp(48px,7vw,72px);}
+.hero-in{position:relative;z-index:2;}
+.hero-media{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--blanc);}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:50% 52%;
+  transform:scale(1.05);animation:cozyKen 34s ease-in-out infinite alternate;}
+@keyframes cozyKen{from{transform:scale(1.05) translate3d(0,0,0);}
+  to{transform:scale(1.13) translate3d(-1.4%,-1.4%,0);}}
+.hero-voile{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(253,246,243,.86) 0%,rgba(253,246,243,.72) 42%,rgba(253,246,243,.94) 100%);}
+.hero-rai{position:absolute;top:-30%;bottom:-30%;width:32%;left:-40%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);
+  transform:skewX(-14deg);animation:cozyRai 9s ease-in-out 1.2s infinite;}
+@keyframes cozyRai{0%{left:-40%;opacity:0;}8%{opacity:.9;}26%{left:112%;opacity:0;}100%{left:112%;opacity:0;}}
+
+
+.cat-band{position:relative;overflow:hidden;border-radius:18px;margin:6px 0 20px;
+  min-height:clamp(120px,15vw,180px);display:flex;align-items:flex-end;
+  background:var(--rose-pale);box-shadow:0 26px 50px -34px rgba(60,42,48,.4);}
+.cat-band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.cb-voile{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(60,42,48,.05) 0%,rgba(60,42,48,.34) 62%,rgba(60,42,48,.62) 100%);}
+.cb-glisse{position:absolute;inset:0;background:var(--blanc);
+  transform:translateX(-101%);transition:transform .34s cubic-bezier(.62,.03,.2,1);}
+.cat-band.glisse .cb-glisse{transform:translateX(0);}
+.cb-mot{position:relative;z-index:2;padding:clamp(16px,2.6vw,26px) clamp(18px,3vw,30px);
+  font-family:'Cormorant Garamond',serif;font-style:italic;color:#fff;
+  font-size:clamp(1.1rem,2.6vw,1.7rem);text-shadow:0 2px 14px rgba(40,26,32,.6);}
+@media(prefers-reduced-motion:reduce){
+  .hero-media img,.hero-rai{animation:none;}
+  .cb-glisse{transition:none;}
+}
+
 .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;border-radius:50%;
   will-change:transform;}
 .cursor-dot{width:6px;height:6px;background:var(--rose-fonce);transform:translate(-50%,-50%);}
@@ -439,6 +477,32 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 }
 @media(max-width:400px){.grid{grid-template-columns:1fr;}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.15s!important;}}
+
+/* =======================================================================
+   VISIBILITE — mesuree sur les pixels rendus (2026-09-05)
+   Regle de la maison : la couleur de marque sert au TRAIT, jamais a la
+   LETTRE. Le rose #bd7d8e tombait a 2,9:1 sur le papier ; il garde les
+   traits, une seconde valeur porte le texte.
+   ======================================================================= */
+:root{--rose-texte:#9c5468;}
+.back-hub{min-height:44px;padding:6px 2px;}
+.hero-tag,.hero-note{color:var(--rose-texte);}
+/* un aplat rose porte du texte FONCE, jamais du blanc (1,59:1 mesure) */
+.fpill.active{color:#33232a;}
+/* la phrase de la bande doit porter sur n'importe quelle matiere */
+.cb-voile{background:linear-gradient(180deg,rgba(60,42,48,.06) 0%,rgba(60,42,48,.45) 55%,rgba(45,30,36,.78) 100%);}
+/* le panier se touche */
+.cart-btn{min-height:44px;min-width:44px;justify-content:center;}
+.fpill,.detail-toggle{min-height:44px;}
+.q-dec,.q-inc{min-width:44px;min-height:44px;}
+/* Cibles tactiles : TOUT bouton fait au moins 44 px. La regle est generale
+   plutot que nominative — la poser bouton par bouton, c'est en oublier un a
+   chaque ajout (six passes l'ont montre le 2026-09-05). Les liens ecrits
+   DANS une phrase gardent leur taille : on les atteint par la ligne. */
+button,a.btn,a[class*="-cta"],a[class*="chip"],a[class*="-btn"],a[class*="-wa"],a[class*="mini"],#finalWa,#helpWa,.crumb > *{min-height:44px;}
+.btn-add,.btn-wa,.card-cta,#helpWa,.help-strip a{min-height:44px;display:inline-flex;align-items:center;}
+/* la note du heros est posee sur une pastille rose pale : 4,39:1, il en faut 4,5 */
+.hero-note{color:#8e4a5e;}
 </style>
 </head>
 <body>
@@ -466,6 +530,12 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 
 <main>
   <div class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <img src="assets/images/ambiances/cozy-heros.webp" alt="" fetchpriority="high" decoding="async" width="1800" height="1005">
+      <span class="hero-voile"></span>
+      <span class="hero-rai"></span>
+    </div>
+    <div class="hero-in">
     <div class="hero-tag reveal">
       <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.3 8.3 2 4.5 5.5 4.5c2.2 0 3.7 1.2 4.5 2.6.8-1.4 2.3-2.6 4.5-2.6 3.5 0 5.2 3.8 3.5 7.2C19.5 16.4 12 21 12 21z"/></svg>
       L'intime, en toute douceur
@@ -477,6 +547,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
       <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.5 2.3 7.1L12 16.6 5.7 21l2.3-7.1-6-4.5h7.6z"/></svg>
       Formules douces · pensées pour vous
     </span></div>
+    </div>
   </div>
 
   <div class="catalog">
@@ -491,6 +562,12 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
         </div>
       </div>
       <div class="filters" id="filters"></div>
+      <div class="cat-band" id="catBand">
+        <img src="assets/images/ambiances/cozy-heros.webp" alt="" loading="lazy" decoding="async" width="1800" height="1005">
+        <span class="cb-voile"></span>
+        <span class="cb-glisse"></span>
+        <span class="cb-mot">Toute la maison Cozy</span>
+      </div>
       <div class="grid-meta" id="gridMeta"></div>
       <div class="grid" id="grid"></div>
 
@@ -779,6 +856,27 @@ const Ambiance=(function(){
   }
 })();
 
+/* ===== LA BANDE DE MATIERE (elle suit la categorie choisie) ===== */
+const MATIERE={all:'cozy-heros',intime:'cozy-intime',selfcare:'cozy-selfcare',
+               raffermissant:'cozy-fermete'};
+const MATIERE_MOT={all:'Toute la maison Cozy',intime:'La douceur, au plus près',
+                   selfcare:'Le soin que l\'on se donne',raffermissant:'La fermeté, patiemment'};
+function poseMatiere(){
+  const bande=document.getElementById('catBand');
+  if(!bande)return;
+  const img=bande.querySelector('img'), mot=bande.querySelector('.cb-mot');
+  const cle=MATIERE[curCat]?curCat:'all';
+  const src='assets/images/ambiances/'+MATIERE[cle]+'.webp';
+  if(img.getAttribute('src')===src)return;
+  /* le voile glisse : on couvre, on echange, on decouvre */
+  bande.classList.add('glisse');
+  setTimeout(function(){
+    img.src=src;
+    mot.textContent=MATIERE_MOT[cle];
+    bande.classList.remove('glisse');
+  }, 340);
+}
+
 /* ===== FILTRES ===== */
 function buildFilters(){
   const root=document.getElementById('filters');root.innerHTML='';
@@ -786,7 +884,7 @@ function buildFilters(){
     const b=document.createElement('button');
     b.className='fpill'+(c.key===curCat?' active':'');
     b.textContent=c.label;
-    b.addEventListener('click',()=>{curCat=c.key;render();});
+    b.addEventListener('click',()=>{curCat=c.key;render();poseMatiere();});
     root.appendChild(b);
   });
 }
@@ -1530,7 +1628,7 @@ if(mute){
 @media(max-width:600px){.lc-cat-btn{font-size:.86rem;padding:10px 14px;}}
 </style>
 <button class="lc-cat-btn" id="lcCatBtn" aria-label="Ouvrir le catalogue">
-  <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Catalogue
+  <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Catalogue</span>
 </button>
 <div class="lc-cat-scrim" id="lcCatScrim"></div>
 <aside class="lc-cat-panel" id="lcCatPanel" aria-label="Catalogue Luxury Club 229">
@@ -1551,9 +1649,9 @@ var ARCH=[
     {n:'Enfant (0-16 ans)',subs:['Gel Lavant','Crème','Crème Lavante']}
   ]},
   {b:'Luxury Skin Clinic',href:'luxury-skin-clinic.html#soins',cats:[
-    {n:'Soins du visage',subs:['Consultation Peau','Consultation — Suivi','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
+    {n:'Soins du visage',subs:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
     {n:'Soins du corps',subs:['Gommage Luxury','Luxury Massage']},
-    {n:'Soins capillaires',subs:['Diagnostic Capillaire','Le Hair Spa','Activateur de Pousse']},
+    {n:'Soins capillaires',subs:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
     {n:'Expérience VIP',subs:['Le Soin Complet VIP']}
   ]},
   {b:'Cozy',href:'cozy.html',cats:[
@@ -1881,5 +1979,37 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
   });
 })();
 </script>
+
+<!-- ===== BANDE DE BORD (2026-09-05) =====================================
+     Un instrument flottant ne recouvre jamais du texte. Seule une bande de
+     bord en a le droit, et elle doit etre VRAIMENT opaque : les pastilles
+     sociales, le bouton du son et la pastille « Catalogue » se posent
+     desormais dessus au lieu de flotter au milieu de la page.
+====================================================================== -->
+<style id="lc-dock-css">
+:root{--dock-h:68px;}
+.lc-dock{position:fixed;left:0;right:0;bottom:0;height:var(--dock-h);z-index:490;
+  background:#3c2a30;border-top:1px solid rgba(201,168,76,.34);
+  box-shadow:0 -14px 34px -22px rgba(0,0,0,.85);}
+html body .lc-social{bottom:calc((var(--dock-h) - 46px) / 2);}
+html body .lc-mute{bottom:calc((var(--dock-h) - 46px) / 2);}
+/* plus aucune animation infinie sous un backdrop-filter */
+html body .lc-social a{animation:none;background:rgba(246,242,232,.07);
+  -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;
+  border-color:rgba(230,211,160,.45);}
+html body .lc-social a:hover{transform:translateY(-4px) scale(1.08);
+  box-shadow:0 10px 24px rgba(201,168,76,.4);}
+html body .lc-mute{-webkit-backdrop-filter:none;backdrop-filter:none;
+  background:rgba(246,242,232,.07);}
+html body .lc-cat-btn{min-height:44px;bottom:calc((var(--dock-h) - 46px) / 2);
+  -webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(246,242,232,.07);}
+@media(max-width:700px){
+  /* mesure a 390 px : la pastille allait jusqu'a 166 px et la premiere icone
+     commence a 119 px. En icone seule elle s'arrete a 60 px. */
+  html body .lc-cat-btn{padding:0;width:46px;height:46px;justify-content:center;border-radius:50%;}
+  html body .lc-cat-btn span{display:none;}
+}
+</style>
+<div class="lc-dock" aria-hidden="true"></div>
 </body>
 </html>

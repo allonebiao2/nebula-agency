@@ -202,6 +202,10 @@ main{position:relative;z-index:5;}
   box-shadow:0 10px 22px -8px rgba(201,168,76,.55);}
 .rdv-day.active .rdv-day-weekday{color:rgba(255,255,255,.85);}
 .rdv-day.disabled{opacity:.4;cursor:not-allowed;background:#f5f0e8;}
+.rdv-day-toggle{flex:1 1 100%;min-height:44px;padding:10px 12px;border-radius:10px;background:transparent;
+  border:1px dashed var(--or);color:var(--or-fonce);font-family:inherit;font-size:.78rem;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .25s ease;}
+.rdv-day-toggle:hover{background:#fff8eb;}
 .rdv-day-weekday{display:block;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);}
 .rdv-day-date{display:block;font-weight:600;margin-top:2px;}
 .rdv-days-help,.rdv-slots-help{font-size:.74rem;color:var(--gris);margin-top:10px;font-style:italic;}
@@ -210,7 +214,8 @@ main{position:relative;z-index:5;}
 .rdv-slot{padding:14px 8px;border-radius:10px;background:#fff;border:1px solid var(--ligne);
   color:var(--encre);font-size:1rem;font-family:'Cormorant Garamond',serif;font-weight:600;
   cursor:pointer;transition:all .25s ease;display:flex;align-items:center;justify-content:center;gap:5px;}
-.rdv-slot:hover{border-color:var(--or);background:#fff8eb;transform:translateY(-2px);}
+.rdv-slot:hover:not(:disabled){border-color:var(--or);background:#fff8eb;transform:translateY(-2px);}
+.rdv-slot:disabled{opacity:.42;cursor:not-allowed;background:#f7f3ec;}
 .rdv-slot.active{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#fff;border-color:var(--or-fonce);
   box-shadow:0 10px 22px -8px rgba(201,168,76,.55);}
 .rdv-slot-label{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
@@ -438,25 +443,6 @@ section{padding:58px 0;}
 .svc-book.ghost:hover{background:var(--encre);color:var(--blanc);}
 .svc-book svg{width:14px;height:14px;}
 
-/* ===== CONSULTATION GRATUITE SECTION ===== */
-.consult{background:#fff;border:1px solid var(--ligne);border-radius:18px;
-  padding:40px 36px;display:flex;gap:32px;flex-wrap:wrap;align-items:center;}
-.consult-l{flex:1;min-width:260px;}
-.consult-l .eyebrow{font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--menthe);
-  font-weight:600;margin-bottom:11px;}
-.consult-l h2{font-size:clamp(1.7rem,3.6vw,2.4rem);line-height:1.18;}
-.consult-l p{font-size:.86rem;color:var(--encre-2);margin-top:12px;line-height:1.75;}
-.consult-l ul{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
-.consult-l li{display:flex;gap:9px;font-size:.82rem;color:var(--encre-2);}
-.consult-l li svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;stroke:var(--menthe);fill:none;stroke-width:2.4;}
-.consult-r{flex:0 0 260px;text-align:center;background:linear-gradient(160deg,var(--menthe-clair),var(--blanc-2));
-  border:1px solid var(--ligne);border-radius:14px;padding:32px 24px;}
-.consult-r .price-big{font-family:'Cormorant Garamond',serif;font-size:3.4rem;font-weight:600;
-  color:var(--menthe);line-height:1;}
-.consult-r .price-lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);
-  margin-top:4px;}
-.consult-r .btn-dark{margin-top:20px;width:100%;justify-content:center;}
-
 /* ===== MODALS ===== */
 .modal-scrim{position:fixed;inset:0;z-index:400;background:rgba(20,19,16,.55);
   backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s;
@@ -498,51 +484,6 @@ section{padding:58px 0;}
 .regl-confirm svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.6;}
 .regl-disclaimer{font-size:.68rem;color:var(--gris);text-align:center;margin-top:11px;font-style:italic;}
 
-/* formulaire */
-.form-intro{font-size:.84rem;color:var(--encre-2);line-height:1.7;margin-bottom:8px;}
-.form-note{font-size:.72rem;color:var(--gris);font-style:italic;margin-bottom:18px;}
-.fsec{margin-bottom:20px;}
-.fsec-h{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--or-fonce);
-  font-weight:600;padding-bottom:8px;border-bottom:1px solid var(--ligne);margin-bottom:13px;
-  display:flex;align-items:center;gap:8px;}
-.fsec-h .fs-n{width:20px;height:20px;border-radius:50%;background:var(--menthe-clair);
-  display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--menthe);}
-.fld{margin-bottom:13px;}
-.fld label{display:block;font-size:.76rem;color:var(--encre);margin-bottom:6px;font-weight:400;}
-.fld label .req{color:var(--warn);}
-.fld input[type=text],.fld input[type=tel],.fld select,.fld textarea{
-  width:100%;padding:10px 12px;border:1px solid var(--ligne);border-radius:8px;
-  background:#fff;font-size:.82rem;color:var(--encre);font-weight:300;transition:border-color .25s;}
-.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--menthe);}
-.fld textarea{resize:vertical;min-height:62px;}
-.opt-row{display:flex;flex-wrap:wrap;gap:7px;}
-.opt{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--ligne);
-  border-radius:20px;font-size:.76rem;color:var(--encre-2);cursor:pointer;transition:all .25s;}
-.opt:hover{border-color:var(--menthe);}
-.opt input{display:none;}
-.opt.sel{background:var(--menthe-clair);border-color:var(--menthe);color:var(--encre);}
-.form-submit{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:15px;
-  border-radius:9px;background:var(--encre);color:var(--blanc);font-size:10.5px;letter-spacing:.14em;
-  text-transform:uppercase;font-weight:600;transition:all .3s var(--ease);margin-top:6px;}
-.form-submit:hover{background:var(--or-fonce);}
-.form-submit svg{width:16px;height:16px;fill:currentColor;}
-.fsec{display:none;}
-.fsec.active{display:block;}
-.form-progress{height:5px;border-radius:4px;background:var(--ligne);overflow:hidden;margin-bottom:8px;}
-.form-progress-bar{height:100%;width:0;background:var(--menthe);transition:width .4s cubic-bezier(.22,1,.36,1);}
-.form-step-lbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--or-fonce);margin-bottom:16px;}
-.fld-hint{font-size:.72rem;color:var(--encre);font-weight:700;margin:-2px 0 7px;letter-spacing:.01em;}
-.fld-err{font-size:.7rem;color:var(--warn);margin-top:5px;}
-.fld-bad input,.fld-bad textarea{border-color:var(--warn)!important;}
-.fld-bad .opt-row{outline:1px solid var(--warn);outline-offset:4px;border-radius:8px;}
-.form-nav{display:flex;gap:10px;margin-top:8px;}
-.form-prev{padding:13px 22px;border-radius:9px;min-height:48px;background:#fff;
-  border:1px solid var(--encre);color:var(--encre);cursor:pointer;font-size:.8rem;}
-.form-next{margin-left:auto;padding:13px 28px;border-radius:9px;min-height:48px;
-  background:var(--menthe);border:0;color:#fff;cursor:pointer;font-size:.82rem;font-weight:600;}
-.form-next:hover,.form-prev:hover{filter:brightness(.94);}
-.form-nav .form-submit{margin:0;flex:1;width:auto;}
-
 /* (CSS confirmation legacy supprime — remplace par lc-confirm-* / lc-thanks-* en bas de page) */
 
 /* audio */
@@ -569,7 +510,7 @@ section{padding:58px 0;}
   background:linear-gradient(135deg,#e6d3a0,#c9a84c);color:var(--encre);font-size:10.5px;
   letter-spacing:.14em;text-transform:uppercase;font-weight:600;transition:transform .3s var(--ease);}
 .final-card .btn-gold:hover{transform:translateY(-3px);}
-.final-card .btn-gold svg{width:15px;height:15px;fill:currentColor;}
+.final-card .btn-gold svg{width:15px;height:15px;}
 
 footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30px 26px;text-align:center;}
 .foot-meta{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);}
@@ -585,6 +526,346 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.15s!important;}
+}
+</style>
+<!-- ===== DIRECTION ARTISTIQUE « LA LUMIERE » (2026-09-05) ===================
+     La phrase : une clinique esthetique, c'est la lumiere qu'on approche d'une
+     peau — d'abord pour la lire, ensuite pour la reveler.
+     Les regles qui doivent battre lc-v3-css (plus bas dans le document) sont
+     ecrites en `html body ...` : a l'ordre on perd, a la specificite on gagne.
+========================================================================== -->
+<style id="lsc-da">
+:root{
+  --nuit:#100f0c;--nuit-2:#1b1913;--papier:#f2eee4;
+  --creme:#f6f2e8;
+  --or-texte:#8a6a1f;          /* l'or qui porte du TEXTE (l'autre reste au trait) */
+  --dock-h:68px;
+}
+
+/* --- le grain : une texture, jamais un melange (lecon Angy 2026-08-26) --- */
+.bg-clinic::after{content:'';position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");}
+
+/* --- le filet de progression --- */
+.lsc-prog{position:fixed;top:0;left:0;right:0;height:2px;z-index:600;pointer-events:none;
+  background:rgba(31,30,26,.07);}
+.lsc-prog i{display:block;height:100%;width:0;
+  background:linear-gradient(90deg,var(--menthe),var(--or) 55%,var(--or-clair));
+  box-shadow:0 0 10px rgba(201,168,76,.6);}
+
+/* =======================================================================
+   HEROS — l'image, le voile, et LA LAMPE QUI PASSE
+   ======================================================================= */
+.hero{position:relative;isolation:isolate;overflow:hidden;
+  padding:clamp(88px,13vw,136px) 26px clamp(76px,11vw,112px);
+  min-height:min(86svh,780px);display:flex;align-items:center;justify-content:center;}
+.hero-in{position:relative;z-index:2;width:100%;max-width:920px;}
+.hero-media{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--nuit);}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:50% 56%;
+  transform:scale(1.06);animation:heroKen 32s ease-in-out infinite alternate;}
+@keyframes heroKen{from{transform:scale(1.06) translate3d(0,0,0);}
+  to{transform:scale(1.15) translate3d(-1.6%,-1.8%,0);}}
+.hero-voile{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 66% 60% at 50% 44%,rgba(201,168,76,.15),transparent 72%),
+    linear-gradient(180deg,rgba(11,10,8,.74) 0%,rgba(11,10,8,.5) 40%,rgba(11,10,8,.88) 100%);}
+/* le rai : la lampe qu'on passe une fois sur la peau */
+.hero-rai{position:absolute;top:-30%;bottom:-30%;width:34%;left:-42%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,246,220,.28) 45%,rgba(255,246,220,.05) 72%,transparent);
+  transform:skewX(-14deg);opacity:0;}
+.hero.balaye .hero-rai{animation:heroRai 2.2s cubic-bezier(.42,0,.2,1) both;}
+@keyframes heroRai{0%{left:-42%;opacity:0;}12%{opacity:1;}86%{opacity:1;}100%{left:112%;opacity:0;}}
+/* le cadre de la clinique : un filet d'or, en retrait */
+.hero-cadre{position:absolute;inset:clamp(14px,2.2vw,28px);z-index:1;pointer-events:none;
+  border:1px solid rgba(230,211,160,.22);border-radius:3px;}
+.hero-cadre::before,.hero-cadre::after{content:'';position:absolute;width:18px;height:18px;
+  border:1px solid rgba(230,211,160,.62);}
+.hero-cadre::before{top:-1px;left:-1px;border-right:0;border-bottom:0;}
+.hero-cadre::after{bottom:-1px;right:-1px;border-left:0;border-top:0;}
+
+.hero h1{color:var(--creme);font-size:clamp(2.7rem,7.4vw,5.2rem);line-height:1.04;
+  letter-spacing:-.006em;text-shadow:0 2px 34px rgba(0,0,0,.45);}
+.hero h1 em{color:var(--or-clair);}
+.hero-sub{color:#e0dacb;max-width:610px;font-size:clamp(.95rem,1.5vw,1.06rem);
+  text-shadow:0 1px 16px rgba(0,0,0,.5);}
+.hero-badge{background:rgba(255,255,255,.10);border-color:rgba(230,211,160,.42);color:#efe0b4;}
+.hero-badge svg{stroke:#efe0b4;}
+.hero .btn-dark{background:linear-gradient(135deg,#e8d7a8,#c9a84c 62%,#a8862f);color:#141310;font-weight:600;}
+.hero .btn-dark:hover{background:linear-gradient(135deg,#f0e2bd,#d5b660 62%,#b8952f);
+  box-shadow:0 18px 38px -14px rgba(201,168,76,.75);}
+.hero .btn-line{border-color:rgba(246,242,232,.6);color:var(--creme);}
+.hero .btn-line:hover{background:var(--creme);color:var(--encre);}
+.expertise{background:rgba(16,15,12,.55);border-color:rgba(230,211,160,.3);}
+.expertise .exp-txt b{color:var(--creme);}
+.expertise .exp-txt p{color:#c9c3b3;}
+.exp-av{background:linear-gradient(150deg,rgba(230,211,160,.24),rgba(127,174,157,.18));
+  border-color:rgba(230,211,160,.42);color:#efe0b4;}
+.exp-seal{color:#a6ccbc;}
+.exp-seal svg{stroke:#a6ccbc;}
+
+/* =======================================================================
+   BANDEAU RDV — l'accent menthe, et LE FILET DE LUMIERE qui court dessus
+   ======================================================================= */
+.rdv-banner{margin-top:calc(clamp(26px,4vw,44px) * -1);position:relative;z-index:6;}
+.rdv-banner-in{position:relative;overflow:hidden;padding:20px 26px;border-radius:14px;
+  background:linear-gradient(135deg,#eef5f1 0%,#e2eee8 55%,#e9f0e9 100%);
+  border:1px solid rgba(201,168,76,.36);
+  box-shadow:0 28px 54px -32px rgba(31,30,26,.42);}
+.rdv-banner-in p{color:var(--encre-2);}
+.rdv-filet{position:absolute;top:0;left:0;height:1px;width:32%;
+  background:linear-gradient(90deg,transparent,var(--or),transparent);
+  animation:filetCourt 7.5s linear infinite;}
+@keyframes filetCourt{from{transform:translateX(-120%);}to{transform:translateX(430%);}}
+.rdv-banner-cta{color:var(--or-texte);}
+
+/* =======================================================================
+   MANIFESTE — papier dense, LES TROIS FOYERS s'allument un a un
+   ======================================================================= */
+#manifeste{background:var(--papier);border-top:1px solid var(--ligne);
+  border-bottom:1px solid var(--ligne);padding:clamp(64px,9vw,100px) 0;}
+.mf-head{text-align:center;margin-bottom:clamp(34px,5vw,54px);}
+.mf-head .eyebrow{font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--or-texte);display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;}
+.mf-head .eyebrow::before,.mf-head .eyebrow::after{content:'';width:26px;height:1px;background:var(--or);}
+.mf-head h2{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;}
+.mf-head h2 em{font-style:italic;color:var(--or-texte);}
+.mf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:clamp(16px,2.4vw,28px);}
+.mf-p{position:relative;overflow:hidden;background:#fff;border:1px solid var(--ligne);
+  border-radius:16px;padding:32px 28px 30px;
+  transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0ms);}
+.mf-p > *:not(.mf-halo){position:relative;z-index:1;}
+.mf-n{font-family:'Cormorant Garamond',serif;font-size:2.7rem;font-weight:600;
+  color:var(--blanc-3);line-height:1;display:block;
+  transition:color .9s var(--ease);transition-delay:calc(var(--d,0ms) + 280ms);}
+.mf-p h3{font-size:1.55rem;margin-top:8px;}
+.mf-p p{font-size:.87rem;color:var(--encre-2);line-height:1.75;margin-top:10px;}
+.mf-halo{position:absolute;top:-46px;left:-46px;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.32),transparent 68%);
+  opacity:0;transform:scale(.55);
+  transition:opacity 1.1s var(--ease),transform 1.1s var(--ease);
+  transition-delay:calc(var(--d,0ms) + 280ms);}
+.mf-p.in .mf-halo{opacity:1;transform:scale(1);}
+.mf-p.in .mf-n{color:var(--or);}
+
+/* =======================================================================
+   RUBAN — les mots du metier passent
+   ======================================================================= */
+.ruban{background:var(--nuit);overflow:hidden;padding:14px 0;}
+.ruban-piste{display:flex;align-items:center;gap:22px;width:max-content;
+  animation:rubanFile 46s linear infinite;}
+.ruban-piste span{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1rem,2vw,1.35rem);color:#e6d3a0;white-space:nowrap;}
+.ruban-piste i{color:rgba(230,211,160,.45);font-style:normal;}
+@keyframes rubanFile{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* =======================================================================
+   EN-TETE DE FAMILLE — L'EXAMEN : le voile se retire, l'image s'eclaire
+   ======================================================================= */
+section{padding:clamp(58px,8vw,94px) 0;}
+.sec-band{position:relative;overflow:hidden;border-radius:20px;
+  min-height:clamp(200px,25vw,310px);display:flex;align-items:flex-end;
+  background:var(--nuit);margin-bottom:clamp(22px,3vw,34px);
+  box-shadow:0 34px 64px -40px rgba(31,30,26,.55);}
+.sec-band-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.sec-band-voile{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(11,10,8,.26) 0%,rgba(11,10,8,.62) 58%,rgba(11,10,8,.9) 100%);}
+/* le voile d'examen : un aplat qui se retire de gauche a droite.
+   Il n'existe QUE si le script a arme la page : sans JS, rien n'est cache. */
+.js-lum .sec-band::after{content:'';position:absolute;inset:0;z-index:3;background:var(--blanc);
+  transform-origin:right center;transition:transform 1.2s cubic-bezier(.62,.03,.2,1);}
+.js-lum .sec-band.in::after{transform:scaleX(0);}
+.sec-band-rai{position:absolute;top:0;bottom:0;width:15%;left:-20%;z-index:4;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,246,220,.5),transparent);opacity:0;}
+.sec-band.in .sec-band-rai{animation:bandRai 1.2s cubic-bezier(.62,.03,.2,1) both;}
+@keyframes bandRai{0%{left:-20%;opacity:0;}10%{opacity:1;}88%{opacity:1;}100%{left:104%;opacity:0;}}
+.sec-band-in{position:relative;z-index:2;padding:clamp(24px,3.4vw,40px) clamp(24px,3.6vw,46px);
+  max-width:660px;text-align:left;}
+.sec-band-in .eyebrow{font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;
+  color:#efe0b4;display:inline-flex;align-items:center;gap:10px;margin-bottom:12px;}
+.sec-band-in .eyebrow::after{content:'';width:34px;height:1px;background:rgba(230,211,160,.75);}
+.sec-band-in h2{color:var(--creme);font-size:clamp(1.9rem,4.6vw,3.1rem);line-height:1.1;}
+.sec-band-in p{color:#e2dbcb;font-size:.93rem;line-height:1.7;margin-top:10px;max-width:470px;}
+
+/* =======================================================================
+   CARTE DE SOIN — LE TRAIT QUI SE TRACE
+   ======================================================================= */
+.svc-visual{height:134px;}
+.svc-visual svg [data-trace]{stroke-dasharray:var(--L);stroke-dashoffset:var(--L);}
+.svc.in .svc-visual svg [data-trace]{animation:svcTrace 1.5s cubic-bezier(.62,.03,.2,1) forwards;
+  animation-delay:calc(var(--k,0) * 55ms);}
+@keyframes svcTrace{to{stroke-dashoffset:0;}}
+.svc-visual svg [data-remplit]{opacity:0;}
+.svc.in .svc-visual svg [data-remplit]{animation:svcFill .9s ease-out forwards;animation-delay:.8s;}
+@keyframes svcFill{to{opacity:1;}}
+/* le halo de la lampe, au survol de la carte */
+.svc-visual::before{content:'';position:absolute;inset:0;z-index:1;opacity:0;
+  background:radial-gradient(ellipse 50% 90% at 20% 50%,rgba(255,244,214,.6),transparent 62%);
+  transform:translateX(-32%);transition:opacity .5s var(--ease),transform 1.15s var(--ease);}
+.svc:hover .svc-visual::before{opacity:1;transform:translateX(48%);}
+.svc h3{padding-right:96px;}
+.svc-price{font-size:1.85rem;color:var(--or-texte);}
+.svc-cat{color:#5f8d7e;}
+
+/* les etapes du protocole s'allument une a une a l'ouverture */
+.proto-step{animation:none;}
+.svc-acc-btn.open + .svc-acc-panel .proto-step{animation:etapeAllume .5s var(--ease) both;
+  animation-delay:calc(var(--i,0) * 62ms);}
+@keyframes etapeAllume{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:none;}}
+
+/* =======================================================================
+   RENDEZ-VOUS — le marbre, et LE CRENEAU QUI S'ILLUMINE
+   ======================================================================= */
+#rdv-booking{background:var(--papier);border-top:1px solid var(--ligne);}
+.rdv-box{position:relative;overflow:hidden;}
+.rdv-marbre{position:absolute;inset:0;z-index:0;opacity:.32;pointer-events:none;
+  background-image:url("assets/images/clinic/rdv.webp");background-size:cover;background-position:center;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.95),transparent 60%);
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.95),transparent 60%);}
+.rdv-box > *:not(.rdv-marbre){position:relative;z-index:1;}
+.rdv-day,.rdv-slot{position:relative;overflow:hidden;}
+.rdv-day.active::after,.rdv-slot.active::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 50%,rgba(255,248,226,.9),transparent 62%);
+  animation:creneauHalo .8s ease-out both;pointer-events:none;}
+@keyframes creneauHalo{from{opacity:.95;transform:scale(.15);}to{opacity:0;transform:scale(1.6);}}
+
+/* =======================================================================
+   FINAL — LE HALO QUI SE REFERME
+   ======================================================================= */
+.final{padding:clamp(66px,9vw,106px) 26px;}
+.final-card{max-width:760px;padding:clamp(48px,7vw,76px) clamp(28px,5vw,56px);
+  background:var(--nuit);overflow:hidden;isolation:isolate;}
+.final-card > *{z-index:2;}
+.final-halo{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:url("assets/images/clinic/final.webp");background-size:cover;background-position:center;
+  opacity:.6;}
+.final-card::before{z-index:1;
+  background:radial-gradient(ellipse 68% 68% at 50% 34%,rgba(201,168,76,.34),transparent 70%);
+  transform:scale(1.7);opacity:0;transition:transform 1.6s var(--ease),opacity 1.6s var(--ease);}
+.final-card.in::before{transform:scale(1);opacity:1;}
+.final-card h2{font-size:clamp(2rem,4.6vw,3.2rem);}
+.final-card p{color:#cdc7b9;}
+
+/* =======================================================================
+   PIED + BANDE DE BORD
+   ======================================================================= */
+footer{background:var(--nuit);border-top:0;padding:36px 26px calc(30px + var(--dock-h));}
+.foot-meta{color:#918b7d;}
+
+/* La seule chose qui ait le droit de passer devant du texte, c'est une bande
+   de bord — et elle doit etre VRAIMENT opaque (regle nee sur Mon Benin, payee
+   deux fois depuis). Ici, les trois pastilles et le bouton du son se posent
+   dessus au lieu de flotter au milieu des titres. */
+html body{padding-bottom:0;}
+.lc-dock{position:fixed;left:0;right:0;bottom:0;height:var(--dock-h);z-index:490;
+  background:var(--nuit);border-top:1px solid rgba(230,211,160,.3);
+  display:flex;align-items:center;padding:0 22px;
+  box-shadow:0 -14px 34px -22px rgba(0,0,0,.85);}
+.lc-dock-nom{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:#8e8878;}
+html body .lc-social{bottom:calc((var(--dock-h) - 46px) / 2);}
+html body .lc-mute{bottom:calc((var(--dock-h) - 46px) / 2);}
+/* plus aucune animation infinie sous un backdrop-filter (lecon Boussole 2026-07-21) */
+html body .lc-social a{animation:none;background:rgba(246,242,232,.07);
+  -webkit-backdrop-filter:none;backdrop-filter:none;border-color:rgba(230,211,160,.45);
+  box-shadow:none;}
+html body .lc-social a:hover{transform:translateY(-4px) scale(1.08);
+  box-shadow:0 10px 24px rgba(201,168,76,.4);}
+html body .lc-mute{-webkit-backdrop-filter:none;backdrop-filter:none;
+  background:rgba(246,242,232,.07);}
+
+/* =======================================================================
+   ACCORDS DE DETAIL
+   ======================================================================= */
+.search-bar{top:var(--head-h,72px);}
+.sec-head .eyebrow,.svc-acc-btn,.rdv-eyebrow{color:var(--or-texte);}
+.rdv-days-help,.rdv-slots-help{color:var(--encre-2);}
+.search-meta b{color:#4f7d6e;}
+
+/* --- ce que les captures ont montre (2026-09-05) --- */
+/* la barre de recherche est une bande de bord : elle doit etre VRAIMENT opaque */
+.search-bar{background:var(--blanc);box-shadow:0 10px 18px -14px rgba(31,30,26,.5);}
+/* une ancre ne doit jamais atterrir sous la barre du haut + la recherche */
+#soins,#manifeste,#rdv-booking,.sec-band{scroll-margin-top:calc(var(--head-h,72px) + 16px);}
+#soins{scroll-margin-top:calc(var(--head-h,72px) + 8px);}
+/* le nom de la maison genait la pastille « Catalogue » : il quitte la bande */
+.lc-dock-nom{display:none;}
+
+/* =======================================================================
+   VISIBILITE — toutes les couleurs mesurees sur les PIXELS RENDUS
+   (demande de Mongazi, 2026-09-05 : « pas de bouton invisible, tout bien
+   visible »). Chaque valeur ci-dessous vient d'une mesure, pas d'un avis.
+   Regle de la maison : la couleur de marque sert au TRAIT, jamais a la
+   LETTRE — d'ou une seconde valeur, foncee, pour tout ce qui se lit.
+   ======================================================================= */
+:root{
+  --or-texte:#7d5f18;   /* l'or qui se lit   (mesure : 5,7:1 sur le papier) */
+  --gris-f:#63605a;     /* le gris qui se lit (5,8:1) — l'ancien tombait a 2,7 */
+  --menthe-f:#42695b;   /* la menthe qui se lit (5,6:1) — l'ancienne : 2,5 */
+}
+.back-hub{color:var(--gris-f);min-height:44px;padding:6px 2px;}
+.svc-cat{color:var(--menthe-f);}
+.svc-by{color:var(--menthe-f);}
+.svc-rdv{color:var(--gris-f);}
+.svc-meta span{color:var(--gris-f);}
+.sc-badge{color:#3d6357;}
+.rdv-day-weekday{color:var(--gris-f);}
+.rdv-day-toggle{color:var(--or-texte);}
+.mf-p.in .mf-n{color:var(--or-texte);}
+.final-card p{color:#eae4d7;}
+.final-halo{opacity:.5;}
+/* la meme assiette d'ombre que le heros, pour que la phrase porte sur le halo */
+.final-card::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 70% 58% at 50% 52%,rgba(8,7,5,.55),transparent 76%);}
+.book-top{min-height:44px;min-width:44px;justify-content:center;}
+/* « +N autres » n'est pas un badge, c'est un bouton : il doit se toucher.
+   Il quitte donc la pastille (20 px) pour un lien de 44 px, centre dans la
+   rangee — plutot qu'une pastille geante au milieu des petites. */
+.svc-concerns{align-items:center;}
+.svc-acc-btn{min-height:44px;}
+.svc-book{min-height:46px;}
+.lc-cat-btn{min-height:44px;}
+/* ⛔ AU SURVOL, LE FOND DEVENAIT OR ET LE TEXTE RESTAIT CREME : 3,29:1 mesure.
+   Regle de la maison : un aplat d'or porte du texte FONCE, jamais du clair. */
+.book-top:hover,.btn-dark:hover,.svc-book:hover,.lc-btn.primary:hover{color:#141310;}
+.book-top:hover svg,.btn-dark:hover svg,.svc-book:hover svg{stroke:#141310;}
+.sc-more{min-height:44px;display:inline-flex;align-items:center;padding:0 6px;
+  background:none;border:0;border-radius:0;color:var(--menthe-f);
+  text-decoration:underline;text-underline-offset:3px;font-size:9px;letter-spacing:.06em;}
+.sc-more:hover{color:var(--or-texte);}
+
+/* le heros : une assiette d'ombre SOUS le texte, plutot qu'un voile plus
+   epais partout — l'image garde sa lumiere, la phrase devient lisible */
+.hero-in::before{content:'';position:absolute;inset:-8% -10%;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 64% 62% at 50% 48%,rgba(9,8,6,.66),rgba(9,8,6,.28) 62%,transparent 78%);}
+.hero-sub{color:#efe9db;}
+.hero-badge{background:rgba(16,15,12,.48);border-color:rgba(230,211,160,.5);color:#f3e7c2;}
+.hero .btn-line{background:rgba(16,15,12,.45);}
+
+/* les bandes de famille : l'ombre vient aussi de la gauche, la ou est le texte */
+.sec-band-voile{background:
+  linear-gradient(90deg,rgba(11,10,8,.9) 0%,rgba(11,10,8,.74) 44%,rgba(11,10,8,.34) 100%),
+  linear-gradient(180deg,rgba(11,10,8,.2) 0%,rgba(11,10,8,.48) 58%,rgba(11,10,8,.8) 100%);}
+
+@media(max-width:760px){
+  .sec-band-in{max-width:none;}
+}
+@media(max-width:700px){
+  /* mesure a 390 px : la pastille allait jusqu'a 166 px, la premiere icone
+     commencait a 119 px. En icone seule elle s'arrete a 60 px. */
+  .lc-cat-btn{padding:0;width:46px;height:46px;justify-content:center;border-radius:50%;}
+  .lc-cat-btn span{display:none;}
+}
+@media(max-width:700px){
+  .hero-media img{animation:none;transform:scale(1.08);}
+  .ruban-piste{animation-duration:34s;}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-media img,.ruban-piste,.rdv-filet{animation:none!important;}
+  .hero.balaye .hero-rai,.sec-band.in .sec-band-rai{animation:none!important;opacity:0;}
+  .js-lum .sec-band::after{transition:none;transform:scaleX(0);}
+  .svc.in .svc-visual svg [data-trace]{animation:none;stroke-dashoffset:0;}
+  .svc-visual svg [data-remplit],.svc.in .svc-visual svg [data-remplit]{animation:none;opacity:1;}
+  .svc-acc-btn.open + .svc-acc-panel .proto-step{animation:none;}
+  .rdv-day.active::after,.rdv-slot.active::after{animation:none;opacity:0;}
 }
 </style>
 </head>
@@ -610,8 +891,16 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
   </div>
 </header>
 
+<div class="lsc-prog" aria-hidden="true"><i></i></div>
 <main>
   <div class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <img src="assets/images/clinic/heros.webp" alt="" fetchpriority="high" decoding="async" width="1800" height="1005">
+      <span class="hero-voile"></span>
+      <span class="hero-rai"></span>
+    </div>
+    <div class="hero-cadre" aria-hidden="true"></div>
+    <div class="hero-in">
     <div class="hero-badge reveal">
       <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Protocoles encadrés · Mme Sabrina diplômée
@@ -620,9 +909,9 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
     <p class="hero-sub reveal">Chaque soin est pensé comme un protocole médical, réalisé par des mains
       expertes. Diagnostic, précision et suivi — pour des résultats visibles et durables.</p>
     <div class="hero-cta reveal">
-      <a class="btn-dark" href="#consultation">
-        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M12 8v8M8 12h8M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-        Consultation peau gratuite
+      <a class="btn-dark" href="#rdv-booking">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg>
+        Prendre rendez-vous
       </a>
       <a class="btn-line" href="#soins">Découvrir les soins</a>
     </div>
@@ -637,15 +926,56 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
         </span>
       </div>
     </div>
+    </div>
   </div>
 
   <div class="rdv-banner reveal">
     <div class="rdv-banner-in">
+      <span class="rdv-filet" aria-hidden="true"></span>
       <svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-      <p><b>Règle de rendez-vous —</b> Mme Sabrina reçoit actuellement
-        <b>le mercredi et le samedi</b>. Les rendez-vous se prennent <b>24h minimum à l'avance</b>,
+      <p><b>Règle de rendez-vous —</b> Mme Sabrina reçoit désormais
+        <b>du lundi au samedi, de 10h à 17h</b>. Les rendez-vous se prennent <b>24h minimum à l'avance</b>,
         aucun rendez-vous le jour même. Un acompte de 5 100 FCFA valide votre réservation.
         <a href="#rdv-booking" class="rdv-banner-cta">Réserver maintenant →</a></p>
+    </div>
+  </div>
+
+  <section id="manifeste">
+    <div class="wrap">
+      <div class="mf-head reveal">
+        <div class="eyebrow">La méthode</div>
+        <h2>On ne touche pas une peau<br><em>avant de l'avoir lue</em></h2>
+      </div>
+      <div class="mf-grid">
+        <article class="mf-p reveal" style="--d:0ms">
+          <span class="mf-halo" aria-hidden="true"></span>
+          <span class="mf-n">01</span>
+          <h3>Le diagnostic</h3>
+          <p>Aucun protocole n'est standardisé. Chaque soin est établi après analyse
+             professionnelle de la peau, jamais avant.</p>
+        </article>
+        <article class="mf-p reveal" style="--d:140ms">
+          <span class="mf-halo" aria-hidden="true"></span>
+          <span class="mf-n">02</span>
+          <h3>Le protocole</h3>
+          <p>Des étapes numérotées, dans un ordre qui ne change pas, réalisées par
+             Mme Sabrina, esthéticienne diplômée.</p>
+        </article>
+        <article class="mf-p reveal" style="--d:280ms">
+          <span class="mf-halo" aria-hidden="true"></span>
+          <span class="mf-n">03</span>
+          <h3>Le suivi</h3>
+          <p>Un dossier par cliente, un check-up chaque mois, une routine qui s'ajuste
+             à ce que la peau répond vraiment.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="ruban" aria-hidden="true">
+    <div class="ruban-piste">
+      <span>Diagnostic</span><i>·</i><span>Protocole</span><i>·</i><span>Suivi</span><i>·</i><span>Mme Sabrina, esthéticienne diplômée</span><i>·</i><span>Cotonou</span><i>·</i><span>Luxury Skin Clinic</span><i>·</i>
+      <span>Diagnostic</span><i>·</i><span>Protocole</span><i>·</i><span>Suivi</span><i>·</i><span>Mme Sabrina, esthéticienne diplômée</span><i>·</i><span>Cotonou</span><i>·</i><span>Luxury Skin Clinic</span><i>·</i>
     </div>
   </div>
 
@@ -668,41 +998,15 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
     </div>
   </section>
 
-  <section id="consultation">
-    <div class="wrap">
-      <div class="consult reveal">
-        <div class="consult-l">
-          <div class="eyebrow">Avant tout soin</div>
-          <h2>Votre consultation peau, offerte</h2>
-          <p>Un diagnostic précis est la base de tout protocole réussi. Remplissez le questionnaire
-            de Mme Sabrina : il nous permet de comprendre votre peau avant de vous recommander
-            le moindre soin.</p>
-          <ul>
-            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Questionnaire complet et confidentiel</span></li>
-            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Analyse personnalisée par une professionnelle diplômée</span></li>
-            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Recommandation de soins adaptée à vos besoins réels</span></li>
-          </ul>
-        </div>
-        <div class="consult-r">
-          <div class="price-big">0 F</div>
-          <div class="price-lbl">Consultation offerte</div>
-          <button class="btn-dark" id="openSkinForm">
-            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            Remplir le questionnaire
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- =========================================================================
-       SECTION RÉSERVATION RDV — Mer / Sam, 4 créneaux/jour
+       SECTION RÉSERVATION RDV — Lun -> Sam, 4 créneaux/jour
        Pour activer la persistance cross-visiteurs (slots pris invisibles) :
        voir docs/SUPABASE-AVIS.md (étendu : table clinic_bookings).
        ========================================================================= -->
   <section id="rdv-booking">
     <div class="wrap">
       <div class="rdv-box reveal">
+        <span class="rdv-marbre" aria-hidden="true"></span>
         <header class="rdv-head">
           <div class="rdv-eyebrow">Prendre rendez-vous</div>
           <h2 class="rdv-title">Réservez votre soin avec Mme Sabrina</h2>
@@ -715,7 +1019,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
           <div class="rdv-pane">
             <div class="rdv-label">1. Choisissez un jour</div>
             <div class="rdv-days" id="rdvDays" role="radiogroup" aria-label="Sélectionnez un jour de rendez-vous"></div>
-            <div class="rdv-days-help">Jours disponibles : <b>mercredi</b> et <b>samedi</b> uniquement.</div>
+            <div class="rdv-days-help">Jours disponibles : <b>du lundi au samedi</b>, de <b>10h à 17h</b>.</div>
           </div>
 
           <div class="rdv-pane">
@@ -786,12 +1090,13 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 
   <div class="final">
     <div class="final-card reveal">
+      <span class="final-halo" aria-hidden="true"></span>
       <h2>Offrez à votre peau<br><em>un protocole d'exception</em></h2>
       <p>Réservez votre soin en quelques secondes. Notre équipe vous recontacte sous 24h
         pour confirmer votre créneau.</p>
-      <a class="btn-gold" href="#soins">
-        <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
-        Voir les soins
+      <a class="btn-gold" href="#rdv-booking">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg>
+        Prendre rendez-vous
       </a>
     </div>
   </div>
@@ -822,7 +1127,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
       <div class="regl-list">
         <div class="regl-item"><div class="regl-num">1</div><div>
           <b>📅 Réservation & paiement</b>
-          <p>• Mme Sabrina reçoit actuellement <b>le mercredi et le samedi</b> uniquement.<br>
+          <p>• Mme Sabrina reçoit <b>du lundi au samedi, de 10h à 17h</b>.<br>
           • Toute prestation nécessite une réservation obligatoire à l'avance.<br>
           • Un acompte de 5 100 FCFA est requis pour valider votre rendez-vous.<br>
           • Le paiement de l'acompte se fait directement via notre site internet (website).<br>
@@ -884,79 +1189,6 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
   </div>
 </div>
 
-<!-- MODAL FORMULAIRE -->
-<div class="modal-scrim" id="formScrim">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Questionnaire">
-    <div class="modal-head">
-      <div><div class="mh-tag" id="formTag">Questionnaire</div><h3 id="formTitle"></h3></div>
-      <button class="modal-close" data-close="formScrim" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <p class="form-intro" id="formIntro"></p>
-      <p class="form-note">Astuce : après l'envoi, joignez vos photos directement dans la conversation WhatsApp.</p>
-      <form id="theForm" novalidate>
-        <div class="form-progress"><div class="form-progress-bar" id="formProgBar"></div></div>
-        <div class="form-step-lbl" id="formStepLbl"></div>
-        <div id="formSections"></div>
-        <div class="form-nav">
-          <button type="button" class="form-prev" id="formPrev">← Précédent</button>
-          <button type="button" class="form-next" id="formNext">Suivant →</button>
-          <button type="submit" class="form-submit" id="formSubmit">
-            <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
-            Envoyer sur WhatsApp
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CONDITIONS DIAGNOSTIC CAPILLAIRE -->
-<div class="modal-scrim" id="hairTermsScrim">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Conditions du diagnostic capillaire">
-    <div class="modal-head">
-      <div><div class="mh-tag">À lire avant l'envoi</div><h3>Conditions du diagnostic</h3></div>
-      <button class="modal-close" data-close="hairTermsScrim" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <p class="regl-intro">🌿 <b>Merci d'avoir rempli votre questionnaire capillaire.</b><br>
-        Pour permettre à Mme Sabrina d'analyser vos cheveux et de préparer vos recommandations personnalisées,
-        merci de lire attentivement les conditions ci-dessous.</p>
-      <div class="regl-list">
-        <div class="regl-item"><div class="regl-num">1</div><div>
-          <b>💳 Paiement du diagnostic</b>
-          <p>• Le diagnostic capillaire personnalisé est facturé <b>5 000 FCFA</b>.<br>
-          • Paiement à effectuer au <b>01 67 97 56 26</b> (Mobile Money), comme pour tous nos services.<br>
-          • Une fois le paiement effectué, envoyez la <b>capture du paiement</b> sur WhatsApp en réponse à notre message.</p></div></div>
-        <div class="regl-item"><div class="regl-num">2</div><div>
-          <b>⏰ Délai de réception des résultats</b>
-          <p>• Après réception de votre capture de paiement, vos résultats sont préparés sous <b>24 à 72 heures</b>.<br>
-          • Vous recevrez : votre <b>diagnostic complet</b> + les <b>recommandations personnalisées</b> (routine, soins, produits adaptés).</p></div></div>
-        <div class="regl-item"><div class="regl-num">3</div><div>
-          <b>📸 Photos à transmettre</b>
-          <p>Pour un diagnostic précis, joignez sur WhatsApp :<br>
-          • photo du cuir chevelu · photo des longueurs · photo de face<br>
-          • photo des zones concernées · photo récente sans filtre</p></div></div>
-        <div class="regl-item"><div class="regl-num">4</div><div>
-          <b>🔒 Confidentialité</b>
-          <p>Toutes vos informations restent strictement confidentielles et ne sont utilisées que pour préparer
-          votre diagnostic et vos recommandations personnalisées.</p></div></div>
-      </div>
-      <p class="regl-intro" style="margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(201,168,76,.10);border:1px solid rgba(201,168,76,.32);font-size:.86rem">
-        ⚠️ <b>NB : Le paiement de 5 000 FCFA est OBLIGATOIRE pour recevoir vos résultats.</b><br>
-        Sans capture de paiement, aucun diagnostic ne pourra être transmis.
-      </p>
-      <label class="regl-check">
-        <input type="checkbox" id="hairTermsCheck">
-        <span>J'ai lu et j'accepte les conditions. Je m'engage à effectuer le paiement de <b>5 000 FCFA</b> au <b>01 67 97 56 26</b> et à envoyer la capture sur WhatsApp pour recevoir mes résultats sous 24 à 72h.</span>
-      </label>
-      <button class="regl-confirm" id="hairTermsConfirm" data-lc="ok" disabled>
-        <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> J'ai lu, j'accepte — Envoyer
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- (Ancienne MODAL CONFIRMATION supprimee — remplacee par lc-thanks-modal en bas de page) -->
 
 <script src="assets/js/global-catalog.js"></script>
@@ -976,8 +1208,6 @@ const EMO_BY_GROUP={'visage':'💆‍♀️','corps':'🌸','capillaires':'💇�
 function emoOfSvc(s){
   if(!s)return '✨';
   if((s.tier||'').toLowerCase().includes('vip'))return '👑';
-  if(s.kind==='form-skin')return '🩺';
-  if(s.kind==='pay-wa-hair')return '🩺';
   return EMO_BY_GROUP[s.g]||'✨';
 }
 
@@ -1087,12 +1317,7 @@ const GROUPS=[
    intro:"L'intégralité de notre expertise en une parenthèse unique."},
 ];
 const SERVICES=[
-  {g:'visage',n:'Consultation Peau',tier:'Gratuite',tierCls:'free',p:0,kind:'form-skin',
-   d:"Analyse intelligente • Routine personnalisée • Compréhension complète de votre peau.",
-   c:['taches','acne','imperfections','pores','grasses','terne','texture','age','eclat'],
-   meta:[['Diagnostic','grid']],
-   det:`<div class="det-h">🌿 Pourquoi ce questionnaire est essentiel</div><p class="det-p">Ce questionnaire est la première étape de votre analyse cutanée personnalisée.</p><p class="det-p">Il a été conçu comme un véritable outil de diagnostic avancé, permettant de comprendre votre peau au-delà de ce qui est visible : son comportement, ses réactions, ses sensibilités et ses besoins réels.</p><p class="det-p">Chaque réponse nous permet de construire une analyse de type "intelligence cutanée", afin de proposer des recommandations adaptées, précises et réellement efficaces.</p><p class="det-p">👉 Plus vos réponses sont détaillées, plus votre diagnostic sera fiable et personnalisé.</p><div class="det-h">🧖🏽‍♀️ Comment ça fonctionne</div><ol class="det-ul"><li>Vous remplissez le questionnaire en ligne</li><li>L'analyse de votre profil cutané est effectuée</li><li>Vous recevez une recommandation de routine personnalisée</li><li>Si nécessaire, des conseils de correction ou d'ajustement vous sont proposés</li></ol><div class="det-h">🧠 Ce qui sera analysé</div><p class="det-p"><b>Informations générales</b> — Âge, sexe, pays/climat, type de peau perçu.</p><p class="det-p"><b>État actuel de la peau</b> — Grasse, mixte, sèche, déshydratée, sensible, réactive, avec imperfections, avec taches pigmentaires.</p><p class="det-p"><b>Problématiques principales</b> — Acné / boutons inflammatoires, points noirs / pores dilatés, taches pigmentaires, teint terne / manque d'éclat, sécheresse / tiraillements, rougeurs / irritations, excès de sébum, vieillissement cutané / rides.</p><p class="det-p"><b>Sensibilité cutanée</b> — Rougeurs après application, picotements / brûlures, réactions aux parfums, réactions au soleil.</p><p class="det-p"><b>Historique de la peau</b> — Acné sévère, traitements dermatologiques, réactions à certains produits, peelings ou soins en institut.</p><p class="det-p"><b>Routine actuelle à domicile</b> — Produits utilisés actuellement.</p><p class="det-p"><b>Réaction aux actifs cosmétiques</b> — Rétinol, acides exfoliants (AHA/BHA/PHA), Vitamine C, Niacinamide, parfums / huiles essentielles.</p><p class="det-p"><b>Intolérances & allergies</b> — Allergies alimentaires ou cutanées, asthme, eczéma, dermatite, sensibilité aux conservateurs.</p><p class="det-p"><b>Mode de vie</b> — Niveau de stress, qualité du sommeil, hydratation quotidienne, alimentation, exposition au soleil.</p><p class="det-p"><b>Objectif beauté</b> — Peau sans imperfections, teint uniforme et lumineux, hydratation et confort, anti-âge / raffermissement, réduction des taches, rééquilibrage global.</p><div class="det-h">📸 Photos</div><p class="det-p">Une photo nette à la lumière du jour des différentes faces de votre visage est requise.</p><p class="det-p">(Vous nous l'envoyez sur WhatsApp après avoir envoyé votre réponse au questionnaire)</p><div class="det-h">🌫️ L'esprit du diagnostic</div><p class="det-p">Ce questionnaire agit comme une analyse cutanée intelligente, permettant de comprendre votre peau comme un système vivant et évolutif.</p><p class="det-p">Chaque réponse construit votre profil unique afin de vous proposer une routine adaptée, cohérente et efficace, sans hasard ni approximation.</p><div class="det-h">✨ Résultat attendu</div><p class="det-p">À la suite de votre analyse :</p><ul class="det-ul"><li>une interprétation complète de votre type de peau</li><li>une routine personnalisée adaptée à vos besoins</li><li>des recommandations ciblées de produits et actifs</li><li>des conseils d'ajustement pour optimiser vos résultats</li></ul>`},
-  {g:'visage',n:'Consultation Peau — Suivi',tier:'Premium',tierCls:'',p:20000,kind:'book',
+  {g:'visage',n:'Consultation Peau — Suivi',a:'suivi',tier:'Premium',tierCls:'',p:20000,kind:'book',
    d:"Diagnostic & programme de soin personnalisé — L'expérience experte de la peau, sur-mesure et suivie dans le temps.",
    c:['taches','acne','imperfections','pores','grasses','terne','texture','age','eclat'],
    meta:[['Suivi 4-6 mois','clock'],['Check-up mensuel','grid']],
@@ -1100,7 +1325,21 @@ const SERVICES=[
    protocol:{type:'list',h:'Votre suivi inclut',items:[
      "Diagnostic complet de votre peau","Programme de soins entièrement personnalisé",
      "Check-up mensuel avec ajustements","Dossier de suivi exclusif et confidentiel"]}},
-  {g:'visage',n:'Soin Visage Oxygène',tier:'',tierCls:'',p:30000,kind:'book',
+  {g:'visage',n:'Soin Visage Classic',a:'classic',tier:'',tierCls:'',p:15000,kind:'book',
+   d:"Soin d'entretien complet — Nettoyer, rafraîchir et rééquilibrer la peau en douceur.",
+   c:['imperfections','pores','grasses','terne','peau-seche'],
+   meta:[['1 séance / 4 à 6 semaines','repeat'],['Protocole personnalisé','grid']],
+   det:`<div class="det-h">🌿 Description du soin</div><p class="det-p">Le Soin Visage Classique est un soin d'entretien complet conçu pour nettoyer, rafraîchir et rééquilibrer la peau en douceur.</p><p class="det-p">Il permet d'éliminer les impuretés accumulées à la surface de la peau, les cellules mortes et l'excès de sébum, tout en apportant confort, fraîcheur et éclat au teint.</p><p class="det-p">Ce soin convient à la majorité des types de peau et peut être personnalisé selon les besoins de chaque cliente : peau normale, sèche, mixte, grasse, déshydratée ou présentant quelques imperfections.</p><p class="det-p"><i>L'objectif est simple : maintenir une peau propre, saine, douce et lumineuse, grâce à un protocole professionnel adapté à son état du jour.</i></p><div class="det-h">💎 Bénéfices du soin</div><ul class="det-ul"><li>Nettoie la peau en profondeur</li><li>Élimine les cellules mortes et les impuretés</li><li>Aide à désincruster les pores</li><li>Lisse le grain de peau</li><li>Apporte douceur et fraîcheur</li><li>Contribue à raviver l'éclat du teint</li><li>Aide à maintenir une peau équilibrée</li><li>Offre un véritable moment de détente</li></ul><div class="det-h">🌱 Pour qui ?</div><p class="det-p">Ce soin est particulièrement recommandé pour :</p><ul class="det-ul"><li>les peaux normales à mixtes</li><li>les peaux sèches ou déshydratées</li><li>les peaux mixtes à grasses</li><li>les peaux présentant quelques comédons</li><li>les teints ternes ou fatigués</li><li>les personnes souhaitant entretenir régulièrement leur peau</li><li>les personnes souhaitant découvrir les soins professionnels du visage</li></ul><p class="det-p">Le protocole est ajusté en fonction de l'état réel de la peau le jour du rendez-vous.</p><div class="det-h">✨ Résultats attendus</div><p class="det-p"><b>Dès la première séance :</b></p><ul class="det-ul"><li>peau propre et fraîche</li><li>grain de peau plus doux</li><li>peau plus souple et confortable</li><li>teint plus lumineux</li><li>sensation de légèreté et de fraîcheur</li></ul><p class="det-p"><b>Après plusieurs séances :</b></p><ul class="det-ul"><li>peau mieux entretenue</li><li>diminution progressive des impuretés superficielles</li><li>grain de peau plus régulier</li><li>teint plus uniforme et lumineux</li><li>meilleure sensation de confort cutané</li></ul><div class="det-h">📅 Fréquence recommandée</div><p class="det-p">Une séance toutes les 4 à 6 semaines, selon le type de peau et ses besoins.</p><div class="det-h">🤍 L'esprit du soin</div><p class="det-p">Le Soin Visage Classique est l'essentiel d'un bon entretien cutané. Un protocole à la fois simple, professionnel et personnalisé, qui permet de prendre soin de sa peau régulièrement sans la sur-solliciter.</p><p class="det-p">Chez Luxury Skin Clinic, chaque peau est différente : le protocole est donc ajusté en fonction de ses besoins afin de préserver son équilibre et son confort.</p><p class="det-p"><i>Une peau bien entretenue est une peau qui conserve plus longtemps sa douceur, son éclat et sa beauté naturelle.</i></p>`,
+   protocol:{type:'steps',h:'Le déroulement du soin',items:[
+     ['Démaquillage & nettoyage',"Nettoyage doux du visage afin d'éliminer maquillage, pollution, transpiration et impuretés superficielles."],
+     ['Exfoliation douce',"Élimination des cellules mortes à l'aide d'une exfoliation adaptée au type et à la sensibilité de la peau : le grain se lisse et l'épiderme est prêt à recevoir les soins suivants."],
+     ['Vapeur douce',"Une vapeur tiède assouplit la couche superficielle de la peau et facilite la désincrustation des impuretés. Cette étape peut être adaptée ou supprimée selon la sensibilité et l'état de la peau."],
+     ['Extraction des comédons',"Désincrustation manuelle des points noirs et impuretés lorsque cela est nécessaire, progressivement et avec douceur, afin de limiter les rougeurs et les traumatismes cutanés."],
+     ['Massage relaxant',"Massage du visage adapté à la peau, pour favoriser la détente et apporter une agréable sensation de bien-être."],
+     ['Masque personnalisé',"Masque sélectionné selon les besoins de la peau : hydratant, apaisant, purifiant ou rééquilibrant."],
+     ['Sérum & crème de soin',"Sérum et crème adaptés afin de restaurer le confort cutané et de finaliser le soin."],
+     ['Protection solaire',"Protection solaire adaptée lorsque le soin est réalisé en journée."]]}},
+  {g:'visage',n:'Soin Visage Oxygène',a:'oxygene',tier:'',tierCls:'',p:30000,kind:'book',
    d:"Nettoyage profond & rééquilibrage cutané — Purification • Éclat • Peau visiblement plus saine.",
    c:['imperfections','pores','grasses','terne'],
    meta:[['Environ 1h','clock'],['1 fois / mois','repeat']],
@@ -1113,7 +1352,7 @@ const SERVICES=[
      ['Masque','Masque purifiant adapté à votre peau.'],
      ['Sérum / Crème','Application de soins ciblés.'],
      ['Machines purifiantes','Finition technologique pour une peau nette.']]}},
-  {g:'visage',n:'Soin Visage Glass Skin',tier:'Signature',tierCls:'signature',p:45000,kind:'book',
+  {g:'visage',n:'Soin Visage Glass Skin',a:'glass',tier:'Signature',tierCls:'signature',p:45000,kind:'book',
    d:"Éclat intense & peau lissée — Glow immédiat • Uniformité • Effet peau miroir.",
    c:['terne','texture','age','eclat'],
    warn:"Contre-indications : peau très irritée ou acné inflammatoire active.",
@@ -1129,16 +1368,16 @@ const SERVICES=[
      ['Sérum repulpant + LED','Boost d\'hydratation sous luminothérapie.'],
      ['Crème scellante + SPF','Protection finale et fini "verre".']]},
    post:"Post-soin obligatoire : routine stricte pendant 3 jours. Une légère purge peut apparaître entre J+3 et J+7 — c'est normal."},
-  {g:'visage',n:'Luxury Peel',tier:'Avancé',tierCls:'vip',p:120000,kind:'book',
+  {g:'visage',n:'Luxury Peel',a:'peel',tier:'Avancé',tierCls:'vip',p:120000,kind:'book',
    d:"Peeling professionnel haute performance — Renouvellement cutané • Correction ciblée • Éclat maîtrisé.",
    c:['taches','acne','irregulier','age'],
    warn:"Jamais en premier soin. Une préparation de la peau est indispensable.",
    meta:[['1 fois / 6 mois max','repeat'],['Sur protocole','grid']],
-   det:`<div class="det-h">🌿 Qu'est-ce qu'un peeling ?</div><p class="det-p">Le peeling professionnel est un soin esthétique avancé qui agit en stimulant le renouvellement naturel de la peau grâce à des actifs exfoliants contrôlés.</p><p class="det-p">Contrairement à un simple exfoliant, il s'agit d'un protocole de transformation cutanée progressive, conçu pour améliorer durablement la qualité de la peau et corriger des problématiques telles que :</p><ul class="det-ul"><li>acné et imperfections</li><li>taches pigmentaires</li><li>teint terne ou irrégulier</li><li>manque d'éclat et de luminosité</li></ul><p class="det-p">Chez nous, le Luxury Peel est formulé et adapté aux peaux africaines et aux climats chauds, afin de garantir une tolérance optimale et un respect total de la barrière cutanée.</p><div class="det-h">💎 Un peeling 100% personnalisé</div><p class="det-p">Chaque peeling est strictement adapté à la problématique de la peau :</p><ul class="det-ul"><li><b>Acné et imperfections</b> → peeling purifiant et régulateur</li><li><b>Taches pigmentaires</b> → peeling éclaircissant et uniformisant</li><li><b>Teint terne</b> → peeling éclat et revitalisant</li><li><b>Vieillissement cutané</b> → peeling lissant et anti-âge</li></ul><p class="det-p"><b>Aucun peeling n'est standardisé.</b><br>Chaque protocole est établi après analyse professionnelle de la peau.</p><div class="det-h">⚠️ Important : Le peeling n'est jamais un premier soin</div><p class="det-p">Le Luxury Peel s'inscrit dans une progression logique et structurée.</p><p class="det-p">Avant d'y accéder, la peau doit être préparée et stabilisée pendant environ 3 mois :</p><ul class="det-ul"><li>Minimum 3 séances de soin Oxygène en cas d'acné, pores obstrués ou teint brouillé<br><b>OU</b></li><li>Minimum 3 mois de soin Glass Skin en cas de taches, manque d'éclat ou irrégularités</li></ul><p class="det-p"><b>C'est-à-dire une fois par mois.</b></p><p class="det-p">Cette phase est accompagnée d'une routine skincare personnalisée obligatoire, définie via consultation (gratuite ou payante), afin de rééduquer la peau et optimiser sa réceptivité.</p><div class="det-h">🧴 Phase de préparation intensive avant peeling</div><p class="det-p">Une fois les 3 mois de préparation terminés, une préparation intensive de 2 semaines avant le peeling est obligatoire.</p><p class="det-p">Cette étape permet de préparer la peau de façon optimale afin de maximiser les résultats et limiter toute sensibilité.</p><p class="det-p">👉 Le kit protocole pré-peeling est disponible à la clinique.</p><div class="det-h">🧖🏽‍♀️ Déroulement du peeling</div><p class="det-p">Le Luxury Peel est réalisé selon un protocole professionnel strict :</p><ul class="det-ul"><li>Analyse de la peau avant chaque séance</li><li>Préparation et nettoyage de la peau</li><li>Application du peeling personnalisé</li><li>Neutralisation et rééquilibrage cutané</li><li>Soin apaisant et réparateur</li><li>Protection finale de la peau</li></ul><div class="det-h">📅 Fréquence recommandée</div><p class="det-p">Le Luxury Peel est un soin intensif et structurant.</p><p class="det-p">👉 Fréquence recommandée :</p><ul class="det-ul"><li>1 séance tous les 6 mois uniquement (2 fois par an)</li></ul><p class="det-p"><i>C'est le rythme idéal pour permettre à la peau de se renouveler sans surcharge ni irritation.</i></p><div class="det-h">🌿 Routine post-peeling obligatoire</div><p class="det-p">Après le peeling, la peau entre dans une phase de régénération.</p><p class="det-p"><b>Une routine stricte doit être suivie pendant 1 mois complet :</b></p><ul class="det-ul"><li>Nettoyant doux non agressif</li><li>Sérum hydratant réparateur</li><li>Crème apaisante et protectrice</li><li>Protection solaire obligatoire quotidienne</li></ul><p class="det-p">👉 Le kit protocole post-peeling est également disponible à la clinique.</p><div class="det-h">💎 Résultats attendus</div><p class="det-p"><b>Après un protocole complet (préparation + peeling + suivi) :</b></p><ul class="det-ul"><li>peau plus lumineuse et uniforme</li><li>amélioration visible de la texture cutanée</li><li>réduction progressive des imperfections ou taches</li><li>teint plus net, plus clair et plus harmonieux</li><li>peau visiblement renouvelée et raffinée</li></ul><div class="det-h">🌫️ L'esprit du Luxury Peel</div><p class="det-p">Le Luxury Peel est un protocole expert, structuré et progressif.<br>Il ne s'agit pas d'un soin isolé, mais d'un processus de transformation cutanée encadré, reposant sur la préparation, la précision et le suivi.</p><p class="det-p">Chaque étape est pensée pour garantir une peau plus belle, plus saine et durablement équilibrée.</p>`,
+   det:`<div class="det-h">🌿 Qu'est-ce qu'un peeling ?</div><p class="det-p">Le peeling professionnel est un soin esthétique avancé qui agit en stimulant le renouvellement naturel de la peau grâce à des actifs exfoliants contrôlés.</p><p class="det-p">Contrairement à un simple exfoliant, il s'agit d'un protocole de transformation cutanée progressive, conçu pour améliorer durablement la qualité de la peau et corriger des problématiques telles que :</p><ul class="det-ul"><li>acné et imperfections</li><li>taches pigmentaires</li><li>teint terne ou irrégulier</li><li>manque d'éclat et de luminosité</li></ul><p class="det-p">Chez nous, le Luxury Peel est formulé et adapté aux peaux africaines et aux climats chauds, afin de garantir une tolérance optimale et un respect total de la barrière cutanée.</p><div class="det-h">💎 Un peeling 100% personnalisé</div><p class="det-p">Chaque peeling est strictement adapté à la problématique de la peau :</p><ul class="det-ul"><li><b>Acné et imperfections</b> → peeling purifiant et régulateur</li><li><b>Taches pigmentaires</b> → peeling éclaircissant et uniformisant</li><li><b>Teint terne</b> → peeling éclat et revitalisant</li><li><b>Vieillissement cutané</b> → peeling lissant et anti-âge</li></ul><p class="det-p"><b>Aucun peeling n'est standardisé.</b><br>Chaque protocole est établi après analyse professionnelle de la peau.</p><div class="det-h">⚠️ Important : Le peeling n'est jamais un premier soin</div><p class="det-p">Le Luxury Peel s'inscrit dans une progression logique et structurée.</p><p class="det-p">Avant d'y accéder, la peau doit être préparée et stabilisée pendant environ 3 mois :</p><ul class="det-ul"><li>Minimum 3 séances de soin Oxygène en cas d'acné, pores obstrués ou teint brouillé<br><b>OU</b></li><li>Minimum 3 mois de soin Glass Skin en cas de taches, manque d'éclat ou irrégularités</li></ul><p class="det-p"><b>C'est-à-dire une fois par mois.</b></p><p class="det-p">Cette phase est accompagnée d'une routine skincare personnalisée obligatoire, définie en consultation, afin de rééduquer la peau et optimiser sa réceptivité.</p><div class="det-h">🧴 Phase de préparation intensive avant peeling</div><p class="det-p">Une fois les 3 mois de préparation terminés, une préparation intensive de 2 semaines avant le peeling est obligatoire.</p><p class="det-p">Cette étape permet de préparer la peau de façon optimale afin de maximiser les résultats et limiter toute sensibilité.</p><p class="det-p">👉 Le kit protocole pré-peeling est disponible à la clinique.</p><div class="det-h">🧖🏽‍♀️ Déroulement du peeling</div><p class="det-p">Le Luxury Peel est réalisé selon un protocole professionnel strict :</p><ul class="det-ul"><li>Analyse de la peau avant chaque séance</li><li>Préparation et nettoyage de la peau</li><li>Application du peeling personnalisé</li><li>Neutralisation et rééquilibrage cutané</li><li>Soin apaisant et réparateur</li><li>Protection finale de la peau</li></ul><div class="det-h">📅 Fréquence recommandée</div><p class="det-p">Le Luxury Peel est un soin intensif et structurant.</p><p class="det-p">👉 Fréquence recommandée :</p><ul class="det-ul"><li>1 séance tous les 6 mois uniquement (2 fois par an)</li></ul><p class="det-p"><i>C'est le rythme idéal pour permettre à la peau de se renouveler sans surcharge ni irritation.</i></p><div class="det-h">🌿 Routine post-peeling obligatoire</div><p class="det-p">Après le peeling, la peau entre dans une phase de régénération.</p><p class="det-p"><b>Une routine stricte doit être suivie pendant 1 mois complet :</b></p><ul class="det-ul"><li>Nettoyant doux non agressif</li><li>Sérum hydratant réparateur</li><li>Crème apaisante et protectrice</li><li>Protection solaire obligatoire quotidienne</li></ul><p class="det-p">👉 Le kit protocole post-peeling est également disponible à la clinique.</p><div class="det-h">💎 Résultats attendus</div><p class="det-p"><b>Après un protocole complet (préparation + peeling + suivi) :</b></p><ul class="det-ul"><li>peau plus lumineuse et uniforme</li><li>amélioration visible de la texture cutanée</li><li>réduction progressive des imperfections ou taches</li><li>teint plus net, plus clair et plus harmonieux</li><li>peau visiblement renouvelée et raffinée</li></ul><div class="det-h">🌫️ L'esprit du Luxury Peel</div><p class="det-p">Le Luxury Peel est un protocole expert, structuré et progressif.<br>Il ne s'agit pas d'un soin isolé, mais d'un processus de transformation cutanée encadré, reposant sur la préparation, la précision et le suivi.</p><p class="det-p">Chaque étape est pensée pour garantir une peau plus belle, plus saine et durablement équilibrée.</p>`,
    protocol:{type:'list',h:'Prérequis obligatoires',items:[
      "Minimum 3 séances de Soin Oxygène (peaux acné / pores)","OU 3 mois de Soin Glass Skin (taches / éclat)",
      "Préparation intensive de la peau 2 semaines avant","Kit pré-peeling et kit post-peeling disponibles"]}},
-  {g:'corps',n:'Gommage Luxury',tier:'',tierCls:'',p:45000,kind:'book',
+  {g:'corps',n:'Gommage Luxury',a:'gommage',tier:'',tierCls:'',p:45000,kind:'book',
    d:"Gommage corps (rituel de régénération cutanée) — Exfoliation avancée • Éclat du corps • Peau ultra douce.",
    c:['irregulier','peau-seche','eclat'],
    meta:[['1 fois / 2 mois','repeat']],
@@ -1148,22 +1387,23 @@ const SERVICES=[
      {t:'steps',v:[['Application','Pose du soin exfoliant sur le corps.'],['Pose','Temps d\'action maîtrisé.'],
        ['Rinçage','Élimination en douceur.'],['Finition','Soin nourrissant et apaisant.'],
        ['Modelage','Modelage final pour une peau sublimée.']]}]}},
-  {g:'corps',n:'Luxury Massage',tier:'',tierCls:'',p:30000,kind:'book',by:"l'esthéticienne",
+  {g:'corps',n:'Luxury Massage',a:'massage',tier:'',tierCls:'',p:30000,kind:'book',by:"l'esthéticienne",
    d:"Massage Luxury Skin Technique — Relaxation profonde • Libération des tensions • Expérience sensorielle totale.",
    c:['detente','bienetre'],
    meta:[['1 heure','clock'],['À volonté','repeat']],
    det:`<div class="det-h">🌿 Une expérience à vivre au moins une fois dans sa vie</div><p class="det-p">Le Massage Luxury Skin Technique est bien plus qu'un massage : c'est une expérience immersive de relaxation profonde, pensée pour relâcher les tensions du corps et apaiser l'esprit.</p><p class="det-p">Grâce à une combinaison de plusieurs techniques de massage professionnelles, ce rituel agit sur l'ensemble du corps pour détendre intensément les muscles, apaiser les nerfs et rétablir une sensation globale de bien-être.</p><div class="det-h">🧖🏽‍♀️ Une prise en charge complète du corps</div><p class="det-p">Ce massage est conçu pour ne laisser aucune zone de côté.</p><p class="det-p"><b>Chaque partie du corps est travaillée avec précision :</b></p><ul class="det-ul"><li>cuir chevelu et crâne</li><li>nuque et cou</li><li>dos complet</li><li>bras et mains</li><li>cuisses et jambes</li><li>pieds et plantes des pieds</li></ul><p class="det-p">👉 Aucune zone n'est oubliée, aucune tension n'est ignorée.</p><div class="det-h">💆🏽‍♀️ Une technique professionnelle & maîtrisée</div><p class="det-p">Le massage est réalisé par une esthéticienne formée aux techniques de relaxation et de bien-être.</p><p class="det-p">Il combine plusieurs approches afin d'obtenir un résultat profond et harmonieux :</p><ul class="det-ul"><li>détente musculaire</li><li>relâchement des tensions nerveuses</li><li>amélioration de la circulation du bien-être corporel</li><li>apaisement global du corps et de l'esprit</li></ul><div class="det-h">🌫️ Ambiance & durée</div><p class="det-p">Le soin se déroule dans une ambiance :</p><ul class="det-ul"><li>douce</li><li>calme</li><li>chaleureuse</li><li>relaxante</li></ul><p class="det-p">La durée du massage est de 1 heure complète, entièrement dédiée à votre détente.</p><div class="det-h">💎 Résultats attendus</div><p class="det-phase"><b>Dès la fin du soin :</b></p><ul class="det-ul"><li>sensation de légèreté du corps</li><li>relâchement des tensions</li><li>apaisement profond</li><li>esprit plus calme et détendu</li></ul><div class="det-h">📅 Fréquence recommandée</div><p class="det-p">Le Massage Luxury Skin Technique peut être réalisé :</p><p class="det-p">👉 à volonté, selon vos besoins et votre envie de détente.<br>Il suffit simplement de prendre rendez-vous.</p><div class="det-h">🌿 L'esprit du soin</div><p class="det-p">Ce massage est une parenthèse hors du temps, une reconnexion totale au corps et au bien-être.<br>Il invite à relâcher, respirer et se recentrer dans une expérience de détente complète et luxueuse.</p>`,
    protocol:{type:'list',h:'Zones travaillées',items:[
      "Cuir chevelu","Nuque","Dos","Bras","Jambes","Pieds"]}},
-  {g:'capillaires',n:'Diagnostic Capillaire',tier:'',tierCls:'',p:5000,kind:'form-hair',
-   d:"Perfect Hair Program™ — Diagnostic personnalisé pour comprendre vos cheveux et votre cuir chevelu.",
-   c:['chute','pousse','cuir-sensible'],
-   meta:[['Diagnostic','grid']],
-   det:`<div class="det-h">Pourquoi cette consultation ?</div><p class="det-p">La consultation capillaire est une étape essentielle pour comprendre les besoins réels de vos cheveux et de votre cuir chevelu. ✨</p><p class="det-p">Elle permet d'identifier les causes des problèmes capillaires <b>(chute, casse, pellicules, sécheresse, manque de pousse, irritation…)</b> afin de proposer une routine et des soins adaptés à votre situation.</p><p class="det-p">Chaque cheveu est différent : un diagnostic personnalisé permet d'éviter les mauvais produits, de mieux cibler les besoins du cuir chevelu et d'obtenir des résultats plus efficaces et durables. 🤍</p><div class="det-h">Comment ça se passe</div><p class="det-p">1. Vous remplissez le questionnaire capillaire complet.<br>2. Vous lisez et acceptez les conditions de diagnostic.<br>3. Vous effectuez le paiement obligatoire de <b>5 000 FCFA</b> au <b>01 67 97 56 26</b> (Mobile Money) et envoyez la capture sur WhatsApp.<br>4. Vous recevez vos résultats et recommandations sous <b>24 à 72h</b>.</p>`,
-   protocol:{type:'list',h:'Ce qui est inclus',items:[
-     "Questionnaire capillaire complet (12 sections)","Analyse du cuir chevelu et de la fibre",
-     "Recommandation de routine et de protocole personnalisé","Résultats sous 24 à 72h après réception de votre paiement"]}},
-  {g:'capillaires',n:'Le Hair Spa',tier:'',tierCls:'',p:15000,kind:'book',
+  {g:'capillaires',n:'Consultation Capillaire Premium',a:'capillaire',tier:'Premium',tierCls:'',p:30000,kind:'book',
+   d:"Analyse & accompagnement personnalisé sur 3 mois — Comprendre vos cheveux et votre cuir chevelu, puis construire la routine qui leur convient.",
+   c:['chute','pousse','cuir-sensible','secs','abimes'],
+   meta:[['30 minutes','clock'],['Suivi 3 mois','repeat'],['Présentiel ou à distance','grid']],
+   det:`<div class="det-h">🌿 Description de la consultation</div><p class="det-p">La Consultation Capillaire Premium est une consultation personnalisée de 30 minutes, conçue pour analyser l'état de vos cheveux et de votre cuir chevelu afin de comprendre vos besoins et d'établir une routine capillaire adaptée.</p><p class="det-p">Parce qu'il n'existe pas de routine universelle, nous commençons par observer et analyser votre chevelure avant de vous recommander des produits.</p><p class="det-p">La consultation est privilégiée en présentiel, afin de permettre une observation plus précise des cheveux et du cuir chevelu. Elle peut également être réalisée à distance, selon les possibilités.</p><p class="det-p">Cette consultation peut être réalisée dans le cadre d'un simple entretien préventif ou pour accompagner différentes problématiques capillaires :</p><ul class="det-ul"><li>pellicules et squames</li><li>démangeaisons du cuir chevelu</li><li>cuir chevelu sec, sensible ou à tendance grasse</li><li>chute de cheveux</li><li>perte de densité</li><li>alopécie</li><li>cheveux cassants ou fragilisés</li><li>sécheresse et déshydratation de la fibre</li><li>cheveux abîmés par les colorations, défrisages ou appareils chauffants</li><li>difficultés à maintenir la longueur</li><li>ou toute autre problématique capillaire</li></ul><div class="det-h">🔎 Votre bilan capillaire</div><p class="det-p">Durant la consultation, nous réalisons une analyse approfondie de :</p><p class="det-p"><b>🧴 Votre cuir chevelu</b> — nous évaluons son état général, son niveau de sécheresse ou de séborrhée, la présence de squames, d'inconfort ou d'autres signes nécessitant une attention particulière.</p><p class="det-p"><b>💇🏽‍♀️ Votre fibre capillaire</b> — nous observons la texture, la sécheresse, la fragilité, la casse, la souplesse et l'état général de la fibre.</p><p class="det-p"><b>📋 Vos habitudes</b> — nous analysons vos habitudes de lavage, vos coiffures, l'utilisation de chaleur, les traitements chimiques, extensions, tresses, produits utilisés et fréquence d'entretien.</p><p class="det-p"><b>🎯 Votre problématique</b> — nous identifions vos principales préoccupations afin de déterminer les priorités de votre routine.</p><div class="det-h">🧴 Une routine personnalisée</div><p class="det-p">À partir de cette analyse, nous élaborons une routine capillaire personnalisée et réaliste, adaptée à votre situation.</p><p class="det-p">Nous effectuons pour vous une sélection de produits disponibles en pharmacie ou en grande surface, issus notamment de marques européennes, américaines et coréennes que nous avons soigneusement sélectionnées.</p><p class="det-p">L'objectif n'est pas de vous faire accumuler les produits. Nous recherchons les produits les plus pertinents pour votre problématique et construisons une routine simple, cohérente et facile à suivre.</p><p class="det-p">Vous saurez ainsi :</p><ul class="det-ul"><li>quels produits utiliser</li><li>dans quel ordre</li><li>à quelle fréquence</li><li>comment les utiliser</li><li>et quelles habitudes adopter pour optimiser vos résultats</li></ul><div class="det-h">📆 Un accompagnement sur 3 mois</div><p class="det-p">La consultation ne s'arrête pas à la première séance. Parce que l'évolution des cheveux et du cuir chevelu demande du temps, votre prise en charge comprend un suivi pendant 3 mois.</p><p class="det-p">📱 Les check-up mensuels sont réalisés en ligne, ce qui vous permet d'être accompagnée tout au long du programme, même à distance.</p><div class="det-h">💎 Pourquoi une consultation capillaire ?</div><p class="det-p">Parce que la multiplication des produits ne garantit pas de meilleurs résultats. Un cuir chevelu qui démange, une chute de cheveux, des pellicules ou des cheveux qui cassent peuvent avoir des origines et des besoins très différents.</p><p class="det-p">Notre objectif est donc de vous éviter les achats inutiles et les essais successifs en vous proposant une routine réfléchie, personnalisée et évolutive.</p><p class="det-p"><i>Vous ne repartez pas simplement avec une liste de produits. Vous repartez avec une véritable stratégie pour vos cheveux.</i></p><div class="det-h">✨ Les bénéfices</div><ul class="det-ul"><li>Comprendre l'état de vos cheveux et de votre cuir chevelu</li><li>Identifier vos principales problématiques</li><li>Établir une routine adaptée à vos besoins</li><li>Recevoir une sélection de produits accessibles</li><li>Apprendre à utiliser correctement chaque produit</li><li>Éviter les associations ou habitudes inadaptées</li><li>Être accompagnée pendant 3 mois</li><li>Ajuster votre routine en fonction de l'évolution observée</li><li>Suivre plus efficacement vos progrès</li></ul><div class="det-h">🤍 L'esprit de la consultation</div><p class="det-p">De beaux cheveux commencent par une bonne compréhension de leur état. Notre approche repose sur trois étapes essentielles : <b>ANALYSER → PERSONNALISER → SUIVRE</b>.</p><p class="det-p">Nous ne vous proposons pas une routine standardisée. Nous construisons une routine pour vos cheveux, votre cuir chevelu et vos objectifs, puis nous vous accompagnons afin de suivre son évolution dans le temps.</p><p class="det-p"><i>Votre routine évolue avec vos cheveux. ✨</i></p><div class="det-h">📋 En résumé</div><ul class="det-ul"><li>Durée de la consultation initiale : 30 minutes</li><li>Format privilégié : présentiel</li><li>Possibilité : consultation à distance</li><li>Suivi : 3 check-up mensuels en ligne</li><li>Durée de l'accompagnement : 3 mois</li></ul>`,
+   protocol:{type:'steps',h:'Votre suivi, mois après mois',items:[
+     ['Mois 1 — Mise en place',"Nous mettons en place votre routine et vous commencez progressivement les soins recommandés."],
+     ['Mois 2 — Évaluation',"Un check-up en ligne permet d'évaluer les premières évolutions, la tolérance des produits et votre adhésion à la routine."],
+     ['Mois 3 — Ajustement',"Nous réalisons un nouveau check-up afin d'évaluer les progrès et d'ajuster la routine si nécessaire."]]}},
+  {g:'capillaires',n:'Le Hair Spa',a:'hairspa',tier:'',tierCls:'',p:15000,kind:'book',
    d:"Rituel capillaire & détente profonde — Soin du cuir chevelu • Relaxation intense • Expertise capillaire.",
    c:['cuir-sensible','secs','bienetre'],
    meta:[['1 fois / mois','repeat']],
@@ -1171,7 +1411,7 @@ const SERVICES=[
    protocol:{type:'list',h:'Le rituel',items:[
      "Technique japonaise : eau, massage et soins","Analyse du cuir chevelu incluse",
      "Détente profonde et cuir chevelu rééquilibré"]}},
-  {g:'capillaires',n:'Soin Activateur de Pousse',tier:'',tierCls:'',p:25000,kind:'book',
+  {g:'capillaires',n:'Soin Activateur de Pousse',a:'pousse',tier:'',tierCls:'',p:25000,kind:'book',
    d:"Microstimulation capillaire avancée — Pousse des cheveux • Densité • Réactivation du cuir chevelu.",
    c:['chute','pousse','abimes'],
    meta:[['1 séance / mois','repeat'],['Cure 6 mois min.','clock']],
@@ -1179,7 +1419,7 @@ const SERVICES=[
    protocol:{type:'list',h:'Le protocole',items:[
      "Microstimulation capillaire avancée","Application d'un sérum activateur premium",
      "Cure recommandée : 1 séance par mois, 6 mois minimum"]}},
-  {g:'complet',n:'Le Soin Complet VIP',tier:'VIP',tierCls:'vip',p:150000,kind:'book',
+  {g:'complet',n:'Le Soin Complet VIP',a:'vip',tier:'VIP',tierCls:'vip',p:150000,kind:'book',
    d:"L'Expérience (Le Rituel Signature VIP) — Beauté • Détente • Évasion absolue.",
    c:['bienetre','eclat','detente'],
    meta:[['4 à 5 heures','clock'],['Espace privatisé','star']],
@@ -1189,141 +1429,6 @@ const SERVICES=[
      "Vin à volonté et repas","Une personne entièrement dédiée à votre service",
      "Espace VIP privatisé exclusif"]}},
 ];
-
-/* ===== FORMULAIRES ===== */
-const SKIN_FORM={
-  title:'Consultation Peau',tag:'Questionnaire offert',
-  intro:"Ce questionnaire permet à Mme Sabrina d'analyser votre peau en profondeur. Répondez le plus précisément possible.",
-  waPrefix:"Bonjour Luxury Skin Clinic, voici mon questionnaire de Consultation Peau :",
-  sections:[
-    {h:'Informations générales',fields:[
-      {t:'text',n:'Nom complet',req:1},{t:'text',n:'Âge'},{t:'text',n:'Profession'},
-      {t:'tel',n:'Téléphone / WhatsApp',req:1}]},
-    {h:'État de la peau',fields:[
-      {t:'radio',n:'Type de peau',o:['Sèche','Normale','Mixte','Grasse','Sensible']},
-      {t:'radio',n:'Sensation habituelle',o:['Confortable','Tiraillements','Brillances','Inconfort variable']}]},
-    {h:'Problématiques',fields:[
-      {t:'check',n:'Préoccupations principales',o:['Taches pigmentaires','Acné / imperfections','Pores dilatés','Teint terne','Rides / relâchement','Rougeurs','Teint irrégulier']},
-      {t:'textarea',n:'Depuis combien de temps ?'}]},
-    {h:'Sensibilité',fields:[
-      {t:'radio',n:'Votre peau réagit-elle facilement ?',o:['Oui, souvent','Parfois','Rarement','Jamais']},
-      {t:'text',n:'À quoi réagit-elle (soleil, produits...) ?'}]},
-    {h:'Historique',fields:[
-      {t:'radio',n:'Soins esthétiques déjà réalisés',o:['Oui','Non']},
-      {t:'textarea',n:'Si oui, lesquels et quand ?'},
-      {t:'radio',n:'Traitement dermatologique en cours',o:['Oui','Non']}]},
-    {h:'Routine actuelle',fields:[
-      {t:'textarea',n:'Produits utilisés le matin',hint:'(mettre le nom exact du produit et la marque)'},
-      {t:'textarea',n:'Produits utilisés le soir',hint:'(mettre le nom exact du produit et la marque)'}]},
-    {h:'Réactions aux actifs',fields:[
-      {t:'check',n:'Actifs déjà utilisés',o:['Rétinol','Vitamine C','Acides (AHA/BHA)','Niacinamide','Peroxyde de benzoyle','Aucun']},
-      {t:'text',n:'Un actif a-t-il provoqué une réaction ?'}]},
-    {h:'Allergies',fields:[
-      {t:'radio',n:'Allergies connues',o:['Oui','Non']},
-      {t:'text',n:'Si oui, lesquelles ?'}]},
-    {h:'Mode de vie',fields:[
-      {t:'radio',n:'Exposition au soleil',o:['Faible','Modérée','Importante']},
-      {t:'radio',n:'Niveau de stress',o:['Faible','Modéré','Élevé']},
-      {t:'radio',n:'Hydratation quotidienne (eau)',o:['Moins d\'1L','1 à 2L','Plus de 2L']},
-      {t:'text',n:'Poids (kg)'},
-      {t:'check',n:'Consommez-vous régulièrement ces aliments ?',o:['Produits laitiers','Œufs','Pâtisseries','Fast food','Soja (bouillie ou fromage)','Whey protéine','Alcool','Aliments / boissons sucrés','Noix (arachide, amande, cajou, autres)']},
-      {t:'radio',n:'Dégradation de votre peau après consommation d\'un aliment ?',o:['Oui','Non']},
-      {t:'text',n:'Si oui, lequel ?'},
-      {t:'radio',n:'Diabète (vous ou un membre de votre famille) ?',o:['Oui','Non','Je ne sais pas']},
-      {t:'radio',n:'SOPK (Syndrome des Ovaires Polykystiques) ?',o:['Oui','Non','Je ne sais pas']},
-      {t:'radio',n:'Acné menstruel ?',o:['Oui','Non']},
-      {t:'radio',n:'Cou, aisselles ou visage plus foncés que le reste du corps ?',o:['Oui','Non']}]},
-    {h:'Objectifs',fields:[
-      {t:'textarea',n:'Qu\'attendez-vous de nos soins ?',req:1}]},
-  ]
-};
-const HAIR_FORM={
-  title:'Questionnaire Capillaire',tag:'Diagnostic personnalisé',
-  intro:"Diagnostic cheveux & cuir chevelu — INA Luxury Hair Clinic. Répondez avec précision afin que Mme Sabrina puisse créer une routine totalement personnalisée à votre cuir chevelu, vos cheveux, vos habitudes et vos objectifs.",
-  waPrefix:"Bonjour Luxury Skin Clinic, voici mon questionnaire de Diagnostic Capillaire :",
-  sections:[
-    {h:'Informations personnelles',fields:[
-      {t:'text',n:'Nom & prénom',req:1},
-      {t:'text',n:'Âge'},
-      {t:'radio',n:'Sexe',o:['Femme','Homme']},
-      {t:'text',n:'Profession'},
-      {t:'tel',n:'Numéro WhatsApp',req:1},
-      {t:'text',n:'Email'},
-      {t:'text',n:'Ville / Pays'}]},
-    {h:'Objectifs capillaires',fields:[
-      {t:'check',n:'Vos principaux objectifs',o:[
-        'Accélérer la pousse','Réduire la chute des cheveux',
-        'Traiter l\'alopécie (zones clairsemées ou perte de densité)',
-        'Traiter les pellicules','Soulager les démangeaisons',
-        'Traiter le psoriasis du cuir chevelu (plaques, squames, irritations)',
-        'Réduire la casse','Hydrater les cheveux','Fortifier les cheveux',
-        'Retrouver de la densité','Réparer les cheveux abîmés','Définir les boucles',
-        'Entretenir les locks','Réduire les irritations du cuir chevelu']},
-      {t:'text',n:'Autre objectif'},
-      {t:'radio',n:'Depuis combien de temps avez-vous ce problème ?',o:['Quelques semaines','Quelques mois','Plus d\'un an','Plusieurs années']}]},
-    {h:'Type de cheveux',fields:[
-      {t:'check',n:'Texture capillaire',o:['Crépus','Bouclés','Frisés','Défrisés','Locksés','Naturels','Colorés','Décolorés']},
-      {t:'radio',n:'Épaisseur de cheveux',o:['Fins (légers et fragiles)','Moyens','Épais (volumineux et résistants)']},
-      {t:'radio',n:'Densité capillaire',o:['Faible (cuir chevelu visible facilement)','Moyenne','Forte (chevelure très dense)']},
-      {t:'radio',n:'Vos cheveux sont-ils ?',o:['Très secs (rêches, ternes, difficiles à coiffer)','Secs','Normaux','Gras (regraissent rapidement)']},
-      {t:'check',n:'Vos pointes sont-elles ?',o:['Saines','Sèches','Fourchues (ouvertes ou fendillées)','Cassantes (se cassent facilement)']}]},
-    {h:'État du cuir chevelu',fields:[
-      {t:'check',n:'Votre cuir chevelu est',o:['Sec (tiraillements, petites peaux, inconfort)','Gras (racines huileuses)','Sensible (réagit aux produits ou coiffures)','Irrité (rougeurs, picotements)','Normal']},
-      {t:'check',n:'Ressentez-vous',o:['Démangeaisons','Douleurs (sensibilité au toucher)','Sensation de brûlure','Rougeurs','Pellicules sèches (blanches, qui tombent)','Pellicules grasses (jaunes ou collantes)','Plaques (zones épaisses ou squameuses)','Croûtes (accumulations épaisses)','Odeurs inhabituelles']},
-      {t:'check',n:'Déjà diagnostiqué(e) avec',o:['Psoriasis (plaques épaisses, squames blanches/argentées)','Dermatite séborrhéique','Alopécie androgénétique (perte progressive héréditaire)','Alopécie de traction (coiffures serrées)','Pelade (zones rondes sans cheveux)','Eczéma','Aucune pathologie connue']},
-      {t:'text',n:'Autre pathologie'},
-      {t:'textarea',n:'Depuis combien de temps ?'}]},
-    {h:'Chute & alopécie',fields:[
-      {t:'radio',n:'Constatez-vous une chute excessive ?',o:['Oui','Non']},
-      {t:'check',n:'La chute est située',o:['Diffuse (sur toute la tête)','Frontale (ligne frontale qui recule)','Tempes','Vertex (sommet du crâne)','Bords clairsemés','Zones localisées']},
-      {t:'textarea',n:'Depuis quand ?'},
-      {t:'check',n:'Avez-vous remarqué',o:['Amincissement des cheveux','Trous / zones dégarnies','Cassure importante','Régression de la ligne frontale']},
-      {t:'radio',n:'Antécédents familiaux d\'alopécie ?',o:['Oui','Non']}]},
-    {h:'Habitudes capillaires',fields:[
-      {t:'radio',n:'Fréquence de lavage',o:['1 fois / semaine','2 fois / semaine','Toutes les 2 semaines','Rarement']},
-      {t:'text',n:'Shampoing utilisé'},
-      {t:'text',n:'Après-shampoing utilisé'},
-      {t:'text',n:'Huiles utilisées'},
-      {t:'text',n:'Masques utilisés'},
-      {t:'text',n:'Leave-in utilisé'},
-      {t:'check',n:'Utilisez-vous fréquemment',o:['Gel coiffant','Lace glue / colle','Cire','Mousse coiffante','Huiles lourdes']},
-      {t:'check',n:'Portez-vous souvent',o:['Perruques','Tissages','Braids','Vanilles','Chignons serrés','Locks']},
-      {t:'radio',n:'Fréquence d\'utilisation de la chaleur',o:['Jamais','Occasionnellement','Régulièrement']},
-      {t:'check',n:'Outils chauffants utilisés',o:['Fer à lisser','Sèche-cheveux','Casque chauffant']}]},
-    {h:'Antécédents chimiques',fields:[
-      {t:'check',n:'Avez-vous déjà utilisé',o:['Défrisage','Coloration','Décoloration','Botox capillaire','Lissage brésilien','Autre traitement chimique']},
-      {t:'text',n:'Date du dernier traitement chimique'},
-      {t:'radio',n:'Réaction allergique à un produit capillaire ?',o:['Oui','Non']},
-      {t:'text',n:'Si oui, lequel ?'}]},
-    {h:'Mode de vie & santé',fields:[
-      {t:'radio',n:'Buvez-vous suffisamment d\'eau ?',o:['Oui','Non']},
-      {t:'radio',n:'Votre alimentation est',o:['Équilibrée','Moyenne','Déséquilibrée']},
-      {t:'radio',n:'Êtes-vous souvent stressé(e) ?',o:['Oui','Non']},
-      {t:'radio',n:'Dormez-vous suffisamment ?',o:['Oui','Non']},
-      {t:'radio',n:'Prenez-vous des compléments alimentaires ?',o:['Oui','Non']},
-      {t:'text',n:'Si oui, lesquels ?'}]},
-    {h:'Santé générale',fields:[
-      {t:'check',n:'Avez-vous',o:['Problèmes hormonaux','SOPK (Syndrome des Ovaires Polykystiques)','Anémie (fatigue, carence en fer)','Troubles thyroïdiens','Carences','Maladie auto-immune','Post-partum récent','Aucun problème connu']},
-      {t:'radio',n:'Traitement médical en cours ?',o:['Oui','Non']},
-      {t:'text',n:'Si oui, lequel ?'},
-      {t:'radio',n:'Êtes-vous enceinte ou allaitante ?',o:['Oui','Non']}]},
-    {h:'Micro-needling capillaire',fields:[
-      {t:'radio',n:'Avez-vous déjà effectué du micro-needling capillaire ?',o:['Oui','Non']},
-      {t:'check',n:'Avez-vous',o:['Cuir chevelu sensible','Plaies ouvertes','Infection active','Psoriasis sévère actif','Antécédents de chéloïdes (cicatrices épaisses)','Aucun de ces éléments']},
-      {t:'radio',n:'Êtes-vous prêt(e) à suivre plusieurs séances pour optimiser les résultats ?',o:['Oui','Non']}]},
-    {h:'Objectifs & engagement',fields:[
-      {t:'textarea',n:'Quels résultats souhaitez-vous obtenir ?',req:1},
-      {t:'text',n:'En combien de temps espérez-vous voir des résultats ?'},
-      {t:'radio',n:'Êtes-vous prêt(e) à suivre une routine régulière ?',o:['Oui','Non']}]},
-    {h:'Photos à fournir',fields:[
-      {t:'check',n:'Je m\'engage à envoyer sur WhatsApp',o:[
-        'Une photo du cuir chevelu',
-        'Une photo des longueurs',
-        'Une photo de face',
-        'Une photo des zones concernées',
-        'Une photo récente sans filtre']}]},
-  ]
-};
 
 /* ===== RENDU SOINS ===== */
 const ICONS={
@@ -1339,6 +1444,20 @@ visage:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="
 corps:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.5" opacity=".62"><path d="M36 38c26-14 52-14 68 0 16 14 42 14 68 0"/><path d="M36 52c26-14 52-14 68 0 16 14 42 14 68 0"/><path d="M36 66c26-14 52-14 68 0 16 14 42 14 68 0"/></g><path d="M104 86V52M104 70c-10-2-17-10-18-22 12 1 19 9 18 22zM104 70c10-2 17-10 18-22-12 1-19 9-18 22z" stroke-width="1.5" fill="#c9a84c" fill-opacity=".1"/><path d="M104 30l2 5.6 5.6 2-5.6 2-2 5.6-2-5.6-5.6-2 5.6-2z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
 capillaires:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.6" opacity=".72"><path d="M80 20c-11 16-11 31 0 46s10 21 3 28"/><path d="M94 17c-13 18-13 35 0 53s11 19 5 24"/><path d="M108 16c-13 19-13 38 0 57"/><path d="M122 17c13 18 13 35 0 53s-11 19-5 24"/><path d="M136 20c11 16 11 31 0 46s-10 21-3 28"/></g><path d="M108 88c1-10 7-17 16-19-1 11-7 17-16 19zM108 88c-1-10-7-17-16-19 1 11 7 17 16 19z" stroke-width="1.4" fill="#c9a84c" fill-opacity=".12"/></svg>',
 complet:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.7"><path d="M68 66h72l6-32-23 17-19-27-19 27-23-17z" fill="#c9a84c" fill-opacity=".1"/><path d="M68 72h72"/></g><g stroke-width="1.3"><circle cx="104" cy="22" r="3.4" fill="#c9a84c" fill-opacity=".4"/><circle cx="79" cy="49" r="2.8" fill="#c9a84c" fill-opacity=".4"/><circle cx="129" cy="49" r="2.8" fill="#c9a84c" fill-opacity=".4"/><path d="M156 28l2 5.6 5.6 2-5.6 2-2 5.6-2-5.6-5.6-2 5.6-2z" fill="#c9a84c" fill-opacity=".45"/><path d="M52 34l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" fill="#c9a84c" fill-opacity=".35"/></g></svg>'
+};
+/* un croquis par soin ; SVC_ART (par famille) reste le secours */
+const ART={
+suivi:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.5" opacity=".65"><path d="M34 82h140"/><path d="M34 82V18"/></g><path d="M44 74C68 72 82 60 104 55S148 40 164 28" stroke-width="1.7"/><g stroke-width="1.3"><circle cx="44" cy="74" r="3.4" fill="#fbfaf7"/><circle cx="84" cy="62" r="3.4" fill="#fbfaf7"/><circle cx="124" cy="48" r="3.4" fill="#fbfaf7"/><circle cx="164" cy="28" r="3.4" fill="#fbfaf7"/></g><g stroke-width="1.4" opacity=".8"><circle cx="164" cy="28" r="13"/><path d="M173 37l9 9"/></g><path d="M58 34l1.8 5 5 1.8 -5 1.8 -1.8 5 -1.8 -5 -5 -1.8 5 -1.8z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+classic:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><path d="M104 20c8 11 13 18 13 25a13 13 0 0 1-26 0c0-7 5-14 13-25z" stroke-width="1.6" fill="#c9a84c" fill-opacity=".12"/><g stroke-width="1.5" opacity=".62"><path d="M44 62c15-9 30-9 45 0s45 9 60 0"/><path d="M44 74c15-9 30-9 45 0s45 9 60 0"/><path d="M56 86c12-7 24-7 36 0s36 7 48 0"/></g><path d="M160 34l1.944 5.4 5.4 1.944 -5.4 1.944 -1.944 5.4 -1.944 -5.4 -5.4 -1.944 5.4 -1.944z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/><path d="M50 40l1.44 4 4 1.44 -4 1.44 -1.44 4 -1.44 -4 -4 -1.44 4 -1.44z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+oxygene:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><circle cx="104" cy="52" r="30" stroke-width="1.6" opacity=".6"/><g stroke-width="1.5"><circle cx="92" cy="64" r="8" fill="#c9a84c" fill-opacity=".1"/><circle cx="113" cy="55" r="5.5" fill="#c9a84c" fill-opacity=".1"/><circle cx="100" cy="42" r="4" fill="#c9a84c" fill-opacity=".1"/></g><g stroke-width="1.3" opacity=".72"><circle cx="132" cy="30" r="3"/><circle cx="146" cy="20" r="2.2"/><circle cx="74" cy="28" r="2.6"/></g><path d="M160 62l1.8 5 5 1.8 -5 1.8 -1.8 5 -1.8 -5 -5 -1.8 5 -1.8z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+glass:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><path d="M104 16l34 34-34 34-34-34z" stroke-width="1.7" fill="#c9a84c" fill-opacity=".08"/><path d="M104 16v68M70 50h68" stroke-width="1.1" opacity=".45"/><path d="M88 50l16-16 16 16-16 16z" stroke-width="1.4" fill="#fbfaf7" fill-opacity=".55"/><path d="M154 28l2.16 6 6 2.16 -6 2.16 -2.16 6 -2.16 -6 -6 -2.16 6 -2.16z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/><path d="M56 68l1.584 4.4 4.4 1.584 -4.4 1.584 -1.584 4.4 -1.584 -4.4 -4.4 -1.584 4.4 -1.584z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+peel:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.5" opacity=".55"><path d="M50 80h108"/><path d="M54 70h100"/></g><path d="M58 60h74c10 0 18-7 18-16 0-6-5-11-11-11-5 0-9 4-9 9 0 4 3 7 7 7" stroke-width="1.7" fill="#c9a84c" fill-opacity=".08"/><path d="M62 48h48" stroke-width="1.2" opacity=".4"/><path d="M48 30l1.872 5.2 5.2 1.872 -5.2 1.872 -1.872 5.2 -1.872 -5.2 -5.2 -1.872 5.2 -1.872z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+gommage:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><path d="M36 72c22-16 46-16 68 0s46 16 68 0" stroke-width="1.7"/><g stroke-width="1.3"><path d="M74 44l6 7-6 7-6-7z" fill="#c9a84c" fill-opacity=".22"/><path d="M104 32l7.5 8.5-7.5 8.5-7.5-8.5z" fill="#c9a84c" fill-opacity=".3"/><path d="M134 46l5.5 6.5-5.5 6.5-5.5-6.5z" fill="#c9a84c" fill-opacity=".22"/><path d="M56 56l4 4.5-4 4.5-4-4.5z" fill="#c9a84c" fill-opacity=".16"/><path d="M152 60l4 4.5-4 4.5-4-4.5z" fill="#c9a84c" fill-opacity=".16"/></g><path d="M44 84c20-10 40-10 60 0s40 10 60 0" stroke-width="1.3" opacity=".45"/><path d="M172 32l1.656 4.6 4.6 1.656 -4.6 1.656 -1.656 4.6 -1.656 -4.6 -4.6 -1.656 4.6 -1.656z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+massage:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.5" opacity=".6"><path d="M64 74a40 40 0 0 1 80 0"/><path d="M76 74a28 28 0 0 1 56 0"/><path d="M88 74a16 16 0 0 1 32 0"/></g><g stroke-width="1.4"><circle cx="88" cy="46" r="4.6" fill="#c9a84c" fill-opacity=".35"/><circle cx="120" cy="46" r="4.6" fill="#c9a84c" fill-opacity=".35"/></g><path d="M64 84h80" stroke-width="1.2" opacity=".35"/><path d="M158 40l1.8 5 5 1.8 -5 1.8 -1.8 5 -1.8 -5 -5 -1.8 5 -1.8z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/><path d="M52 52l1.44 4 4 1.44 -4 1.44 -1.44 4 -1.44 -4 -4 -1.44 4 -1.44z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+capillaire:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.6" opacity=".7"><path d="M72 16c-9 16-9 32 0 48s8 18 3 22"/><path d="M88 14c-11 18-11 36 0 54s9 16 4 20"/><path d="M104 14c-11 19-11 38 0 57"/></g><g stroke-width="1.5"><circle cx="132" cy="42" r="19"/><path d="M146 56l12 12"/></g><path d="M124 42h16M132 34v16" stroke-width="1.1" opacity=".5"/><g stroke-width="1.3"><circle cx="120" cy="84" r="3" fill="#c9a84c" fill-opacity=".3"/><circle cx="134" cy="84" r="3" fill="#c9a84c" fill-opacity=".3"/><circle cx="148" cy="84" r="3" fill="#c9a84c" fill-opacity=".3"/></g><path d="M56 34l1.656 4.6 4.6 1.656 -4.6 1.656 -1.656 4.6 -1.656 -4.6 -4.6 -1.656 4.6 -1.656z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+hairspa:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><path d="M58 56h92a46 46 0 0 1-46 38 46 46 0 0 1-46-38z" stroke-width="1.7" fill="#c9a84c" fill-opacity=".08"/><g stroke-width="1.4" opacity=".62"><path d="M72 68c10-5 20-5 30 0s22 5 32 0"/><path d="M78 78c8-4 16-4 24 0s18 4 26 0"/></g><g stroke-width="1.5" opacity=".7"><path d="M86 44c-6-7-6-13 0-20s6-11 2-16"/><path d="M104 42c-7-8-7-15 0-23s7-12 3-17"/><path d="M122 44c6-7 6-13 0-20s-6-11-2-16"/></g><path d="M160 30l2.2 6 6 2.2-6 2.2-2.2 6-2.2-6-6-2.2 6-2.2z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/><path d="M50 38l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" stroke-width="1.1" fill="#c9a84c" fill-opacity=".35"/></svg>',
+pousse:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><path d="M40 82h128" stroke-width="1.6" opacity=".6"/><g stroke-width="1.7"><path d="M76 82V44"/><path d="M70 52l6-8 6 8"/><path d="M104 82V28"/><path d="M97 37l7-9 7 9"/><path d="M132 82V50"/><path d="M126 58l6-8 6 8"/></g><g stroke-width="1.2" opacity=".5"><path d="M76 66c-8-3-12-9-12-16 8 1 12 7 12 16z"/><path d="M132 70c8-3 12-9 12-16-8 1-12 7-12 16z"/></g><path d="M160 34l1.8 5 5 1.8 -5 1.8 -1.8 5 -1.8 -5 -5 -1.8 5 -1.8z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+vip:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><path d="M66 68h76l7-34-24 18-21-29-21 29-24-18z" stroke-width="1.7" fill="#c9a84c" fill-opacity=".12"/><path d="M66 76h76" stroke-width="1.6"/><g stroke-width="1.3"><circle cx="104" cy="20" r="3.6" fill="#c9a84c" fill-opacity=".4"/><circle cx="77" cy="46" r="3" fill="#c9a84c" fill-opacity=".4"/><circle cx="131" cy="46" r="3" fill="#c9a84c" fill-opacity=".4"/></g><path d="M160 30l2.016 5.6 5.6 2.016 -5.6 2.016 -2.016 5.6 -2.016 -5.6 -5.6 -2.016 5.6 -2.016z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/><path d="M50 40l1.512 4.2 4.2 1.512 -4.2 1.512 -1.512 4.2 -1.512 -4.2 -4.2 -1.512 4.2 -1.512z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
 };
 function svcCard(s,idx){
   const el=document.createElement('article');el.className='svc anim';
@@ -1364,15 +1483,11 @@ function svcCard(s,idx){
   }
   if(s.post)proto+=`<div class="proto-h">Après le soin</div><p class="proto-p">${s.post}</p>`;
   const rdv=(s.kind==='book')?`<div class="svc-rdv"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-    <span>Mme Sabrina reçoit le mercredi et le samedi. Rendez-vous 24h minimum à l'avance.</span></div>`:'';
+    <span>Mme Sabrina reçoit du lundi au samedi, de 10h à 17h. Rendez-vous 24h minimum à l'avance.</span></div>`:'';
   const warn=s.warn?`<div class="svc-warn"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>${s.warn}</span></div>`:'';
-  let btn;
-  if(s.kind==='form-skin')btn=`<button class="svc-book ghost" data-form="skin"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Remplir le questionnaire</button>`;
-  else if(s.kind==='form-hair')btn=`<button class="svc-book ghost" data-form="hair"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Remplir le diagnostic</button>`;
-  else if(s.kind==='pay-wa-hair')btn=`<button class="svc-book" data-pay-wa="hair" data-svc-idx="${idx}"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Remplir le formulaire</button>`;
-  else btn=`<button class="svc-book" data-book="${idx}"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg> Réserver ce soin</button>`;
+  const btn=`<button class="svc-book" data-book="${idx}"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg> Réserver ce soin</button>`;
   el.innerHTML=`
-    <div class="svc-visual">${SVC_ART[s.g]||''}</div>
+    <div class="svc-visual">${ART[s.a]||SVC_ART[s.g]||''}</div>
     <div class="svc-top">${tier}
       <div class="svc-cat">${GROUPS.find(g=>g.key===s.g).label}</div>
       <h3>${s.n}</h3>${price}
@@ -1420,15 +1535,20 @@ function svcCard(s,idx){
     const list=SERVICES.filter(s=>s.g===g.key);
     if(!list.length)return;
     const sec=document.createElement('div');sec.style.marginBottom='8px';
-    sec.innerHTML=`<div class="sec-head reveal"><div class="eyebrow">${g.eyebrow}</div>
-      <h2>${g.label}</h2><p>${g.intro}</p></div><div class="svc-grid"></div>`;
+    sec.innerHTML=`<div class="sec-band reveal">
+      <img class="sec-band-img" src="assets/images/clinic/${g.key}.webp" alt="" loading="lazy" decoding="async" width="1600" height="893">
+      <span class="sec-band-voile"></span>
+      <span class="sec-band-rai"></span>
+      <div class="sec-band-in"><div class="eyebrow">${g.eyebrow}</div>
+        <h2>${g.label}</h2><p>${g.intro}</p></div>
+    </div><div class="svc-grid"></div>`;
     const grid=sec.querySelector('.svc-grid');
     list.forEach(s=>grid.appendChild(svcCard(s,SERVICES.indexOf(s))));
     sec.style.paddingBottom='34px';
     root.appendChild(sec);
   });
   const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
-  document.querySelectorAll('.svc.anim,.sec-head.reveal').forEach(el=>io.observe(el));
+  document.querySelectorAll('.svc.anim,.sec-band.reveal').forEach(el=>io.observe(el));
 })();
 
 /* ===== MODALS : OUVERTURE / FERMETURE ===== */
@@ -1447,62 +1567,7 @@ reglCheck.addEventListener('change',()=>reglConfirm.toggleAttribute('disabled',!
 document.getElementById('svcSections').addEventListener('click',e=>{
   const bk=e.target.closest('[data-book]');
   if(bk){startBooking(SERVICES[+bk.dataset.book]);return;}
-  const pw=e.target.closest('[data-pay-wa]');
-  if(pw){payViaWa(pw.dataset.payWa,+pw.dataset.svcIdx);return;}
-  const fm=e.target.closest('[data-form]');
-  if(fm)openForm(fm.dataset.form);
 });
-/* === Paiement en ligne pas encore intégré (FedaPay à venir) ===
-   Pour les services payants à formulaire (ex. Diagnostic Capillaire),
-   on redirige directement vers WhatsApp avec un message contextualisé.
-   Une fois FedaPay branché, cette fonction sera remplacée par le tunnel
-   paiement → questionnaire → envoi WhatsApp décrit dans CONTEXT.md. */
-function payViaWa(formKind,svcIdx){
-  const s=SERVICES[svcIdx];if(!s)return;
-  let msg;
-  if(formKind==='hair'){
-    msg=`🌸 *Bonjour Luxury Club 229* ✨
-
-${BRAND_LINE}
-
-Je souhaite démarrer mon *${s.n}* 🩺
-   Programme : Perfect Hair Program™
-   Tarif : ${fmt(s.p)} FCFA
-
-Merci de me transmettre :
-• le lien ou les instructions de paiement (Mobile Money / autre)
-• le questionnaire diagnostic capillaire complet
-• la liste des photos à joindre (face, profils, arrière, racines, longueurs, zones problématiques)
-
-Mes principales préoccupations capillaires (au choix) :
-chute · casse · pellicules · sécheresse · manque de pousse · irritations du cuir chevelu
-
-Merci, j'attends votre retour pour commencer 🙏
-
-Réf : ${genRef()}  ·  ${nowFr()}`;
-  }else{
-    const e=emoOfSvc(s);
-    msg=`🌸 *Bonjour Luxury Club 229* ✨
-
-${BRAND_LINE}
-
-Je souhaite démarrer :
-${e} *${s.n}*
-   Tarif : ${fmt(s.p)} FCFA
-
-Merci de m'indiquer la suite (paiement + questionnaire) 🙏
-
-Réf : ${genRef()}  ·  ${nowFr()}`;
-  }
-  const recapHtml=`<div class="lc-recap-line"><div class="nm">🩺 <b>${s.n}</b><small>${formKind==='hair'?'Perfect Hair Program™ · Diagnostic capillaire personnalisé':'Diagnostic'}</small><small>Mme Sabrina vous accompagne sur WhatsApp</small></div><div class="ln">${fmt(s.p)} FCFA</div></div>`;
-  window.lcConfirmOrder({
-    title:'Votre diagnostic ✨',
-    recap:recapHtml,
-    q:'Démarrer le diagnostic avec Mme Sabrina ?',
-    confirmLabel:'Démarrer le diagnostic →',
-    onConfirm:()=>window.open(waLink(msg),'_blank'),
-  });
-}
 function startBooking(svc){
   pendingBook=svc;
   if(sessionStorage.getItem('reglement_ok')==='1'){doBooking();return;}
@@ -1534,7 +1599,7 @@ ${BRAND_LINE}
 Je souhaite réserver le *SOIN COMPLET VIP* ⭐
 ${tarifLine}${durationLine}
 
-📅 Jour souhaité : mercredi ou samedi (à confirmer ensemble)
+📅 Créneau souhaité : du lundi au samedi, entre 10h et 17h (à confirmer ensemble)
 ⏰ Rappel : RDV 24h minimum à l'avance
 ✅ J'ai lu et accepté le règlement de la clinique.
 
@@ -1549,7 +1614,7 @@ Je souhaite réserver :
 ${e} *${s.n}*
 ${tarifLine}
 
-📅 Jour souhaité : mercredi ou samedi (à confirmer ensemble)
+📅 Créneau souhaité : du lundi au samedi, entre 10h et 17h (à confirmer ensemble)
 ⏰ Rappel : RDV 24h minimum à l'avance
 ✅ J'ai lu et accepté le règlement de la clinique.
 
@@ -1558,8 +1623,8 @@ Merci de me contacter pour confirmer mon créneau 🙏
 Réf : ${genRef()}  ·  ${nowFr()}`;
   const tarifTxt=(s.p>0)?fmt(s.p)+' FCFA':'Sur devis';
   const recapHtml=isVip
-    ?`<div class="lc-recap-line"><div class="nm">👑 <b>SOIN COMPLET VIP ⭐</b><small>Durée : 4 à 5 heures · Espace privatisé</small><small>Mercredi ou samedi — à confirmer avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`
-    :`<div class="lc-recap-line"><div class="nm">${e} <b>${s.n}</b>${s.tier?'<small>'+s.tier+'</small>':''}<small>Mercredi ou samedi — à confirmer avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`;
+    ?`<div class="lc-recap-line"><div class="nm">👑 <b>SOIN COMPLET VIP ⭐</b><small>Durée : 4 à 5 heures · Espace privatisé</small><small>Du lundi au samedi, 10h-17h — à confirmer avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`
+    :`<div class="lc-recap-line"><div class="nm">${e} <b>${s.n}</b>${s.tier?'<small>'+s.tier+'</small>':''}<small>Du lundi au samedi, 10h-17h — à confirmer avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`;
   window.lcConfirmOrder({
     title:'Votre réservation ✨',
     recap:recapHtml,
@@ -1572,210 +1637,6 @@ Réf : ${genRef()}  ·  ${nowFr()}`;
     },
   });
 }
-
-/* ===== FORMULAIRES ===== */
-const formScrim=document.getElementById('formScrim'),theForm=document.getElementById('theForm'),
-      formSections=document.getElementById('formSections');
-let currentForm=null,formStep=0;
-function formKey(){return 'lsc_form_'+(currentForm===HAIR_FORM?'hair':'skin');}
-function loadAnswers(){try{return JSON.parse(localStorage.getItem(formKey()))||{};}catch(e){return {};}}
-function saveAnswers(){
-  const a={};
-  formSections.querySelectorAll('input,textarea').forEach(inp=>{
-    const k=inp.dataset.fld;if(!k)return;
-    if(inp.type==='checkbox'){if(inp.checked){a[k]=a[k]||[];a[k].push(inp.value);}}
-    else if(inp.type==='radio'){if(inp.checked)a[k]=inp.value;}
-    else if(inp.value.trim())a[k]=inp.value.trim();
-  });
-  try{localStorage.setItem(formKey(),JSON.stringify(a));}catch(e){}
-}
-function clearErr(inp){
-  const fld=inp.closest('.fld');if(!fld)return;
-  fld.classList.remove('fld-bad');
-  const e=fld.querySelector('.fld-err');if(e)e.remove();
-}
-function setErr(fld,msg){
-  fld.classList.add('fld-bad');
-  if(!fld.querySelector('.fld-err')){
-    const e=document.createElement('div');e.className='fld-err';e.textContent=msg;fld.appendChild(e);
-  }
-}
-function renderField(f,id){
-  const req=f.req?'<span class="req"> *</span>':'';
-  let ctrl='';
-  if(f.t==='text'||f.t==='tel')ctrl=`<input type="${f.t==='tel'?'tel':'text'}" data-fld="${f.n}"${f.req?' data-req="1"':''}>`;
-  else if(f.t==='textarea')ctrl=`<textarea data-fld="${f.n}"${f.req?' data-req="1"':''}></textarea>`;
-  else if(f.t==='radio')ctrl=`<div class="opt-row">${f.o.map(o=>`<label class="opt"><input type="radio" name="r_${id}" value="${o}" data-fld="${f.n}"><span>${o}</span></label>`).join('')}</div>`;
-  else if(f.t==='check')ctrl=`<div class="opt-row">${f.o.map(o=>`<label class="opt"><input type="checkbox" value="${o}" data-fld="${f.n}"><span>${o}</span></label>`).join('')}</div>`;
-  const hint=f.hint?`<div class="fld-hint">${f.hint}</div>`:'';
-  return `<div class="fld"><label>${f.n}${req}</label>${hint}${ctrl}</div>`;
-}
-function openForm(kind){
-  currentForm=(kind==='hair')?HAIR_FORM:SKIN_FORM;
-  formStep=0;
-  document.getElementById('formTitle').textContent=currentForm.title;
-  document.getElementById('formTag').textContent=currentForm.tag;
-  document.getElementById('formIntro').textContent=currentForm.intro;
-  formSections.innerHTML=currentForm.sections.map((sec,si)=>{
-    const fields=sec.fields.map((f,fi)=>renderField(f,si+'_'+fi)).join('');
-    return `<div class="fsec" data-step="${si}"><div class="fsec-h"><span class="fs-n">${si+1}</span>${sec.h}</div>${fields}</div>`;
-  }).join('');
-  const saved=loadAnswers();
-  formSections.querySelectorAll('input,textarea').forEach(inp=>{
-    const k=inp.dataset.fld;
-    if(k&&saved[k]!==undefined){
-      const v=saved[k];
-      if(inp.type==='checkbox'){if(Array.isArray(v)&&v.indexOf(inp.value)>=0){inp.checked=true;inp.closest('.opt').classList.add('sel');}}
-      else if(inp.type==='radio'){if(inp.value===v){inp.checked=true;inp.closest('.opt').classList.add('sel');}}
-      else inp.value=v;
-    }
-    inp.addEventListener('input',()=>{clearErr(inp);saveAnswers();});
-  });
-  formSections.querySelectorAll('.opt').forEach(o=>{
-    o.addEventListener('click',()=>{
-      const inp=o.querySelector('input');
-      if(inp.type==='radio'){
-        o.closest('.opt-row').querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
-        o.classList.add('sel');inp.checked=true;
-      }else{inp.checked=!inp.checked;o.classList.toggle('sel',inp.checked);}
-      clearErr(inp);saveAnswers();
-    });
-  });
-  showStep(0);
-  openModal('formScrim');
-}
-function validateStep(si){
-  const sec=formSections.querySelector('.fsec[data-step="'+si+'"]');
-  const flds=sec.querySelectorAll('.fld');
-  let ok=true;
-  currentForm.sections[si].fields.forEach((f,fi)=>{
-    if(!f.req)return;
-    const fld=flds[fi];
-    if(f.t==='radio'||f.t==='check'){
-      if(!fld.querySelector('input:checked')){setErr(fld,'Merci de répondre à cette question.');ok=false;}
-    }else{
-      const inp=fld.querySelector('input,textarea');
-      if(!inp.value.trim()){setErr(fld,'Ce champ est obligatoire.');ok=false;}
-    }
-  });
-  return ok;
-}
-function showStep(si){
-  formStep=si;
-  const total=currentForm.sections.length;
-  formSections.querySelectorAll('.fsec').forEach((el,i)=>el.classList.toggle('active',i===si));
-  document.getElementById('formProgBar').style.width=((si+1)/total*100)+'%';
-  document.getElementById('formStepLbl').textContent='Étape '+(si+1)+' / '+total;
-  document.getElementById('formPrev').style.display=si===0?'none':'';
-  document.getElementById('formNext').style.display=si>=total-1?'none':'';
-  document.getElementById('formSubmit').style.display=si>=total-1?'':'none';
-  const body=theForm.closest('.modal-body');if(body)body.scrollTop=0;
-}
-document.getElementById('formNext').addEventListener('click',()=>{
-  if(validateStep(formStep))showStep(formStep+1);
-});
-document.getElementById('formPrev').addEventListener('click',()=>{
-  if(formStep>0)showStep(formStep-1);
-});
-theForm.addEventListener('submit',e=>{
-  e.preventDefault();
-  let firstBad=-1;
-  for(let i=0;i<currentForm.sections.length;i++){
-    if(!validateStep(i)&&firstBad<0)firstBad=i;
-  }
-  if(firstBad>=0){showStep(firstBad);return;}
-  const answers={};
-  formSections.querySelectorAll('input,textarea').forEach(inp=>{
-    const key=inp.dataset.fld;if(!key)return;
-    if(inp.type==='checkbox'){if(inp.checked){answers[key]=answers[key]||[];answers[key].push(inp.value);}}
-    else if(inp.type==='radio'){if(inp.checked)answers[key]=inp.value;}
-    else if(inp.value.trim())answers[key]=inp.value.trim();
-  });
-  const isSkin=(currentForm===SKIN_FORM);
-  const isHair=(currentForm===HAIR_FORM);
-  const headTitle=isSkin?'la *Consultation Peau GRATUITE* 🩺':'mon *Diagnostic Capillaire personnalisé* 🩺';
-  let body='';
-  currentForm.sections.forEach(sec=>{
-    let secLines='';
-    sec.fields.forEach(f=>{
-      const v=answers[f.n];
-      if(v!==undefined&&v!=='')secLines+=`\n• ${f.n} : ${Array.isArray(v)?v.join(', '):v}`;
-    });
-    if(secLines)body+=`\n\n*${sec.h}*${secLines}`;
-  });
-  const hairFooter=isHair
-    ?`
-
-━━━━━━━━━━━━━━━━━━━
-💳 *Paiement obligatoire : 5 000 FCFA*
-   Numéro : *01 67 97 56 26* (Mobile Money)
-📸 J'envoie ma capture de paiement dans cette conversation, ainsi que mes photos (cuir chevelu, longueurs, face, zones concernées, photo récente sans filtre).
-⏰ Je comprends que mes résultats + recommandations me seront transmis sous *24 à 72h* après réception de mon paiement.
-✅ J'ai lu et accepté les conditions du diagnostic.
-━━━━━━━━━━━━━━━━━━━`
-    :`
-
-Je joins mes photos dans cette conversation 📸`;
-  const msg=`🌸 *Bonjour Luxury Skin Clinic* ✨
-
-${BRAND_LINE}
-
-Je souhaite bénéficier de ${headTitle}
-
-J'ai rempli le questionnaire en ligne, voici mes réponses :${body}${hairFooter}
-
-Merci de me contacter pour la suite 🙏
-
-Réf : ${genRef()}  ·  ${nowFr()}`;
-  const formTitle=isSkin?'Consultation Peau — GRATUITE':'Diagnostic Capillaire — 5 000 FCFA';
-  const formIcon='🩺';
-  const photoNote=isSkin
-    ?`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">📸 Photos requises<small>Veuillez joindre des photos nettes des différentes faces de votre visage <b>après avoir envoyé votre questionnaire</b>, pour une meilleure analyse de Mme Sabrina.</small></div></div>`
-    :`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">💳 Paiement requis<small><b>5 000 FCFA</b> au <b>01 67 97 56 26</b> (Mobile Money). Envoyez la capture de paiement + photos sur WhatsApp. Résultats sous <b>24 à 72h</b>.</small></div></div>`;
-  const recapHtml=`<div class="lc-recap-line"><div class="nm">${formIcon} <b>${formTitle}</b><small>Questionnaire complet · ${currentForm.sections.length} sections renseignées</small></div></div>${photoNote}`;
-  closeModal('formScrim');
-  // Pour le diagnostic capillaire payant → passer par le modal "Conditions" avant l'envoi WhatsApp
-  if(isHair){
-    const hairCheck=document.getElementById('hairTermsCheck');
-    const hairConfirmBtn=document.getElementById('hairTermsConfirm');
-    hairCheck.checked=false;
-    hairConfirmBtn.setAttribute('disabled','');
-    openModal('hairTermsScrim');
-    const onConfirm=()=>{
-      hairConfirmBtn.removeEventListener('click',onConfirm);
-      closeModal('hairTermsScrim');
-      window.lcConfirmOrder({
-        title:'Votre diagnostic capillaire ✨',
-        recap:recapHtml,
-        q:'Envoyer votre questionnaire à Mme Sabrina ?',
-        confirmLabel:'Envoyer mon questionnaire →',
-        onConfirm:()=>{
-          try{localStorage.removeItem(formKey());}catch(e){}
-          window.open(waLink(msg),'_blank');
-        },
-      });
-    };
-    hairConfirmBtn.addEventListener('click',onConfirm);
-    return;
-  }
-  window.lcConfirmOrder({
-    title:'Votre questionnaire ✨',
-    recap:recapHtml,
-    q:'Envoyer votre questionnaire à Mme Sabrina ?',
-    confirmLabel:'Envoyer mon questionnaire →',
-    onConfirm:()=>{
-      try{localStorage.removeItem(formKey());}catch(e){}
-      window.open(waLink(msg),'_blank');
-    },
-  });
-});
-// Activation du bouton "J'ai lu, j'accepte" en fonction de la case
-(function(){
-  const c=document.getElementById('hairTermsCheck'),b=document.getElementById('hairTermsConfirm');
-  if(!c||!b)return;
-  c.addEventListener('change',()=>b.toggleAttribute('disabled',!c.checked));
-})();
-document.getElementById('openSkinForm').addEventListener('click',()=>openForm('skin'));
 
 /* =========================================================================
    RECHERCHE CROSS-MARQUE — INA + Cozy + Skin Clinic
@@ -1901,13 +1762,17 @@ if(window.LC&&LC.globalCatalogPromise){
 const WEEKS_AHEAD=8;
 const WEEKDAY_LABELS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
 const MONTH_LABELS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
-const ALLOWED_WEEKDAYS=[3,6]; // 3 = mercredi, 6 = samedi
+const ALLOWED_WEEKDAYS=[1,2,3,4,5,6]; // lundi -> samedi (dimanche ferme)
+/* Ouverture 10h-17h : le dernier creneau commence a 16h pour finir a la fermeture. */
 const SLOTS=[
-  {value:'09:00',label:'9h',period:'matin'},
+  {value:'10:00',label:'10h',period:'matin'},
   {value:'11:00',label:'11h',period:'matin'},
   {value:'14:00',label:'14h',period:'après-midi'},
   {value:'16:00',label:'16h',period:'après-midi'},
 ];
+/* Six jours par semaine sur 8 semaines = 48 boutons : on n'en montre que les
+   premiers, le reste s'ouvre a la demande. */
+const DAYS_VISIBLE=12;
 const ACOMPTE_FCFA=5100;
 const RDV_THROTTLE_MS=10*60*1000;
 
@@ -1927,13 +1792,20 @@ function buildDays(){
       days.push(new Date(d));
     }
   }
-  wrap.innerHTML=days.map(d=>{
+  const hidden=Math.max(0,days.length-DAYS_VISIBLE);
+  wrap.innerHTML=days.map((d,i)=>{
     const iso=d.toISOString().slice(0,10);
-    return `<button type="button" class="rdv-day" data-day="${iso}" role="radio" aria-checked="false">
+    return `<button type="button" class="rdv-day${i>=DAYS_VISIBLE?' rdv-day-more':''}" data-day="${iso}" role="radio" aria-checked="false"${i>=DAYS_VISIBLE?' hidden':''}>
       <span class="rdv-day-weekday">${WEEKDAY_LABELS[d.getDay()]}</span>
       <span class="rdv-day-date">${d.getDate()} ${MONTH_LABELS[d.getMonth()]}</span>
     </button>`;
-  }).join('');
+  }).join('')
+   +(hidden?`<button type="button" class="rdv-day-toggle" id="rdvMoreDays">+ ${hidden} autres dates</button>`:'');
+  const more=document.getElementById('rdvMoreDays');
+  if(more)more.addEventListener('click',()=>{
+    wrap.querySelectorAll('.rdv-day-more').forEach(b=>{b.hidden=false;});
+    more.remove();
+  });
   wrap.querySelectorAll('.rdv-day').forEach(btn=>{
     btn.addEventListener('click',()=>{
       if(btn.classList.contains('disabled'))return;
@@ -1954,7 +1826,11 @@ function renderSlots(){
   const help=$('rdvSlotsHelp');
   if(!wrap)return;
   if(!state.day){
-    wrap.innerHTML='';
+    /* on montre les horaires eteints : un pave vide ne dit pas ce qu'on propose */
+    wrap.innerHTML=SLOTS.map(function(s){
+      return '<button type="button" class="rdv-slot" disabled aria-disabled="true">'
+        +'<span>'+s.label+'</span><span class="rdv-slot-label">'+s.period+'</span></button>';
+    }).join('');
     help.textContent="Sélectionnez d'abord un jour ci-dessus.";
     return;
   }
@@ -2177,6 +2053,7 @@ body{padding-bottom:84px;}
   .svc-rdv svg,.svc-by svg{animation:none;}.svc:hover .svc-visual svg{transform:none;}}
 @media(prefers-reduced-motion:reduce){.lc-social a{animation:none;}.lc-eq i{animation:none!important;}}
 </style>
+<div class="lc-dock" aria-hidden="true"><span class="lc-dock-nom">Luxury Skin Clinic · Cotonou</span></div>
 <div class="lc-social" aria-label="Réseaux sociaux">
   <a class="wa" href="https://wa.me/2290167975626" target="_blank" rel="noopener" data-net="WhatsApp" aria-label="Contacter sur WhatsApp">
     <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
@@ -2424,7 +2301,7 @@ if(mute){
 @media(max-width:600px){.lc-cat-btn{font-size:.86rem;padding:10px 14px;}}
 </style>
 <button class="lc-cat-btn" id="lcCatBtn" aria-label="Ouvrir le catalogue">
-  <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Catalogue
+  <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Catalogue</span>
 </button>
 <div class="lc-cat-scrim" id="lcCatScrim"></div>
 <aside class="lc-cat-panel" id="lcCatPanel" aria-label="Catalogue Luxury Club 229">
@@ -2445,9 +2322,9 @@ var ARCH=[
     {n:'Enfant (0-16 ans)',subs:['Gel Lavant','Crème','Crème Lavante']}
   ]},
   {b:'Luxury Skin Clinic',href:'luxury-skin-clinic.html#soins',cats:[
-    {n:'Soins du visage',subs:['Consultation Peau','Consultation — Suivi','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
+    {n:'Soins du visage',subs:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
     {n:'Soins du corps',subs:['Gommage Luxury','Luxury Massage']},
-    {n:'Soins capillaires',subs:['Diagnostic Capillaire','Le Hair Spa','Activateur de Pousse']},
+    {n:'Soins capillaires',subs:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
     {n:'Expérience VIP',subs:['Le Soin Complet VIP']}
   ]},
   {b:'Cozy',href:'cozy.html',cats:[
@@ -2777,5 +2654,108 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
   window.lcShowThanks=showThanks;
 })();
 </script>
+<!-- ===== ANIMATIONS « LA LUMIERE » ===== -->
+<script id="lsc-da-js">
+(function(){
+'use strict';
+var doux = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* La page dit au CSS que le script est vivant. Sans ce drapeau, aucun voile
+   n'est pose : ce qui n'est pas anime doit rester VISIBLE, jamais cache. */
+document.documentElement.classList.add('js-lum');
+
+/* ---- la hauteur reelle de la barre du haut (la recherche se cale dessous) ---- */
+function mesureBarre(){
+  var b = document.querySelector('header');
+  if(b) document.documentElement.style.setProperty('--head-h', Math.round(b.getBoundingClientRect().height) + 'px');
+}
+mesureBarre();
+addEventListener('resize', mesureBarre);
+addEventListener('load', mesureBarre);
+
+/* ---- le filet de progression : une seule boucle, scrollY lu une fois ---- */
+(function(){
+  var barre = document.querySelector('.lsc-prog i');
+  if(!barre) return;
+  var demande = false;
+  function pose(){
+    demande = false;
+    var course = document.documentElement.scrollHeight - innerHeight;
+    barre.style.width = (course > 0 ? Math.min(1, scrollY / course) * 100 : 0) + '%';
+  }
+  addEventListener('scroll', function(){
+    if(!demande){ demande = true; requestAnimationFrame(pose); }
+  }, {passive:true});
+  addEventListener('resize', pose, {passive:true});
+  pose();
+})();
+
+/* ---- LA LAMPE QUI PASSE : le rai traverse le heros a chaque entree ---- */
+(function(){
+  var hero = document.querySelector('.hero');
+  if(!hero || doux) return;
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      hero.classList.remove('balaye');
+      void hero.offsetWidth;              /* on rejoue l'animation */
+      hero.classList.add('balaye');
+    });
+  }, {threshold:.3}).observe(hero);
+})();
+
+/* ---- LE TRAIT QUI SE TRACE : le croquis de chaque carte se dessine ----
+   La longueur de chaque trace est MESUREE (getTotalLength) au moment ou la
+   carte approche : c'est la seule facon d'avoir la meme vitesse d'un dessin a
+   l'autre. Les remplissages (les etincelles) arrivent apres le trait. */
+(function(){
+  if(doux) return;
+  function prepare(carte){
+    if(carte.dataset.trace) return;
+    carte.dataset.trace = '1';
+    var svg = carte.querySelector('.svc-visual svg');
+    if(!svg) return;
+    var k = 0;
+    svg.querySelectorAll('path,circle,rect,line,polyline,polygon').forEach(function(el){
+      var plein = el.getAttribute('fill');
+      if(plein && plein !== 'none') el.setAttribute('data-remplit','');
+      if(typeof el.getTotalLength !== 'function') return;
+      var L;
+      try { L = el.getTotalLength(); } catch(e){ return; }
+      if(!L || L > 8000) return;
+      el.style.setProperty('--L', Math.ceil(L));
+      el.style.setProperty('--k', k++);
+      el.setAttribute('data-trace','');
+    });
+  }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      prepare(e.target);
+      io.unobserve(e.target);
+    });
+  }, {threshold:0, rootMargin:'200px'});
+  function scrute(){ document.querySelectorAll('.svc').forEach(function(c){ io.observe(c); }); }
+  if(document.readyState === 'loading') addEventListener('DOMContentLoaded', scrute);
+  else scrute();
+})();
+
+/* ---- LES ETAPES QUI S'ALLUMENT : cascade a l'ouverture d'un protocole ---- */
+(function(){
+  var racine = document.getElementById('svcSections');
+  if(!racine) return;
+  racine.addEventListener('click', function(e){
+    var b = e.target.closest('.svc-acc-btn');
+    if(!b) return;
+    var panneau = b.nextElementSibling;
+    if(!panneau) return;
+    panneau.querySelectorAll('.proto-step').forEach(function(s, i){
+      s.style.setProperty('--i', i);
+    });
+  });
+})();
+})();
+</script>
+
 </body>
 </html>

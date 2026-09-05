@@ -486,6 +486,139 @@ de la zone catalogue INA Luxury.
 - Rendu print via **msedge headless `--print-to-pdf`** (91×61 et 210×210) ; polices Cormorant Garamond + Jost.
 - Commits poussés : carte `f10b91e`, affiche `9f362cb`.
 
+
+## 2026-09-05 — LES QUATRE DEMANDES DE GLORIA, PUIS « LA LUMIÈRE »
+
+> Journal complet : `_memoire/conversations/2026-09-05-luxury-skin-clinic-gloria-et-la-lumiere.md`
+
+### Le contenu (demandes de Gloria par WhatsApp)
+
+| Avant | Après |
+|---|---|
+| Consultation Peau **gratuite** (questionnaire 10 sections) | **supprimée** — plus aucune consultation non payante |
+| Mme Sabrina reçoit **mercredi et samedi** | **du lundi au samedi, de 10h à 17h** (9 endroits mis d'accord) |
+| — | **SOIN VISAGE CLASSIC — 15 000 F** (fiche complète, protocole en 8 étapes) |
+| Diagnostic Capillaire **5 000 F** (questionnaire) | **CONSULTATION CAPILLAIRE PREMIUM — 30 000 F** (30 min, présentiel privilégié, suivi 3 mois) |
+
+Le catalogue reste à **11 soins**. Les listes croisées des 4 pages (panneau
+« Catalogue Luxury Club 229 », menu d'INA, modale « Faire ma consultation »)
+suivent.
+
+⚠️ **Supprimer la consultation gratuite, c'est supprimer un MOTEUR.** Les deux
+questionnaires (`SKIN_FORM`, `HAIR_FORM`), leurs modales et le moteur
+multi-étapes n'avaient plus aucune porte d'entrée : ils sont retirés (sinon un
+`getElementById` sur un élément disparu **cassait tout le JS de la page**).
+**Récupérables dans git**, état du 2026-09-04. Gain : −30 Ko.
+
+⚠️ **Du lundi au samedi sur 8 semaines = 48 boutons de date** (16 avant) : le
+calendrier n'en montre que **12**, puis « + N autres dates ». Le créneau de
+**9h est passé à 10h** — il tombait avant l'ouverture.
+
+⚠️ La Consultation Capillaire Premium est un **rendez-vous** (`kind:'book'`),
+pas un formulaire : l'analyse se fait pendant la consultation.
+
+### La direction artistique « LA LUMIÈRE »
+
+**La phrase :** *une clinique esthétique, c'est **la lumière qu'on approche
+d'une peau** : d'abord pour la lire, ensuite pour la révéler.*
+
+**Une animation par zone**, toutes tirées de là : la lampe qui passe (héros) ·
+le filet de lumière (bandeau) · les trois foyers (manifeste, section neuve) ·
+le défilé (ruban) · l'examen (en-têtes de famille) · le trait qui se trace
+(cartes) · les étapes qui s'allument (protocole) · le créneau qui s'illumine
+(RDV) · le halo qui se referme (final).
+
+**Rythme des fonds** : héros sombre → bandeau menthe → manifeste papier →
+ruban encre → soins clair → RDV papier → final encre → pied encre.
+
+**Onze croquis, un par soin** (il y en avait quatre, un par famille : les trois
+soins du visage montraient la même goutte). Le trait **se trace** à
+l'apparition, longueur mesurée au `getTotalLength()`. `SVC_ART` (par famille)
+reste en secours.
+
+### Les images
+
+**19 ambiances générées** (WaveSpeed `nano-banana-pro`, **~2,66 $**) :
+7 pour la clinique (`assets/images/clinic/`), 12 pour les 3 univers
+(`assets/images/ambiances/`). Deux d'entre elles (`ina-levres`,
+`cozy-fermete`) sont des **recadrages** faute de solde.
+
+⛔ **Aucune ne montre un visage, une peau, un cheveu, une main, un produit ni
+un intérieur** : ce sont des matières et de la lumière.
+
+⏳ **Mongazi demande des images de SOINS** (gestes, massages, esthétique), pas
+des matières. **Le script est prêt : `_outils/_gen_soins.py`.** Il ne peut pas
+tourner : **WaveSpeed est à 0,03 $ et Higgsfield à 0 crédit.** Recharger, puis
+`python _outils/_gen_soins.py`, regarder les cinq images, `--poser`.
+⛔ La ligne écrite dans le script : aucun avant/après, aucun portrait « après
+soin », aucune cabine présentée comme l'institut de Gloria, et **la peau est
+ouest-africaine** (le modèle occidentalise par défaut).
+
+### La visibilité, mesurée
+
+`_outils/_qc.py` **mesure le contraste sur les PIXELS RENDUS** (le texte est
+masqué, le fond photographié) : un contrôle qui lit `background-color` est
+aveugle dès qu'un texte est posé sur une photo.
+
+⛔ **Au survol, les boutons passaient en or et le texte restait crème :
+3,29:1.** *Un aplat d'or porte du texte foncé, jamais du clair.*
+Défauts antérieurs corrigés : lien « Accueil » 2,72 · « réalisé par » 2,49 ·
+badges 3,84 · méta 3,00 · sur Cozy l'étiquette du héros 2,89 et la pastille de
+filtre active **1,59** (blanc sur rose).
+Trois valeurs nouvelles : `--or-texte:#7d5f18`, `--gris-f:#63605a`,
+`--menthe-f:#42695b` (+ `--rose-texte:#9c5468` sur Cozy).
+
+**Résultat : clinique 136 contrôles verts · hub 29 · INA 32 · Cozy 32.**
+
+⚠️ **Quatre fois, c'est la SONDE qui mentait** (vérifier l'instrument avant
+d'accuser la page) : elle lisait la couleur du texte **après** l'avoir rendue
+transparente ; elle mesurait au bord de la fenêtre, sous la bande de bord ;
+elle mesurait **pendant** la révélation d'une carte ; et elle accusait l'image
+du héros de déborder alors qu'un `overflow:hidden` la rogne.
+
+### Ce que les captures ont montré, et pas le code
+
+- les pastilles sociales se posaient **sur « ENTRER »** (hub) et sur les titres
+  de section (clinique) → **bande de bord opaque** sur les 4 pages, la pastille
+  « Catalogue » passe en icône seule sous 700 px
+- ma règle de bande d'image était posée **avant** `.brand` : à spécificité
+  égale la dernière gagne, et la bande recouvrait le sous-titre des 3 univers
+- le raccourci `padding` de deux requêtes média **remettait le haut à zéro**
+- la matière des familles INA était **invisible** : `z-index:-1` la posait
+  derrière la carte
+- le bouton final portait une **icône WhatsApp**, le libellé « Voir les soins »
+  et un lien vers `#soins` : trois promesses dans un seul bouton
+- le pavé « 2. Choisissez un créneau » était **un grand vide** avant le choix
+  d'un jour → les quatre horaires s'y affichent, éteints
+
+### Ce qui a été retiré parce que ça coûtait cher pour rien
+
+`.marble::before` (hub **et** INA) : calque plein écran `fixed` en
+**`mix-blend-mode:screen`**, **animé en boucle** — la dépense mesurée sur Angy
+Art le 2026-08-26. Remplacé par une vraie image. Idem `.lc-social a` qui
+animait une ombre **en boucle sous un `backdrop-filter`** sur les 4 pages.
+
+### Les outils (neufs)
+
+| Outil | Rôle |
+|---|---|
+| `_outils/_qc.py` | la suite de contrôle, `--page` pour les 4 pages |
+| `_outils/_vues.py` | photographie zone par zone en 390 et 1440 (**la fenêtre, pas l'élément**) |
+| `_outils/_gen_ambiances.py` | les 7 matières de la clinique |
+| `_outils/_gen_univers.py` | les 12 matières du hub, d'INA et de Cozy |
+| `_outils/_gen_soins.py` | **les 5 gestes de soin — prêts, en attente du solde** |
+
+### Reste à faire
+
+- ⏳ recharger WaveSpeed → `python _outils/_gen_soins.py` (≈ 0,70 $)
+- ⏳ régénérer proprement `ina-levres` et `cozy-fermete` (recadrages)
+- ⏳ **déployer** : `wrangler pages deploy . --project-name luxury-club-229`
+  ⚠️ déploiement avec `.` : tout fichier manquant sur le disque disparaît du site
+- ⏳ les vraies photos de l'institut et des soins de Mme Sabrina
+- ⛔ `assets/images/clinic/consultation-peau.jpg` est un **avant/après** de
+  provenance inconnue : toujours pas intégré, et il ne doit pas l'être
+
+
 ## Liens
 
 - Pages : `index.html`, `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`

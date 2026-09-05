@@ -61,11 +61,12 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
   radial-gradient(ellipse 80% 60% at 20% 15%,rgba(33,29,22,.9),transparent 70%),
   radial-gradient(ellipse 70% 70% at 85% 80%,rgba(31,27,20,.85),transparent 65%),
   var(--noir);}
-.marble::before{content:'';position:absolute;inset:-20%;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='700' height='700'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.009 0.013' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 0.79  0 0 0 0 0.66  0 0 0 0 0.30  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
-  opacity:.10;mix-blend-mode:screen;
-  animation:marbleDrift 60s ease-in-out infinite alternate;will-change:transform;}
-@keyframes marbleDrift{0%{transform:scale(1.05) translate(0,0) rotate(0deg);}100%{transform:scale(1.18) translate(2%,-3%) rotate(2deg);}}
+/* la lumiere de la maison : une vraie image, sans melange et sans animation.
+   L'ancien calque `mix-blend-mode:screen` anime coutait le tiers du budget
+   d'une image pour un effet qu'on ne voyait pas (mesure sur Angy Art). */
+.marble::before{content:'';position:absolute;inset:0;
+  background-image:url("assets/images/ambiances/hub-heros.webp");
+  background-size:cover;background-position:50% 42%;opacity:.55;}
 .marble::after{content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse 60% 50% at 50% 40%,transparent,rgba(10,10,10,.55) 100%);}
 
@@ -290,6 +291,30 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
   pointer-events:none;}
 @keyframes fabFadeIn{from{opacity:0;transform:translateY(-15px);}to{opacity:1;transform:translateY(0);}}
 @keyframes fabPulse{0%{opacity:.7;transform:scale(1);}70%{opacity:0;transform:scale(1.2);}100%{opacity:0;}}
+/* les pastilles de filtre des avis se touchent : 34 px mesures, 44 exiges */
+/* Cibles tactiles : TOUT bouton fait au moins 44 px, et les liens-boutons
+   aussi. Regle generale plutot que nominative — la poser un par un, c'est en
+   oublier un a chaque ajout. */
+button,select,input[type=text],a[class*="-btn"],a[class*="-wa"],a[class*="chip"],.testi-chip,.rev-chip{min-height:44px;}
+.rev-star-btn{min-width:44px;}
+.fab-avis{min-height:44px;}
+
+/* ===== LES BANDES DE MATIERE DES TROIS UNIVERS (2026-09-05) ===== */
+/* ⚠️ POSE ICI, APRES `.brand` : plus haut dans la feuille, la regle
+   `padding` d'origine gagnait a specificite egale et la bande venait
+   recouvrir le sous-titre de chaque univers (vu sur capture). */
+/* La bande est POSEE en absolu et la carte reserve sa hauteur en haut : des
+   marges negatives auraient du suivre les trois valeurs de `padding` de la
+   carte, et se seraient decalees au premier changement de gabarit. */
+.brand{--bande:clamp(112px,16vw,150px);padding-top:calc(var(--bande) + 24px);}
+.brand-media{position:absolute;top:0;left:0;right:0;height:var(--bande);overflow:hidden;}
+.brand-media img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 1.3s cubic-bezier(.22,1,.36,1);}
+.brand:hover .brand-media img{transform:scale(1.08);}
+.brand-media span{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,10,10,.16) 0%,rgba(10,10,10,.7) 60%,rgba(10,10,10,.97) 100%);}
+@media(max-width:640px){.brand{--bande:96px;padding-top:calc(96px + 16px);}}
+
 @media(prefers-reduced-motion:reduce){.fab-avis::before{animation:none;}}
 @media(max-width:540px){
   .fab-avis{padding:9px 14px 9px 11px;font-size:.78rem;gap:7px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));}
@@ -307,7 +332,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
   .hub{padding:30px 12px 22px;}
   .hub-welcome{margin-top:24px;min-height:9em;}
   .brands{gap:9px;margin:26px 0 auto;flex-wrap:nowrap;}
-  .brand{padding:22px 9px 20px;max-width:none;gap:4px;border-radius:14px;}
+  .brand{padding-inline:9px;padding-bottom:20px;max-width:none;gap:4px;border-radius:14px;}
   .ready .brand{animation-name:levitate-sm;}
   .brand-emblem{width:48px;height:48px;margin-bottom:7px;}
   .brand-emblem span{font-size:18px;}
@@ -327,7 +352,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
 @keyframes levitate-sm{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
 @media(max-width:360px){
   .brand-enter span{display:none;}
-  .brand{padding:20px 6px 18px;}
+  .brand{padding-inline:6px;padding-bottom:18px;}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;
@@ -371,6 +396,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
   <section class="brands" id="brands" aria-label="Nos univers">
 
     <article class="brand b1" data-href="ina-luxury.html" tabindex="0" role="link" aria-label="Découvrir INA Luxury">
+      <div class="brand-media" aria-hidden="true"><img src="assets/images/ambiances/hub-ina.webp" alt="" loading="lazy" decoding="async" width="1200" height="670"><span></span></div>
       <div class="brand-emblem em-ina"><span class="ina-mark">INA</span><span class="ina-sub">LUXURY</span></div>
       <div class="brand-kicker">Cosmétiques & Capillaires</div>
       <h2>INA Luxury</h2>
@@ -382,6 +408,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
     </article>
 
     <article class="brand b2" data-href="luxury-skin-clinic.html" tabindex="0" role="link" aria-label="Découvrir Luxury Skin Clinic">
+      <div class="brand-media" aria-hidden="true"><img src="assets/images/ambiances/hub-clinic.webp" alt="" loading="lazy" decoding="async" width="1200" height="670"><span></span></div>
       <div class="brand-emblem em-lsc"><img class="emblem-logo" src="assets/images/logos/logo-clinique-soin.png" alt="Luxury Skin Clinic"></div>
       <div class="brand-kicker">Soins & Prestations</div>
       <h2>Skin Clinic</h2>
@@ -393,6 +420,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
     </article>
 
     <article class="brand b3" data-href="cozy.html" tabindex="0" role="link" aria-label="Découvrir Cozy">
+      <div class="brand-media" aria-hidden="true"><img src="assets/images/ambiances/hub-cozy.webp" alt="" loading="lazy" decoding="async" width="1200" height="670"><span></span></div>
       <div class="brand-emblem em-cozy"><img class="emblem-logo" src="assets/images/logos/logo-cozy.png" alt="Cozy"></div>
       <div class="brand-kicker">Hygiène Intime & Bien-être</div>
       <h2>Cozy</h2>
@@ -1356,7 +1384,7 @@ if(mute){
 @media(max-width:600px){.lc-cat-btn{font-size:.86rem;padding:10px 14px;}}
 </style>
 <button class="lc-cat-btn" id="lcCatBtn" aria-label="Ouvrir le catalogue">
-  <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Catalogue
+  <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Catalogue</span>
 </button>
 <div class="lc-cat-scrim" id="lcCatScrim"></div>
 <aside class="lc-cat-panel" id="lcCatPanel" aria-label="Catalogue Luxury Club 229">
@@ -1377,9 +1405,9 @@ var ARCH=[
     {n:'Enfant (0-16 ans)',subs:['Gel Lavant','Crème','Crème Lavante']}
   ]},
   {b:'Luxury Skin Clinic',href:'luxury-skin-clinic.html#soins',cats:[
-    {n:'Soins du visage',subs:['Consultation Peau','Consultation — Suivi','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
+    {n:'Soins du visage',subs:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
     {n:'Soins du corps',subs:['Gommage Luxury','Luxury Massage']},
-    {n:'Soins capillaires',subs:['Diagnostic Capillaire','Le Hair Spa','Activateur de Pousse']},
+    {n:'Soins capillaires',subs:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
     {n:'Expérience VIP',subs:['Le Soin Complet VIP']}
   ]},
   {b:'Cozy',href:'cozy.html',cats:[
@@ -1865,5 +1893,37 @@ else init();
 
 })();
 </script>
+
+<!-- ===== BANDE DE BORD (2026-09-05) =====================================
+     Un instrument flottant ne recouvre jamais du texte. Seule une bande de
+     bord en a le droit, et elle doit etre VRAIMENT opaque : les pastilles
+     sociales, le bouton du son et la pastille « Catalogue » se posent
+     desormais dessus au lieu de flotter au milieu de la page.
+====================================================================== -->
+<style id="lc-dock-css">
+:root{--dock-h:68px;}
+.lc-dock{position:fixed;left:0;right:0;bottom:0;height:var(--dock-h);z-index:490;
+  background:#0a0a0a;border-top:1px solid rgba(201,168,76,.30);
+  box-shadow:0 -14px 34px -22px rgba(0,0,0,.85);}
+html body .lc-social{bottom:calc((var(--dock-h) - 46px) / 2);}
+html body .lc-mute{bottom:calc((var(--dock-h) - 46px) / 2);}
+/* plus aucune animation infinie sous un backdrop-filter */
+html body .lc-social a{animation:none;background:rgba(246,242,232,.07);
+  -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;
+  border-color:rgba(230,211,160,.45);}
+html body .lc-social a:hover{transform:translateY(-4px) scale(1.08);
+  box-shadow:0 10px 24px rgba(201,168,76,.4);}
+html body .lc-mute{-webkit-backdrop-filter:none;backdrop-filter:none;
+  background:rgba(246,242,232,.07);}
+html body .lc-cat-btn{min-height:44px;bottom:calc((var(--dock-h) - 46px) / 2);
+  -webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(246,242,232,.07);}
+@media(max-width:700px){
+  /* mesure a 390 px : la pastille allait jusqu'a 166 px et la premiere icone
+     commence a 119 px. En icone seule elle s'arrete a 60 px. */
+  html body .lc-cat-btn{padding:0;width:46px;height:46px;justify-content:center;border-radius:50%;}
+  html body .lc-cat-btn span{display:none;}
+}
+</style>
+<div class="lc-dock" aria-hidden="true"></div>
 </body>
 </html>

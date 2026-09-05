@@ -58,10 +58,12 @@ textarea:focus-visible,select:focus-visible,summary:focus-visible{
 .marble{position:fixed;inset:0;z-index:0;background:
   radial-gradient(ellipse 80% 60% at 20% 12%,rgba(33,29,22,.9),transparent 70%),
   radial-gradient(ellipse 70% 70% at 88% 88%,rgba(31,27,20,.85),transparent 65%),var(--noir);}
-.marble::before{content:'';position:absolute;inset:-20%;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='700' height='700'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.009 0.013' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 0.79  0 0 0 0 0.66  0 0 0 0 0.30  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
-  opacity:.08;mix-blend-mode:screen;animation:marbleDrift 70s ease-in-out infinite alternate;}
-@keyframes marbleDrift{0%{transform:scale(1.05);}100%{transform:scale(1.16) translate(2%,-2%);}}
+/* la coulee d'or de la maison : une vraie image, sans melange et sans
+   animation. Le calque `mix-blend-mode:screen` anime qui etait ici coutait
+   le tiers du budget d'une image pour un effet indiscernable (Angy Art). */
+.marble::before{content:'';position:absolute;inset:0;
+  background-image:url("assets/images/ambiances/ina-heros.webp");
+  background-size:cover;background-position:50% 40%;opacity:.16;}
 #particles{position:fixed;inset:0;z-index:-1;pointer-events:none;}
 
 .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;
@@ -211,7 +213,34 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
   display:flex;flex-direction:column;justify-content:flex-end;gap:5px;
   border:1px solid rgba(201,168,76,.2);transition:transform .5s var(--ease),border-color .4s;}
 .fam-card:hover{transform:translateY(-8px);border-color:rgba(236,217,164,.5);}
-.fam-card .fc-bg{position:absolute;inset:0;z-index:-1;opacity:.9;}
+.back-hub{min-height:44px;padding:6px 2px;}
+.cart-btn{min-height:44px;min-width:44px;justify-content:center;}
+.q-dec,.q-inc{min-width:44px;}
+.q-dec,.q-inc,.detail-toggle,.fpill,.chip,.subcat-pill,.btn-back,.menu-reset{min-height:44px;}
+/* Cibles tactiles : TOUT bouton fait au moins 44 px. La regle est generale
+   plutot que nominative — la poser bouton par bouton, c'est en oublier un a
+   chaque ajout (six passes l'ont montre le 2026-09-05). Les liens ecrits
+   DANS une phrase gardent leur taille : on les atteint par la ligne. */
+button,a.btn,a[class*="-cta"],a[class*="chip"],a[class*="-btn"],a[class*="-wa"],a[class*="mini"],#finalWa,#helpWa,.crumb > *{min-height:44px;}
+.crumb button,.crumb a,.crumb span,.btn-add,.acc-sub-btn,.acc-fam-btn,.guide-cta{min-height:44px;display:inline-flex;align-items:center;}
+.fam-card{isolation:isolate;}
+.fam-card > *{position:relative;z-index:1;}
+/* ⚠️ `z-index:-1` posait la matiere DERRIERE la carte : on voyait le fond de
+   page au travers et l'image de la famille n'apparaissait jamais. */
+.fam-card .fc-bg{position:absolute;inset:0;z-index:0;opacity:1;overflow:hidden;}
+.fam-card .fc-bg img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 1.3s cubic-bezier(.22,1,.36,1);}
+.fam-card:hover .fc-bg img{transform:scale(1.08);}
+/* la teinte de la famille reste, posee sur la matiere : c'est elle qui porte
+   le texte, et c'est elle qui distingue les cinq univers */
+/* une matiere claire (l'enfant) rendait le texte creme illisible : sous la
+   teinte de famille, un fond sombre garantit la lecture quelle que soit
+   l'image — mesure, pas suppose */
+.fam-card .fc-bg::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(8,8,8,.18) 0%,rgba(8,8,8,.66) 52%,rgba(8,8,8,.88) 100%);}
+.fam-card .fc-bg span{position:absolute;inset:0;opacity:.72;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.45),#000 62%);
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.45),#000 62%);}
 .fam-card .fc-k{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--or-clair);}
 .fam-card h3{font-size:1.6rem;color:var(--creme);font-weight:600;}
 .fam-card p{font-size:.78rem;color:var(--texte-doux);line-height:1.6;}
@@ -737,7 +766,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
       <div class="guide-ic">✦</div>
       <div class="guide-txt">
         <b>Vous ne savez pas quel produit choisir ?</b>
-        <p>Mme Sabrina, esthéticienne diplômée, analyse votre peau et vous oriente — gratuitement.</p>
+        <p>Mme Sabrina, esthéticienne diplômée, analyse votre peau et vous oriente vers la routine qui lui convient.</p>
       </div>
       <button class="guide-cta" type="button" id="consultBtn">Faire ma consultation</button>
     </div>
@@ -860,15 +889,15 @@ function emoForName(name){
 
 /* ===== DONNÉES ===== */
 const FAMILIES=[
-  {key:'visage',label:'Visage',desc:'Nettoyants, sérums, crèmes et masques pour le visage.',
+  {key:'visage',img:'ina-visage',label:'Visage',desc:'Nettoyants, sérums, crèmes et masques pour le visage.',
    tint:'linear-gradient(155deg,#2a2018,#3a2a22 55%,#1a1410)'},
-  {key:'corps',label:'Corps',desc:'Beauty bars, crèmes, gommages, huiles et savons noirs pour le corps.',
+  {key:'corps',img:'ina-corps',label:'Corps',desc:'Beauty bars, crèmes, gommages, huiles et savons noirs pour le corps.',
    tint:'linear-gradient(155deg,#2a2218,#3a3020 55%,#1a160e)'},
-  {key:'capillaires',label:'Capillaires',desc:'Shampoings, après-shampoings, masques, sérums, huiles et beurres cheveux.',
+  {key:'capillaires',img:'ina-capillaires',label:'Capillaires',desc:'Shampoings, après-shampoings, masques, sérums, huiles et beurres cheveux.',
    tint:'linear-gradient(155deg,#241e16,#332a1e 55%,#15110c)'},
-  {key:'enfant',label:'Enfant (0-16 ans)',desc:'Soins doux et haute tolérance pour la peau des enfants.',
+  {key:'enfant',img:'ina-enfant',label:'Enfant (0-16 ans)',desc:'Soins doux et haute tolérance pour la peau des enfants.',
    tint:'linear-gradient(155deg,#241f1a,#34302a 55%,#16120e)'},
-  {key:'soin-levres',label:'Soin Lèvres',desc:'Rituel lèvres couture — exfoliant, baume réparateur et gloss biomimétique.',
+  {key:'soin-levres',img:'ina-levres',label:'Soin Lèvres',desc:'Rituel lèvres couture — exfoliant, baume réparateur et gloss biomimétique.',
    tint:'linear-gradient(155deg,#2a1c1e,#3a2528 55%,#1a1010)'},
 ];
 const SUBCATS={
@@ -1392,9 +1421,9 @@ const state={family:null,subcat:null,routine:null,query:''};
 /* architecture des 2 autres marques (liens sortants) */
 const CROSS_BRANDS=[
   {label:'LUXURY SKIN CLINIC',href:'luxury-skin-clinic.html#soins',groups:[
-    {label:'Soins Visage',items:['Consultation Peau (gratuite)','Consultation — Suivi','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
+    {label:'Soins Visage',items:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
     {label:'Soins Corps',items:['Gommage Luxury','Luxury Massage']},
-    {label:'Soins Capillaires',items:['Diagnostic Capillaire','Le Hair Spa','Activateur de Pousse']},
+    {label:'Soins Capillaires',items:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
     {label:'VIP',items:['Le Soin Complet VIP']},
   ]},
   {label:'COZY',href:'cozy.html',groups:[
@@ -1629,7 +1658,7 @@ function renderFamCards(){
   FAMILIES.forEach(f=>{
     const cnt=PRODUCTS.filter(p=>p.f===f.key).length;
     const card=document.createElement('article');card.className='fam-card';
-    card.innerHTML=`<div class="fc-bg" style="background:${f.tint}"></div>
+    card.innerHTML=`<div class="fc-bg">${f.img?`<img src="assets/images/ambiances/${f.img}.webp" alt="" loading="lazy" decoding="async">`:''}<span style="background:${f.tint}"></span></div>
       <div class="fc-k">${cnt} produit${cnt>1?'s':''}</div>
       <h3>${f.label}</h3><p>${f.desc}</p>
       <span class="fc-go">Découvrir <svg viewBox="0 0 24 12"><path d="M1 6h21M17 1l5 5-5 5"/></svg></span>`;
@@ -2886,17 +2915,6 @@ if(mute){
     <h2 class="consult-title" id="consultTitle">Choisissez votre consultation</h2>
     <p class="consult-sub">Mme Sabrina, esthéticienne diplômée, vous accompagne selon votre besoin. Sélectionnez la formule qui vous correspond.</p>
     <div class="consult-list">
-      <a class="consult-opt" href="luxury-skin-clinic.html#consultation">
-        <span class="consult-opt-ic">✦</span>
-        <div class="consult-opt-body">
-          <div class="consult-opt-row">
-            <span class="consult-opt-name">Consultation Peau</span>
-            <span class="consult-opt-tag free">Gratuite</span>
-          </div>
-          <div class="consult-opt-desc">Questionnaire offert pour analyser votre peau et recevoir une routine sur mesure de Mme Sabrina.</div>
-        </div>
-        <span class="consult-opt-go">→</span>
-      </a>
       <a class="consult-opt" href="luxury-skin-clinic.html#soins">
         <span class="consult-opt-ic">★</span>
         <div class="consult-opt-body">
@@ -2912,10 +2930,10 @@ if(mute){
         <span class="consult-opt-ic">❀</span>
         <div class="consult-opt-body">
           <div class="consult-opt-row">
-            <span class="consult-opt-name">Diagnostic Capillaire</span>
-            <span class="consult-opt-tag paid">5 000 F</span>
+            <span class="consult-opt-name">Consultation Capillaire Premium</span>
+            <span class="consult-opt-tag paid">30 000 F</span>
           </div>
-          <div class="consult-opt-desc">Questionnaire approfondi pour analyser votre cuir chevelu et identifier la routine capillaire idéale.</div>
+          <div class="consult-opt-desc">30 minutes d'analyse de vos cheveux et de votre cuir chevelu, une routine sur mesure, et un accompagnement de 3 mois.</div>
         </div>
         <span class="consult-opt-go">→</span>
       </a>
@@ -2946,5 +2964,29 @@ if(mute){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('show'))close();});
 })();
 </script>
+
+<!-- ===== BANDE DE BORD (2026-09-05) =====================================
+     Un instrument flottant ne recouvre jamais du texte. Seule une bande de
+     bord en a le droit, et elle doit etre VRAIMENT opaque : les pastilles
+     sociales, le bouton du son et la pastille « Catalogue » se posent
+     desormais dessus au lieu de flotter au milieu de la page.
+====================================================================== -->
+<style id="lc-dock-css">
+:root{--dock-h:68px;}
+.lc-dock{position:fixed;left:0;right:0;bottom:0;height:var(--dock-h);z-index:490;
+  background:#0a0a0a;border-top:1px solid rgba(201,168,76,.30);
+  box-shadow:0 -14px 34px -22px rgba(0,0,0,.85);}
+html body .lc-social{bottom:calc((var(--dock-h) - 46px) / 2);}
+html body .lc-mute{bottom:calc((var(--dock-h) - 46px) / 2);}
+/* plus aucune animation infinie sous un backdrop-filter */
+html body .lc-social a{animation:none;background:rgba(246,242,232,.07);
+  -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;
+  border-color:rgba(230,211,160,.45);}
+html body .lc-social a:hover{transform:translateY(-4px) scale(1.08);
+  box-shadow:0 10px 24px rgba(201,168,76,.4);}
+html body .lc-mute{-webkit-backdrop-filter:none;backdrop-filter:none;
+  background:rgba(246,242,232,.07);}
+</style>
+<div class="lc-dock" aria-hidden="true"></div>
 </body>
 </html>
