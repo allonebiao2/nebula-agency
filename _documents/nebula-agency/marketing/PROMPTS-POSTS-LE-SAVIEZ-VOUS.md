@@ -1033,4 +1033,278 @@ combien ça coûte de l’écrire. Et **on entre par le Catalogue**
 
 ---
 
+---
+
+## 9. Post n° 17 · « ON CROIT QUE C'EST BEAU. C'EST UNE ARMURE. »
+
+**Quatrième direction artistique · « NUIT & CRÉATURE »**, née d'une référence apportée par
+Mongazi le 2026-09-05 (poster rouge, zèbre 3D anthropomorphe, mur d'écrans en arc).
+Date : 2026-09-05 · Canal : statut WhatsApp + post.
+
+### Le fait, et sa source
+
+> **Les rayures du zèbre ne servent pas à se cacher. Elles empêchent les mouches piqueuses
+> de se poser.**
+
+Prouvé en habillant des chevaux avec des manteaux rayés : les taons approchaient toujours
+aussi nombreux, mais rataient leur atterrissage et repartaient. Sur les zones rayées, ils
+ne se posaient plus.
+
+✅ **Vérifié** · Caro T. et coll., « Benefits of zebra stripes: behaviour of tabanid flies
+around zebras and horses », *PLOS ONE*, 2019. C'est aujourd'hui l'explication la mieux
+étayée, devant le camouflage et la thermorégulation, longtemps avancés et jamais démontrés.
+
+⚠️ **Si on demande la source en commentaire, on la donne.** C'est tout l'intérêt d'un fait
+vrai : il tient quand on le pousse. Ne jamais ajouter de pourcentage, il n'en faut pas.
+
+### Pourquoi ce fait sert la vente
+
+Le retournement est exactement celui du commerçant : **ce qu'il prend pour de la décoration
+fait le travail le plus dur.** Il croit qu'un catalogue en ligne, c'est pour faire joli. En
+vrai c'est ce qui répond à 22 h quand sa boutique est fermée, ce qui donne le prix sans
+qu'il le retape, ce qui empêche un client hésitant d'aller demander au voisin.
+
+L'urgence n'est pas inventée : elle est dans le **délai réel de 5 à 7 jours**. Chaque jour
+d'attente est un jour de plus où on lui pose la question sans qu'il ait la réponse écrite
+quelque part.
+
+### LE PROMPT (ChatGPT · GPT Image · 4:5)
+
+⚠️ **Ordre des pièces jointes.** Mongazi envoie **la référence en 1er, le logo en 2e**. Le
+prompt-maître du §2 recommande l'inverse pour Nano Banana Pro (un logo joint en second est
+parfois traité comme un modèle de style). Ici, le rôle de chaque image est **nommé en toutes
+lettres dans le prompt**, ce qui est la vraie protection. Si la marque est malgré tout
+réinterprétée, inverser les deux pièces jointes et relancer.
+
+```
+===========================================================
+NEBULA AGENCY - INFORMATIVE SOCIAL POST · "LE SAVIEZ-VOUS ?" #17
+===========================================================
+
+ATTACHED INPUTS - read these roles carefully, do not confuse them:
+
+  IMAGE 1 = THE STYLE REFERENCE (the red zebra poster).
+     A reference for CRAFT AND FORM ONLY. Study how it is built.
+     Its subject, its words, its colours, its brand and the website
+     address printed on it are IRRELEVANT and must NEVER appear in
+     the output. Do not copy its text. Do not copy its red. Do not
+     copy its URL. Do not copy its laptop or its browser mock-ups.
+
+  IMAGE 2 = THE NEBULA LOGO.
+     An ASSET TO PLACE, pixel-faithful. Never a style reference,
+     never a subject to reinterpret, never redrawn or recoloured.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original informative social graphic for NEBULA Agency,
+a digital studio in Cotonou, Benin, serving West African merchants.
+Its purpose is to TEACH one surprising, verifiable fact.
+This is editorial content, not an advertisement.
+
+-----------------------------------------------------------
+WHAT TO INHERIT FROM IMAGE 1
+-----------------------------------------------------------
+  - the heroic 3D animal as the single centre of gravity:
+    photoreal fur and anatomy, cinematic studio lighting,
+    soft contact shadow on the ground
+  - one flat saturated background colour, with very faint
+    concentric shapes ghosted into it
+  - the giant display headline sitting at the top, its lower
+    line passing BEHIND the animal's body so the animal
+    overlaps the type
+  - the wide curved arc of elements fanning out behind the
+    subject, in perspective
+  - the same level of finish: premium poster, not a collage
+
+WHAT TO REJECT FROM IMAGE 1
+  - its red palette (see BRAND LOCK below)
+  - its words, its baseline, its website address
+  - its sunglasses, its laptop, its throne, its browser windows
+  - any comedic mascot treatment: our animal is observed,
+    not disguised as a human worker
+
+-----------------------------------------------------------
+BRAND LOCK - non-negotiable, overrides the reference
+-----------------------------------------------------------
+NEBULA palette:
+  background   very dark navy-black #070A14
+  primary glow violet #9B5CFF
+  secondary    blue #4A7DFF
+  accent       cyan #3FD8E6
+  text         warm white #EAEEF9, muted grey-blue #9AA6C4
+  highlight    amber #F6A63C - one single element maximum
+
+Texture: fine star dust, subtle film grain, soft nebula bleed.
+The zebra's own black and white must stay TRUE black and white:
+it is the subject of the lesson, it is never tinted violet.
+Never flat corporate stock. Never neon cyberpunk. Never clip-art.
+
+LOGO PLACEMENT:
+  Place IMAGE 2 exactly as provided, bottom-left, about 12% of the
+  canvas width, with clear margin. Do not redraw, restyle, recolour,
+  crop, rotate, or add a wordmark of your own.
+
+-----------------------------------------------------------
+SERIES CONSISTENCY
+-----------------------------------------------------------
+This image belongs to an ongoing rubric titled "LE SAVIEZ-VOUS ?".
+The label always reads exactly "LE SAVIEZ-VOUS ?", uppercase, top-left,
+same size, same colour, same letter-spacing in every post.
+It is the recognition anchor of the series. Everything else changes.
+
+-----------------------------------------------------------
+CONTENT - render exactly these strings, nothing else
+-----------------------------------------------------------
+LABEL ....... "LE SAVIEZ-VOUS ?"
+
+HEADLINE .... "ON CROIT QUE C'EST BEAU."
+              "C'EST UNE ARMURE."
+              Emphasis word: "ARMURE" - the largest word on the canvas.
+              The second line passes behind the zebra's body.
+
+TEACHING VISUAL (centre of canvas, about 45% of its height):
+  A demonstration in two halves, read left to right.
+
+  LEFT, smaller and set back in shadow: a plain brown horse,
+  uniform coat, seen from the side. Biting flies have LANDED on
+  its flank: small sharp dark insects clearly resting on the coat.
+  Their approach paths are drawn as straight thin dotted lines
+  that end ON the animal.
+
+  RIGHT, larger, lit, the hero of the image: a zebra in sharp
+  contrasted black and white, seen from the side, calm and still.
+  The same flies swerve around it: their dotted flight paths curve
+  away at the last moment, bending off into a wide arc behind the
+  animal, and NOT ONE of them is resting on the zebra.
+  That fan of curved dotted paths is what replaces the reference's
+  arc of screens.
+
+  Inline captions, small, muted:
+              "ELLES SE POSENT."   /   "ELLES N'Y ARRIVENT PAS."
+
+BODY ........ "Les rayures n'ont jamais servi à se cacher."
+              "Elles empêchent les mouches piqueuses de se poser."
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Format: 4:5 vertical, 1080 x 1350 px.
+Four horizontal zones, top to bottom:
+  1. LABEL                                              (~8%)
+  2. HEADLINE, two lines, huge, high contrast          (~22%)
+  3. TEACHING VISUAL, the demonstration                 (~45%)
+  4. BODY, then logo bottom-left, URL bottom-right      (~25%)
+Generous negative space. Nothing touches the edges.
+
+-----------------------------------------------------------
+TEXT RENDERING - read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted in the CONTENT block, plus the site
+  address "nebula-agency.online" in tiny muted type, bottom-right.
+- Reproduce them VERBATIM. Do not translate, rephrase, shorten,
+  complete or "improve" them.
+- Correct French diacritics and apostrophes: e-acute, e-grave, a-grave,
+  c-cedilla, and the apostrophes in "C'EST", "N'Y", "n'ont".
+- The headline must stay legible at 20% of full size.
+- Absolutely NO other word, number, caption, tag, label or UI text
+  anywhere in the image.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO invented statistics, percentages or figures of any kind.
+- NO human faces, no readable third-party brand, no watermark.
+- NO price, no phone number, no call to action inside the image.
+- The zebra must NOT wear clothes or glasses, and holds no object.
+- One single idea per image.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1350 graphic, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+**Logo à joindre :** `_documents/nebula-agency/marketing/logo/nebula-logo-detoure.png`
+(fond transparent, à préférer sur cette direction sombre).
+
+### Pour le passer en statut WhatsApp (9:16)
+
+Trois lignes à remplacer, rien d'autre :
+
+```
+FORMAT: 1080 x 1920 px, vertical 9:16.
+SAFE ZONES: the TOP 220 px are covered by the WhatsApp profile bar and
+the BOTTOM 340 px by the reply field. Nothing that matters may sit in
+those two strips: the logo, the label, the headline, the two animals,
+the captions and the body all live between 220 px and 1580 px.
+COMPOSITION: stack the demonstration vertically instead of side by side,
+the horse above, the zebra below, so both keep their full size.
+```
+
+### La légende
+
+```
+Un zèbre ne se cache pas.
+
+On a longtemps cru que ses rayures étaient un camouflage. C'est faux.
+Des chercheurs ont habillé des chevaux avec des manteaux rayés. Les
+mouches piqueuses arrivaient toujours aussi nombreuses, mais elles
+n'arrivaient plus à se poser. Elles rataient l'atterrissage et repartaient.
+
+Les rayures ne sont pas une décoration. C'est une armure.
+
+Votre commerce, c'est pareil, et c'est là que ça fait mal.
+Vous croyez qu'un catalogue en ligne, c'est pour faire joli.
+En vrai, c'est ce qui répond à 22 h quand votre boutique est fermée.
+C'est ce qui donne le prix sans que vous ayez à le retaper.
+C'est ce qui fait qu'un client qui hésite ne va pas demander au voisin.
+
+Ce que vous prenez pour de la décoration est ce qui travaille le plus dur.
+
+Et voilà l'urgence, sans exagérer : un catalogue est livré en 5 à 7 jours.
+Celui qui commence aujourd'hui est couvert la semaine prochaine. Celui qui
+attend lundi vient de s'offrir sept jours de plus de questions sans réponse.
+
+Catalogue Digital · 50 000 F · livré en 5 à 7 jours.
+
+Répondez à ce statut avec ce que vous vendez. Je vous dis en une phrase ce
+qui manque chez vous, gratuitement.
+
+NEBULA Agency · Cotonou
+nebula-agency.online
+```
+
+**Le premier commentaire, à poster soi-même :**
+
+> Vous croyiez que c'était pour se cacher ? Vous n'êtes pas le seul. Dites-moi ce que vous
+> vendez, je vous dis où vous perdez vos clients.
+
+### Ce qu'on répond selon ce qu'il vend
+
+| Il répond | Ce qu'on lui dit, en une phrase |
+|---|---|
+| des produits (tissu, cosmétique, alimentaire) | ses prix ne sont écrits nulle part : chaque « c'est combien ? » est une vente qui refroidit |
+| un service (coiffure, couture, réparation) | on ne sait ni ce qu'il fait exactement ni combien de temps ça prend, donc on n'ose pas demander |
+| il livre ou il importe | ses conditions ne sont écrites nulle part, et le client lâche au dernier mètre |
+| il a déjà une page Facebook | sa page est un mur qui défile : ce qu'il a publié il y a deux semaines n'existe plus |
+
+⚠️ **On entre par le Catalogue à 50 000 F, jamais par la Vitrine.** Et **jamais un délai plus
+court que 5 à 7 jours** : c'est la règle n° 1 du socle commercial.
+
+### Contrôles propres à ce post
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Aucune mouche posée sur le zèbre** | c'est la démonstration entière : une seule mouche posée et le post dit le contraire du fait |
+| **Le zèbre reste noir et blanc** | teinté violet, il devient un élément de décor et la leçon s'efface |
+| **Aucune trace de la référence** : ni rouge, ni URL tierce, ni lunettes, ni ordinateur | la référence appartient à quelqu'un d'autre, on en hérite la forme, jamais le contenu |
+| **Aucun prix sur l'image** | le prix vit dans la légende : l'image est éditoriale, c'est ce qui la fait partager |
+| Le label « LE SAVIEZ-VOUS ? » identique aux 16 posts précédents | c'est l'ancre de la série |
+| Réduire à 20 % | si « ARMURE » ne se lit plus, le post est mort dans le fil |
+
+---
+
 *NEBULA Agency · Cotonou, Bénin · Document vivant. Ajouter chaque nouveau post ici.*
