@@ -1,2 +1,4 @@
 _vues/
+_dist/
 _outils/*.log
+.wrangler/

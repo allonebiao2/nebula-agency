@@ -7,6 +7,33 @@
 
 ---
 
+## Luxury Club 229 — deux fuites refermées, une copie périmée à surveiller (2026-09-05)
+
+Le site se déployait avec `.`, c'est-à-dire **tout le dossier client**. Mesuré
+en ligne ce jour-là, avant correction :
+
+- `https://luxuryclub229.com/CONTEXT.md` → **200** (les notes internes : prix,
+  décisions, « à valider »)
+- `https://luxuryclub229.com/assets/_inbox/…` → **200** (**7,2 Mo** de photos
+  sources brutes de Gloria)
+
+Aucune page ne les référençait. Ils sont **hors du livrable** depuis
+`_outils/_dist.py`, et l'URL du déploiement les rend bien en **404**.
+
+⏳ **À revérifier :** sur le domaine, une **copie périmée** subsiste dans la
+couche de Cloudflare Pages (`Age` qui grimpe depuis la même origine,
+`s-maxage=604800`). Ni `purge_everything` ni la purge par URL ne l'atteignent —
+c'est le cache **de Pages**, pas celui de la zone. Toute clé fraîche (une
+requête avec `?x=…`) répond déjà **404**. Ça expire seul en **7 jours au
+maximum** : revérifier après le 2026-09-12.
+
+```bash
+curl -sI https://luxuryclub229.com/CONTEXT.md | head -1     # doit finir en 404
+```
+
+⚠️ **À chercher sur les autres sites du parc** : tout site déployé avec `.`
+publie ce que le dossier contient. `clients/` en a plusieurs.
+
 ## 🔴 CE QUI BLOQUE, ou peut coûter de l'argent
 
 | Quoi | Pourquoi c'est grave | Qui débloque |

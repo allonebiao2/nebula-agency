@@ -608,6 +608,48 @@ animait une ombre **en boucle sous un `backdrop-filter`** sur les 4 pages.
 | `_outils/_gen_univers.py` | les 12 matières du hub, d'INA et de Cozy |
 | `_outils/_gen_soins.py` | **les 5 gestes de soin — prêts, en attente du solde** |
 
+### ✅ EN LIGNE le 2026-09-05, et le déploiement a changé de forme
+
+**Publier ne se fait plus avec `.` mais avec `_dist` :**
+
+```bash
+python _outils/_dist.py
+wrangler pages deploy _dist --project-name luxury-club-229 --branch main
+```
+
+⛔ **POURQUOI.** Le site se déployait avec `.` — tout le dossier client. Mesuré
+en ligne avant correction :
+`https://luxuryclub229.com/CONTEXT.md` → **200** (les notes internes, les prix,
+les « à valider ») et `https://luxuryclub229.com/assets/_inbox/…` → **200**
+(**7,2 Mo** de photos sources brutes de Gloria). Rien ne les référençait ; ils
+étaient publics depuis des mois. `_dist.py` exclut `CONTEXT.md`, `_outils/`,
+`_vues/`, `assets/_inbox/`, `assets/og-source/` — et **refuse d'écrire** si un
+exclu a suivi. Le livrable passe de **36 Mo à 9,9 Mo, 147 fichiers**.
+
+⛔ **`404.html` AJOUTÉE.** Sans elle, Cloudflare Pages servait **la page
+d'accueil avec un code 200** pour toute adresse inconnue (leçon Hillary du
+2026-08-06). Vérifié : un fichier absent répond maintenant **404**.
+
+**`_headers` ajouté** : X-Frame-Options, nosniff, Referrer-Policy,
+Permissions-Policy, HSTS — et un cache d'**une heure** sur `/assets/*`.
+⚠️ **Surtout pas `immutable`** : les images de ce site ne portent pas de `?v=`,
+un cache d'un an y créerait le piège du cache périmé.
+
+**Vérifié en ligne** : les 4 pages en 200 · les 19 images en 200 · un fichier
+absent en 404 · « mercredi » 0 fois, « Diagnostic Capillaire » 0 fois,
+« du lundi au samedi » 6 fois.
+
+⏳ **Une copie périmée subsiste** dans la couche de cache **de Pages** (pas
+celle de la zone) : `CONTEXT.md` et une photo de `_inbox` y répondent encore
+200 alors que l'URL du déploiement rend 404. Ni `purge_everything` ni la purge
+par URL ne l'atteignent ; toute clé fraîche (`?x=…`) rend déjà 404. Ça expire
+seul en **7 jours au maximum** — revérifier après le **2026-09-12**.
+
+⚠️ **`scripts/purger.py` couvre maintenant les 4 zones** du parc
+(`nebula-agency.online`, `luxuryclub229.com`, `djambarteam.com`,
+`graindesthetique.com`) : il n'en connaissait qu'une, et ne savait donc pas
+purger ce site.
+
 ### Reste à faire
 
 - ⏳ recharger WaveSpeed → `python _outils/_gen_soins.py` (≈ 0,70 $)

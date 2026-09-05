@@ -1,0 +1,15 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# ⚠️ UNE HEURE, PAS UN AN, ET SURTOUT PAS `immutable`.
+# Les images de ce site ne portent PAS de `?v=` : poser `immutable` y créerait
+# le piège du cache périmé (une image corrigée resterait un an chez la cliente,
+# et ça ne se voit ni depuis le serveur, ni dans un QC, ni en comparant les
+# MD5 de la page servie — leçon Angy Art des 2026-08-08 et 2026-09-04).
+# Une heure suffit à soulager la 3G de Cotonou sans rien piéger.
+/assets/*
+  Cache-Control: public, max-age=3600

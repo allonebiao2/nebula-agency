@@ -60,14 +60,20 @@ API = "https://api.cloudflare.com/client/v4"
 
 # Les hôtes servis par Cloudflare pour NEBULA. Un site absent d'ici ne se
 # purge pas : c'est volontaire, on ne devine pas les adresses.
+# ⚠️ LE PARC TIENT SUR PLUSIEURS ZONES, PAS UNE. L'outil n'en connaissait
+# qu'une : le jour ou une fuite a du etre refermee sur luxuryclub229.com
+# (2026-09-05), il ne savait pas la purger. Chaque site porte donc SA zone.
 SITES = {
-    "piste": "piste.nebula-agency.online",
-    "agence": "www.nebula-agency.online",
-    "agence-apex": "nebula-agency.online",
-    "partenaires": "partenaires.nebula-agency.online",
-    "vendora": "vendora.nebula-agency.online",
+    "piste":        ("piste.nebula-agency.online",       "nebula-agency.online"),
+    "agence":       ("www.nebula-agency.online",         "nebula-agency.online"),
+    "agence-apex":  ("nebula-agency.online",             "nebula-agency.online"),
+    "partenaires":  ("partenaires.nebula-agency.online", "nebula-agency.online"),
+    "vendora":      ("vendora.nebula-agency.online",     "nebula-agency.online"),
+    "luxury":       ("luxuryclub229.com",                "luxuryclub229.com"),
+    "luxury-www":   ("www.luxuryclub229.com",            "luxuryclub229.com"),
+    "djambar":      ("djambarteam.com",                  "djambarteam.com"),
+    "grain":        ("graindesthetique.com",             "graindesthetique.com"),
 }
-ZONE = "nebula-agency.online"
 
 # ⚠️ Cloudflare renvoie 403 a un robot qui ne se presente pas comme un
 # navigateur. On verifie ce que voit un VISITEUR, pas ce que voit un script.
@@ -109,12 +115,18 @@ def appeler(chemin, t, corps=None):
         return json.load(e)
 
 
-def zone_id(t):
-    d = appeler(f"/zones?name={ZONE}", t)
+_ZONES = {}
+
+
+def zone_id(t, zone):
+    if zone in _ZONES:
+        return _ZONES[zone]
+    d = appeler(f"/zones?name={zone}", t)
     r = d.get("result") or []
     if not r:
-        raise SystemExit(f"  zone {ZONE} introuvable : {str(d.get('errors'))[:120]}")
-    return r[0]["id"]
+        raise SystemExit(f"  zone {zone} introuvable : {str(d.get('errors'))[:120]}")
+    _ZONES[zone] = r[0]["id"]
+    return _ZONES[zone]
 
 
 def verifier(hote):
@@ -165,14 +177,14 @@ def main():
 
     if seul_verifier:
         print()
-        for nom, hote in cibles.items():
+        for nom, (hote, _zone) in cibles.items():
             print(f"  {nom:<14} {verifier(hote)}")
         return 0
 
     t = jeton()
-    z = zone_id(t)
     print()
-    for nom, hote in cibles.items():
+    for nom, (hote, zone) in cibles.items():
+        z = zone_id(t, zone)
         d = appeler(f"/zones/{z}/purge_cache", t, {"hosts": [hote]})
         if not d.get("success"):
             # certains jetons n'autorisent que la purge par fichier
