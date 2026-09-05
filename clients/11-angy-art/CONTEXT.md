@@ -989,3 +989,51 @@ restés sur l'ancienne version. → `?v=20260904b`. Défaut du 2026-08-08 à l'i
 **le cache du navigateur ne se voit pas depuis le serveur, et le QC ne le dit pas.**
 
 ### Contrôles : 188 → 209
+
+## 2026-09-05 — LES PRIX S'EN VONT, UNE SÉLECTION ARRIVE
+
+> Journal : `_memoire/conversations/2026-09-05-angy-art-prix-et-selection.md`
+
+**Angélique ne veut plus afficher ses prix.** ⚠️ Un prix vivait à **quatre**
+endroits, dont **trois invisibles depuis la page** : la ligne `PRIX` du cartel
+(6 retirées), le **message WhatsApp pré-écrit** du bouton « acquérir »
+(5 nettoyés), le **balisage `Offer` du JSON-LD** (5 retirées — celui-là part
+chez Google et **s'affiche dans les résultats de recherche**), et deux phrases
+d'introduction qui **annonçaient** que les prix sont donnés.
+
+⛔ **Ce qui reste exprès** : les cinq tranches de **budget** du formulaire de
+création sur mesure. Ce n'est pas un prix d'Angélique, c'est la question
+qu'elle pose au client, et elle vient de son brief du 2026-08-21. ⏳ **À elle
+de trancher.**
+
+⚠️ **Le contrôle n'a pas été supprimé, il a été RETOURNÉ** : « chaque œuvre
+annonce son prix » devient « aucune œuvre n'affiche de prix », plus un second
+contrôle sur le message WhatsApp — l'endroit qu'on oublie.
+
+**LA SÉLECTION (le « panier » demandé par Mongazi).** ⚠️ **Un panier sans prix
+ne peut pas additionner** : il n'y a plus de total, il y a une **liste**, et un
+**seul message** au lieu d'un par œuvre. C'est le panier d'Hillary moins
+l'addition, d'où le nom **« Ma sélection »** (⏳ si Mongazi veut le mot
+« panier », c'est un libellé, pas un mécanisme).
+
+**Où se pose le rappel** : ⛔ pas dans la barre du haut (mesuré : **31 px de
+marge** à 1024 px, un bouton de plus la fait déborder) · ⛔ pas en pastille
+flottante (interdit depuis Mon Bénin, payé ici le 27/08) · ✅ **une bande de
+bord vraiment opaque, qui n'apparaît que si la sélection n'est pas vide**, avec
+`body` qui réserve sa hauteur et **les deux instruments du couloir de droite qui
+montent d'autant**. ⚠️ **La hauteur est MESURÉE** : à 390 px la bande passe sur
+deux lignes, une valeur en dur laisserait des pixels de recouvrement.
+
+**Ce que la sélection ne fait pas** : elle **ne recopie aucune œuvre** (titre,
+dimensions et image **lus dans la fiche**) · elle **écarte ce qui n'existe
+plus** · **sans JavaScript** elle n'existe pas et le lien WhatsApp direct de
+chaque œuvre suffit · la modale est un `<dialog>` natif, donc piège au clavier,
+Échap et inertie **sans une ligne de plus**.
+
+⛔ **Vu sur une capture, pas dans le code** : la flèche de « ÉCRIRE À
+ANGÉLIQUE » sortait en **triangle plein noir**. `.pill` n'avait jamais porté
+d'icône : sans règle, un `<path>` sans `fill="none"` se remplit.
+
+**QC : 209 → 220 contrôles, tous verts.** ⚠️ **`?v=` bumpé en `20260905a`** —
+les assets portent `immutable` un an et **le cache de bordure d'un
+`*.pages.dev` ne se purge pas**. ✅ Déployé et vérifié en ligne.

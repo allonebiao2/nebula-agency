@@ -1,0 +1,289 @@
+C:\Users\USER\nebula-agency\clients\11-angy-art\_qc.py:139: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  px = list(im.getdata())
+
+ANGY ART — contrôle qualité   http://127.0.0.1:8611/
+
+== téléphone 390
+  [ok] téléphone 390 : aucun débordement horizontal (390 / 390)
+  [ok] téléphone 390 : aucune erreur JavaScript
+  [ok] téléphone 390 : toutes les ressources locales répondent
+  [ok] cibles tactiles : toutes au moins 40 px
+
+== téléphone 390 : le bouton flottant
+  [ok] téléphone 390, en haut : le bouton flottant est là (58×58 px)
+  [ok] téléphone 390, en haut : il ne touche pas le bouton du son
+  [ok] téléphone 390, au milieu : le bouton flottant est là (58×58 px)
+  [ok] téléphone 390, au milieu : il ne touche pas le bouton du son
+  [ok] téléphone 390, en bas : le bouton flottant est là (58×58 px)
+  [ok] téléphone 390, en bas : il ne touche pas le bouton du son
+  [ok] téléphone 390 : le halo du bouton flottant s'anime
+  [ok] téléphone 390 : sur les 32 liens et boutons de la page, il n'en recouvre aucun
+  [ok] téléphone 390 : le panneau s'ouvre depuis le bas de la page
+  [ok] téléphone 390 : les 9 entrées du panneau se voient toutes
+  [ok] téléphone 390 : le panneau ne cache rien derrière un défilement
+  [ok] téléphone 390 : la page derrière le panneau est inerte
+  [ok] téléphone 390 : le halo se tait pendant que le panneau est ouvert
+  [ok] téléphone 390 : Échap referme le panneau
+  [ok] téléphone 390 : le focus revient sur le bouton flottant
+  [ok] téléphone 390 : la page redevient atteignable au clavier
+  [ok] téléphone 390 : le hamburger est là
+  [ok] téléphone 390 : le hamburger ouvre le tiroir et ses 7 liens
+
+== Rien ne se chevauche
+  [ok] .hero-lg et .cadre ne se touchent pas
+  [ok] .hero-mx li et .cadre ne se touchent pas
+  [ok] .son et .hero-plan a ne se touchent pas
+  [ok] .fab et .hero-plan a ne se touchent pas
+
+== Toute image porte sa marque de version
+  [ok] 27 images, toutes versionnées
+
+== Texte posé sur une photo
+  [ok] description « pour un lieu » : 6.86:1 sur la photo (fond le plus clair rgb(59,57,53))
+  [ok] titre « pour un lieu » : 7.93:1 sur la photo (fond le plus clair rgb(49,44,39))
+  [ok] description « la visite » : 5.29:1 sur la photo (fond le plus clair rgb(104,69,53))
+  [ok] relance « sur mesure » : 8.15:1 sur la photo (fond le plus clair rgb(52,40,28))
+  [ok] bouton « sur mesure » : 8.46:1 sur la photo (fond le plus clair rgb(42,38,34))
+  [ok] légende du héros : 10.27:1 sur la photo (fond le plus clair rgb(9,9,9))
+
+== Arrivée par le menu
+  [ok] le menu porte 6 entrées de page
+  [ok] « accueil » ramène en haut (12597 -> 0 px)
+  [ok] #demarche : le titre respire sous la barre (91 px)
+  [ok] #oeuvres : le titre respire sous la barre (91 px)
+  [ok] #atelier : le titre respire sous la barre (90 px)
+  [ok] #personnalise : le titre respire sous la barre (90 px)
+  [ok] #visite : le titre respire sous la barre (136 px)
+
+== tablette 768
+  [ok] tablette 768 : aucun débordement horizontal (768 / 768)
+  [ok] tablette 768 : aucune erreur JavaScript
+  [ok] tablette 768 : toutes les ressources locales répondent
+
+== tablette 768 : le bouton flottant
+  [ok] tablette 768, en haut : le bouton flottant est là (58×58 px)
+  [ok] tablette 768, en haut : il ne touche pas le bouton du son
+  [ok] tablette 768, au milieu : le bouton flottant est là (58×58 px)
+  [ok] tablette 768, au milieu : il ne touche pas le bouton du son
+  [ok] tablette 768, en bas : le bouton flottant est là (58×58 px)
+  [ok] tablette 768, en bas : il ne touche pas le bouton du son
+  [ok] tablette 768 : le halo du bouton flottant s'anime
+  [ok] tablette 768 : sur les 32 liens et boutons de la page, il n'en recouvre aucun
+  [ok] tablette 768 : le panneau s'ouvre depuis le bas de la page
+  [ok] tablette 768 : les 9 entrées du panneau se voient toutes
+  [ok] tablette 768 : le panneau ne cache rien derrière un défilement
+  [ok] tablette 768 : la page derrière le panneau est inerte
+  [ok] tablette 768 : le halo se tait pendant que le panneau est ouvert
+  [ok] tablette 768 : Échap referme le panneau
+  [ok] tablette 768 : le focus revient sur le bouton flottant
+  [ok] tablette 768 : la page redevient atteignable au clavier
+  [ok] tablette 768 : le hamburger est là
+  [ok] tablette 768 : le hamburger ouvre le tiroir et ses 7 liens
+
+== Rien ne se chevauche
+  [ok] .hero-lg et .cadre ne se touchent pas
+  [ok] .hero-mx li et .cadre ne se touchent pas
+  [ok] .son et .hero-plan a ne se touchent pas
+  [ok] .fab et .hero-plan a ne se touchent pas
+
+== Toute image porte sa marque de version
+  [ok] 27 images, toutes versionnées
+
+== Texte posé sur une photo
+  [ok] description « pour un lieu » : 9.49:1 sur la photo (fond le plus clair rgb(28,25,22))
+  [ok] titre « pour un lieu » : 7.99:1 sur la photo (fond le plus clair rgb(45,44,42))
+  [ok] description « la visite » : 7.28:1 sur la photo (fond le plus clair rgb(58,51,45))
+  [ok] relance « sur mesure » : 10.08:1 sur la photo (fond le plus clair rgb(18,14,10))
+  [ok] bouton « sur mesure » : 10.07:1 sur la photo (fond le plus clair rgb(19,14,10))
+  [ok] légende du héros : 10.27:1 sur la photo (fond le plus clair rgb(9,9,9))
+
+== Arrivée par le menu
+  [ok] le menu porte 6 entrées de page
+  [ok] « accueil » ramène en haut (11052 -> 0 px)
+  [ok] #demarche : le titre respire sous la barre (104 px)
+  [ok] #oeuvres : le titre respire sous la barre (105 px)
+  [ok] #atelier : le titre respire sous la barre (104 px)
+  [ok] #personnalise : le titre respire sous la barre (105 px)
+  [ok] #visite : le titre respire sous la barre (383 px)
+
+== ordinateur 1440
+  [ok] ordinateur 1440 : aucun débordement horizontal (1440 / 1440)
+  [ok] ordinateur 1440 : aucune erreur JavaScript
+  [ok] ordinateur 1440 : toutes les ressources locales répondent
+
+== ordinateur 1440 : le bouton flottant
+  [ok] ordinateur 1440, en haut : le bouton flottant est là (58×58 px)
+  [ok] ordinateur 1440, en haut : il ne touche pas le bouton du son
+  [ok] ordinateur 1440, au milieu : le bouton flottant est là (58×58 px)
+  [ok] ordinateur 1440, au milieu : il ne touche pas le bouton du son
+  [ok] ordinateur 1440, en bas : le bouton flottant est là (58×58 px)
+  [ok] ordinateur 1440, en bas : il ne touche pas le bouton du son
+  [ok] ordinateur 1440 : le halo du bouton flottant s'anime
+  [ok] ordinateur 1440 : sur les 32 liens et boutons de la page, il n'en recouvre aucun
+  [ok] ordinateur 1440 : le panneau s'ouvre depuis le bas de la page
+  [ok] ordinateur 1440 : les 9 entrées du panneau se voient toutes
+  [ok] ordinateur 1440 : le panneau ne cache rien derrière un défilement
+  [ok] ordinateur 1440 : la page derrière le panneau est inerte
+  [ok] ordinateur 1440 : le halo se tait pendant que le panneau est ouvert
+  [ok] ordinateur 1440 : Échap referme le panneau
+  [ok] ordinateur 1440 : le focus revient sur le bouton flottant
+  [ok] ordinateur 1440 : la page redevient atteignable au clavier
+  [ok] ordinateur 1440 : la rangée de la barre montre ses 6 liens
+  [ok] ordinateur 1440 : pas de hamburger sur ordinateur
+
+== Rien ne se chevauche
+  [ok] .hero-lg et .cadre ne se touchent pas
+  [ok] .hero-mx li et .cadre ne se touchent pas
+  [ok] .son et .hero-plan a ne se touchent pas
+  [ok] .fab et .hero-plan a ne se touchent pas
+
+== Toute image porte sa marque de version
+  [ok] 27 images, toutes versionnées
+
+== Texte posé sur une photo
+  [ok] description « pour un lieu » : 9.96:1 sur la photo (fond le plus clair rgb(19,17,17))
+  [ok] titre « pour un lieu » : 8.17:1 sur la photo (fond le plus clair rgb(43,42,40))
+  [ok] description « la visite » : 8.61:1 sur la photo (fond le plus clair rgb(41,36,32))
+  [ok] relance « sur mesure » : 10.12:1 sur la photo (fond le plus clair rgb(17,13,10))
+  [ok] bouton « sur mesure » : 9.39:1 sur la photo (fond le plus clair rgb(37,24,8))
+  [ok] légende du héros : 10.27:1 sur la photo (fond le plus clair rgb(9,9,9))
+
+== Arrivée par le menu
+  [ok] le menu porte 6 entrées de page
+  [ok] « accueil » ramène en haut (9990 -> 0 px)
+  [ok] #demarche : le titre respire sous la barre (156 px)
+  [ok] #oeuvres : le titre respire sous la barre (156 px)
+  [ok] #atelier : le titre respire sous la barre (157 px)
+  [ok] #personnalise : le titre respire sous la barre (157 px)
+  [ok] #visite : le titre respire sous la barre (282 px)
+
+== Typographie
+  [ok] display = "Playfair Display"
+  [ok] texte = "Public Sans"
+  [ok] deux familles chargées : ['Playfair Display', 'Public Sans']
+
+== Contrastes mesurés à l'écran
+  [ok] corps du héros : 10.2:1
+  [ok] coordonnées : 7.76:1
+  [ok] métriques : 7.76:1
+  [ok] légende de l'arche : 7.76:1
+  [ok] sous-titre or : 7.83:1
+  [ok] label sur crème : 15.17:1
+  [ok] italique or sur crème : 4.42:1
+  [ok] texte démarche : 6.98:1
+  [ok] légende démarche : 6.98:1
+  [ok] lien souligné : 15.17:1
+  [ok] label des quatre temps : 13.36:1
+  [ok] italique or sur papier : 4.89:1
+  [ok] description des quatre temps : 6.14:1
+  [ok] numéro d'étape : 4.89:1
+  [ok] titre d'étape : 13.36:1
+  [ok] texte d'étape : 6.14:1
+  [ok] label sur noir : 10.2:1
+  [ok] italique or sur noir : 7.83:1
+  [ok] description portfolio : 10.2:1
+  [ok] label carrousel : 7.83:1
+  [ok] sous-titre carrousel : 10.2:1
+  [ok] compteur : 10.2:1
+  [ok] bouton pilule : 19.8:1
+  [ok] description plein écran : 10.2:1
+  [ok] étiquettes : 10.2:1
+  [ok] attribution citation : 7.83:1
+  [ok] coordonnées du pied : 10.2:1
+  [ok] liens du pied : 10.2:1
+  [ok] mentions du pied : 7.76:1
+
+== Les portes WhatsApp
+  [ok] 6 liens WhatsApp, tous sur le bon numéro et pré-remplis
+
+== Le carrousel
+  [ok] 6 diapositives, une seule active
+  [ok] compteur cohérent : « 01 — 06 »
+  [ok] le cartel ne finit pas par un séparateur orphelin
+  [ok] bloc de texte rempli : « MISE EN SITUATIONDeux visages, terre et blancS… »
+  [ok] 6 vraies photos d'œuvres dans le carrousel
+  [ok] la flèche fait avancer : « 02 — 06 »
+
+== La modale de demande
+  [ok] la modale s'ouvre
+  [ok] champ vide : le message d'erreur s'affiche et le champ se marque
+  [ok] la demande part sur WhatsApp, déjà rédigée
+  [ok] le message reprend les trois réponses
+  [ok] le message de confirmation s'affiche
+
+== Les œuvres
+  [ok] 6 œuvres au catalogue
+  [ok] chaque œuvre porte son cartel (technique, palette, dimensions)
+  [ok] aucune œuvre n'affiche de prix
+  [ok] aucun prix dans les messages WhatsApp pré-écrits
+  [ok] chaque œuvre annonce ses dimensions
+  [ok] le texte d'Angélique est dans la PAGE, pas dans le script
+  [ok] chaque œuvre a son lien d'acquisition, déjà rédigé
+  [ok] chaque œuvre décrit sa photo aux lecteurs d'écran
+  [ok] 3 photos annoncent « mise en situation »
+
+== Les créations personnalisées
+  [ok] la section « créations personnalisées » est là
+  [ok] la distinction avec les collections est écrite (2 blocs)
+  [ok] la signature « l'entaille » est présente
+  [ok] sans JavaScript, un vrai lien WhatsApp reste
+  [ok] une seule étape à la fois
+  [ok] les champs conditionnels restent cachés tant qu'on n'en a pas besoin
+  [ok] sans histoire, on ne passe pas à la suite
+  [ok] « Autre » fait apparaître le champ à préciser
+  [ok] le troisième temps porte le bouton d'envoi
+  [ok] sans nom, la demande ne part pas
+  [ok] le projet part sur WhatsApp, déjà rédigé
+  [ok] le message porte l'histoire, le nom et la date (376 caractères)
+  [ok] la confirmation « votre projet a bien été transmis » s'affiche
+
+== Garde-fous de performance
+  [ok] aucun backdrop-filter sur un élément de la page
+  [ok] animations infinies maîtrisées (6) : ['DIV.cadre', 'I.rai', 'SPAN.fab-halo']
+
+== Accessibilité
+  [ok] toutes les images ont un alt
+  [ok] tout élément cliquable a un nom
+  [ok] un seul h1
+  [ok] langue déclarée : fr
+  [ok] chaque liste déroulante a son étiquette
+  [ok] header / main / footer présents
+  [ok] le son est éteint par défaut
+  [ok] après un défilement complet, plus rien n'est resté invisible
+
+== La sélection
+  [ok] la bande ne paraît pas tant que la sélection est vide
+  [ok] la bande paraît et compte (2 œuvres)
+  [ok] la bande de bord est vraiment opaque
+  [ok] le corps réserve la hauteur de la bande (68 px pour 68 px)
+  [ok] la sélection tient dans le navigateur (2 œuvres)
+  [ok] la sélection survit au rechargement
+  [ok] la modale s'ouvre et liste les œuvres (2)
+  [ok] le clavier entre dans la modale
+  [ok] Échap referme la sélection
+  [ok] la bande repart quand la sélection se vide
+
+== Le défilement lissé laisse passer les autres
+  [ok] témoin : la page glisse bien (3000 -> 4776 px)
+  [ok] un saut extérieur pendant le glissement tient (200 px)
+
+== Sans JavaScript
+  [ok] sans JS : les 6 étiquettes de section sont là
+  [ok] sans JS : « ANGY » reste lisible
+  [ok] sans JS : « par sa main » reste lisible
+  [ok] sans JS : « La forme » reste lisible
+  [ok] sans JS : « Le trait » reste lisible
+  [ok] sans JS : « Retrouvons-nous » reste lisible
+  [ok] sans JS : « ÉNERGIES » reste lisible
+  [ok] sans JS : « Votre histoire » reste lisible
+  [ok] sans JS : les 7 entrées du sommaire restent atteignables
+  [ok] sans JS : le bouton flottant se retire au lieu de ne rien faire
+  [ok] sans JS : la barre ne flotte pas au-dessus du texte
+  [ok] sans JS : les liens WhatsApp fonctionnent
+
+== Mouvement réduit
+  [ok] mouvement réduit : rien ne reste caché
+  [ok] mouvement réduit : pas de curseur personnalisé
+
+220 contrôles verts, 0 en échec
+Tout est vert.

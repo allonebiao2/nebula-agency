@@ -838,4 +838,165 @@
     });
   })();
 
+  /* ---------- 13. LA SÉLECTION ----------------------------------------
+     Le « panier » d'une artiste qui n'affiche plus ses prix : il n'y a pas
+     de total, il y a une LISTE. On retient plusieurs œuvres, et Angélique
+     reçoit un seul message au lieu d'un par pièce.
+
+     ⚠️ LES ŒUVRES NE SONT PAS RECOPIÉES ICI. Titre, dimensions et image sont
+     LUS dans la fiche. Le jour où elle change un texte, la sélection suit.
+
+     ⚠️ LA HAUTEUR DE LA BANDE EST MESURÉE, pas écrite à la main. Une valeur
+     en dur laisse toujours quelques pixels de recouvrement quand la bande
+     passe sur deux lignes (leçon Hillary du 2026-08-16).
+     ------------------------------------------------------------------- */
+  (function selection() {
+    var bande = $('#selb'), modale = $('#selM');
+    if (!bande || !modale || !modale.showModal) return;
+
+    var CLE = 'angy_selection';
+    var liste = $('#selL'), vide = $('#selVide'), nb = $('#selbN'), mot = $('#selbM');
+    var choisies = [];
+
+    function lire() {
+      try {
+        var v = JSON.parse(localStorage.getItem(CLE));
+        return Array.isArray(v) ? v : [];
+      } catch (e) { return []; }
+    }
+    function ecrire() {
+      try { localStorage.setItem(CLE, JSON.stringify(choisies)); } catch (e) {}
+    }
+
+    /* la fiche est la source : on n'en garde que l'identifiant */
+    function oeuvre(id) {
+      var a = document.getElementById(id);
+      if (!a) return null;
+      var t = a.querySelector('.oeu-t'), img = a.querySelector('.oeu-p img'), dim = '';
+      a.querySelectorAll('.oeu-c div').forEach(function (d) {
+        var dt = d.querySelector('dt');
+        if (dt && dt.textContent.trim().indexOf('DIMENSIONS') === 0) {
+          var dd = d.querySelector('dd');
+          if (dd) dim = dd.textContent.trim();
+        }
+      });
+      return {
+        id: id,
+        titre: t ? t.textContent.trim() : id,
+        dim: dim,
+        img: img ? img.getAttribute('src') : '',
+        alt: img ? (img.getAttribute('alt') || '') : ''
+      };
+    }
+
+    function mesurer() {
+      var h = Math.round(bande.getBoundingClientRect().height);
+      if (h > 0) document.documentElement.style.setProperty('--selb-h', h + 'px');
+    }
+
+    function poser() {
+      /* on écarte ce qui n'existe plus : une œuvre retirée de la page ne doit
+         pas rester dans une sélection oubliée dans le navigateur */
+      choisies = choisies.filter(function (id) { return !!document.getElementById(id); });
+
+      var n = choisies.length;
+      bande.hidden = (n === 0);
+      document.body.classList.toggle('a-selection', n > 0);
+      if (nb) nb.textContent = n;
+      if (mot) mot.textContent = (n > 1 ? 'œuvres sélectionnées' : 'œuvre sélectionnée');
+
+      $$('[data-add]').forEach(function (b) {
+        var a = b.closest('.oeu');
+        var dedans = a && choisies.indexOf(a.id) >= 0;
+        b.setAttribute('aria-pressed', dedans ? 'true' : 'false');
+        var t = b.querySelector('.oeu-add-t');
+        if (t) t.textContent = dedans ? 'DANS MA SÉLECTION' : 'AJOUTER À MA SÉLECTION';
+      });
+
+      if (liste) {
+        liste.innerHTML = '';
+        choisies.forEach(function (id) {
+          var o = oeuvre(id);
+          if (!o) return;
+          var li = document.createElement('li');
+          li.className = 'sel-i';
+          li.innerHTML =
+            '<img src="' + o.img + '" alt="" width="56" height="56" loading="lazy" decoding="async">' +
+            '<div class="sel-i-c"><p class="sel-i-t"></p><p class="sel-i-d"></p></div>' +
+            '<button class="sel-i-x" type="button" aria-label="Retirer cette œuvre de ma sélection">' +
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+          li.querySelector('.sel-i-t').textContent = o.titre;
+          li.querySelector('.sel-i-d').textContent = o.dim;
+          li.querySelector('.sel-i-x').addEventListener('click', function () {
+            choisies = choisies.filter(function (x) { return x !== id; });
+            ecrire(); poser();
+          });
+          liste.appendChild(li);
+        });
+      }
+      if (vide) vide.hidden = (n > 0);
+      var envoi = $('#selEnvoi'), vider = $('#selVider');
+      if (envoi) envoi.disabled = (n === 0);
+      if (vider) vider.hidden = (n === 0);
+      requestAnimationFrame(mesurer);
+    }
+
+    /* --- le geste : ajouter, retirer --- */
+    $$('[data-add]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var a = b.closest('.oeu');
+        if (!a || !a.id) return;
+        var i = choisies.indexOf(a.id);
+        if (i >= 0) choisies.splice(i, 1); else choisies.push(a.id);
+        ecrire(); poser();
+      });
+    });
+
+    /* --- la modale : `showModal` donne le piège au clavier, Échap et
+           l'inertie de la page derrière, sans une ligne de plus --- */
+    var dernier = null;
+    function ouvrir(depuis) {
+      dernier = depuis || null;
+      poser();
+      modale.showModal();
+      document.body.classList.add('fige');
+    }
+    $('#selbOpen').addEventListener('click', function () { ouvrir(this); });
+    $('#selX').addEventListener('click', function () { modale.close(); });
+    modale.addEventListener('click', function (e) { if (e.target === modale) modale.close(); });
+    modale.addEventListener('close', function () {
+      document.body.classList.remove('fige');
+      if (dernier && document.contains(dernier)) dernier.focus({ preventScroll: true });
+    });
+
+    $('#selVider').addEventListener('click', function () {
+      choisies = []; ecrire(); poser();
+      modale.close();
+    });
+
+    /* --- le message : un seul, pour toutes les œuvres --- */
+    $('#selEnvoi').addEventListener('click', function () {
+      if (!choisies.length) return;
+      var pieces = choisies.map(oeuvre).filter(Boolean);
+      var l = [pieces.length > 1
+        ? "Bonjour Angélique, j'ai vu ces œuvres sur votre site :"
+        : "Bonjour Angélique, j'ai vu cette œuvre sur votre site :"];
+      l.push('');
+      pieces.forEach(function (o) {
+        l.push('• ' + o.titre + (o.dim ? ' (' + o.dim + ')' : ''));
+      });
+      l.push('');
+      l.push(pieces.length > 1
+        ? 'Pouvez-vous me dire comment les acquérir ?'
+        : "Pouvez-vous me dire comment l'acquérir ?");
+      var url = (NUM || 'https://wa.me/2290152006490') + '?text=' + encodeURIComponent(l.join('\n'));
+      window.open(url, '_blank', 'noopener');
+    });
+
+    choisies = lire();
+    poser();
+    addEventListener('resize', mesurer, { passive: true });
+  })();
+
+
 })();

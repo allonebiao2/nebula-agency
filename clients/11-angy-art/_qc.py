@@ -820,8 +820,13 @@ def main():
                 # LES SIX PIÈCES, AVEC LEUR CARTEL.
                 # ⚠️ Elles sont écrites EN DUR dans la page, pas dans le
                 # JavaScript : ce qui fait la valeur de ce site — les textes
-                # d'Angélique, les dimensions, les prix — doit rester lisible
-                # sans JS et visible pour les moteurs de recherche.
+                # d'Angélique, les dimensions — doit rester lisible sans JS
+                # et visible pour les moteurs de recherche.
+                # ⚠️ 2026-09-05 : Angélique ne veut plus afficher ses prix. Les
+                #    contrôles qui en exigeaient un ne sont pas supprimés, ils
+                #    sont RETOURNÉS. Et un prix vit à QUATRE endroits — la
+                #    fiche, le message WhatsApp pré-écrit, le balisage et les
+                #    phrases d'introduction : on les regarde tous les quatre.
                 o = page.evaluate("""() => {
                   const a = [...document.querySelectorAll('.oeu')];
                   return a.map(e => ({
@@ -837,13 +842,17 @@ def main():
                 bon(f"{len(o)} œuvres au catalogue") if len(o) == 6 \
                     else mauvais(f"{len(o)} œuvres, six attendues")
                 if o:
-                    sansCartel = [x["t"] for x in o if len(x["dd"]) < 4]
-                    bon("chaque œuvre porte son cartel complet") if not sansCartel \
+                    sansCartel = [x["t"] for x in o if len(x["dd"]) < 3]
+                    bon("chaque œuvre porte son cartel (technique, palette, dimensions)") if not sansCartel \
                         else mauvais(f"cartel incomplet : {sansCartel}")
-                    sansPrix = [x["t"] for x in o
-                                if not any(("FCFA" in d) or ("demande" in d) for d in x["dd"])]
-                    bon("chaque œuvre annonce son prix, ou qu'il est sur demande") if not sansPrix \
-                        else mauvais(f"sans prix ni mention : {sansPrix}")
+                    avecPrix = [x["t"] for x in o
+                                if any(("FCFA" in d) or ("F CFA" in d) for d in x["dd"])
+                                or any("PRIX" in d for d in x["dt"])]
+                    bon("aucune œuvre n'affiche de prix") if not avecPrix \
+                        else mauvais(f"un prix est encore affiché : {avecPrix}")
+                    waPrix = [x["t"] for x in o if "FCFA" in x["wa"] or "AFFCFA" in x["wa"]]
+                    bon("aucun prix dans les messages WhatsApp pré-écrits") if not waPrix \
+                        else mauvais(f"un prix part encore chez elle : {waPrix}")
                     sansDim = [x["t"] for x in o if not any("cm" in d for d in x["dd"])]
                     bon("chaque œuvre annonce ses dimensions") if not sansDim \
                         else mauvais(f"sans dimensions : {sansDim}")
@@ -1004,6 +1013,77 @@ def main():
                 # donc d'abord QUE ÇA GLISSE, puis on saute par-dessus.
                 # (Le moteur n'existe que sur pointeur fin : c'est ici, en
                 # contexte PC, et nulle part ailleurs.)
+                titre("La sélection")
+                # ⚠️ UN PANIER SANS PRIX. Angélique ne les affiche plus : il n'y
+                #    a pas de total, il y a une liste, et un seul message au
+                #    lieu d'un par œuvre.
+                page.evaluate("() => { try { localStorage.removeItem('angy_selection'); } catch(e){} }")
+                page.reload(wait_until="load"); page.wait_for_timeout(2600)
+                bande = page.evaluate("() => !document.getElementById('selb') "
+                                      "|| document.getElementById('selb').hidden")
+                bon("la bande ne paraît pas tant que la sélection est vide") if bande \
+                    else mauvais("la bande s'affiche sur une sélection vide")
+
+                page.evaluate("() => { const b=[...document.querySelectorAll('[data-add]')];"
+                              "b[0].click(); b[1].click(); }")
+                page.wait_for_timeout(500)
+                e = page.evaluate("""() => {
+                  const b = document.getElementById('selb');
+                  const s = getComputedStyle(b);
+                  const m = (s.backgroundColor.match(/[\\d.]+/g) || []);
+                  return {vu: !b.hidden, n: (document.getElementById('selbN')||{}).textContent,
+                          opac: m.length > 3 ? parseFloat(m[3]) : 1,
+                          h: Math.round(b.getBoundingClientRect().height),
+                          marge: Math.round(parseFloat(getComputedStyle(document.body).paddingBottom)),
+                          corps: document.body.classList.contains('a-selection')};
+                }""")
+                bon(f"la bande paraît et compte ({e['n']} œuvres)") if e["vu"] and e["n"] == "2" \
+                    else mauvais(f"bande : vue={e['vu']} compte={e['n']}")
+                bon("la bande de bord est vraiment opaque") if e["opac"] == 1 \
+                    else mauvais(f"bande translucide ({e['opac']}) : elle passe devant du texte")
+                # ⚠️ la hauteur est MESURÉE, pas écrite à la main : une valeur en
+                #    dur laisse toujours quelques pixels de recouvrement.
+                bon(f"le corps réserve la hauteur de la bande ({e['marge']} px pour {e['h']} px)") \
+                    if e["corps"] and e["marge"] >= e["h"] - 2 \
+                    else mauvais(f"marge {e['marge']} px pour une bande de {e['h']} px")
+
+                # le message : les deux œuvres, et AUCUN prix
+                msg = page.evaluate("""() => {
+                  const ids = JSON.parse(localStorage.getItem('angy_selection') || '[]');
+                  return ids.map(i => (document.getElementById(i).querySelector('.oeu-t')||{}).textContent);
+                }""")
+                bon(f"la sélection tient dans le navigateur ({len(msg)} œuvres)") if len(msg) == 2 \
+                    else mauvais(f"stockage : {msg}")
+                page.reload(wait_until="load"); page.wait_for_timeout(2600)
+                garde = page.evaluate("() => (document.getElementById('selbN')||{}).textContent")
+                bon("la sélection survit au rechargement") if garde == "2" \
+                    else mauvais(f"après rechargement : {garde}")
+
+                # la modale : elle s'ouvre, elle liste, Échap la ferme
+                page.click("#selbOpen"); page.wait_for_timeout(600)
+                d = page.evaluate("""() => {
+                  const m = document.getElementById('selM');
+                  return {ouvert: m.open, lignes: m.querySelectorAll('.sel-i').length,
+                          vide: document.getElementById('selVide').hidden,
+                          actif: document.activeElement && document.activeElement.closest('#selM') !== null};
+                }""")
+                bon(f"la modale s'ouvre et liste les œuvres ({d['lignes']})") if d["ouvert"] and d["lignes"] == 2 \
+                    else mauvais(f"modale : ouverte={d['ouvert']} lignes={d['lignes']}")
+                bon("le clavier entre dans la modale") if d["actif"] \
+                    else mauvais("le focus est resté derrière la modale")
+                page.keyboard.press("Escape"); page.wait_for_timeout(400)
+                bon("Échap referme la sélection") if not page.evaluate(
+                    "() => document.getElementById('selM').open") \
+                    else mauvais("Échap ne referme pas la sélection")
+
+                # on retire tout : la bande doit repartir
+                page.evaluate("() => { const b=[...document.querySelectorAll('[data-add]')];"
+                              "b[0].click(); b[1].click(); }")
+                page.wait_for_timeout(400)
+                bon("la bande repart quand la sélection se vide") if page.evaluate(
+                    "() => document.getElementById('selb').hidden") \
+                    else mauvais("la bande reste après avoir tout retiré")
+
                 titre("Le défilement lissé laisse passer les autres")
                 page.evaluate("() => window.scrollTo(0, 3000)")
                 page.wait_for_timeout(700)
