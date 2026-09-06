@@ -740,3 +740,42 @@ navigation qu'on VOIT pour une navigation qu'on OUVRE.
 
 ⚠️ **La règle des instruments flottants tient** : les deux (bouton et son)
 partagent **un seul couloir réservé**, pas deux, et aucun ne recouvre du texte.
+
+---
+
+## 2026-09-06 · MINUIT : l'idée est arrêtée, les douze questions sont fermées
+
+- **Décidé par** : moi, sur demande de Mongazi (« finalise-moi l'idée de la
+  lettre digitale »), sauf les six lignes marquées ⏳ qui lui reviennent.
+- **Portée** : le produit MINUIT en entier. Document : `_plans/2026-09-06-minuit-arrete.html`.
+- **Ce qui a changé depuis le dossier du 27 août** : SasPay est en ligne
+  (03/09) et livre tout seul chez PISTE ; **n8n tournait sur un VPS qui
+  n'appartient plus à Mongazi**, donc la machine à livrer du dossier n'existe
+  pas ; la lettre, le constructeur et la vidéo existent.
+
+| № | Question ouverte | Décision |
+|---|---|---|
+| 01 | Le nom (« proposition, pas décision ») | **MINUIT**, arrêté |
+| 02 | Où vit l'heure de remise | **Dans la lettre**, plus dans une machine |
+| 03 | Qui envoie le lien | **L'acheteur.** NEBULA n'écrit jamais à la destinataire |
+| 04 | Minuit, mais minuit où | **Heure de calendrier**, sur le téléphone de qui reçoit |
+| 05 | FedaPay, ou la référence collée à la main | **SasPay**, comme PISTE |
+| 06 | Render + le SQLite de `vitrina/` | **Non.** Cloudflare Pages + Supabase |
+| 07 | Le prix suit l'occasion ou le palier | **Le palier.** L'occasion décide du ton |
+| 08 | La grille, francs et euros | 4 paliers, **un seul règlement en francs** |
+| 09 | Le détournement | **Écrit** : `minuit/CONDITIONS.md` |
+| 10 | Combien d'occasions d'un coup | **Trois lignes** : lettre, faire-part, deuil |
+| 11 | Quand | **Le faire-part vise novembre**, pas février |
+| 12 | Quand arrête-t-on | **Le 1er décembre 2026**, critères du dossier inchangés |
+
+- **Les trois décisions qui portent tout le reste** :
+  1. **L'heure vit dans la lettre.** C'est la seule place qui ne dépend de rien.
+     Elle tient même si l'acheteur envoie son lien trois jours trop tôt.
+  2. **On n'écrit jamais à quelqu'un qui n'a rien demandé.** Ça supprime le
+     modèle Meta, le coût d'envoi, et le pire risque du produit d'un seul coup.
+  3. **Pas de validation manuelle sous 10 000 F**, règle du manuel appliquée
+     jusqu'au bout : soit l'encaissement est automatique, soit le palier
+     d'entrée n'ouvre pas.
+- **Ce que je n'ai pas tranché, et qui bloque la vente** : le compte qui
+  encaisse · le sous-domaine · **un n8n tourne-t-il ailleurs** · la commission
+  SasPay · qui relit le deuil · le premier franc encaissé pour de vrai.

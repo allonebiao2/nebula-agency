@@ -1,0 +1,755 @@
+<title>Minuit · l'arrêté</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ink:#14181d;
+  --ink-2:#232a31;
+  --paper:#eff1f2;
+  --paper-2:#e4e7e9;
+  --card:#f7f8f9;
+  --slate:#5c6670;
+  --slate-2:#7d868f;
+  --line:#d3d8db;
+  --line-2:#c2c9cd;
+  --wax:#8e2233;
+  --wax-soft:#a8394a;
+  --wax-wash:rgba(142,34,51,.07);
+  --gold:#7d6230;
+  --gold-wash:rgba(125,98,48,.09);
+  --good:#2c6350;
+  --warn:#8a5a1a;
+  --shadow:0 1px 2px rgba(20,24,29,.05),0 8px 24px -12px rgba(20,24,29,.13);
+  --f-disp:"Fraunces",Georgia,"Times New Roman",serif;
+  --f-body:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#e9ecee;
+    --ink-2:#c8cfd4;
+    --paper:#12161a;
+    --paper-2:#1a1f24;
+    --card:#191e23;
+    --slate:#98a2aa;
+    --slate-2:#7b858d;
+    --line:#2a3238;
+    --line-2:#3a444b;
+    --wax:#e28391;
+    --wax-soft:#cf6a7a;
+    --wax-wash:rgba(226,131,145,.10);
+    --gold:#c9a765;
+    --gold-wash:rgba(201,167,101,.11);
+    --good:#68b295;
+    --warn:#d1a15c;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e9ecee;
+  --ink-2:#c8cfd4;
+  --paper:#12161a;
+  --paper-2:#1a1f24;
+  --card:#191e23;
+  --slate:#98a2aa;
+  --slate-2:#7b858d;
+  --line:#2a3238;
+  --line-2:#3a444b;
+  --wax:#e28391;
+  --wax-soft:#cf6a7a;
+  --wax-wash:rgba(226,131,145,.10);
+  --gold:#c9a765;
+  --gold-wash:rgba(201,167,101,.11);
+  --good:#68b295;
+  --warn:#d1a15c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.col{max-width:680px}
+
+/* ---------- typography ---------- */
+h1,h2,h3,h4{font-family:var(--f-disp);font-weight:600;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.6rem,6vw,4.4rem);line-height:1.02;letter-spacing:-.022em;font-weight:700}
+h2{font-size:clamp(1.75rem,3.4vw,2.5rem);line-height:1.12;letter-spacing:-.015em}
+h3{font-size:1.3rem;line-height:1.25;letter-spacing:-.008em}
+h4{font-size:1.06rem;line-height:1.3;font-weight:600}
+p{margin:0 0 1.05em}
+a{color:var(--wax);text-decoration:none;border-bottom:1px solid color-mix(in oklab,var(--wax) 35%,transparent)}
+a:hover{border-bottom-color:var(--wax)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--wax);outline-offset:3px;border-radius:2px}
+strong{font-weight:600;color:var(--ink)}
+em{font-style:italic}
+.lede{font-size:1.24rem;line-height:1.5;color:var(--ink-2)}
+.eyebrow{
+  font-family:var(--f-mono);font-size:.7rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--slate);
+}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+header.top{
+  border-bottom:1px solid var(--line);
+  background:var(--paper);
+}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px}
+.seal{
+  width:26px;height:26px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 34% 30%,var(--wax-soft),var(--wax) 62%);
+  box-shadow:inset 0 0 0 1.5px color-mix(in oklab,var(--wax) 55%,transparent);
+  position:relative;
+}
+.seal::after{
+  content:"";position:absolute;inset:0;margin:auto;width:9px;height:9px;
+  border-radius:50%;border:1.5px solid rgba(255,255,255,.6);
+}
+.brand b{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600}
+.hero{padding:74px 0 62px}
+.hero .kicker{margin-bottom:22px}
+.hero h1{margin-bottom:26px}
+.hero h1 i{font-style:italic;color:var(--wax);font-weight:400}
+.hero .lede{max-width:640px}
+.metastrip{
+  display:flex;gap:0;flex-wrap:wrap;margin-top:44px;
+  border-top:1px solid var(--line);
+}
+.metastrip div{
+  flex:1 1 150px;padding:16px 20px 16px 0;border-right:1px solid var(--line);
+}
+.metastrip div:last-child{border-right:none}
+.metastrip span{display:block;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--slate);margin-bottom:5px}
+.metastrip b{font-family:var(--f-disp);font-size:1.16rem;font-weight:600;line-height:1.2}
+
+/* ---------- sections ---------- */
+section{padding:62px 0;border-top:1px solid var(--line)}
+section.plain{border-top:none}
+.shead{margin-bottom:34px}
+.shead .eyebrow{display:block;margin-bottom:11px}
+.shead p{color:var(--ink-2);max-width:660px;margin-top:14px;margin-bottom:0}
+
+/* ---------- tables ---------- */
+.tscroll{overflow-x:auto;margin:0 0 8px;border:1px solid var(--line);border-radius:3px;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:.93rem;min-width:660px}
+th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{
+  font-family:var(--f-mono);font-size:.67rem;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--slate);background:var(--paper-2);
+  border-bottom:1px solid var(--line-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td.fig,th.fig{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.money{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--gold);font-weight:500;white-space:nowrap}
+.vlabel{font-family:var(--f-mono);font-size:.72rem;font-weight:600;color:var(--wax);white-space:nowrap}
+caption{caption-side:bottom;text-align:left;padding:11px 15px;font-size:.82rem;color:var(--slate);border-top:1px solid var(--line)}
+
+/* ---------- laws ---------- */
+.laws{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;margin-top:8px}
+.law{background:var(--card);padding:22px 24px}
+.law .n{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.12em;color:var(--wax);font-weight:600;display:block;margin-bottom:9px}
+.law h4{margin-bottom:7px}
+.law p{margin:0;font-size:.94rem;color:var(--ink-2)}
+
+/* ---------- two column ---------- */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:820px){.duo{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:3px;padding:24px 26px;background:var(--card)}
+.panel.pro{border-top:2px solid var(--good)}
+.panel.con{border-top:2px solid var(--wax)}
+.panel h3{margin-bottom:16px;font-size:1.14rem}
+.panel ul{margin:0;padding-left:0;list-style:none}
+.panel li{padding:11px 0;border-bottom:1px solid var(--line);font-size:.93rem;color:var(--ink-2)}
+.panel li:last-child{border-bottom:none;padding-bottom:0}
+.panel li b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px;font-size:.95rem}
+
+/* ---------- callout / stamp ---------- */
+.stamp{
+  position:relative;border:1px solid var(--line-2);border-left:3px solid var(--wax);
+  border-radius:3px;background:var(--wax-wash);padding:26px 30px;margin:34px 0;
+}
+.stamp .eyebrow{color:var(--wax);display:block;margin-bottom:10px}
+.stamp p{margin:0;font-family:var(--f-disp);font-size:1.2rem;line-height:1.42;color:var(--ink)}
+.stamp p + p{margin-top:12px;font-size:1.05rem;font-family:var(--f-body);color:var(--ink-2)}
+
+.note{
+  border-left:2px solid var(--line-2);padding:4px 0 4px 20px;margin:26px 0;
+  font-size:.94rem;color:var(--slate);
+}
+.note b{color:var(--ink-2)}
+
+.warnbox{
+  border:1px solid var(--line-2);border-radius:3px;padding:22px 26px;margin:30px 0;
+  background:var(--gold-wash);
+}
+.warnbox .eyebrow{color:var(--warn);display:block;margin-bottom:10px}
+.warnbox ul{margin:0;padding-left:20px}
+.warnbox li{margin-bottom:8px;font-size:.94rem;color:var(--ink-2)}
+.warnbox li:last-child{margin-bottom:0}
+
+/* ---------- phases ---------- */
+.phases{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px}
+.phase{background:var(--card);display:grid;grid-template-columns:88px 1fr;gap:22px;padding:22px 24px}
+@media(max-width:640px){.phase{grid-template-columns:1fr;gap:10px}}
+.phase .when{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;color:var(--wax);font-weight:600;padding-top:3px}
+.phase h4{margin-bottom:7px}
+.phase p{margin:0;font-size:.93rem;color:var(--ink-2)}
+.phase p.out{margin-top:9px;font-size:.87rem;color:var(--slate)}
+.phase p.out b{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-2)}
+
+/* ---------- scenarios ---------- */
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:8px}
+@media(max-width:860px){.scen{grid-template-columns:1fr}}
+.sc{border:1px solid var(--line);border-radius:3px;padding:24px;background:var(--card)}
+.sc.mid{border-color:var(--line-2);box-shadow:var(--shadow)}
+.sc .eyebrow{display:block;margin-bottom:12px}
+.sc .big{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:1.5rem;font-weight:600;letter-spacing:-.02em;line-height:1.1;color:var(--gold);display:block;margin-bottom:4px}
+.sc .per{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);display:block;margin-bottom:16px}
+.sc ul{margin:0;padding-left:0;list-style:none;font-size:.89rem;color:var(--ink-2)}
+.sc li{padding:6px 0;border-bottom:1px dotted var(--line);display:flex;justify-content:space-between;gap:12px}
+.sc li:last-child{border-bottom:none}
+.sc li span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--slate);white-space:nowrap}
+
+/* ---------- channels ---------- */
+.chan{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px}
+.ch{background:var(--card);padding:20px 24px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start}
+@media(max-width:700px){.ch{grid-template-columns:1fr}}
+.ch h4{margin-bottom:5px}
+.ch p{margin:0;font-size:.91rem;color:var(--ink-2)}
+.tag{
+  font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:2px;white-space:nowrap;font-weight:600;
+  border:1px solid var(--line-2);color:var(--slate);
+}
+.tag.now{color:var(--wax);border-color:color-mix(in oklab,var(--wax) 42%,transparent);background:var(--wax-wash)}
+.tag.cash{color:var(--gold);border-color:color-mix(in oklab,var(--gold) 42%,transparent);background:var(--gold-wash)}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:42px 0 60px;color:var(--slate);font-size:.88rem}
+footer .cols{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-end}
+footer b{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-2);display:block;margin-bottom:6px}
+footer ul{margin:0;padding-left:18px}
+footer li{margin-bottom:4px}
+
+details{border:1px solid var(--line);border-radius:3px;background:var(--card);padding:0;margin:12px 0}
+summary{padding:15px 20px;cursor:pointer;font-weight:600;font-size:.95rem;font-family:var(--f-body)}
+details[open] summary{border-bottom:1px solid var(--line)}
+details .body{padding:18px 20px}
+details .body p:last-child{margin-bottom:0}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>
+/* ⚠️ Pas de white-space:nowrap ici : une ligne de code citee en entier
+   (« aller(p.prix === 0 ? ... ) ») poussait la PAGE de 92 px a 390. Les
+   tableaux, eux, defilent dans .tscroll ; une phrase, non. */
+.mono{font-family:var(--f-mono);font-size:.9em;background:var(--paper-2);
+  padding:1px 5px;border-radius:2px;overflow-wrap:anywhere}
+</style>
+<header class="top">
+  <div class="wrap topbar">
+    <div class="brand"><span class="seal" aria-hidden="true"></span><b>NEBULA Agency · Arrêté</b></div>
+    <div class="eyebrow">6 septembre 2026 · Cotonou</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow kicker">Ce qui est tranché · ce qui est fait · ce qui reste</div>
+    <h1>Minuit,<br>l'idée <i>fermée</i></h1>
+    <p class="lede">Le dossier du 27 août disait quoi vendre. Le manuel du 28 disait ce qui se passe le mardi matin. Les deux laissaient douze questions ouvertes, et l'une d'elles portait le nom du produit. Voici les douze réponses, ce qui a été construit aujourd'hui pour les tenir, et les six choses que Mongazi est seul à pouvoir décider.</p>
+    <div class="metastrip">
+      <div><span>Questions fermées</span><b>12 sur 12</b></div>
+      <div><span>Construit aujourd'hui</span><b>Le verrou d'heure</b></div>
+      <div><span>Contrôles</span><b>82 → 115 verts</b></div>
+      <div><span>Ce qui bloque encore</span><b>6 réponses de Mongazi</b></div>
+    </div>
+  </div>
+
+  <!-- 1 · CE QUI A CHANGE -->
+  <section class="plain" style="border-top:1px solid var(--line)">
+    <div class="shead col">
+      <span class="eyebrow">1 · Dix jours ont passé</span>
+      <h2>Trois faits neufs, qui changent trois décisions</h2>
+      <p>Un dossier vieux de dix jours n'est pas faux : il est daté. Trois choses ont bougé dans le dépôt depuis le 27 août, et chacune retire ou remplace une brique du plan d'origine.</p>
+    </div>
+
+    <div class="laws">
+      <div class="law">
+        <span class="n">FAIT 1 · 3 SEPTEMBRE</span>
+        <h4>PISTE encaisse en ligne, et livre tout seul</h4>
+        <p>SasPay est branché : Mobile Money et carte, 61 réseaux vérifiés au Bénin, au Togo et en Côte d'Ivoire, minimum 200 F, et la livraison part dès qu'un paiement est confirmé, à trois heures du matin comme à midi. Le dossier supposait FedaPay et une vérification à la main. Ce n'est plus la meilleure option disponible : c'est la moins bonne.</p>
+      </div>
+      <div class="law">
+        <span class="n">FAIT 2 · LE SERVEUR N'EST PLUS LÀ</span>
+        <h4>n8n tournait sur un VPS qui n'appartient plus à Mongazi</h4>
+        <p>Le dossier et le manuel confient tous les deux « la livraison à l'heure choisie » à n8n. Or n8n était auto-hébergé sur le VPS Hostinger 72.61.103.56, et la note d'infrastructure du dépôt dit que cette machine n'est plus la sienne, qu'il ne faut plus y toucher. La fonction qui donne son nom au produit reposait donc sur une machine perdue.</p>
+      </div>
+      <div class="law">
+        <span class="n">FAIT 3 · 2 ET 3 SEPTEMBRE</span>
+        <h4>La lettre, le constructeur et la vidéo existent</h4>
+        <p>Le gabarit et son constructeur sont écrits et contrôlés ; la démonstration vidéo est rendue. Elle promet « Elle l'ouvre à minuit pile. Pas avant. » Cette phrase était fausse le 3 septembre : rien, nulle part, ne tenait cette heure.</p>
+      </div>
+    </div>
+
+    <div class="stamp">
+      <span class="eyebrow">CE QUE ÇA VEUT DIRE</span>
+      <p>Le produit n'attendait pas un développement. Il attendait qu'on tranche où vit l'heure.</p>
+      <p>Une machine à envoyer, il n'y en a plus. Un serveur, il n'y en a pas. La seule réponse qui ne dépend de rien, c'est que la lettre tienne l'heure elle-même. C'est ce qui a été construit aujourd'hui, et c'est ce qui ferme neuf des douze questions.</p>
+    </div>
+  </section>
+
+  <!-- 2 · LES DOUZE DECISIONS -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">2 · L'arrêté</span>
+      <h2>Douze décisions, et pourquoi</h2>
+      <p>Chacune ferme une question que le dossier ou le manuel laissait ouverte. Les quatre marquées <b>fait</b> ne sont pas des intentions : elles sont dans le code, sous contrôle.</p>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <thead>
+          <tr><th>№</th><th>La question qui restait</th><th>La décision</th><th>Pourquoi celle-là</th><th>État</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="vlabel">01</td>
+            <td>Le nom. Le dossier disait : « Minuit est une proposition, pas une décision. »</td>
+            <td><b>MINUIT est arrêté.</b></td>
+            <td>Il nomme la seule fonction qu'aucun concurrent observé ne vend, il se prononce pareil à Cotonou et dans la diaspora, et il laisse le romantique, le mariage et le deuil cohabiter sans fausse note. Le code, la vidéo et les documents le portent déjà : le changer coûte tout, le garder ne coûte rien. En contrepartie, le nom nous oblige : le jour où l'heure ne serait plus tenue, l'enseigne mentirait.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">02</td>
+            <td>Où vit l'heure de remise, puisque n8n n'est plus là ?</td>
+            <td><b>Dans la lettre.</b> Avant l'heure choisie, le cachet ne se brise pas.</td>
+            <td>C'est la seule place qui ne dépend de rien : ni serveur, ni réseau, ni compte tiers. La lettre s'ouvre dans un taxi, hors connexion, et l'heure tient quand même. Elle tient aussi si l'acheteur envoie son lien trois jours trop tôt, ce qu'aucune machine à envoyer n'aurait pu rattraper.</td>
+            <td><span class="tag cash">fait</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">03</td>
+            <td>Qui envoie le lien à la destinataire, et quand ?</td>
+            <td><b>L'acheteur, quand il veut.</b> NEBULA n'écrit jamais à quelqu'un qui n'a rien demandé.</td>
+            <td>Trois problèmes disparaissent d'un coup : le modèle WhatsApp à faire approuver par Meta pour sortir de la fenêtre de 24 h, le coût d'un envoi, et surtout le risque le plus grave du produit, celui d'une machine qui écrit à une personne qui n'a jamais donné son numéro. Le cadeau reste un geste entre deux personnes ; nous fabriquons l'objet, pas le geste.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">04</td>
+            <td>Minuit, mais minuit où ? L'acheteur est à Cotonou, elle est parfois à Paris.</td>
+            <td><b>Une heure de calendrier, lue sur le téléphone de celle qui reçoit.</b></td>
+            <td>Un instant absolu ferait s'ouvrir à 22 h à Paris une lettre programmée à minuit depuis Cotonou, et le cadeau arriverait pendant le dîner. « Minuit », dans une lettre, veut dire minuit chez celle qui lit. C'est aussi la seule règle qui ne demande aucune plomberie de fuseau, donc la seule qui ne cassera jamais.</td>
+            <td><span class="tag cash">fait</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">05</td>
+            <td>Comment on encaisse : FedaPay, ou le dépôt Mobile Money déclaré à la main ?</td>
+            <td><b>SasPay, exactement comme PISTE.</b> L'écran « colle la référence de ton SMS » disparaît.</td>
+            <td>Le manuel pose lui-même la règle qui tranche : <i>aucune validation manuelle sous 10 000 F</i>. Deux minutes de Mongazi par vente à 2 000 F rendent le palier d'entrée structurellement déficitaire, donc soit il n'ouvre jamais, soit l'encaissement est automatique. SasPay est branché, mesuré, et son minimum de 200 F passe sous notre plus petit ticket. Le chemin est déjà écrit pour PISTE : on le copie, on ne l'invente pas.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">06</td>
+            <td>Où tourne le service : le Render du manuel, avec le serveur de <span class="mono">vitrina/</span> ?</td>
+            <td><b>Non. Cloudflare Pages pour les pages, Supabase pour tout le reste.</b></td>
+            <td><span class="mono">vitrina/server.py</span> range les commandes dans un fichier SQLite posé à côté du code. Sur Render, le disque est effacé à chaque déploiement : c'est exactement ce qui avait fait disparaître les deux PDF des partenaires. Un déploiement, et les lettres payées n'existent plus. Supabase porte déjà PISTE, le bureau des partenaires et Boussole ; MINUIT y est un schéma de plus, pas une facture de plus.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">07</td>
+            <td>Le prix suit l'occasion, comme dans le manuel, ou le palier, comme dans le constructeur ?</td>
+            <td><b>Le palier fixe le prix. L'occasion décide du ton.</b></td>
+            <td>Les deux échelles cohabitaient dans le même fichier, et l'écran des paliers disait déjà la vérité : « la lettre est déjà écrite, elle ne change pas selon le prix ». Une même lettre affichée à deux prix selon l'étiquette qu'on lui colle est une promesse qu'on ne peut pas défendre en face d'un client. La ligne événement, elle, garde ses prix propres : là, la page fait vraiment davantage.</td>
+            <td><span class="tag cash">fait</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">08</td>
+            <td>La grille, en francs et en euros, avec quel contenu par palier ?</td>
+            <td><b>Quatre paliers, un seul barème, un seul règlement en francs.</b></td>
+            <td>Le détail est au chapitre 5. Ce qui change par rapport au dossier : le Coffret ne vend plus « la livraison WhatsApp à minuit », qui n'existe pas et n'existera pas, mais la lettre longue. Et la diaspora paie en francs par carte, avec le prix en euros affiché à côté, tant que SasPay n'aura pas confirmé qu'il encaisse en euros.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">09</td>
+            <td>Le détournement : « à traiter avant la première vente, pas après le premier incident ».</td>
+            <td><b>Écrit, et c'est un document, pas une intention :</b> <span class="mono">minuit/CONDITIONS.md</span>.</td>
+            <td>Adresse impossible à deviner, aucune indexation, expiration par palier, et surtout le retrait sous 24 h à la demande de la personne visée, sans discussion, sans prévenir l'acheteur et sans remboursement. Le pouvoir de retirer appartient à qui détient le lien, ce qui est exactement l'ensemble des gens concernés.</td>
+            <td><span class="tag cash">écrit</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">10</td>
+            <td>Le catalogue : dix occasions d'un coup, comme dans le manuel ?</td>
+            <td><b>Trois lignes, dans cet ordre : la lettre, le faire-part, le deuil.</b></td>
+            <td>La lettre romantique fait le volume et les vidéos ; le faire-part avec confirmation fait le chiffre d'affaires ; le deuil est un vrai besoin mal servi, et le seul qu'une maladresse de ton peut nous coûter durablement. Il n'ouvre qu'après relecture par quelqu'un qui vient d'enterrer un proche. Ce n'est pas une précaution de style, c'est la condition.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">11</td>
+            <td>Quand ? Le dossier parlait en « jours 1 à 5 », sans jamais une date.</td>
+            <td><b>Le faire-part vise novembre, pas février.</b></td>
+            <td>Le calendrier du manuel le dit sans le dire : novembre et décembre sont le meilleur chiffre d'affaires de l'année, à ticket élevé, parce que c'est la saison des mariages et le retour de la diaspora. Février est un pic de volume à ticket faible. Viser la Saint-Valentin d'abord, c'est travailler six mois pour le mois qui rapporte le moins.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+          <tr>
+            <td class="vlabel">12</td>
+            <td>Quand décide-t-on que ça ne marche pas ?</td>
+            <td><b>Le 1<sup>er</sup> décembre 2026, avec les critères du dossier, inchangés.</b></td>
+            <td>Huit semaines de publication et 200 pages gratuites créées : si la conversion payante reste sous 3 % et qu'aucun revendeur n'a signé, la ligne romantique est un loisir. On garde alors le palier gratuit comme aimant vers le Catalogue à 50 000 F, et les heures repartent vers Boussole et PISTE. La date est écrite maintenant pour ne pas être négociée en décembre.</td>
+            <td><span class="tag now">arrêté</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3 · CE QUE CA RETIRE -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">3 · Le bilan des décisions</span>
+      <h2>Ce que le plan perd, ce qu'il gagne</h2>
+      <p>Une décision se juge à ce qu'elle supprime. Celles-ci retirent quatre dépendances dont trois n'existaient déjà plus, et n'ajoutent que ce qui tourne déjà pour un autre produit.</p>
+    </div>
+
+    <div class="duo">
+      <div class="panel pro">
+        <h3>Ce qui disparaît du plan</h3>
+        <ul>
+          <li><b>n8n</b>La machine à livrer tournait sur un serveur qui n'est plus à nous. L'heure n'a plus besoin d'elle.</li>
+          <li><b>Le service Render</b>Un hébergement de plus à payer, à déployer à la main, et dont le disque efface la base à chaque mise en ligne.</li>
+          <li><b>Le modèle WhatsApp approuvé par Meta</b>Il n'était nécessaire que pour écrire à quelqu'un hors de la fenêtre de 24 h. On n'écrit plus à personne.</li>
+          <li><b>La vérification du SMS Mobile Money</b>Deux minutes de Mongazi par vente, sur un ticket de 2 000 F. C'était la ligne rouge du manuel, et elle interdisait le palier d'entrée.</li>
+          <li><b>L'écran « colle ta référence »</b>Le moment le plus fragile de la chaîne : celui où l'acheteur quitte la page pour payer.</li>
+        </ul>
+      </div>
+      <div class="panel con">
+        <h3>Ce qu'il faut en échange</h3>
+        <ul>
+          <li><b>Un schéma Supabase</b>Une table de lettres, dans le projet qui porte déjà PISTE, Boussole et les partenaires. ⚠️ Ce projet unique porte alors quatre produits : s'il est mis en pause, les quatre tombent ensemble.</li>
+          <li><b>Trois fonctions de bord</b>Ouvrir une session de paiement, recevoir la notification, écrire la lettre. Les trois existent pour PISTE et se recopient presque telles quelles.</li>
+          <li><b>Un sous-domaine</b>Une adresse, une seule, comme la leçon de Mon Bénin l'exige.</li>
+          <li><b>Les conditions d'utilisation</b>Écrites aujourd'hui. Elles ne coûtent rien et sans elles on ne vend pas.</li>
+          <li><b>Un premier franc encaissé pour de vrai</b>Comme pour PISTE, c'est le seul essai qui prouve le dernier maillon.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · LES DEFAUTS -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">4 · En fermant l'idée</span>
+      <h2>Quatre défauts trouvés dans ce qui était déjà écrit</h2>
+      <p>Fermer une idée oblige à relire le code en face des documents. Les quatre ci-dessous étaient dans un produit dont les 82 contrôles étaient verts, et trois d'entre eux touchaient de l'argent.</p>
+    </div>
+
+    <div class="laws">
+      <div class="law">
+        <span class="n">01 · L'HEURE N'EXISTAIT NULLE PART</span>
+        <h4>Elle était demandée, promise, et jetée</h4>
+        <p>Le constructeur demandait la date et l'heure, les gardait dans son état, et l'écran final annonçait « elle la recevra le 14 février à 00:00 ». Aucune de ces deux valeurs n'entrait dans la lettre livrée, et aucune machine ne les lisait ailleurs. Le produit portait le nom d'une fonction qui n'était écrite à aucun endroit. <b>Corrigé : la lettre tient l'heure.</b></p>
+      </div>
+      <div class="law">
+        <span class="n">02 · DEUX PRIX POUR LA MÊME LETTRE</span>
+        <h4>« Demande en mariage · dès 10 000 F », payable 0 F</h4>
+        <p>Chaque occasion portait un prix affiché en « dès », et chaque palier portait le vrai. Rien ne reliait les deux : on choisissait la demande en mariage annoncée à 10 000 F, puis le palier gratuit, et on partait avec la lettre sans payer un franc. Deux échelles dans un fichier sont deux vérités. <b>Corrigé : les occasions n'ont plus de prix.</b></p>
+      </div>
+      <div class="law">
+        <span class="n">03 · LA LETTRE OFFERTE PASSAIT PAR LA CAISSE</span>
+        <h4>« Envoie exactement cette somme, au franc près », pour zéro franc</h4>
+        <p>Le code disait <span class="mono">aller(p.prix === 0 ? "e-paiement" : "e-paiement")</span> : les deux branches étaient identiques, donc l'intention avait été écrite puis perdue. Le palier gratuit, celui qui porte toute la boucle virale et qui doit être le plus fluide du site, affichait un numéro Mobile Money et réclamait une référence de SMS. <b>Corrigé : offert, l'écran demande seulement où envoyer le lien.</b></p>
+      </div>
+      <div class="law">
+        <span class="n">04 · LE SEUIL N'ÉTAIT MESURÉ PAR RIEN</span>
+        <h4>3,09:1 sur l'écran le plus vu du produit</h4>
+        <p>Le contrôle de contraste ne regardait que le corps de la lettre. Or une lettre programmée ne montre que son seuil, parfois pendant des heures, et c'est là que vit le compte à rebours. Le même gris tient 4,8:1 sur le papier de la lettre et tombe à 3,09:1 sur la nuit du seuil, mesuré sur les pixels rendus. <b>Corrigé : un gris pour le papier, un gris pour la nuit, et quatre contrôles qui le mesurent.</b></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>La leçon, et elle n'est pas neuve dans cette maison :</b> un contrôle vert dit que ce qui est mesuré marche, jamais que le produit est bon. Les 82 contrôles ne pouvaient pas voir l'heure manquante, parce qu'on ne peut pas mesurer l'absence d'une chose dont personne n'a écrit qu'elle devait exister. C'est la même famille que la photo livrée et jamais affichée chez Au Braisé d'Or.
+    </div>
+  </section>
+
+  <!-- 5 · LA GRILLE -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">5 · Le barème</span>
+      <h2>La grille, arrêtée</h2>
+      <p>Elle reste volontairement sous les produits d'agence : ce sont des achats d'impulsion, pas des prestations. Ce qui change par rapport au dossier est signalé.</p>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <thead>
+          <tr><th>Palier</th><th>Prix</th><th>Ce qu'il y a dedans</th><th>Son rôle</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="vlabel">Gratuit</td>
+            <td class="mono">0 F</td>
+            <td>Une lettre, une photo, le seuil, 7 jours en ligne, le pied « Créer la mienne sur MINUIT ».</td>
+            <td>La boucle virale, et l'aimant vers le Catalogue à 50 000 F. Il ne passe plus par la caisse.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Le Mot</td>
+            <td class="mono">2 000 F</td>
+            <td>Un an en ligne, trois photos, le pied retiré, l'heure d'ouverture.</td>
+            <td>L'impulsion. Il n'ouvre qu'avec l'encaissement automatique : à ce prix, une minute de travail humain le rend déficitaire.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">La Lettre</td>
+            <td class="mono">5 000 F</td>
+            <td>Tout du Mot, plus le code secret, le compte des jours ensemble, et la lettre longue.</td>
+            <td>Le palier de référence, celui qu'on met en avant. C'est le prix qu'on annonce quand on répond « c'est combien ? ».</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Le Coffret</td>
+            <td class="mono">10 000 F</td>
+            <td>Tout de La Lettre, plus la galerie de photos et le traitement soigné de la mise en page.</td>
+            <td>La marge. ⚠️ Il ne vend plus « la livraison WhatsApp à minuit » du dossier : cette livraison n'existe pas, et l'heure est désormais dans tous les paliers payés.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Sur mesure</td>
+            <td class="mono">25 000 F</td>
+            <td>Une direction artistique, une animation signature, 48 heures.</td>
+            <td>Le pont vers l'agence. Il se vend à la main, et c'est normal : à ce prix, le temps humain est payé.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Faire-part</td>
+            <td class="mono">25 000 F</td>
+            <td>Programme, plan d'accès, confirmation des invités, compte en direct.</td>
+            <td>Le chiffre d'affaires. 200 à 500 diffusions par vente, et une vraie douleur résolue : compter les invités pour le traiteur.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Pack mariage</td>
+            <td class="mono">75 000 F</td>
+            <td>Le faire-part, la galerie d'après, la page de remerciement.</td>
+            <td>Le haut de la ligne événement.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Marque blanche</td>
+            <td class="mono">15 000 F / mois</td>
+            <td>Pages illimitées, à la marque du professionnel, avec son logo.</td>
+            <td>La récurrence, et la seule bonne qualité de revenu du plan. Prospection dans PISTE.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warnbox">
+      <span class="eyebrow">Sur la diaspora</span>
+      <ul>
+        <li>Le dossier prévoyait une page en euros, avec paiement par carte. <b>La carte est disponible chez SasPay, l'euro ne l'est pas encore</b> : tout ce qui a été mesuré est en francs CFA.</li>
+        <li>Donc, en attendant : <b>le prix est affiché en euros et débité en francs</b>, et la page le dit. Un prix affiché dans une monnaie et prélevé dans une autre sans le dire est le meilleur moyen de fabriquer une réclamation.</li>
+        <li>⏳ <b>À vérifier au contrat SasPay :</b> l'encaissement en euros, et la commission réelle. Aucun des deux n'est documenté dans le dépôt, et la commission décide de la marge d'un ticket à 2 000 F.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 · AVANT LA PREMIERE VENTE -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">6 · Le paquet qui conditionne tout</span>
+      <h2>Ce qui doit être vrai avant le premier franc</h2>
+      <p>Le dossier classait le détournement en risque <i>critique</i> et notait qu'aucune des cinq références ne le traitait. C'est écrit, c'est court, et c'est dans <span class="mono">minuit/CONDITIONS.md</span>.</p>
+    </div>
+
+    <div class="chan">
+      <div class="ch">
+        <div><h4>L'adresse ne se devine pas</h4><p>Un jeton tiré au hasard, jamais un numéro qui se suit. Personne ne trouve la lettre d'un autre en essayant l'adresse voisine.</p></div>
+        <span class="tag">à construire</span>
+      </div>
+      <div class="ch">
+        <div><h4>Aucune indexation, aucune mesure d'audience</h4><p>La balise est déjà dans le gabarit ; l'en-tête devra l'être côté serveur. Une lettre est privée, et on ne compte pas les visites de quelqu'un qui lit une lettre.</p></div>
+        <span class="tag cash">à moitié fait</span>
+      </div>
+      <div class="ch">
+        <div><h4>Le retrait sous 24 h</h4><p>Sur simple demande de la personne visée. Sans discuter, sans prévenir l'acheteur, sans rembourser. Le pouvoir de retirer appartient à qui détient le lien : c'est exactement l'ensemble des gens concernés.</p></div>
+        <span class="tag">à construire</span>
+      </div>
+      <div class="ch">
+        <div><h4>L'expiration</h4><p>Sept jours pour une lettre offerte, un an pour une lettre payée. Ce qui reste en ligne pour toujours finit par se retourner contre quelqu'un.</p></div>
+        <span class="tag">à construire</span>
+      </div>
+      <div class="ch">
+        <div><h4>On ne dit jamais que c'est un coffre-fort</h4><p>Le texte d'une lettre est dans la page : qui sait lire un code source peut le lire avant l'heure. Le cachet ne se brise pas avant l'heure, et c'est tout ce qu'on promet. Une promesse de secret serait un mensonge technique.</p></div>
+        <span class="tag cash">écrit</span>
+      </div>
+      <div class="ch">
+        <div><h4>Aucun fichier de musique hébergé</h4><p>C'est de la contrefaçon. Un lien vers un service, ou rien.</p></div>
+        <span class="tag cash">écrit</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · L'ORDRE -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">7 · L'exécution</span>
+      <h2>Cinq étapes, avec des dates</h2>
+      <p>L'ordre compte plus que le contenu, et chaque étape est vendable seule. Les dates viennent du calendrier des occasions, pas d'une envie.</p>
+    </div>
+
+    <div class="phases">
+      <div class="phase">
+        <div class="when">FAIT<br>6 SEPT</div>
+        <div>
+          <h4>La lettre tient son heure</h4>
+          <p>Le verrou d'heure dans le gabarit, la caisse réparée, les conditions d'utilisation écrites. 115 contrôles verts.</p>
+          <p class="out"><b>sortie</b> · le produit fait ce que son nom dit.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="when">SEMAINE<br>DU 8 SEPT</div>
+        <div>
+          <h4>La caisse et l'adresse</h4>
+          <p>Schéma Supabase, trois fonctions de bord copiées de PISTE, session SasPay, écriture de la lettre à l'adresse tirée au hasard, expiration et retrait. Un sous-domaine, un seul. Puis une vraie vente de 200 F depuis un autre téléphone.</p>
+          <p class="out"><b>sortie</b> · une vente se fait sans Mongazi, la nuit comprise.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="when">SEMAINE<br>DU 15 SEPT</div>
+        <div>
+          <h4>La page de vente, l'affiche, et la vidéo publiée</h4>
+          <p>Trois exemples qu'on peut ouvrir pour de vrai, les prix, l'affiche A4 avec QR. La démonstration vidéo devient publiable le jour où l'adresse existe : sa promesse est désormais tenue par la lettre.</p>
+          <p class="out"><b>sortie</b> · il y a quelque chose à montrer, et un lien à envoyer.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="when">OCTOBRE</div>
+        <div>
+          <h4>Le faire-part</h4>
+          <p>Confirmation des invités, compte en direct, plan d'accès. Puis démarchage de dix professionnels de l'événement tirés de PISTE pour la marque blanche.</p>
+          <p class="out"><b>sortie</b> · prêt pour la saison des mariages, qui commence en novembre.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="when">1<sup>er</sup> DÉC</div>
+        <div>
+          <h4>On regarde, et on tranche</h4>
+          <p>Les critères d'arrêt du dossier, appliqués sans négociation. Si la ligne romantique n'a pas pris, elle redevient un aimant gratuit et les heures repartent vers Boussole et PISTE.</p>
+          <p class="out"><b>sortie</b> · on poursuit, ou on range, mais on ne s'entête pas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Pourquoi février n'est pas la cible :</b> le pic de la Saint-Valentin est un pic de volume à petit ticket, et il se prépare en janvier avec des gabarits déjà rendus. Novembre et décembre sont la saison des mariages et le retour de la diaspora, à ticket dix fois plus élevé. Viser février d'abord, ce serait travailler cinq mois pour le mois qui rapporte le moins.
+    </div>
+  </section>
+
+  <!-- 8 · CE QUI RESTE -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">8 · Ce que je ne peux pas trancher</span>
+      <h2>Six réponses qui n'appartiennent qu'à Mongazi</h2>
+      <p>Elles ne bloquent pas l'écriture, elles bloquent la vente. Aucune ne demande plus d'une minute.</p>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <thead>
+          <tr><th>Ce qu'il faut</th><th>Pourquoi ça bloque</th><th>Ce que je propose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="vlabel">Le compte qui encaisse</td>
+            <td>Le constructeur affiche aujourd'hui un numéro Mobile Money au nom de « NEBULA Agency ». Avec SasPay il disparaît, mais le compte qui reçoit doit exister.</td>
+            <td>Le compte SasPay de PISTE, ou un second. Un seul suffit tant que les libellés distinguent les deux produits.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Le sous-domaine</td>
+            <td>Une lettre voyage dans un message WhatsApp : l'adresse est la première chose qu'on voit du produit.</td>
+            <td><span class="mono">minuit.nebula-agency.online</span>, comme PISTE. Une seule adresse, jamais deux.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Un n8n ailleurs ?</td>
+            <td>Toute la note d'infrastructure repose sur l'idée que n8n vivait sur le VPS perdu. Si une instance tourne ailleurs, ça ne change pas le verrou d'heure, mais ça rouvre les relances automatiques.</td>
+            <td>Un mot suffit : oui, ou non. En attendant, rien ne dépend de n8n.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">La commission SasPay</td>
+            <td>Sur un ticket à 2 000 F, le taux décide de la marge. Il n'est écrit nulle part dans le dépôt.</td>
+            <td>La lire au contrat. Si elle dépasse 5 %, le palier à 2 000 F devient une porte d'entrée, pas une source de revenu, et c'est très bien tant qu'on le sait.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">La relecture du deuil</td>
+            <td>C'est la ligne la plus rentable de la partie événement, et la seule où une maladresse de ton abîme la marque pour longtemps.</td>
+            <td>Une personne, choisie par Mongazi, qui a enterré un proche récemment, et qui lit la page avant qu'elle existe en vente.</td>
+          </tr>
+          <tr>
+            <td class="vlabel">Le premier franc</td>
+            <td>Comme pour PISTE : c'est le seul essai qui prouve le dernier maillon, celui qui relie une notification à une commande.</td>
+            <td>200 F depuis un autre téléphone, dès que la caisse est branchée. Une boutique qui n'a jamais encaissé n'est pas ouverte, elle est en préparation.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 9 · VERDICT -->
+  <section class="plain">
+    <div class="shead col">
+      <span class="eyebrow">9 · Verdict</span>
+      <h2>Ce qui a changé, au fond</h2>
+    </div>
+
+    <div class="col">
+      <p>Le dossier avait raison sur le marché et sur la thèse : le romantique est le marketing, l'événement est le chiffre d'affaires, le B2B est la retraite. Rien de tout cela ne bouge.</p>
+      <p>Ce qui bouge, c'est que le produit ne dépend plus de rien. Il n'attend plus un serveur qu'il faut payer, une machine qui n'existe plus, un modèle de message qu'une entreprise américaine doit approuver, ni deux minutes de Mongazi par vente à 2 000 F. Une lettre est un fichier qui tient sa promesse tout seul, et la seule chose qu'il reste à brancher, c'est la caisse, qui tourne déjà à côté.</p>
+    </div>
+
+    <div class="stamp">
+      <span class="eyebrow">LA PHRASE À RETENIR</span>
+      <p>La fonction qui donne son nom au produit ne s'achète pas, ne s'héberge pas et ne tombe jamais en panne : elle est écrite dans la lettre.</p>
+      <p>C'est ce qui fait la différence entre une jolie page qu'on copie en une soirée et un objet qui tient une promesse. Les concurrents n'ont pas de seuil qui attend une heure ; ils n'en auront pas, parce qu'ils vendent des gabarits et qu'un gabarit ne peut pas promettre une heure.</p>
+    </div>
+
+    <div class="warnbox">
+      <span class="eyebrow">Et ce qu'on ne fera pas, quelles que soient les circonstances</span>
+      <ul>
+        <li><b>Aucune photo de couple générée.</b> La règle du 1<sup>er</sup> août s'applique, et ici elle est doublement juste : fabriquer un visage à la place d'un vrai visage, sur un cadeau intime, est une trahison du produit.</li>
+        <li><b>Jamais détenir l'argent des cadeaux de mariage.</b> Les contributions vont au couple. Nous facturons un service, nous ne sommes pas dépositaires de fonds.</li>
+        <li><b>Jamais écrire à quelqu'un qui n'a rien demandé.</b> Même pour livrer une bonne nouvelle, même à l'heure dite.</li>
+        <li><b>Jamais promettre le secret.</b> Le cachet tient l'heure ; il ne chiffre rien, et on ne laissera personne croire le contraire.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="cols">
+      <div>
+        <b>Ce qui a été écrit aujourd'hui</b>
+        <ul>
+          <li>Le verrou d'heure dans <span class="mono">minuit/lettre.html</span></li>
+          <li>Deux défauts de caisse dans <span class="mono">minuit/creer.html</span></li>
+          <li>33 contrôles de plus dans <span class="mono">minuit/_qc.py</span></li>
+          <li><span class="mono">minuit/CONDITIONS.md</span></li>
+        </ul>
+      </div>
+      <div>
+        <b>À lire avec</b>
+        <ul>
+          <li>Le dossier du 27 août, pour le marché</li>
+          <li>Le manuel du 28 août, pour la procédure</li>
+          <li><span class="mono">piste/PAIEMENT.md</span>, pour la caisse</li>
+        </ul>
+      </div>
+      <div>NEBULA Agency<br>Arrêté interne · 6 septembre 2026</div>
+    </div>
+  </footer>
+
+</div>

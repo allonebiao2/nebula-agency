@@ -7,6 +7,55 @@
 
 ---
 
+## 0 nonies. LE 2026-09-06 — MINUIT : L'IDÉE EST ARRÊTÉE, ET LA LETTRE TIENT SON HEURE
+
+**Demande de Mongazi** : « Finalise-moi l'idée de la lettre digitale. »
+
+Livré : **`_plans/2026-09-06-minuit-arrete.html`** (les 12 décisions),
+**`minuit/CONDITIONS.md`** (le retrait sous 24 h, à avoir avant de vendre), et le
+code qui tient la première décision. Détail complet dans
+`_memoire/conversations/2026-09-06-minuit-finalisation.md`.
+
+### ⛔ Le produit ne faisait pas ce que son nom dit
+
+L'heure de remise était demandée à l'acheteur, promise sur l'écran final, et
+**n'entrait dans aucune lettre**. Et n8n, à qui le dossier ET le manuel
+confiaient « la livraison à l'heure choisie », **tourne sur le VPS Hostinger qui
+n'appartient plus à Mongazi** : la fonction la plus vendeuse reposait sur un
+serveur perdu. ⚠️ **82 contrôles verts** : on ne mesure pas l'absence d'une chose
+dont personne n'a écrit qu'elle devait exister.
+
+→ **L'heure vit maintenant DANS la lettre.** Avant l'heure, la cire dort et il
+n'y a aucun bouton ; à l'heure, la cire s'allume et le bouton paraît, sans
+rechargement. Ça ne dépend de rien, et ça tient même si l'acheteur envoie son
+lien trois jours trop tôt. **QC 82 → 115.**
+
+### Les trois décisions qui portent le reste
+
+1. **NEBULA n'écrit jamais à la destinataire** : plus de modèle Meta à faire
+   approuver, plus de coût d'envoi, et le pire risque du produit disparaît par
+   conception.
+2. **SasPay, comme PISTE.** Le manuel interdit lui-même toute validation
+   manuelle sous 10 000 F : à 2 000 F, deux minutes de Mongazi rendent la vente
+   déficitaire.
+3. ⛔ **Jamais Render avec le SQLite de `vitrina/`** : son disque s'efface à
+   chaque déploiement, c'est ce qui avait tué les 2 PDF des partenaires. Un
+   déploiement, et les lettres payées n'existent plus. → Supabase.
+
+### ⏳ Par quoi commencer la prochaine fois
+
+**Six réponses de Mongazi bloquent la vente, aucune ne prend une minute** : le
+compte qui encaisse · le sous-domaine · **un n8n tourne-t-il ailleurs, oui ou
+non** (ça rouvre aussi les relances de renouvellements) · la commission SasPay ·
+qui relit le deuil · **le premier franc encaissé pour de vrai**.
+
+Puis, dans cet ordre : la caisse SasPay (copiée de `piste/PAIEMENT.md`),
+l'adresse (schéma Supabase + 3 fonctions de bord + sous-domaine), la page de
+vente, et **le faire-part pour novembre** (pas pour février : ticket dix fois
+plus élevé).
+
+---
+
 ## 0 octies. LE 2026-09-04 — DEUX VITRINES REMISES À JOUR ET PUBLIÉES
 
 Journée de vitrines, pas de produit. **Rien ne bloque, rien n'attend de moi.**

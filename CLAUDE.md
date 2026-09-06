@@ -11,6 +11,13 @@
 ## Stack technique
 - Vitrines : HTML pur, CSS inline, images base64
 - Automatisation : n8n self-hosted (Hostinger VPS 72.61.103.56)
+  ⚠️ **CETTE LIGNE CONTREDIT LA SECTION INFRASTRUCTURE** : le VPS `72.61.103.56`
+  **n'appartient plus à Mongazi** (certificat au nom de `api-preprod.normly.fr`).
+  Donc, sauf preuve du contraire, **il n'y a plus de n8n utilisable**. Deux
+  chantiers s'appuyaient dessus sans le savoir : la relance des renouvellements,
+  et « la livraison à l'heure choisie » de MINUIT (celle-là vit désormais dans la
+  lettre, elle n'attend plus rien). ⏳ **Mongazi doit dire si un n8n tourne
+  ailleurs**, oui ou non ; en attendant, ne rien planifier qui en dépende.
 - IA : Claude Anthropic, Gemini, Groq llama-3.3-70b
 - Images/vidéos générées : **WaveSpeed** (961 modèles, un seul solde, à l'image).
   Le meilleur : `google/nano-banana-pro/text-to-image`, **0,14 $**. Clé dans
@@ -283,27 +290,76 @@
   CSS). Réserver une marge ne suffit pas : un `fixed` est ancré au viewport.
 - Détail complet : `benin-mon-pays/CONTEXT.md`
 
-### MINUIT — la lettre digitale  *(produit interne, 2026-09-02)*
+### MINUIT — la lettre digitale  *(produit interne, 2026-09-02 · **idée arrêtée le 2026-09-06**)*
 - **Ce que c'est** : « une lettre digitale, c'est **une enveloppe cachetée qu'on
-  ouvre à l'heure dite** ». L'acheteur écrit son mot, choisit l'heure, paie en
-  Mobile Money ; la destinataire reçoit un lien, brise le cachet, et lit.
+  ouvre à l'heure dite** ». L'acheteur écrit son mot, choisit l'heure, paie ;
+  il envoie le lien lui-même, elle brise le cachet à l'heure dite, et lit.
   Dossier de décision : `_plans/2026-08-27-minuit-dossier.html` · manuel
-  d'exploitation : `_plans/2026-08-28-minuit-manuel.html` · code : **`minuit/`**.
+  d'exploitation : `_plans/2026-08-28-minuit-manuel.html` · **arrêté (les 12
+  décisions) : `_plans/2026-09-06-minuit-arrete.html`** · conditions et retrait :
+  **`minuit/CONDITIONS.md`** · code : **`minuit/`**.
 - **La thèse** : *le romantique est le marketing, l'événement est le chiffre
   d'affaires, le B2B est la retraite.* Un seul moteur, trois habillages.
 - **Fait le 2026-09-02** : **le gabarit** (`lettre.html`) et **le constructeur**
-  (`creer.html`), **78 contrôles verts** (`python minuit/_qc.py`), quatre
-  passages d'affilée. ⏳ Restent **la livraison à l'heure choisie** (n8n, la
-  fonction qui donne son nom au produit et qu'aucun concurrent ne propose) et
-  **le serveur en ligne** (Render).
+  (`creer.html`), **78 contrôles verts** (`python minuit/_qc.py`).
+- 🕛 **FAIT LE 2026-09-06 — LA LETTRE TIENT L'HEURE ELLE-MÊME** (détail
+  `_memoire/conversations/2026-09-06-minuit-finalisation.md`) : ⛔ **la fonction
+  qui donne son nom au produit n'existait NULLE PART** — l'heure était demandée à
+  l'acheteur, promise sur l'écran final (« elle la recevra le 14 février à
+  00:00 ») et n'entrait dans aucune lettre ; ⚠️ **aucun contrôle ne pouvait le
+  voir** (on ne mesure pas l'absence d'une chose dont personne n'a écrit qu'elle
+  devait exister, même famille que la photo livrée et jamais affichée chez Au
+  Braisé d'Or) · ⛔ **n8n, à qui le dossier ET le manuel confiaient la livraison,
+  tournait sur le VPS Hostinger `72.61.103.56` qui n'appartient plus à
+  Mongazi** : la fonction reposait sur une machine perdue → **elle vit dans la
+  LETTRE**, qui ne dépend de rien et tient même si l'acheteur envoie son lien
+  trois jours trop tôt · **avant l'heure le cachet dort** (cire éteinte, aucun
+  bouton), la page **DIT** quand elle s'ouvre et compte à rebours, **à l'heure
+  la cire s'allume** et le bouton paraît **sans rechargement** · ⚠️ **le
+  garde-fou est dans `ouvrir()`, pas sur le bouton** (le code secret appelle
+  `ouvrir()` directement) · ⚠️ **heure de CALENDRIER, sans fuseau** : minuit,
+  c'est minuit **sur le téléphone de celle qui lit** (un instant absolu ferait
+  s'ouvrir à 22 h à Paris une lettre programmée à minuit depuis Cotonou) ·
+  ⛔ **on ne promet JAMAIS le secret** (le texte est dans la page) : le cachet
+  tient l'heure, c'est tout, et c'est déjà ce que personne d'autre ne vend ·
+  ⛔ **NEBULA n'écrit jamais à la destinataire** → plus besoin du modèle Meta
+  hors fenêtre de 24 h, et le risque de harcèlement disparaît par conception ·
+  **2 défauts de caisse** : ⛔ **deux échelles de prix** (les occasions
+  portaient un « dès 10 000 F » appliqué nulle part → on prenait « Demande en
+  mariage · dès 10 000 F » au palier gratuit et on payait **0 F** ; l'occasion
+  décide du TON, le palier décide du PRIX) et ⛔ **le palier gratuit passait par
+  la caisse** (`aller(p.prix === 0 ? "e-paiement" : "e-paiement")`, deux branches
+  identiques = intention écrite puis perdue : une lettre offerte affichait
+  « Envoie exactement cette somme, au franc près » au-dessus d'un numéro Mobile
+  Money) · ⛔ **le seuil n'était mesuré par rien** alors qu'une lettre programmée
+  ne montre que lui pendant des heures : le même gris tient 4,8:1 sur le papier
+  et **3,09:1 sur la nuit**, mesuré → `--gris-nuit` · **QC 82 → 115**, avec un
+  **TÉMOIN** à chaque verrou (heure passée, palier payé) sans quoi un verrou
+  resté fermé pour toujours passerait avec les honneurs.
+- ⏳ **CE QUI RESTE** (les 12 décisions sont prises, voir l'arrêté) :
+  **l'encaissement SasPay** comme PISTE (⛔ pas de validation manuelle sous
+  10 000 F : à 2 000 F, deux minutes de Mongazi rendent la vente déficitaire) ·
+  **l'adresse** = schéma Supabase + 3 fonctions de bord + un sous-domaine ·
+  ⛔ **PAS de Render avec le SQLite de `vitrina/`** : le disque de Render
+  s'efface à chaque déploiement (c'est ce qui avait fait disparaître les 2 PDF
+  des partenaires) — un déploiement, et les lettres payées n'existent plus ·
+  **le faire-part pour NOVEMBRE** (saison des mariages + retour de la diaspora,
+  ticket 25 000 F), pas pour février (volume, petit ticket) · **critères
+  d'arrêt au 1er décembre 2026**, écrits d'avance.
+- ⏳ **Les 6 réponses qui n'appartiennent qu'à Mongazi** : le compte qui encaisse ·
+  le sous-domaine · **un n8n tourne-t-il ailleurs, oui ou non** · la commission
+  SasPay (elle décide de la marge d'un ticket à 2 000 F, écrite nulle part) ·
+  qui relit le deuil · **le premier franc encaissé pour de vrai**.
 - **Fait le 2026-09-03** : **la vidéo de démonstration**, composition
   `minuit-demo` dans `_studio-video/` (1080x1920, 30 s, `npm run rendu:minuit`).
   Six plans, **les six signatures du produit rejouées en React** et non
   photographiées : une capture ne montre pas un cachet qui se brise. ⛔ **Ne pas
   la publier en l'état** : elle promet « Elle l'ouvre à minuit pile. Pas
   avant. » et affiche `nebula-agency.online/minuit`, or **ni la remise à
-  l'heure dite ni le serveur n'existent** au 2026-09-03. La vidéo est prête,
-  la promesse ne l'est pas. ⛔ **Jamais de fondu enchaîné entre deux plans qui
+  l'heure dite ni le serveur n'existent** au 2026-09-03. ✅ **Depuis le
+  2026-09-06 la promesse est tenue** (la lettre porte le verrou) : il ne reste
+  que l'adresse affichée, qui doit exister avant publication.
+  ⛔ **Jamais de fondu enchaîné entre deux plans qui
   montrent du papier** : mesuré, deux feuilles à 50 % l'une sur l'autre
   ressemblent à une panne, pas à une transition (les plans partagent le même
   fond de nuit, donc la coupe est déjà invisible).
@@ -327,11 +383,16 @@
 - ⛔ **La sauvegarde du formulaire n'est pas un confort** : pour payer, l'acheteur
   QUITTE la page. Sans restauration au retour il perd son quart d'heure, ne
   recommence pas, et **on ne sait même pas que la vente a existé**.
-- ⏳ **Avant la première vente** : le risque de détournement (adresse non
-  devinable, expiration, retrait sous 24 h, CGU) — aucune des 5 références du
-  dossier ne le traite. ⛔ **Jamais de MP3 hébergé** (contrefaçon). ⚠️ **Le deuil
-  ne se décore pas** : sobriété totale, aucun emoji, relecture par quelqu'un qui
-  vient d'enterrer un proche avant de le vendre.
+- ✅ **AVANT LA PREMIÈRE VENTE : `minuit/CONDITIONS.md` est écrit** (le dossier
+  classait ce risque en *critique* et notait qu'aucune des 5 références ne le
+  traite) — adresse impossible à deviner, `X-Robots-Tag` en plus de la balise,
+  expiration (7 jours offert / 1 an payé), aucune mesure d'audience, et
+  **retrait sous 24 h à la demande de la personne visée, sans discuter, sans
+  prévenir l'acheteur, sans rembourser** : ⚠️ **le pouvoir de retirer appartient
+  à qui détient le lien**, ce qui est exactement l'ensemble des gens concernés.
+  ⛔ **Jamais de MP3 hébergé** (contrefaçon). ⚠️ **Le deuil ne se décore pas** :
+  sobriété totale, aucun emoji, relecture par quelqu'un qui vient d'enterrer un
+  proche **avant** de le vendre, et c'est la condition d'ouverture de la ligne.
 
 ### LE STANDARD — l'agent WhatsApp des clients  *(produit interne, 2026-08-28)*
 - **Ce que c'est** : celui qui décroche. Un client écrit sur le WhatsApp d'une

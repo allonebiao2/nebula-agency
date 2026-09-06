@@ -6,24 +6,26 @@
 
 Dossier de décision : `_plans/2026-08-27-minuit-dossier.html`
 Manuel d'exploitation : `_plans/2026-08-28-minuit-manuel.html`
+**L'arrêté (les 12 décisions) : `_plans/2026-09-06-minuit-arrete.html`**
+Conditions et retrait : `minuit/CONDITIONS.md`
 
 ---
 
-## Ce qui existe, au 2026-09-03
+## Ce qui existe, au 2026-09-06
 
 | Brique | État |
 |---|---|
-| **Le gabarit de la lettre** (`lettre.html`) | ✅ construit, **78 contrôles verts** |
-| **Le constructeur** (`creer.html`) | ✅ construit, les 6 écrans du manuel |
+| **Le gabarit de la lettre** (`lettre.html`) | ✅ construit, **115 contrôles verts** |
+| **Le constructeur** (`creer.html`) | ✅ construit |
 | **La sauvegarde du formulaire** | ✅ à chaque frappe, restaurée au retour |
-| Commande, paiement déclaré, validation | ✅ déjà dans `vitrina/`, 28 contrôles verts |
-| Alertes WhatsApp et Telegram | ✅ dans `vitrina/`, variables à poser |
-| **Livraison à l'heure choisie** | ⏳ **reste à faire**, avec n8n |
-| **Serveur en ligne** | ⏳ **reste à faire**, un service Render |
-| **La vidéo de démonstration** | ✅ construite le 2026-09-03, ⛔ **à ne pas publier encore** |
+| **L'heure d'ouverture** | ✅ **dans la lettre**, depuis le 2026-09-06 |
+| **Les conditions et le retrait** | ✅ écrits, `CONDITIONS.md` |
+| **L'encaissement** | ⏳ **reste à faire** : SasPay, comme PISTE |
+| **L'adresse en ligne** | ⏳ **reste à faire** : Supabase + un sous-domaine |
+| **La vidéo de démonstration** | ✅ construite le 2026-09-03, publiable dès que l'adresse existe |
 
 Le manuel disait : *« un gabarit irréprochable, la sauvegarde du formulaire, la
-livraison à l'heure choisie, dans cet ordre »*. Les deux premiers sont faits.
+livraison à l'heure choisie, dans cet ordre »*. **Les trois sont faits.**
 
 ### La vidéo de démonstration
 
@@ -35,9 +37,10 @@ une capture ne montre pas un cachet qui se brise. Les couleurs, le texte de la
 lettre et le prix y sont lus depuis **ce dossier**, recopiés une seule fois
 dans `_studio-video/src/minuit/donnees.ts`.
 
-⛔ **Elle n'est pas publiable en l'état.** Elle promet « Elle l'ouvre à minuit
-pile. Pas avant. » et affiche `nebula-agency.online/minuit` : les deux lignes
-⏳ du tableau ci-dessus. La vidéo est prête, la promesse ne l'est pas.
+⚠️ Elle promet « Elle l'ouvre à minuit pile. Pas avant. » **Cette phrase est
+vraie depuis le 2026-09-06** : la lettre tient l'heure. Il ne reste que
+l'adresse qu'elle affiche (`nebula-agency.online/minuit`), qui doit exister
+avant publication.
 
 ---
 
@@ -48,11 +51,12 @@ pile. Pas avant. » et affiche `nebula-agency.online/minuit` : les deux lignes
 | `lettre.html` | **Le produit.** Une lettre, autonome, sans aucun appel réseau |
 | `creer.html` | Le constructeur : occasion, écriture, aperçu vivant, paiement |
 | `_injecter.py` | **Le seul endroit** où l'on écrit des données dans le gabarit |
-| `_qc.py` | 78 contrôles. Vert obligatoire avant toute mise en ligne |
+| `_qc.py` | **115 contrôles**. Vert obligatoire avant toute mise en ligne |
+| `CONDITIONS.md` | Ce qu'on promet, et le retrait sous 24 h. À lire avant de vendre |
 | `_voir.py` | Fabrique les captures à REGARDER (390 et 1440) |
 
 ```bash
-python minuit/_qc.py       # les 78 contrôles
+python minuit/_qc.py       # les 115 contrôles
 python minuit/_voir.py     # les captures
 cd minuit && python -m http.server   # pour ouvrir creer.html
 ```
@@ -65,7 +69,7 @@ Toutes tirées de l'objet « enveloppe cachetée », aucune n'est décorative.
 
 | Section | Signature |
 |---|---|
-| 1 · Le seuil | **Le cachet respire, puis se brise** en trois éclats de cire |
+| 1 · Le seuil | **Le cachet dort, s'allume à l'heure dite, puis se brise** en trois éclats de cire |
 | 2 · Le pli | **Le dépliage** : la feuille s'ouvre, ses deux plis s'effacent |
 | 3 · La lettre | **L'encre qui sèche** : flou vers net, ligne après ligne |
 | 4 · Les photos | **Le polaroïd qui se développe**, du blanc vers l'image |
@@ -95,6 +99,45 @@ tiers. Le gabarit refuse toute source qui ne commence pas par `data:`.
 
 **Le pied viral n'existe qu'au palier gratuit.** C'est la boucle de croissance :
 chaque destinataire est un acheteur possible. Un palier payé le retire.
+
+---
+
+## 🕛 Le verrou d'heure, et pourquoi il vit DANS la lettre
+
+C'est la fonction qui donne son nom au produit, et **aucun concurrent observé ne
+la propose**. Le dossier et le manuel la confiaient tous les deux à n8n. Or n8n
+était auto-hébergé sur le VPS Hostinger `72.61.103.56`, et **cette machine
+n'appartient plus à Mongazi**. La fonction reposait sur un serveur perdu.
+
+Elle vit donc **dans la lettre**, et c'est mieux :
+
+- elle **ne dépend de rien** : ni serveur, ni réseau, ni compte tiers ;
+- elle tient **même si l'acheteur envoie son lien trois jours trop tôt**, ce
+  qu'aucune machine à envoyer n'aurait rattrapé ;
+- elle retire d'un coup **trois dépendances** : le modèle WhatsApp à faire
+  approuver par Meta pour sortir de la fenêtre de 24 h, le coût d'un envoi, et
+  le risque le plus grave du produit, celui d'écrire à quelqu'un qui n'a jamais
+  donné son numéro.
+
+**Ce qu'on promet, et rien de plus :** le cachet ne se brise pas avant l'heure.
+⛔ **On ne promet JAMAIS le secret** : le texte est dans la page, qui sait lire
+un code source peut le lire avant l'heure. Une lettre est un cadeau emballé, pas
+un coffre-fort. Voir `CONDITIONS.md` §1.
+
+**L'heure est une heure de CALENDRIER, sans fuseau** (`2027-02-14T00:00`) :
+minuit, c'est minuit sur le téléphone de celle qui lit. Un instant absolu ferait
+s'ouvrir à 22 h à Paris une lettre programmée à minuit depuis Cotonou.
+
+⚠️ **Le garde-fou est dans `ouvrir()`, pas sur le bouton** : le code secret
+appelle `ouvrir()` directement, et tout chemin futur y passera aussi.
+
+⚠️ **L'aperçu du constructeur ignore le verrou** : l'acheteur doit voir SES mots
+pendant qu'il les tape, c'est là que la vente se fait. Le drapeau d'aperçu ne
+part jamais dans la commande, et un contrôle le vérifie.
+
+⚠️ **Chaque verrou a son TÉMOIN dans le QC** (une heure passée, un palier payé) :
+sans lui, un verrou resté fermé pour toujours passerait tous les contrôles avec
+les honneurs.
 
 ---
 
@@ -146,18 +189,52 @@ Quatre sondes ont accusé un produit sain. À relire avant d'ajouter un contrôl
   800 ms donnait **1 passage vert sur 3**. `attendre()` attend l'ÉTAT.
 - **Un serveur de test mono-tâche** se bloque dès la seconde requête et fait
   échouer sur un « Timeout » sans rapport. `ThreadingHTTPServer`, toujours.
+- **Deux instantanés ne mesurent pas un compte à rebours.** Il change une fois
+  par seconde : deux lectures peuvent tomber dans la même. On échantillonne.
+
+---
+
+## ⛔ Les trois défauts trouvés le 2026-09-06, tous invisibles au QC vert
+
+1. **L'heure n'existait nulle part.** Elle était demandée à l'acheteur, promise
+   sur l'écran final (« elle la recevra le 14 février à 00:00 ») et n'entrait
+   dans aucune lettre. ⚠️ **Aucun contrôle ne pouvait le voir** : on ne mesure
+   pas l'absence d'une chose dont personne n'a écrit qu'elle devait exister.
+2. **Deux échelles de prix.** Les occasions portaient un « dès 10 000 F »
+   appliqué nulle part : on prenait « Demande en mariage · dès 10 000 F » au
+   palier gratuit, et on partait à 0 F. **L'occasion décide du ton, le palier
+   décide du prix.**
+3. **Le palier gratuit passait par la caisse.** `aller(p.prix === 0 ?
+   "e-paiement" : "e-paiement")` : deux branches identiques, donc l'intention
+   avait été écrite puis perdue. Une lettre offerte affichait « Envoie
+   exactement cette somme, au franc près » au-dessus d'un numéro Mobile Money.
+
+Et un quatrième, de contraste : **le seuil n'était mesuré par rien**, alors
+qu'une lettre programmée ne montre que lui, parfois pendant des heures. Le même
+gris tient 4,8:1 sur le papier et tombe à **3,09:1** sur la nuit du seuil,
+mesuré. → `--gris-nuit`, et quatre contrôles qui le mesurent.
 
 ---
 
 ## ⏳ Ce qui reste
 
-1. **La livraison à l'heure choisie** (n8n). C'est la fonction qui donne son nom
-   au produit, et **aucun concurrent observé ne la propose**.
-2. **Le serveur en ligne** : un service Render, un sous-domaine.
-3. **Le risque de détournement**, à traiter **avant la première vente** : adresse
-   non devinable, expiration, retrait sous 24 h, conditions d'utilisation.
-   Aucune des cinq références du dossier ne le traite.
-4. ⛔ **Ne jamais héberger un MP3** : c'est de la contrefaçon. Lien externe, ou rien.
-5. Les autres occasions du catalogue (faire-part, naissance, deuil). ⚠️ **Le deuil
-   ne se décore pas** : sobriété totale, aucun emoji, et une relecture par
-   quelqu'un qui vient d'enterrer un proche avant de le vendre.
+Les douze décisions sont prises : `_plans/2026-09-06-minuit-arrete.html`.
+
+1. **L'encaissement : SasPay**, comme PISTE. ⛔ Pas de validation manuelle sous
+   10 000 F : à 2 000 F, deux minutes de Mongazi rendent la vente déficitaire.
+   Le chemin est écrit dans `piste/PAIEMENT.md`, il se copie.
+2. **L'adresse** : un schéma Supabase, trois fonctions de bord, un sous-domaine.
+   ⛔ **Pas de Render avec le SQLite de `vitrina/`** : le disque de Render
+   s'efface à chaque déploiement, c'est ce qui avait fait disparaître les deux
+   PDF des partenaires. Un déploiement, et les lettres payées n'existent plus.
+3. **Le paquet du chapitre 2 de `CONDITIONS.md`** : adresse impossible à
+   deviner, `X-Robots-Tag`, expiration, retrait sous 24 h.
+4. **Le faire-part avec confirmation**, pour **novembre** (saison des mariages
+   et retour de la diaspora), pas pour février.
+5. ⛔ **Ne jamais héberger un MP3** : c'est de la contrefaçon. Lien externe, ou rien.
+6. Le deuil, **après** relecture par quelqu'un qui vient d'enterrer un proche.
+
+### Les six réponses qui n'appartiennent qu'à Mongazi
+
+Le compte qui encaisse · le sous-domaine · un n8n ailleurs, oui ou non · la
+commission SasPay · qui relit le deuil · le premier franc encaissé pour de vrai.
