@@ -20,8 +20,8 @@ Conditions et retrait : `minuit/CONDITIONS.md`
 | **La sauvegarde du formulaire** | ✅ à chaque frappe, restaurée au retour |
 | **L'heure d'ouverture** | ✅ **dans la lettre**, depuis le 2026-09-06 |
 | **Les conditions et le retrait** | ✅ écrits, `CONDITIONS.md` |
-| **L'encaissement** | ⏳ **reste à faire** : SasPay, comme PISTE |
-| **L'adresse en ligne** | ⏳ **reste à faire** : Supabase + un sous-domaine |
+| **L'encaissement** | ✅ **écrit et contrôlé** (SasPay), ⏳ pas encore branché |
+| **L'adresse en ligne** | ✅ **écrite et contrôlée**, ⏳ pas encore déployée |
 | **La vidéo de démonstration** | ✅ construite le 2026-09-03, publiable dès que l'adresse existe |
 
 Le manuel disait : *« un gabarit irréprochable, la sauvegarde du formulaire, la
@@ -51,14 +51,20 @@ avant publication.
 | `lettre.html` | **Le produit.** Une lettre, autonome, sans aucun appel réseau |
 | `creer.html` | Le constructeur : occasion, écriture, aperçu vivant, paiement |
 | `_injecter.py` | **Le seul endroit** où l'on écrit des données dans le gabarit |
-| `_qc.py` | **115 contrôles**. Vert obligatoire avant toute mise en ligne |
+| `_qc.py` | **127 contrôles**. Vert obligatoire avant toute mise en ligne |
+| `_qc_caisse.mjs` | **118 contrôles** sur la caisse, sans clé ni réseau |
+| `supabase/` | La base et les trois fonctions de bord. Voir `PAIEMENT.md` |
+| `_gabarit_ts.py` | Recopie `lettre.html` dans un module pour les fonctions |
+| `PAIEMENT.md` | Où vit chaque morceau, et comment brancher le jour venu |
 | `CONDITIONS.md` | Ce qu'on promet, et le retrait sous 24 h. À lire avant de vendre |
 | `_voir.py` | Fabrique les captures à REGARDER (390 et 1440) |
 
 ```bash
-python minuit/_qc.py       # les 115 contrôles
-python minuit/_voir.py     # les captures
-cd minuit && python -m http.server   # pour ouvrir creer.html
+python minuit/_qc.py                                   # les 127 contrôles
+node --experimental-strip-types minuit/_qc_caisse.mjs  # les 118 de la caisse
+python minuit/_gabarit_ts.py                           # après toute retouche de lettre.html
+python minuit/_voir.py                                 # les captures
+cd minuit && python -m http.server                     # pour ouvrir creer.html
 ```
 
 ---
@@ -99,6 +105,20 @@ tiers. Le gabarit refuse toute source qui ne commence pas par `data:`.
 
 **Le pied viral n'existe qu'au palier gratuit.** C'est la boucle de croissance :
 chaque destinataire est un acheteur possible. Un palier payé le retire.
+
+---
+
+## 🏦 La caisse, en une phrase
+
+Le constructeur envoie **les données** de la lettre à `minuit-commande`, qui en
+fixe le prix (⛔ jamais le navigateur), la dépose, et ouvre un paiement SasPay.
+La notification signée rend la lettre joignable, seule, à n'importe quelle
+heure. `minuit-lettre` la sert à une adresse de **110 bits tirés au sort**, et
+la retire à la demande. Tout est dans **`PAIEMENT.md`**.
+
+⛔ **On ne stocke jamais le HTML du navigateur** : une porte publique qui
+accepte du HTML et le sert sur notre domaine est un hébergeur de pages
+arbitraires, gratuit et anonyme. La lettre est **rebâtie** à partir du gabarit.
 
 ---
 
@@ -220,15 +240,15 @@ mesuré. → `--gris-nuit`, et quatre contrôles qui le mesurent.
 
 Les douze décisions sont prises : `_plans/2026-09-06-minuit-arrete.html`.
 
-1. **L'encaissement : SasPay**, comme PISTE. ⛔ Pas de validation manuelle sous
-   10 000 F : à 2 000 F, deux minutes de Mongazi rendent la vente déficitaire.
-   Le chemin est écrit dans `piste/PAIEMENT.md`, il se copie.
-2. **L'adresse** : un schéma Supabase, trois fonctions de bord, un sous-domaine.
-   ⛔ **Pas de Render avec le SQLite de `vitrina/`** : le disque de Render
-   s'efface à chaque déploiement, c'est ce qui avait fait disparaître les deux
-   PDF des partenaires. Un déploiement, et les lettres payées n'existent plus.
-3. **Le paquet du chapitre 2 de `CONDITIONS.md`** : adresse impossible à
-   deviner, `X-Robots-Tag`, expiration, retrait sous 24 h.
+1. **Brancher la caisse.** Elle est écrite, contrôlée, et pas déployée : la
+   marche à suivre tient en cinq commandes dans **`PAIEMENT.md`**. ⛔ Pas de
+   Render avec le SQLite de `vitrina/` : son disque s'efface à chaque
+   déploiement, c'est ce qui avait fait disparaître les deux PDF des
+   partenaires. Un déploiement, et les lettres payées n'existent plus.
+2. **Le ménage des lettres expirées** : `minuit_menage()` existe, rien ne
+   l'appelle encore. Une tâche quotidienne suffit.
+3. **Le lien « retirer cette lettre »** dans le pied de la lettre : la porte
+   existe, le bouton non. Le retrait passe par WhatsApp en attendant.
 4. **Le faire-part avec confirmation**, pour **novembre** (saison des mariages
    et retour de la diaspora), pas pour février.
 5. ⛔ **Ne jamais héberger un MP3** : c'est de la contrefaçon. Lien externe, ou rien.

@@ -277,45 +277,25 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       <div id="bloc-reglement">
         <div class="somme">
           <div class="n" id="p-somme">2 000 F</div>
-          <div class="l">Envoie exactement cette somme, au franc près.</div>
-        </div>
-
-        <div class="numero">
-          <div><b id="p-numero">01 96 74 07 32</b><span id="p-nom">NEBULA Agency</span></div>
-          <button class="copier" id="btn-copier">Copier</button>
+          <div class="l">Mobile Money ou carte, sur la page de notre encaisseur.</div>
         </div>
 
         <div class="avert">
-          Une somme différente crée un litige qu'il faut arbitrer à la main, et ta lettre attend pendant ce temps.
+          Tu choisis ton réseau là-bas : MTN, Moov ou Celtiis. Rien à recopier, rien à nous envoyer par SMS.
         </div>
       </div>
 
-      <div class="groupe" id="groupe-ref">
-        <label for="f-ref">La référence de ton SMS</label>
-        <input type="text" id="f-ref" placeholder="MP260827.1432.A81234" autocomplete="off">
-        <p class="indice">Ton opérateur te l'envoie par SMS juste après le transfert. Copie-la en entier.</p>
-      </div>
-
-      <div class="deux">
-        <div class="groupe">
-          <label for="f-wa">Ton WhatsApp</label>
-          <input type="tel" id="f-wa" placeholder="01 97 08 55 76" autocomplete="tel">
-          <p class="indice">C'est là qu'on t'envoie le lien.</p>
-        </div>
-        <div class="groupe">
-          <label for="f-reseau">Le réseau</label>
-          <select id="f-reseau">
-            <option value="MTN">MTN MoMo</option>
-            <option value="Moov">Moov Money</option>
-            <option value="Celtiis">Celtiis Cash</option>
-          </select>
-        </div>
+      <div class="groupe">
+        <label for="f-wa">Ton WhatsApp</label>
+        <input type="tel" id="f-wa" placeholder="01 97 08 55 76" autocomplete="tel">
+        <p class="indice">C'est là qu'on t'écrit si quelque chose cloche. On n'écrit jamais à la personne qui reçoit la lettre.</p>
       </div>
 
       <div class="actions">
         <button class="sec" data-vers="e-palier">Retour</button>
         <button class="pri" id="btn-commander">J'ai payé, envoyer</button>
       </div>
+      <p class="indice" id="envoi-mot" role="status" hidden></p>
     </section>
 
     <!-- ÉCRAN 6 · il attend, mais pas dans le vide -->
@@ -324,6 +304,10 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
         <div class="rond" aria-hidden="true">✓</div>
         <h1 class="serif">Commande reçue.</h1>
         <p class="sous">On vérifie ton règlement, puis tu reçois ton lien sur WhatsApp. En attendant, voici ton aperçu : tu peux déjà le regarder.</p>
+        <div id="bloc-adresse" hidden>
+          <p class="indice">L'adresse de ta lettre. Envoie-la à qui tu veux, elle n'est joignable que par ce lien.</p>
+          <a class="lien" id="lien-lettre" href="#" rel="noreferrer"></a>
+        </div>
         <a class="lien" id="lien-apercu" href="#" download="ma-lettre.html">Télécharger mon aperçu</a>
         <p class="indice" id="fini-quand"></p>
       </div>
@@ -371,7 +355,17 @@ var PALIERS = [
   {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",              prix:5000,  pied:false},
   {id:"coffret", nom:"Le Coffret",  desc:"Tout, plus la livraison WhatsApp à l'heure choisie",prix:10000, pied:false}
 ];
-var MOMO = { nom:"NEBULA Agency", numero:"01 96 74 07 32", reseau:"MTN" };
+/* ══════════════════════════════════════════════════════════════════════
+   LA CAISSE. C'est la fonction de bord qui depose la lettre, en fixe le
+   prix (⛔ jamais ce fichier : il s'edite dans la console en trois
+   secondes) et ouvre le paiement. Elle vit dans
+   `minuit/supabase/functions/minuit-commande/`.
+
+   ⚠️ Tant que `POINT` est vide, la commande ne part nulle part et on le
+   DIT a l'acheteur : mieux vaut « ce n'est pas encore ouvert » qu'un ecran
+   « Commande recue » pour une commande que personne n'a recue.
+   ══════════════════════════════════════════════════════════════════════ */
+var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/minuit-commande";
 var CLE = "minuit:brouillon";
 
 var $ = function(s){ return document.querySelector(s); };
@@ -383,7 +377,7 @@ var E = {
   occasion:"anniv", palier:"lettre",
   pour:"", de:"", titre:"", lettre:"", photos:[],
   depuis:"", code:"", quand:"", quandH:"00:00",
-  ref:"", wa:"", reseau:"MTN"
+  wa:""
 };
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -484,6 +478,25 @@ function htmlCommande(){
   return batir(d);
 }
 
+/* ⛔ CE QU'ON ENVOIE A LA CAISSE : LES DONNEES, PAS LE HTML.
+   Une porte publique qui accepte du HTML et le sert sur notre domaine est un
+   hebergeur de pages arbitraires : gratuit, anonyme, et parfait pour une page
+   qui imite une banque. Le serveur rebatit la lettre a partir du gabarit.
+
+   ⛔ Ni `pied`, ni `lien`, ni `apercu`, ni le moindre prix : ce sont des
+   decisions du serveur. Ce fichier ne fait qu'apporter les mots de
+   l'acheteur. */
+function commande(){
+  var d = donnees();
+  return {
+    palier: E.palier,
+    occasion: d.occasion, pour: d.pour, de: d.de, titre: d.titre,
+    code: d.code, lettre: d.lettre, photos: d.photos,
+    depuis: d.depuis, ouvre: d.ouvre,
+    whatsapp: E.wa
+  };
+}
+
 var minuteur = null;
 function peindre(){
   /* On ne reconstruit pas l'iframe a chaque touche : ca rejouerait
@@ -548,7 +561,7 @@ PALIERS.forEach(function(p){
 /* ── Les champs. Un seul chemin : champ -> etat -> sauvegarde -> apercu. ── */
 var CHAMPS = { "f-pour":"pour", "f-de":"de", "f-titre":"titre", "f-lettre":"lettre",
                "f-depuis":"depuis", "f-code":"code", "f-quand":"quand",
-               "f-quand-h":"quandH", "f-ref":"ref", "f-wa":"wa", "f-reseau":"reseau" };
+               "f-quand-h":"quandH", "f-wa":"wa" };
 Object.keys(CHAMPS).forEach(function(id){
   var el = document.getElementById(id);
   if (!el) { return; }
@@ -632,12 +645,11 @@ function peindreReglement(){
   var offert = p.prix === 0;
   $("#p-somme").textContent = fmt(p.prix);
   $("#bloc-reglement").hidden = offert;
-  $("#groupe-ref").hidden = offert;
   $("#pay-titre").textContent = offert ? "Où t'envoyer ta lettre." : "Le règlement.";
   $("#pay-sous").innerHTML = offert
     ? "Elle est offerte. Dis-nous seulement où t'envoyer le lien."
-    : "Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>";
-  $("#btn-commander").textContent = offert ? "Recevoir ma lettre" : "J'ai payé, envoyer";
+    : "Tu vas payer sur une page sécurisée, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>";
+  $("#btn-commander").textContent = offert ? "Recevoir ma lettre" : ("Payer " + fmt(p.prix));
 }
 
 $("#vers-paiement").addEventListener("click", function(){
@@ -655,33 +667,16 @@ $("#btn-oublier").addEventListener("click", function(){
   location.reload();
 });
 
-$("#btn-copier").addEventListener("click", function(){
-  var n = MOMO.numero.replace(/\s/g, "");
-  var fini = function(){
-    $("#btn-copier").textContent = "Copié";
-    setTimeout(function(){ $("#btn-copier").textContent = "Copier"; }, 1800);
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(n).then(fini, fini);
-  } else { fini(); }
-});
-
 /* ── La commande. Le formulaire refuse de partir sans la reference : sans
      elle, il faut arbitrer a la main, et la lettre attend. ── */
 $("#btn-commander").addEventListener("click", function(){
   var p = PALIERS.filter(function(x){ return x.id === E.palier; })[0];
-  if (p.prix > 0 && !E.ref.trim()) {
-    $("#f-ref").focus();
-    $("#f-ref").style.borderColor = "var(--cire-clair)";
-    return;
-  }
   if (!E.wa.trim()) {
     $("#f-wa").focus();
     $("#f-wa").style.borderColor = "var(--cire-clair)";
     return;
   }
-  var html = htmlCommande();
-  var blob = new Blob([html], { type: "text/html" });
+  var blob = new Blob([htmlCommande()], { type: "text/html" });
   $("#lien-apercu").href = URL.createObjectURL(blob);
   /* On ne promet que ce que la lettre tient toute seule : le cachet ne se
      brise pas avant l'heure. On ne promet PAS un envoi a l'heure dite, que
@@ -692,26 +687,64 @@ $("#btn-commander").addEventListener("click", function(){
     : "Envoie-lui le lien quand tu veux : elle pourra l'ouvrir tout de suite.";
   $("#fini-quand").textContent = q;
 
-  /* Le serveur de vitrina attend exactement cette forme. On n'invente pas
-     un deuxieme parcours de commande : celui-la est ecrit et teste. */
-  var commande = {
-    pack: E.palier, biz_name: "Lettre " + (E.pour || "sans nom"),
-    client_name: E.de || "", whatsapp: E.wa, email: "",
-    network: E.reseau, ref: E.ref, html: html
-  };
-  window.MINUIT_COMMANDE = commande;   /* lisible par le QC et par le serveur */
-
-  aller("e-fini");
-  /* On n'oublie le brouillon qu'une fois la commande partie ET l'apercu
-     remis : effacer plus tot, c'est reprendre le risque de l'ecran 4. */
-  oublier();
+  var c = commande();
+  window.MINUIT_COMMANDE = c;   /* lisible par le controle */
+  envoyer(c, p);
 });
+
+/* ── L'envoi. ────────────────────────────────────────────────────────────
+   ⛔ LE BROUILLON N'EST EFFACE QU'APRES UNE REPONSE HEUREUSE. C'est la lecon
+   de l'ecran 4, poussee jusqu'au bout : un acheteur qui perd son quart
+   d'heure ne recommence pas, et on ne saura meme pas que la vente a existe.
+   Un reseau qui tombe ne doit rien coute r de plus qu'un bouton a retoucher. */
+function envoyer(c, p){
+  var b = $("#btn-commander");
+  var libelle = b.textContent;
+  var rendre = function(mot){
+    b.disabled = false; b.textContent = libelle;
+    $("#envoi-mot").textContent = mot;
+    $("#envoi-mot").hidden = !mot;
+  };
+
+  if (!POINT) {
+    /* Dire pourquoi, plutot que d'afficher « Commande recue » pour une
+       commande que personne n'a recue. */
+    rendre("La boutique n'est pas encore ouverte. Garde cette page : ta lettre est gardée ici.");
+    return;
+  }
+
+  b.disabled = true; b.textContent = "Un instant…";
+  $("#envoi-mot").hidden = true;
+
+  fetch(POINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(c)
+  }).then(function(r){
+    return r.json().then(function(j){ return { code: r.status, j: j }; });
+  }).then(function(rep){
+    var j = rep.j || {};
+    if (!j.ok) {
+      rendre(j.erreur ? ("Ça n'est pas passé : " + j.erreur) : "Ça n'est pas passé. Réessaie dans un moment.");
+      return;
+    }
+    /* Une lettre payee part vers la caisse. On ne l'oublie pas encore : tant
+       qu'il n'a pas paye, son brouillon doit l'attendre au retour. */
+    if (j.paiement) { location.href = j.paiement; return; }
+    /* Une lettre offerte est deja vivante : on rend son adresse. */
+    $("#lien-lettre").href = j.adresse;
+    $("#lien-lettre").textContent = j.adresse;
+    $("#bloc-adresse").hidden = false;
+    aller("e-fini");
+    oublier();
+  }).catch(function(){
+    rendre("Pas de réseau. Ta lettre est gardée, réessaie dans un moment.");
+  });
+}
 
 /* ══════════════════════════════════════════════════════════════════════
    Le demarrage
    ══════════════════════════════════════════════════════════════════════ */
-$("#p-numero").textContent = MOMO.numero;
-$("#p-nom").textContent = MOMO.nom;
 peindreReglement();
 
 var repris = reprendre();

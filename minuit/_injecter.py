@@ -34,7 +34,13 @@ def serialiser(donnees):
       <!-- ouvre un commentaire HTML hérité, qui avale la suite ;
       U+2028 / U+2029 sont des fins de ligne pour JavaScript, pas pour JSON.
     """
-    s = json.dumps(donnees, ensure_ascii=False)
+    # ⚠️ SEPARATEURS COMPACTS, et ce n'est pas une coquetterie de poids : par
+    # defaut json.dumps ecrit « "a": 1, "b": 2 » quand JSON.stringify ecrit
+    # « "a":1,"b":2 ». Trois serialiseurs ecrivent des lettres MINUIT (ici, le
+    # constructeur dans le navigateur, la fonction de bord qui rebatit la
+    # lettre) : s'ils ne rendent pas le meme octet, on ne peut plus comparer
+    # leurs sorties, donc plus prouver qu'ils protegent pareil.
+    s = json.dumps(donnees, ensure_ascii=False, separators=(",", ":"))
     s = s.replace("</", "<\\/")
     s = s.replace("<!--", "<\\!--")
     s = s.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")

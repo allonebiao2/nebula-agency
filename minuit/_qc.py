@@ -611,44 +611,112 @@ def main():
             dit("au retour, on le remet sur l'ecran d'ecriture",
                 pg.eval_on_selector("#e-lettre", "e=>e.classList.contains('on')"))
 
-            # ⛔ Une commande sans reference oblige a arbitrer a la main.
             pg.click("#vers-palier")
             pg.click('.pal[data-id="lettre"]')
             pg.click("#vers-paiement")
             pg.wait_for_timeout(300)
             dit("la somme affichee suit le palier", "5 000" in pg.inner_text("#p-somme"))
 
+            # ⚠️ CONTROLE RETOURNE (2026-09-06). Il disait « sans reference, la
+            # commande ne part pas » : c'etait vrai, et ca ne l'est plus, parce
+            # que la reference elle-meme a disparu avec SasPay. Un controle qui
+            # devient faux ne se supprime pas, il dit la nouvelle verite.
+            dit("il n'y a plus de reference de SMS a coller",
+                pg.eval_on_selector_all("#f-ref", "n=>n.length") == 0)
+            dit("ni de reseau a choisir : la page de paiement le demande",
+                pg.eval_on_selector_all("#f-reseau", "n=>n.length") == 0)
+            dit("le bouton annonce la somme", "5 000" in pg.inner_text("#btn-commander"))
+
             pg.click("#btn-commander")
             pg.wait_for_timeout(250)
-            dit("sans reference, la commande ne part PAS",
+            dit("sans WhatsApp, la commande ne part pas",
                 not pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
 
-            pg.fill("#f-ref", "MP260827.1432.A81234")
-            pg.click("#btn-commander")
-            pg.wait_for_timeout(250)
-            dit("sans WhatsApp non plus, la commande ne part pas",
-                not pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
+            # ── La caisse, interceptee ────────────────────────────────────
+            # ⚠️ On ne parle a personne : on repond nous-memes a la place de la
+            # fonction de bord. Ce qui est mesure ici, c'est CE QUE LE
+            # CONSTRUCTEUR ENVOIE, et rien d'autre.
+            envois = []
 
+            def caisse(route, request):
+                envois.append(json.loads(request.post_data or "{}"))
+                route.fulfill(status=200, content_type="application/json",
+                              body=json.dumps({"ok": True, "offert": False,
+                                               "jeton": "c" * 22,
+                                               "adresse": "https://exemple.invalid/l/" + "c" * 22,
+                                               "paiement": "https://paiement.invalid/session/42"}))
+
+            pg.route("**/minuit-commande", caisse)
+
+            # ⛔ Le brouillon ne doit PAS partir tant que la reponse n'est pas
+            # heureuse : un acheteur qui perd son quart d'heure ne recommence
+            # pas. On coupe d'abord la caisse pour le prouver.
+            pg.route("**/minuit-commande", lambda r, q: r.abort())
             pg.fill("#f-wa", "0197085576")
             pg.click("#btn-commander")
-            pg.wait_for_timeout(600)
-            dit("avec tout, la commande part",
-                pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
-            cmd = pg.evaluate("window.MINUIT_COMMANDE")
-            # On teste le MARQUEUR, pas le mot : « MINUIT_DONNEES » figure aussi
-            # dans le commentaire d'en-tete du gabarit, qui doit rester.
-            dit("la commande porte le HTML complet de la lettre",
-                bool(cmd) and "<html" in cmd["html"]
-                and "/*MINUIT_DONNEES*/" not in cmd["html"]
-                and '"pour"' in cmd["html"] and "Zara" in cmd["html"])
-            # ⛔ La lettre LIVREE garde son cachet : le seuil EST le produit.
-            dit("la lettre livree n'est PAS deja ouverte",
-                bool(cmd) and '"apercu"' not in cmd["html"])
-            dit("la commande porte la reference et le WhatsApp",
-                bool(cmd) and cmd["ref"] == "MP260827.1432.A81234"
-                and cmd["whatsapp"] == "0197085576")
-            dit("le brouillon n'est efface QU'APRES l'envoi",
-                pg.evaluate("localStorage.getItem('minuit:brouillon')") is None)
+            attendre(lambda: not pg.eval_on_selector("#envoi-mot", "e=>e.hidden"))
+            dit("reseau coupe : on le DIT a l'acheteur",
+                "réseau" in pg.inner_text("#envoi-mot").lower())
+            dit("reseau coupe : le brouillon est GARDE",
+                pg.evaluate("localStorage.getItem('minuit:brouillon')") is not None)
+            dit("reseau coupe : on ne montre pas « commande recue »",
+                not pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
+            dit("reseau coupe : le bouton redevient cliquable",
+                pg.eval_on_selector("#btn-commander", "e=>!e.disabled"))
+
+            pg.unroute("**/minuit-commande")
+            pg.route("**/minuit-commande", caisse)
+            # Une lettre payee part vers la page de paiement : on retient la
+            # navigation pour pouvoir la mesurer.
+            pg.route("https://paiement.invalid/**",
+                     lambda r, q: r.fulfill(status=200, content_type="text/html",
+                                            body="<title>caisse</title>"))
+            pg.click("#btn-commander")
+            attendre(lambda: len(envois) > 0)
+            dit("la commande part vers la caisse", len(envois) == 1)
+
+            cmd = envois[0] if envois else {}
+            # ⛔ ON N'ENVOIE PLUS DE HTML. Une porte publique qui accepte du HTML
+            # et le sert sur notre domaine est un hebergeur de pages
+            # arbitraires. Le serveur rebatit la lettre a partir du gabarit.
+            dit("⛔ la commande ne porte AUCUN HTML", "html" not in cmd)
+            dit("elle porte les mots de l'acheteur",
+                cmd.get("pour") == "Zara" and isinstance(cmd.get("lettre"), list)
+                and len(cmd.get("lettre") or []) >= 1)
+            dit("elle porte le palier, pas un prix",
+                cmd.get("palier") == "lettre"
+                and not any(k in cmd for k in ("prix", "total", "montant")))
+            dit("elle porte le WhatsApp de l'acheteur", cmd.get("whatsapp") == "0197085576")
+            dit("elle ne porte plus aucune reference", "ref" not in cmd)
+            # ⛔ Le seuil EST le produit : le drapeau d'apercu ne franchit jamais
+            # la porte, et le pied viral est une decision du serveur.
+            dit("le drapeau d'apercu ne part pas", "apercu" not in cmd)
+            dit("le pied viral n'est pas decide par le navigateur", "pied" not in cmd)
+
+            # ⚠️ ON N'INTERROGE PAS `pg.url` EN BOUCLE POUR ATTENDRE UNE
+            # NAVIGATION : le contexte d'execution est detruit pendant qu'elle
+            # a lieu, et la sonde tombe sur « Execution context was destroyed »
+            # ou conclut trop tot que rien n'a bouge. Playwright a un guetteur
+            # pour ca, et lui survit au changement de page.
+            parti = True
+            try:
+                pg.wait_for_url("**paiement.invalid**", timeout=15000)
+            except Exception as e:
+                parti = False
+                detail = str(e).splitlines()[0]
+            dit("une lettre payee s'en va vers la page de paiement",
+                parti, "" if parti else detail)
+
+            # ⚠️ TEMOIN : le brouillon reste tant qu'il n'a pas paye. Il quitte
+            # la page pour payer ; s'il revient sans avoir paye, sa lettre doit
+            # l'attendre.
+            # ⛔ ET ON REVIENT D'ABORD : `localStorage` appartient a l'ORIGINE.
+            # Lu depuis la page de paiement, il rendrait le rangement d'un autre
+            # site, et le controle dirait n'importe quoi.
+            pg.go_back()
+            attendre(lambda: "creer.html" in pg.url)
+            dit("il part payer, et son brouillon l'attend",
+                pg.evaluate("localStorage.getItem('minuit:brouillon')") is not None)
 
             # Le palier gratuit garde le pied viral, le palier paye le retire.
             pg.evaluate("localStorage.clear()")
@@ -676,17 +744,18 @@ def main():
             pg.wait_for_timeout(250)
             dit("offert : aucune somme a envoyer",
                 pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is True)
-            dit("offert : aucune reference a coller",
-                pg.eval_on_selector("#groupe-ref", "e=>e.hidden") is True)
             dit("offert : le bouton ne parle pas de paiement",
                 "payé" not in pg.inner_text("#btn-commander"))
             dit("offert : on demande quand meme ou envoyer le lien",
                 pg.is_visible("#f-wa"))
+            pg.route("**/minuit-commande", lambda r, q: r.fulfill(
+                status=200, content_type="application/json",
+                body=json.dumps({"ok": True, "offert": True,
+                                 "adresse": "https://exemple.invalid/l/" + "e" * 22})))
             pg.fill("#f-wa", "0197085576")
             pg.click("#btn-commander")
-            pg.wait_for_timeout(500)
             dit("offert : la commande part sans reference",
-                pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
+                attendre(lambda: pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')")))
 
             # ⚠️ TEMOIN : un ecran qui serait TOUJOURS nu passerait les quatre
             # controles ci-dessus. On repasse a un palier paye.
@@ -699,8 +768,7 @@ def main():
             pg.click("#vers-paiement")
             pg.wait_for_timeout(250)
             dit("paye : la caisse revient",
-                pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is False
-                and pg.eval_on_selector("#groupe-ref", "e=>e.hidden") is False)
+                pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is False)
             pg.close()
 
             # ⛔ L'HEURE PART AVEC LA LETTRE. Elle etait demandee, promise sur
@@ -716,18 +784,27 @@ def main():
             pg.click("#vers-palier")
             pg.click('.pal[data-id="coffret"]')
             pg.click("#vers-paiement")
-            pg.fill("#f-ref", "MP270214.0000.A00001")
             pg.fill("#f-wa", "0197085576")
+            envois2 = []
+            pg.route("**/minuit-commande", lambda r, q: (
+                envois2.append(json.loads(q.post_data or "{}")),
+                r.fulfill(status=200, content_type="application/json",
+                          body=json.dumps({"ok": True, "offert": True,
+                                           "adresse": "https://exemple.invalid/l/" + "d" * 22}))))
             pg.click("#btn-commander")
-            pg.wait_for_timeout(600)
-            cmd2 = pg.evaluate("window.MINUIT_COMMANDE")
+            attendre(lambda: len(envois2) > 0)
+            cmd2 = envois2[0] if envois2 else {}
             dit("la lettre livree porte l'heure choisie",
-                bool(cmd2) and '"ouvre":"2027-02-14T00:00"' in cmd2["html"])
+                cmd2.get("ouvre") == "2027-02-14T00:00", str(cmd2.get("ouvre")))
             # ⚠️ Sans fuseau, et c'est le sujet : minuit, c'est minuit sur le
             # telephone de celle qui lit, pas celui de l'acheteur.
             dit("l'heure est une heure de calendrier, sans fuseau",
-                bool(cmd2) and '"ouvre":"2027-02-14T00:00Z' not in cmd2["html"]
-                and '"ouvre":"2027-02-14T00:00+' not in cmd2["html"])
+                not any(c in str(cmd2.get("ouvre")) for c in ("Z", "+")))
+            attendre(lambda: pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
+            dit("une lettre offerte montre son adresse",
+                "exemple.invalid/l/" in pg.inner_text("#lien-lettre"))
+            dit("et son brouillon est alors oublie",
+                pg.evaluate("localStorage.getItem('minuit:brouillon')") is None)
             # On ne promet que ce que la lettre tient toute seule.
             promesse = pg.inner_text("#fini-quand")
             dit("l'ecran final ne promet aucun envoi automatique",
