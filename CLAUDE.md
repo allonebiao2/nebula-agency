@@ -336,13 +336,43 @@
   et **3,09:1 sur la nuit**, mesuré → `--gris-nuit` · **QC 82 → 115**, avec un
   **TÉMOIN** à chaque verrou (heure passée, palier payé) sans quoi un verrou
   resté fermé pour toujours passerait avec les honneurs.
-- ⏳ **CE QUI RESTE** (les 12 décisions sont prises, voir l'arrêté) :
-  **l'encaissement SasPay** comme PISTE (⛔ pas de validation manuelle sous
-  10 000 F : à 2 000 F, deux minutes de Mongazi rendent la vente déficitaire) ·
-  **l'adresse** = schéma Supabase + 3 fonctions de bord + un sous-domaine ·
+- 🏦 **LA CAISSE ET L'ADRESSE SONT ÉCRITES ET CONTRÔLÉES le 2026-09-06**
+  (marche à suivre : **`minuit/PAIEMENT.md`**) — ⏳ **rien n'est déployé**, il
+  manque 6 réponses de Mongazi : **schéma Supabase `minuit`** + **3 fonctions
+  de bord** (déposer+payer · la notification signée qui **ouvre la lettre** ·
+  servir+**retirer**), sur la forme éprouvée de PISTE · **`_shared/lettre.ts`
+  porte TOUT ce qui décide**, en Web standard, donc essayable **sans clé, sans
+  réseau et sans base** (`node --experimental-strip-types minuit/_qc_caisse.mjs`,
+  **118 contrôles**) · **le constructeur parle enfin à la caisse** (il posait sa
+  commande sur `window.MINUIT_COMMANDE` et elle n'allait nulle part) ·
+  ⛔ **ON NE STOCKE JAMAIS LE HTML DU NAVIGATEUR** : une porte publique qui
+  accepte du HTML et le sert sur notre domaine est un **hébergeur de pages
+  arbitraires**, gratuit et anonyme — on stocke les **données**, la lettre est
+  **rebâtie** depuis le gabarit (`_gabarit_ts.py` l'y recopie, un contrôle
+  compare) · ⛔ **le prix ne vient jamais du navigateur**, ni le pied viral, ni
+  le code secret : un contrôle **lit les deux barèmes** et refuse la moindre
+  différence · ⛔ **l'écran « colle la référence de ton SMS » DISPARAÎT**, avec
+  le numéro Mobile Money et le choix du réseau (c'était le moment le plus
+  fragile de la chaîne) · ⛔ **le brouillon ne s'efface qu'après une réponse
+  heureuse** · ⛔ **le retrait passe avant tout** (état, date, remboursement) ·
+  ⚠️ **U+2028 EN CLAIR dans les regex qui doivent le neutraliser, 3e et 4e fois**
+  (dans `lettre.ts`, puis dans le contrôle qui l'essaie) : **un fichier qui
+  documente son propre piège doit être vérifié comme s'il le contenait** ·
+  ⚠️ **2 sondes menteuses** (l'une lisait la ligne d'**import** au lieu de
+  l'appel ; l'autre interrogeait `pg.url` **en boucle pendant une navigation**,
+  or le contexte d'exécution est détruit → `wait_for_url`) et ⛔ **`localStorage`
+  appartient à l'ORIGINE** (lu depuis la page de paiement, il rend le rangement
+  d'un autre site) · ⚠️ **3 contrôles RETOURNÉS**, pas supprimés · ⚠️ **un
+  3e sérialiseur = une 3e vérité** : Python écrivait `"a": 1` là où les deux
+  autres écrivent `"a":1` → séparateurs compacts partout, et le contrôle exige
+  **le même octet** des deux implémentations · **QC 115 → 127 + 118**
+- ⏳ **CE QUI RESTE** : **brancher** la caisse (5 commandes, `PAIEMENT.md`) ·
   ⛔ **PAS de Render avec le SQLite de `vitrina/`** : le disque de Render
   s'efface à chaque déploiement (c'est ce qui avait fait disparaître les 2 PDF
   des partenaires) — un déploiement, et les lettres payées n'existent plus ·
+  le **ménage des lettres expirées** (`minuit_menage()` existe, rien ne
+  l'appelle) · le **lien « retirer cette lettre »** dans le pied (la porte
+  existe, le bouton non) ·
   **le faire-part pour NOVEMBRE** (saison des mariages + retour de la diaspora,
   ticket 25 000 F), pas pour février (volume, petit ticket) · **critères
   d'arrêt au 1er décembre 2026**, écrits d'avance.

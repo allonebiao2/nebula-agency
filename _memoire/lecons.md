@@ -2197,3 +2197,87 @@ changement, pas du déploiement.
   valeurs diffèrent. Et un **témoin** à côté de chaque verrou (une heure déjà
   passée, un palier payé) : sans lui, un verrou resté fermé pour toujours
   passerait tous les contrôles avec les honneurs.
+
+---
+
+## 2026-09-06 · Une porte qui accepte du HTML est un hébergeur, pas une API
+
+- **Contexte** : la caisse de MINUIT. Le constructeur bâtissait la lettre dans
+  le navigateur et l'envoyait toute faite, comme le fait `vitrina/`.
+- **Ce qui s'est passé** : en écrivant la fonction qui la reçoit, la question
+  s'est posée : que se passe-t-il si quelqu'un poste **autre chose** ? Réponse :
+  on lui sert sa page sur `minuit.nebula-agency.online`, gratuitement,
+  anonymement, avec notre nom de domaine et notre certificat. C'est le
+  nécessaire pour une page qui imite une banque.
+- **Leçon** : accepter du HTML d'un inconnu et le servir sur son propre domaine,
+  ce n'est pas une API, c'est un hébergement gratuit pour n'importe qui.
+- **À appliquer** : **on stocke les DONNÉES, on rebâtit la page côté serveur**
+  à partir d'un gabarit qui, lui, est à nous. Conséquence heureuse : une
+  correction dans le gabarit profite à toutes les lettres déjà vendues.
+
+---
+
+## 2026-09-06 · Un fichier qui documente un piège le contient, presque toujours
+
+- **Contexte** : la fonction qui neutralise U+2028 / U+2029 avant d'écrire des
+  données dans un bloc `<script>`.
+- **Ce qui s'est passé** : **quatre fois** maintenant. Deux fois le 2026-09-02
+  (le commentaire qui expliquait `</script>` le contenait ; la fonction qui
+  neutralise U+2028 les portait en clair dans ses regex), et **deux fois de plus
+  le 2026-09-06** : dans le jumeau TypeScript de cette fonction, puis dans le
+  contrôle écrit pour l'essayer. À chaque fois, le fichier refuse de se charger.
+- **Leçon** : écrire un caractère invisible « pour l'exemple » revient à le
+  poser dans son propre code. Les regex ne s'échappent pas toutes seules.
+- **À appliquer** : **` ` en échappement, jamais le caractère**, et
+  **charger le module une fois** juste après l'avoir écrit. C'est le chargement
+  qui a parlé les deux fois, immédiatement, avant tout contrôle.
+
+---
+
+## 2026-09-06 · On n'attend pas une navigation en interrogeant l'URL
+
+- **Contexte** : le contrôle « une lettre payée s'en va vers la page de
+  paiement ».
+- **Ce qui s'est passé** : la sonde lisait `page.url` toutes les 100 ms. Elle a
+  annoncé que la page n'avait pas bougé, alors qu'elle bougeait ; en
+  l'instrumentant, Playwright a répondu « Execution context was destroyed, most
+  likely because of a navigation ». **Le produit était sain**, la sonde
+  regardait un contexte en train d'être détruit. En isolation, la même séquence
+  passait : le défaut ne se voyait que sous la charge de la suite complète.
+- **Leçon** : une navigation n'est pas un état qu'on échantillonne, c'est un
+  événement. Et `localStorage` **appartient à l'origine** : lu après la
+  navigation, il rend le rangement d'un autre site.
+- **À appliquer** : `wait_for_url()` pour attendre, et **revenir sur la bonne
+  origine** avant de lire un rangement local. Cinquième sonde menteuse de la
+  semaine : vérifier sa sonde avant d'accuser le produit.
+
+---
+
+## 2026-09-06 · Une boucle de tirage au sort doit être bornée
+
+- **Contexte** : `jeton()`, qui fabrique l'adresse indevinable d'une lettre.
+- **Ce qui s'est passé** : elle tirait des octets et rejetait ceux qui
+  fausseraient la répartition, dans un `while` sans borne. Le contrôle écrit
+  pour prouver le rejet lui a donné une source qui ne rend **que** des octets
+  rejetés : la suite de tests s'est arrêtée de tourner, sans un mot.
+- **Leçon** : dans une fonction de bord, une boucle qui peut ne pas se terminer
+  ne rend pas une erreur, elle **cesse de répondre** — et un serveur qui ne
+  répond plus ne dit rien à personne.
+- **À appliquer** : borner, et lever une erreur nommée. Et se rappeler que
+  c'est le contrôle qui l'a trouvé, en donnant à la fonction exactement
+  l'entrée qu'elle ne savait pas refuser.
+
+---
+
+## 2026-09-06 · Trois sérialiseurs pour une règle, trois octets différents
+
+- **Contexte** : les données d'une lettre s'écrivent dans le gabarit depuis
+  Python (`_injecter.py`), depuis le navigateur (`creer.html`) et désormais
+  depuis Deno (`_shared/lettre.ts`).
+- **Ce qui s'est passé** : Python écrivait `"a": 1` là où `JSON.stringify`
+  écrit `"a":1`. Même règle d'échappement, sortie différente : impossible de
+  comparer les trois, donc impossible de prouver qu'ils protègent pareil.
+- **Leçon** : deux implémentations d'une même règle ne se valident que si elles
+  rendent **le même octet**. Sinon on compare des intentions.
+- **À appliquer** : `separators=(",", ":")` côté Python, et un contrôle qui
+  passe la **même batterie hostile** aux deux et exige l'égalité stricte.

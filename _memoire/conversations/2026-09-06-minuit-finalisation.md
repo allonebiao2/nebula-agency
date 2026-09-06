@@ -264,7 +264,103 @@ et prélevé dans une autre sans le dire fabrique une réclamation.
 
 ---
 
-## 8 · Les fichiers touchés
+## 8 · SECOND TEMPS — la caisse et l'adresse
+
+Étape 2 de l'arrêté, écrite dans la foulée. **Rien n'est déployé** (il manque
+six réponses de Mongazi), mais tout ce qui décide est écrit et essayé.
+Marche à suivre complète : **`minuit/PAIEMENT.md`**.
+
+### Ce qui est posé
+
+- **`supabase/lettres.sql`** : le schéma `minuit`, les sessions de paiement, le
+  journal des notifications, et **huit portes que seul le `service_role` peut
+  pousser**. Même forme que PISTE, qui encaisse depuis le 2026-09-03.
+- **Trois fonctions de bord** : `minuit-commande` (déposer + ouvrir le
+  paiement), `minuit-paiement-recu` (le webhook signé, qui **ouvre la lettre**),
+  `minuit-lettre` (servir, et **retirer**).
+- **`_shared/lettre.ts`** : tout ce qui décide, en Web standard, donc essayable
+  sous Node **sans clé, sans réseau et sans base**. 118 contrôles.
+- **Le constructeur parle enfin à la caisse.** Il posait sa commande sur
+  `window.MINUIT_COMMANDE` et elle n'allait nulle part : c'était une
+  démonstration.
+
+### ⛔ Les deux règles qui ont décidé de tout le reste
+
+**On ne stocke jamais le HTML du navigateur.** Une porte publique qui accepte
+du HTML et le sert sur notre domaine est **un hébergeur de pages arbitraires** :
+gratuit, anonyme, et parfait pour une page qui imite une banque. On stocke les
+**données**, et la lettre est **rebâtie** à partir du gabarit à chaque lecture.
+Conséquence heureuse : une correction dans `lettre.html` profite à toutes les
+lettres déjà vendues.
+
+**Le prix ne vient jamais du navigateur.** Le constructeur est un paquet
+statique : ce qu'il annonce se réécrit dans la console en trois secondes. Le
+barème de `_shared/lettre.ts` est le seul qui engage la caisse, et un contrôle
+**lit les deux côtés** et refuse la moindre différence. Même règle pour le pied
+viral (sinon il se retire d'un clic) et pour le code secret.
+
+### L'écran de la référence disparaît
+
+Avec le numéro Mobile Money et le choix du réseau. C'était **le moment le plus
+fragile de toute la chaîne**, et la validation à la main rendait le palier à
+2 000 F déficitaire, ce que le manuel interdit lui-même. L'écran dit maintenant
+la somme, « Mobile Money ou carte, sur la page de notre encaisseur », et le
+bouton annonce **« Payer 5 000 F »**.
+
+### ⛔ Trois fois le même piège, dans la même journée
+
+**U+2028 écrit EN CLAIR dans les expressions régulières qui doivent le
+neutraliser** : dans `lettre.ts`, puis dans le contrôle qui essaie `lettre.ts`.
+Le README documente ce piège depuis le 2026-09-02, où il s'était déjà produit
+deux fois.
+
+⚠️ **Un fichier qui documente son propre piège doit être vérifié comme s'il le
+contenait**, parce que c'est souvent le cas. Les deux fois, c'est le
+**chargement du module** qui l'a dit, immédiatement : écrire un garde-fou sans
+l'exécuter une fois, c'est écrire une intention.
+
+### ⚠️ Deux sondes qui mentaient, encore
+
+- L'une lisait la **ligne d'import** au lieu de l'appel (« une lettre offerte
+  n'ouvre aucun paiement » accusait un code sain, parce que le mot
+  `ouvrirSession` figure en haut du fichier).
+- L'autre interrogeait **`pg.url` en boucle** pour attendre une navigation :
+  le contexte d'exécution est détruit pendant qu'elle a lieu, et la sonde
+  tombe sur « Execution context was destroyed » ou conclut trop tôt que rien
+  n'a bougé. Playwright a un guetteur pour ça (`wait_for_url`), et lui survit
+  au changement de page.
+- ⛔ Et **`localStorage` appartient à l'ORIGINE** : lu depuis la page de
+  paiement, il rend le rangement d'un autre site. Le contrôle « son brouillon
+  l'attend » revient d'abord sur le constructeur.
+
+### Un défaut de conception attrapé par un contrôle
+
+`jeton()` tirait au sort dans une boucle **non bornée** : une source de hasard
+qui ne rendrait que des octets rejetés l'aurait fait tourner pour toujours, et
+**un serveur qui tourne pour toujours ne dit rien, il ne répond plus**. La
+boucle est bornée, et lève une erreur nommée. C'est le contrôle qui l'a
+trouvé, en lui donnant exactement ce hasard-là.
+
+### ⚠️ Trois contrôles RETOURNÉS, pas supprimés
+
+« Sans référence, la commande ne part pas » disait quelque chose de vrai sur le
+produit, et c'est ce quelque chose qui a changé : il dit maintenant « il n'y a
+plus de référence à coller ». Idem pour « la commande porte le HTML complet de
+la lettre », devenu **« ⛔ la commande ne porte AUCUN HTML »**.
+
+### Un troisième sérialiseur, donc une troisième vérité
+
+`_injecter.py` (Python), `creer.html` (navigateur) et `_shared/lettre.ts`
+(Deno) écrivent tous les trois des données dans le gabarit. Python écrivait
+`"a": 1` là où les deux autres écrivent `"a":1` : **même règle, trois octets
+différents**. Séparateurs compacts partout, et le contrôle passe la même
+batterie hostile aux deux implémentations en exigeant **le même octet**.
+
+**Contrôles : 115 → 127 (la lettre) + 118 (la caisse).**
+
+---
+
+## 9 · Les fichiers touchés
 
 | Fichier | Ce qui a changé |
 |---|---|
@@ -275,3 +371,8 @@ et prélevé dans une autre sans le dire fabrique une réclamation.
 | `minuit/CONDITIONS.md` | **Neuf** |
 | `_plans/2026-09-06-minuit-arrete.html` | **Neuf** : les 12 décisions |
 | `minuit/README.md`, `CLAUDE.md` | L'état réel, et la contradiction n8n signalée |
+| `minuit/supabase/` | **Neuf** : la base et les trois fonctions de bord |
+| `minuit/_qc_caisse.mjs` | **Neuf** : 118 contrôles, sans clé ni réseau |
+| `minuit/_gabarit_ts.py` | **Neuf** : le gabarit voyage avec le code |
+| `minuit/PAIEMENT.md` | **Neuf** : où vit chaque morceau, et comment brancher |
+| `minuit/_injecter.py` | Séparateurs compacts : trois sérialiseurs, un seul octet |

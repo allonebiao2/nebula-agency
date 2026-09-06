@@ -42,6 +42,19 @@ lien trois jours trop tôt. **QC 82 → 115.**
    chaque déploiement, c'est ce qui avait tué les 2 PDF des partenaires. Un
    déploiement, et les lettres payées n'existent plus. → Supabase.
 
+### 🏦 Second temps du même jour : la caisse est écrite
+
+**Rien n'est déployé, tout est contrôlé.** Marche à suivre en cinq commandes :
+**`minuit/PAIEMENT.md`**. Le schéma Supabase `minuit`, trois fonctions de bord
+sur la forme éprouvée de PISTE, et le constructeur qui parle enfin à la caisse
+(il posait sa commande sur `window.MINUIT_COMMANDE` et elle n'allait nulle
+part). **QC 115 → 127 + 118.**
+
+⛔ **On ne stocke jamais le HTML du navigateur** : ce serait un hébergeur de
+pages arbitraires sur notre domaine. On stocke les données, la lettre est
+rebâtie depuis le gabarit. ⛔ **Le prix ne vient jamais du navigateur** non
+plus, ni le pied viral, ni le code secret.
+
 ### ⏳ Par quoi commencer la prochaine fois
 
 **Six réponses de Mongazi bloquent la vente, aucune ne prend une minute** : le
@@ -49,10 +62,9 @@ compte qui encaisse · le sous-domaine · **un n8n tourne-t-il ailleurs, oui ou
 non** (ça rouvre aussi les relances de renouvellements) · la commission SasPay ·
 qui relit le deuil · **le premier franc encaissé pour de vrai**.
 
-Puis, dans cet ordre : la caisse SasPay (copiée de `piste/PAIEMENT.md`),
-l'adresse (schéma Supabase + 3 fonctions de bord + sous-domaine), la page de
-vente, et **le faire-part pour novembre** (pas pour février : ticket dix fois
-plus élevé).
+Puis, dans cet ordre : **brancher** la caisse (elle est écrite : cinq commandes
+dans `minuit/PAIEMENT.md`), la page de vente et l'affiche, et **le faire-part
+pour novembre** (pas pour février : ticket dix fois plus élevé).
 
 ---
 
