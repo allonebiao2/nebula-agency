@@ -42,6 +42,11 @@
   --or:#c9a227;
   --or-doux:#e0c266;
   --gris:#6d6478;
+  /* ⚠️ LE MEME GRIS NE VA PAS SUR LES DEUX FONDS. #6d6478 tient 4,8:1 sur le
+     papier de la lettre, et tombe a 3,4:1 sur la nuit du seuil, ou vivent la
+     ligne d'attente et LE COMPTE A REBOURS. Un gris pour le papier, un gris
+     pour la nuit : c'est la meme lecon que l'or d'Angy Art, a l'envers. */
+  --gris-nuit:#8f86a0;
   --pli:rgba(36,29,43,.12);
   --t:cubic-bezier(.25,1,.5,1);
 }
@@ -75,7 +80,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   transition:opacity .7s var(--t),visibility .7s;
 }
 #seuil.parti{opacity:0;visibility:hidden;pointer-events:none}
-.pour{font-size:clamp(13px,3.4vw,15px);letter-spacing:.24em;text-transform:uppercase;color:var(--gris)}
+.pour{font-size:clamp(13px,3.4vw,15px);letter-spacing:.24em;text-transform:uppercase;color:var(--gris-nuit)}
 .pour b{color:var(--or-doux);font-weight:600}
 
 .enveloppe{
@@ -118,7 +123,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes eclat3{0%{opacity:1;transform:translate(-50%,-50%)}
   100%{opacity:0;transform:translate(-30%,-160%) rotate(18deg)}}
 
-.touche{font-size:clamp(13px,3.5vw,15px);color:var(--gris);letter-spacing:.05em}
+.touche{font-size:clamp(13px,3.5vw,15px);color:var(--gris-nuit);letter-spacing:.05em}
 .ouvrir{
   padding:14px 30px;border-radius:999px;background:var(--papier);color:var(--encre);
   font-weight:700;font-size:15px;letter-spacing:.02em;
@@ -127,6 +132,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .ouvrir:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(0,0,0,.5)}
 .ouvrir:active{transform:translateY(0)}
+
+/* ── LE VERROU D'HEURE ────────────────────────────────────────────────
+   Ce qui donne son nom au produit. Avant l'heure choisie, le cachet DORT :
+   la cire est froide, elle ne respire pas, et il n'y a pas de bouton a
+   pousser. A l'heure dite, la cire s'allume et le bouton parait.
+   On ne cache rien : la page DIT quand elle s'ouvre. Ce n'est pas un
+   coffre-fort, c'est un cachet, et c'est exactement ce qu'on promet. */
+#attente{display:none;flex-direction:column;align-items:center;gap:6px}
+#attente.on{display:flex}
+.att-quand{font-size:clamp(14px,3.8vw,16px);color:var(--papier)}
+.att-quand b{color:var(--or-doux);font-weight:600;white-space:nowrap}
+.att-reste{font-size:clamp(12px,3.2vw,13px);color:var(--gris-nuit);letter-spacing:.08em;
+  font-variant-numeric:tabular-nums}
+.cachet{transition:filter 1.1s var(--t)}
+.verrouille .cachet{animation:none;filter:saturate(.5) brightness(.62)}
+.verrouille .enveloppe{box-shadow:0 22px 52px rgba(0,0,0,.5)}
 
 /* Le code secret : quatre cases, pas un champ de mot de passe. */
 #code{display:none;flex-direction:column;align-items:center;gap:12px}
@@ -141,7 +162,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .cases input:focus{outline:none;border-color:var(--or-doux);background:rgba(244,237,224,.12)}
 .cases.faux{animation:non .4s}
 @keyframes non{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-.aide{font-size:13px;color:var(--gris);max-width:30ch}
+.aide{font-size:13px;color:var(--gris-nuit);max-width:30ch}
 
 /* ══════════════════════════════════════════════════════════════════
    2 · LE PLI · la lettre sort et se deplie
@@ -286,7 +307,15 @@ main.ouverte{opacity:1}
     <div class="cachet serif" aria-hidden="true"><span id="s-init">M</span></div>
   </div>
 
-  <p class="touche" id="s-touche">Une lettre t'attend.</p>
+  <p class="touche" id="s-touche" role="status" aria-live="polite">Une lettre t'attend.</p>
+
+  <!-- Le verrou d'heure. La phrase est lue par les lecteurs d'ecran ; le
+       compte a rebours, non : une annonce par seconde serait une torture. -->
+  <div id="attente">
+    <p class="att-quand" id="att-quand"></p>
+    <p class="att-reste" id="att-reste" aria-hidden="true"></p>
+  </div>
+
   <button class="ouvrir" id="btn-ouvrir">Briser le cachet</button>
 
   <div id="code">
@@ -357,6 +386,7 @@ var D = /*MINUIT_DONNEES*/{
   ],
   photos:[],
   depuis:"",
+  ouvre:"",
   pied:true,
   lien:"https://nebula-agency.online/minuit"
 }/*FIN_MINUIT_DONNEES*/;
@@ -443,10 +473,90 @@ function rouler(){
   requestAnimationFrame(pas);
 }
 
+/* ── LE VERROU D'HEURE ──────────────────────────────────────────────────
+   D.ouvre est une heure de CALENDRIER (« 2026-09-07T00:00 »), sans fuseau,
+   et c'est voulu : minuit, c'est minuit sur le telephone de celle qui lit.
+   Un instant absolu ferait ouvrir la lettre a 22 h a Paris parce que
+   l'acheteur a tape minuit a Cotonou.
+   On lit la date a la main plutot que de laisser new Date() decider : les
+   navigateurs n'ont pas toujours traite « ...T00:00 » comme une heure locale.
+   ─────────────────────────────────────────────────────────────────────── */
+var MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août",
+            "septembre","octobre","novembre","décembre"];
+var JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+
+function instantOuverture(s){
+  var m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(String(s || ""));
+  if (!m) { return 0; }
+  /* Les secondes sont acceptees mais le constructeur n'en ecrit jamais :
+     elles servent aux controles, qui ne peuvent pas attendre une minute. */
+  return new Date(+m[1], +m[2] - 1, +m[3],
+                  +(m[4] || 0), +(m[5] || 0), +(m[6] || 0), 0).getTime();
+}
+var OUVRE = instantOuverture(D.ouvre);
+function verrouille(){ return OUVRE > 0 && !D.apercu && Date.now() < OUVRE; }
+
+function libQuand(t){
+  var d = new Date(t);
+  var h = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+  var jour = JOURS[d.getDay()] + " " + d.getDate() + " " + MOIS[d.getMonth()];
+  /* Minuit se dit, il ne se lit pas en chiffres. */
+  return jour + (h === "00:00" ? " à minuit" : " à " + h);
+}
+
+function libReste(ms){
+  var s = Math.max(0, Math.ceil(ms / 1000));
+  var j = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600);
+  var mn = Math.floor(s % 3600 / 60);
+  /* On nomme l'unite jusqu'au bout : « dans 5 h 11 » se lit comme une heure
+     de la journee, pas comme une duree. */
+  if (j > 0) { return "dans " + j + (j > 1 ? " jours " : " jour ") + h + " h"; }
+  if (h > 0) { return "dans " + h + " h " + ("0" + mn).slice(-2) + " min"; }
+  if (mn > 0) { return "dans " + mn + " min " + ("0" + (s % 60)).slice(-2) + " s"; }
+  return "dans " + s + " s";
+}
+
+var minuteur = 0;
+function ouvrable(){
+  /* L'heure est venue : la cire s'allume, le bouton parait, et on le DIT
+     une fois (le lecteur d'ecran l'annonce, la page ne se recharge pas). */
+  if (minuteur) { clearInterval(minuteur); minuteur = 0; }
+  document.documentElement.classList.remove("verrouille");
+  $("#attente").classList.remove("on");
+  $("#btn-ouvrir").hidden = false;
+  txt($("#s-touche"), "C'est l'heure.");
+}
+
+function tic(){
+  var reste = OUVRE - Date.now();
+  if (reste <= 0) { ouvrable(); return; }
+  txt($("#att-reste"), libReste(reste));
+}
+
+if (verrouille()) {
+  document.documentElement.classList.add("verrouille");
+  $("#btn-ouvrir").hidden = true;
+  $("#attente").classList.add("on");
+  txt($("#s-touche"), "Une lettre t'attend.");
+  $("#att-quand").innerHTML = "";
+  $("#att-quand").appendChild(document.createTextNode("Elle s'ouvre "));
+  var bq = document.createElement("b");
+  txt(bq, libQuand(OUVRE));
+  $("#att-quand").appendChild(bq);
+  $("#att-quand").appendChild(document.createTextNode("."));
+  tic();
+  minuteur = setInterval(tic, 1000);
+  /* Un onglet en arriere-plan voit ses minuteurs ralentis : au retour, on
+     recompte tout de suite au lieu d'afficher une seconde perimee. */
+  document.addEventListener("visibilitychange", function(){
+    if (!document.hidden && minuteur) { tic(); }
+  });
+}
+
 /* ── L'ouverture. ── */
 var ouvert = false;
 function ouvrir(){
-  if (ouvert) { return; }
+  if (ouvert || verrouille()) { return; }
   ouvert = true;
   var env = $("#env");
   env.classList.add("brise");

@@ -249,7 +249,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
           <input type="date" id="f-quand">
           <input type="time" id="f-quand-h" value="00:00">
         </div>
-        <p class="indice">À minuit pile, c'est ce qui fait le produit. Laisse vide pour une remise tout de suite.</p>
+        <p class="indice">Sa lettre ne s'ouvrira pas avant cette heure, à l'heure de <b>son</b> téléphone. Laisse vide pour qu'elle s'ouvre tout de suite.</p>
       </div>
 
       <div class="actions">
@@ -271,24 +271,26 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 
     <!-- ÉCRAN 4 et 5 · il paie, il colle la référence -->
     <section class="ecran" id="e-paiement">
-      <h1 class="serif">Le règlement.</h1>
-      <p class="sous">Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b></p>
+      <h1 class="serif" id="pay-titre">Le règlement.</h1>
+      <p class="sous" id="pay-sous">Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b></p>
 
-      <div class="somme">
-        <div class="n" id="p-somme">2 000 F</div>
-        <div class="l">Envoie exactement cette somme, au franc près.</div>
+      <div id="bloc-reglement">
+        <div class="somme">
+          <div class="n" id="p-somme">2 000 F</div>
+          <div class="l">Envoie exactement cette somme, au franc près.</div>
+        </div>
+
+        <div class="numero">
+          <div><b id="p-numero">01 96 74 07 32</b><span id="p-nom">NEBULA Agency</span></div>
+          <button class="copier" id="btn-copier">Copier</button>
+        </div>
+
+        <div class="avert">
+          Une somme différente crée un litige qu'il faut arbitrer à la main, et ta lettre attend pendant ce temps.
+        </div>
       </div>
 
-      <div class="numero">
-        <div><b id="p-numero">01 96 74 07 32</b><span id="p-nom">NEBULA Agency</span></div>
-        <button class="copier" id="btn-copier">Copier</button>
-      </div>
-
-      <div class="avert">
-        Une somme différente crée un litige qu'il faut arbitrer à la main, et ta lettre attend pendant ce temps.
-      </div>
-
-      <div class="groupe">
+      <div class="groupe" id="groupe-ref">
         <label for="f-ref">La référence de ton SMS</label>
         <input type="text" id="f-ref" placeholder="MP260827.1432.A81234" autocomplete="off">
         <p class="indice">Ton opérateur te l'envoie par SMS juste après le transfert. Copie-la en entier.</p>
@@ -349,13 +351,19 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
    Le catalogue. Les prix viennent du manuel Minuit et de nulle part
    ailleurs : on ne recopie jamais un prix a la main dans deux fichiers.
    ══════════════════════════════════════════════════════════════════════ */
+/* ⛔ UNE SEULE ECHELLE DE PRIX, et elle est plus bas : les PALIERS.
+   Les occasions portaient chacune un prix, affiche « des 10 000 F », que rien
+   n'appliquait ensuite : on choisissait « Demande en mariage · des 10 000 F »
+   puis le palier gratuit, et on payait 0 F. Deux echelles dans un fichier
+   sont deux verites. L'occasion decide du TON, le palier decide du PRIX,
+   et l'ecran des paliers le dit deja : « elle ne change pas selon le prix ». */
 var OCCASIONS = [
-  {id:"mois",     nom:"Mois de rencontre", note:"« Happy 1 month »", titre:"Un mois avec toi", prix:2000},
-  {id:"anniv",    nom:"Anniversaire",      note:"Le plus demandé",   titre:"Joyeux anniversaire", prix:2000},
-  {id:"rdv",      nom:"Une invitation",    note:"Un rendez-vous",    titre:"Ça te dit ?", prix:5000},
-  {id:"pardon",   nom:"Excuse",            note:"Réconciliation",    titre:"Je m'excuse", prix:2000},
-  {id:"maman",    nom:"Fête des mères",    note:"Toute la fratrie",  titre:"Merci maman", prix:5000},
-  {id:"demande",  nom:"Demande en mariage",note:"Sobriété maximale", titre:"Veux-tu m'épouser ?", prix:10000}
+  {id:"mois",     nom:"Mois de rencontre", note:"« Happy 1 month »", titre:"Un mois avec toi"},
+  {id:"anniv",    nom:"Anniversaire",      note:"Le plus demandé",   titre:"Joyeux anniversaire"},
+  {id:"rdv",      nom:"Une invitation",    note:"Un rendez-vous",    titre:"Ça te dit ?"},
+  {id:"pardon",   nom:"Excuse",            note:"Réconciliation",    titre:"Je m'excuse"},
+  {id:"maman",    nom:"Fête des mères",    note:"Toute la fratrie",  titre:"Merci maman"},
+  {id:"demande",  nom:"Demande en mariage",note:"Sobriété maximale", titre:"Veux-tu m'épouser ?"}
 ];
 var PALIERS = [
   {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, le pied MINUIT reste", prix:0,     pied:true},
@@ -442,6 +450,12 @@ function donnees(){
       return { src: p.src, legende: p.legende || "" };
     }),
     depuis: E.depuis || "",
+    /* L'HEURE. Elle etait demandee a l'acheteur, promise sur l'ecran final,
+       et n'entrait dans aucune lettre. C'est elle qui donne son nom au
+       produit : sans elle, MINUIT s'appelle « une jolie page ».
+       Format de calendrier, sans fuseau : minuit, c'est minuit sur le
+       telephone de celle qui lit. */
+    ouvre: E.quand ? (E.quand + "T" + (E.quandH || "00:00")) : "",
     pied: pal.pied,
     lien: "https://nebula-agency.online/minuit",
     /* Ouvert d'office pendant l'ecriture, ferme quand on demande a revoir
@@ -500,8 +514,7 @@ OCCASIONS.forEach(function(o){
   b.dataset.id = o.id;
   var n = document.createElement("b"); n.textContent = o.nom;
   var s = document.createElement("span"); s.textContent = o.note;
-  var e = document.createElement("em"); e.textContent = "dès " + fmt(o.prix);
-  b.appendChild(n); b.appendChild(s); b.appendChild(e);
+  b.appendChild(n); b.appendChild(s);
   b.addEventListener("click", function(){
     E.occasion = o.id;
     if (!E.titre) { $("#f-titre").value = o.titre; E.titre = o.titre; }
@@ -526,7 +539,7 @@ PALIERS.forEach(function(p){
   b.addEventListener("click", function(){
     E.palier = p.id;
     $$(".pal").forEach(function(y){ y.classList.toggle("on", y.dataset.id === p.id); });
-    $("#p-somme").textContent = fmt(p.prix);
+    peindreReglement();
     garder(); peindre();
   });
   $("#liste-paliers").appendChild(b);
@@ -607,10 +620,29 @@ $$("[data-vers]").forEach(function(b){
   b.addEventListener("click", function(){ aller(b.dataset.vers); });
 });
 $("#vers-palier").addEventListener("click", function(){ aller("e-palier"); });
-$("#vers-paiement").addEventListener("click", function(){
+/* ⛔ Une lettre OFFERTE n'a pas de caisse. La ligne d'avant disait
+   « aller(p.prix === 0 ? "e-paiement" : "e-paiement") » : les deux branches
+   etaient identiques, donc l'intention avait ete ecrite puis perdue, et le
+   palier gratuit, celui qui porte TOUTE la boucle virale, affichait « Envoie
+   exactement cette somme, au franc pres » au-dessus d'un numero Mobile Money,
+   pour zero franc. On garde UN seul ecran (le WhatsApp se demande dans les
+   deux cas) et c'est l'ecran qui change de nature. */
+function peindreReglement(){
   var p = PALIERS.filter(function(x){ return x.id === E.palier; })[0];
+  var offert = p.prix === 0;
   $("#p-somme").textContent = fmt(p.prix);
-  aller(p.prix === 0 ? "e-paiement" : "e-paiement");
+  $("#bloc-reglement").hidden = offert;
+  $("#groupe-ref").hidden = offert;
+  $("#pay-titre").textContent = offert ? "Où t'envoyer ta lettre." : "Le règlement.";
+  $("#pay-sous").innerHTML = offert
+    ? "Elle est offerte. Dis-nous seulement où t'envoyer le lien."
+    : "Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>";
+  $("#btn-commander").textContent = offert ? "Recevoir ma lettre" : "J'ai payé, envoyer";
+}
+
+$("#vers-paiement").addEventListener("click", function(){
+  peindreReglement();
+  aller("e-paiement");
 });
 $("#btn-rejouer").addEventListener("click", function(){
   /* On rejoue le seuil : enveloppe fermee, cachet a briser. */
@@ -651,8 +683,13 @@ $("#btn-commander").addEventListener("click", function(){
   var html = htmlCommande();
   var blob = new Blob([html], { type: "text/html" });
   $("#lien-apercu").href = URL.createObjectURL(blob);
-  var q = E.quand ? ("Elle la recevra le " + E.quand + " à " + (E.quandH || "00:00") + ".")
-                  : "Elle la recevra dès que ton règlement est vérifié.";
+  /* On ne promet que ce que la lettre tient toute seule : le cachet ne se
+     brise pas avant l'heure. On ne promet PAS un envoi a l'heure dite, que
+     personne n'ecrit. Envoyer le lien, c'est lui. */
+  var q = E.quand
+    ? ("Envoie-lui le lien quand tu veux : le cachet ne se brisera pas avant le "
+       + E.quand + " à " + (E.quandH || "00:00") + ".")
+    : "Envoie-lui le lien quand tu veux : elle pourra l'ouvrir tout de suite.";
   $("#fini-quand").textContent = q;
 
   /* Le serveur de vitrina attend exactement cette forme. On n'invente pas
@@ -675,6 +712,7 @@ $("#btn-commander").addEventListener("click", function(){
    ══════════════════════════════════════════════════════════════════════ */
 $("#p-numero").textContent = MOMO.numero;
 $("#p-nom").textContent = MOMO.nom;
+peindreReglement();
 
 var repris = reprendre();
 Object.keys(CHAMPS).forEach(function(id){

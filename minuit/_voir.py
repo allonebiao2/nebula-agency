@@ -46,6 +46,14 @@ def main():
     essai = OUT / "_essai.html"
     essai.write_text(poser(EXEMPLE), encoding="utf-8")
 
+    # La meme lettre, mais programmee : le verrou d'heure est ce que voit
+    # d'abord celle qui la recoit avant l'heure.
+    import datetime
+    quand = datetime.datetime.now() + datetime.timedelta(hours=5, minutes=12)
+    verrou = OUT / "_essai_verrou.html"
+    verrou.write_text(poser(dict(EXEMPLE, ouvre=quand.strftime("%Y-%m-%dT%H:%M"))),
+                      encoding="utf-8")
+
     with sync_playwright() as pw:
         nav = pw.chromium.launch()
         for nom, larg, haut in (("390", 390, 844), ("1440", 1440, 900)):
@@ -54,6 +62,14 @@ def main():
             pg.goto(essai.as_uri())
             pg.wait_for_timeout(900)
             pg.screenshot(path=str(OUT / ("seuil-%s.png" % nom)))
+
+            # Le seuil VERROUILLE : c'est le premier ecran d'une lettre
+            # programmee, donc le plus vu du produit. Il se regarde.
+            pg.goto(verrou.as_uri())
+            pg.wait_for_timeout(900)
+            pg.screenshot(path=str(OUT / ("verrou-%s.png" % nom)))
+            pg.goto(essai.as_uri())
+            pg.wait_for_timeout(700)
 
             pg.click("#btn-ouvrir")
             # L'ouverture dure ~620 ms, puis les lignes s'ecrivent une a une.

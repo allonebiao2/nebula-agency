@@ -8,6 +8,7 @@ lisible pour qui a coupe les animations.
 
     python minuit/_qc.py
 """
+import datetime
 import json
 import pathlib
 import re
@@ -31,6 +32,21 @@ BASE = {
 }
 
 verts, rouges = [], []
+
+# Les memes noms que dans lettre.html : un libelle recopie a la main derive.
+MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
+        "août", "septembre", "octobre", "novembre", "décembre"]
+
+
+def dans(secondes):
+    """Une heure de calendrier, comme celle que l'acheteur tape.
+
+    ⚠️ Sans fuseau, et c'est le sujet : minuit, c'est minuit sur le telephone
+    de celle qui lit. Les secondes ne servent qu'ici : un controle ne peut pas
+    attendre une minute pour voir un verrou se lever.
+    """
+    d = datetime.datetime.now() + datetime.timedelta(seconds=secondes)
+    return d, d.strftime("%Y-%m-%dT%H:%M:%S")
 
 
 def ok(nom):
@@ -107,6 +123,20 @@ def main():
         dit("%s : aucun tiret cadratin" % f, "\u2014" not in src_f)
     dit("le marqueur de donnees est unique",
         src.count("/*MINUIT_DONNEES*/") == 1 and src.count("/*FIN_MINUIT_DONNEES*/") == 1)
+    # ⛔ UNE SEULE ECHELLE DE PRIX. Les occasions en portaient une deuxieme,
+    # affichee « des 10 000 F » et appliquee nulle part : on choisissait
+    # « Demande en mariage · des 10 000 F », puis le palier gratuit, et on
+    # payait 0 F. Deux echelles dans un fichier sont deux verites.
+    creer = (ICI / "creer.html").read_text(encoding="utf-8")
+    bloc_occ = re.search(r"var OCCASIONS = \[(.*?)\];", creer, re.S)
+    dit("les occasions ne portent aucun prix",
+        bool(bloc_occ) and "prix" not in bloc_occ.group(1))
+    dit("aucune carte d'occasion n'affiche « des X F »",
+        'textContent = "dès " + fmt' not in creer)
+    bloc_pal = re.search(r"var PALIERS = \[(.*?)\];", creer, re.S)
+    dit("les paliers, eux, portent les 4 prix",
+        bool(bloc_pal) and bloc_pal.group(1).count("prix:") == 4)
+
     # Une animation signature par section : on verifie qu'elles sont bien
     # distinctes, pas qu'une seule serve partout.
     sigs = set(re.findall(r"@keyframes\s+([a-zA-Z0-9_-]+)", src))
@@ -260,6 +290,116 @@ def main():
             pg.eval_on_selector("#l-compte", "e=>e.hidden") is True)
         pg.close()
 
+        # ───────────────────────────────────── 5 bis · LE VERROU D'HEURE
+        # C'est la fonction qui donne son nom au produit. Elle etait demandee
+        # a l'acheteur et n'existait nulle part : ni dans la lettre, ni dans
+        # une machine a envoyer (n8n tournait sur un serveur qui n'est plus a
+        # Mongazi). Elle vit desormais DANS la lettre.
+        print("\n== Le verrou d'heure")
+
+        d, tard = dans(95)
+        f = page_avec(dict(BASE, ouvre=tard), "_qc_verrou.html")
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        bugs = []
+        pg.on("pageerror", lambda e: bugs.append(str(e)))
+        pg.goto(f.as_uri())
+        pg.wait_for_timeout(400)
+
+        dit("avant l'heure : aucun bouton a pousser", not pg.is_visible("#btn-ouvrir"))
+        dit("avant l'heure : la lettre reste fermee",
+            not pg.eval_on_selector("#lettre", "e=>e.classList.contains('ouverte')"))
+        quand = pg.text_content("#att-quand")
+        dit("avant l'heure : la page DIT quand elle s'ouvre",
+            ("%d %s" % (d.day, MOIS[d.month - 1])) in quand, "lu : %s" % quand)
+
+        # Le compte descend vraiment. On ECHANTILLONNE : deux instantanes
+        # peuvent tomber dans la meme seconde et faire echouer un site sain.
+        vus = []
+        for _ in range(4):
+            vus.append(pg.text_content("#att-reste"))
+            pg.wait_for_timeout(700)
+        dit("avant l'heure : le compte descend", len(set(vus)) >= 2, " / ".join(vus))
+
+        # ⛔ Le garde-fou est DANS ouvrir(), pas seulement sur le bouton : le
+        # code secret appelle ouvrir() directement.
+        pg.evaluate("ouvrir()")
+        pg.wait_for_timeout(300)
+        dit("avant l'heure : ouvrir() refuse, meme appele directement",
+            not pg.eval_on_selector("#lettre", "e=>e.classList.contains('ouverte')"))
+        dit("avant l'heure : le cachet dort (il ne respire pas)",
+            pg.eval_on_selector(".cachet", "e=>getComputedStyle(e).animationName") == "none")
+        pg.close()
+
+        # Le bon code ne suffit pas non plus : l'heure passe avant le code.
+        d, tard = dans(95)
+        f = page_avec(dict(BASE, ouvre=tard, code="1234"), "_qc_verrou_code.html")
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(f.as_uri())
+        pg.wait_for_timeout(300)
+        pg.evaluate("""() => {
+          const cs = Array.prototype.slice.call(document.querySelectorAll('#cases input'));
+          '1234'.split('').forEach((v, i) => {
+            cs[i].value = v;
+            cs[i].dispatchEvent(new Event('input', { bubbles: true }));
+          });
+        }""")
+        pg.wait_for_timeout(400)
+        dit("avant l'heure : le BON code n'ouvre pas non plus",
+            not pg.eval_on_selector("#lettre", "e=>e.classList.contains('ouverte')"))
+        pg.close()
+
+        # ⚠️ TEMOIN. Sans lui, un verrou reste ferme pour toujours passerait
+        # tous les controles ci-dessus avec les honneurs.
+        _, passee = dans(-120)
+        f = page_avec(dict(BASE, ouvre=passee), "_qc_verrou_passe.html")
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(f.as_uri())
+        pg.wait_for_timeout(300)
+        dit("heure passee : le bouton est la", pg.is_visible("#btn-ouvrir"))
+        dit("heure passee : rien n'annonce d'attente",
+            not pg.is_visible("#attente"))
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(1400)
+        dit("heure passee : la lettre s'ouvre normalement",
+            pg.eval_on_selector("#lettre", "e=>e.classList.contains('ouverte')"))
+        pg.close()
+
+        # L'heure arrive SOUS LES YEUX : le verrou se leve seul, sans
+        # rechargement, et la cire s'allume.
+        _, bientot = dans(3)
+        f = page_avec(dict(BASE, ouvre=bientot), "_qc_verrou_degel.html")
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(f.as_uri())
+        pg.wait_for_timeout(200)
+        pg.evaluate("window.__temoin = 1")
+        froide = pg.eval_on_selector(".cachet", "e=>getComputedStyle(e).filter")
+        leve = attendre(lambda: pg.is_visible("#btn-ouvrir"), 9000, 200)
+        dit("l'heure arrive : le verrou se leve tout seul", leve)
+        dit("l'heure arrive : la page ne s'est PAS rechargee",
+            pg.evaluate("window.__temoin") == 1)
+        dit("l'heure arrive : on le dit a celle qui attend",
+            "C'est l'heure" in pg.text_content("#s-touche"))
+        chaude = pg.eval_on_selector(".cachet", "e=>getComputedStyle(e).filter")
+        dit("l'heure arrive : la cire s'allume", froide != chaude and froide != "none",
+            "%s -> %s" % (froide, chaude))
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(1400)
+        dit("l'heure arrive : la lettre s'ouvre",
+            pg.eval_on_selector("#lettre", "e=>e.classList.contains('ouverte')"))
+        dit("le verrou n'a leve aucune erreur JavaScript", not bugs, " | ".join(bugs[:2]))
+        pg.close()
+
+        # ⛔ L'apercu du constructeur n'est JAMAIS verrouille : l'acheteur doit
+        # voir SES mots pendant qu'il les tape. C'est la ou la vente se fait.
+        _, tard2 = dans(9999)
+        f = page_avec(dict(BASE, ouvre=tard2, apercu=True), "_qc_verrou_apercu.html")
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(f.as_uri())
+        dit("l'apercu ignore le verrou",
+            attendre(lambda: pg.eval_on_selector(
+                "#lettre", "e=>e.classList.contains('ouverte')")))
+        pg.close()
+
         # ───────────────────────────────────── 6 · le pied viral
         print("\n== Le pied viral")
         f = page_avec(dict(BASE, pied=False), "_qc_sanspied.html")
@@ -345,6 +485,37 @@ def main():
           return Math.round(((L1+.05)/(L2+.05)) * 100) / 100;
         }""")
         dit("le corps de la lettre depasse 4,5:1", ratio >= 4.5, "mesure : %s:1" % ratio)
+        pg.close()
+
+        # ⛔ LE SEUIL N'ETAIT MESURE PAR RIEN, et c'est l'ecran le plus vu du
+        # produit : une lettre programmee ne montre QUE lui pendant des heures.
+        # Le meme gris tenait 4,8:1 sur le papier et 3,4:1 sur la nuit.
+        _, tard3 = dans(4000)
+        f = page_avec(dict(BASE, ouvre=tard3), "_qc_contraste_seuil.html")
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(f.as_uri())
+        pg.wait_for_timeout(400)
+        mesures = pg.evaluate("""() => {
+          const lum = c => { const s = c.map(v => { v /= 255;
+            return v <= .03928 ? v/12.92 : Math.pow((v+.055)/1.055, 2.4); });
+            return .2126*s[0] + .7152*s[1] + .0722*s[2]; };
+          // Le fond du seuil est un degrade : on prend sa borne la PLUS CLAIRE,
+          // la moins favorable pour du texte clair.
+          const g = getComputedStyle(document.querySelector('#seuil')).backgroundImage;
+          const m = [...g.matchAll(/rgba?\(([^)]+)\)/g)].map(x =>
+            x[1].split(',').slice(0,3).map(Number));
+          const fond = m.length ? m.reduce((a,b) => lum(a) > lum(b) ? a : b) : [0,0,0];
+          const out = {};
+          for (const sel of ['.pour', '#s-touche', '#att-quand', '#att-reste']) {
+            const e = document.querySelector(sel);
+            const t = getComputedStyle(e).color.match(/\d+/g).map(Number);
+            const L1 = Math.max(lum(t), lum(fond)), L2 = Math.min(lum(t), lum(fond));
+            out[sel] = Math.round(((L1+.05)/(L2+.05)) * 100) / 100;
+          }
+          return out;
+        }""")
+        for sel, r in mesures.items():
+            dit("seuil %s depasse 4,5:1" % sel, r >= 4.5, "mesure : %s:1" % r)
         pg.close()
 
         # ───────────────────────────────────── 9 · mouvement reduit
@@ -493,6 +664,75 @@ def main():
             dit("palier paye : le pied MINUIT disparait",
                 attendre(lambda: pg.frame_locator("#apercu")
                          .locator("#l-pied").evaluate("e=>e.hidden")))
+
+            # ⛔ UNE LETTRE OFFERTE N'A PAS DE CAISSE. Le code disait
+            # « aller(p.prix === 0 ? "e-paiement" : "e-paiement") » : les deux
+            # branches etaient identiques, donc l'intention avait ete ecrite
+            # puis perdue. Le palier gratuit, celui qui porte toute la boucle
+            # virale, affichait « Envoie exactement cette somme, au franc
+            # pres » au-dessus d'un numero Mobile Money, pour zero franc.
+            pg.click('.pal[data-id="gratuit"]')
+            pg.click("#vers-paiement")
+            pg.wait_for_timeout(250)
+            dit("offert : aucune somme a envoyer",
+                pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is True)
+            dit("offert : aucune reference a coller",
+                pg.eval_on_selector("#groupe-ref", "e=>e.hidden") is True)
+            dit("offert : le bouton ne parle pas de paiement",
+                "payé" not in pg.inner_text("#btn-commander"))
+            dit("offert : on demande quand meme ou envoyer le lien",
+                pg.is_visible("#f-wa"))
+            pg.fill("#f-wa", "0197085576")
+            pg.click("#btn-commander")
+            pg.wait_for_timeout(500)
+            dit("offert : la commande part sans reference",
+                pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
+
+            # ⚠️ TEMOIN : un ecran qui serait TOUJOURS nu passerait les quatre
+            # controles ci-dessus. On repasse a un palier paye.
+            pg.evaluate("localStorage.clear()")
+            pg.goto(base)
+            pg.wait_for_timeout(900)
+            pg.click('.occ[data-id="anniv"]')
+            pg.click("#vers-palier")
+            pg.click('.pal[data-id="lettre"]')
+            pg.click("#vers-paiement")
+            pg.wait_for_timeout(250)
+            dit("paye : la caisse revient",
+                pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is False
+                and pg.eval_on_selector("#groupe-ref", "e=>e.hidden") is False)
+            pg.close()
+
+            # ⛔ L'HEURE PART AVEC LA LETTRE. Elle etait demandee, promise sur
+            # l'ecran final, et n'entrait dans aucune lettre livree.
+            pg = nav.new_page(viewport={"width": 1280, "height": 900})
+            pg.goto(base)
+            pg.wait_for_timeout(900)
+            pg.click('.occ[data-id="anniv"]')
+            pg.fill("#f-pour", "Zara")
+            pg.fill("#f-lettre", "Un mot vrai.")
+            pg.fill("#f-quand", "2027-02-14")
+            pg.fill("#f-quand-h", "00:00")
+            pg.click("#vers-palier")
+            pg.click('.pal[data-id="coffret"]')
+            pg.click("#vers-paiement")
+            pg.fill("#f-ref", "MP270214.0000.A00001")
+            pg.fill("#f-wa", "0197085576")
+            pg.click("#btn-commander")
+            pg.wait_for_timeout(600)
+            cmd2 = pg.evaluate("window.MINUIT_COMMANDE")
+            dit("la lettre livree porte l'heure choisie",
+                bool(cmd2) and '"ouvre":"2027-02-14T00:00"' in cmd2["html"])
+            # ⚠️ Sans fuseau, et c'est le sujet : minuit, c'est minuit sur le
+            # telephone de celle qui lit, pas celui de l'acheteur.
+            dit("l'heure est une heure de calendrier, sans fuseau",
+                bool(cmd2) and '"ouvre":"2027-02-14T00:00Z' not in cmd2["html"]
+                and '"ouvre":"2027-02-14T00:00+' not in cmd2["html"])
+            # On ne promet que ce que la lettre tient toute seule.
+            promesse = pg.inner_text("#fini-quand")
+            dit("l'ecran final ne promet aucun envoi automatique",
+                "ne se brisera pas avant" in promesse
+                and "recevra" not in promesse, promesse)
             pg.close()
 
             # Sur telephone.
