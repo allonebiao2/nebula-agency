@@ -644,7 +644,8 @@ def main():
                               body=json.dumps({"ok": True, "offert": False,
                                                "jeton": "c" * 22,
                                                "adresse": "https://exemple.invalid/l/" + "c" * 22,
-                                               "paiement": "https://paiement.invalid/session/42"}))
+                                               "paiement": "https://paiement.invalid/session/42",
+                                               "palier": "La Lettre", "prix": 5000}))
 
             pg.route("**/minuit-commande", caisse)
 
@@ -666,11 +667,6 @@ def main():
 
             pg.unroute("**/minuit-commande")
             pg.route("**/minuit-commande", caisse)
-            # Une lettre payee part vers la page de paiement : on retient la
-            # navigation pour pouvoir la mesurer.
-            pg.route("https://paiement.invalid/**",
-                     lambda r, q: r.fulfill(status=200, content_type="text/html",
-                                            body="<title>caisse</title>"))
             pg.click("#btn-commander")
             attendre(lambda: len(envois) > 0)
             dit("la commande part vers la caisse", len(envois) == 1)
@@ -700,23 +696,55 @@ def main():
             # pour ca, et lui survit au changement de page.
             parti = True
             try:
-                pg.wait_for_url("**paiement.invalid**", timeout=15000)
+                pg.wait_for_url("**/paiement.html", timeout=15000)
             except Exception as e:
                 parti = False
                 detail = str(e).splitlines()[0]
-            dit("une lettre payee s'en va vers la page de paiement",
+            # ⚠️ On ne part PAS directement chez l'encaisseur : on passe par
+            # notre page, qui montre ce qu'on achete et le lien en clair.
+            dit("une lettre payee passe par NOTRE page de paiement",
                 parti, "" if parti else detail)
 
-            # ⚠️ TEMOIN : le brouillon reste tant qu'il n'a pas paye. Il quitte
-            # la page pour payer ; s'il revient sans avoir paye, sa lettre doit
-            # l'attendre.
-            # ⛔ ET ON REVIENT D'ABORD : `localStorage` appartient a l'ORIGINE.
-            # Lu depuis la page de paiement, il rendrait le rangement d'un autre
-            # site, et le controle dirait n'importe quoi.
-            pg.go_back()
-            attendre(lambda: "creer.html" in pg.url)
+            # ── La page de paiement ───────────────────────────────────────
+            print("\n== La page de paiement")
+            pg.wait_for_timeout(300)
+            dit("elle montre pour qui", "Zara" in pg.inner_text("#r-pour"))
+            dit("elle montre l'offre", "La Lettre" in pg.inner_text("#r-palier"))
+            dit("elle montre la somme rendue par la caisse",
+                "5 000" in pg.inner_text("#r-somme"), pg.inner_text("#r-somme"))
+            dit("le bouton annonce la somme", "5 000" in pg.inner_text("#btn-payer"))
+            # ⛔ CE QU'IL EST VENU CHERCHER : le lien.
+            dit("le bouton porte le lien de paiement",
+                pg.get_attribute("#btn-payer", "href") == "https://paiement.invalid/session/42",
+                str(pg.get_attribute("#btn-payer", "href")))
+            dit("le lien est aussi ecrit en clair, pour payer d'un autre telephone",
+                "paiement.invalid/session/42" in pg.inner_text("#r-lien"))
+            dit("elle montre l'adresse de la lettre",
+                "exemple.invalid/l/" in pg.inner_text("#r-adresse"))
+            # ⛔ AUCUN CODE NE PASSE PAR CETTE PAGE. Une page de vitrine qui
+            # demanderait un code Mobile Money est exactement ce qu'on apprend
+            # aux gens a ne jamais faire.
+            dit("⛔ elle ne demande AUCUN code, aucun numero",
+                pg.eval_on_selector_all("input, select, textarea", "n=>n.length") == 0)
+            dit("elle ne s'indexe pas", "noindex" in (pg.get_attribute(
+                "meta[name=robots]", "content") or ""))
+            # ⚠️ TEMOIN : le brouillon reste tant qu'il n'a pas paye, et la page
+            # de paiement est sur NOTRE origine, donc on le lit d'ici.
             dit("il part payer, et son brouillon l'attend",
                 pg.evaluate("localStorage.getItem('minuit:brouillon')") is not None)
+
+            deb = pg.evaluate(
+                "document.documentElement.scrollWidth - document.documentElement.clientWidth")
+            dit("page de paiement 1280 px : aucun debordement", deb <= 0, "%d px" % deb)
+
+            # Ouverte a la main, sans commande : elle le dit, elle ne ment pas.
+            pg.evaluate("localStorage.removeItem('minuit:paiement')")
+            pg.goto(base.replace("creer.html", "paiement.html"))
+            pg.wait_for_timeout(300)
+            dit("sans commande, la page de paiement le DIT",
+                pg.is_visible("#vide") and not pg.is_visible("#carte"))
+            dit("et elle renvoie ecrire une lettre",
+                "creer.html" in (pg.get_attribute("#vide a", "href") or ""))
 
             # Le palier gratuit garde le pied viral, le palier paye le retire.
             pg.evaluate("localStorage.clear()")
@@ -810,6 +838,37 @@ def main():
             dit("l'ecran final ne promet aucun envoi automatique",
                 "ne se brisera pas avant" in promesse
                 and "recevra" not in promesse, promesse)
+            # ── La page de retour ─────────────────────────────────────────
+            print("\n== La page de retour")
+            merci = base.replace("creer.html", "merci.html") + "?j=" + ("c" * 22)
+
+            # 1 · tant que la notification n'est pas arrivee, la lettre attend.
+            pg.route("**/etat", lambda r, q: r.fulfill(
+                status=200, content_type="application/json",
+                body=json.dumps({"etat": "attente"})))
+            pg.goto(merci)
+            pg.wait_for_timeout(700)
+            # ⛔ ELLE NE PROUVE RIEN : l'adresse se tape a la main. On ne dit
+            # JAMAIS « paiement reussi » ici.
+            corps = pg.inner_text("body").lower()
+            dit("⛔ la page de retour ne declare aucun paiement reussi",
+                "réussi" not in corps and "confirmé" not in corps, corps[:80])
+            dit("elle dit qu'on attend la confirmation", "attend" in corps)
+            dit("et le bouton n'ouvre encore rien",
+                pg.get_attribute("#ouvrir", "aria-disabled") == "true")
+
+            # 2 · la notification est arrivee : la lettre est vivante.
+            pg.unroute("**/etat")
+            pg.route("**/etat", lambda r, q: r.fulfill(
+                status=200, content_type="application/json",
+                body=json.dumps({"etat": "vivante"})))
+            pg.goto(merci)
+            dit("quand la lettre s'ouvre, la page le dit toute seule",
+                attendre(lambda: "ouverte" in pg.inner_text("#titre").lower()))
+            dit("et le bouton mene a la lettre",
+                (pg.get_attribute("#ouvrir", "href") or "").endswith("c" * 22))
+            dit("l'adresse est copiable", pg.is_visible("#copier"))
+            pg.unroute("**/etat")
             pg.close()
 
             # Sur telephone.

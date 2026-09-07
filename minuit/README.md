@@ -49,9 +49,11 @@ avant publication.
 | Fichier | Ce que c'est |
 |---|---|
 | `lettre.html` | **Le produit.** Une lettre, autonome, sans aucun appel réseau |
-| `creer.html` | Le constructeur : occasion, écriture, aperçu vivant, paiement |
+| `creer.html` | Le constructeur : occasion, écriture, aperçu vivant, commande |
+| `paiement.html` | **La page de paiement** : la somme, et **le lien** (bouton + en clair) |
+| `merci.html` | **La page de retour**, celle que SasPay rappelle. ⛔ Elle ne prouve rien |
 | `_injecter.py` | **Le seul endroit** où l'on écrit des données dans le gabarit |
-| `_qc.py` | **127 contrôles**. Vert obligatoire avant toute mise en ligne |
+| `_qc.py` | **145 contrôles**. Vert obligatoire avant toute mise en ligne |
 | `_qc_caisse.mjs` | **118 contrôles** sur la caisse, sans clé ni réseau |
 | `supabase/` | La base et les trois fonctions de bord. Voir `PAIEMENT.md` |
 | `_gabarit_ts.py` | Recopie `lettre.html` dans un module pour les fonctions |
@@ -60,7 +62,7 @@ avant publication.
 | `_voir.py` | Fabrique les captures à REGARDER (390 et 1440) |
 
 ```bash
-python minuit/_qc.py                                   # les 127 contrôles
+python minuit/_qc.py                                   # les 145 contrôles
 node --experimental-strip-types minuit/_qc_caisse.mjs  # les 118 de la caisse
 python minuit/_gabarit_ts.py                           # après toute retouche de lettre.html
 python minuit/_voir.py                                 # les captures

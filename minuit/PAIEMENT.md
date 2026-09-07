@@ -34,8 +34,42 @@ Mobile Money et le choix du réseau. Il n'y a plus qu'un seul moyen de payer.
 | `functions/_shared/gabarit.ts` | Deno | `lettre.html`, recopié par `python minuit/_gabarit_ts.py`. **Fichier généré** |
 | `functions/minuit-commande/` | Deno | Dépose la lettre, et ouvre son paiement s'il y en a un |
 | `functions/minuit-paiement-recu/` | Deno | Le webhook. Vérifie la signature, marque payé, **ouvre la lettre** |
-| `functions/minuit-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, et la retire à `/l/<jeton>/retrait` |
+| `functions/minuit-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, dit son état à `/l/<jeton>/etat`, et la retire à `/l/<jeton>/retrait` |
+| `paiement.html` | Cloudflare Pages | **La page de paiement** : ce qu'on achète, la somme, et **le lien** |
+| `merci.html` | Cloudflare Pages | **La page de retour**, celle que SasPay rappelle |
 | `_qc_caisse.mjs` | Node, sans clé ni réseau | 118 contrôles sur tout ce qui décide |
+
+---
+
+## 2 bis. Les deux écrans que voit l'acheteur
+
+**`paiement.html`** — il y arrive à la fin de sa commande. Elle montre pour qui,
+l'offre, l'heure d'ouverture s'il en a choisi une, la somme, et **le lien** :
+en bouton, **et écrit en clair avec un « Copier »**.
+
+⚠️ **Le lien en clair n'est pas un détail.** À Cotonou on paie souvent depuis le
+téléphone de quelqu'un d'autre, ou depuis celui qui porte le compte Mobile
+Money. Un bouton qu'on ne peut pas copier oblige à recommencer toute la
+commande sur l'autre appareil.
+
+⛔ **Aucun champ sur cette page.** Ni code, ni numéro, ni référence : un
+contrôle vérifie qu'elle ne contient **aucun** `input`. Une page de vitrine qui
+demande un code Mobile Money est exactement ce qu'on apprend aux gens à ne
+jamais faire.
+
+**`merci.html`** — SasPay l'y ramène après le paiement.
+
+⛔ **Elle ne déclare jamais un paiement réussi.** Son adresse se tape à la main :
+revenir ne prouve rien. Elle dit « on attend la confirmation », et elle
+interroge **l'état de la lettre**, qui, lui, ne ment pas : la lettre ne devient
+`vivante` que lorsque la notification signée est arrivée. Quand c'est fait, la
+page le dit toute seule et donne l'adresse à envoyer.
+
+⚠️ **L'adresse de retour est propre à chaque commande** (`merci.html?j=<jeton>`)
+et **doit être posée à l'appel** : le réglage par défaut de `_shared/saspay.ts`
+ramène chez **PISTE**, puisque ce fichier en est la copie exacte. Sans cette
+ligne, un acheteur de lettre tomberait sur la page d'un autre produit. Le nom
+client par défaut aussi (« Client PISTE » sur un reçu MINUIT).
 
 ---
 

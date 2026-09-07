@@ -68,6 +68,29 @@ Deno.serve(async (req: Request) => {
   if (error) { console.error('minuit lire', error.message); return page('Un instant.', 'Cette lettre ne peut pas s’ouvrir pour le moment. Réessaie dans un moment.', 503) }
   const l = Array.isArray(data) ? data[0] : data
 
+  /* ── l'etat, pour la page de retour ──────────────────────────────────── */
+  /*
+    ⛔ ELLE NE REND QUE L'ETAT, jamais le contenu, jamais le prix, jamais le
+    WhatsApp de l'acheteur. C'est la page « merci » qui la lit, en boucle
+    lente, pour dire « c'est ouvert » sans jamais pretendre qu'un retour de
+    navigateur prouve un paiement.
+
+    ⚠️ CORS ouvert, et c'est sans consequence : qui appelle cette adresse
+    detient deja le jeton, donc deja la lettre. Une adresse de 110 bits tires
+    au sort est ce qui protege ici, pas un en-tete.
+  */
+  if (geste === 'etat') {
+    return new Response(JSON.stringify({ etat: verdict(l ?? null) === 'servir' ? 'vivante' : verdict(l ?? null) }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-store',
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    })
+  }
+
   /* ── le retrait ──────────────────────────────────────────────────────── */
   if (geste === 'retrait') {
     if (req.method !== 'POST') return page('Retirer cette lettre', 'Écris-nous sur WhatsApp avec ce lien, et elle est retirée sous 24 heures.', 405)

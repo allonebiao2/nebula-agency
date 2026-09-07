@@ -90,7 +90,16 @@ Deno.serve(async (req: Request) => {
     }, 503)
   }
 
-  const s = await ouvrirSession(r, {
+  /* ⛔ L'ADRESSE DE RETOUR EST PROPRE A CETTE COMMANDE, et il faut la poser :
+     le reglage par defaut de `_shared/saspay.ts` ramene chez PISTE, parce que
+     ce fichier est LA COPIE EXACTE du sien. Sans cette ligne, un acheteur de
+     lettre qui vient de payer tomberait sur la page d'un autre produit.
+     ⚠️ Le nom par defaut aussi : « Client PISTE » finirait sur un recu MINUIT. */
+  const s = await ouvrirSession({
+    ...r,
+    retour: `${SITE}/merci.html?j=${j}`,
+    nomDefaut: 'Client MINUIT',
+  }, {
     reference: j,
     montant: palier.prix,
     description: `MINUIT · ${palier.nom}`,
@@ -109,5 +118,11 @@ Deno.serve(async (req: Request) => {
   })
   if (eS) console.error('saspay session non enregistrée', j, eS.message)
 
-  return repondre({ ok: true, offert: false, jeton: j, adresse, paiement: s.url })
+  /* ⛔ LA SOMME ET LE NOM DE L'OFFRE VIENNENT D'ICI, pas du navigateur : la
+     page de paiement les AFFICHE, elle ne les calcule pas. Un prix recalcule
+     dans le navigateur est un prix qu'on peut reecrire dans la console. */
+  return repondre({
+    ok: true, offert: false, jeton: j, adresse, paiement: s.url,
+    palier: palier.nom, prix: palier.prix,
+  })
 })

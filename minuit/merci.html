@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Merci · MINUIT</title>
+<!--
+  MINUIT · la page ou SasPay ramene l'acheteur.
+
+  ⛔ CETTE PAGE NE PROUVE RIEN. Elle se visite a la main, en tapant l'adresse :
+  un client ramene ici n'a pas paye pour autant. Ce qui fait foi, c'est la
+  notification signee qui arrive chez `minuit-paiement-recu`. On ne dit donc
+  JAMAIS « paiement reussi » ici. On dit « on attend la confirmation », et on
+  regarde l'etat de la lettre elle-meme, qui, lui, ne ment pas.
+
+  ⚠️ PISTE a paye cette lecon : la route de retour n'existait pas, et le client
+  tombait sur une page morte apres avoir paye.
+-->
+<style>
+:root{
+  --nuit:#141019; --nuit-2:#1d1826; --papier:#f4ede0; --encre:#241d2b;
+  --cire:#8c2f39; --cire-clair:#b2434e; --or:#c9a227; --or-doux:#e0c266;
+  --gris-nuit:#8f86a0; --vert:#4f9d7a; --ligne:rgba(244,237,224,.14);
+  --t:cubic-bezier(.25,1,.5,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:radial-gradient(120% 80% at 50% 0%,var(--nuit-2) 0%,var(--nuit) 60%);
+  color:var(--papier);min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;padding:22px 20px 40px;
+}
+.serif{font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",Times,serif}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--or-doux);outline-offset:3px;border-radius:6px}
+
+.marque{display:flex;align-items:center;gap:10px;margin-bottom:30px;align-self:flex-start}
+.sceau{width:26px;height:26px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,#6d1f27 100%);
+  box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.marque b{font-size:14px;letter-spacing:.22em;font-weight:700}
+
+.carte{width:100%;max-width:440px;text-align:center}
+h1{font-size:clamp(26px,7.4vw,34px);font-weight:600;line-height:1.15;margin-bottom:10px}
+.sous{color:var(--gris-nuit);font-size:15px;margin-bottom:26px}
+
+/* Le point qui bat pendant l'attente : la seule animation de la page, et elle
+   dit quelque chose de vrai (on attend). */
+.veille{display:inline-flex;align-items:center;gap:10px;font-size:14px;
+  color:var(--gris-nuit);border:1px solid var(--ligne);border-radius:999px;
+  padding:9px 17px;margin-bottom:26px}
+.point{width:9px;height:9px;border-radius:50%;background:var(--or);
+  animation:bat 1.6s ease-in-out infinite}
+@keyframes bat{0%,100%{opacity:.35;transform:scale(.82)}50%{opacity:1;transform:scale(1)}}
+.prete .point{animation:none;background:var(--vert)}
+
+.adresse{border:1px solid var(--ligne);border-radius:14px;padding:15px 16px;margin-bottom:16px}
+.adresse .t{font-size:13px;color:var(--gris-nuit);margin-bottom:9px}
+.rang{display:flex;gap:10px;align-items:center}
+.url{flex:1;min-width:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:12.5px;background:rgba(244,237,224,.06);border:1px solid var(--ligne);
+  border-radius:9px;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;text-align:left}
+.copier{flex:none;min-height:44px;padding:11px 16px;border-radius:9px;
+  border:1px solid rgba(244,237,224,.28);font-size:14px;font-weight:600}
+.copier:hover{background:rgba(244,237,224,.08)}
+
+.ouvrir{display:flex;align-items:center;justify-content:center;width:100%;
+  min-height:56px;padding:16px 24px;border-radius:999px;background:var(--papier);
+  color:var(--encre);font-weight:700;font-size:16.5px;text-decoration:none;
+  box-shadow:0 14px 34px rgba(0,0,0,.42);transition:transform .2s var(--t)}
+.ouvrir:hover{transform:translateY(-2px)}
+.ouvrir[aria-disabled="true"]{opacity:.42;pointer-events:none;box-shadow:none}
+
+.mot{font-size:14px;color:var(--gris-nuit);margin-top:20px}
+.mot a{color:var(--or-doux)}
+@media (prefers-reduced-motion: reduce){.point{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="marque"><span class="sceau" aria-hidden="true"></span><b>MINUIT</b></div>
+
+<main class="carte" id="carte">
+  <h1 class="serif" id="titre">Merci.</h1>
+  <p class="sous" id="sous">On attend la confirmation de ton paiement. Ça prend en général quelques secondes.</p>
+
+  <div class="veille" id="veille"><span class="point" aria-hidden="true"></span><span id="etat">Vérification…</span></div>
+
+  <div class="adresse" id="bloc-adresse" hidden>
+    <p class="t">L'adresse de ta lettre. Envoie-la à qui tu veux.</p>
+    <div class="rang">
+      <div class="url" id="url">—</div>
+      <button class="copier" id="copier" type="button">Copier</button>
+    </div>
+  </div>
+
+  <a class="ouvrir" id="ouvrir" href="#" aria-disabled="true">Ouvrir ma lettre</a>
+
+  <p class="mot" id="mot">
+    Si rien ne bouge après quelques minutes, écris-nous : <a id="wa" href="#">WhatsApp</a>.
+  </p>
+</main>
+
+<script>
+"use strict";
+/* ══════════════════════════════════════════════════════════════════════
+   ⛔ ON NE CROIT PAS CETTE PAGE, ON REGARDE LA LETTRE.
+   SasPay ramene ici apres un paiement, mais l'adresse se tape a la main :
+   revenir ne prouve rien. On demande donc son etat A LA LETTRE elle-meme,
+   qui ne devient « vivante » que lorsque la notification signee est
+   arrivee chez nous.
+   ══════════════════════════════════════════════════════════════════════ */
+var CLE = "minuit:paiement";
+var WA = "22996740732";
+var $ = function(s){ return document.querySelector(s); };
+
+var C = null;
+try { C = JSON.parse(localStorage.getItem(CLE) || "null"); } catch (e) { C = null; }
+
+/* Le jeton peut aussi venir de l'adresse : SasPay nous ramene avec, et le
+   rangement du navigateur peut avoir ete vide entre-temps. */
+var jeton = (new URLSearchParams(location.search)).get("j") || (C && C.jeton) || "";
+var adresse = (C && C.adresse) || (jeton ? location.origin + "/l/" + jeton : "");
+
+$("#wa").href = "https://wa.me/" + WA + "?text=" +
+  encodeURIComponent("Bonjour, je viens de payer une lettre MINUIT" +
+    (jeton ? " (" + jeton + ")" : "") + " et j'attends encore.");
+
+if (adresse) {
+  $("#url").textContent = adresse;
+  $("#bloc-adresse").hidden = false;
+  $("#copier").addEventListener("click", function(){
+    var b = $("#copier");
+    var fini = function(){ b.textContent = "Copié"; setTimeout(function(){ b.textContent = "Copier"; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(adresse).then(fini, fini);
+    } else { fini(); }
+  });
+}
+
+function prete(){
+  $("#carte").classList.add("prete");
+  $("#titre").textContent = "Ta lettre est ouverte.";
+  $("#sous").textContent = "Envoie-lui le lien quand tu veux. Le cachet, lui, tiendra l'heure que tu as choisie.";
+  $("#etat").textContent = "Paiement confirmé";
+  $("#ouvrir").href = adresse;
+  $("#ouvrir").setAttribute("aria-disabled", "false");
+  $("#mot").hidden = true;
+  /* La commande a abouti : on ne garde pas un lien de paiement perime. */
+  try { localStorage.removeItem(CLE); } catch (e) {}
+}
+
+/* On regarde, sans s'acharner : toutes les 4 s, vingt fois, puis on laisse la
+   main. Une page qui interroge un serveur pour toujours est une page qu'on
+   oublie ouverte et qui coute. */
+var tours = 0;
+function regarder(){
+  if (!jeton) { $("#etat").textContent = "En attente"; return; }
+  fetch(location.origin + "/l/" + jeton + "/etat", { cache: "no-store" })
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if (j && j.etat === "vivante") { prete(); return; }
+      suivant();
+    })
+    .catch(suivant);
+}
+function suivant(){
+  tours++;
+  if (tours >= 20) {
+    $("#etat").textContent = "Toujours en attente";
+    return;
+  }
+  setTimeout(regarder, 4000);
+}
+regarder();
+</script>
+</body>
+</html>

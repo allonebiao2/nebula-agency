@@ -728,9 +728,24 @@ function envoyer(c, p){
       rendre(j.erreur ? ("Ça n'est pas passé : " + j.erreur) : "Ça n'est pas passé. Réessaie dans un moment.");
       return;
     }
-    /* Une lettre payee part vers la caisse. On ne l'oublie pas encore : tant
-       qu'il n'a pas paye, son brouillon doit l'attendre au retour. */
-    if (j.paiement) { location.href = j.paiement; return; }
+    /* ⚠️ UNE LETTRE PAYEE NE PART PAS DIRECTEMENT CHEZ L'ENCAISSEUR. Elle
+       passe par NOTRE page de paiement, qui montre ce qu'on achete, la somme,
+       et surtout LE LIEN EN CLAIR : a Cotonou on paie souvent depuis un autre
+       telephone, ou depuis celui qui porte le compte Mobile Money. Un bouton
+       qu'on ne peut pas copier oblige a recommencer la commande ailleurs.
+       ⛔ La somme et le nom de l'offre viennent de la CAISSE, pas d'ici. */
+    if (j.paiement) {
+      try {
+        localStorage.setItem("minuit:paiement", JSON.stringify({
+          jeton: j.jeton, paiement: j.paiement, adresse: j.adresse,
+          palier: j.palier || "", somme: fmt(j.prix), pour: c.pour, ouvre: c.ouvre
+        }));
+      } catch (e) {}
+      /* On ne l'oublie pas encore : tant qu'il n'a pas paye, son brouillon
+         doit l'attendre au retour. */
+      location.href = "paiement.html";
+      return;
+    }
     /* Une lettre offerte est deja vivante : on rend son adresse. */
     $("#lien-lettre").href = j.adresse;
     $("#lien-lettre").textContent = j.adresse;
