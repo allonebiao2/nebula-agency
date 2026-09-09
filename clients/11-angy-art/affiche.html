@@ -3,9 +3,21 @@
 <head>
 <meta charset="utf-8">
 <title>Angy Art — affiche A4</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ⚠️ LES POLICES SONT LOCALES, ET C'EST VOLONTAIRE.
+   Elles venaient de Google Fonts. Le 2026-09-09 Chromium a cessé de les
+   charger alors que Python joignait le même hôte sans problème : le PDF
+   serait sorti en Georgia et Helvetica, et personne ne l'aurait vu avant le
+   papier. Un fichier qui part à l'imprimeur ne dépend pas du réseau.
+   Playfair Display et Public Sans sont sous licence OFL : la redistribution
+   est permise, les deux licences sont à côté des fichiers. */
+@font-face{font-family:"Playfair Display";font-style:normal;font-weight:100 900;
+  src:url("assets/fonts/PlayfairDisplay.ttf") format("truetype");font-display:block}
+@font-face{font-family:"Playfair Display";font-style:italic;font-weight:100 900;
+  src:url("assets/fonts/PlayfairDisplay-Italic.ttf") format("truetype");font-display:block}
+@font-face{font-family:"Public Sans";font-style:normal;font-weight:100 900;
+  src:url("assets/fonts/PublicSans.ttf") format("truetype");font-display:block}
+</style>
 <style>
   @page{size:A4;margin:0}
   *{box-sizing:border-box;margin:0;padding:0}

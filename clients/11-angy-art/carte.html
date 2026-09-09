@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Angy Art — carte de visite</title>
+<style>
+/* ⚠️ LES POLICES SONT LOCALES, ET C'EST VOLONTAIRE.
+   Elles venaient de Google Fonts. Le 2026-09-09 Chromium a cessé de les
+   charger alors que Python joignait le même hôte sans problème : le PDF
+   serait sorti en Georgia et Helvetica, et personne ne l'aurait vu avant le
+   papier. Un fichier qui part à l'imprimeur ne dépend pas du réseau.
+   Playfair Display et Public Sans sont sous licence OFL : la redistribution
+   est permise, les deux licences sont à côté des fichiers. */
+@font-face{font-family:"Playfair Display";font-style:normal;font-weight:100 900;
+  src:url("assets/fonts/PlayfairDisplay.ttf") format("truetype");font-display:block}
+@font-face{font-family:"Playfair Display";font-style:italic;font-weight:100 900;
+  src:url("assets/fonts/PlayfairDisplay-Italic.ttf") format("truetype");font-display:block}
+@font-face{font-family:"Public Sans";font-style:normal;font-weight:100 900;
+  src:url("assets/fonts/PublicSans.ttf") format("truetype");font-display:block}
+</style>
+<style>
+/* ---------------------------------------------------------------------------
+   CARTE DE VISITE — Angélique AVOCEVOU · ANGY ART
+
+   Coupe 85 x 55 mm, la norme au Bénin comme en France.
+   La page fait 91 x 61 mm : 3 mm de FOND PERDU tout autour, pour que l'aplat
+   noir du recto continue au-delà du trait de coupe. Sans lui, le moindre
+   décalage de massicot laisse un liseré blanc sur le bord d'une carte noire,
+   et ça se voit de loin.
+
+   Zone tranquille : 8 mm depuis le bord de la page, soit 5 mm depuis la coupe.
+   Rien d'important ne descend en dessous.
+
+   ⚠️ L'or de la marque vaut 2,2:1 sur le crème : il est illisible en texte.
+   Sur crème on écrit avec --or-f (#7e6d3a). C'est la même règle que sur le
+   site, et elle vaut aussi sur du papier.
+--------------------------------------------------------------------------- */
+:root{
+  --noir:#0a0a0a; --creme:#f3efe6; --or:#bd9f64; --or-f:#7e6d3a;
+  --tx-n:rgba(255,255,255,.72); --tx-c:#54504a;
+  --ff-d:"Playfair Display",Didot,Georgia,serif;
+  --ff-t:"Public Sans",Helvetica,Arial,sans-serif;
+}
+@page{size:91mm 61mm;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#8a8a8a}
+body{font-family:var(--ff-t);font-weight:300;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.face{width:91mm;height:61mm;position:relative;overflow:hidden;
+  page-break-after:always;break-after:page}
+.face:last-child{page-break-after:auto;break-after:auto}
+
+/* ------------------------------------------------------------------ RECTO */
+.recto{background:var(--noir);color:var(--creme);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* la lumière rasante du site, figée : une carte ne bouge pas */
+.recto::before{content:'';position:absolute;top:-14%;left:-10%;width:78%;height:132%;
+  background:linear-gradient(102deg,transparent 4%,rgba(255,240,214,.09) 26%,
+    rgba(201,185,154,.14) 47%,rgba(255,255,255,.045) 66%,transparent 92%);
+  transform:rotate(8deg)}
+
+.recto .z{position:relative;z-index:1;text-align:center}
+.glyphe{width:24mm;height:auto;display:block;margin:0 auto}
+/* 17 mm laissaient le glyphe en timbre-poste sous un mot de 39 mm de large :
+   les deux ne se lisaient plus comme une seule marque. Mesuré : a 24 mm le
+   bloc entier fait 35 mm de haut, il reste 10 mm au-dessus et en dessous. */
+.mot{margin-top:4.4mm;font-family:var(--ff-d);font-weight:400;
+  font-size:13pt;letter-spacing:.30em;text-indent:.30em;color:var(--creme)}
+.acc{margin-top:2.6mm;font-family:var(--ff-d);font-style:italic;
+  font-size:7.6pt;letter-spacing:.012em;color:var(--or)}
+
+/* ------------------------------------------------------------------ VERSO */
+.verso{background:var(--creme);color:var(--tx-c);
+  display:grid;grid-template-columns:1fr auto;gap:6mm;
+  align-items:center;padding:8mm}
+
+.nom{font-family:var(--ff-d);font-weight:400;font-size:12.4pt;
+  line-height:1.06;color:var(--noir);letter-spacing:-.004em}
+.nom em{font-style:normal;display:block;font-size:10.2pt;letter-spacing:.055em}
+.role{margin-top:2.2mm;font-size:6.2pt;font-weight:500;letter-spacing:.235em;
+  text-transform:uppercase;color:var(--or-f)}
+.fil{margin:3.1mm 0;width:15mm;height:.35mm;background:var(--or-f)}
+
+.coord{font-size:7.4pt;line-height:1.72;color:#3f3b36}
+.coord b{font-weight:500;color:var(--noir);letter-spacing:.004em}
+.coord .mail{font-size:6.9pt;color:#3f3b36}
+.coord .lieu{color:var(--tx-c);font-size:6.6pt;letter-spacing:.13em;
+  text-transform:uppercase;margin-top:1.5mm}
+/* ⏳ Instagram volontairement absent : l'affiche porte DEUX comptes
+   (@ANGY_ART_CREATIF et @ANGY_ART_) et rien ne dit lequel est le principal.
+   Sur un écran on peut se tromper et corriger ; sur cinq cents cartes, non. */
+
+/* Le QR : noir plein sur crème. 20 mm de côté, zone de silence comprise dans
+   l'image — c'est ce qui donne un module d'un demi-millimètre, mesuré par
+   `_carte.py`, en dessous duquel un téléphone décroche. */
+.bloc-qr{display:flex;flex-direction:column;align-items:center}
+.qr{width:20mm;height:20mm;display:block;image-rendering:pixelated}
+.qr-l{margin-top:1.4mm;font-size:5.6pt;letter-spacing:.17em;
+  text-transform:uppercase;color:var(--or-f);font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- ================================================================ RECTO -->
+<section class="face recto">
+  <div class="z">
+    <img class="glyphe" src="assets/images/logos/marque.png" alt="">
+    <div class="mot">ANGY&nbsp;·&nbsp;ART</div>
+    <div class="acc">Inspiré d’en haut, enraciné ici.</div>
+  </div>
+</section>
+
+<!-- ================================================================ VERSO -->
+<section class="face verso">
+  <div>
+    <div class="nom">Angélique<em>AVOCEVOU</em></div>
+    <div class="role">Artiste plasticienne</div>
+    <div class="fil"></div>
+    <div class="coord">
+      <div><b>+229 01 52 00 64 90</b></div>
+      <div><b>angyart.online</b></div>
+      <div class="mail">angyavocevou@gmail.com</div>
+      <div class="lieu">Atelier à Cotonou · Bénin</div>
+    </div>
+  </div>
+  <div class="bloc-qr">
+    <img class="qr" src="assets/images/qr/qr-carte.png" alt="">
+    <div class="qr-l">Voir&nbsp;les&nbsp;œuvres</div>
+  </div>
+</section>
+
+</body>
+</html>
