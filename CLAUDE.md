@@ -300,6 +300,23 @@
   **`minuit/CONDITIONS.md`** · code : **`minuit/`**.
 - **La thèse** : *le romantique est le marketing, l'événement est le chiffre
   d'affaires, le B2B est la retraite.* Un seul moteur, trois habillages.
+- ⏳ **LE NOM EST ROUVERT (2026-09-09)** — l'arrêté du 06/09 le donne « arrêté »
+  à sa décision 01, ce n'est plus vrai : Mongazi le remet en question. ⚠️ **Le
+  défaut est réel et mesuré sur les trois registres** : « MINUIT » nomme une
+  HEURE, donc il va à la lettre d'amour, passe sur un faire-part de mariage, et
+  ⛔ **ne va pas sur une annonce de décès** (« MINUIT · Famille Dossou »), qui
+  est la ligne à 15 000-50 000 F. Sur les quatre finalistes (MINUIT · LE PLI ·
+  LE CACHET · MISSIVE), **seul LE PLI passe les trois**, parce qu'il nomme
+  l'OBJET et pas l'occasion. ⚠️ **Le domaine ne contraint plus rien** : Mongazi
+  a tranché le sous-domaine (`<nom>.nebula-agency.online`), il n'y a rien à
+  acheter. **La question n'est pas « lequel » mais « une enseigne ou deux »**,
+  et elle est asymétrique : *une seule* enseigne (LE PLI au-dessus, MINUIT
+  redevenant le nom du palier) **se décide AVANT la première vente** (renommer
+  = une demi-journée maintenant, un lien mort dans un téléphone après) ; *deux*
+  enseignes ne coûtent rien aujourd'hui, la ligne événement n'ouvrant qu'en
+  novembre. Recommandation posée : **deux enseignes, MINUIT reste**, avec la
+  règle gravée ⛔ **jamais un faire-part de décès sous l'enseigne MINUIT**.
+  ⏳ **Mongazi n'a pas encore tranché : ne rien renommer sans sa réponse.**
 - **Fait le 2026-09-02** : **le gabarit** (`lettre.html`) et **le constructeur**
   (`creer.html`), **78 contrôles verts** (`python minuit/_qc.py`).
 - 🕛 **FAIT LE 2026-09-06 — LA LETTRE TIENT L'HEURE ELLE-MÊME** (détail

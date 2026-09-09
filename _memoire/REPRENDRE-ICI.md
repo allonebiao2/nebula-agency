@@ -55,6 +55,22 @@ pages arbitraires sur notre domaine. On stocke les données, la lettre est
 rebâtie depuis le gabarit. ⛔ **Le prix ne vient jamais du navigateur** non
 plus, ni le pied viral, ni le code secret.
 
+### ⏳ LE NOM EST ROUVERT (2026-09-09), et il bloque le reste
+
+⚠️ **L'arrêté du 06/09 dit « MINUIT est arrêté » : ce n'est plus vrai.** Le nom
+va à la lettre d'amour, passe sur un mariage, et ⛔ **ne va pas sur une annonce
+de décès** — la ligne qui rapporte le plus. Des quatre finalistes (MINUIT · LE
+PLI · LE CACHET · MISSIVE), **seul LE PLI passe les trois registres**.
+
+⚠️ **Le sous-domaine est tranché** (`<nom>.nebula-agency.online`) : plus aucun
+domaine à acheter, donc plus aucune contrainte de disponibilité sur le nom.
+
+**La question posée à Mongazi, et pas encore répondue** : une enseigne ou deux ?
+*Une seule* → renommer AVANT la première vente (demi-journée : dossier `minuit/`,
+3 fonctions, schéma Supabase, sigle, texte de la vidéo). *Deux* → rien à faire
+maintenant, la ligne événement n'ouvre qu'en novembre.
+⛔ **Ne rien renommer tant qu'il n'a pas répondu.**
+
 ### ⏳ Par quoi commencer la prochaine fois
 
 **Six réponses de Mongazi bloquent la vente, aucune ne prend une minute** : le
