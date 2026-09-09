@@ -118,7 +118,54 @@ def controles_fichier(chemin):
     # 6. les regles de la maison
     att("@media(prefers-reduced-motion:reduce)" in src, "le mouvement reduit est respecte")
     att("photo à venir" not in src.lower(), "aucun texte d'attente sur la page")
+
+    # 7. LE GEO : ce qui est ecrit pour les machines
+    # ⚠️ UN `FAQPage` NE VAUT QUE CE QUE LA PAGE MONTRE. Declarer des questions
+    #    qu'aucun visiteur ne voit est un balisage qui ment (defaut trouve chez
+    #    Hillary le 2026-08-16). On compare donc les deux cotes.
+    visibles = [re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", q)).strip()
+                for q in re.findall(r"<summary>(.*?)</summary>", src, re.S)]
+    att(len(visibles) >= 6, "la FAQ affiche au moins 6 questions (%d)" % len(visibles))
+    m = re.search(r'<script type="application/ld\+json">(.*?)</script>', src, re.S)
+    try:
+        graphe = json.loads(m.group(1)) if m else []
+    except Exception:
+        graphe = []
+    graphe = graphe if isinstance(graphe, list) else [graphe]
+    faq = [x for x in graphe if x.get("@type") == "FAQPage"]
+    att(bool(faq), "un FAQPage est balise")
+    if faq:
+        balisees = [q["name"] for q in faq[0].get("mainEntity", [])]
+        absentes = [q for q in balisees if q not in visibles]
+        att(not absentes, "chaque question balisee est VISIBLE sur la page%s"
+            % (" — absente : " + absentes[0][:50] if absentes else ""))
+        att(len(balisees) == len(visibles),
+            "autant de questions balisees que visibles (%d/%d)" % (len(balisees), len(visibles)))
+
+    # les deux fichiers que lisent les machines
+    for f in ("llms.txt", "tarifs.md"):
+        att(os.path.exists(os.path.join(RACINE, f)), "%s existe" % f)
+    if os.path.exists(os.path.join(RACINE, "tarifs.md")):
+        t = io.open(os.path.join(RACINE, "tarifs.md"), encoding="utf-8").read()
+        # ⚠️ un prix recopie est une deuxieme verite : on compare au catalogue
+        prix_page = set(re.findall(r"p:(\d+),", src))
+        manquants = [p for p in prix_page
+                     if p != "0" and "{:,}".format(int(p)).replace(",", " ") not in t]
+        att(not manquants, "tous les prix du catalogue sont dans tarifs.md%s"
+            % (" — manque " + manquants[0] if manquants else ""))
+        att("Mme Sabrina" in t and "lundi au samedi" in t,
+            "tarifs.md porte les conditions (qui, quand)")
+
+    # les robots des IA sont nommes
+    rb = os.path.join(RACINE, "robots.txt")
+    if os.path.exists(rb):
+        r = io.open(rb, encoding="utf-8").read()
+        att(all(b in r for b in ("GPTBot", "ClaudeBot", "PerplexityBot", "Google-Extended")),
+            "robots.txt nomme les quatre robots d'IA")
+        att("Disallow: /" not in r, "robots.txt ne bloque personne")
+
     return src
+
 
 
 

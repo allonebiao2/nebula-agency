@@ -1,4 +1,21 @@
 User-agent: *
 Allow: /
 
+# Les robots des IA sont les bienvenus : une clinique se fait citer par eux
+# comme elle se faisait citer par les moteurs. Verifie le 2026-09-09 : les
+# quatre repondent 200 sur ce domaine (Cloudflare les bloque par defaut, le
+# reglage a ete leve sur la zone le 2026-08-02).
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
 Sitemap: https://luxuryclub229.com/sitemap.xml

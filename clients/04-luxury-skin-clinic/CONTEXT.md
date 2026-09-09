@@ -741,3 +741,48 @@ cache HTTP Netlify rend les re-visites quasi-instantanées.
 - **QR étiquette produits → INA Luxury** (`https://luxuryclub229.com/ina-luxury`) : à coller sur ses produits. Livrables `assets/docs/` : `qr-ina-luxury.svg`/`.png` (ECC H) + `Etiquette_QR_INA_Luxury.pdf`/`.png` (étiquette carrée ~60 mm, charte crème/or).
 - **QR « menu des soins » → Luxury Skin Clinic** (`https://luxuryclub229.com/luxury-skin-clinic#soins`) : pour les **tables de la clinique**. **Affiche carrée modifiée** (`affiche-luxury-skin-clinic-carre.html`, QR remplacé + « Le menu de nos soins »), régénérée `Affiche_Luxury_Skin_Clinic_Carre.pdf`/`.png` ; QR nu `qr-luxury-skin-clinic-soins.png`/`.svg` (ECC M).
 - **3 QR bien distincts** : carte de visite → hub (univers) · étiquette → produits INA · tables → menu des soins. Tous **vérifiés par décodage jsqr**. Rien à déployer.
+
+## PASSE GEO du 2026-09-09 — se faire CITER par les IA
+
+> Journal : `_memoire/conversations/2026-09-09-geo-clinique-et-angy.md`
+
+**La porte d'abord.** Cloudflare bloque les robots d'IA par défaut et le
+réglage est introuvable au tableau de bord. **Mesuré en se présentant comme
+chacun d'eux : GPTBot, ClaudeBot, PerplexityBot et Googlebot répondent tous
+200.** Le `robots.txt` les **nomme** désormais un par un.
+
+**Une FAQ de 8 questions**, écrite pour être citée : une question posée comme
+on la pose, une réponse de 40-60 mots qui tient debout toute seule (jours et
+horaires · réserver · combien coûte un soin · qui les réalise · annuler ·
+consultation avant un peeling · les deux consultations · venir accompagnée).
+⛔ **Chaque réponse vient de la page.** ⚠️ **Une phrase inventée a été
+attrapée avant publication** : « l'acompte se déduit du montant » n'est écrit
+nulle part — le site dit qu'il *valide le créneau* et qu'il *n'est pas
+remboursable*. Une FAQ qui invente est pire qu'une FAQ absente.
+
+⚠️ **Le `FAQPage` est LU dans les questions visibles** (`_outils/_jsonld.py`),
+jamais recopié — et **un contrôle compare les deux côtés** : 8 visibles,
+8 balisées, aucune absente. Un `FAQPage` sans question à l'écran est un
+balisage qui ment (défaut trouvé chez Hillary le 2026-08-16).
+
+**Deux fichiers pour les machines**, produits par `_outils/_llms.py` et **lus
+dans les pages** : **`/tarifs.md`** (les 11 soins, prix, descriptions et
+conditions — un agent qui compare des prestations lit un fichier, il ne rend
+pas une page) et **`/llms.txt`** (la maison en dix lignes, les 3 univers, les
+8 questions, et une section « ce que ce site ne dit pas » : pas d'adresse de
+rue, pas d'avis, pas de note). ⚠️ **À relancer après tout changement de tarif
+ou de FAQ.** ⚠️ Piège de lecture : le champ `d:` d'une fiche est sur la
+**ligne suivante** de `SERVICES` — une expression bornée à la ligne courante
+perdait toutes les descriptions, or c'est la description qui rend une ligne
+citable.
+
+**QC : 136 → 147 contrôles.**
+
+⏳ **Ce qui ne se fait pas d'ici, et qui pèse le plus** : une marque est citée
+**6,5 fois plus via un tiers que via son propre domaine**. Fiche Google
+Business, annuaires béninois, présence tierce : il faut les comptes de Gloria.
+⏳ Le **suivi de citation** (est-ce qu'une IA nous cite ?) se fait à la main,
+une vingtaine de requêtes une fois par mois.
+⛔ **Aucune statistique inventée** : le skill donne +37 % aux contenus
+chiffrés, la clinique n'a aucun chiffre vérifiable à publier, et en fabriquer
+un serait pire que s'en passer.

@@ -1,0 +1,64 @@
+# Luxury Club 229
+
+> Maison de beauté à Cotonou, Bénin, réunissant trois marques :
+> **Luxury Skin Clinic** (clinique esthétique, soins en institut),
+> **INA Luxury** (cosmétiques et soins capillaires) et
+> **Cozy** (hygiène intime et bien-être).
+
+Fondée et dirigée par Ahouangnimon Gloria. Les soins en institut sont
+réalisés par Mme Sabrina, esthéticienne diplômée en esthétique médicale
+et spécialiste en cosmétologie avancée. Les commandes et les
+réservations passent par WhatsApp (+229 01 67 97 56 26).
+
+## Les trois univers
+
+- [Luxury Skin Clinic](https://luxuryclub229.com/luxury-skin-clinic) : 11 soins en institut, de 15 000 à 150 000 FCFA — visage, corps, capillaires et une expérience complète.
+- [INA Luxury](https://luxuryclub229.com/ina-luxury) : cosmétiques et soins capillaires, par famille (visage, corps, capillaires, enfant, lèvres) et par routine.
+- [Cozy](https://luxuryclub229.com/cozy) : hygiène intime et bien-être féminin.
+
+## Fichiers utiles
+
+- [Tarifs des soins](https://luxuryclub229.com/tarifs.md) : les 11 soins et leurs prix, en markdown.
+- [Plan du site](https://luxuryclub229.com/sitemap.xml)
+
+## Questions fréquentes
+
+### Quels jours et à quelles heures Luxury Skin Clinic reçoit-elle ?
+
+Mme Sabrina reçoit du lundi au samedi, de 10h à 17h, uniquement sur rendez-vous. Les rendez-vous se prennent 24 heures minimum à l'avance : aucun rendez-vous n'est pris le jour même. La clinique est à Cotonou, au Bénin.
+
+### Comment réserver un soin à la clinique ?
+
+Choisissez votre jour et votre créneau sur le site, puis envoyez votre demande. Un acompte de 5 100 FCFA valide la réservation : il se règle par Mobile Money au 01 67 97 56 26, et la capture du paiement s'envoie sur WhatsApp. Sans cette preuve, le créneau reste ouvert aux autres clientes.
+
+### Combien coûte un soin à Luxury Skin Clinic ?
+
+Les soins vont de 15 000 FCFA pour le Soin Visage Classic à 150 000 FCFA pour Le Soin Complet VIP. Le prix de chaque soin est affiché sur sa fiche, sans exception. Un acompte de 5 100 FCFA, non remboursable, valide votre créneau au moment de la réservation.
+
+### Qui réalise les soins ?
+
+Tous les soins sont réalisés par Mme Sabrina, esthéticienne diplômée en esthétique médicale et spécialiste en cosmétologie avancée. Le Luxury Massage est réalisé par l'esthéticienne de la clinique. Chaque protocole est établi après analyse de la peau, jamais avant.
+
+### Peut-on annuler ou reporter un rendez-vous ?
+
+Toute annulation doit être signalée au minimum 24 heures à l'avance. Une annulation tardive entraîne la perte de l'acompte, qui n'est pas remboursable. En cas de retard, la tolérance est de 5 minutes : au-delà, appelez immédiatement la clinique pour vérifier le planning.
+
+### Faut-il une consultation avant un peeling ?
+
+Oui. Le Luxury Peel n'est jamais un premier soin. La peau se prépare environ 3 mois — au minimum 3 séances de Soin Oxygène en cas d'acné, ou 3 mois de Soin Glass Skin en cas de taches — puis 2 semaines de préparation intensive. La routine est définie en consultation.
+
+### Quelle est la différence entre la Consultation Peau — Suivi et la Consultation Capillaire Premium ?
+
+La Consultation Peau — Suivi (20 000 FCFA) porte sur la peau : diagnostic complet, programme personnalisé, check-up mensuel et dossier de suivi pendant 4 à 6 mois. La Consultation Capillaire Premium (30 000 FCFA) dure 30 minutes, porte sur les cheveux et le cuir chevelu, et s'accompagne d'un suivi de 3 mois.
+
+### Peut-on venir accompagnée ?
+
+Une seule personne accompagnatrice est autorisée, et elle patiente à l'accueil pendant le soin. Les cabines de soins sont climatisées ; l'espace d'accueil ne l'est pas, il vaut mieux le savoir à l'avance si cela peut gêner votre accompagnant.
+
+## Ce que ce site ne dit pas
+
+L'adresse exacte de l'institut n'est pas publiée : la clinique se situe
+à Cotonou, et le rendez-vous se confirme par WhatsApp. Le site ne
+publie aucun avis client ni aucune note.
+
+Dernière mise à jour : 2026-09-09.

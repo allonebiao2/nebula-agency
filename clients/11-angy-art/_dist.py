@@ -19,7 +19,9 @@ import shutil
 ICI = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ICI, "_dist")
 
-FICHIERS = ["index.html", "404.html", "robots.txt", "sitemap.xml", "_headers"]
+# ⚠️ `llms.txt` est une LISTE EXPLICITE : un fichier absent d'ici ne part pas
+#    en ligne, et rien ne le signale (ajoute le 2026-09-09).
+FICHIERS = ["index.html", "404.html", "robots.txt", "sitemap.xml", "_headers", "llms.txt"]
 DOSSIERS = ["assets"]
 # rien de tout ça ne doit se retrouver en ligne
 EXCLUS = shutil.ignore_patterns("_*", ".*")

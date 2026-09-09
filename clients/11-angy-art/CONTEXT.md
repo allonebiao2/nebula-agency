@@ -1037,3 +1037,26 @@ d'icône : sans règle, un `<path>` sans `fill="none"` se remplit.
 **QC : 209 → 220 contrôles, tous verts.** ⚠️ **`?v=` bumpé en `20260905a`** —
 les assets portent `immutable` un an et **le cache de bordure d'un
 `*.pages.dev` ne se purge pas**. ✅ Déployé et vérifié en ligne.
+
+## 2026-09-09 — GEO : le `llms.txt` qui aurait pu tout défaire
+
+Les robots d'IA sont **vérifiés** sur ce site (GPTBot, ClaudeBot,
+PerplexityBot, Googlebot : **200**), et le `robots.txt` les nommait déjà.
+
+⚠️ **Angélique a retiré ses prix le 5 septembre.** Écrire un `llms.txt` en
+reprenant machinalement le modèle de la clinique aurait **remis ses prix en
+ligne par la porte que personne ne regarde.** Son fichier porte donc : qui
+elle est, sa phrase, ses **six œuvres avec technique, palette et dimensions**,
+ce qu'on peut lui demander, ses quatre questions, et la mention que **le prix
+est communiqué sur demande**. ⛔ **Zéro FCFA dans le fichier, et un contrôle le
+vérifie.** Il porte aussi les **mises en situation** : une IA qui le lit ne
+peut pas prendre les décors montés pour des photos de son atelier.
+
+Produit par `python _outils_llms.py`, **lu dans la page** — à relancer après
+toute modification de la collection.
+
+⚠️ **`_dist.py` liste ses fichiers un par un** : sans l'y ajouter, `llms.txt`
+serait resté sur le disque sans jamais partir en ligne, **et rien ne l'aurait
+signalé**.
+
+**QC : 220 → 224 contrôles.**

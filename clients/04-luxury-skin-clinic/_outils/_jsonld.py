@@ -32,6 +32,29 @@ JOURS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 OUVRE, FERME = "10:00", "17:00"
 
 
+def lire_questions(src):
+    """Releve les questions VISIBLES de la section #questions.
+
+    ⛔ UN `FAQPage` NE SE RECOPIE PAS. Un balisage qui declare des questions
+       que la page n'affiche pas est un balisage qui ment — defaut trouve chez
+       Hillary le 2026-08-16, ou le `FAQPage` existait sans une seule question
+       a l'ecran. Ici, si la question disparait de la page, elle disparait du
+       balisage le jour meme.
+    """
+    i = src.find('<section id="questions">')
+    j = src.find("</section>", i)
+    if i < 0 or j < 0:
+        return []
+    bloc = src[i:j]
+    qs = []
+    for m in re.finditer(r"<summary>(.*?)</summary>\s*<p>(.*?)</p>", bloc, re.S):
+        q = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", m.group(1))).strip()
+        r = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", m.group(2))).strip()
+        if q and r:
+            qs.append((q, r))
+    return qs
+
+
 def lire_soins(src):
     """Relève le nom, le prix et la famille de chaque soin du tableau SERVICES."""
     i = src.find("const SERVICES=[")
@@ -93,8 +116,22 @@ def main():
         },
     }
 
+    questions = lire_questions(src)
+    if len(questions) < 4:
+        sys.exit("seulement %d questions relevees : la FAQ visible a bouge" % len(questions))
+
+    graphe = [fiche, {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{
+            "@type": "Question", "name": q,
+            "acceptedAnswer": {"@type": "Answer", "text": r},
+        } for q, r in questions],
+    }]
+
     bloc = ('<script type="application/ld+json">'
-            + json.dumps(fiche, ensure_ascii=False, separators=(",", ":"))
+            + json.dumps(graphe if len(graphe) > 1 else fiche,
+                          ensure_ascii=False, separators=(",", ":"))
             + "</script>")
     neuf, n = re.subn(r'<script type="application/ld\+json">.*?</script>', bloc, src, count=1, flags=re.S)
     if n != 1:
@@ -106,6 +143,7 @@ def main():
     print("  balisage refait : %d soins lus, prix de %s à %s FCFA"
           % (len(soins), prix[0], prix[-1]))
     print("  horaires : lundi→samedi %s-%s" % (OUVRE, FERME))
+    print("  %d questions LUES dans la FAQ visible de la page" % len(questions))
     for s in soins:
         print("     %-34s %7d F" % (s["nom"], s["prix"]))
 

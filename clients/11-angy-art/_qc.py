@@ -1084,6 +1084,21 @@ def main():
                     "() => document.getElementById('selb').hidden") \
                     else mauvais("la bande reste après avoir tout retiré")
 
+                titre("Ce que lisent les machines")
+                import os as _os
+                _ll = _os.path.join(RACINE, "llms.txt")
+                bon("llms.txt existe") if _os.path.exists(_ll) else mauvais("llms.txt absent")
+                if _os.path.exists(_ll):
+                    _t = open(_ll, encoding="utf-8").read()   # `io` n'est pas importe ici
+                    # ⛔ Angélique a retiré ses prix : les remettre ici serait les
+                    #    réafficher par la porte que personne ne regarde.
+                    bon("aucun prix dans llms.txt") if "FCFA" not in _t \
+                        else mauvais("un prix est revenu dans llms.txt")
+                    bon("les six œuvres sont dans llms.txt") if _t.count("- Technique :") == 6 \
+                        else mauvais("llms.txt décrit %d œuvres, six attendues" % _t.count("- Technique :"))
+                    bon("llms.txt dit ce que le site ne dit pas") if "mises en situation" in _t \
+                        else mauvais("llms.txt ne mentionne pas les mises en situation")
+
                 titre("Le défilement lissé laisse passer les autres")
                 page.evaluate("() => window.scrollTo(0, 3000)")
                 page.wait_for_timeout(700)
