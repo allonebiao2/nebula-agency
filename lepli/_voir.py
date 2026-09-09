@@ -32,7 +32,7 @@ EXEMPLE = {
     "photos": [],
     "depuis": "2024-03-14",
     "pied": True,
-    "lien": "https://nebula-agency.online/minuit",
+    "lien": "https://lepli.nebula-agency.online",
 }
 
 

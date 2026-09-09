@@ -1,16 +1,16 @@
 /**
- * MINUIT · la démonstration du produit, en vidéo verticale.
+ * LE PLI · la démonstration du produit, en vidéo verticale.
  *
- * La phrase qui tient tout, reprise mot pour mot de `minuit/README.md` :
+ * La phrase qui tient tout, reprise mot pour mot de `lepli/README.md` :
  * une lettre digitale, c'est une ENVELOPPE CACHETÉE qu'on ouvre à l'heure dite.
  * Le sceau, le pli, l'encre qui sèche. Chaque animation de cette vidéo sort de
  * cet objet, et d'aucun autre. Si un mouvement pourrait être collé dans la
  * vidéo d'un autre produit, il est à refaire.
  *
  * ⚠️ Rien n'est inventé ici. Les couleurs sont les jetons de
- * `minuit/lettre.html`, le texte de la lettre est celui de la démonstration du
+ * `lepli/lettre.html`, le texte de la lettre est celui de la démonstration du
  * produit (accentué, il ne l'était pas), et les prix sont ceux de
- * `minuit/creer.html`. Ce fichier est le SEUL endroit où ils sont recopiés :
+ * `lepli/creer.html`. Ce fichier est le SEUL endroit où ils sont recopiés :
  * si la charte du produit bouge, c'est le seul endroit à corriger.
  */
 
@@ -19,7 +19,7 @@ export const LARGEUR = 1080;
 export const HAUTEUR = 1920;
 
 /**
- * Les jetons de `minuit/lettre.html`.
+ * Les jetons de `lepli/lettre.html`.
  * Jamais #000 ni #fff en fond : une encre de nuit, un papier de lettre.
  */
 export const C = {
@@ -58,7 +58,7 @@ export const SANS =
 
 /**
  * Le contenu de la lettre montrée. C'est la démonstration du produit, celle
- * des captures de `minuit/_vues/`, remise avec ses accents.
+ * des captures de `lepli/_vues/`, remise avec ses accents.
  *
  * Une ligne vide est un saut de paragraphe : elle ne compte pas dans le
  * séchage de l'encre, elle ouvre juste un blanc.

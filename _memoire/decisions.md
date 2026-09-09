@@ -779,3 +779,43 @@ partagent **un seul couloir réservé**, pas deux, et aucun ne recouvre du texte
 - **Ce que je n'ai pas tranché, et qui bloque la vente** : le compte qui
   encaisse · le sous-domaine · **un n8n tourne-t-il ailleurs** · la commission
   SasPay · qui relit le deuil · le premier franc encaissé pour de vrai.
+
+---
+
+## 2026-09-09 · LE NOM DU PRODUIT : **LE PLI**, et MINUIT disparaît
+
+- **Décidé par** : Mongazi, mot pour mot : « Je préfère le pli ».
+- **Portée** : tout le produit. Il annule la décision 01 de l'arrêté du
+  2026-09-06 (« MINUIT est arrêté »), qui n'a tenu que trois jours.
+- **Ce qui a fait tomber MINUIT**, et ce n'est pas une question de goût : le nom
+  désigne **une heure**. Passé aux trois registres qu'on veut vendre, il donne
+  ceci :
+
+| | Lettre d'amour | Faire-part de mariage | Annonce de décès |
+|---|---|---|---|
+| MINUIT | va | passe | ⛔ **ne va pas** |
+| **LE PLI** | va | va | **va** |
+| LE CACHET | va | va | passe |
+| MISSIVE | passe | va | va |
+
+  « MINUIT · Famille Dossou » ne se vend pas, et c'est la ligne à 15 000-50 000 F.
+  **LE PLI est le seul des quatre à passer les trois**, parce qu'il nomme
+  **l'objet et pas l'occasion** : « un pli », c'est littéralement une lettre
+  qu'on fait parvenir.
+
+- **Une seule enseigne, pas deux.** MINUIT ne survit pas comme nom de palier ni
+  comme sous-marque : garder les deux ferait deux vérités. Le mot « minuit »
+  reste partout où c'est le **mot français** (« elle s'ouvre à minuit pile »).
+- **Ce qui n'a PAS pesé** : la disponibilité des domaines. Mongazi ayant tranché
+  le sous-domaine (`lepli.nebula-agency.online`), il n'y avait rien à acheter.
+- **Fait le jour même, avant la première vente** — c'était la seule décision de
+  la semaine à avoir une date limite : après une vente, renommer laisse un lien
+  mort dans le téléphone de quelqu'un. `minuit/` → `lepli/`, schéma Supabase,
+  trois fonctions de bord, marqueur du gabarit, rangement du navigateur, la
+  vidéo et ses compositions, l'enseigne sur les quatre pages. **333
+  remplacements dans 28 fichiers, QC 145 + 118 toujours verts.**
+- ⛔ **Non appliqué, volontairement** : `_plans/2026-08-27-minuit-dossier.html`,
+  `_plans/2026-08-28-minuit-manuel.html`, `_plans/2026-09-06-minuit-arrete.html`,
+  les journaux, les conversations et `lecons.md`. Ce sont des **enregistrements
+  datés** : à cette date, le produit portait bien l'autre nom. L'arrêté porte un
+  bandeau qui renvoie ici, les deux autres non.

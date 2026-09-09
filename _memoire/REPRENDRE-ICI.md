@@ -7,14 +7,14 @@
 
 ---
 
-## 0 nonies. LE 2026-09-06 — MINUIT : L'IDÉE EST ARRÊTÉE, ET LA LETTRE TIENT SON HEURE
+## 0 nonies. LE 2026-09-06 — LE PLI : L'IDÉE EST ARRÊTÉE, ET LA LETTRE TIENT SON HEURE
 
 **Demande de Mongazi** : « Finalise-moi l'idée de la lettre digitale. »
 
-Livré : **`_plans/2026-09-06-minuit-arrete.html`** (les 12 décisions),
-**`minuit/CONDITIONS.md`** (le retrait sous 24 h, à avoir avant de vendre), et le
+Livré : **`_plans/2026-09-06-lepli-arrete.html`** (les 12 décisions),
+**`lepli/CONDITIONS.md`** (le retrait sous 24 h, à avoir avant de vendre), et le
 code qui tient la première décision. Détail complet dans
-`_memoire/conversations/2026-09-06-minuit-finalisation.md`.
+`_memoire/conversations/2026-09-06-lepli-finalisation.md`.
 
 ### ⛔ Le produit ne faisait pas ce que son nom dit
 
@@ -45,9 +45,9 @@ lien trois jours trop tôt. **QC 82 → 115.**
 ### 🏦 Second temps du même jour : la caisse est écrite
 
 **Rien n'est déployé, tout est contrôlé.** Marche à suivre en cinq commandes :
-**`minuit/PAIEMENT.md`**. Le schéma Supabase `minuit`, trois fonctions de bord
+**`lepli/PAIEMENT.md`**. Le schéma Supabase `lepli`, trois fonctions de bord
 sur la forme éprouvée de PISTE, et le constructeur qui parle enfin à la caisse
-(il posait sa commande sur `window.MINUIT_COMMANDE` et elle n'allait nulle
+(il posait sa commande sur `window.LEPLI_COMMANDE` et elle n'allait nulle
 part). **QC 115 → 127 + 118.**
 
 ⛔ **On ne stocke jamais le HTML du navigateur** : ce serait un hébergeur de
@@ -55,21 +55,21 @@ pages arbitraires sur notre domaine. On stocke les données, la lettre est
 rebâtie depuis le gabarit. ⛔ **Le prix ne vient jamais du navigateur** non
 plus, ni le pied viral, ni le code secret.
 
-### ⏳ LE NOM EST ROUVERT (2026-09-09), et il bloque le reste
+### ✅ LE NOM EST TRANCHÉ (2026-09-09) : **LE PLI**
 
-⚠️ **L'arrêté du 06/09 dit « MINUIT est arrêté » : ce n'est plus vrai.** Le nom
-va à la lettre d'amour, passe sur un mariage, et ⛔ **ne va pas sur une annonce
-de décès** — la ligne qui rapporte le plus. Des quatre finalistes (MINUIT · LE
-PLI · LE CACHET · MISSIVE), **seul LE PLI passe les trois registres**.
+Mongazi : « je préfère le pli ». **Une seule enseigne**, et ⛔ **MINUIT
+disparaît comme marque** (le mot « minuit » reste, comme mot français).
 
-⚠️ **Le sous-domaine est tranché** (`<nom>.nebula-agency.online`) : plus aucun
-domaine à acheter, donc plus aucune contrainte de disponibilité sur le nom.
+**Pourquoi** : MINUIT nommait une HEURE. Il allait à la lettre d'amour, passait
+sur un mariage, et ⛔ **ne passait pas sur une annonce de décès** — la ligne à
+15 000-50 000 F. Des quatre finalistes, **seul LE PLI passe les trois
+registres**, parce qu'il nomme l'objet et pas l'occasion.
 
-**La question posée à Mongazi, et pas encore répondue** : une enseigne ou deux ?
-*Une seule* → renommer AVANT la première vente (demi-journée : dossier `minuit/`,
-3 fonctions, schéma Supabase, sigle, texte de la vidéo). *Deux* → rien à faire
-maintenant, la ligne événement n'ouvre qu'en novembre.
-⛔ **Ne rien renommer tant qu'il n'a pas répondu.**
+**Renommé le jour même, avant la première vente** : `minuit/` → `lepli/`, le
+schéma, les trois fonctions, le marqueur du gabarit, le rangement du navigateur,
+la vidéo, l'enseigne. 333 remplacements, QC **145 + 118 verts**.
+⚠️ **Un renommage mécanique abîme les textes qui COMPARENT les deux noms** :
+relire ceux-là à la main. ⛔ Les documents datés gardent MINUIT.
 
 ### ⏳ Par quoi commencer la prochaine fois
 
@@ -79,7 +79,7 @@ non** (ça rouvre aussi les relances de renouvellements) · la commission SasPay
 qui relit le deuil · **le premier franc encaissé pour de vrai**.
 
 Puis, dans cet ordre : **brancher** la caisse (elle est écrite : cinq commandes
-dans `minuit/PAIEMENT.md`), la page de vente et l'affiche, et **le faire-part
+dans `lepli/PAIEMENT.md`), la page de vente et l'affiche, et **le faire-part
 pour novembre** (pas pour février : ticket dix fois plus élevé).
 
 ---

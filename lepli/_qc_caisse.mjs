@@ -1,7 +1,7 @@
 /*
-  MINUIT · le contrôle de la caisse et de l'adresse.
+  LE PLI · le contrôle de la caisse et de l'adresse.
 
-      node --experimental-strip-types minuit/_qc_caisse.mjs
+      node --experimental-strip-types lepli/_qc_caisse.mjs
 
   ⚠️ Le drapeau n'est pas un caprice : ce fichier importe des `.ts`, que Deno
   lit nativement et que Node 22 refuse sans lui.
@@ -255,7 +255,7 @@ dit(!/[\u2028\u2029]/.test(lire('supabase/functions/_shared/lettre.ts')),
 console.log('\n== La lettre rebâtie')
 
 const pose = M.poser(G.GABARIT, M.lireCommande(BON).lettre)
-dit(!pose.includes('/*MINUIT_DONNEES*/'), 'le marqueur a disparu')
+dit(!pose.includes('/*LEPLI_DONNEES*/'), 'le marqueur a disparu')
 dit(pose.includes('"ouvre":"2027-02-14T00:00"'), 'l’heure est dans la page servie')
 dit(pose.includes('"pour":"Zara"'), 'le prénom est dans la page servie')
 dit(!/<script[^>]+src=/.test(pose), 'aucun script externe')
@@ -283,25 +283,25 @@ dit(a === b, 'la caisse est exactement celle de PISTE', `${a.length} contre ${b.
 console.log('\n== Le schéma')
 
 const sql = lire('supabase/lettres.sql')
-dit(/CREATE SCHEMA IF NOT EXISTS minuit/.test(sql), 'MINUIT a son propre schéma')
+dit(/CREATE SCHEMA IF NOT EXISTS lepli/.test(sql), 'LE PLI a son propre schéma')
 dit(!/DROP /i.test(sql), 'le fichier ne détruit rien : il est rejouable')
-for (const f of ['minuit_deposer', 'minuit_lire', 'minuit_paiement_attendu',
-                 'minuit_paiement_session', 'minuit_paiement_par_session',
-                 'minuit_paiement_journal', 'minuit_ouvrir', 'minuit_retirer'])
+for (const f of ['lepli_deposer', 'lepli_lire', 'lepli_paiement_attendu',
+                 'lepli_paiement_session', 'lepli_paiement_par_session',
+                 'lepli_paiement_journal', 'lepli_ouvrir', 'lepli_retirer'])
   dit(sql.includes(`FUNCTION public.${f}(`), `la porte ${f} existe`)
 dit(/REVOKE ALL ON FUNCTION/.test(sql) && /GRANT EXECUTE ON FUNCTION %s TO service_role/.test(sql),
     'aucune porte n’est ouverte au navigateur')
 dit(/ENABLE ROW LEVEL SECURITY/.test(sql), 'les tables sont fermées')
-dit(/minuit_evenement_unique/.test(sql), 'un renvoi de notification ne paie pas deux fois')
+dit(/lepli_evenement_unique/.test(sql), 'un renvoi de notification ne paie pas deux fois')
 /* ⛔ Le HTML du navigateur n'est stocké nulle part. */
 dit(!/\bhtml\b\s+text/.test(sql), 'la base ne garde aucun HTML d’acheteur')
 
 /* ═══ 10 · ce que les fonctions promettent ════════════════════════════════ */
 console.log('\n== Les fonctions de bord')
 
-const cmd = lire('supabase/functions/minuit-commande/index.ts')
-const recu = lire('supabase/functions/minuit-paiement-recu/index.ts')
-const serv = lire('supabase/functions/minuit-lettre/index.ts')
+const cmd = lire('supabase/functions/lepli-commande/index.ts')
+const recu = lire('supabase/functions/lepli-paiement-recu/index.ts')
+const serv = lire('supabase/functions/lepli-lettre/index.ts')
 
 dit(!/p_prix:\s*(d|Number)/.test(cmd) && /p_prix: palier.prix/.test(cmd),
     'le dépôt écrit le prix du barème, pas celui du corps')
@@ -315,7 +315,7 @@ dit(/verifierSignature/.test(recu) && /horodatageFrais/.test(recu),
     'la notification est signée ET fraîche, deux contrôles')
 dit(/await req.text\(\)/.test(recu) && !/JSON.stringify\(await req/.test(recu),
     'le corps brut n’est jamais reparsé avant la signature')
-dit(/minuit_retirer/.test(serv), 'le retrait est une porte, pas une intention')
+dit(/lepli_retirer/.test(serv), 'le retrait est une porte, pas une intention')
 dit(/verdict\(/.test(serv), 'servir une lettre passe par la décision commune')
 
 /* ⚠️ Le service_role ne doit jamais fuiter vers le navigateur. */

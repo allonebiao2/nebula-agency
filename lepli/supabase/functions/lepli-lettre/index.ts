@@ -3,10 +3,10 @@ import { GABARIT } from '../_shared/gabarit.ts'
 import { JETON_FORME, entetes, poser, verdict } from '../_shared/lettre.ts'
 
 /*
-  MINUIT · servir une lettre, et la retirer.
+  LE PLI · servir une lettre, et la retirer.
 
   ⚠️ CE FICHIER EST LA SOURCE. Il tourne sur Supabase, mais il vit ICI.
-      supabase functions deploy minuit-lettre --no-verify-jwt
+      supabase functions deploy lepli-lettre --no-verify-jwt
   ⛔ `--no-verify-jwt` : celle qui reçoit la lettre n'a pas de compte, pas de
      jeton, et souvent pas beaucoup de réseau. Ce qui protège cette porte,
      c'est que l'adresse ne se devine pas (110 bits tirés au sort).
@@ -64,8 +64,8 @@ Deno.serve(async (req: Request) => {
     return page('Cette lettre n’existe pas.', 'Le lien est peut-être incomplet. Redemande-le à qui te l’a envoyé.', 404)
   }
 
-  const { data, error } = await db().rpc('minuit_lire', { p_jeton: jeton })
-  if (error) { console.error('minuit lire', error.message); return page('Un instant.', 'Cette lettre ne peut pas s’ouvrir pour le moment. Réessaie dans un moment.', 503) }
+  const { data, error } = await db().rpc('lepli_lire', { p_jeton: jeton })
+  if (error) { console.error('lepli lire', error.message); return page('Un instant.', 'Cette lettre ne peut pas s’ouvrir pour le moment. Réessaie dans un moment.', 503) }
   const l = Array.isArray(data) ? data[0] : data
 
   /* ── l'etat, pour la page de retour ──────────────────────────────────── */
@@ -97,9 +97,9 @@ Deno.serve(async (req: Request) => {
     /* ⛔ Aucune preuve demandée, aucune question posée. On retire même une
        lettre déjà retirée : c'est sans effet, et c'est ce qui permet de
        répondre la même chose à tout le monde. */
-    const { error: eR } = await db().rpc('minuit_retirer', { p_jeton: jeton })
-    if (eR) { console.error('minuit retrait', eR.message); return page('Un instant.', 'Le retrait n’a pas pu se faire. Écris-nous sur WhatsApp, on le fait à la main.', 503) }
-    console.log('minuit · retirée', jeton)
+    const { error: eR } = await db().rpc('lepli_retirer', { p_jeton: jeton })
+    if (eR) { console.error('lepli retrait', eR.message); return page('Un instant.', 'Le retrait n’a pas pu se faire. Écris-nous sur WhatsApp, on le fait à la main.', 503) }
+    console.log('lepli · retirée', jeton)
     return page('C’est retiré.', 'Cette lettre n’existe plus. Personne n’a été prévenu.', 200)
   }
 

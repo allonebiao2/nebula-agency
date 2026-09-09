@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MINUIT · écris ta lettre</title>
+<title>LE PLI · écris ta lettre</title>
 <!--
-  MINUIT · le constructeur.
+  LE PLI · le constructeur.
 
   Les six ecrans du manuel : il arrive, il choisit l'occasion, il remplit ET IL
   VOIT, il paie, il colle la reference, il attend sans etre dans le vide.
@@ -167,7 +167,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 <body>
 
 <header>
-  <div class="marque"><span class="sceau" aria-hidden="true"></span>MINUIT</div>
+  <div class="marque"><span class="sceau" aria-hidden="true"></span>LE PLI</div>
   <div class="etapes" role="progressbar" aria-label="Avancement" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="jauge">
     <i class="on"></i><i></i><i></i><i></i>
   </div>
@@ -332,7 +332,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 "use strict";
 
 /* ══════════════════════════════════════════════════════════════════════
-   Le catalogue. Les prix viennent du manuel Minuit et de nulle part
+   Le catalogue. Les prix viennent du manuel du 2026-08-28 et de nulle part
    ailleurs : on ne recopie jamais un prix a la main dans deux fichiers.
    ══════════════════════════════════════════════════════════════════════ */
 /* ⛔ UNE SEULE ECHELLE DE PRIX, et elle est plus bas : les PALIERS.
@@ -350,8 +350,8 @@ var OCCASIONS = [
   {id:"demande",  nom:"Demande en mariage",note:"Sobriété maximale", titre:"Veux-tu m'épouser ?"}
 ];
 var PALIERS = [
-  {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, le pied MINUIT reste", prix:0,     pied:true},
-  {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, sans le pied MINUIT",               prix:2000,  pied:false},
+  {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, le pied LE PLI reste", prix:0,     pied:true},
+  {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, sans le pied LE PLI",               prix:2000,  pied:false},
   {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",              prix:5000,  pied:false},
   {id:"coffret", nom:"Le Coffret",  desc:"Tout, plus la livraison WhatsApp à l'heure choisie",prix:10000, pied:false}
 ];
@@ -359,14 +359,14 @@ var PALIERS = [
    LA CAISSE. C'est la fonction de bord qui depose la lettre, en fixe le
    prix (⛔ jamais ce fichier : il s'edite dans la console en trois
    secondes) et ouvre le paiement. Elle vit dans
-   `minuit/supabase/functions/minuit-commande/`.
+   `lepli/supabase/functions/lepli-commande/`.
 
    ⚠️ Tant que `POINT` est vide, la commande ne part nulle part et on le
    DIT a l'acheteur : mieux vaut « ce n'est pas encore ouvert » qu'un ecran
    « Commande recue » pour une commande que personne n'a recue.
    ══════════════════════════════════════════════════════════════════════ */
-var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/minuit-commande";
-var CLE = "minuit:brouillon";
+var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-commande";
+var CLE = "lepli:brouillon";
 
 var $ = function(s){ return document.querySelector(s); };
 var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
@@ -446,12 +446,12 @@ function donnees(){
     depuis: E.depuis || "",
     /* L'HEURE. Elle etait demandee a l'acheteur, promise sur l'ecran final,
        et n'entrait dans aucune lettre. C'est elle qui donne son nom au
-       produit : sans elle, MINUIT s'appelle « une jolie page ».
+       produit : sans elle, LE PLI s'appelle « une jolie page ».
        Format de calendrier, sans fuseau : minuit, c'est minuit sur le
        telephone de celle qui lit. */
     ouvre: E.quand ? (E.quand + "T" + (E.quandH || "00:00")) : "",
     pied: pal.pied,
-    lien: "https://nebula-agency.online/minuit",
+    lien: "https://lepli.nebula-agency.online",
     /* Ouvert d'office pendant l'ecriture, ferme quand on demande a revoir
        le seuil. Ce drapeau ne part JAMAIS dans la lettre commandee : voir
        htmlCommande(). */
@@ -461,8 +461,8 @@ function donnees(){
 
 function batir(d){
   if (!GABARIT) { return "<p style='color:#f4ede0;font-family:sans-serif;padding:24px'>Aperçu en cours de chargement…</p>"; }
-  var a = GABARIT.indexOf("/*MINUIT_DONNEES*/");
-  var b = GABARIT.indexOf("/*FIN_MINUIT_DONNEES*/") + "/*FIN_MINUIT_DONNEES*/".length;
+  var a = GABARIT.indexOf("/*LEPLI_DONNEES*/");
+  var b = GABARIT.indexOf("/*FIN_LEPLI_DONNEES*/") + "/*FIN_LEPLI_DONNEES*/".length;
   return GABARIT.slice(0, a) + serialiser(d) + GABARIT.slice(b);
 }
 
@@ -688,7 +688,7 @@ $("#btn-commander").addEventListener("click", function(){
   $("#fini-quand").textContent = q;
 
   var c = commande();
-  window.MINUIT_COMMANDE = c;   /* lisible par le controle */
+  window.LEPLI_COMMANDE = c;   /* lisible par le controle */
   envoyer(c, p);
 });
 
@@ -736,7 +736,7 @@ function envoyer(c, p){
        ⛔ La somme et le nom de l'offre viennent de la CAISSE, pas d'ici. */
     if (j.paiement) {
       try {
-        localStorage.setItem("minuit:paiement", JSON.stringify({
+        localStorage.setItem("lepli:paiement", JSON.stringify({
           jeton: j.jeton, paiement: j.paiement, adresse: j.adresse,
           palier: j.palier || "", somme: fmt(j.prix), pour: c.pour, ouvre: c.ouvre
         }));
@@ -785,7 +785,7 @@ fetch("lettre.html")
     $("#apercu").srcdoc =
       "<p style='color:#f4ede0;font-family:sans-serif;padding:24px;line-height:1.6'>" +
       "L'aperçu a besoin d'un serveur. Lance <code>python -m http.server</code> " +
-      "dans le dossier minuit/.</p>";
+      "dans le dossier lepli/.</p>";
   });
 </script>
 </body>

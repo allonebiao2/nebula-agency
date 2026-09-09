@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <title>Une lettre pour toi</title>
 <!--
-  MINUIT · le gabarit de la lettre.
+  LE PLI · le gabarit de la lettre.
 
   La phrase qui tient tout : une lettre digitale, c'est une ENVELOPPE CACHETEE
   qu'on ouvre a l'heure dite. Le sceau, le pli, l'encre qui seche. Chaque
@@ -25,7 +25,7 @@
   - prefers-reduced-motion honore partout ;
   - noindex : une lettre est privee, elle n'a rien a faire dans un moteur.
 
-  Les donnees sont injectees a la place de MINUIT_DONNEES par le constructeur
+  Les donnees sont injectees a la place de LEPLI_DONNEES par le constructeur
   (creer.html) ou par le serveur. Le gabarit ne va JAMAIS chercher un fichier :
   photos et sons sont des donnees, ou ne sont pas.
 -->
@@ -363,7 +363,7 @@ main.ouverte{opacity:1}
   <footer class="pied" id="l-pied">
     <a id="pied-lien" href="#" rel="noopener">
       <span class="sceau" aria-hidden="true"></span>
-      Fais la tienne sur MINUIT
+      Fais la tienne sur LE PLI
     </a>
     <p class="note">Une lettre, une enveloppe, un cachet. En cinq minutes.</p>
   </footer>
@@ -373,7 +373,7 @@ main.ouverte{opacity:1}
 "use strict";
 /* Les donnees de CETTE lettre. Le constructeur remplace la ligne entiere.
    Rien n'est charge depuis le reseau : une lettre doit s'ouvrir dans un taxi. */
-var D = /*MINUIT_DONNEES*/{
+var D = /*LEPLI_DONNEES*/{
   occasion:"Anniversaire",
   pour:"Zara",
   de:"Robert",
@@ -388,8 +388,8 @@ var D = /*MINUIT_DONNEES*/{
   depuis:"",
   ouvre:"",
   pied:true,
-  lien:"https://nebula-agency.online/minuit"
-}/*FIN_MINUIT_DONNEES*/;
+  lien:"https://lepli.nebula-agency.online"
+}/*FIN_LEPLI_DONNEES*/;
 
 var $ = function(s){ return document.querySelector(s); };
 var doux = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -454,7 +454,7 @@ if (jours > 0) {
 }
 
 if (!D.pied) { $("#l-pied").hidden = true; }
-else { $("#pied-lien").href = D.lien || "https://nebula-agency.online/minuit"; }
+else { $("#pied-lien").href = D.lien || "https://lepli.nebula-agency.online"; }
 
 /* ── Les chiffres qui roulent, une fois la lettre ouverte. ── */
 function rouler(){

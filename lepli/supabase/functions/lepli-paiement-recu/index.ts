@@ -6,10 +6,10 @@ import {
 import { JETON_FORME, palier } from '../_shared/lettre.ts'
 
 /*
-  MINUIT · la notification de paiement (webhook SasPay).
+  LE PLI · la notification de paiement (webhook SasPay).
 
   ⚠️ CE FICHIER EST LA SOURCE. Il tourne sur Supabase, mais il vit ICI.
-      supabase functions deploy minuit-paiement-recu --no-verify-jwt
+      supabase functions deploy lepli-paiement-recu --no-verify-jwt
   ⛔ `--no-verify-jwt` n'est pas une négligence : SasPay n'a pas de jeton
      Supabase à présenter. Ce qui protège cette porte n'est pas un JWT, c'est
      la signature vérifiée ci-dessous.
@@ -71,7 +71,7 @@ Deno.serve(async (req: Request) => {
   /* Notre référence EST le jeton de la lettre. */
   let jeton = JETON_FORME.test(n.reference) ? n.reference : ''
   if (!jeton && n.session) {
-    const { data } = await db.rpc('minuit_paiement_par_session', { p_session: n.session })
+    const { data } = await db.rpc('lepli_paiement_par_session', { p_session: n.session })
     const s = Array.isArray(data) ? data[0] : data
     if (s?.jeton) jeton = String(s.jeton)
   }
@@ -85,7 +85,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const journal = async (agi: string, code = 200) => {
-    const { data, error } = await db.rpc('minuit_paiement_journal', {
+    const { data, error } = await db.rpc('lepli_paiement_journal', {
       p_evenement_id: n.evenementId,
       p_jeton: jeton || null,
       p_session: n.session || null,
@@ -104,7 +104,7 @@ Deno.serve(async (req: Request) => {
   if (!jeton) return journal('sans lettre')
 
   /* ── ce qu'on attend, puis la décision ───────────────────────────────── */
-  const { data: lignes, error } = await db.rpc('minuit_paiement_attendu', { p_jeton: jeton })
+  const { data: lignes, error } = await db.rpc('lepli_paiement_attendu', { p_jeton: jeton })
   if (error) { console.error('saspay attendu', error.message); return ok({ ok: false }, 500) }
   const b = Array.isArray(lignes) ? lignes[0] : lignes
   const cmd = b?.existe
@@ -112,7 +112,7 @@ Deno.serve(async (req: Request) => {
     : null
 
   /* ⛔ Les gardes (devise, montant, déjà payée) vivent dans `_shared/saspay.ts`
-     et sont essayées par `node minuit/_qc_caisse.mjs`. Les recopier ici ferait
+     et sont essayées par `node lepli/_qc_caisse.mjs`. Les recopier ici ferait
      deux vérités sur ce qui autorise un encaissement.
      ⚠️ `decider` refuse un état hors « attente / recue » : notre lettre payée
      porte « vivante », donc un renvoi est refusé comme doublon, ce qui est
@@ -133,7 +133,7 @@ Deno.serve(async (req: Request) => {
      écrit ici deviendrait faux en silence le jour où l'un d'eux change. */
   const p = palier(b?.palier)
   if (!p) { console.error('saspay palier inconnu', jeton, b?.palier); return ok({ ok: false, erreur: 'palier' }, 500) }
-  const { data: fait, error: eO } = await db.rpc('minuit_ouvrir', {
+  const { data: fait, error: eO } = await db.rpc('lepli_ouvrir', {
     p_jeton: jeton, p_jours: p.jours,
   })
   if (eO) { console.error('saspay ouverture', jeton, eO.message); return ok({ ok: false, erreur: 'ouverture' }, 500) }
@@ -147,6 +147,6 @@ Deno.serve(async (req: Request) => {
     return journal('payee · lettre retirée, non ouverte')
   }
 
-  console.log('minuit · payée et ouverte', jeton, cmd?.total, r.devise)
+  console.log('lepli · payée et ouverte', jeton, cmd?.total, r.devise)
   return journal('payee · ouverte')
 })

@@ -15,7 +15,7 @@
   **n'appartient plus à Mongazi** (certificat au nom de `api-preprod.normly.fr`).
   Donc, sauf preuve du contraire, **il n'y a plus de n8n utilisable**. Deux
   chantiers s'appuyaient dessus sans le savoir : la relance des renouvellements,
-  et « la livraison à l'heure choisie » de MINUIT (celle-là vit désormais dans la
+  et « la livraison à l'heure choisie » de LE PLI (celle-là vit désormais dans la
   lettre, elle n'attend plus rien). ⏳ **Mongazi doit dire si un n8n tourne
   ailleurs**, oui ou non ; en attendant, ne rien planifier qui en dépende.
 - IA : Claude Anthropic, Gemini, Groq llama-3.3-70b
@@ -45,7 +45,7 @@
   rendus suivants passent. ⚠️ **`rotate: 12` en nombre nu sort en `rotate:12px`,
   donc invalide et ignoré sans un mot** (React n'a que `scale` dans sa table
   des valeurs sans unité) : toute rotation s'écrit avec son `deg`.
-  Le studio porte aussi **la démonstration vidéo de MINUIT** (`minuit-demo`,
+  Le studio porte aussi **la démonstration vidéo de LE PLI** (`lepli-demo`,
   30 s, six plans). Détail : `_studio-video/README.md`.
 - WhatsApp : Twilio
 - Base de données : Supabase
@@ -290,37 +290,44 @@
   CSS). Réserver une marge ne suffit pas : un `fixed` est ancré au viewport.
 - Détail complet : `benin-mon-pays/CONTEXT.md`
 
-### MINUIT — la lettre digitale  *(produit interne, 2026-09-02 · **idée arrêtée le 2026-09-06**)*
+### LE PLI — la lettre digitale  *(produit interne, 2026-09-02 · **idée arrêtée le 2026-09-06**)*
 - **Ce que c'est** : « une lettre digitale, c'est **une enveloppe cachetée qu'on
   ouvre à l'heure dite** ». L'acheteur écrit son mot, choisit l'heure, paie ;
   il envoie le lien lui-même, elle brise le cachet à l'heure dite, et lit.
-  Dossier de décision : `_plans/2026-08-27-minuit-dossier.html` · manuel
-  d'exploitation : `_plans/2026-08-28-minuit-manuel.html` · **arrêté (les 12
-  décisions) : `_plans/2026-09-06-minuit-arrete.html`** · conditions et retrait :
-  **`minuit/CONDITIONS.md`** · code : **`minuit/`**.
+  Dossier de décision : `_plans/2026-08-27-lepli-dossier.html` · manuel
+  d'exploitation : `_plans/2026-08-28-lepli-manuel.html` · **arrêté (les 12
+  décisions) : `_plans/2026-09-06-lepli-arrete.html`** · conditions et retrait :
+  **`lepli/CONDITIONS.md`** · code : **`lepli/`**.
 - **La thèse** : *le romantique est le marketing, l'événement est le chiffre
   d'affaires, le B2B est la retraite.* Un seul moteur, trois habillages.
-- ⏳ **LE NOM EST ROUVERT (2026-09-09)** — l'arrêté du 06/09 le donne « arrêté »
-  à sa décision 01, ce n'est plus vrai : Mongazi le remet en question. ⚠️ **Le
-  défaut est réel et mesuré sur les trois registres** : « MINUIT » nomme une
-  HEURE, donc il va à la lettre d'amour, passe sur un faire-part de mariage, et
-  ⛔ **ne va pas sur une annonce de décès** (« MINUIT · Famille Dossou »), qui
-  est la ligne à 15 000-50 000 F. Sur les quatre finalistes (MINUIT · LE PLI ·
-  LE CACHET · MISSIVE), **seul LE PLI passe les trois**, parce qu'il nomme
-  l'OBJET et pas l'occasion. ⚠️ **Le domaine ne contraint plus rien** : Mongazi
-  a tranché le sous-domaine (`<nom>.nebula-agency.online`), il n'y a rien à
-  acheter. **La question n'est pas « lequel » mais « une enseigne ou deux »**,
-  et elle est asymétrique : *une seule* enseigne (LE PLI au-dessus, MINUIT
-  redevenant le nom du palier) **se décide AVANT la première vente** (renommer
-  = une demi-journée maintenant, un lien mort dans un téléphone après) ; *deux*
-  enseignes ne coûtent rien aujourd'hui, la ligne événement n'ouvrant qu'en
-  novembre. Recommandation posée : **deux enseignes, MINUIT reste**, avec la
-  règle gravée ⛔ **jamais un faire-part de décès sous l'enseigne MINUIT**.
-  ⏳ **Mongazi n'a pas encore tranché : ne rien renommer sans sa réponse.**
+- ✅ **LE NOM EST TRANCHÉ LE 2026-09-09 : LE PLI.** Mongazi : « je préfère le
+  pli ». **Une seule enseigne**, et ⛔ **MINUIT disparaît comme marque** — le
+  mot « minuit » ne survit que là où c'est le mot français (« elle s'ouvre à
+  minuit pile »), jamais comme enseigne : garder les deux ferait deux vérités.
+  ⚠️ **Le défaut qui a tué MINUIT, mesuré sur les trois registres** : il nommait
+  une HEURE, donc il allait à la lettre d'amour, passait sur un faire-part de
+  mariage, et ⛔ **ne passait pas sur une annonce de décès** (« MINUIT · Famille
+  Dossou »), la ligne à 15 000-50 000 F. Des quatre finalistes (MINUIT · LE PLI ·
+  LE CACHET · MISSIVE), **seul LE PLI passe les trois, parce qu'il nomme l'OBJET
+  et pas l'occasion** (« un pli », c'est littéralement une lettre qu'on fait
+  parvenir). ⚠️ **Le sous-domaine étant tranché** (`lepli.nebula-agency.online`),
+  aucun domaine n'était à acheter : la disponibilité n'a contraint personne.
+  **Renommé le jour même**, avant la première vente : `minuit/` → **`lepli/`**,
+  schéma `minuit` → **`lepli`**, `minuit-*` → **`lepli-*`**, `MINUIT_DONNEES` →
+  **`LEPLI_DONNEES`**, `minuit:brouillon` → **`lepli:brouillon`**, la vidéo et
+  ses compositions, et l'enseigne partout. **333 remplacements, 28 fichiers**,
+  QC **145 + 118 toujours verts**. ⚠️ **Un renommage mécanique abîme les textes
+  qui COMPARENT les deux noms** : la note de la veille est ressortie en « LE PLI
+  nomme une HEURE » et « les finalistes LE PLI · LE PLI » — relire les endroits
+  où l'ancien nom était cité comme objet d'analyse, pas comme enseigne.
+  ⛔ **Les documents datés gardent l'ancien nom** (`_plans/2026-08-27-minuit-*`,
+  `_plans/2026-09-06-minuit-arrete.html`, les journaux, les conversations, les
+  leçons) : à cette date le produit s'appelait MINUIT. L'arrêté porte un bandeau
+  qui renvoie ici.
 - **Fait le 2026-09-02** : **le gabarit** (`lettre.html`) et **le constructeur**
-  (`creer.html`), **78 contrôles verts** (`python minuit/_qc.py`).
+  (`creer.html`), **78 contrôles verts** (`python lepli/_qc.py`).
 - 🕛 **FAIT LE 2026-09-06 — LA LETTRE TIENT L'HEURE ELLE-MÊME** (détail
-  `_memoire/conversations/2026-09-06-minuit-finalisation.md`) : ⛔ **la fonction
+  `_memoire/conversations/2026-09-06-lepli-finalisation.md`) : ⛔ **la fonction
   qui donne son nom au produit n'existait NULLE PART** — l'heure était demandée à
   l'acheteur, promise sur l'écran final (« elle la recevra le 14 février à
   00:00 ») et n'entrait dans aucune lettre ; ⚠️ **aucun contrôle ne pouvait le
@@ -354,14 +361,14 @@
   **TÉMOIN** à chaque verrou (heure passée, palier payé) sans quoi un verrou
   resté fermé pour toujours passerait avec les honneurs.
 - 🏦 **LA CAISSE ET L'ADRESSE SONT ÉCRITES ET CONTRÔLÉES le 2026-09-06**
-  (marche à suivre : **`minuit/PAIEMENT.md`**) — ⏳ **rien n'est déployé**, il
-  manque 6 réponses de Mongazi : **schéma Supabase `minuit`** + **3 fonctions
+  (marche à suivre : **`lepli/PAIEMENT.md`**) — ⏳ **rien n'est déployé**, il
+  manque 6 réponses de Mongazi : **schéma Supabase `lepli`** + **3 fonctions
   de bord** (déposer+payer · la notification signée qui **ouvre la lettre** ·
   servir+**retirer**), sur la forme éprouvée de PISTE · **`_shared/lettre.ts`
   porte TOUT ce qui décide**, en Web standard, donc essayable **sans clé, sans
-  réseau et sans base** (`node --experimental-strip-types minuit/_qc_caisse.mjs`,
+  réseau et sans base** (`node --experimental-strip-types lepli/_qc_caisse.mjs`,
   **118 contrôles**) · **le constructeur parle enfin à la caisse** (il posait sa
-  commande sur `window.MINUIT_COMMANDE` et elle n'allait nulle part) ·
+  commande sur `window.LEPLI_COMMANDE` et elle n'allait nulle part) ·
   ⛔ **ON NE STOCKE JAMAIS LE HTML DU NAVIGATEUR** : une porte publique qui
   accepte du HTML et le sert sur notre domaine est un **hébergeur de pages
   arbitraires**, gratuit et anonyme — on stocke les **données**, la lettre est
@@ -387,7 +394,7 @@
   ⛔ **PAS de Render avec le SQLite de `vitrina/`** : le disque de Render
   s'efface à chaque déploiement (c'est ce qui avait fait disparaître les 2 PDF
   des partenaires) — un déploiement, et les lettres payées n'existent plus ·
-  le **ménage des lettres expirées** (`minuit_menage()` existe, rien ne
+  le **ménage des lettres expirées** (`lepli_menage()` existe, rien ne
   l'appelle) · le **lien « retirer cette lettre »** dans le pied (la porte
   existe, le bouton non) ·
   **le faire-part pour NOVEMBRE** (saison des mariages + retour de la diaspora,
@@ -398,11 +405,11 @@
   SasPay (elle décide de la marge d'un ticket à 2 000 F, écrite nulle part) ·
   qui relit le deuil · **le premier franc encaissé pour de vrai**.
 - **Fait le 2026-09-03** : **la vidéo de démonstration**, composition
-  `minuit-demo` dans `_studio-video/` (1080x1920, 30 s, `npm run rendu:minuit`).
+  `lepli-demo` dans `_studio-video/` (1080x1920, 30 s, `npm run rendu:lepli`).
   Six plans, **les six signatures du produit rejouées en React** et non
   photographiées : une capture ne montre pas un cachet qui se brise. ⛔ **Ne pas
   la publier en l'état** : elle promet « Elle l'ouvre à minuit pile. Pas
-  avant. » et affiche `nebula-agency.online/minuit`, or **ni la remise à
+  avant. » et affiche `lepli.nebula-agency.online`, or **ni la remise à
   l'heure dite ni le serveur n'existent** au 2026-09-03. ✅ **Depuis le
   2026-09-06 la promesse est tenue** (la lettre porte le verrou) : il ne reste
   que l'adresse affichée, qui doit exister avant publication.
@@ -410,10 +417,10 @@
   montrent du papier** : mesuré, deux feuilles à 50 % l'une sur l'autre
   ressemblent à une panne, pas à une transition (les plans partagent le même
   fond de nuit, donc la coupe est déjà invisible).
-  Détail : `_memoire/conversations/2026-09-03-minuit-video-demo.md`.
+  Détail : `_memoire/conversations/2026-09-03-lepli-video-demo.md`.
 - ⛔ **`</script>` écrit par un acheteur TUE la page** : les données atterrissent
   dans un bloc `<script>`, et **`json.dumps` ne protège pas de ça**. Toute
-  sérialisation passe par **`minuit/_injecter.py`**, seul endroit, qui neutralise
+  sérialisation passe par **`lepli/_injecter.py`**, seul endroit, qui neutralise
   `</`, `<!--` et U+2028/U+2029. ⚠️ **Le commentaire qui documentait ce piège le
   contenait en clair** et fermait lui-même le bloc ; ⚠️ **la fonction qui
   neutralise U+2028 les portait en clair dans ses regex**. → **`node --check` sur
@@ -430,7 +437,7 @@
 - ⛔ **La sauvegarde du formulaire n'est pas un confort** : pour payer, l'acheteur
   QUITTE la page. Sans restauration au retour il perd son quart d'heure, ne
   recommence pas, et **on ne sait même pas que la vente a existé**.
-- ✅ **AVANT LA PREMIÈRE VENTE : `minuit/CONDITIONS.md` est écrit** (le dossier
+- ✅ **AVANT LA PREMIÈRE VENTE : `lepli/CONDITIONS.md` est écrit** (le dossier
   classait ce risque en *critique* et notait qu'aucune des 5 références ne le
   traite) — adresse impossible à deviner, `X-Robots-Tag` en plus de la balise,
   expiration (7 jours offert / 1 an payé), aucune mesure d'audience, et

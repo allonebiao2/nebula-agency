@@ -1,11 +1,11 @@
-# MINUIT · les conditions, et le retrait
+# LE PLI · les conditions, et le retrait
 
 > **À lire avant la première vente, pas après le premier incident.**
 > Le dossier du 27 août classe le détournement en risque *critique* et note
 > qu'aucune des cinq références observées ne le traite. Ce fichier le traite.
 > Il n'y a rien à inventer le jour où quelqu'un appelle : tout est décidé ici.
 
-Une lettre MINUIT porte de vraies photos, un vrai prénom, parfois une adresse
+Une lettre LE PLI porte de vraies photos, un vrai prénom, parfois une adresse
 et une heure de rendez-vous, sur une adresse qui vit sur Internet. **Quelqu'un
 s'en servira un jour contre un ex.** Ce qui suit existe pour ce jour-là.
 
@@ -138,4 +138,4 @@ famille a le droit de choisir qui entre ; il ne « joue » pas.
 ---
 
 *NEBULA Agency · 6 septembre 2026. Arrêté avec le dossier
-`_plans/2026-09-06-minuit-arrete.html`.*
+`_plans/2026-09-06-lepli-arrete.html`.*

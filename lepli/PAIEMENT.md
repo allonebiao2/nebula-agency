@@ -1,10 +1,10 @@
-# MINUIT · la caisse et l'adresse
+# LE PLI · la caisse et l'adresse
 
 > Écrit le 2026-09-06, en appliquant les décisions 05, 06 et 09 de l'arrêté
-> (`_plans/2026-09-06-minuit-arrete.html`).
+> (`_plans/2026-09-06-lepli-arrete.html`).
 >
 > **Rien de tout ça n'est encore en ligne.** Le code est écrit, contrôlé
-> (`node --experimental-strip-types minuit/_qc_caisse.mjs`, 118 contrôles),
+> (`node --experimental-strip-types lepli/_qc_caisse.mjs`, 118 contrôles),
 > et il attend six réponses de Mongazi, listées en bas.
 
 ---
@@ -28,13 +28,13 @@ Mobile Money et le choix du réseau. Il n'y a plus qu'un seul moyen de payer.
 
 | Morceau | Où | Ce qu'il fait |
 |---|---|---|
-| `supabase/lettres.sql` | Supabase, schéma `minuit` | Les lettres, les sessions, le journal des notifications, et les huit portes que seul le `service_role` peut pousser |
+| `supabase/lettres.sql` | Supabase, schéma `lepli` | Les lettres, les sessions, le journal des notifications, et les huit portes que seul le `service_role` peut pousser |
 | `functions/_shared/lettre.ts` | Deno | **Tout ce qui décide** : le barème, le jeton, l'heure, l'expiration, le retrait, les en-têtes, ce qu'un acheteur a le droit d'envoyer |
 | `functions/_shared/saspay.ts` | Deno | **La copie exacte de celle de PISTE**. Un contrôle compare les deux octet par octet |
-| `functions/_shared/gabarit.ts` | Deno | `lettre.html`, recopié par `python minuit/_gabarit_ts.py`. **Fichier généré** |
-| `functions/minuit-commande/` | Deno | Dépose la lettre, et ouvre son paiement s'il y en a un |
-| `functions/minuit-paiement-recu/` | Deno | Le webhook. Vérifie la signature, marque payé, **ouvre la lettre** |
-| `functions/minuit-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, dit son état à `/l/<jeton>/etat`, et la retire à `/l/<jeton>/retrait` |
+| `functions/_shared/gabarit.ts` | Deno | `lettre.html`, recopié par `python lepli/_gabarit_ts.py`. **Fichier généré** |
+| `functions/lepli-commande/` | Deno | Dépose la lettre, et ouvre son paiement s'il y en a un |
+| `functions/lepli-paiement-recu/` | Deno | Le webhook. Vérifie la signature, marque payé, **ouvre la lettre** |
+| `functions/lepli-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, dit son état à `/l/<jeton>/etat`, et la retire à `/l/<jeton>/retrait` |
 | `paiement.html` | Cloudflare Pages | **La page de paiement** : ce qu'on achète, la somme, et **le lien** |
 | `merci.html` | Cloudflare Pages | **La page de retour**, celle que SasPay rappelle |
 | `_qc_caisse.mjs` | Node, sans clé ni réseau | 118 contrôles sur tout ce qui décide |
@@ -69,7 +69,7 @@ page le dit toute seule et donne l'adresse à envoyer.
 et **doit être posée à l'appel** : le réglage par défaut de `_shared/saspay.ts`
 ramène chez **PISTE**, puisque ce fichier en est la copie exacte. Sans cette
 ligne, un acheteur de lettre tomberait sur la page d'un autre produit. Le nom
-client par défaut aussi (« Client PISTE » sur un reçu MINUIT).
+client par défaut aussi (« Client PISTE » sur un reçu LE PLI).
 
 ---
 
@@ -109,28 +109,28 @@ client par défaut aussi (« Client PISTE » sur un reçu MINUIT).
 
 ```bash
 # 0. la base, une seule fois, dans l'éditeur SQL de Supabase
-#    → le contenu de minuit/supabase/lettres.sql
+#    → le contenu de lepli/supabase/lettres.sql
 
 # 1. les secrets. ⛔ JAMAIS dans le dépôt, il est PUBLIC.
 supabase secrets set SASPAY_CLE_SECRETE=…        # déjà posé pour PISTE
 supabase secrets set SASPAY_SECRET_WEBHOOK=…     # déjà posé pour PISTE
-supabase secrets set MINUIT_SITE=https://minuit.nebula-agency.online
+supabase secrets set LEPLI_SITE=https://lepli.nebula-agency.online
 
 # 2. le gabarit, à refaire À CHAQUE modification de lettre.html
-python minuit/_gabarit_ts.py
+python lepli/_gabarit_ts.py
 
 # 3. les fonctions
-cd minuit
-supabase functions deploy minuit-commande
-supabase functions deploy minuit-paiement-recu --no-verify-jwt
-supabase functions deploy minuit-lettre        --no-verify-jwt
+cd lepli
+supabase functions deploy lepli-commande
+supabase functions deploy lepli-paiement-recu --no-verify-jwt
+supabase functions deploy lepli-lettre        --no-verify-jwt
 
 # 4. dans le tableau de bord SasPay, onglet « Webhooks », déclarer :
-#    https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/minuit-paiement-recu
+#    https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-paiement-recu
 
 # 5. les contrôles, avant tout
-python minuit/_qc.py                                   # 127
-node --experimental-strip-types minuit/_qc_caisse.mjs  # 118
+python lepli/_qc.py                                   # 127
+node --experimental-strip-types lepli/_qc_caisse.mjs  # 118
 ```
 
 ⛔ **`--no-verify-jwt` n'est pas une négligence.** SasPay n'a pas de jeton
@@ -140,9 +140,9 @@ c'est **une adresse de 110 bits tirés au sort**.
 
 ### L'adresse publique
 
-`minuit-lettre` répond sur son adresse Supabase. Pour que le lien soit court et
+`lepli-lettre` répond sur son adresse Supabase. Pour que le lien soit court et
 lisible dans un message WhatsApp, un relais Cloudflare fait passer
-`minuit.nebula-agency.online/l/*` vers la fonction, exactement comme le domaine
+`lepli.nebula-agency.online/l/*` vers la fonction, exactement comme le domaine
 des partenaires passe par `nebula-partenaires`.
 
 ⚠️ **Une seule adresse.** La leçon de Mon Bénin : le site a longtemps répondu à
@@ -161,7 +161,7 @@ deux adresses sans en nommer aucune.
 
 Et deux choses qui ne dépendent de personne, mais qui ne sont pas faites :
 
-- ⏳ **Le ménage des lettres expirées.** `minuit_menage()` existe et vide les
+- ⏳ **Le ménage des lettres expirées.** `lepli_menage()` existe et vide les
   photos d'une lettre expirée ; rien ne l'appelle encore. Une tâche planifiée
   quotidienne suffit (GitHub Actions le fait déjà gratuitement pour PISTE).
 - ⏳ **Le lien « retirer cette lettre »** n'est pas dans le pied de la lettre :

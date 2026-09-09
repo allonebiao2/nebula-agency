@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""MINUIT · les controles du gabarit de la lettre.
+"""LE PLI · les controles du gabarit de la lettre.
 
 Ce qu'une suite verte doit prouver ici, et que l'oeil ne voit pas :
 le seuil tient vraiment, le texte d'un acheteur ne peut pas injecter de HTML,
 la page ne va chercher AUCUN fichier sur le reseau, et une lettre reste
 lisible pour qui a coupe les animations.
 
-    python minuit/_qc.py
+    python lepli/_qc.py
 """
 import datetime
 import json
@@ -28,7 +28,7 @@ BASE = {
     "titre": "Joyeux anniversaire", "code": "",
     "lettre": ["Premiere ligne.", "Deuxieme ligne.", "Troisieme ligne."],
     "photos": [], "depuis": "", "pied": True,
-    "lien": "https://nebula-agency.online/minuit",
+    "lien": "https://lepli.nebula-agency.online",
 }
 
 verts, rouges = [], []
@@ -78,7 +78,7 @@ def attendre(fn, limite=6000, pas=100):
 
 
 def servir(dossier):
-    """Un petit serveur MULTITACHE sur le dossier minuit/.
+    """Un petit serveur MULTITACHE sur le dossier lepli/.
 
     ⚠️ ThreadingHTTPServer, jamais HTTPServer : mono-tache, il se bloque des
     que la page demande un second fichier, et le controle echoue sur un
@@ -122,7 +122,7 @@ def main():
         src_f = (ICI / f).read_text(encoding="utf-8")
         dit("%s : aucun tiret cadratin" % f, "\u2014" not in src_f)
     dit("le marqueur de donnees est unique",
-        src.count("/*MINUIT_DONNEES*/") == 1 and src.count("/*FIN_MINUIT_DONNEES*/") == 1)
+        src.count("/*LEPLI_DONNEES*/") == 1 and src.count("/*FIN_LEPLI_DONNEES*/") == 1)
     # ⛔ UNE SEULE ECHELLE DE PRIX. Les occasions en portaient une deuxieme,
     # affichee « des 10 000 F » et appliquee nulle part : on choisissait
     # « Demande en mariage · des 10 000 F », puis le palier gratuit, et on
@@ -595,7 +595,7 @@ def main():
             pg.fill("#f-code", "")
 
             # ⛔ LE TROU DE L'ECRAN 4 : il quitte la page pour payer.
-            garde = pg.evaluate("localStorage.getItem('minuit:brouillon')")
+            garde = pg.evaluate("localStorage.getItem('lepli:brouillon')")
             dit("le brouillon est ecrit a la frappe", bool(garde) and "Zara" in garde)
 
             pg.goto("about:blank")
@@ -647,26 +647,26 @@ def main():
                                                "paiement": "https://paiement.invalid/session/42",
                                                "palier": "La Lettre", "prix": 5000}))
 
-            pg.route("**/minuit-commande", caisse)
+            pg.route("**/lepli-commande", caisse)
 
             # ⛔ Le brouillon ne doit PAS partir tant que la reponse n'est pas
             # heureuse : un acheteur qui perd son quart d'heure ne recommence
             # pas. On coupe d'abord la caisse pour le prouver.
-            pg.route("**/minuit-commande", lambda r, q: r.abort())
+            pg.route("**/lepli-commande", lambda r, q: r.abort())
             pg.fill("#f-wa", "0197085576")
             pg.click("#btn-commander")
             attendre(lambda: not pg.eval_on_selector("#envoi-mot", "e=>e.hidden"))
             dit("reseau coupe : on le DIT a l'acheteur",
                 "réseau" in pg.inner_text("#envoi-mot").lower())
             dit("reseau coupe : le brouillon est GARDE",
-                pg.evaluate("localStorage.getItem('minuit:brouillon')") is not None)
+                pg.evaluate("localStorage.getItem('lepli:brouillon')") is not None)
             dit("reseau coupe : on ne montre pas « commande recue »",
                 not pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
             dit("reseau coupe : le bouton redevient cliquable",
                 pg.eval_on_selector("#btn-commander", "e=>!e.disabled"))
 
-            pg.unroute("**/minuit-commande")
-            pg.route("**/minuit-commande", caisse)
+            pg.unroute("**/lepli-commande")
+            pg.route("**/lepli-commande", caisse)
             pg.click("#btn-commander")
             attendre(lambda: len(envois) > 0)
             dit("la commande part vers la caisse", len(envois) == 1)
@@ -731,14 +731,14 @@ def main():
             # ⚠️ TEMOIN : le brouillon reste tant qu'il n'a pas paye, et la page
             # de paiement est sur NOTRE origine, donc on le lit d'ici.
             dit("il part payer, et son brouillon l'attend",
-                pg.evaluate("localStorage.getItem('minuit:brouillon')") is not None)
+                pg.evaluate("localStorage.getItem('lepli:brouillon')") is not None)
 
             deb = pg.evaluate(
                 "document.documentElement.scrollWidth - document.documentElement.clientWidth")
             dit("page de paiement 1280 px : aucun debordement", deb <= 0, "%d px" % deb)
 
             # Ouverte a la main, sans commande : elle le dit, elle ne ment pas.
-            pg.evaluate("localStorage.removeItem('minuit:paiement')")
+            pg.evaluate("localStorage.removeItem('lepli:paiement')")
             pg.goto(base.replace("creer.html", "paiement.html"))
             pg.wait_for_timeout(300)
             dit("sans commande, la page de paiement le DIT",
@@ -753,11 +753,11 @@ def main():
             pg.click('.occ[data-id="anniv"]')
             pg.click("#vers-palier")
             pg.click('.pal[data-id="gratuit"]')
-            dit("palier gratuit : le pied MINUIT reste",
+            dit("palier gratuit : le pied LE PLI reste",
                 attendre(lambda: not pg.frame_locator("#apercu")
                          .locator("#l-pied").evaluate("e=>e.hidden")))
             pg.click('.pal[data-id="coffret"]')
-            dit("palier paye : le pied MINUIT disparait",
+            dit("palier paye : le pied LE PLI disparait",
                 attendre(lambda: pg.frame_locator("#apercu")
                          .locator("#l-pied").evaluate("e=>e.hidden")))
 
@@ -776,7 +776,7 @@ def main():
                 "payé" not in pg.inner_text("#btn-commander"))
             dit("offert : on demande quand meme ou envoyer le lien",
                 pg.is_visible("#f-wa"))
-            pg.route("**/minuit-commande", lambda r, q: r.fulfill(
+            pg.route("**/lepli-commande", lambda r, q: r.fulfill(
                 status=200, content_type="application/json",
                 body=json.dumps({"ok": True, "offert": True,
                                  "adresse": "https://exemple.invalid/l/" + "e" * 22})))
@@ -814,7 +814,7 @@ def main():
             pg.click("#vers-paiement")
             pg.fill("#f-wa", "0197085576")
             envois2 = []
-            pg.route("**/minuit-commande", lambda r, q: (
+            pg.route("**/lepli-commande", lambda r, q: (
                 envois2.append(json.loads(q.post_data or "{}")),
                 r.fulfill(status=200, content_type="application/json",
                           body=json.dumps({"ok": True, "offert": True,
@@ -832,7 +832,7 @@ def main():
             dit("une lettre offerte montre son adresse",
                 "exemple.invalid/l/" in pg.inner_text("#lien-lettre"))
             dit("et son brouillon est alors oublie",
-                pg.evaluate("localStorage.getItem('minuit:brouillon')") is None)
+                pg.evaluate("localStorage.getItem('lepli:brouillon')") is None)
             # On ne promet que ce que la lettre tient toute seule.
             promesse = pg.inner_text("#fini-quand")
             dit("l'ecran final ne promet aucun envoi automatique",

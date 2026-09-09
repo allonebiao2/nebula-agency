@@ -3,10 +3,10 @@ import { ouvrirSession, reglages } from '../_shared/saspay.ts'
 import { expireLe, jeton, lireCommande } from '../_shared/lettre.ts'
 
 /*
-  MINUIT · déposer une lettre, et ouvrir son paiement.
+  LE PLI · déposer une lettre, et ouvrir son paiement.
 
   ⚠️ CE FICHIER EST LA SOURCE. Il tourne sur Supabase, mais il vit ICI.
-      supabase functions deploy minuit-commande
+      supabase functions deploy lepli-commande
 
   DEUX CHEMINS, UN SEUL DÉPÔT
     Palier offert → la lettre est vivante tout de suite, on rend son adresse.
@@ -30,7 +30,7 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-const SITE = Deno.env.get('MINUIT_SITE') || 'https://minuit.nebula-agency.online'
+const SITE = Deno.env.get('LEPLI_SITE') || 'https://lepli.nebula-agency.online'
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -63,7 +63,7 @@ Deno.serve(async (req: Request) => {
   const j = jeton()
   const offert = palier.prix === 0
 
-  const { error } = await db.rpc('minuit_deposer', {
+  const { error } = await db.rpc('lepli_deposer', {
     p_jeton: j,
     p_palier: palier.id,
     p_prix: palier.prix,
@@ -73,7 +73,7 @@ Deno.serve(async (req: Request) => {
     p_etat: offert ? 'vivante' : 'attente',
     p_expire: offert ? expireLe(palier) : null,
   })
-  if (error) { console.error('minuit dépôt', error.message); return repondre({ ok: false, erreur: 'dépôt' }, 500) }
+  if (error) { console.error('lepli dépôt', error.message); return repondre({ ok: false, erreur: 'dépôt' }, 500) }
 
   const adresse = `${SITE}/l/${j}`
   if (offert) return repondre({ ok: true, offert: true, adresse })
@@ -94,15 +94,15 @@ Deno.serve(async (req: Request) => {
      le reglage par defaut de `_shared/saspay.ts` ramene chez PISTE, parce que
      ce fichier est LA COPIE EXACTE du sien. Sans cette ligne, un acheteur de
      lettre qui vient de payer tomberait sur la page d'un autre produit.
-     ⚠️ Le nom par defaut aussi : « Client PISTE » finirait sur un recu MINUIT. */
+     ⚠️ Le nom par defaut aussi : « Client PISTE » finirait sur un recu LE PLI. */
   const s = await ouvrirSession({
     ...r,
     retour: `${SITE}/merci.html?j=${j}`,
-    nomDefaut: 'Client MINUIT',
+    nomDefaut: 'Client LE PLI',
   }, {
     reference: j,
     montant: palier.prix,
-    description: `MINUIT · ${palier.nom}`,
+    description: `LE PLI · ${palier.nom}`,
   })
   if (!s.ok) {
     console.error('saspay session', j, s.erreur)
@@ -112,7 +112,7 @@ Deno.serve(async (req: Request) => {
   /* On garde le lien AVANT de le rendre : la notification qui arrivera ne
      portera peut-être que l'identifiant de session. Sans ce répertoire, un
      paiement bien réel serait impossible à rattacher à une lettre. */
-  const { error: eS } = await db.rpc('minuit_paiement_session', {
+  const { error: eS } = await db.rpc('lepli_paiement_session', {
     p_session: s.session, p_jeton: j, p_montant: palier.prix,
     p_devise: r.devise, p_url: s.url,
   })

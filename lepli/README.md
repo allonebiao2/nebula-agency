@@ -1,13 +1,13 @@
-# MINUIT · la lettre digitale
+# LE PLI · la lettre digitale
 
 > Une lettre digitale, c'est **une enveloppe cachetée qu'on ouvre à l'heure dite.**
 > Le sceau, le pli, l'encre qui sèche. Toutes les animations de ce produit sortent
 > de cet objet, et d'aucun autre.
 
-Dossier de décision : `_plans/2026-08-27-minuit-dossier.html`
-Manuel d'exploitation : `_plans/2026-08-28-minuit-manuel.html`
-**L'arrêté (les 12 décisions) : `_plans/2026-09-06-minuit-arrete.html`**
-Conditions et retrait : `minuit/CONDITIONS.md`
+Dossier de décision : `_plans/2026-08-27-lepli-dossier.html`
+Manuel d'exploitation : `_plans/2026-08-28-lepli-manuel.html`
+**L'arrêté (les 12 décisions) : `_plans/2026-09-06-lepli-arrete.html`**
+Conditions et retrait : `lepli/CONDITIONS.md`
 
 ---
 
@@ -29,17 +29,17 @@ livraison à l'heure choisie, dans cet ordre »*. **Les trois sont faits.**
 
 ### La vidéo de démonstration
 
-`_studio-video/`, composition **`minuit-demo`** : 1080x1920, 30 s.
-`cd _studio-video && npm run rendu:minuit`.
+`_studio-video/`, composition **`lepli-demo`** : 1080x1920, 30 s.
+`cd _studio-video && npm run rendu:lepli`.
 
 Les **six signatures ci-dessous sont rejouées en React**, pas photographiées :
 une capture ne montre pas un cachet qui se brise. Les couleurs, le texte de la
 lettre et le prix y sont lus depuis **ce dossier**, recopiés une seule fois
-dans `_studio-video/src/minuit/donnees.ts`.
+dans `_studio-video/src/lepli/donnees.ts`.
 
 ⚠️ Elle promet « Elle l'ouvre à minuit pile. Pas avant. » **Cette phrase est
 vraie depuis le 2026-09-06** : la lettre tient l'heure. Il ne reste que
-l'adresse qu'elle affiche (`nebula-agency.online/minuit`), qui doit exister
+l'adresse qu'elle affiche (`lepli.nebula-agency.online`), qui doit exister
 avant publication.
 
 ---
@@ -62,11 +62,11 @@ avant publication.
 | `_voir.py` | Fabrique les captures à REGARDER (390 et 1440) |
 
 ```bash
-python minuit/_qc.py                                   # les 145 contrôles
-node --experimental-strip-types minuit/_qc_caisse.mjs  # les 118 de la caisse
-python minuit/_gabarit_ts.py                           # après toute retouche de lettre.html
-python minuit/_voir.py                                 # les captures
-cd minuit && python -m http.server                     # pour ouvrir creer.html
+python lepli/_qc.py                                   # les 145 contrôles
+node --experimental-strip-types lepli/_qc_caisse.mjs  # les 118 de la caisse
+python lepli/_gabarit_ts.py                           # après toute retouche de lettre.html
+python lepli/_voir.py                                 # les captures
+cd lepli && python -m http.server                     # pour ouvrir creer.html
 ```
 
 ---
@@ -112,10 +112,10 @@ chaque destinataire est un acheteur possible. Un palier payé le retire.
 
 ## 🏦 La caisse, en une phrase
 
-Le constructeur envoie **les données** de la lettre à `minuit-commande`, qui en
+Le constructeur envoie **les données** de la lettre à `lepli-commande`, qui en
 fixe le prix (⛔ jamais le navigateur), la dépose, et ouvre un paiement SasPay.
 La notification signée rend la lettre joignable, seule, à n'importe quelle
-heure. `minuit-lettre` la sert à une adresse de **110 bits tirés au sort**, et
+heure. `lepli-lettre` la sert à une adresse de **110 bits tirés au sort**, et
 la retire à la demande. Tout est dans **`PAIEMENT.md`**.
 
 ⛔ **On ne stocke jamais le HTML du navigateur** : une porte publique qui
@@ -203,9 +203,9 @@ Quatre sondes ont accusé un produit sain. À relire avant d'ajouter un contrôl
   en `text-transform: uppercase` : la sonde lisait « ZARA » et « JOURS ENSEMBLE »
   et concluait à une erreur. On lit `text_content` quand c'est le contenu qui
   compte.
-- **Chercher un mot au lieu du marqueur.** « MINUIT_DONNEES » figure aussi dans
+- **Chercher un mot au lieu du marqueur.** « LEPLI_DONNEES » figure aussi dans
   le commentaire d'en-tête du gabarit, qui doit rester. Le bon test porte sur
-  `/*MINUIT_DONNEES*/`.
+  `/*LEPLI_DONNEES*/`.
 - **Une attente fixe est un pari.** La chaîne de l'aperçu fait 260 ms
   d'anti-rebond, plus le chargement de l'iframe, plus 620 ms d'ouverture :
   800 ms donnait **1 passage vert sur 3**. `attendre()` attend l'ÉTAT.
@@ -240,14 +240,14 @@ mesuré. → `--gris-nuit`, et quatre contrôles qui le mesurent.
 
 ## ⏳ Ce qui reste
 
-Les douze décisions sont prises : `_plans/2026-09-06-minuit-arrete.html`.
+Les douze décisions sont prises : `_plans/2026-09-06-lepli-arrete.html`.
 
 1. **Brancher la caisse.** Elle est écrite, contrôlée, et pas déployée : la
    marche à suivre tient en cinq commandes dans **`PAIEMENT.md`**. ⛔ Pas de
    Render avec le SQLite de `vitrina/` : son disque s'efface à chaque
    déploiement, c'est ce qui avait fait disparaître les deux PDF des
    partenaires. Un déploiement, et les lettres payées n'existent plus.
-2. **Le ménage des lettres expirées** : `minuit_menage()` existe, rien ne
+2. **Le ménage des lettres expirées** : `lepli_menage()` existe, rien ne
    l'appelle encore. Une tâche quotidienne suffit.
 3. **Le lien « retirer cette lettre »** dans le pied de la lettre : la porte
    existe, le bouton non. Le retrait passe par WhatsApp en attendant.
