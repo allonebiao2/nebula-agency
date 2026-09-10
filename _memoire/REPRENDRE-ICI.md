@@ -25,9 +25,8 @@ et **lire le CORPS, un 200 ne prouve rien**) · **Cloudflare préfixe son
 d'e-mail rend l'adresse illisible sans JavaScript.
 
 ⏳ **Quatre choses attendent Mongazi, toutes dans le tableau de bord** (aucun de
-nos jetons n'a `Zone · DNS` ni les réglages de zone, mesuré) : `www` rend
-**522** tant que son `CNAME` vise `angyart.online` au lieu de
-`angy-art.pages.dev` · désactiver le `robots.txt` géré dans **AI Crawl
+nos jetons n'a `Zone · DNS` ni les réglages de zone, mesuré) : ~~`www`~~ **réglé**,
+son `CNAME` visait la racine et le proxy tournait en rond · désactiver le `robots.txt` géré dans **AI Crawl
 Control** · trancher l'obfuscation d'e-mail · poser un **SPF vide et un DMARC
 en refus** (aucun MX nécessaire, son adresse est un Gmail).
 

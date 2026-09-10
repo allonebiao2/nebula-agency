@@ -95,8 +95,10 @@ d'adresses contre lisibilité. **À trancher par Mongazi.**
 
 ## Ce qui reste
 
-- ⏳ **`www` rend 522** : son `CNAME` vise encore `angyart.online`, donc le
-  proxy tourne en rond. Cible attendue : `angy-art.pages.dev`.
+- ✅ **`www` réglé** : son `CNAME` visait `angyart.online`, donc le proxy
+  tournait en rond (522). Repointé sur `angy-art.pages.dev`, il répond 200 et
+  son `canonical` renvoie à la racine. ⚠️ Le champ s'appelle **Content** dans
+  l'écran d'édition de Cloudflare, pas « Target ».
 - ⏳ **AI Crawl Control** : désactiver le `robots.txt` géré.
 - ⏳ **L'obfuscation d'e-mail** : la garder ou non.
 - ⏳ **SPF et DMARC** : personne n'envoie de courrier depuis ce domaine, donc
