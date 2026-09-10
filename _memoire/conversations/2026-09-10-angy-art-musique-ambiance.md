@@ -354,3 +354,62 @@ jour, elle dormait dans `main` et le site n'en avait **aucune**. Quand Mongazi
 a testé et conclu que c'était raté, il écoutait un site qui n'avait jamais eu
 de musique. Les deux défauts ci-dessus étaient bien réels, mais ils l'auraient
 mordu **ensuite**.
+
+---
+
+## ⛔ « Sur PC ça marche, sur mobile c'est comme au tout départ »
+
+Mongazi, le même jour. Et c'était vrai : un chemin ne s'ouvrait que sur mobile,
+et il fermait tout.
+
+```js
+function economie() {
+  var c = navigator.connection || navigator.webkitConnection;
+  return !!(c && (c.saveData === true || /(^|-)2g$/.test(c.effectiveType || '')));
+}
+function precharger() { if (joue || refuse || economie()) return; ... }
+function demarrer()   { if (joue || refuse || economie()) return; ... }   // ⛔ ICI
+```
+
+⚠️ **`navigator.connection` n'existe QUE sur Android.** Sur un PC il est absent,
+donc `economie()` rend `false` et la musique part. Sur un téléphone à Cotonou il
+rend très souvent `2g` (c'est une **estimation de latence**, pas la vraie radio)
+ou `saveData` si l'économiseur est actif : le site refusait alors de jouer
+**quel que soit le geste, pour toujours**.
+
+### Mesuré, avant et après, sur le site en ligne
+
+| | téléphone annonçant `2g` | téléphone ordinaire |
+|---|---|---|
+| avant | **l'élément `<audio>` n'est même pas créé** | joue, `vol 0.66` |
+| après | joue, `vol 0.66` | joue, `vol 0.66` |
+
+### La leçon
+
+**Économiser les données de la visiteuse, c'est ne pas télécharger 677 Ko
+qu'elle n'a pas demandés. Ce n'est pas lui refuser le son qu'elle vient de
+demander en touchant l'écran.** Le garde-fou ne barre plus que `precharger()`.
+Sur connexion lente, rien n'est pris en avance et le morceau part au toucher :
+le **résultat** est le même partout, seule la mise en tampon s'adapte.
+
+⚠️ **Une intention louable posée au mauvais endroit coupe la fonction.** Le
+commentaire d'origine disait « on ne télécharge rien si on ne va pas jouer » :
+juste pour le préchargement, faux pour la lecture, et les deux portes
+partageaient la même condition.
+
+**QC 242 → 244** : deux contrôles téléphone (connexion lente annoncée,
+économiseur de données) qui feignent `navigator.connection` **avant le
+chargement**, touchent l'écran, et exigent que ça lise à volume non nul.
+
+### ⚠️ Et un piège de publication découvert au passage
+
+`_publier.py` vérifiait **dans la seconde** qui suit la purge, alors que
+`purger.py` dit lui-même de compter une minute : `app.js` a été annoncé
+« différent du disque » alors qu'il était juste. ⛔ **Ce n'est pas un faux
+positif à ignorer** : un vrai cache empoisonné rend exactement le même rouge.
+Le script attend donc la minute et redemande **une seule fois**.
+
+⚠️ **Ma sonde a encore menti d'abord** : une comparaison en PowerShell relisait
+le corps en texte puis le ré-encodait en UTF-8, et ce fichier est plein
+d'accents et de symboles — elle annonçait 53 115 octets pour 52 502. **On
+compare des octets, jamais du texte relu.**

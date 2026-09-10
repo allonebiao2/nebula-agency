@@ -811,9 +811,16 @@
 
     var el = null, joue = false, raf = 0;
 
-    /* ⚠️ ON NE TÉLÉCHARGE RIEN SI ON NE VA PAS JOUER. 677 Ko sur la 3G de
-       Cotonou, chez quelqu'un qui a déjà coupé le son ou qui a demandé
-       l'économie de données, c'est de l'argent pris à la visiteuse. */
+    /* ⛔ CE GARDE-FOU NE DOIT JAMAIS EMPÊCHER DE JOUER, SEULEMENT DE
+       PRÉCHARGER. Il barrait les deux portes, et `navigator.connection`
+       n'existe QUE sur Android : sur PC il rend `4g` et la musique partait,
+       sur un téléphone de Cotonou il rend très souvent `2g` (c'est une
+       estimation de latence, pas la vraie radio) et le site refusait alors de
+       jouer QUEL QUE SOIT le geste, pour toujours. Mongazi, 2026-09-10 :
+       « le son marche sur PC, sur mobile c'est comme au tout départ ».
+       ⚠️ Économiser les données de la visiteuse, c'est ne pas télécharger
+       677 Ko qu'elle n'a pas demandés. Ce n'est pas lui refuser le son
+       qu'elle vient de demander en touchant l'écran. */
     function economie() {
       var c = navigator.connection || navigator.webkitConnection;
       return !!(c && (c.saveData === true ||
@@ -902,7 +909,8 @@
     }
 
     function demarrer() {
-      if (joue || refuse || economie()) return;
+      /* ⚠️ PAS de `economie()` ici : voir plus haut. Le geste fait foi. */
+      if (joue || refuse) return;
       batir();
       el.muted = false;
       var p = el.play();

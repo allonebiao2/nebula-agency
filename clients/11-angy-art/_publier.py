@@ -24,6 +24,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -141,6 +142,18 @@ def main():
     print("     rien : Cloudflare a déjà servi « error code: 502 » dans un CSS")
     print("     qui répondait 200.\n")
     r = subprocess.run([sys.executable, "_verifier_en_ligne.py"], cwd=ICI)
+    if r.returncode != 0:
+        # UNE PURGE NE PREND PAS EFFET TOUT DE SUITE. `purger.py` dit lui-meme
+        # de compter une minute, et cette etape verifiait dans la seconde : le
+        # 2026-09-10, `app.js` a ete annonce « different du disque » alors
+        # qu'il etait juste. Et ce n'est PAS un faux positif a ignorer : un
+        # vrai cache empoisonne rend exactement le meme rouge. On laisse donc
+        # passer la minute et on redemande, une seule fois.
+        print("\n  ⏳ La purge se propage. On attend une minute et on")
+        print("     reverifie, une seule fois. Si c'est encore rouge apres")
+        print("     ca, ce n'est plus la propagation.\n")
+        time.sleep(60)
+        r = subprocess.run([sys.executable, "_verifier_en_ligne.py"], cwd=ICI)
 
     print("\n" + "=" * 62)
     if r.returncode == 0:

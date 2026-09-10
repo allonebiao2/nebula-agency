@@ -621,6 +621,47 @@ def musique(nav):
         else mauvais(f"onglet caché : {cache}")
     ctx.close()
 
+    # -- 6. LE MEME RESULTAT SUR TELEPHONE, MEME SUR CONNEXION LENTE --------
+    # Le 2026-09-10 le son marchait sur PC et PAS sur mobile : economie()
+    # barrait AUSSI demarrer(), or navigator.connection n'existe que sur
+    # Android et rend tres souvent 2g a Cotonou (c'est une estimation de
+    # latence, pas la vraie radio). Mesure alors sur le site en ligne :
+    # l'element <audio> n'etait meme pas CREE, aucun geste n'y pouvait rien.
+    # Mongazi : « le resultat sur PC doit etre exactement le meme sur mobile,
+    # meme sur tablette, partout ».
+    # On feint la connexion AVANT le chargement : navigator.connection est lu
+    # au moment du geste, pas au demarrage du script.
+    for nom, lent in (("connexion lente annoncee", True),
+                      ("economiseur de donnees", False)):
+        ctx = nav.new_context(viewport={"width": 390, "height": 844},
+                              has_touch=True, is_mobile=True)
+        ctx.add_init_script(
+            "Object.defineProperty(navigator,'connection',{get:()=>({"
+            "effectiveType:'%s',saveData:%s,"
+            "addEventListener(){},removeEventListener(){}})});"
+            % ("2g" if lent else "4g", "false" if lent else "true"))
+        page = ctx.new_page()
+        page.goto(BASE, wait_until="load")
+        page.wait_for_timeout(3600)
+        page.touchscreen.tap(195, 500)
+        page.wait_for_timeout(2200)
+        e = page.evaluate("() => { const a = document.querySelector('audio');"
+                          "return a ? {cree:true, lit:!a.paused, vol:a.volume,"
+                          " t:a.currentTime} : {cree:false}; }")
+        if not e["cree"]:
+            mauvais("telephone, %s : le lecteur n'est meme pas cree, aucun "
+                    "geste ne pourra lancer la musique" % nom)
+        elif not e["lit"] or e["t"] <= 0:
+            mauvais("telephone, %s : le lecteur existe mais n'avance pas "
+                    "(lit=%s, t=%.2f)" % (nom, e["lit"], e["t"]))
+        elif e["vol"] <= 0:
+            mauvais("telephone, %s : ca lit a volume %.2f, donc en silence"
+                    % (nom, e["vol"]))
+        else:
+            bon("telephone, %s : la musique part au toucher (volume %.2f)"
+                % (nom, e["vol"]))
+        ctx.close()
+
 
 def main():
     from playwright.sync_api import sync_playwright
