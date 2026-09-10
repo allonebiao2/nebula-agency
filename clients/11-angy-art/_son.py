@@ -59,7 +59,7 @@ ICI = os.path.dirname(os.path.abspath(__file__))
 SOURCE = os.path.join(ICI, "_sources", "musique-source.mp3")
 SORTIE = os.path.join(ICI, "assets", "sons", "ambiance.mp3")
 
-LOWPASS = 5000      # Hz — le feutrage, léger
+LOWPASS = 3600      # Hz — le feutrage, léger
 HIGHPASS = 80       # Hz — les infra-graves
 LUFS = -11          # la sonie visée
 DEBIT = "48k"
@@ -338,12 +338,22 @@ def mesurer():
               % (c, "%.1f" % a if a is not None else "?",
                  "%.1f" % b if b is not None else "?", d))
     if 6400 in ecarts and 1600 in ecarts:
-        feutre = ecarts[1600] - ecarts[6400]
-        print("  le brillant (6400 Hz) est %.1f dB en retrait du médium (1600 Hz)"
-              % feutre)
-        print("  %s le feutrage agit sans étouffer le piano"
-              % ("[ok]" if feutre > 1.0 else "[KO] filtre trop doux, il ne se"
-                 " passe rien"))
+        print("  le filtre a retire %.1f dB de brillant"
+              % (ecarts[1600] - ecarts[6400]))
+    # CE QUI COMPTE EST LA PROPRIETE DU FICHIER LIVRE, PAS L'ACTION DU FILTRE.
+    # Le 2026-09-10, le morceau WETHU a fait rougir ce controle en etant DEJA
+    # sombre : dans la SOURCE son 6400 Hz est 10,8 dB sous le medium, donc le
+    # filtre n'avait presque rien a retirer et son action mesurait 0,4 dB.
+    # « Un filtre ne retire pas ce qui n'est pas la » est ecrit plus haut dans
+    # ce fichier. Un controle qui exige une ACTION punit une source deja
+    # feutree, et laisse passer une source criarde a peine adoucie : les deux
+    # erreurs a la fois. On mesure donc ce que la visiteuse entendra.
+    if 6400 in bf and 1600 in bf:
+        recul = bf[1600] - bf[6400]
+        print("  dans le fichier livre, le brillant est %.1f dB sous le medium"
+              % recul)
+        print("  %s le fichier est feutre" % ("[ok]" if recul > 6.0 else
+              "[KO] trop brillant pour une ambiance de fond :"))
 
 
 if __name__ == "__main__":

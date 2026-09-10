@@ -803,7 +803,7 @@
        `VER` pour une photo ferait retélécharger 677 Ko de son à tout le monde,
        et changer le morceau sans toucher aux images l'aurait laissé figé un an
        dans les caches (`/assets/*` porte `immutable`). */
-    var VER_SON = '?v=20260910a';
+    var VER_SON = '?v=20260910b';
     var SRC = 'assets/sons/ambiance.mp3' + VER_SON;
 
     var refuse = false;

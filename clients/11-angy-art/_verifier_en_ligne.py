@@ -176,8 +176,18 @@ def main():
                      "c'est l'ancienne version qui est servie")
     bon("l'ancienne ambiance synthétisée a bien disparu") if "createOscillator" not in sjs \
         else mauvais("`createOscillator` est encore là : l'ancienne ambiance survit")
-    bon("le pied crédite la musique") if "Tama" in txt \
-        else mauvais("le crédit « Tama's Little Music Shop » manque dans la page servie")
+    # LE NOM DE L'ARTISTE SE LIT DANS LE index.html DU DISQUE, jamais recopie
+    # ici : le 2026-09-10 le morceau a change, et ce controle aurait accuse la
+    # page servie d'avoir perdu un credit qu'elle portait sous un autre nom.
+    _src = open(os.path.join(ICI, "index.html"), encoding="utf-8").read()
+    _m = re.search("Musique&nbsp;:(.+?)[.]<", _src)
+    _nom = _m.group(1).replace("&rsquo;", chr(8217)).replace("&nbsp;", " ").strip() if _m else ""
+    if not _nom:
+        mauvais("aucun credit de musique dans index.html")
+    elif _nom in txt:
+        bon("le pied credite la musique (%s)" % _nom)
+    else:
+        mauvais("le credit « %s » manque dans la page servie" % _nom)
 
     # ── le cache : le domaine contre son origine ────────────────────────
     titre("Le cache")

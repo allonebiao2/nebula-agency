@@ -413,3 +413,63 @@ Le script attend donc la minute et redemande **une seule fois**.
 le corps en texte puis le ré-encodait en UTF-8, et ce fichier est plein
 d'accents et de symboles — elle annonçait 53 115 octets pour 52 502. **On
 compare des octets, jamais du texte relu.**
+
+---
+
+## Le morceau change : WETHU remplace le lofi
+
+Demandé par Mongazi, avec l'exigence que l'expérience sonore soit **identique
+sur PC, mobile, tablette et Apple**.
+
+### ⚠️ Choisir un extrait, ça se mesure
+
+La source dure **1 h 02** (52 Mo). Encodée telle quelle elle pèserait 22 Mo pour
+une cible de 1 Mo. Le choix de l'extrait n'a donc pas été fait au hasard : profil
+de niveau seconde par seconde, puis on retient la fenêtre de 2 min qui a le
+niveau le plus stable **et dont les deux bouts se ressemblent le plus**, parce
+que c'est cet écart qui s'entend à la couture de la boucle.
+
+Trois candidats à égalité (34:07, 45:34, 58:39). Retenu **34:07 → 36:09** : même
+score, mais au milieu du morceau, loin de toute fin possible. ⚠️ Le meilleur
+score brut tombait dans la **dernière minute** d'une heure de musique : un
+classement ne connaît pas la place qu'occupe ce qu'il classe.
+
+Livré : 119,8 s, mono 32 kHz 48 kb/s, **702 Ko**, **−12,1 LUFS**, raccord de
+boucle **11 %**, brillant **11,2 dB** sous le médium.
+
+### ⛔ Trois contrôles qui auraient menti
+
+**Deux cherchaient « Tama » en dur** (`_qc.py`, `_verifier_en_ligne.py`). Le
+morceau changeant, ils seraient passés au rouge en accusant la page d'avoir
+perdu un crédit qu'elle portait, simplement sous un autre nom. Ils **lisent**
+maintenant le crédit dans `index.html`. C'est la règle déjà écrite pour PISTE :
+un contrôle lit les libellés dans les données, il ne les recopie pas.
+
+**Le troisième mesurait l'ACTION DU FILTRE** au lieu de la propriété du fichier.
+Ce morceau est déjà sombre à la source (6400 Hz à 10,8 dB sous le médium), donc
+le `lowpass` n'avait presque rien à retirer : 0,4 dB, et rouge, sur un fichier
+parfaitement feutré. ⚠️ **Le même contrôle laissait passer l'erreur inverse** :
+une source criarde à peine adoucie aurait affiché une belle action de filtre.
+Il mesure désormais **ce que la visiteuse entendra**. La phrase qui l'annonçait
+était déjà dans le fichier depuis le premier jour : *« un filtre ne retire pas
+ce qui n'est pas là »*.
+
+### ✅ Vérifié en ligne, huit configurations
+
+Chrome ordinateur, téléphone, téléphone annonçant `2g`, économiseur de données,
+tablette, et **WebKit** (le moteur d'Apple) en ordinateur, iPhone et iPad.
+Toutes lisent le nouveau morceau, horloge qui avance, volume 0,57 sur pointeur
+fin et 0,66 au toucher.
+
+### ⏳ La licence n'est pas établie
+
+Le morceau précédent annonçait « no copyright » dans son titre, et Mongazi avait
+tranché sur cette base. **Celui-ci ne l'annonce nulle part.** Le crédit au pied
+nomme l'artiste, ce qui est la précaution d'usage, mais la question reste
+ouverte et posée.
+
+### ⚠️ La source brute ne va pas au dépôt
+
+52 Mo, dépôt public : ajoutée au `.gitignore` **avant** tout `git add`, comme le
+lofi avant elle. ⚠️ Les crochets du nom YouTube doivent être **échappés** dans un
+`.gitignore`, sinon ils ouvrent une classe de caractères et le motif ne mord pas.

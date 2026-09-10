@@ -428,8 +428,19 @@ def musique(nav):
     page.goto(BASE, wait_until="load")
     page.wait_for_timeout(2500)          # le prechargement se fait apres `load`
     pied = page.inner_text(".pied-b")
-    bon("le pied crédite la musique") if "Tama" in pied \
-        else mauvais("le crédit de la musique a disparu du pied")
+    # LE NOM DE L'ARTISTE SE LIT DANS LA PAGE, il ne se recopie pas ici.
+    # Le 2026-09-10 le morceau a change et ce controle cherchait « Tama » en
+    # dur : il serait passe au rouge en accusant la page d'avoir perdu un
+    # credit qu'elle portait, juste sous un autre nom.
+    _src = open(os.path.join(RACINE, "index.html"), encoding="utf-8").read()
+    _m = re.search("Musique&nbsp;:(.+?)[.]<", _src)
+    _nom = _m.group(1).replace("&rsquo;", chr(8217)).strip() if _m else ""
+    if not _nom:
+        mauvais("aucun credit de musique dans index.html")
+    elif _nom in pied:
+        bon("le pied credite la musique (%s)" % _nom)
+    else:
+        mauvais("le credit « %s » manque dans le pied rendu" % _nom)
 
     # ⚠️ LE LECTEUR EST UN `<audio>` NU, SANS Web Audio, et c'est ce qui le rend
     #    audible sur un iPhone en mode silencieux. Si quelqu'un le rebranche un
