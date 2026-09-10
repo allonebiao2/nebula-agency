@@ -208,3 +208,37 @@ ne garde pas un feutrage réglé pour la discrétion.
 référence que Mongazi avait lui-même donnée — a transformé « ça doit sortir
 mieux » en un écart de 8,8 dB et une cible. Sans elle, j'aurais monté le volume
 au jugé, sans savoir si c'était assez.
+
+---
+
+## Mise en ligne, le 2026-09-10 depuis le PC de Cotonou
+
+Le travail avait dormi dans `main` toute l'après-midi : la session distante ne
+pouvait pas déployer, son proxy bloquant `api.cloudflare.com`. Le PC l'a fait.
+
+**QC 242 verts**, `_dist` à 48 fichiers pour 8,89 Mo, déploiement Cloudflare
+(3 fichiers envoyés, 44 déjà présents), cache de zone vidé, puis **12 contrôles
+verts en ligne** : page et morceau **identiques au disque en MD5**, morceau servi
+en `audio/mpeg`, script en ligne portant le nouveau moteur, domaine servant la
+même chose que son origine `*.pages.dev`, adresse inconnue en 404.
+
+### ⛔ Ce qui a bloqué, et ce que ça apprend
+
+**`wrangler` ne lit pas `secrets/cloudflare.env` tout seul.** Il exige
+`CLOUDFLARE_API_TOKEN` dans l'environnement, sinon il s'arrête sur *« In a
+non-interactive environment, it's necessary to set a CLOUDFLARE_API_TOKEN »*.
+
+⚠️ **L'arrêt tombait à la pire place** : après le contrôle qualité et après la
+composition de `_dist`, c'est-à-dire après tout ce qui coûte des minutes. Un
+script « en une seule commande » doit vérifier ce dont il a besoin **avant** de
+faire le travail cher, pas au moment de s'en servir. `charger_jeton()` charge
+maintenant le fichier, et dit clairement ce qui manque si la clé n'y est pas.
+
+### ⚠️ Et pourquoi ce PC ne voyait même pas `_publier.py`
+
+Au début de la session, `main` local était **en retard de 11 commits** sur
+`origin/main`. La commande collée par Mongazi a donc été déclarée inexistante,
+recherche à l'appui, alors qu'elle était poussée depuis une heure. **Un `find`
+qui ne trouve rien ne prouve rien tant que le `git fetch` n'a pas été fait** :
+c'est la règle du 2026-08-27, payée une seconde fois, en sens inverse (le PC a
+cette fois nié un travail au lieu de le refaire).

@@ -7,10 +7,21 @@
 
 ---
 
-## 0 decies. LE 2026-09-10 — ⛔ LA MUSIQUE D'ANGY ART EST DANS `main` ET N'EST **PAS** EN LIGNE
+## 0 decies. LE 2026-09-10 — ✅ LA MUSIQUE D'ANGY ART EST EN LIGNE ET VÉRIFIÉE
 
-**C'est la première chose à faire en ouvrant une session sur un PC.** Trois
-commandes, tout est prêt et vérifié :
+✅ **Fait le 2026-09-10 depuis le PC de Cotonou.** QC **242 verts**, déployé,
+cache de zone vidé, puis **12 contrôles verts en ligne** : la page et le morceau
+servis sont **identiques au disque en MD5**, le morceau sort en `audio/mpeg`, le
+script en ligne porte le nouveau moteur, le domaine sert la même chose que son
+origine `*.pages.dev`, et une adresse inconnue rend 404.
+
+⚠️ **`_publier.py` s'est arrêté une première fois à l'étape du déploiement** :
+wrangler ne lit pas `secrets/cloudflare.env` tout seul, il exige
+`CLOUDFLARE_API_TOKEN` dans l'environnement. L'arrêt tombait **après** le QC et
+la composition de `_dist`, donc à l'endroit le plus coûteux à refaire. Le script
+charge désormais le fichier lui-même (`charger_jeton()`).
+
+Pour republier, une seule commande :
 
 ```bash
 python clients/11-angy-art/_publier.py

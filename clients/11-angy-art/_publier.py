@@ -69,6 +69,31 @@ def wrangler():
         "     (⚠️ pas `npx wrangler` : il ne marche plus sur ce PC)")
 
 
+def charger_jeton():
+    """⚠️ wrangler ne lit PAS `secrets/cloudflare.env` tout seul. Sans cette
+       étape il s'arrête sur « In a non-interactive environment, it's necessary
+       to set a CLOUDFLARE_API_TOKEN » — arrivé le 2026-09-10, APRÈS un QC vert
+       et un `_dist` composé, donc à l'endroit le plus coûteux à refaire.
+       Le fichier est ignoré par git : il ne vit que sur le PC."""
+    if os.environ.get("CLOUDFLARE_API_TOKEN"):
+        return
+    f = os.path.join(RACINE, "secrets", "cloudflare.env")
+    if not os.path.exists(f):
+        raise SystemExit(
+            "  ⛔ secrets/cloudflare.env introuvable.\n"
+            "     Ce fichier n'est pas dans le dépôt (git l'ignore) : une\n"
+            "     session distante ne peut donc pas déployer, et de toute\n"
+            "     façon son proxy bloque api.cloudflare.com.")
+    for ligne in open(f, encoding="utf-8"):
+        ligne = ligne.strip()
+        if not ligne or ligne.startswith("#") or "=" not in ligne:
+            continue
+        cle, _, valeur = ligne.partition("=")
+        os.environ.setdefault(cle.strip(), valeur.strip().strip('"').strip("'"))
+    if not os.environ.get("CLOUDFLARE_API_TOKEN"):
+        raise SystemExit("  ⛔ CLOUDFLARE_API_TOKEN absent de secrets/cloudflare.env.")
+
+
 def main():
     total = 5 if VITE else 6
     n = 0
@@ -94,6 +119,7 @@ def main():
 
     n += 1
     etape(n, total, "Déployer sur Cloudflare Pages")
+    charger_jeton()
     lancer([wrangler(), "pages", "deploy", os.path.join(ICI, "_dist"),
             "--project-name=" + PROJET, "--branch=main"],
            stop="Pas connecté ? `wrangler login`, ou pose CLOUDFLARE_API_TOKEN.")
