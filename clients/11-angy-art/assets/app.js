@@ -772,9 +772,10 @@
         MÊME EN MODE SILENCIEUX (il passe par le canal média), là où Web Audio
         reste muet. Beaucoup de téléphones ici vivent en silencieux.
 
-     ⚠️ LE TAMISÉ EST DANS LE FICHIER, pas ici : `_son.py` normalise à -17 LUFS
-        et retire le souffle. Si Mongazi trouve ça trop fort ou trop bas, c'est
-        VOL ci-dessous qu'on change, une seule ligne.
+     ⚠️ LE TAMISÉ SE FAIT ICI, AU VOLUME. `_son.py` livre un fichier franc
+        (-11 LUFS, comme la source) et c'est `VOL` ci-dessous qui le pose au
+        bon niveau : une seule ligne, qui s'entend tout de suite. Un fichier
+        encodé trop bas, lui, ne se rattrape pas.
 
      ⚠️ LA BOUCLE AUSSI EST DANS LE FICHIER : le morceau reçu portait un fondu
         de sortie de quatre secondes, donc en `loop` le site se serait éteint
@@ -790,7 +791,12 @@
        rate une tablette. Pour le son on prend aussi le pointeur grossier : un
        haut-parleur de téléphone rend moins fort qu'un ordinateur. */
     var tactile = petit || matchMedia('(pointer: coarse)').matches;
-    var VOL = tactile ? 0.40 : 0.34;
+    /* ⚠️ CE COUPLE A DÉJÀ ÉTÉ RÉGLÉ TROP BAS UNE FOIS. Le fichier était
+       normalisé à -17 LUFS ET joué à 0,34 : deux atténuations l'une sur
+       l'autre, soit -26,8 LUFS entendus, quand le site de l'agence sort à
+       -18,0. Mongazi : « j'entends un bruit tout bas ». Le fichier est
+       maintenant à -11 LUFS et c'est CE volume qui tamise, lui seul. */
+    var VOL = tactile ? 0.66 : 0.57;      /* ≈ -14,6 / -15,9 LUFS entendus */
     var FONDU = 1200;                    /* ms — l'arrivée ne doit pas se remarquer */
     /* ⚠️ LA MUSIQUE A SA PROPRE MARQUE DE VERSION, séparée de celle des
        images, parce que les deux ne changent jamais en même temps : bumper

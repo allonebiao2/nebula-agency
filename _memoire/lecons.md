@@ -2147,3 +2147,28 @@ changement, pas du déploiement.
 - **Et un contrôle lit ce qui se passe, pas ce qui est écrit** : le contrôle du
   `?v=` lisait le **code source** (`... + VER`) — il aurait dit oui à une
   constante vide. Il lit maintenant l'URL réellement demandée.
+
+---
+
+## 2026-09-10 · Le tamisé se fait au volume de lecture, jamais dans le fichier
+
+- **Contexte** : Angy Art, une musique demandée « bien tamisée ». Livrée avec un
+  fichier normalisé à −17 LUFS **et** un volume de lecture à 0,34. Mongazi :
+  « j'entends un bruit tout bas ».
+- **La faute** : deux atténuations l'une sur l'autre, soit **−26,8 LUFS
+  entendus**, quand le site de l'agence — la référence qu'il avait lui-même
+  donnée — sort à **−18,0**. Son fichier à lui n'est pas normalisé : il est
+  brut à −8,9, et **seul le volume le tamise**.
+- **Leçon** : le volume de lecture est une ligne de code, il s'entend tout de
+  suite et se corrige en une seconde. Un fichier encodé trop bas se ré-encode,
+  et surtout **il n'a pas l'air fautif** : il est « normalisé », donc propre,
+  donc on ne le soupçonne pas. Normaliser reste utile pour la prévisibilité,
+  mais à un niveau franc (−11 LUFS), pas à un niveau d'atténuation.
+- **Corollaire, et il vaut pour tout réglage de confort** : le contrôle du
+  volume acceptait `0,05 < v ≤ 0,55`. Il bornait « trop fort » et laissait
+  « inaudible » grand ouvert — **il validait le défaut**. Un contrôle qui borne
+  un confort doit border **les deux côtés** ; celui qu'on ne surveille pas est
+  précisément celui qui passe.
+- **Et la mesure a fait le travail** : comparer chiffre contre chiffre au site
+  que le client cite en référence transforme « ça doit sortir mieux » en un
+  écart de 8,8 dB et une cible. Sans ça, on monte le volume au jugé.

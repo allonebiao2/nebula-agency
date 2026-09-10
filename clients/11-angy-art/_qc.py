@@ -550,9 +550,15 @@ def musique(nav):
         mauvais("pas de lecteur à mesurer")
     else:
         haut = max(suite["v"])
-        bon(f"le volume est monté à {haut:.2f} et reste tamisé") \
-            if 0.05 < haut <= 0.55 else \
-            mauvais(f"volume hors de la plage tamisée : {haut:.2f}")
+        # ⚠️ LA PLAGE A ÉTÉ RELEVÉE le 2026-09-10 : elle plafonnait à 0,55 et
+        #    validait donc un réglage que Mongazi n'entendait pas (« un bruit
+        #    tout bas »). Un contrôle qui borne un confort doit border LES DEUX
+        #    côtés : trop fort agresse, trop bas ne s'entend pas — et le second
+        #    est passé inaperçu parce que personne ne le cherchait.
+        bon(f"le volume est monté à {haut:.2f}, audible sans agresser") \
+            if 0.45 <= haut <= 0.80 else \
+            mauvais(f"volume hors de la plage utile : {haut:.2f} "
+                    f"(sous 0,45 on ne l'entend pas, au-dessus de 0,80 ça agresse)")
         bon("le bouton se déclare allumé") if suite["presse"] == "true" \
             else mauvais(f"aria-pressed={suite['presse']} alors que ça joue")
 

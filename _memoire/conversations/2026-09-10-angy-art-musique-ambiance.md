@@ -30,7 +30,7 @@ Fichier reçu : `iced coffee & jazz lofi vibes`, **Tama's Little Music Shop**,
 | durée | 120,1 s | **115,5 s** |
 | poids | 2 112 Ko | **677 Ko** (−68 %) |
 | forme | stéréo 44,1 kHz 136 kb/s | mono 32 kHz 48 kb/s |
-| sonie | −8,2 LUFS | **−17,4 LUFS** |
+| sonie | −8,2 LUFS | **−11,9 LUFS** |
 
 Format de la maison, celui de Mon Bénin (`benin-mon-pays/_sons_finir.py`), avec
 `highpass=80, lowpass=3200, loudnorm=I=-17`. **−17 et non −20** : à Mon Bénin
@@ -165,3 +165,45 @@ a été vérifié **avec un témoin** : fichier retiré, il refuse.
   une session en conteneur ne publie pas. C'est le PC de Cotonou.
 - ⏳ **La source n'est pas versionnée** (`clients/*/_sources/` est ignoré, le
   dépôt est public). Si elle disparaît, elle se redemande à Mongazi.
+
+
+---
+
+## ⛔ CORRECTION LE SOIR MÊME : le son était deux fois trop bas
+
+> Mongazi, après écoute : « J'entends un bruit tout bas. Il faut que le son
+> sorte bien, qu'on l'entende correctement. »
+
+Il avait raison, et **c'était une faute de conception, pas un réglage à ajuster** :
+j'avais atténué **deux fois**, dans le fichier *puis* au volume de lecture.
+
+| | LUFS du fichier | volume | **entendus** |
+|---|---|---|---|
+| sa source, brute | −8,2 | — | — |
+| le site de l'agence (**sa référence**) | −8,9 | 0,35 | **−18,0** |
+| ⛔ ce que j'avais livré | −17,4 | 0,34 | **−26,8** |
+| ✅ après correction | −11,9 | 0,57 / 0,66 | **−16,7 / −15,5** |
+
+**Presque 9 dB sous sa propre référence.** Le fichier de l'agence n'est pas
+normalisé du tout : il est brut, et **seul le volume de lecture le tamise**.
+
+⚠️ **LA RÈGLE QUI MANQUAIT — le tamisé se fait AU VOLUME DE LECTURE, jamais dans
+le fichier.** Le volume est une ligne, il s'entend tout de suite et se corrige en
+une seconde. Un fichier encodé trop bas, lui, se ré-encode — et surtout, il ne
+*paraît* pas fautif : il est « normalisé », donc propre, donc on ne le soupçonne
+pas. Normaliser reste utile (prévisibilité, pas de saturation), mais à un niveau
+franc : **−11 LUFS**, pas −17.
+
+⚠️ **ET LE QC VALIDAIT LE DÉFAUT.** Le contrôle du volume acceptait
+`0,05 < v ≤ 0,55` : il bornait le côté « trop fort » et laissait le côté
+« inaudible » grand ouvert. **Un contrôle qui borne un confort doit border les
+deux côtés** — le côté qu'on ne surveille pas est celui qui passe. Nouvelle
+plage : **0,45 ≤ v ≤ 0,80**, avec le motif écrit des deux bornes.
+
+⚠️ Le `lowpass` passe de 3200 à **5000 Hz** : quand on cherche la présence, on
+ne garde pas un feutrage réglé pour la discrétion.
+
+**Ce que la mesure a permis** : la comparaison chiffrée au site de l'agence — la
+référence que Mongazi avait lui-même donnée — a transformé « ça doit sortir
+mieux » en un écart de 8,8 dB et une cible. Sans elle, j'aurais monté le volume
+au jugé, sans savoir si c'était assez.

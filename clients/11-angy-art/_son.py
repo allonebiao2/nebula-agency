@@ -34,8 +34,16 @@ silencieux, où Web Audio est muet (leçon du 2026-05-25) :
     ne fait que retirer le souffle.
   · `highpass=80` retire des infra-graves que personne n'entend et qui coûtent
     des bits à chaque seconde.
-  · `loudnorm I=-17` aligne la SONIE PERÇUE, pas le pic. Mon Bénin normalise à
-    -20 : là-bas l'ambiance passe SOUS une narration, ici la musique est seule.
+  · `loudnorm I=-11` aligne la SONIE PERÇUE, pas le pic.
+    ⛔ **UNE PREMIÈRE VERSION VISAIT -17, ET MONGAZI N'ENTENDAIT « QU'UN BRUIT
+    TOUT BAS ».** L'erreur : atténuer DEUX FOIS, dans le fichier puis au volume
+    de lecture. Mesuré : -17,4 LUFS x 0,34 = **-26,8 LUFS entendus**, quand le
+    site de l'agence — la référence qu'il donne — sort à **-18,0** (son fichier
+    est BRUT, à -8,9, et n'est atténué que par le volume).
+    ⚠️ **LE TAMISÉ SE FAIT AU VOLUME DE LECTURE, PAS DANS LE FICHIER** : le
+    volume se règle en une ligne et s'entend tout de suite ; un fichier trop
+    bas se ré-encode et ne se rattrape jamais vraiment.
+    -11 laisse de la marge de crête sans rien perdre de la présence.
   · mono, 32 kHz, 48 kb/s : le format de la maison (`benin-mon-pays/_sons_finir.py`).
 """
 import json
@@ -51,9 +59,9 @@ ICI = os.path.dirname(os.path.abspath(__file__))
 SOURCE = os.path.join(ICI, "_sources", "musique-source.mp3")
 SORTIE = os.path.join(ICI, "assets", "sons", "ambiance.mp3")
 
-LOWPASS = 3200      # Hz — le feutrage
+LOWPASS = 5000      # Hz — le feutrage, léger
 HIGHPASS = 80       # Hz — les infra-graves
-LUFS = -17          # la sonie visée
+LUFS = -11          # la sonie visée
 DEBIT = "48k"
 ECHANT = "32000"
 CROISE = 2.0        # s — le fondu croisé qui referme la boucle
