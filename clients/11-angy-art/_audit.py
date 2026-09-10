@@ -32,7 +32,7 @@ for _f in (sys.stdout, sys.stderr):
 from playwright.sync_api import sync_playwright
 
 ICI = os.path.dirname(os.path.abspath(__file__))
-LIVE = "https://angy-art.pages.dev/"
+LIVE = "https://angyart.online/"
 
 ok, ko = [], []
 
@@ -55,7 +55,7 @@ def sans_navigateur():
     m = re.search(r'property="og:image"\s+content="([^"]+)"', html)
     dire(bool(m), "og:image declaree")
     if m:
-        rel = m.group(1).split("?")[0].split("angy-art.pages.dev/")[-1]
+        rel = m.group(1).split("?")[0].split("angyart.online/")[-1]
         f = os.path.join(ICI, rel.replace("/", os.sep))
         existe = os.path.exists(f)
         dire(existe, "og:image presente sur le disque : %s" % rel)

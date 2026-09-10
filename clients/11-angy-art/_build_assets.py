@@ -33,7 +33,7 @@ IMG = os.path.join(RACINE, "assets", "images")
 SRC = os.path.join(RACINE, "_sources", "logo-transparent.png")
 
 NUM = "2290152006490"
-SITE = "https://angy-art.pages.dev/"
+SITE = "https://angyart.online/"
 MSG = ("Bonjour Angélique, j'ai vu votre site. Pouvez-vous m'envoyer le "
        "portfolio complet des pièces disponibles ?")
 WA = "https://wa.me/" + NUM + "?text=" + urllib.parse.quote(MSG)

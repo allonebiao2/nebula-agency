@@ -42,7 +42,7 @@ for _f in (sys.stdout, sys.stderr):
 from playwright.sync_api import sync_playwright
 
 ICI = os.path.dirname(os.path.abspath(__file__))
-LIVE = "https://angy-art.pages.dev/"
+LIVE = "https://angyart.online/"
 
 # Le compteur, posé dans la page avant tout le reste.
 SONDE = """

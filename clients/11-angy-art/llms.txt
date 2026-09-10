@@ -77,7 +77,7 @@ de la collection sont des **mises en situation** : les masques sont bien
 d'Angélique, les intérieurs qui les entourent sont des rendus, et le
 site le dit sur chacune.
 
-- [Le site](https://angy-art.pages.dev/)
-- [Plan du site](https://angy-art.pages.dev/sitemap.xml)
+- [Le site](https://angyart.online/)
+- [Plan du site](https://angyart.online/sitemap.xml)
 
-Dernière mise à jour : 2026-09-09.
+Dernière mise à jour : 2026-09-10.

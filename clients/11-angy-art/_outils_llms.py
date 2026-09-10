@@ -21,7 +21,7 @@ except Exception:
     pass
 
 RACINE = os.path.dirname(os.path.abspath(__file__))
-DOMAINE = "https://angy-art.pages.dev"
+DOMAINE = "https://angyart.online"
 
 
 def main():
