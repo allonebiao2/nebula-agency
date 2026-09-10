@@ -7,6 +7,35 @@
 
 ---
 
+## 0 nonies. LE 2026-09-10 — ANGY ART VIT SUR SON NOM
+
+**https://angyart.online/** est en ligne, vérifié, 224 contrôles verts. Détail :
+`_memoire/conversations/2026-09-10-angy-art-nom-de-domaine.md`.
+
+⚠️ **Un branchement de domaine a deux moitiés** : le nom déclaré dans *Custom
+domains* du projet Pages, **et** l'enregistrement DNS qui pointe vers lui. Le
+domaine était acheté, sa zone active, ses NS délégués depuis des semaines, et
+il servait quand même la page de parking Hostinger.
+
+⛔ **Trois réglages mordent dès qu'on quitte un `*.pages.dev`** : le cache de
+zone sert encore l'ancien HTML après un déploiement réussi (`purge_everything`,
+et **lire le CORPS, un 200 ne prouve rien**) · **Cloudflare préfixe son
+`robots.txt` géré au nôtre et interdit les robots d'IA que nous accueillons**
+(le travail GEO de la veille défait par un réglage de zone) · l'obfuscation
+d'e-mail rend l'adresse illisible sans JavaScript.
+
+⏳ **Quatre choses attendent Mongazi, toutes dans le tableau de bord** (aucun de
+nos jetons n'a `Zone · DNS` ni les réglages de zone, mesuré) : `www` rend
+**522** tant que son `CNAME` vise `angyart.online` au lieu de
+`angy-art.pages.dev` · désactiver le `robots.txt` géré dans **AI Crawl
+Control** · trancher l'obfuscation d'e-mail · poser un **SPF vide et un DMARC
+en refus** (aucun MX nécessaire, son adresse est un Gmail).
+
+✅ **La carte de visite est enfin imprimable** : son QR menait à une adresse
+qu'on abandonnait.
+
+---
+
 ## 0 octies. LE 2026-09-04 — DEUX VITRINES REMISES À JOUR ET PUBLIÉES
 
 Journée de vitrines, pas de produit. **Rien ne bloque, rien n'attend de moi.**
