@@ -547,12 +547,38 @@ Preuves de capacité sur l'Outil métier : **Boussole**, **Digital HSE**, **Vend
 
 ## 13. Reste à répercuter
 
-- [ ] **Site www.nebula-agency.online** : l'abonnement y est encore affiché à **15 000 F / 6 mois**
-      (section Tarifs et cartes d'offres). À passer à **20 000 F, modifications comprises**.
-- [ ] **Cerveau de NOVA** (`nebula-affilies/server.py`, `agency_brain()`) : à aligner sur les
-      nouveaux prix et l'abonnement unique.
-- [ ] **Anciens guides du back-office partenaires** (`seed_docs`) : ils poussent la Vitrine en
-      premier, ce qui contredit l'escalier. À retirer ou réécrire.
+**Les trois points de cette liste sont faits.** Vérifiés un par un le 2026-09-10, dans les
+fichiers et pas de mémoire.
+
+- [x] **Site www.nebula-agency.online** : `nebula_agency_v9.html` (le fichier servi) affiche
+      **20 000 FCFA / 6 mois, modifications comprises**, aux 6 endroits qui le mentionnent,
+      cartes d'offres, tarifs, formulaire de commande et FAQ compris.
+- [x] **Cerveau de NOVA** (`nebula-affilies/server.py`, `agency_brain()`) : « ABONNEMENT
+      (Catalogue et Vitrine) : 20 000 FCFA TOUS LES 6 MOIS, jamais par mois », modifications
+      comprises, avec le paiement 70/30.
+- [x] **Anciens guides du back-office partenaires** : `seed_docs` **n'existe plus**. Il a été
+      remplacé par `DOCS_PARTENAIRES` + `publier_documents()`, et les 7 anciennes entrées sont
+      nommées dans `DOCS_RETIRES`, qui les supprime de la base à chaque démarrage.
+
+⚠️ **Ce qui reste, et qui n'était pas dans cette liste**, trouvé le 2026-09-10 en relisant tout :
+
+- [x] **Quatre documents à l'ancienne grille** (brochure partenaire, guide de lancement, deck
+      de 14 diapositives, son export PDF) annonçaient encore **25 / 30 / 35 %** et une
+      **commission de réseau de 10 % et 5 %**. Rangés dans `_documents/nebula-agency/_obsolete/`,
+      avec le détail de ce qui a changé. ⛔ **Ils ne sont pas modifiables** : leurs diapositives
+      sont des images, sans source dans le dépôt.
+- [x] **Le simulateur de commissions ne montrait plus ni palier ni message d'incitation** : il
+      cherchait des paliers `t-25` et `t-35` qui n'existent plus depuis la grille unique, et
+      l'erreur coupait le rendu au milieu. Réparé.
+- [x] **Le kit partenaire** (`_kits/kit-nebula.html` et son PDF) vendait la **Fiche Google Maps**
+      et l'**Avatar IA**, hors du tableau 4.1 du contrat, faisait entrer par la Vitrine au lieu du
+      Catalogue, et annonçait l'abonnement à 15 000 F. Refait.
+- [ ] ⏳ **`00-nebula-agency/affiliation/programme-affilies.html`** : page de recrutement d'une
+      génération encore antérieure. Elle annonce une **Vitrine à 100 000 F négociable à 75 000 F**,
+      un **Catalogue à 40 000 F livré en 14 à 21 jours**, des commissions en **montants fixes**
+      (30 000 F et 12 000 F), un versement **sous 7 jours** et un numéro de paiement qui n'est pas
+      celui du contrat. Rien n'y est juste. **Mongazi tranche** : la refaire contre ce socle, ou
+      la ranger dans `_obsolete/` comme les quatre autres.
 
 ---
 

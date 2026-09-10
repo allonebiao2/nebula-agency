@@ -121,8 +121,10 @@ RATE_EQUIPE  = 0.40
 SEUIL_EQUIPE = 3    # lui + ses filleuls directs, ventes validées dans le mois
 # ---- Rôles spéciaux (au-delà de la recrue standard) ----
 # Le rôle « superviseur » ne commande PLUS de barème : depuis la grille unique du
-# 2026-08-02, tout le monde est sur 30/40/50. Il ne reste qu'un insigne d'animation
-# d'équipe, sans effet sur la rémunération.
+# 2026-08-02, tout le monde est sur 30/40, et il n'y a rien au-dessus de 40 %. Il ne
+# reste qu'un insigne d'animation d'équipe, sans effet sur la rémunération.
+# (Ce commentaire annonçait « 30/40/50 » : un troisième palier qui n'a jamais existé
+#  dans le code, RATE_BASE et RATE_EQUIPE étant les deux seuls taux. Corrigé 2026-09-10.)
 ROLE_LABELS = {"superviseur": "Superviseur"}
 
 # ---- FONDATEUR (Mongazi) : titre + rang FIXES, au sommet du réseau (n'évoluent jamais) ----

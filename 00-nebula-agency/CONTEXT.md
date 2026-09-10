@@ -19,23 +19,40 @@ Vendora pour le commerce). Slogan : « Un outil pensé pour votre secteur, pas u
 générique. » Ce service phare est mis en avant sur le site (bloc `.vsaas` en bas de la
 section Services). Voir mémoire `project_positionnement-vertical`.
 
-## Grille tarifaire actuelle (2026-05-30)
+## Grille tarifaire actuelle (2026-09-02)
+
+> ⚠️ **La source de vérité est `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`**, et
+> l'article 4.1 du contrat partenaire en est la copie signée. Ce tableau ne fait que la refléter.
 
 | Service | Setup | Récurrent |
 |---|---|---|
-| Vitrine Digitale + QR Code | **150 000 FCFA** | 15 000 F / 6 mois *(hébergement & sécurité)* |
-| Catalogue Digital + QR Code | **50 000 FCFA** | 15 000 F / 6 mois *(hébergement & sécurité)* |
-| Création Fiche Google Maps | **20 000 FCFA** | — |
-| Création QR Code Google Review | **30 000 FCFA** | — |
-| Forfait Avatar IA ESSENTIEL | — | 30 000 F/mois (3 vidéos) |
-| Forfait Avatar IA PRO | — | 100 000 F/mois (10 vidéos + scripts + publication + rapport) |
+| Catalogue Digital + QR Code (jusqu'à 20 produits) | **50 000 FCFA** | 20 000 F / 6 mois |
+| Lot de 10 produits supplémentaires | **15 000 FCFA** | pas de récurrent propre |
+| Vitrine Digitale + QR Code (une page) | **150 000 FCFA** | 20 000 F / 6 mois |
+| Page supplémentaire | **30 000 FCFA** | pas de récurrent propre |
+| QR Code Google Review | **30 000 FCFA** | aucun abonnement |
+| Outil Digital sur mesure | **55 000 à 500 000 FCFA**, selon configurateur | selon dossier |
+| Nom de domaine | offert la 1re année | puis 16 000 F par an |
+| Réactivation d'un site coupé | **5 000 FCFA** | en sus du semestre dû |
+
+⛔ **Fiche Google Maps et Avatar IA ne sont plus des offres** : elles ne figurent ni au socle,
+ni au tableau 4.1 du contrat, et l'article 4.4 dit « les offres du tableau, **et elles
+seules** ». Elles traînaient encore dans `SERVICES` du portail partenaires et dans le kit,
+retirées du kit le 2026-09-10.
 
 **Délai affiché** : **5 à 7 jours** partout (hero, métriques, why, étapes, CTAs).
 Ancien « 48h / 48-72h » remplacé le 2026-05-30.
 
-**Hébergement & sécurité** : **15 000 FCFA tous les 6 mois** (par semestre) pour la
-Vitrine et le Catalogue Digital. Frais d'hébergement récurrent, indépendant des
-modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois ».)*
+**Abonnement** : **20 000 FCFA tous les 6 mois** (par semestre) pour la Vitrine et le
+Catalogue Digital. Il couvre l'hébergement, la sécurité **et les modifications de contenu**
+(textes, prix, photos, ajout ou retrait de produits). Une refonte du design, de nouvelles
+fonctionnalités ou de nouvelles pages font l'objet d'un devis à part.
+*(Passé de 15 000 à 20 000 F le 2026-07-31, modifications comprises. Le site v9 l'affiche
+correctement depuis ; c'est ce tableau qui était resté en retard, corrigé le 2026-09-10.
+Corrigé le 2026-06-20 : était affiché par erreur « /mois ».)*
+
+**Sans paiement, le site est coupé au 8e jour** : 7 jours de courtoisie, puis hébergement et
+sécurité interrompus, données gardées 6 mois. Réactivation **5 000 F** (contrat art. 6.2 bis).
 
 ## État
 

@@ -225,7 +225,6 @@ footer b{color:#C3CCE4}
     <p style="color:var(--dim);font-size:12px;margin-top:12px">
 <b style="color:var(--txt)">Tu ne touches aucune commission sur leurs ventes.</b> Elles
       s'ajoutent aux tiennes pour faire monter ton palier : dès <b style="color:var(--txt)">3
-      au total</b>, tout ton mois passe à 40 %. Et dès que tu fais <b style="color:var(--txt)">4
       au total</b>, tout ton mois passe à 40 %. Une seule profondeur : les recrues de tes
       recrues ne comptent pas. Et <b style="color:var(--txt)">ça repart à zéro le 1er du
       mois</b> : les 40 % se regagnent chaque mois.
@@ -289,7 +288,7 @@ footer b{color:#C3CCE4}
     else if (nb >= 1)            { badge.textContent = "Palier BRONZE"; badge.classList.add("starter"); }
     else              { badge.textContent = "Aucune vente"; }
 
-    ["25","30","35"].forEach(function(k){ el("t-" + k).classList.remove("on"); });
+    ["30","40"].forEach(function(k){ el("t-" + k).classList.remove("on"); });
     if ((nb + s.n1) >= 3 && nb)  el("t-40").classList.add("on");
     else if (nb >= 1)            el("t-30").classList.add("on");
 
