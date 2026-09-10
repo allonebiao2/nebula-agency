@@ -63,8 +63,9 @@ trou de 3 dB, parce que c'est la puissance qui s'additionne.
 Mesuré à niveau égal : un `lowpass` à 3200 Hz creuse l'aigu de **2,0 dB**, trois
 filtres empilés de **2,3 dB**. La source est du lofi : elle n'a presque rien
 au-dessus de 4 kHz, et un filtre ne retire pas ce qui n'est pas là.
-**Le tamisé vient du niveau** (−17 LUFS et le volume de lecture), le filtre ne
-retire que le souffle. ⛔ Ne pas empiler des filtres en croyant feutrer.
+**Le tamisé vient du volume de lecture** (voir la correction du soir, plus bas :
+une première version l'avait mis DANS le fichier, et c'était la faute), le filtre
+ne retire que le souffle. ⛔ Ne pas empiler des filtres en croyant feutrer.
 
 ⚠️ **La première mesure des bandes mentait** : elle comparait les dB bruts, or la
 normalisation baisse tout de 9 dB — toutes les bandes chutaient d'autant et la
