@@ -1,9 +1,47 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-04
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-10
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 decies. LE 2026-09-10 — ⛔ LA MUSIQUE D'ANGY ART EST DANS `main` ET N'EST **PAS** EN LIGNE
+
+**C'est la première chose à faire en ouvrant une session sur un PC.** Trois
+commandes, tout est prêt et vérifié :
+
+```bash
+git pull origin main
+python clients/11-angy-art/_dist.py
+wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
+python scripts/purger.py angy --verifier
+```
+
+⚠️ **`wrangler` global, jamais `npx`.** ⚠️ **La purge n'est pas optionnelle** :
+le cache de zone a déjà servi l'ancien HTML après un déploiement réussi le matin
+même (`angyart.online` ne figurait même pas dans `purger.py`, ajouté depuis).
+
+**Ce qui attend** : le morceau lofi de Mongazi remplace l'ambiance synthétisée,
+il part **au premier contact** avec la vitrine, il boucle sans couture, le bouton
+le coupe et ce choix est retenu. 677 Ko, −11,9 LUFS, **241 contrôles verts**,
+**niveau écouté et validé par Mongazi**. Détail :
+`_memoire/conversations/2026-09-10-angy-art-musique-ambiance.md`.
+
+⛔ **CE QUI A COÛTÉ TROIS ÉCHANGES, et qui se reproduira** : Mongazi testait
+`angyart.online` pendant que le travail dormait dans la branche. Il entendait
+l'**ancienne ambiance synthétisée** (un bourdon de trois oscillateurs graves qui
+ne partait qu'au clic sur le bouton) **en croyant écouter son morceau**, et
+concluait que le travail était raté. J'ai répété « ce n'est pas déployé » : exact,
+et inutile, puisqu'il était sur son téléphone. Ce qui a débloqué en un coup : un
+**banc d'essai publié en artefact** (le morceau en base64 + le mécanisme réel).
+⚠️ **Quand le livrable ne peut pas être vu là où le client le cherche, fabriquer
+le chemin le plus court vers l'essai** — pas expliquer pourquoi il ne voit rien.
+
+⏳ **Restera après le déploiement** : vérifier sur le vrai site, **iPhone en mode
+silencieux compris** (c'est précisément ce que le choix d'un `<audio>` nu, sans
+Web Audio, cherche à préserver).
 
 ---
 
