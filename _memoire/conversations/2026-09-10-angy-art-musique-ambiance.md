@@ -15,8 +15,11 @@ Fichier reçu : `iced coffee & jazz lofi vibes`, **Tama's Little Music Shop**,
    bruit filtré, gouttes). Deux nappes superposées font de la bouillie : le lofi
    porte déjà sa basse. Le code retiré reste dans git.
 2. **Un crédit discret au pied** : « Musique : Tama's Little Music Shop ».
-   ⏳ « No copyright music » sur YouTube n'est pas le domaine public :
-   **la licence exacte reste à confirmer par Mongazi avant mise en ligne**.
+   ✅ **Licence tranchée par Mongazi le soir même** : « c'est écrit sur le titre
+   no copyright donc sans souci ». J'avais signalé que « no copyright » sur
+   YouTube n'est pas le domaine public ; il a maintenu, c'est sa décision.
+   ⚠️ **Le crédit au pied reste posé**, et c'est précisément ce que ces chaînes
+   demandent d'ordinaire : la précaution est déjà en place. ⛔ Sujet clos.
 3. **Réglage « doux »** : présent mais discret, le piano lisible sur un
    haut-parleur de téléphone.
 
@@ -158,7 +161,6 @@ a été vérifié **avec un témoin** : fichier retiré, il refuse.
   reproduit pas le comportement audio d'iOS/Android). ⚠️ Un iPhone en mode
   silencieux : à vérifier, c'est justement ce que le choix du `<audio>` nu
   cherche à préserver.
-- ⏳ **Confirmer la licence** du morceau.
 - ⏳ **Déployer** : les jetons Cloudflare sont dans `secrets/`, ignoré par git —
   une session en conteneur ne publie pas. C'est le PC de Cotonou.
 - ⏳ **La source n'est pas versionnée** (`clients/*/_sources/` est ignoré, le
