@@ -2172,3 +2172,31 @@ changement, pas du déploiement.
 - **Et la mesure a fait le travail** : comparer chiffre contre chiffre au site
   que le client cite en référence transforme « ça doit sortir mieux » en un
   écart de 8,8 dB et une cible. Sans ça, on monte le volume au jugé.
+
+---
+
+## 2026-09-10 · Quand un client ne peut pas essayer, lui donner un moyen d'essayer
+
+- **Contexte** : la musique d'Angy Art était finie, mesurée, 241 contrôles verts.
+  Mongazi testait **angyart.online**, qui n'était pas déployé. Il entendait donc
+  l'ANCIENNE ambiance synthétisée (un bourdon de trois oscillateurs graves qui ne
+  partait qu'au clic sur le bouton) **en croyant écouter son morceau**.
+- **Ce que j'ai mal fait** : répété trois fois « ce n'est pas déployé, voici les
+  commandes ». C'était exact et parfaitement inutile — il était sur son téléphone,
+  il ne pouvait pas lancer wrangler, et chaque essai le confirmait dans l'idée
+  que le travail était raté. J'ai même corrigé un niveau sonore en croyant qu'il
+  écoutait le fichier que je lui avais envoyé, alors qu'il décrivait le site.
+- **Ce qui a débloqué en un coup** : un **banc d'essai publié en artefact** — le
+  morceau embarqué en base64, le mécanisme exact du site, ouvert sur son
+  téléphone en un lien. Réponse : « c'est parfait ».
+- **Leçon** : quand le livrable ne peut pas être vu là où le client le cherche,
+  la bonne réponse n'est pas d'expliquer pourquoi, c'est de **fabriquer le
+  chemin le plus court vers l'essai**. Un rapport de mesures ne remplace jamais
+  l'objet : il n'avait pas besoin de savoir que le son sortait à −16,7 LUFS, il
+  avait besoin de l'entendre.
+- **Signal à reconnaître** : un client qui décrit un symptôme *précis et
+  cohérent* qui ne correspond à rien de ce qu'on a écrit (« un bruit hyper bas
+  et étrange, qui ne part qu'au clic ») **ne se trompe pas** — il regarde autre
+  chose que nous. Ici, sa description était le portrait exact du code d'avant :
+  trois oscillateurs à 55/82/110 Hz sous un filtre à 420 Hz, démarrés par un
+  `click`. C'est ça qui a identifié le vrai problème, pas mes explications.
