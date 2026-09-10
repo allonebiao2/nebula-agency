@@ -301,3 +301,56 @@ autres MP3 y étaient déjà nommés. Celui-ci les rejoint, et le fichier reste 
 le disque. ⚠️ **Le blob demeure dans l'historique** d'un dépôt public : le
 retirer vraiment demanderait une réécriture d'historique et un `push --force`,
 donc **Mongazi tranche**.
+
+---
+
+## Le défaut pris en flagrant délit dans le navigateur
+
+Mongazi : « vérifie toi-même, tu as accès, t'es dans l'extension ». Fait, sur
+le site en ligne, dans son Chrome.
+
+**49,6 secondes de lecture à `volume 0.00`.** Le morceau se charge
+(`readyState 4`), démarre (`playing` à 480 ms), la promesse de `play()` se
+résout, `timeupdate` défile de 0 à 49,6 s — et le volume ne quitte jamais zéro.
+La piste tourne, rien ne sort. C'est le silence, mesuré, pas déduit.
+
+### Ce que la mesure a écarté, définitivement
+
+- **le fichier** : 693 620 octets servis, `audio/mpeg`, `206` avec
+  `Content-Range` exact ; contenu = 115,5 s de vraie musique, crête **0,0 dBFS**,
+  moyenne **−10,9 dBFS**, **aucun silence au début**, niveau constant sur douze
+  tranches de 10 s (−10,4 à −11,6)
+- **la sortie audio** : un `AudioContext` a joué 3 s du morceau à travers ses
+  haut-parleurs, `running`, 2 canaux, horloge qui avance
+
+### ⛔ Second défaut, découvert par la mesure elle-même
+
+**`requestAnimationFrame` ne tourne pas dans un onglet caché**, donc `fondre()`
+n'y progresse jamais et le volume reste à 0. Une page ouverte en arrière-plan
+serait revenue muette. `fondre()` pose désormais la valeur d'un coup quand
+`document.hidden` : personne ne regarde, personne n'a besoin d'un fondu.
+
+### ⚠️ Ce que l'extension ne peut PAS faire, et il faut le savoir
+
+Le groupe d'onglets de l'extension vit dans une **fenêtre occultée**. Chrome y :
+
+- refuse toute nouvelle activation par clic → `play()` rend `NotAllowedError`
+  et `navigator.userActivation.hasBeenActive` reste **false**
+- diffère le chargement média (`loadstart` puis `stalled`, `readyState 0`)
+- étrangle les minuteurs jusqu'à **geler le moteur de rendu** (une boucle de
+  douze `setTimeout` d'une seconde a fait expirer CDP à 45 s)
+- n'exécute aucun `requestAnimationFrame`
+
+⚠️ **Toute mesure de média faite là-bas doit d'abord lire `visibilityState`**,
+sinon elle accuse le produit à la place de l'instrument — ce qui est arrivé
+ici : le premier diagnostic accusait le fichier. Contournement qui marche :
+**armer les écouteurs dans un appel, relire dans un appel séparé**, sans jamais
+attendre dans la page.
+
+### ⚠️ Et l'explication la plus probable de la plainte initiale
+
+La musique n'était en ligne que **depuis une heure**. Avant le déploiement du
+jour, elle dormait dans `main` et le site n'en avait **aucune**. Quand Mongazi
+a testé et conclu que c'était raté, il écoutait un site qui n'avait jamais eu
+de musique. Les deux défauts ci-dessus étaient bien réels, mais ils l'auraient
+mordu **ensuite**.

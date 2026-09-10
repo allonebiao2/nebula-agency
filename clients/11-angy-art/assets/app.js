@@ -848,9 +848,18 @@
       document.body.appendChild(el);
     }
 
-    /* Fondu en ease-out cubique, comme partout ailleurs sur ce site. */
+    /* Fondu en ease-out cubique, comme partout ailleurs sur ce site.
+       ⛔ `requestAnimationFrame` NE TOURNE PAS dans un onglet caché. Mesuré le
+          2026-09-10 : un fondu lancé là ne progresse jamais, et le volume reste
+          à 0 — la piste avance, l'horloge défile, et on n'entend rien au retour.
+          Personne ne regarde un onglet caché : on y pose la valeur d'un coup. */
     function fondre(vers, ms, fini) {
       cancelAnimationFrame(raf);
+      if (document.hidden) {
+        try { el.volume = vers; } catch (x) {}
+        if (fini) fini();
+        return;
+      }
       var de = el ? el.volume : 0, t0 = performance.now();
       (function pas(t) {
         var p = Math.min((t - t0) / ms, 1);
