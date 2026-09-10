@@ -73,6 +73,12 @@ SITES = {
     "luxury-www":   ("www.luxuryclub229.com",            "luxuryclub229.com"),
     "djambar":      ("djambarteam.com",                  "djambarteam.com"),
     "grain":        ("graindesthetique.com",             "graindesthetique.com"),
+    # AJOUTES LE 2026-09-10, le jour meme ou le domaine a ete branche : la
+    # zone etait absente de cette liste, alors que la bascule avait deja
+    # montre que le cache de zone SERT ENCORE L'ANCIEN HTML apres un
+    # deploiement reussi. Sans elles, on deploie et rien ne change.
+    "angy":         ("angyart.online",                   "angyart.online"),
+    "angy-www":     ("www.angyart.online",               "angyart.online"),
 }
 
 # ⚠️ Cloudflare renvoie 403 a un robot qui ne se presente pas comme un

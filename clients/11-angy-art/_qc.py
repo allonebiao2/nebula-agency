@@ -10,6 +10,7 @@ ANGY ART — suite de contrôle qualité.
    ignore le meta viewport, rend à 800 px et invente des débordements.
 """
 import http.server, socketserver, threading, functools, sys, os, glob
+import io, re, time
 
 # ⚠️ ON DIT À PLAYWRIGHT OÙ EST LE NAVIGATEUR. Dans l'environnement distant,
 #    Chromium est déjà là (`/opt/pw-browsers`) mais Playwright cherche le
@@ -392,6 +393,235 @@ SELS = [
 ]
 
 
+def musique(nav):
+    """LA MUSIQUE : elle part au contact, elle se coupe, et le refus se retient.
+
+    ⚠️ TROIS CHOSES QUE CE CONTRÔLE NE PEUT PAS DIRE, et qu'il ne faut pas lui
+       faire dire : si le morceau est beau, s'il est au bon volume dans une
+       vraie pièce, et si un iPhone en mode silencieux le joue. Ça s'écoute sur
+       un vrai téléphone. Ici on vérifie la mécanique.
+
+    ⚠️ LE NAVIGATEUR DE TEST AUTORISE LA LECTURE AUTOMATIQUE, un vrai Chrome de
+       bureau NON : là-bas la tentative d'entrée échoue et c'est le premier clic
+       ou la première touche qui lance la musique. Un `[ok]` ici ne prouve donc
+       pas que le son part sans geste chez la visiteuse — il prouve que le
+       chemin fonctionne quand le navigateur l'autorise."""
+    titre("La musique")
+
+    # ── 1. le fichier lui-même, sans navigateur ────────────────────────────
+    f = os.path.join(RACINE, "assets", "sons", "ambiance.mp3")
+    if not os.path.exists(f):
+        mauvais("assets/sons/ambiance.mp3 est absent (lance `python _son.py`)")
+        return
+    poids = os.path.getsize(f)
+    bon(f"le fichier pèse {poids // 1024} Ko") if poids < 1024 * 1024 \
+        else mauvais(f"le fichier pèse {poids // 1024} Ko, la maison vise moins de 1 Mo")
+
+    # ⚠️ `/assets/*` porte `immutable` un an : sans marque de version, corriger
+    #    le son un jour serait impossible pour qui l'a déjà chargé. Ce contrôle
+    #    lisait le CODE (`... + VER`) — il aurait donc dit oui à une constante
+    #    vide. Il lit maintenant l'URL RÉELLEMENT DEMANDÉE, plus bas.
+
+    # ── 2. le crédit, dans la page servie ──────────────────────────────────
+    ctx = nav.new_context(viewport={"width": 1440, "height": 900})
+    page = ctx.new_page()
+    page.goto(BASE, wait_until="load")
+    page.wait_for_timeout(2500)          # le prechargement se fait apres `load`
+    pied = page.inner_text(".pied-b")
+    bon("le pied crédite la musique") if "Tama" in pied \
+        else mauvais("le crédit de la musique a disparu du pied")
+
+    # ⚠️ LE LECTEUR EST UN `<audio>` NU, SANS Web Audio, et c'est ce qui le rend
+    #    audible sur un iPhone en mode silencieux. Si quelqu'un le rebranche un
+    #    jour dans un AudioContext, ce contrôle le dira.
+    aud = page.evaluate("""() => {
+      const a = document.querySelector('audio');
+      return a ? {loop: a.loop, preload: a.preload, dansLeDom: true} : null;
+    }""")
+    if not aud:
+        mauvais("aucun élément <audio> dans la page : rien ne peut l'observer")
+    else:
+        bon("le lecteur boucle") if aud["loop"] else mauvais("le lecteur ne boucle pas")
+
+    ctx.close()
+
+    # ── 3. un geste lance la musique, et le volume monte vraiment ──────────
+    ctx = nav.new_context(viewport={"width": 1440, "height": 900})
+    page = ctx.new_page()
+    recus = []
+    # ⚠️ LES JALONS SE DATENT ICI, PAS DANS LA PAGE. Un premier jet lisait
+    #    `performance.getEntriesByType('resource')` : il n'y trouvait AUCUNE
+    #    entrée pour le son et concluait « rien n'est préchargé », alors que
+    #    `readyState` valait 4 et que le fichier était bel et bien là. Le
+    #    Resource Timing n'expose pas les requêtes média. La sonde mentait,
+    #    pas le site — vérifier sa sonde avant d'accuser le produit.
+    jalons = []
+    page.on("load", lambda _: jalons.append(("load", time.monotonic())))
+    # ⚠️ on retire le `?v=` avant de comparer : sinon le nom ne correspond jamais.
+    urls = []
+    def _son(r):
+        if "/sons/" in r.url:
+            recus.append(r.url.split("/")[-1].split("?")[0])
+            urls.append(r.url)
+            jalons.append(("son", time.monotonic()))
+    page.on("request", _son)
+    page.goto(BASE, wait_until="load")
+    page.wait_for_timeout(3400)
+
+    # ⚠️ CES DEUX CONTRÔLES SONT LE CŒUR DE LA DEMANDE, et ils manquaient : une
+    #    première version passait au vert alors que RIEN n'était téléchargé
+    #    avant le geste. Le son partait bien, mais après avoir attendu 677 Ko —
+    #    invisible sur un serveur local, plusieurs secondes sur la 3G. Un
+    #    contrôle qui ne mesure que « ça finit par jouer » ne dit rien du délai.
+    avant = page.evaluate("""() => {
+      const a = document.querySelector('audio');
+      return a ? {pause: a.paused, pret: a.readyState} : null;
+    }""")
+    if not avant:
+        mauvais("aucun lecteur avant le geste")
+    else:
+        bon(f"sans aucun geste, le morceau est déjà prêt (readyState {avant['pret']})") \
+            if avant["pret"] >= 3 else \
+            mauvais(f"rien n'est préchargé (readyState {avant['pret']}) : au premier "
+                    "contact la visiteuse attendra le téléchargement")
+        bon("et il ne joue pas encore : rien ne s'impose avant le contact") \
+            if avant["pause"] else mauvais("le son joue AVANT tout contact")
+
+    # ⚠️ LE PREMIER ÉCRAN NE PAIE PAS LA MUSIQUE : les 677 Ko ne partent
+    #    qu'APRÈS l'événement `load`. Le chemin critique du site est mesuré à
+    #    244 Ko, on ne le double pas pour une ambiance.
+    ordre = [n for n, _ in jalons]
+    if "son" not in ordre:
+        mauvais("le son n'a pas été préchargé : le premier contact attendra")
+    elif "load" not in ordre:
+        mauvais("impossible de dater la fin du chargement")
+    else:
+        t_load = [t for n, t in jalons if n == "load"][0]
+        t_son = [t for n, t in jalons if n == "son"][0]
+        bon("le son ne part qu'après le premier écran (%+d ms)"
+            % round((t_son - t_load) * 1000)) if t_son >= t_load else \
+            mauvais("le son part %d ms AVANT la fin du chargement : il vole le "
+                    "chemin critique" % round((t_load - t_son) * 1000))
+
+    # ⚠️ ON MESURE LE DÉLAI, on ne se contente pas de constater que ça joue.
+    page.evaluate("window.__t0 = performance.now()")
+    page.mouse.click(400, 700)
+    delai = page.evaluate("""async () => {
+      const a = document.querySelector('audio');
+      for (let i = 0; i < 300; i++) {
+        if (!a.paused && !a.muted && a.volume > 0.005)
+          return Math.round(performance.now() - window.__t0);
+        await new Promise(r => setTimeout(r, 5));
+      }
+      return null;
+    }""")
+    if delai is None:
+        mauvais("le son n'est jamais sorti après le contact")
+    else:
+        bon(f"le son sort {delai} ms après le contact") if delai < 400 \
+            else mauvais(f"il faut {delai} ms entre le contact et le son")
+    page.wait_for_timeout(1800)
+
+    bon("le son a bien été téléchargé") if "ambiance.mp3" in recus \
+        else mauvais(f"le son n'a jamais été demandé -> {recus}")
+    bon("l'adresse demandée porte une marque de version") \
+        if any("?v=" in u for u in urls) \
+        else mauvais(f"le son est demandé SANS `?v=` : le cache le figera un an "
+                     f"-> {urls[:1]}")
+    bon("le son n'est demandé qu'une fois") if recus.count("ambiance.mp3") <= 1 \
+        else mauvais(f"le son est demandé {recus.count('ambiance.mp3')} fois")
+
+    # ⚠️ ON ÉCHANTILLONNE LE VOLUME, on ne prend pas deux instantanés : le fondu
+    #    dure 1,2 s, et deux relevés mal placés peuvent tomber sur la même
+    #    valeur et faire croire qu'il ne se passe rien (même famille que le
+    #    contrôle des pastilles, 2026-08-20).
+    suite = page.evaluate("""async () => {
+      const a = document.querySelector('audio');
+      if (!a) return null;
+      const v = [];
+      for (let i = 0; i < 10; i++) {
+        v.push(a.volume);
+        await new Promise(r => setTimeout(r, 160));
+      }
+      return {v: v, joue: !a.paused, presse: document.querySelector('#fabSon')
+                .getAttribute('aria-pressed')};
+    }""")
+    if not suite:
+        mauvais("pas de lecteur à mesurer")
+    else:
+        haut = max(suite["v"])
+        # ⚠️ LA PLAGE A ÉTÉ RELEVÉE le 2026-09-10 : elle plafonnait à 0,55 et
+        #    validait donc un réglage que Mongazi n'entendait pas (« un bruit
+        #    tout bas »). Un contrôle qui borne un confort doit border LES DEUX
+        #    côtés : trop fort agresse, trop bas ne s'entend pas — et le second
+        #    est passé inaperçu parce que personne ne le cherchait.
+        bon(f"le volume est monté à {haut:.2f}, audible sans agresser") \
+            if 0.45 <= haut <= 0.80 else \
+            mauvais(f"volume hors de la plage utile : {haut:.2f} "
+                    f"(sous 0,45 on ne l'entend pas, au-dessus de 0,80 ça agresse)")
+        bon("le bouton se déclare allumé") if suite["presse"] == "true" \
+            else mauvais(f"aria-pressed={suite['presse']} alors que ça joue")
+
+    # ── 4. couper : ça se tait, et ça se retient ───────────────────────────
+    page.click("#fabSon")
+    page.wait_for_timeout(900)
+    apres = page.evaluate("""() => {
+      const a = document.querySelector('audio');
+      return {vol: a ? a.volume : -1, pause: a ? a.paused : null,
+              memo: localStorage.getItem('angy:son'),
+              presse: document.querySelector('#fabSon').getAttribute('aria-pressed')};
+    }""")
+    bon("couper éteint réellement le son") if apres["vol"] < 0.02 \
+        else mauvais(f"le son continue à {apres['vol']:.2f} après avoir été coupé")
+    bon("couper est retenu (angy:son)") if apres["memo"] == "coupe" \
+        else mauvais(f"le refus n'est pas mémorisé -> {apres['memo']}")
+    bon("le bouton se déclare éteint") if apres["presse"] == "false" \
+        else mauvais(f"aria-pressed={apres['presse']} alors que c'est coupé")
+    ctx.close()
+
+    # ── 5. ⚠️ CONTRÔLE RETOURNÉ. Il disait « le son est éteint par défaut ».
+    #    Ce n'est plus vrai : Mongazi veut qu'il parte au contact. Ce qui reste
+    #    vrai, et qui compte davantage, c'est qu'on n'impose rien à quelqu'un
+    #    qui a déjà dit non — et qu'on ne lui prenne pas 677 Ko pour rien.
+    ctx = nav.new_context(viewport={"width": 390, "height": 844},
+                          is_mobile=True, has_touch=True)
+    ctx.add_init_script("try{localStorage.setItem('angy:son','coupe')}catch(e){}")
+    page = ctx.new_page()
+    recus2 = []
+    page.on("request", lambda r: recus2.append(r.url.split("/")[-1].split("?")[0])
+            if "/sons/" in r.url else None)
+    page.goto(BASE, wait_until="domcontentloaded")
+    page.wait_for_timeout(3000)
+    page.mouse.click(200, 600)
+    page.evaluate("window.scrollTo(0, 1200)")
+    page.wait_for_timeout(1500)
+    bon("qui a coupé le son ne le retélécharge pas") if not recus2 \
+        else mauvais(f"le son repart chez quelqu'un qui l'avait coupé -> {recus2}")
+    etat = page.eval_on_selector("#fabSon", "e => e.getAttribute('aria-pressed')")
+    bon("et le bouton reste éteint à la visite suivante") if etat == "false" \
+        else mauvais(f"aria-pressed={etat} alors que le son avait été coupé")
+    ctx.close()
+
+    # ── 6. onglet caché : on se tait ───────────────────────────────────────
+    ctx = nav.new_context(viewport={"width": 1440, "height": 900})
+    page = ctx.new_page()
+    page.goto(BASE, wait_until="domcontentloaded")
+    page.wait_for_timeout(3200)
+    page.mouse.click(400, 700)
+    page.wait_for_timeout(1400)
+    cache = page.evaluate("""async () => {
+      const a = document.querySelector('audio');
+      if (!a || a.paused) return 'pas de lecture en cours';
+      Object.defineProperty(document, 'hidden', {value: true, configurable: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+      await new Promise(r => setTimeout(r, 400));
+      return a.paused ? 'pause' : 'continue';
+    }""")
+    bon("onglet caché, la musique se met en pause") if cache == "pause" \
+        else mauvais(f"onglet caché : {cache}")
+    ctx.close()
+
+
 def main():
     from playwright.sync_api import sync_playwright
     srv = servir()
@@ -410,7 +640,16 @@ def main():
             page = ctx.new_page()
             err, mq = [], []
             page.on("pageerror", lambda e: err.append(str(e)))
-            page.on("requestfailed", lambda r: mq.append(r.url))
+            # ⚠️ UNE REQUÊTE ANNULÉE N'EST PAS UNE RESSOURCE MANQUANTE. Depuis
+            #    que la page précharge la musique (677 Ko après `load`), le
+            #    contrôle qui suit navigue ou ferme l'onglet pendant que le
+            #    téléchargement tourne encore : Chromium l'annule, et
+            #    `requestfailed` le rapporte comme les autres. Un `ERR_ABORTED`
+            #    signifie « nous avons coupé », pas « le fichier n'existe pas ».
+            #    On garde donc le motif de l'échec, on ne garde pas que l'URL.
+            page.on("requestfailed", lambda r: mq.append(
+                f"{r.url}  [{(r.failure or '')}]")
+                if "ERR_ABORTED" not in (r.failure or "") else None)
             page.on("response", lambda r: mq.append(f"{r.status} {r.url}")
                     if r.status >= 400 and "127.0.0.1" in r.url else None)
 
@@ -994,7 +1233,18 @@ def main():
                   labels: [...document.querySelectorAll('select')].every(s =>
                     !!document.querySelector('label[for="'+s.id+'"]')),
                   reperes: ['header','main','footer'].filter(t => document.querySelector(t)).length,
-                  son: document.querySelector('#fabSon').getAttribute('aria-pressed')
+                  son: (() => {
+                    /* ⚠️ CONTRÔLE RETOURNÉ (2026-09-10). Il disait « le son est
+                       éteint par défaut ». Mongazi veut désormais qu'il parte au
+                       contact : la phrase est devenue fausse par construction, et
+                       un contrôle qui devient faux ne se supprime pas, il se
+                       retourne. Ce qui compte maintenant, c'est que le BOUTON DISE
+                       LA VÉRITÉ — quelqu'un qui veut couper doit voir l'état réel. */
+                    var b = document.querySelector('#fabSon');
+                    var a = document.querySelector('audio');
+                    var joue = !!(a && !a.paused && a.volume > 0.01);
+                    return (b.getAttribute('aria-pressed') === 'true') === joue;
+                  })()
                 })""")
                 bon("toutes les images ont un alt") if a["sansAlt"] == 0 else mauvais(f"{a['sansAlt']} image(s) sans alt")
                 bon("tout élément cliquable a un nom") if a["sansNom"] == 0 else mauvais(f"{a['sansNom']} sans nom")
@@ -1002,7 +1252,8 @@ def main():
                 bon("langue déclarée : fr") if a["lang"] == "fr" else mauvais("langue non déclarée")
                 bon("chaque liste déroulante a son étiquette") if a["labels"] else mauvais("select sans label")
                 bon("header / main / footer présents") if a["reperes"] == 3 else mauvais("repères manquants")
-                bon("le son est éteint par défaut") if a["son"] == "false" else mauvais("le son n'est pas éteint")
+                bon("le bouton du son dit l'état réel du lecteur") if a["son"] \
+                    else mauvais("le bouton du son annonce l'inverse de ce qui joue")
 
                 f = page.evaluate(JS_FANTOMES)
                 bon("après un défilement complet, plus rien n'est resté invisible") if not f                     else mauvais(f"éléments restés invisibles après révélation -> {f}")
@@ -1127,6 +1378,8 @@ def main():
                 if VOIR: capturer(page, "pc")
 
             ctx.close()
+
+        musique(nav)
 
         titre("Sans JavaScript")
         ctx = nav.new_context(viewport={"width": 390, "height": 844}, is_mobile=True,
