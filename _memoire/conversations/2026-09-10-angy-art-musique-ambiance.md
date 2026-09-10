@@ -242,3 +242,62 @@ recherche à l'appui, alors qu'elle était poussée depuis une heure. **Un `find
 qui ne trouve rien ne prouve rien tant que le `git fetch` n'a pas été fait** :
 c'est la règle du 2026-08-27, payée une seconde fois, en sens inverse (le PC a
 cette fois nié un travail au lieu de le refaire).
+
+---
+
+## ⛔ « Je n'entends toujours pas le son » — le fondu ne doit pas tenir à une promesse
+
+Mongazi, une fois le site en ligne et vérifié. Le déploiement était bon : les
+octets servis étaient ceux du disque. **« Les octets sont bons » ne veut pas
+dire « le son se déclenche ».**
+
+### Ce que la mesure a établi
+
+Le fichier est **valide et décodable** (`decodeAudioData` : 115,5 s, mono,
+48 kHz) et **servi correctement**, y compris en requêtes par plage (`206`,
+`Content-Range` exact) : ni le réseau ni Cloudflare ne sont en cause. Et
+`localStorage['angy:son']` était **vide**, donc le son n'avait pas été coupé
+par mégarde.
+
+### ⛔ Le défaut
+
+L'élément naît à `volume = 0` et **seul `reussi()` le remonte**. Or `reussi()`
+ne tenait qu'au `.then()` de `play()`. Une promesse qui tarde, se perd, ou
+court contre la mise en pause d'un onglet caché laisse alors la piste tourner
+**à volume zéro pour toujours** : `paused` est faux, le bouton affiche encore
+« Écouter la musique », et on n'entend rien.
+
+Mesuré exactement ainsi en ligne : `paused:false · volume:0 · currentTime:0`.
+
+**Ce qui rend une musique audible ne doit pas être une promesse.** Le fondu
+suit désormais l'événement **`playing`**, celui qui signifie littéralement « du
+son sort maintenant ». La promesse reste en second chemin, et `reussi()` ne
+s'exécute qu'une fois.
+
+### ⚠️ Ma sonde a menti avant de dire vrai, une fois de plus
+
+Le premier diagnostic accusait le fichier : un `<audio>` neuf, puis un `<audio>`
+alimenté par un **blob** sans aucun réseau, se bloquaient tous deux à
+`readyState 0`. Cause réelle : **`document.visibilityState === "hidden"`**.
+Chrome diffère le chargement média dans un onglet qui n'est pas au premier
+plan, et c'est cela que je mesurais. ⚠️ **Un onglet piloté par automatisation
+n'est pas au premier plan** : toute mesure de média qui y est faite doit
+d'abord lire `visibilityState`, sinon elle accuse le produit à la place de
+l'instrument. Même famille que les cinq sondes menteuses du 2026-08-26.
+
+### ⚠️ Le `?v=` a été bumpé, lui
+
+`app.js?v=20260910a` → `20260910b`. Nos assets portent `immutable` un an :
+sans ce bump, tous ceux qui avaient ouvert le site aujourd'hui, Mongazi le
+premier, seraient restés sur la version silencieuse. `app.css` n'a pas bougé,
+donc son `?v=` non plus.
+
+### 🧹 Le MP3 source sorti du dépôt
+
+`git add -A` avait emporté `_partage/iced coffee … [FUVt6vnJcGc].mp3`
+(2,1 Mo, le téléchargement brut). `_partage/` est versionné exprès, mais les
+**médias bruts dont la forme finale est déjà au dépôt** en sont exclus : deux
+autres MP3 y étaient déjà nommés. Celui-ci les rejoint, et le fichier reste sur
+le disque. ⚠️ **Le blob demeure dans l'historique** d'un dépôt public : le
+retirer vraiment demanderait une réécriture d'historique et un `push --force`,
+donc **Mongazi tranche**.

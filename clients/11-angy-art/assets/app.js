@@ -834,6 +834,17 @@
          quand on le coupe. `hidden` ne l'empêche pas de jouer. Même choix
          qu'Au Braisé d'Or. */
       el.hidden = true;
+      /* ⛔ CE QUI REND LA MUSIQUE AUDIBLE NE DOIT PAS ÊTRE UNE PROMESSE.
+         L'élément naît à `volume = 0` et seul `reussi()` le remonte. Tant que
+         `reussi()` ne tenait qu'au `.then()` de `play()`, une promesse qui
+         tardait, se perdait ou courait contre la mise en pause d'un onglet
+         caché laissait la piste tourner à volume ZÉRO pour toujours :
+         `paused` faux, le bouton affichant encore « Écouter la musique », et
+         la visiteuse n'entendant rien. Mesuré le 2026-09-10.
+         `playing` est l'événement qui signifie littéralement « du son sort
+         maintenant » — c'est lui qui doit commander le fondu. La promesse
+         reste, en second chemin ; `reussi()` ne s'exécute qu'une fois. */
+      el.addEventListener('playing', reussi);
       document.body.appendChild(el);
     }
 
@@ -895,6 +906,7 @@
     }
 
     function reussi() {
+      if (joue) return;                  /* deux chemins y mènent : un seul agit */
       joue = true;
       el.muted = false;
       marquer(true);
