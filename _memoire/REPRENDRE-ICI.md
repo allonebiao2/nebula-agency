@@ -17,7 +17,20 @@ git pull origin main
 python clients/11-angy-art/_dist.py
 wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
 python scripts/purger.py angy --verifier
+python clients/11-angy-art/_verifier_en_ligne.py     # <- colle sa sortie ici
 ```
+
+✅ **`_verifier_en_ligne.py` est l'oeil que la session distante n'a pas.** Il
+compare **les octets servis à ceux du disque** (MD5), pas les codes HTTP — ⛔ un
+200 ne prouve rien, Cloudflare a déjà servi `error code: 502` DANS un CSS
+répondant 200. Il compare aussi **le domaine à son origine `*.pages.dev`**, ce
+qui désigne un cache de zone périmé en trois secondes, vérifie que le morceau
+répond en `audio/mpeg` au bon poids, que le script en ligne porte bien
+`ambiance.mp3` et plus `createOscillator`, et qu'une adresse inconnue rend 404.
+⚠️ Il s'essaie lui-même avec `--base http://127.0.0.1:PORT` sur `_dist` : **12
+verts** obtenus ainsi avant livraison (un contrôle qu'on n'a jamais vu réussir
+ne prouve rien — et ce premier essai a justement trouvé un défaut dans sa
+propre sonde d'en-têtes).
 
 ⛔ **UNE SESSION EN CONTENEUR NE PEUT PAS DÉPLOYER, MÊME AVEC UN JETON.**
 Mesuré le 2026-09-10 : le réseau sortant est sur liste blanche et
