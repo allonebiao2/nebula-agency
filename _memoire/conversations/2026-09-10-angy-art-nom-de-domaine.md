@@ -99,7 +99,8 @@ d'adresses contre lisibilité. **À trancher par Mongazi.**
   tournait en rond (522). Repointé sur `angy-art.pages.dev`, il répond 200 et
   son `canonical` renvoie à la racine. ⚠️ Le champ s'appelle **Content** dans
   l'écran d'édition de Cloudflare, pas « Target ».
-- ⏳ **AI Crawl Control** : désactiver le `robots.txt` géré.
+- ✅ **AI Crawl Control** : `robots.txt` géré **désactivé**. Le fichier servi
+  ne porte plus que le nôtre (14 lignes) et les 4 robots restent en 200.
 - ⏳ **L'obfuscation d'e-mail** : la garder ou non.
 - ⏳ **SPF et DMARC** : personne n'envoie de courrier depuis ce domaine, donc
   un SPF vide et un DMARC en refus empêchent qu'on écrive « au nom d'Angy
