@@ -2072,3 +2072,78 @@ image alors que le serveur envoyait la vraie »).
 ⚠️ **Le cache du navigateur ne se voit ni depuis le serveur, ni dans un QC, ni
 dans une vérification MD5 de la page servie.** Bumper la marque fait partie du
 changement, pas du déploiement.
+
+---
+
+## 2026-09-10 · Un commentaire de code n'est pas une mesure, même chez nous
+
+- **Contexte** : Angy Art, poser une musique qui démarre au premier contact.
+  Deux sites de la maison le font déjà — Djambar et Au Braisé d'Or — et leur
+  code porte ce commentaire : « démarre TOUT DE SUITE en sourdine (autorisé
+  partout) => la piste tourne, bufferisée, prête à être révélée sans délai ».
+- **Ce qui s'est passé** : repris tel quel, puis mesuré. Chromium le refuse :
+  `NotAllowedError: play() failed because the user didn't interact with the
+  document first`. **La lecture muette n'est pas « autorisée partout ».** Ces
+  deux sites croient bufferiser et ne bufferisent rien : chez eux, le premier
+  contact déclenche le téléchargement (3,75 Mo chez Djambar) avant le son.
+- **Leçon** : un précédent maison se vérifie comme n'importe quelle source. Un
+  commentaire décrit ce que son auteur croyait, pas ce que fait le navigateur.
+  Ce qui marche pour précharger sans jouer ne dépend d'aucune politique de
+  lecture automatique : `preload = 'auto'` puis `load()`.
+- **⏳ Dette ouverte** : le même défaut dort chez les clients 05 et 09.
+
+---
+
+## 2026-09-10 · On mesure ce qu'on entend, pas ce qui code
+
+- **Contexte** : savoir si un morceau de deux minutes peut tourner en boucle.
+- **Le réflexe qui a trompé** : comparer la **taille des trames MP3** au début et
+  à la fin. Verdict : « débit stable à 125-135 kb/s aux deux extrémités, aucun
+  fondu, le morceau est fait pour boucler ». Faux. Mesuré au **niveau sonore**,
+  le morceau s'éteint sur ses quatre dernières secondes : −10 dB à 116 s, −26,6
+  à 118 s, −41,7 à 119,5. En boucle, le site se serait tu quatre secondes puis
+  rallumé d'un coup, toutes les deux minutes.
+- **Pourquoi** : le débit d'un encodeur suit la **complexité** du signal, pas son
+  amplitude. Un fondu de sortie reste complexe jusqu'au bout.
+- **Leçon** : pour une question d'oreille, prendre une mesure d'oreille (RMS,
+  LUFS). Le poids et le débit répondent à d'autres questions.
+- **Et le remède est dans le fichier, pas dans le navigateur** : rogner le fondu,
+  puis refermer le morceau sur lui-même par un fondu croisé. La page n'a alors
+  besoin que d'un `<audio loop>`. ⚠️ `amix` **divise** par le nombre d'entrées
+  (`normalize=0`), et les fondus croisés se font en **`qsin`** — deux rampes
+  linéaires laissent un trou de 3 dB, c'est la puissance qui s'additionne.
+
+---
+
+## 2026-09-10 · Le Resource Timing n'expose pas les requêtes média
+
+- **Contexte** : un contrôle devait vérifier que la musique n'est téléchargée
+  qu'après le premier écran. Écrit avec
+  `performance.getEntriesByType('resource')`, il ne trouvait **aucune** entrée
+  pour le `.mp3` et annonçait « rien n'est préchargé ».
+- **La vérité** : `readyState` valait **4** et 59 secondes étaient en tampon. Le
+  fichier était là. C'est la sonde qui ne voyait rien.
+- **Leçon** : troisième fois cette année qu'une sonde accuse le produit. Avant
+  de corriger un défaut signalé par un instrument, **prouver l'instrument sur un
+  cas connu**. Ici, les jalons se datent côté Python, avec l'espion de requêtes.
+- **Corollaire trouvé au passage** : depuis qu'on précharge, fermer un onglet
+  pendant le téléchargement produit un `net::ERR_ABORTED` que le contrôle des
+  ressources comptait comme une panne. **Une requête annulée n'est pas une
+  ressource manquante** : garder le motif de l'échec, pas seulement l'URL.
+
+---
+
+## 2026-09-10 · Un contrôle écrit le matin peut devenir faux l'après-midi
+
+- **Contexte** : le même jour, deux contrôles du QC d'Angy Art sont devenus faux
+  — « le son est éteint par défaut » (Mongazi veut qu'il parte au contact) et
+  « le lecteur ne précharge rien », que **j'avais écrit quelques heures plus
+  tôt**, avant que le préchargement devienne justement le produit.
+- **Leçon** : un contrôle qui devient faux ne se supprime pas, il se **retourne**
+  vers l'exigence réelle qu'il servait. « Éteint par défaut » devient « le bouton
+  dit l'état réel du lecteur ». « Ne précharge rien » devient « le son ne part
+  qu'après le premier écran » — ce qui était l'exigence depuis le début : la
+  valeur de l'attribut `preload` n'a jamais été le sujet.
+- **Et un contrôle lit ce qui se passe, pas ce qui est écrit** : le contrôle du
+  `?v=` lisait le **code source** (`... + VER`) — il aurait dit oui à une
+  constante vide. Il lit maintenant l'URL réellement demandée.

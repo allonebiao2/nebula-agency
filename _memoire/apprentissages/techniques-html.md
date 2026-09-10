@@ -68,6 +68,14 @@
 **Problème** : mettre du son sur une vitrine sans MP3 ni CDN (règle NEBULA).
 **Solution** : générer tous les sons par oscillateurs Web Audio API.
 
+> ⚠️ **CETTE RÈGLE A UNE EXCEPTION DEPUIS LE 2026-09-10** : Angy Art porte un
+> vrai fichier MP3, fourni par Mongazi, hébergé chez nous (jamais de CDN). Un
+> morceau de musique ne se synthétise pas. Et **le choix de Web Audio a un coût
+> qu'il faut connaître** : sur iPhone en **mode silencieux**, Web Audio est muet
+> alors qu'un élément `<audio>` **joue** (canal média). Pour une musique de fond,
+> préférer l'élément `<audio>` nu ; garder Web Audio pour les bruitages courts.
+> Voir `_memoire/conversations/2026-09-10-angy-art-musique-ambiance.md`.
+
 - `AudioContext` créé une fois ; **toujours** appeler `ctx.resume()` au 1er geste
   utilisateur (`click`/`touchstart`/`keydown`) sinon le navigateur bloque le son.
 - Un son = oscillateur + gain avec enveloppe (`exponentialRampToValueAtTime`).
@@ -161,6 +169,37 @@ le téléphone NON silencieux.
 
 **Notes** : volume effectif des SFX sur mobile après patch (master 1.45) :
 tap .12 · hover .14 · whatsapp .29 · addCart .32 · brandClick .43 · musique .35.
+
+### ⛔ Correctif 2026-09-10 — « la lecture muette est autorisée partout » est FAUX
+
+Deux vitrines (Djambar client 05, Au Braisé d'Or client 09) lancent une lecture
+**en sourdine** dès le chargement, avec ce commentaire : « démarre TOUT DE SUITE
+en sourdine (autorisé partout) => la piste tourne, bufferisée, prête à être
+révélée sans délai ».
+
+**Mesuré sur Chromium le 2026-09-10, c'est refusé** :
+
+```
+NotAllowedError: play() failed because the user didn't interact with the document first
+```
+
+Ces deux sites **croient bufferiser et ne bufferisent rien** : chez eux, le
+premier contact déclenche le téléchargement (3,75 Mo chez Djambar) *avant* le
+premier son. ⏳ **Dette ouverte sur les clients 05 et 09.**
+
+Ce qui précharge vraiment, sans dépendre d'aucune politique de lecture
+automatique, c'est de télécharger **sans jouer** :
+
+```js
+el.preload = 'auto';
+el.load();               // posé APRÈS l'événement `load` de la page
+```
+
+Mesuré chez Angy Art : avant tout geste `readyState === 4`, et le son sort
+**33 ms** après le premier contact. ⛔ Aucun navigateur ne laisse sortir du son
+sans geste, et sur Chrome de bureau **une molette n'est pas un geste**.
+
+---
 
 ### Update v2 (2026-05-25 PM) — itération après retour cliente
 La v1 ci-dessus ne suffisait pas dans la vraie vie. 4 fixes additionnels :

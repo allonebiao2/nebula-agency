@@ -751,90 +751,204 @@
     montrer();
   })();
 
-  /* ---------- 12. L'ambiance de l'atelier -----------------------------
-     Synthétisée : aucun fichier, aucun droit à payer, 0 Ko de réseau.
-     Éteinte par défaut. Jamais un son sans un geste de l'utilisateur. */
-  (function ambiance() {
+  /* ---------- 12. LA MUSIQUE DE LA MAISON ------------------------------
+     Mongazi, 2026-09-10 : « quand on rentre sur la vitrine le son doit se
+     déclencher, ou limite dès qu'il y a contact, et que ce soit tamisé et
+     immersif ». Le morceau est de lui (jazz lofi, Tama's Little Music Shop).
+
+     ⚠️ CE BLOC REMPLACE L'AMBIANCE SYNTHÉTISÉE (trois oscillateurs graves, un
+        bruit filtré, des gouttes). Elle ne coûtait aucun octet, mais deux
+        nappes superposées font de la bouillie : le lofi porte déjà sa propre
+        basse. Le code retiré reste dans git si on veut le reprendre.
+
+     ⚠️ LE MÊME MOTEUR QUE nebula-agency.online, à la demande de Mongazi : une
+        balise `<audio>` NUE avec `loop`, le premier geste qui lance, un fondu,
+        un bouton qui coupe. Rien de Web Audio.
+        ⚠️ UNE SEULE DIFFÉRENCE, mesurée : là où l'agence TENTE une lecture au
+        chargement (refusée par le navigateur, donc sans effet), on TÉLÉCHARGE
+        sans jouer. C'est ce qui fait sortir le son 33 ms après le contact au
+        lieu d'attendre 677 Ko. Voir `precharger()` plus bas.
+     ⚠️ ET C'EST VOULU : un `<audio>` non routé dans Web Audio joue sur iPhone
+        MÊME EN MODE SILENCIEUX (il passe par le canal média), là où Web Audio
+        reste muet. Beaucoup de téléphones ici vivent en silencieux.
+
+     ⚠️ LE TAMISÉ EST DANS LE FICHIER, pas ici : `_son.py` normalise à -17 LUFS
+        et retire le souffle. Si Mongazi trouve ça trop fort ou trop bas, c'est
+        VOL ci-dessous qu'on change, une seule ligne.
+
+     ⚠️ LA BOUCLE AUSSI EST DANS LE FICHIER : le morceau reçu portait un fondu
+        de sortie de quatre secondes, donc en `loop` le site se serait éteint
+        puis rallumé d'un coup toutes les deux minutes. `_son.py` rogne ce
+        fondu et referme le morceau sur lui-même par un fondu croisé (raccord
+        mesuré à 14 % d'écart, la maison tolère 35 %). D'où `loop` tout simple. */
+  (function musique() {
     var b = $('#fabSon');
     if (!b) return;
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) { b.hidden = true; return; }
 
-    var ctx = null, maitre = null, minuteur = null, allume = false;
-    var VOL = petit ? 0.15 : 0.10;
-    var NOTES = [110, 146.83, 164.81, 220, 246.94, 293.66];
+    var CLE = 'angy:son';
+    /* ⚠️ La détection mobile de la page (`petit`) ne regarde que la largeur et
+       rate une tablette. Pour le son on prend aussi le pointeur grossier : un
+       haut-parleur de téléphone rend moins fort qu'un ordinateur. */
+    var tactile = petit || matchMedia('(pointer: coarse)').matches;
+    var VOL = tactile ? 0.40 : 0.34;
+    var FONDU = 1200;                    /* ms — l'arrivée ne doit pas se remarquer */
+    /* ⚠️ LA MUSIQUE A SA PROPRE MARQUE DE VERSION, séparée de celle des
+       images, parce que les deux ne changent jamais en même temps : bumper
+       `VER` pour une photo ferait retélécharger 677 Ko de son à tout le monde,
+       et changer le morceau sans toucher aux images l'aurait laissé figé un an
+       dans les caches (`/assets/*` porte `immutable`). */
+    var VER_SON = '?v=20260910a';
+    var SRC = 'assets/sons/ambiance.mp3' + VER_SON;
+
+    var refuse = false;
+    try { refuse = localStorage.getItem(CLE) === 'coupe'; } catch (e) {}
+
+    var el = null, joue = false, raf = 0;
+
+    /* ⚠️ ON NE TÉLÉCHARGE RIEN SI ON NE VA PAS JOUER. 677 Ko sur la 3G de
+       Cotonou, chez quelqu'un qui a déjà coupé le son ou qui a demandé
+       l'économie de données, c'est de l'argent pris à la visiteuse. */
+    function economie() {
+      var c = navigator.connection || navigator.webkitConnection;
+      return !!(c && (c.saveData === true ||
+                      /(^|-)2g$/.test(c.effectiveType || '')));
+    }
 
     function batir() {
-      ctx = new AC();
-      var bf = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();
-      s.buffer = bf; s.connect(ctx.destination); s.start(0);   /* déblocage iOS */
-
-      var comp = ctx.createDynamicsCompressor();
-      comp.threshold.value = -26; comp.knee.value = 22; comp.ratio.value = 8;
-      comp.attack.value = 0.006; comp.release.value = 0.3;
-      maitre = ctx.createGain(); maitre.gain.value = 0;
-      maitre.connect(comp); comp.connect(ctx.destination);
-
-      var filtre = ctx.createBiquadFilter();
-      filtre.type = 'lowpass'; filtre.frequency.value = 420; filtre.Q.value = 0.6;
-      filtre.connect(maitre);
-
-      [55, 82.41, 110].forEach(function (fr, i) {
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = i === 2 ? 'triangle' : 'sine';
-        o.frequency.value = fr * (1 + (i - 1) * 0.0016);
-        g.gain.value = [0.5, 0.3, 0.14][i];
-        o.connect(g); g.connect(filtre); o.start();
-      });
-
-      var nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), dd = nb.getChannelData(0);
-      for (var i = 0; i < dd.length; i++) dd[i] = (Math.random() * 2 - 1) * 0.5;
-      var src = ctx.createBufferSource(); src.buffer = nb; src.loop = true;
-      var bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 620; bp.Q.value = 0.5;
-      var ng = ctx.createGain(); ng.gain.value = 0.02;
-      src.connect(bp); bp.connect(ng); ng.connect(maitre); src.start();
-
-      var lfo = ctx.createOscillator(), lg = ctx.createGain();
-      lfo.frequency.value = 0.035; lg.gain.value = 170;
-      lfo.connect(lg); lg.connect(filtre.frequency); lfo.start();
+      if (el) return;
+      el = new Audio();
+      el.loop = true;
+      el.preload = 'none';
+      el.setAttribute('playsinline', '');   /* iOS : ne prend pas l'écran */
+      el.volume = 0;
+      el.src = SRC;
+      /* ⚠️ IL ENTRE DANS LA PAGE, et ce n'est pas décoratif : un `new Audio()`
+         gardé dans une variable est INVISIBLE pour tout contrôle — on ne peut
+         vérifier ni qu'il boucle, ni que son volume monte, ni qu'il se tait
+         quand on le coupe. `hidden` ne l'empêche pas de jouer. Même choix
+         qu'Au Braisé d'Or. */
+      el.hidden = true;
+      document.body.appendChild(el);
     }
 
-    function goutte() {
-      if (!allume || !ctx) return;
-      var fr = NOTES[(Math.random() * NOTES.length) | 0];
-      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
-      o.type = 'sine'; o.frequency.value = fr;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.07, t + 0.05);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 3.4);
-      o.connect(g); g.connect(maitre); o.start(t); o.stop(t + 3.6);
-      minuteur = setTimeout(goutte, 7000 + Math.random() * 11000);
+    /* Fondu en ease-out cubique, comme partout ailleurs sur ce site. */
+    function fondre(vers, ms, fini) {
+      cancelAnimationFrame(raf);
+      var de = el ? el.volume : 0, t0 = performance.now();
+      (function pas(t) {
+        var p = Math.min((t - t0) / ms, 1);
+        try { el.volume = de + (vers - de) * (1 - Math.pow(1 - p, 3)); } catch (x) {}
+        if (p < 1) raf = requestAnimationFrame(pas);
+        else if (fini) fini();
+      })(t0);
     }
 
-    b.addEventListener('click', function () {
-      if (allume) {
-        allume = false; clearTimeout(minuteur);
-        maitre.gain.cancelScheduledValues(ctx.currentTime);
-        maitre.gain.setValueAtTime(maitre.gain.value, ctx.currentTime);
-        maitre.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
-        b.setAttribute('aria-pressed', 'false');
-        b.setAttribute('aria-label', "Activer l'ambiance sonore de l'atelier");
+    function marquer(on) {
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('aria-label', on ? 'Couper la musique' : 'Écouter la musique');
+    }
+
+    /* ⚠️ CE PRÉCHARGEMENT N'EST PAS UN CONFORT, IL EST LE PRODUIT.
+       Mesuré ici : sans lui, `play()` est refusé tant qu'il n'y a pas eu de
+       geste, et rien n'est téléchargé — le premier contact déclenche alors les
+       677 Ko AVANT le premier son. Sur la 3G de Cotonou, la visiteuse touche
+       l'écran et n'entend rien pendant plusieurs secondes.
+
+       ⛔ ET L'ASTUCE DE LA MAISON NE MARCHE PAS. Djambar et Au Braisé d'Or
+          lancent une lecture EN SOURDINE au chargement en la croyant toujours
+          autorisée (« la piste tourne, bufferisée, prête à être révélée sans
+          délai »). Mesuré ici, Chromium la refuse aussi :
+              NotAllowedError: play() failed because the user didn't interact
+          Ces deux sites croient donc bufferiser et ne bufferisent rien.
+          ⚠️ À vérifier chez eux un jour — ce n'est pas le chantier d'Angélique.
+
+       Ce qui marche, et qui ne dépend d'AUCUNE politique de lecture
+       automatique, c'est de télécharger sans jouer : `preload` puis `load()`.
+       Le fichier arrive pendant qu'on lit le héros, et le contact ne fait plus
+       que le dévoiler.
+       ⛔ Aucun navigateur ne laisse sortir du son sans geste : « dès qu'il y a
+          contact » est le mieux qui existe, et c'est bien ce qu'on livre. */
+    function precharger() {
+      if (joue || refuse || economie()) return;
+      batir();
+      el.preload = 'auto';
+      try { el.load(); } catch (x) {}
+    }
+
+    function demarrer() {
+      if (joue || refuse || economie()) return;
+      batir();
+      el.muted = false;
+      var p = el.play();
+      if (p && p.then) {
+        p.then(reussi).catch(function () {
+          /* le navigateur veut un vrai geste : le fichier est déjà là, le
+             prochain contact partira tout de suite. */
+        });
+      } else { reussi(); }
+    }
+
+    function reussi() {
+      joue = true;
+      el.muted = false;
+      marquer(true);
+      fondre(VOL, FONDU);
+      desarmer();
+    }
+
+    function couper() {
+      if (!el) return;
+      fondre(0, 420, function () { try { el.pause(); } catch (x) {} });
+      joue = false;
+      marquer(false);
+    }
+
+    b.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (joue) {
+        refuse = true;
+        try { localStorage.setItem(CLE, 'coupe'); } catch (x) {}
+        couper();
       } else {
-        if (!ctx) batir();
-        if (ctx.state === 'suspended') ctx.resume();
-        allume = true;
-        maitre.gain.cancelScheduledValues(ctx.currentTime);
-        maitre.gain.setValueAtTime(maitre.gain.value, ctx.currentTime);
-        maitre.gain.linearRampToValueAtTime(VOL, ctx.currentTime + 1.6);
-        minuteur = setTimeout(goutte, 3200);
-        b.setAttribute('aria-pressed', 'true');
-        b.setAttribute('aria-label', "Couper l'ambiance sonore de l'atelier");
+        refuse = false;
+        try { localStorage.setItem(CLE, 'joue'); } catch (x) {}
+        batir();
+        el.muted = false;
+        var p = el.play();
+        if (p && p.then) p.then(reussi).catch(function () {}); else reussi();
       }
     });
 
+    /* ⚠️ LE PREMIER CONTACT, QUEL QU'IL SOIT. `scroll` est dans la liste parce
+       que c'est le premier geste réel d'une visiteuse sur téléphone — mais sur
+       Chrome de bureau une molette N'EST PAS un geste au sens de la lecture
+       automatique : `play()` y sera refusé jusqu'au premier clic ou à la
+       première touche. C'est le navigateur qui décide, pas nous. */
+    var GESTES = ['pointerdown', 'touchstart', 'keydown', 'click', 'scroll'];
+    function auContact(e) {
+      if (e && e.target && b.contains(e.target)) return;   /* le bouton a sa logique */
+      demarrer();
+    }
+    function desarmer() {
+      GESTES.forEach(function (g) { window.removeEventListener(g, auContact, true); });
+    }
+    GESTES.forEach(function (g) {
+      window.addEventListener(g, auContact, { passive: true, capture: true });
+    });
+
+    /* La tentative d'entrée : elle réussit là où le navigateur l'autorise, et
+       elle échoue en silence ailleurs — les gestes ci-dessus prennent le relais.
+       Après `load` : le premier écran du site pèse 244 Ko mesurés, la musique
+       ne passe jamais devant. */
+    if (document.readyState === 'complete') precharger();
+    else window.addEventListener('load', precharger, { once: true });
+
+    marquer(false);
+
     document.addEventListener('visibilitychange', function () {
-      if (!ctx || !allume) return;
-      document.hidden ? ctx.suspend() : ctx.resume();
+      if (!el || !joue) return;
+      if (document.hidden) { try { el.pause(); } catch (x) {} }
+      else { var p = el.play(); if (p && p.catch) p.catch(function () {}); }
     });
   })();
 
