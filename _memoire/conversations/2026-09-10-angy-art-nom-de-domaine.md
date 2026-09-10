@@ -102,8 +102,17 @@ d'adresses contre lisibilité. **À trancher par Mongazi.**
 - ✅ **AI Crawl Control** : `robots.txt` géré **désactivé**. Le fichier servi
   ne porte plus que le nôtre (14 lignes) et les 4 robots restent en 200.
 - ⏳ **L'obfuscation d'e-mail** : la garder ou non.
-- ⏳ **SPF et DMARC** : personne n'envoie de courrier depuis ce domaine, donc
-  un SPF vide et un DMARC en refus empêchent qu'on écrive « au nom d'Angy
-  Art ». Aucun MX n'est nécessaire : son adresse est un Gmail.
+- ✅ **SPF et DMARC posés le 2026-09-10**, et vérifiés depuis un résolveur
+  public : `angyart.online` rend `v=spf1 -all`, `_dmarc.angyart.online` rend
+  `v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s`, **aucun MX**. Personne
+  n'envoie de courrier depuis ce domaine : un SPF vide et un DMARC en refus
+  empêchent qu'on écrive « au nom d'Angy Art », et son adresse reste un Gmail.
+  ⚠️ Le jour où elle voudrait écrire **depuis** `@angyart.online`, ces deux
+  enregistrements feraient rejeter son message : c'est à défaire ce jour-là.
+  ⚠️ **Le nom de l'enregistrement n'est pas son contenu** : la chaîne
+  `v=DMARC1; …` collée dans le champ **Name** fabrique un sous-domaine qui
+  s'appelle comme la politique, et Cloudflare répond « angyart.online has a
+  record with content » sans dire que c'est le champ qui est faux. Name =
+  `_dmarc` (ou `@` pour le SPF), Content = la politique.
 - ✅ **La carte de visite est imprimable**, ce qu'elle n'était pas hier : son
   QR menait à une adresse qu'on abandonnait.
