@@ -13,12 +13,18 @@
 commandes, tout est prêt et vérifié :
 
 ```bash
-git pull origin main
-python clients/11-angy-art/_dist.py
-wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
-python scripts/purger.py angy --verifier
-python clients/11-angy-art/_verifier_en_ligne.py     # <- colle sa sortie ici
+python clients/11-angy-art/_publier.py
 ```
+
+C'est tout. Le script enchaîne : récupérer `main`, contrôle qualité, composer
+`_dist`, déployer, purger le cache, **et vérifier ce qui est réellement servi**.
+Il s'arrête net à la première étape qui échoue en disant quoi faire. `--vite`
+saute le QC quand il est déjà vert sur le même commit.
+
+⚠️ **POUSSER SUR GITHUB NE MET RIEN EN LIGNE.** Ce sont deux gestes différents,
+et c'est le malentendu qui a coûté le plus de temps le 2026-09-10 : le travail
+dormait dans `main` pendant que Mongazi testait le site et concluait que c'était
+raté. Même famille que le 2026-08-22 (six œuvres dans `main`, six images en 404).
 
 ✅ **`_verifier_en_ligne.py` est l'oeil que la session distante n'a pas.** Il
 compare **les octets servis à ceux du disque** (MD5), pas les codes HTTP — ⛔ un
