@@ -2200,3 +2200,27 @@ changement, pas du déploiement.
   chose que nous. Ici, sa description était le portrait exact du code d'avant :
   trois oscillateurs à 55/82/110 Hz sous un filtre à 420 Hz, démarrés par un
   `click`. C'est ça qui a identifié le vrai problème, pas mes explications.
+
+---
+
+## 2026-09-10 · Tester la connectivité AVANT de demander un secret
+
+- **Contexte** : le déploiement d'Angy Art ne pouvait pas se faire depuis une
+  session en conteneur. J'ai constaté l'absence de `secrets/`, installé wrangler,
+  préparé `_dist`, et annoncé « dès que tu m'envoies le jeton, ça prend moins
+  d'une minute ». Mongazi a créé un jeton, l'a configuré, me l'a transmis.
+- **Ce qui s'est passé** : `api.cloudflare.com` est **bloqué par le proxy**
+  (code 000, `CONNECT tunnel failed, response 403`). Le réseau sortant est sur
+  liste blanche. **Aucun jeton, si valide soit-il, n'y change quoi que ce soit.**
+  Le secret a été créé, transmis et révoqué pour rien.
+- **L'indice était là** : une heure plus tôt, mon `curl` sur `angyart.online`
+  renvoyait déjà 403 du proxy, et je l'avais attribué au site. Le même symptôme,
+  sur un autre hôte, disait déjà que la sortie réseau était filtrée.
+- **Leçon** : avant de demander à quelqu'un de fabriquer et de transmettre un
+  secret, **prouver que le chemin fonctionne sans lui** — un appel non
+  authentifié sur l'hôte visé suffit (il doit répondre 401, pas 000). Un secret
+  demandé à tort ne coûte pas qu'un aller-retour : il circule dans un
+  historique, il faut le révoquer, et il use la confiance.
+- **Le vrai constat, plus large** : « je n'ai pas les identifiants » et « je n'ai
+  pas la route » sont deux empêchements différents. J'ai diagnostiqué le premier
+  et supposé que c'était le seul.

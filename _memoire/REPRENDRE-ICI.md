@@ -19,6 +19,16 @@ wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch
 python scripts/purger.py angy --verifier
 ```
 
+⛔ **UNE SESSION EN CONTENEUR NE PEUT PAS DÉPLOYER, MÊME AVEC UN JETON.**
+Mesuré le 2026-09-10 : le réseau sortant est sur liste blanche et
+**`api.cloudflare.com` est bloqué** (code 000, `CONNECT tunnel failed, response
+403`), tout comme `angyart.online`. La raison n'est donc pas seulement que
+`secrets/` est absent du dépôt — **même un jeton valide ne sert à rien**.
+⚠️ **Ne demandez JAMAIS un jeton Cloudflare à Mongazi depuis une session
+distante** : ça l'a fait créer, configurer et transmettre un secret pour rien,
+qu'il a fallu révoquer dans la foulée. **Tester la connectivité AVANT de
+demander un secret**, pas après.
+
 ⚠️ **`wrangler` global, jamais `npx`.** ⚠️ **La purge n'est pas optionnelle** :
 le cache de zone a déjà servi l'ancien HTML après un déploiement réussi le matin
 même (`angyart.online` ne figurait même pas dans `purger.py`, ajouté depuis).
