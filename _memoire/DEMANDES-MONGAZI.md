@@ -2,7 +2,37 @@
 
 > **Ce fichier ne contient QUE ce que Mongazi a demandé, mot pour mot ou au
 > plus près.** Il ne dit pas ce qui reste à faire : voir `RESTE-A-FAIRE.md`.
-> Tenu à jour à chaque demande. Dernière mise à jour : 2026-09-04.
+> Tenu à jour à chaque demande. Dernière mise à jour : 2026-09-11.
+
+---
+
+## Session du 2026-09-11
+
+### Déployer ce qui dormait
+
+> « fais les deploie ce qu'il ya en memoire, les modification etc.... »
+
+| # | Demande | État |
+|---|---|---|
+| 1 | Rapatrier les modifications faites ailleurs | ✅ 6 branches dans `main` : documents de vente, posts, quinze produits, Grain d'Esthétique + fiche Google du Braisé, Whapi + devis Luxury, LE PLI · une laissée exprès (réveil de Render par tâche planifiée, à trancher) |
+| 2 | Déployer | ✅ bureau des partenaires redéployé (il ne l'avait pas été depuis le 4 août) : contrat 1.5 et guides corrigés chez les partenaires, vérifiés en base · les 17 sites servaient déjà le dépôt |
+
+### Contrat partenaire 1.5 (session du téléphone, le matin)
+
+> « j'apporte des prospects au partenaire, je leur enverrai des numéros à
+> appeler pour proposer nos services »
+
+| # | Demande | État |
+|---|---|---|
+| 1 | NEBULA transmet des contacts à appeler | ✅ contrat 1.5 (art. 3.5, 3.6, 7.6, 7.7, 14.6), en ligne chez les partenaires le 2026-09-11 |
+
+### La mémoire
+
+> « mets tout en memoire avance correctement »
+
+| # | Demande | État |
+|---|---|---|
+| 1 | Tout mettre en mémoire | ✅ REPRENDRE-ICI, journal, conversation, décisions, méthodes, apprentissage, leçons, reste à faire, CLAUDE.md, CONTEXT Luxury, mémoire de Claude |
 
 ---
 

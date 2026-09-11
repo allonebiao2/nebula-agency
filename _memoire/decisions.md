@@ -819,3 +819,23 @@ partagent **un seul couloir réservé**, pas deux, et aucun ne recouvre du texte
   les journaux, les conversations et `lecons.md`. Ce sont des **enregistrements
   datés** : à cette date, le produit portait bien l'autre nom. L'arrêté porte un
   bandeau qui renvoie ici, les deux autres non.
+
+## 2026-09-11 · Contrat partenaire 1.5 : NEBULA transmet des contacts à appeler
+
+**Demande de Mongazi** (session du téléphone) : « j'apporte des prospects au
+partenaire, je leur enverrai des numéros à appeler pour proposer nos services ».
+
+- **Obligation de moyens** (art. 3.5) : selon ce dont NEBULA dispose, sans
+  quantité, fréquence ni qualité promises ; un mois sans contact n'est pas un
+  manquement. Chercher ses prospects reste la mission du partenaire (art. 3.1).
+- **La commission ne bouge pas** (art. 3.6) : taux plein, rien n'est prélevé
+  pour le contact fourni.
+- **Un contact transmis est à ce partenaire 60 jours** (art. 7.6) ; un contact
+  qui refuse d'être rappelé n'est retransmis à personne (art. 7.7).
+- **Ces listes restent des données de NEBULA** (art. 14.6) : usage réservé,
+  jamais communiquées, pas même à un filleul, détruites à la fin.
+- **Règle interne, au socle et pas au contrat** : une fiche sous exclusivité
+  PISTE (90 jours, payée par son client) ne se transmet jamais à un partenaire.
+- Aucun taux ne baisse de la 1.4 à la 1.5 : le préavis de l'art. 6.7 ne joue pas.
+
+✅ **Publié chez les partenaires le 2026-09-11** (Render `9e28b91`, vérifié en base).

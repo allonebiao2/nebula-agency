@@ -156,3 +156,22 @@ laisse un état derrière lui (la page se souvient, et le contrôle suivant mesu
 des champs déjà remplis) · un instrument de capture peut cacher exactement ce
 qu'on lui demande de montrer. **On mesure ce que le client VOIT, pas ce que le
 DOM contient.**
+
+## 2026-09-11 · Publier, c'est prouver dans ce qui est servi
+
+**1. Ce qui passe par un démarrage se prouve dans la base.** Un bump dans le
+code n'est qu'une intention : le bureau des partenaires a servi les PDF du
+3 août pendant cinq semaines de bumps. Publier = bump + push + redéploiement
+Render + `python scripts/verif_documents.py`.
+
+**2. Une chaîne qui écrit dans git s'arrête à la première erreur.** En
+PowerShell, `;` n'arrête rien : `$LASTEXITCODE` contrôlé après chaque étape,
+`git grep` des marqueurs de conflit avant tout push, et les comparaisons se
+font contre un commit nommé quand une fusion peut déplacer la référence.
+
+**3. Rapatrier les branches du téléphone** : `python scripts/rapatrier.py`,
+lire chaque branche, fusionner une à une, résoudre les conflits de NOTES en
+gardant les deux côtés, relancer le QC de ce qui a bougé, et **laisser hors de
+`main` ce qui tourne seul** (une tâche planifiée GitHub) tant que Mongazi n'a
+pas tranché. Et regarder ce qu'une branche pose **dans un dossier publié** :
+un devis rangé dans le dossier d'un site part en ligne au déploiement suivant.

@@ -256,7 +256,10 @@ Les douze décisions sont prises : `_plans/2026-09-06-lepli-arrete.html`.
 5. ⛔ **Ne jamais héberger un MP3** : c'est de la contrefaçon. Lien externe, ou rien.
 6. Le deuil, **après** relecture par quelqu'un qui vient d'enterrer un proche.
 
-### Les six réponses qui n'appartiennent qu'à Mongazi
+### Les cinq réponses qui n'appartiennent qu'à Mongazi
 
-Le compte qui encaisse · le sous-domaine · un n8n ailleurs, oui ou non · la
-commission SasPay · qui relit le deuil · le premier franc encaissé pour de vrai.
+Le compte qui encaisse · un n8n ailleurs, oui ou non · la commission SasPay ·
+qui relit le deuil · le premier franc encaissé pour de vrai.
+
+✅ Le sous-domaine est tranché depuis le 2026-09-09 : `lepli.nebula-agency.online`
+(`_memoire/decisions.md`).

@@ -101,8 +101,9 @@ ne compte plus.
 
 ## ⏳ Ce qui reste
 
-- **LE PLI** : les six réponses de Mongazi (compte qui encaisse, sous-domaine,
-  n8n ailleurs ou non, commission SasPay, qui relit le deuil, premier franc).
+- **LE PLI** : cinq réponses de Mongazi (compte qui encaisse, n8n ailleurs
+  ou non, commission SasPay, qui relit le deuil, premier franc ; le
+  sous-domaine est tranché depuis le 2026-09-09, `lepli.nebula-agency.online`).
   Rien n'est déployé, et rien ne peut l'être avant.
 - **`video-project-analysis-monetization-18oh7b`** : trancher le réveil de
   Render par GitHub Actions et le sort de `vitrina/lettre/`.

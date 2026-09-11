@@ -3,7 +3,29 @@
 > **Ce fichier ne contient QUE ce qui n'est pas fait.** Ce que Mongazi a
 > demandé est dans `DEMANDES-MONGAZI.md`. Quand une ligne est faite, on la
 > retire d'ici et on la marque là-bas.
-> Dernière mise à jour : 2026-09-04.
+> Dernière mise à jour : 2026-09-11.
+
+---
+
+## Rapatriement du 2026-09-11 · ce qui n'est pas parti
+
+- ⏳ **`claude/video-project-analysis-monetization-18oh7b`** n'est pas dans
+  `main`, exprès : elle ajoute `.github/workflows/reveil.yml` (un réveil de
+  Render par tâche planifiée, qui tournerait seul dès la fusion) et touche
+  `vitrina/server.py` et `_worker.js`. Sa lettre (`vitrina/lettre/`) est
+  antérieure à LE PLI. **Mongazi tranche** : le réveil, oui ou non, et ce
+  qu'on garde de `vitrina/lettre/`.
+- ⏳ **LE PLI** est dans `main` (`lepli/`), rien n'est en ligne : cinq réponses
+  de Mongazi d'abord (le compte qui encaisse, un n8n ailleurs ou non, la
+  commission SasPay, qui relit le deuil, le premier franc). Le sous-domaine est
+  tranché depuis le 2026-09-09 (`lepli.nebula-agency.online`, `decisions.md`).
+- ⏳ **Le devis tablette de Luxury (420 000 F)** est prêt dans le dépôt
+  (`clients/04-luxury-skin-clinic/assets/docs/Devis_Vitrine_Tablette_LUXURY_CLUB_229.pdf`)
+  et exclu du site : l'envoyer à Gloria, et trancher avec elle les cinq
+  contradictions notées dans son CONTEXT.
+- ⏳ **Les branches d'avant le 12 août** (`continuation-xu5ma7`,
+  `protocole-boussole-memoire-9xy3j4`, `repo-discussion-analysis-g8qubx`) :
+  jamais tranchées, en conflit, à regarder un jour ou à abandonner.
 
 ---
 

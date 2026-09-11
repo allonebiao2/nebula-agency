@@ -21,7 +21,8 @@ fichier du dépôt en MD5.
 
 ⚠️ **Un bump dans `server.py` ne publie rien tant que Render n'est pas
 redéployé**, et Render ne se redéploie pas au push :
-`POST /v1/services/srv-d9nni7e7bikc73c9oksg/deploys`, puis **relire la base**.
+`POST /v1/services/srv-d9nni7e7bikc73c9oksg/deploys`, puis **relire la base** :
+`python scripts/verif_documents.py`.
 
 **Rapatriées** : documents de vente (09-11), posts (09-04), quinze produits
 (09-03), Grain d'Esthétique + fiche Google du Braisé (09-02), Whapi + devis
