@@ -2582,3 +2582,42 @@ changement, pas du déploiement.
   rendent **le même octet**. Sinon on compare des intentions.
 - **À appliquer** : `separators=(",", ":")` côté Python, et un contrôle qui
   passe la **même batterie hostile** aux deux et exige l'égalité stricte.
+
+## 2026-09-11 · Un bump dans le code n'est pas une publication
+
+`DOCS_PARTENAIRES` avait été bumpé trois fois en septembre (manuel, contrat
+1.3 puis 1.4, trois guides), et un commit disait « arrive vraiment jusqu'aux
+partenaires ». La base portait encore les dix PDF du 3 août : le service
+Render n'avait pas été redéployé depuis le 4. Un changement qui passe par une
+fonction de démarrage n'existe qu'une fois le service redémarré, et ne se
+prouve **qu'en relisant la base**, jamais le code.
+
+## 2026-09-11 · Une sonde qui retire des lignes emporte ce qui partage la ligne
+
+Le script du défi de Cloudflare se pose tantôt seul sur sa ligne, tantôt
+collé à `</body>`. Retirer la ligne entière emportait `</body>` avec lui, et
+un site identique sortait « EN RETARD », quatre fois de suite, alors que la
+même sonde disait « égal » une heure plus tôt. On retire **le morceau**, pas
+la ligne.
+
+## 2026-09-11 · En PowerShell, un `;` n'arrête pas la chaîne
+
+Une résolution de conflit a échoué sur une assertion, et le `git commit` qui
+suivait dans la même commande a commité les marqueurs. Chaque étape native
+d'une chaîne qui écrit dans git est suivie de
+`if ($LASTEXITCODE -ne 0) { throw }`, et un `git grep` des marqueurs précède
+tout `push`. Et le dernier marqueur d'un fichier sans saut de ligne final
+échappe à une expression qui exige `\n`.
+
+## 2026-09-11 · Comparer contre un commit nommé, pas contre une branche qui bouge
+
+Deux comparaisons lancées en parallèle d'une fusion ont lu `main`… après la
+fusion : « identique » partout, contrat compris. Quand une autre opération
+peut déplacer la référence, on compare contre l'empreinte (`caa0748`).
+
+## 2026-09-11 · Sous Windows, `text=True` peut rendre `stdout = None`
+
+`subprocess.run(capture_output=True, text=True)` décode en cp1252 dans un fil
+de lecture ; un octet UTF-8 inconnu tue le fil sans lever d'exception, et
+`stdout` revient à `None`. Toujours `encoding="utf-8", errors="replace"` et
+`PYTHONIOENCODING=utf-8` pour l'enfant.

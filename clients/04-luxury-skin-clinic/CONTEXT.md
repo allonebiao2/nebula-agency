@@ -836,3 +836,14 @@ refabrique à l'identique, hors ligne, sur n'importe quelle machine.
 noire pour tout le document ; dans le seul bloc à fond noir, les mots en gras étaient
 **invisibles** (**1,27:1 mesuré**) — et c'étaient les trois noms de formules, dans la
 phrase qui porte la recommandation. Corrigé en blanc (19,4:1).
+
+## 2026-09-11 — le devis ne part pas en ligne
+
+La fusion de la branche du 2026-08-29 a posé le devis « vitrine sur tablette »
+dans le dossier du site (`devis-vitrine-tablette.html`, `assets/docs/Devis_*.pdf`,
+`_build_devis.py`). `_outils/_dist.py` copiait tout sauf une liste fixe : le
+prix négocié serait parti en ligne au déploiement suivant. Il l'exclut
+désormais **par son nom, à tout niveau** (`devis-`, `Devis_`, `_build_devis.py`),
+vérifié sur un `_dist` réel : 157 fichiers, aucun devis. Le site n'a pas été
+redéployé : rien n'y a changé. Les polices `assets/fonts/` (celles du devis)
+partiront au prochain déploiement, sans conséquence.

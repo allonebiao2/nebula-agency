@@ -1,9 +1,38 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-10
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-11
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 undecies. LE 2026-09-11 — LE CONTRAT 1.5 EST CHEZ LES PARTENAIRES, SIX BRANCHES DANS `main`
+
+✅ **Tout le parc sert ce qu'il y a dans le dépôt** (`verif_parc.py`), et
+**le bureau des partenaires aussi**, ce qui n'était plus vrai depuis le 4 août.
+
+⛔ **Les partenaires téléchargeaient encore les PDF du 3 août.** `naff.documents`
+portait « 2026-08-03 » partout : trois sessions avaient bumpé des versions
+dans `DOCS_PARTENAIRES`, aucune n'avait redéployé Render. Le commit du contrat
+1.5 remplaçait en plus son PDF sans changer sa date. Bumpé, redéployé
+(`9e28b91`), **10/10 vérifiés en base**, les cinq republiés identiques au
+fichier du dépôt en MD5.
+
+⚠️ **Un bump dans `server.py` ne publie rien tant que Render n'est pas
+redéployé**, et Render ne se redéploie pas au push :
+`POST /v1/services/srv-d9nni7e7bikc73c9oksg/deploys`, puis **relire la base**.
+
+**Rapatriées** : documents de vente (09-11), posts (09-04), quinze produits
+(09-03), Grain d'Esthétique + fiche Google du Braisé (09-02), Whapi + devis
+Luxury (08-29), **LE PLI** (09-09). QC : LE PLI 145 verts, Le Standard 175.
+**Laissée exprès** : `video-project-analysis-monetization-18oh7b` (réveil de
+Render par GitHub Actions + `vitrina/`, à trancher par Mongazi).
+
+⛔ **Le devis Luxury (420 000 F) serait parti en ligne** au déploiement suivant
+du site : il était dans le dossier publié. `_dist.py` l'exclut désormais.
+
+Détail : `_memoire/conversations/2026-09-11-rapatriement-et-deploiement.md`.
 
 ---
 

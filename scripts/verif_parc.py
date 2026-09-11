@@ -29,6 +29,7 @@ PLACE du fichier (2026-08-04). On regarde donc aussi le corps.
 """
 import hashlib
 import os
+import re
 import sys
 import urllib.request
 
@@ -86,11 +87,27 @@ SITES = [
 ]
 
 
+# ⚠️ PAR MORCEAU, JAMAIS PAR LIGNE (2026-09-11). Le script du défi de Cloudflare
+#    se pose tantôt seul sur sa ligne, tantôt collé à `</body>` : jeter la ligne
+#    entière emportait `</body>` avec lui, et NEBULA Agency sortait « EN RETARD »
+#    quatre fois de suite sur une page identique au dépôt.
+_SCRIPT = re.compile(r"<script\b[^>]*>.*?</script>", re.S | re.I)
+
+
 def sans_injection(txt):
-    """Retire ce que Cloudflare ajoute, et dit combien de lignes sont parties."""
-    lignes = txt.replace("\r\n", "\n").split("\n")
-    gardees = [l for l in lignes if not any(m in l for m in INJECTE)]
-    return "\n".join(gardees), len(lignes) - len(gardees)
+    """Retire ce que Cloudflare ajoute, et dit combien de morceaux sont partis."""
+    partis = [0]
+
+    def ote(m):
+        if any(k in m.group(0) for k in INJECTE):
+            partis[0] += 1
+            return ""
+        return m.group(0)
+
+    txt = _SCRIPT.sub(ote, txt.replace("\r\n", "\n"))
+    # le retrait laisse une ligne vide, ou recolle deux balises : l'espace entre
+    # deux balises ne dit rien de la page servie
+    return re.sub(r">\s+<", "><", txt).strip(), partis[0]
 
 
 def main():

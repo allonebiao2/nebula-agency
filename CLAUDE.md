@@ -612,6 +612,14 @@ Pour en publier un nouveau, ou une nouvelle version : poser le fichier dans
 ne rejoue rien. Il ne touche jamais un document ajouté à la main depuis le cockpit
 (marqueur `url = 'nebula:socle'`).
 
+⛔ **UN BUMP NE PUBLIE RIEN TANT QUE RENDER N'EST PAS REDÉPLOYÉ** (et Render ne se
+redéploie pas au push). Mesuré le 2026-09-11 : la base portait encore les dix PDF
+du 3 août alors que trois sessions de septembre avaient bumpé manuel, contrat et
+guides, et le commit du contrat 1.5 avait remplacé son PDF **sans** bumper sa date.
+Publier = bump + push + `POST /v1/services/srv-d9nni7e7bikc73c9oksg/deploys`, puis
+**relire `naff.documents`** (colonne `filename` = la version) : c'est la base qui
+prouve, pas le code.
+
 ⚠️ **`00-SOCLE-COMMERCIAL` et `01-AVIS-DE-RECRUTEMENT` restent INTERNES** : ils ne
 vont jamais dans la bibliothèque des partenaires.
 
