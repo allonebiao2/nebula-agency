@@ -9,7 +9,7 @@
 >
 > **Ce qui ne change jamais :** le label « LE SAVIEZ-VOUS ? », ancre de la rubrique.
 >
-> Version 1.0 · 2026-08-04
+> Version 1.3 · 2026-08-31
 
 ---
 
@@ -1329,7 +1329,1053 @@ mieux qu’une conclusion qu’on nous vend.
 
 ---
 
-## 8. Contrôles avant publication
+## 8. Statut n° 6 · « LA VOIE VIDE » · direction « NUIT ÉLECTRIQUE »
+
+**Le thème demandé :** sortir de la masse et passer devant tout le monde.
+
+**Le piège du thème.** Tout le monde traite « sortir de la masse » de la même façon :
+faites-vous remarquer, criez plus fort, publiez plus. Or **crier plus fort, c’est
+exactement ce que fait la masse.** C’est même sa définition. Un statut qui dit ça ne sort
+de rien du tout : il rejoint le tas.
+
+**Le retournement.** On ne passe pas devant en poussant dans la file. **On passe devant en
+prenant la voie où personne n’est.** Et cette voie existe pour de bon : au Bénin, dans la
+plupart des métiers, la concurrence n’est **pas encore** en ligne. Ce n’est pas un argument
+de vente, c’est un fait que le lecteur peut vérifier en cherchant trois de ses concurrents
+ce soir.
+
+### L’image
+
+Un boulevard de Cotonou, la nuit, vu d’un pont. **D’un côté la file : pare-chocs contre
+pare-chocs jusqu’à l’horizon, des dizaines de feux arrière, immobile.** De l’autre côté de
+la ligne blanche, **une voie totalement vide**, l’asphalte encore humide, éclairée d’un
+bleu froid, qui file droit vers le point de fuite.
+
+**Et le détail qui fait tout le post :** la voie vide **n’est pas vide.** Tout au fond,
+minuscule, un seul phare. **Quelqu’un est déjà passé.**
+
+C’est ce point lumineux qui transforme une jolie métaphore en urgence. Sans lui, le post
+dit « il y a de la place ». Avec lui, il dit **« il y a de la place, et elle se prend en
+ce moment. »** L’envie fait travailler un statut bien mieux que la peur, et elle ne coûte
+rien à la confiance.
+
+### Les mots
+
+> **Tout le monde attend** · **Doublez**
+>
+> *La file, c’est le marché. La voie vide, c’est internet.*
+> *Elle est encore vide. Quelqu’un est déjà devant.*
+
+Deux temps, comme la référence : une petite ligne posée sur une barre bleue pleine, puis
+**un seul mot énorme dans un cadre en pointillés.** « Doublez » se lit à 20 %, se comprend
+sans l’image, et c’est un ordre : sur un statut, un verbe à l’impératif vaut dix phrases.
+
+### Pourquoi il vient aujourd’hui, et pas hier
+
+Hier, « L’HEURE DORÉE » vendait. **La règle du document interdit d’enchaîner.** Celui-ci ne
+vend rien : il donne une lecture stratégique, et il demande **un mot**, pas un achat. C’est
+lui qui rachète le droit d’être cru la prochaine fois.
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+"LA VOIE VIDE" — electric night direction
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap
+their roles: swapping them ruins the image.
+
+  THE STYLE REFERENCE = the attachment showing a very dark navy
+     poster with a blue-tinted close-up of a hand moving a chess
+     piece on a board, a small white headline sitting on a solid
+     blue bar that bleeds off the left edge, a much larger white
+     headline inside a DASHED blue rectangle, a logo at the top
+     centre and a website address at the bottom centre.
+     Take from it, and only from it:
+       - the DEEP NAVY / NEAR-BLACK ground and the single cold BLUE
+         light source coming from the upper left
+       - the BLUE DUOTONE photographic treatment: desaturated,
+         high contrast, cinematic, almost monochrome
+       - the ROUNDED GEOMETRIC HEAVY SANS-SERIF lettering
+       - THE TWO-PART HEADLINE DEVICE: a small line on a SOLID
+         electric-blue bar bleeding off the LEFT EDGE, and under it
+         a much larger line inside a DASHED electric-blue rectangle
+       - the logo centred at the top, the address centred at the
+         very bottom
+       - its level of finish
+     Take NOTHING of its subject, its words or its brand. There is
+     NO chess, NO chessboard, NO chess piece, NO hand and NO
+     tabletop anywhere in the new image, and the words "The Zubix"
+     appear nowhere.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with
+     "AGENCY" underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a
+     style reference and never a subject to reinterpret.
+
+  If you hesitate: the attachment with a transparent background and
+  a readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is
+  THE STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp status image for NEBULA Agency, a
+digital studio in Cotonou, Benin, that builds pages and online
+catalogues for West African merchants.
+The idea: everyone is queuing in the same lane; the lane beside it
+is open, and someone is already far down it.
+Cinematic, cold, premium, night. Never cheap, never clip-art.
+
+-----------------------------------------------------------
+THE SCENE — full bleed, it fills the whole canvas
+-----------------------------------------------------------
+A wide city boulevard in Cotonou, Benin, at NIGHT, seen from a
+FOOTBRIDGE ABOVE IT, looking straight down the road toward a distant
+vanishing point.
+
+RIGHT SIDE — THE QUEUE: a dense, unbroken traffic jam. Cars and
+moto-taxis packed bumper to bumper, crowded, identical, stretching
+all the way to the horizon, completely motionless. Rendered DIM: the
+mass is dark, cluttered and slightly out of focus.
+
+LEFT SIDE — THE OPEN LANE: separated only by a painted white line,
+ONE COMPLETELY EMPTY LANE. Wet asphalt reflecting a cold blue light,
+crisp painted markings, running clean and straight to the vanishing
+point. It is the ONLY brightly lit thing in the picture. Nothing on
+it, no vehicle, no obstacle, no person.
+
+FAR AWAY, at the very end of the empty lane, almost at the vanishing
+point, TINY: a single motorcycle silhouette with its headlight on,
+already far ahead. It must be small enough that the eye finds it
+second, after the empty lane, and it must be unmistakable.
+
+SKY: the upper third is a near-black navy sky with one soft cold
+blue glow spilling from the upper left, exactly like the light in
+the reference. Keep it clean and uncluttered: the logo and the
+headline sit on it.
+
+FOREGROUND: the bottom of the frame is dark, empty asphalt. Keep it
+plain: the small lines of text sit there.
+
+-----------------------------------------------------------
+THE COLOUR
+-----------------------------------------------------------
+Blue duotone throughout, exactly as in the reference: deep navy,
+steel blue, cold white highlights, near-black shadows.
+ONE controlled exception: the tail lights of the jam stay red, but
+DIM and desaturated, small points only. They are the only red in the
+image and they must never compete with the blue lane.
+No orange street lamps, no warm tones anywhere else.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place
+it at the TOP of the image, centred, on the dark sky, small, exactly
+as provided, and KEEP that transparency.
+  - it sits DIRECTLY on the sky. NO white box, NO black box, NO
+    coloured plate, NO rounded card, NO badge, NO outline, NO glow,
+    NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - size it so its wordmark stays comfortably readable when the
+    whole image is viewed at 20% of its size.
+A logo pasted on a plate is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a status is covered by the interface
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface ON TOP of the image:
+  - the TOP 220 px are covered (profile picture, name, time)
+  - the BOTTOM 340 px are covered (the "Reply" field)
+The logo, every line of type and the small motorcycle must ALL sit
+between y = 220 px and y = 1580 px. Nothing that matters may fall
+inside those two strips.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+HEADLINE, part 1 — small white bold capitals-and-lowercase text on a
+SOLID ELECTRIC-BLUE BAR that starts off the LEFT EDGE of the canvas
+and stops after the words, exactly the device used in the reference:
+    "Tout le monde attend"
+
+HEADLINE, part 2 — directly under it, MUCH larger, white, the
+loudest element of the whole image, inside a DASHED ELECTRIC-BLUE
+RECTANGLE OUTLINE, exactly the device used in the reference:
+    "Doublez"
+
+THE READING, lower area, over the dark asphalt, two lines, centred,
+medium size, white:
+    "La file, c’est le marché."
+    "La voie vide, c’est internet."
+
+THE STING, one line under it, smaller, in electric blue:
+    "Elle est encore vide. Quelqu’un est déjà devant."
+
+THE ANSWER TO GIVE, one line under it, small, white, semi-bold:
+    "Répondez VOIE à ce statut."
+
+FOOTER, at the very bottom of the safe area, tiny, centred, white at
+reduced opacity:
+    "nebula-agency.online"
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom, all inside the safe band:
+  1. NEBULA logo, centred on the dark sky
+  2. blue bar + "Tout le monde attend"        (bleeds off the left)
+  3. dashed rectangle + "Doublez"             <- loudest zone
+  4. THE ROAD: the jam on the right, the lit empty lane on the left,
+     the tiny motorcycle far away              <- largest zone
+  5. "La file, c’est le marché." / "La voie vide, c’est internet."
+  6. THE STING
+  7. "Répondez VOIE à ce statut."
+  8. nebula-agency.online
+Lines 5 to 8 form ONE tight block over the dark foreground asphalt,
+with generous space between that block and the headline above.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "c’est" (twice), "Quelqu’un".
+- Correct diacritics: "marché", "déjà".
+- The word "VOIE" stays in capitals, exactly as written. Do not turn
+  it into a button, a pill or a badge: it is plain text.
+- "Doublez" must still be readable when the image is viewed at 20%
+  of its size, and it must be the first thing the eye reads.
+- No hashtag, no emoji, no icon, no arrow, no star, no rating, no
+  road sign, no speed limit disc, no number plate, no readable text
+  on any vehicle.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO chess, NO chessboard, NO chess piece, NO hand, NO tabletop.
+  The reference gives the style and NOTHING of its subject.
+- NO price, NO amount, NO currency symbol, NO offer, NO discount,
+  NO percentage.
+- NO invented statistics, follower counts, client counts, ratings or
+  stars. No figures anywhere in the image.
+- NO visible human face and no readable person: the only human
+  presence is the distant motorcycle silhouette.
+- NO recognisable third-party brand, logo, car badge or app, and the
+  words "The Zubix" must not appear.
+- NO watermark, no frame, no border around the image itself.
+- The empty lane stays EMPTY apart from the one distant motorcycle.
+  Filling it destroys the entire idea.
+- One idea, told once.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready, cinematic
+quality, high-fidelity text rendering.
+===========================================================
+```
+
+### Pour le fil Instagram et Facebook (4:5)
+
+Même prompt, en remplaçant le bloc FORMAT. **La ligne « Répondez VOIE à ce statut. »
+disparaît** : sur un fil, on ne répond pas à un statut, on écrit en commentaire ou en
+message. Elle est reprise dans la légende.
+
+```
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. No safe zones: the whole canvas is visible.
+Bring the horizon slightly higher so the road still runs deep into
+the frame, and keep the same top-to-bottom order.
+
+REMOVE ONE LINE: do not render "Répondez VOIE à ce statut." on this
+version. Everything else is unchanged.
+```
+
+### Le texte à écrire sous le statut
+
+```
+La file, ce n’est pas la circulation. C’est le marché.
+
+Tout le monde y est. Tout le monde attend le même client, au même
+endroit, au même moment. Et personne ne regarde la voie d’à côté.
+
+Cherchez trois de vos concurrents ce soir. Tapez leur nom. Regardez
+combien vous en trouvez vraiment.
+
+C’est ça, la voie vide. Elle ne restera pas vide.
+
+Répondez VOIE, je vous dis par où on entre.
+```
+
+**Pourquoi cette légende marche :** elle ne demande pas de croire, **elle demande de
+vérifier**, et la vérification se fait en trente secondes, dans le téléphone qui tient déjà
+le statut. Celui qui cherche ses trois concurrents et n’en trouve aucun vient de se
+convaincre tout seul.
+
+### Ce qu’on répond à « VOIE »
+
+⚠️ **La réponse ne vend pas de vitrine.** Le socle est formel : on entre par le Catalogue.
+La voie vide, dans la conversation, c’est **une adresse où tout ce qu’on vend est rangé**,
+pas un site à 150 000 F.
+
+```
+Bonjour, merci d’avoir répondu.
+
+Une question avant tout : aujourd’hui, quand quelqu’un veut savoir ce que
+vous vendez et à quel prix, vous faites comment ? Vous renvoyez les photos
+une par une sur WhatsApp ?
+
+Si c’est ça, la voie vide commence exactement là. On range tout ce que vous
+vendez à une seule adresse, que vous envoyez en un lien. Vous arrêtez de
+renvoyer les mêmes photos dix fois par semaine, et vous existez là où on
+vous cherche.
+
+Dites-moi votre activité, je vous envoie un exemple dans votre métier.
+```
+
+**On termine par une demande minuscule** (« votre activité »), pas par un prix. Celui qui
+répond son métier a déjà commencé la vente sans le savoir.
+
+### Contrôles propres à ce statut
+
+| Contrôle | Pourquoi |
+|---|---|
+| **La voie vide est vraiment vide** | un seul véhicule dedans, et l’idée est morte |
+| **Le phare lointain est présent et minuscule** | c’est lui qui transforme la métaphore en urgence |
+| L’œil trouve la voie vide avant la file | c’est la lumière qui doit séparer, pas une flèche |
+| Aucun échiquier, aucune main, aucune table | on prend le style de la référence, jamais son sujet |
+| « The Zubix » n’apparaît nulle part | c’est la marque de quelqu’un d’autre |
+| Le rouge des feux reste faible | s’il domine, la file devient le sujet |
+| Rien dans les 220 px du haut ni les 340 px du bas | le phare lointain compte aussi |
+| **Réduire à 20 %** | si « Doublez » ne se lit plus, le statut est mort |
+| **La réponse à « VOIE » est prête avant de publier** | promettre une réponse et la faire attendre coûte plus que se taire |
+| Aucune statistique | règle absolue de la maison |
+
+---
+
+## 9. Statut n° 7 · « EN CE MOMENT » · la peur, poussée au maximum
+
+**Ce qui est demandé :** l’urgence et la peur en avant, et l’envie d’acheter dès la dernière
+ligne lue. C’est le statut le plus agressif du document, et il n’est publiable **que parce
+que celui d’hier n’a rien vendu du tout.**
+
+### La peur qui marche, et les trois qui ne marchent pas
+
+**Ne marchent pas :** la peur inventée (« il ne reste que 3 places »), la peur générale
+(« le monde se digitalise »), la peur qui accuse (« vous êtes en retard »). La première se
+démonte, la deuxième glisse, la troisième vexe. Un commerçant vexé ne répond pas, il ferme
+le statut.
+
+**Marche :** **la perte qu’on ne voit pas.** Un client qui vous cherche et ne vous trouve
+pas ne se plaint jamais. Il n’écrit pas, il ne râle pas, il ne dit rien. **Il achète
+ailleurs, et vous ne saurez jamais qu’il a existé.**
+
+C’est la seule peur de la liste qui soit **vraie, invisible et sans reproche**. Le lecteur
+ne peut pas la contredire, et surtout : **il ne peut pas se rassurer tout seul.** Il n’a
+aucun moyen de vérifier que ça ne lui arrive pas. Une inquiétude qu’on ne peut pas éteindre
+soi-même cherche une sortie, et la sortie, c’est nous.
+
+### L’urgence, sans faux compte à rebours
+
+Rien n’expire, rien n’est limité, aucune place n’est comptée. **L’urgence est que la perte
+est continue et définitive.** Les clients d’hier ne reviennent pas, ceux de demain seront
+plus nombreux. C’est vrai, ça ne se démonte pas, et ça ne s’use pas.
+
+> **« Demain, ils seront plus nombreux. »**
+
+### Les mots
+
+> **Vous perdez des clients** · **en ce moment**
+>
+> *Ils ont cherché. Ils n’ont pas trouvé.*
+> *Ils ont acheté ailleurs, et vous ne le saurez jamais.*
+> *Demain, ils seront plus nombreux.*
+
+**« en ce moment » est le mot énorme du cadre en pointillés.** Trois mots, présent, aucun
+verbe : à 20 % il se lit encore, et il fait relever les yeux vers la petite ligne au-dessus.
+La peur est au présent ou elle n’est pas.
+
+⚠️ **C’est la ligne la plus dure jamais écrite ici.** Elle est défendable : pour un
+commerçant absent d’internet, quelqu’un cherche en ce moment ce qu’il vend. Ce n’est pas une
+statistique, c’est l’ordinaire, et le statut donne le moyen de le vérifier. Si elle paraît
+trop frontale un jour, la remplacer par **« sans le savoir »** dans le cadre. Le reste ne
+bouge pas.
+
+### L’image
+
+**Une main serrée, en très gros plan, et du sable lumineux qui coule entre les doigts** et
+se perd dans le noir. Chaque grain est un client parti sans rien dire.
+
+Pourquoi le sable : il **tombe tout seul**, on ne peut pas le rattraper, et il compte le
+temps. Trois idées du post dans un seul objet. Et pourquoi lumineux : dans la direction de
+la référence, **c’est la lumière qui désigne le sujet**, et une main qui se vide de sa
+lumière raconte la perte sans une flèche ni un graphique.
+
+C’est la même direction que « LA VOIE VIDE » (fond navy, duotone bleu, barre pleine et
+cadre en pointillés), avec **une scène diamétralement différente** : hier un boulevard vu de
+loin, aujourd’hui un macro serré. Deux statuts reconnaissables comme venant de la même
+maison, sans se ressembler. C’est ce qui fait une direction, et plus une référence.
+
+### Ce que le statut demande, et ce que ça engage
+
+**« Répondez TEST à ce statut. »** On cherche leur commerce devant eux et on leur envoie ce
+qu’on trouve. C’est gratuit, ça prend deux minutes, et **c’est la démonstration la plus
+convaincante qui existe** : le doute qu’on vient d’installer, ils le lèvent eux-mêmes, et il
+se referme du mauvais côté.
+
+⚠️ **Ça engage vraiment.** Promettre une recherche et la faire attendre coûte plus cher que
+tout le statut. **Les deux réponses possibles doivent être prêtes avant de publier**, y
+compris celle du cas où le commerçant apparaît bien.
+
+### Version 1 · direction « NUIT ÉLECTRIQUE » · le prompt
+
+*Gardée : c’est la variante sombre du même message. La version publiée est la
+**version 2** plus bas, « PLEIN SOLEIL ».*
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+"EN CE MOMENT" — electric night direction
+===========================================================
+
+ATTACHED INPUTS — TWO attachments, IN THIS ORDER:
+  1st = THE STYLE REFERENCE
+  2nd = THE NEBULA LOGO
+Never swap their roles: swapping them ruins the image. If the order
+is ever unclear, fall back on their content, described below.
+
+  THE STYLE REFERENCE (first attachment) = a very dark navy poster
+     showing a blue-tinted dramatic close-up of a hand moving a
+     chess piece on a board, with a small white headline sitting on
+     a SOLID BLUE BAR that bleeds off the left edge, a much larger
+     white headline inside a DASHED BLUE RECTANGLE, a logo at the
+     top centre and a website address at the bottom centre.
+     REPRODUCE ITS DESIGN SYSTEM COMPLETELY AND FAITHFULLY:
+       - the DEEP NAVY / NEAR-BLACK ground
+       - ONE single cold BLUE light source from the UPPER LEFT,
+         hard, raking, leaving most of the frame in shadow
+       - the BLUE DUOTONE photographic treatment: desaturated,
+         high contrast, cinematic, almost monochrome
+       - a TIGHT DRAMATIC CLOSE-UP OF A HAND as the central subject,
+         filling the middle of the frame, at the same scale and with
+         the same theatrical lighting as in the reference
+       - the ROUNDED GEOMETRIC HEAVY SANS-SERIF lettering
+       - THE TWO-PART HEADLINE DEVICE: a small line on a SOLID
+         electric-blue bar bleeding off the LEFT EDGE, and under it
+         a much larger line inside a DASHED electric-blue rectangle
+       - the logo centred at the top, the address centred at the
+         very bottom
+       - its exact level of polish and finish
+     Take NOTHING of its subject and none of its words. There is NO
+     chess, NO chessboard, NO chess piece and NO game anywhere in
+     the new image, and the words "The Zubix" appear nowhere.
+
+  THE LOGO (second attachment) = the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with
+     "AGENCY" underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a
+     style reference and never a subject to reinterpret.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp status image for NEBULA Agency, a
+digital studio in Cotonou, Benin, that builds pages and online
+catalogues for West African merchants.
+The idea: something valuable is running out of a closed hand, right
+now, silently, and it cannot be caught again.
+Cinematic, cold, tense, premium. Never cheap, never clip-art.
+
+-----------------------------------------------------------
+THE SUBJECT — extreme close-up, same scale as the reference
+-----------------------------------------------------------
+A HUMAN HAND in the centre of the frame, dark brown skin, seen very
+close, held horizontally and CLENCHED into a loose fist, knuckles
+up, tilted slightly toward the camera.
+FROM BETWEEN THE FINGERS, FINE SAND IS POURING OUT in a thin
+continuous stream, falling into the darkness below and dispersing.
+THE SAND IS LUMINOUS: each grain glows cold electric blue, so the
+falling stream is the BRIGHTEST THING in the picture, and the hand
+that holds it is already darker than the sand escaping it.
+Some grains catch the light on the way down and scatter like sparks.
+The stream lands on a dark, matte, textured surface at the bottom
+and disappears into shadow: no pile, no heap, nothing recovered.
+The hand is straining slightly, tendons visible: it is trying to
+hold, and it is losing.
+
+Skin, sleeve and background all fall into the blue duotone. NO warm
+tones anywhere. NO jewellery, NO watch, NO ring, NO tattoo, NO
+sleeve logo.
+
+-----------------------------------------------------------
+THE LIGHT AND THE FRAME
+-----------------------------------------------------------
+One hard cold blue key light from the upper left, exactly as in the
+reference, raking across the knuckles and the falling sand.
+Everything else falls to near-black. The upper part of the frame is
+clean empty darkness: the logo and the headline sit on it.
+The lower part of the frame is dark, plain and uncluttered: the
+small lines of text sit there.
+Shallow depth of field, cinematic macro, visible skin texture and
+individual grains in the lit area.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place
+it at the TOP of the image, centred, on the dark background, small,
+exactly as provided, and KEEP that transparency.
+  - it sits DIRECTLY on the dark background. NO white box, NO black
+    box, NO coloured plate, NO rounded card, NO badge, NO outline,
+    NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - size it so its wordmark stays comfortably readable when the
+    whole image is viewed at 20% of its size.
+A logo pasted on a plate is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a status is covered by the interface
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface ON TOP of the image:
+  - the TOP 220 px are covered (profile picture, name, time)
+  - the BOTTOM 340 px are covered (the "Reply" field)
+The logo, every line of type, the hand and the falling sand must ALL
+sit between y = 220 px and y = 1580 px. Nothing that matters may
+fall inside those two strips.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+HEADLINE, part 1 — small white bold text on a SOLID ELECTRIC-BLUE
+BAR that starts off the LEFT EDGE of the canvas and stops after the
+words, exactly the device used in the reference:
+    "Vous perdez des clients"
+
+HEADLINE, part 2 — directly under it, MUCH larger, white, the
+loudest element of the whole image, inside a DASHED ELECTRIC-BLUE
+RECTANGLE OUTLINE, exactly the device used in the reference:
+    "en ce moment"
+
+THE MECHANISM, lower area, over the dark background, two lines,
+centred, medium size, white:
+    "Ils ont cherché. Ils n’ont pas trouvé."
+    "Ils ont acheté ailleurs, et vous ne le saurez jamais."
+
+THE URGENCY, one line under it, smaller, in electric blue:
+    "Demain, ils seront plus nombreux."
+
+THE ANSWER TO GIVE, one line under it, small, white, semi-bold:
+    "Répondez TEST à ce statut."
+
+FOOTER, at the very bottom of the safe area, tiny, centred, white at
+reduced opacity:
+    "nebula-agency.online"
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom, all inside the safe band:
+  1. NEBULA logo, centred on the dark background
+  2. blue bar + "Vous perdez des clients"   (bleeds off the left)
+  3. dashed rectangle + "en ce moment"      <- loudest zone
+  4. THE CLENCHED HAND AND THE FALLING LUMINOUS SAND  <- largest
+  5. the two lines of THE MECHANISM
+  6. THE URGENCY
+  7. "Répondez TEST à ce statut."
+  8. nebula-agency.online
+Lines 5 to 8 form ONE tight block over the dark lower area, with
+generous space between that block and the hand above.
+No text may cross the falling sand: the stream must stay clean and
+unbroken from the fingers to the bottom of the subject area.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "n’ont".
+- Correct diacritics: "cherché", "acheté", "à".
+- The word "TEST" stays in capitals, exactly as written. Do not turn
+  it into a button, a pill or a badge: it is plain text.
+- "en ce moment" must still be readable when the image is viewed at
+  20% of its size, and it must be the first thing the eye reads.
+- No hashtag, no emoji, no icon, no arrow, no clock, no hourglass,
+  no countdown, no timer, no star, no rating, no percentage sign.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO chess, NO chessboard, NO chess piece, NO game.
+  The reference gives the design system and NOTHING of its subject.
+- NO hourglass and NO clock anywhere: the sand alone tells the time.
+- NO price, NO amount, NO currency symbol, NO offer, NO discount,
+  NO percentage.
+- NO invented statistics, follower counts, client counts, ratings or
+  stars. No figures anywhere in the image.
+- NO visible human face, NO head, NO body: one hand and part of a
+  forearm only.
+- NO coins, NO banknotes, NO money of any kind falling from the
+  hand: it is sand, and only sand.
+- NO recognisable third-party brand, logo or app, and the words
+  "The Zubix" must not appear.
+- NO watermark, no frame, no border around the image itself.
+- One idea, told once. No second object, no second message.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready, cinematic
+quality, high-fidelity text rendering.
+===========================================================
+```
+
+### Pour le fil Instagram et Facebook (4:5)
+
+Même prompt, en remplaçant le bloc FORMAT. **La ligne « Répondez TEST à ce statut. »
+disparaît** : sur un fil on ne répond pas à un statut. Elle passe dans la légende.
+
+```
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. No safe zones: the whole canvas is visible.
+Crop tighter on the hand so it fills more of the frame, and keep the
+same top-to-bottom order.
+
+REMOVE ONE LINE: do not render "Répondez TEST à ce statut." on this
+version. Everything else is unchanged.
+```
+
+### Le texte à écrire sous le statut
+
+```
+Un client mécontent, vous le savez. Il vous le dit, il râle, il revient
+se plaindre.
+
+Un client qui ne vous a pas trouvé ne dit rien.
+
+Il a cherché votre commerce, il n’a rien vu, il a acheté ailleurs et il
+n’y a plus jamais repensé. Vous n’avez reçu aucun message. Vous n’avez
+rien vu passer. Pour vous, cette vente n’a jamais existé.
+
+C’est le seul argent qu’on perd sans jamais l’apprendre.
+
+Répondez TEST : je cherche votre commerce devant vous, et je vous envoie
+exactement ce que votre client voit. C’est gratuit et ça prend deux
+minutes.
+```
+
+**Pourquoi ça convertit :** le statut installe un doute que le lecteur **ne peut pas lever
+tout seul**, puis lui tend le seul moyen de le lever. Répondre devient plus confortable que
+ne pas répondre. C’est tout le mécanisme, et il est honnête : le test est réel et gratuit.
+
+### Les deux réponses à préparer avant de publier
+
+⚠️ **Il y a deux cas, et le second arrive souvent.** N’en préparer qu’un, c’est se
+retrouver muet devant la moitié des réponses.
+
+**Cas 1 · on ne le trouve pas.**
+
+```
+J’ai cherché [nom du commerce] comme le ferait un client. Voilà exactement
+ce qui apparaît. [capture]
+
+Ce n’est pas un problème de qualité, ni de prix, ni de réputation. C’est un
+problème d’adresse : il n’y a rien à trouver.
+
+La première marche est simple : on range tout ce que vous vendez à une seule
+adresse, que vous envoyez en un lien. Dites-moi votre activité, je vous
+envoie un exemple dans votre métier.
+```
+
+**Cas 2 · on le trouve, mais mal.**
+
+```
+Bonne nouvelle : on vous trouve. [capture]
+
+Regardez maintenant ce que le client voit vraiment : pas de prix, pas de
+liste de ce que vous vendez, la dernière publication date d’il y a
+longtemps. Il a l’information qu’il vous cherchait, pas celle qui le fait
+acheter.
+
+Vous existez. Il manque l’endroit où on voit ce que vous vendez et combien.
+Dites-moi votre activité, je vous envoie un exemple dans votre métier.
+```
+
+**Dans les deux cas on finit sur une demande minuscule** (« votre activité »), jamais sur un
+prix : le socle veut qu’on entre par le Catalogue, et c’est la conversation qui décide de la
+marche.
+
+### Contrôles propres à ce statut
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Le sable est plus lumineux que la main** | c’est la perte qui doit briller, pas celui qui perd |
+| **Rien ne se dépose en bas** | un petit tas, et on croit que ça se rattrape |
+| Aucun sablier, aucune horloge, aucun compte à rebours | le sable dit déjà le temps ; un sablier fait publicité |
+| **Aucune pièce, aucun billet** | de l’argent qui tombe d’une main, c’est un autre post et une autre promesse |
+| Aucun échiquier, aucune main sur une table | on prend le système de la référence, jamais son sujet |
+| Aucun texte ne traverse le filet de sable | c’est la seule chose que l’œil doit suivre |
+| Rien dans les 220 px du haut ni les 340 px du bas | |
+| **Réduire à 20 %** | si « en ce moment » ne se lit plus, le statut est mort |
+| **Les DEUX réponses à « TEST » sont prêtes** | la moitié des gens sont dans le cas 2 |
+| **Faire le test le jour même** | promettre une recherche et la faire attendre coûte plus que tout le statut |
+| Aucune statistique | règle absolue de la maison |
+
+⚠️ **Le prochain statut ne fait pas peur.** Deux peurs d’affilée et on devient la personne
+qui angoisse tout le monde ; celui d’après doit donner quelque chose sans rien demander.
+
+---
+
+### Version 2 · direction « PLEIN SOLEIL » · **c’est celle à publier**
+
+Référence : `references/REF-plein-soleil.jpg` (affiche « scale. Your Vision », mur teal et
+sol ocre séparés par une arête nette, plein soleil, deux hommes en costume orange assis,
+minuscules dans un mur immense et vide).
+
+**Même message, même mécanisme, même « TEST ». Tout le reste change.**
+
+#### Pourquoi une image ensoleillée fait plus peur qu’une image sombre
+
+Le premier réflexe serait de refuser : cette référence est calme, lumineuse, presque
+amusante, et le texte parle d’argent perdu. **C’est justement ce qui la rend meilleure.**
+
+Une image sombre annonce la couleur : le lecteur voit qu’on va lui faire peur, il met sa
+garde, il passe. **Une belle journée ensoleillée, un mur propre, un homme tranquille assis
+au soleil : c’est un mardi ordinaire.** Et c’est exactement ce que dit le post, il ne se
+passe rien de visible, et c’est là que ça se passe. La phrase brutale posée sur une image
+paisible ne se voit pas venir, et **elle ne peut pas être classée comme « une pub qui fait
+peur »**, donc elle n’est pas filtrée.
+
+#### Ce que la référence donne, et qu’aucune autre n’avait
+
+**Elle contient déjà le dispositif de comparaison : deux hommes identiques, côte à côte,
+même costume, même posture, même soleil.** Il n’y a rien à inventer, il suffit de mettre
+**une seule différence** entre eux, et elle devient énorme parce que tout le reste est
+rigoureusement pareil.
+
+**Et cette différence, la référence la fournit aussi : les ombres.** Le sol ocre en plein
+soleil, avec ses longues ombres géométriques, est la signature de l’image. On s’en sert
+pour dire la chose invisible du post.
+
+> **À droite :** un homme, et sur le sol, en plus de la sienne, **cinq ou six longues ombres
+> de gens debout qui montent vers lui.**
+> **À gauche :** le même homme, le même costume, la même posture, et **rien**. Le sol autour
+> de lui est nu.
+
+Même métier, même jour, même soleil. **Pas les mêmes clients.** Et celui de gauche ne verra
+jamais ce qui lui manque, puisqu’une ombre qui n’est pas venue ne fait pas de bruit.
+
+⛔ **Aucun personnage ne doit avoir de corps dans les ombres.** Ce sont des ombres seules,
+qui entrent par le bas du cadre. Des gens dessinés à côté et le post redevient une
+illustration.
+
+#### Le texte, dans la typographie de la référence
+
+La référence empile quatre niveaux, et ils se remplissent un par un :
+
+| Niveau de la référence | Chez nous |
+|---|---|
+| le mot énorme en bas de casse avec un point (*scale.*) | **« introuvable. »** |
+| la ligne grasse dessous (*Your Vision*) | **« en ce moment »** |
+| les trois mots très espacés (*FOCUS. DEPTH, IMPACT.*) | **« CHERCHÉ. RIEN. AILLEURS. »** |
+| le petit paragraphe justifié en capitales | la phrase qui coupe |
+
+**« introuvable. »** est le seul mot lisible à 20 %, et il dit déjà tout : c’est la
+définition du problème en un mot. Les **trois mots espacés** racontent la vente perdue en
+trois temps, à la place des trois vertus de la référence. Ce détournement est le cœur de
+l’adaptation : **le gabarit de la référence sert à énumérer une perte au lieu d’énumérer des
+qualités.**
+
+⚠️ **Pas de pastille « vérifié ».** La référence en porte une à côté de son nom. Un badge de
+vérification imité est un mensonge de plateforme, et il ne coûte rien à retirer : le logo se
+pose directement sur le mur, il est plus beau comme ça.
+
+⚠️ **Le teal est gardé.** Sur un bleu indigo, le logo NEBULA (violet et bleu) se noierait ;
+sur le teal profond de la référence il ressort, et la vibe est intacte.
+
+#### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+"INTROUVABLE" — full sun, colour-block direction
+===========================================================
+
+ATTACHED INPUTS — TWO attachments, IN THIS ORDER:
+  1st = THE STYLE REFERENCE
+  2nd = THE NEBULA LOGO
+Never swap their roles: swapping them ruins the image. If the order
+is ever unclear, fall back on their content, described below.
+
+  THE STYLE REFERENCE (first attachment) = a bright editorial poster
+     with a deep TEAL wall filling the upper two thirds, a saturated
+     OCHRE YELLOW ground filling the lower third, a thin orange lip
+     between them, hard sunlight casting sharp geometric shadows,
+     and two small men in identical bright orange suits sitting on
+     the ledge with laptops. Its type is centred on the empty wall:
+     one huge lowercase word with a full stop, a bold line under it,
+     a row of three widely spaced bold capitalised words, and a
+     small justified all-caps paragraph.
+     REPRODUCE ITS DESIGN SYSTEM COMPLETELY AND FAITHFULLY:
+       - the FLAT COLOUR BLOCKING: one large deep TEAL field above,
+         one saturated OCHRE YELLOW field below, divided by a clean
+         straight architectural ledge with a thin ORANGE lip
+       - HARD DIRECT SUNLIGHT from the upper left, with crisp
+         geometric shadows and one large diagonal shadow shape on
+         the teal wall
+       - the enormous EMPTY WALL: the human figures are small and
+         the emptiness around them is most of the picture
+       - editorial architectural photography, matte surfaces,
+         slight wall texture, no gloss, no gradient
+       - the TYPOGRAPHY SYSTEM described below, in a clean heavy
+         GEOMETRIC SANS-SERIF, all type in white
+       - its exact level of polish and finish
+     Take NOTHING of its words and NOTHING of its branding. The
+     words "scale", "Your Vision", "FOCUS", "DEPTH", "IMPACT" and
+     "bizzjum" appear NOWHERE, and there is NO verified tick, NO
+     white brand chip and NO social badge anywhere in the image.
+
+  THE LOGO (second attachment) = the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with
+     "AGENCY" underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a
+     style reference and never a subject to reinterpret.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp status image for NEBULA Agency, a
+digital studio in Cotonou, Benin, that builds pages and online
+catalogues for West African merchants.
+Two identical men, the same day, the same sun. One of them has
+customers coming. The other one does not, and cannot see it.
+Bright, calm, editorial, expensive. The image must look like an
+ordinary sunny afternoon, never like an advertisement about fear.
+
+-----------------------------------------------------------
+THE SCENE — full bleed
+-----------------------------------------------------------
+A clean modern wall in hard sunlight, photographed straight on.
+  - the UPPER TWO THIRDS: one flat DEEP TEAL wall, matte, softly
+    textured, almost entirely empty. A large soft-edged diagonal
+    shadow falls across its left side, exactly as in the reference.
+  - a straight horizontal LEDGE crossing the frame, with a thin
+    bright ORANGE lip along its front edge
+  - the LOWER THIRD: a flat saturated OCHRE YELLOW ground in full
+    sun, plain and open
+
+SEATED ON THE LEDGE, small in the frame exactly like the reference:
+TWO MEN, deliberately IDENTICAL. Same bright orange suit, same
+build, same shoes, same posture: seated, knees apart, forearms on
+the thighs, head lowered over a mobile phone held in both hands.
+Dark brown skin. Heads down, faces not readable, no recognisable
+identity, no hat, no jewellery, no visible logo on the clothing.
+They are placed apart from each other with a clear gap of empty
+ledge between them: one in the LEFT half, one in the RIGHT half.
+Nothing distinguishes them. That is the point.
+
+-----------------------------------------------------------
+THE SHADOWS — this is the whole message, get it right
+-----------------------------------------------------------
+On the sunlit ochre ground, the sunlight casts long crisp shadows.
+
+UNDER THE MAN ON THE RIGHT: his own long shadow, AND, converging
+toward him, FIVE OR SIX LONG ELONGATED SHADOWS OF STANDING PEOPLE.
+They enter from the BOTTOM EDGE of the frame and stretch up toward
+him, as if a small group were standing in front of him just outside
+the picture. They are SHADOWS ONLY: no bodies, no heads, no figures
+anywhere in the frame, only their dark shapes on the yellow ground.
+
+UNDER THE MAN ON THE LEFT: his own shadow, and NOTHING ELSE. The
+ochre ground around him is completely bare and evenly lit.
+
+The difference between the two sides must be obvious at a glance,
+and it must be the ONLY difference in the entire picture.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place
+it in the UPPER RIGHT of the teal wall, small, exactly as provided,
+and KEEP that transparency.
+  - it sits DIRECTLY on the teal wall. NO white chip, NO rounded
+    pill, NO plate, NO badge, NO outline, NO glow, NO drop shadow,
+    and above all NO VERIFIED TICK of any kind.
+  - keep the wall behind it clean and evenly lit, with no shadow
+    edge crossing it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - size it so its wordmark stays comfortably readable when the
+    whole image is viewed at 20% of its size.
+Directly UNDER the logo, in small white type:
+    "nebula-agency.online"
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a status is covered by the interface
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface ON TOP of the image:
+  - the TOP 220 px are covered (profile picture, name, time)
+  - the BOTTOM 340 px are covered (the "Reply" field)
+The logo, every line of type, both men and ALL the shadows must sit
+between y = 220 px and y = 1580 px. The extra height compared with
+the reference goes into MORE EMPTY TEAL WALL above the type: the
+emptiness is the luxury of this layout, do not fill it.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+All type is WHITE, centred on the teal wall, in a clean geometric
+sans-serif, arranged exactly like the reference:
+
+THE HUGE WORD — lowercase, very heavy, enormous, with a full stop,
+the single loudest element of the image, exactly like the big word
+in the reference:
+    "introuvable."
+
+THE BOLD LINE — directly under it, clearly smaller but still bold:
+    "en ce moment"
+
+THE THREE BEATS — one line further down, three short words in bold
+capitals, spread WIDELY APART across the full width with large
+even gaps between them, exactly the device used in the reference:
+    "CHERCHÉ."        "RIEN."        "AILLEURS."
+
+THE PARAGRAPH — under it, small, light weight, ALL CAPITALS, set
+JUSTIFIED to both margins with exaggerated word spacing so the
+lines align on both edges, exactly like the small paragraph in the
+reference, two lines:
+    "VOUS PERDEZ DES CLIENTS SANS LE SAVOIR. UN CLIENT QUI NE VOUS
+    A PAS TROUVÉ NE DIT RIEN."
+
+THE ANSWER TO GIVE — one line lower on the teal wall, just above
+the seated men, small, white, semi-bold, centred:
+    "Répondez TEST à ce statut."
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom, all inside the safe band:
+  1. empty teal wall
+  2. NEBULA logo, upper right, and "nebula-agency.online" under it
+  3. "introuvable."                          <- loudest zone
+  4. "en ce moment"
+  5. "CHERCHÉ."  "RIEN."  "AILLEURS."
+  6. the justified two-line paragraph
+  7. "Répondez TEST à ce statut."
+  8. THE LEDGE, THE TWO IDENTICAL SEATED MEN
+  9. THE OCHRE GROUND AND THE SHADOWS      <- second largest zone
+No text at all sits on the ochre ground or over the men: everything
+written lives on the empty teal wall, exactly as in the reference.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- THERE IS NO APOSTROPHE ANYWHERE IN THIS IMAGE. If an apostrophe
+  appears, a word has been invented and the image is wrong.
+- Keep the accents ON THE CAPITAL LETTERS, as French requires:
+  "CHERCHÉ.", "TROUVÉ". Never "CHERCHE", never "TROUVE".
+- "introuvable." stays lowercase and keeps its full stop.
+- Each of the three beats keeps its own full stop: "CHERCHÉ."
+  "RIEN." "AILLEURS."
+- The word "TEST" stays in capitals, exactly as written. Do not turn
+  it into a button, a pill or a badge: it is plain text.
+- "introuvable." must still be readable when the image is viewed at
+  20% of its size, and it must be the first thing the eye reads.
+- No hashtag, no emoji, no icon, no arrow, no star, no rating, no
+  percentage sign, no verified tick.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- The TWO MEN ARE IDENTICAL. Same suit, same colour, same posture,
+  same build. If they differ in any way other than their shadows,
+  the image has failed.
+- The shadows of the crowd are SHADOWS ONLY: no bodies, no heads,
+  no drawn people anywhere in the frame.
+- NO verified tick, NO white brand chip, NO social badge, NO
+  follower count, NO app interface.
+- NO laptop brand, NO phone brand, NO visible screen content, NO
+  readable text on any device.
+- NO price, NO amount, NO currency symbol, NO offer, NO discount.
+- NO invented statistics, client counts, ratings or stars. No
+  figures anywhere in the image.
+- NO readable face and no recognisable person: heads stay lowered.
+- NO watermark, no frame, no border around the image itself.
+- The teal wall stays FLAT and mostly EMPTY: no pattern, no poster,
+  no window, no plant, no second object. The emptiness is the
+  subject.
+- One difference, told once.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready, editorial
+photographic quality, high-fidelity text rendering.
+===========================================================
+```
+
+#### Pour le fil Instagram et Facebook (4:5)
+
+C’est le format natif de la référence, donc c’est là qu’elle est la plus juste.
+
+```
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. No safe zones: the whole canvas is visible.
+This is the reference's own proportion: follow its composition
+exactly, with the teal wall filling the upper two thirds and the
+ochre ground the lower third.
+
+REMOVE ONE LINE: do not render "Répondez TEST à ce statut." on this
+version. Everything else is unchanged.
+```
+
+**La légende et les deux réponses préparées ne changent pas** : ce sont celles du § 9,
+elles servent aux deux versions.
+
+#### Contrôles propres à cette version
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Les deux hommes sont vraiment identiques** | une seule différence ailleurs, et la comparaison ne veut plus rien dire |
+| **Les ombres de foule sont des ombres seules** | des gens dessinés, et c’est une illustration, plus une photo |
+| **Le sol est nu à gauche** | s’il y traîne une ombre, le post ne dit plus rien |
+| Aucune pastille « vérifié », aucun jeton blanc | imiter un badge de plateforme est un mensonge, et ça se voit |
+| Le mur teal reste vide | c’est le vide qui fait le luxe et qui porte le texte |
+| Accents gardés sur les capitales | « CHERCHE » au lieu de « CHERCHÉ » et tout le bloc a l’air bâclé |
+| Aucune apostrophe sur l’image | il n’y en a pas une seule ; s’il en apparaît une, un mot a été inventé |
+| Aucun texte sur le sol ocre | tout vit sur le mur, comme dans la référence |
+| **Réduire à 20 %** | si « introuvable. » ne se lit plus, le statut est mort |
+| **Les DEUX réponses à « TEST » sont prêtes** | inchangé, voir plus haut |
+
+---
+
+## 10. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -1345,18 +2391,19 @@ mieux qu’une conclusion qu’on nous vend.
 
 ---
 
-## 9. Les prochains statuts
+## 11. Les prochains statuts
 
 Même gabarit : le label, la hiérarchie brutale, les zones mortes, et surtout **la question
 fermée qui se répond d'un caractère**.
 
 | Statut | L'accroche | Ce qu'on demande de répondre |
 |---|---|---|
-| **Introuvable** | « ILS ONT CHERCHÉ VOTRE COMMERCE. RIEN. » | « TEST », et on fait la recherche pour eux |
 | **Le prix caché** | « CE N'EST PAS VOTRE PRIX QUI FAIT FUIR. » | « OUI » ou « NON » : affichez-vous vos prix ? |
 | **L'heure du soir** | « ON VOUS ÉCRIT QUAND VOUS DORMEZ. » | l'heure à laquelle ils reçoivent le plus de messages |
 
-*Le statut « Introuvable » a son prompt complet dans `POST-DU-JOUR-MULTICANAL.md`.*
+*Le statut « Introuvable » qui était prévu ici est **fait** : c’est le § 9,
+« EN CE MOMENT ». Une première version plus ancienne existe aussi dans
+`POST-DU-JOUR-MULTICANAL.md`.*
 
 ⚠️ **Ne jamais enchaîner deux statuts qui font peur.** Entre deux, en publier un qui ne
 vend rien et donne un savoir utile. C'est lui qui achète le droit d'être cru la fois
