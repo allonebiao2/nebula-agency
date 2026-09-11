@@ -634,8 +634,14 @@ def controles_outils() -> None:
                  subprocess.run([sys.executable, "-m", "py_compile", str(chemin)],
                                 capture_output=True).returncode == 0)
 
+    # ⚠️ Sur le PC (console cp1252), `text=True` decode la sortie dans la langue
+    #    du systeme : un octet UTF-8 inconnu de cp1252 tue le fil de lecture, et
+    #    `demo.stdout` revient a None sans un mot (le QC plantait sur un `in None`).
+    #    On impose l'UTF-8 aux deux bouts.
+    import os
     demo = subprocess.run([sys.executable, str(RACINE_KIT / "demonstration.py")],
-                          capture_output=True, text=True)
+                          capture_output=True, encoding="utf-8", errors="replace",
+                          env={**os.environ, "PYTHONIOENCODING": "utf-8"})
     controle("outils · la démonstration tourne de bout en bout",
              demo.returncode == 0, demo.stderr[-200:])
     controle("outils · la démonstration MONTRE le garde-fou bloquer",
