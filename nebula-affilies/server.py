@@ -1024,10 +1024,15 @@ def seed_content():
 # 2026-09-11 : 03, 06 et 01b passent a cette date, leur CONTENU ayant change
 # (montants de commission a l'ancienne grille, ecrits en francs). Les sept
 # autres gardent la leur : meme contenu, inutile de les repousser.
+# 2026-09-11 (PC) : 09 passe aussi a cette date. Le commit du contrat 1.5 avait
+# remplace le PDF sans toucher sa date : les partenaires seraient restes sur la
+# 1.4 sans un mot. Mesure en base le meme jour : les dix documents portaient
+# encore « 2026-08-03 », aucun bump de septembre n'avait ete publie (le service
+# Render n'avait pas ete redeploye depuis).
 DOCS_PARTENAIRES = [
     ("02-MANUEL-DU-PARTENAIRE.pdf", "2026-09-02", "Le manuel du partenaire", "Formation",
      "Ton métier de A à Z : trouver des commerçants, présenter, relancer, être payé. À lire en premier."),
-    ("09-CONTRAT-PARTENAIRE.pdf", "2026-09-03", "Ton contrat de partenaire", "Juridique",
+    ("09-CONTRAT-PARTENAIRE.pdf", "2026-09-11", "Ton contrat de partenaire", "Juridique",
      "À imprimer, signer, scanner et renvoyer. Il dit ce que NEBULA te doit et ce que tu dois à NEBULA."),
     ("03-GUIDE-CATALOGUE.pdf", "2026-09-11", "Vendre le Catalogue (50 000 F)", "Produits",
      "Ton offre d'entrée, celle qui se vend le plus facilement. Commence toujours par elle."),
