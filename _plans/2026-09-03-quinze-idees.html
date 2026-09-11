@@ -1,0 +1,837 @@
+<title>Après Minuit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ink:#14181d; --ink-2:#232a31;
+  --paper:#eff1f2; --paper-2:#e4e7e9; --card:#f7f8f9;
+  --slate:#5c6670; --slate-2:#7d868f;
+  --line:#d3d8db; --line-2:#c2c9cd;
+  --gold:#7d6230; --gold-soft:#9a7c42; --gold-wash:rgba(125,98,48,.10);
+  --wax:#8e2233; --wax-wash:rgba(142,34,51,.07);
+  --good:#2c6350; --good-wash:rgba(44,99,80,.09);
+  --warn:#8a5a1a; --warn-wash:rgba(138,90,26,.10);
+  --shadow:0 1px 2px rgba(20,24,29,.05),0 8px 24px -12px rgba(20,24,29,.13);
+  --f-disp:"Fraunces",Georgia,"Times New Roman",serif;
+  --f-body:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#e9ecee; --ink-2:#c8cfd4;
+    --paper:#12161a; --paper-2:#1a1f24; --card:#191e23;
+    --slate:#98a2aa; --slate-2:#7b858d;
+    --line:#2a3238; --line-2:#3a444b;
+    --gold:#c9a765; --gold-soft:#b08f4f; --gold-wash:rgba(201,167,101,.12);
+    --wax:#e28391; --wax-wash:rgba(226,131,145,.10);
+    --good:#68b295; --good-wash:rgba(104,178,149,.11);
+    --warn:#d1a15c; --warn-wash:rgba(209,161,92,.12);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e9ecee; --ink-2:#c8cfd4;
+  --paper:#12161a; --paper-2:#1a1f24; --card:#191e23;
+  --slate:#98a2aa; --slate-2:#7b858d;
+  --line:#2a3238; --line-2:#3a444b;
+  --gold:#c9a765; --gold-soft:#b08f4f; --gold-wash:rgba(201,167,101,.12);
+  --wax:#e28391; --wax-wash:rgba(226,131,145,.10);
+  --good:#68b295; --good-wash:rgba(104,178,149,.11);
+  --warn:#d1a15c; --warn-wash:rgba(209,161,92,.12);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.wrap.wide{max-width:1320px}
+.col{max-width:64ch}
+h1,h2,h3,h4{font-family:var(--f-disp);font-weight:600;text-wrap:balance;margin:0}
+p{margin:0}
+a{color:var(--gold);text-decoration-thickness:1px;text-underline-offset:2px}
+strong,b{font-weight:600;color:var(--ink)}
+em{font-style:italic}
+
+/* ---------- en-tete ---------- */
+header{border-bottom:1px solid var(--line);background:var(--paper-2)}
+.head{display:flex;flex-direction:column;gap:20px;padding:54px 0 40px}
+.kick{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.kick span:not(:first-child){color:var(--slate-2)}
+h1{font-size:clamp(42px,7.5vw,74px);line-height:.98;letter-spacing:-.022em}
+.lede{font-size:clamp(17px,2.3vw,20px);color:var(--ink-2);max-width:60ch;line-height:1.55}
+.meta{display:flex;gap:26px;flex-wrap:wrap;font-family:var(--f-mono);font-size:12px;color:var(--slate);border-top:1px solid var(--line);padding-top:16px}
+.meta b{color:var(--ink);font-weight:500}
+
+/* ---------- sections ---------- */
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+.snum{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+h2{font-size:clamp(26px,4vw,38px);line-height:1.08;letter-spacing:-.015em;margin-bottom:14px}
+h3{font-size:19px;line-height:1.3;margin-bottom:6px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.stack-lg{display:flex;flex-direction:column;gap:30px}
+
+/* ---------- encadres ---------- */
+.note{border-left:2px solid var(--gold);background:var(--gold-wash);padding:16px 20px;display:flex;flex-direction:column;gap:8px;border-radius:0 4px 4px 0}
+.note.stop{border-color:var(--wax);background:var(--wax-wash)}
+.note.ok{border-color:var(--good);background:var(--good-wash)}
+.note h4{font-size:16px;font-family:var(--f-body);font-weight:600}
+.note p{font-size:15px;color:var(--ink-2)}
+
+/* ---------- tableau ---------- */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:1040px}
+caption{caption-side:bottom;text-align:left;font-size:13.5px;color:var(--slate);padding-top:12px;line-height:1.5}
+th,td{text-align:left;padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+td:nth-child(3){min-width:230px;max-width:300px}
+td:nth-child(9){max-width:150px}
+thead th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--slate);font-weight:500;background:var(--paper-2);position:sticky;top:0;border-bottom:1px solid var(--line-2)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--paper-2)}
+.r{font-family:var(--f-mono);font-size:12.5px;color:var(--gold);font-weight:600}
+.nm{font-weight:600;white-space:nowrap}
+.fig,.money{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:13px}
+.money{font-weight:500}
+td small{display:block;color:var(--slate);font-size:12.5px;line-height:1.4;margin-top:2px}
+
+/* ---------- jauges ---------- */
+.j{display:inline-flex;gap:2.5px;align-items:center}
+.j i{width:7px;height:13px;background:var(--line-2);border-radius:1px;display:block}
+.j i.on{background:var(--gold)}
+.pc{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
+
+/* ---------- pastilles ---------- */
+.tag{display:inline-block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:3px;white-space:nowrap;border:1px solid}
+.t-now{color:var(--good);border-color:var(--good);background:var(--good-wash)}
+.t-soon{color:var(--gold);border-color:var(--gold-soft);background:var(--gold-wash)}
+.t-late{color:var(--slate);border-color:var(--line-2);background:transparent}
+.t-if{color:var(--warn);border-color:var(--warn);background:var(--warn-wash)}
+
+/* ---------- fiches idees ---------- */
+.idee{display:grid;grid-template-columns:56px 1fr;gap:0 20px;padding-top:26px;border-top:1px solid var(--line)}
+.idee:first-child{border-top:0;padding-top:0}
+.idee .rk{font-family:var(--f-mono);font-size:26px;font-weight:600;color:var(--gold);line-height:1;padding-top:3px;font-variant-numeric:tabular-nums}
+.idee .bd{display:flex;flex-direction:column;gap:11px;min-width:0}
+.ttl{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.idee p{font-size:15.5px;color:var(--ink-2);max-width:62ch}
+.lines{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--line);padding-top:11px}
+.ln{display:grid;grid-template-columns:112px 1fr;gap:14px;font-size:14.5px;align-items:baseline}
+.ln .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
+.ln .v{color:var(--ink-2);min-width:0}
+.ln .v b{color:var(--ink)}
+.risk .k{color:var(--wax)}
+
+/* ---------- chemins ---------- */
+.paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px}
+.path{border:1px solid var(--line);border-top:3px solid var(--gold);background:var(--card);padding:20px;display:flex;flex-direction:column;gap:12px;border-radius:0 0 5px 5px}
+.path .big{font-family:var(--f-mono);font-size:30px;font-weight:600;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.path .sub{font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--slate)}
+.path ul{margin:0;padding-left:17px;font-size:14.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:5px}
+.path.mid{border-top-color:var(--good)}
+.path.slow{border-top-color:var(--slate-2)}
+
+/* ---------- frise ---------- */
+.frise{display:flex;flex-direction:column}
+.ev{display:grid;grid-template-columns:132px 1fr;gap:20px;padding:14px 0;border-bottom:1px solid var(--line)}
+.ev:last-child{border-bottom:0}
+.ev .d{font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.35}
+.ev .d small{display:block;font-weight:400;color:var(--slate);font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.ev .c{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ev .c b{font-size:15.5px}
+.ev .c p{font-size:14.5px;color:var(--ink-2)}
+.ev.peak{background:var(--gold-wash);margin:0 -14px;padding:14px;border-radius:4px;border-bottom-color:transparent}
+.ev.peak .d{color:var(--gold)}
+
+/* ---------- listes ---------- */
+ul.plain{margin:0;padding-left:19px;display:flex;flex-direction:column;gap:9px;font-size:15.5px;color:var(--ink-2);max-width:64ch}
+ul.plain b{color:var(--ink)}
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:11px;font-size:15.5px;color:var(--ink-2);max-width:64ch}
+ol.steps::marker{font-family:var(--f-mono)}
+ol.steps b{color:var(--ink)}
+
+footer{padding:38px 0 60px;color:var(--slate);font-size:13.5px}
+.foot{display:flex;gap:34px;flex-wrap:wrap;justify-content:space-between;align-items:flex-start}
+footer ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+footer b{color:var(--ink)}
+
+@media (max-width:640px){
+  .idee{grid-template-columns:1fr;gap:8px}
+  .idee .rk{font-size:20px;padding-top:0}
+  .ln{grid-template-columns:1fr;gap:1px}
+  .ev{grid-template-columns:1fr;gap:5px}
+  .ev.peak{margin:0 -12px;padding:14px 12px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+
+<header>
+  <div class="wrap head">
+    <div class="kick"><span>NEBULA Agency</span><span>Dossier interne</span><span>3 septembre 2026</span></div>
+    <h1>Après Minuit</h1>
+    <p class="lede">Quinze produits qui tournent sur le même moteur que la lettre digitale : une page scellée, une date, un lien qui voyage sur WhatsApp, un paiement Mobile Money. Classés par ce qu&rsquo;ils rapportent et par la vitesse à laquelle ils peuvent le rapporter.</p>
+    <div class="meta">
+      <span><b>Objectif posé</b> · 3 000 000 F</span>
+      <span><b>Marché</b> · Bénin, puis Togo et Côte d&rsquo;Ivoire</span>
+      <span><b>Socle</b> · le moteur de MINUIT</span>
+      <span><b>Suite de</b> · dossier du 27 août 2026</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap stack">
+    <div class="col stack">
+      <div class="snum">Avant tout le reste</div>
+      <h2>Les quinze idées partagent un rail qui n&rsquo;est pas fini</h2>
+      <p>Le <code>README</code> de MINUIT porte deux lignes en attente, et ce sont exactement les deux que ces quinze produits réutilisent : <b>la livraison à l&rsquo;heure choisie</b> et <b>le serveur en ligne</b>. Le gabarit et le constructeur sont faits, 78 contrôles verts. Le reste ne l&rsquo;est pas.</p>
+      <p>Aucune de ces quinze idées ne rapporte un franc tant qu&rsquo;un inconnu ne peut pas payer seul, à trois heures du matin, sans que personne ne se lève. La bonne nouvelle : ce rail se construit <em>une fois</em> et il sert les quinze. La mauvaise : tant qu&rsquo;il n&rsquo;existe pas, chercher une seizième idée est une façon agréable de ne pas le construire.</p>
+    </div>
+    <div class="note stop">
+      <h4>La seule dépense de temps qui compte cette semaine</h4>
+      <p>Livraison à l&rsquo;heure dite (n8n) et serveur en ligne (Render). Deux semaines. Le dossier du 27 août dit déjà la même chose sous une autre forme : <em>« tant que le parcours n&rsquo;est pas automatisé, le produit est structurellement déficitaire sous 10 000 F »</em>.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="col stack">
+      <div class="snum">La recette</div>
+      <h2>Ce qui fait qu&rsquo;une idée appartient à cette famille</h2>
+      <p>La lettre digitale ne marche pas parce qu&rsquo;elle est jolie. Elle marche parce qu&rsquo;elle réunit cinq traits. Une idée qui n&rsquo;en a pas au moins quatre n&rsquo;est pas de cette famille, quelle que soit sa beauté.</p>
+      <ul class="plain">
+        <li><b>Celui qui paie n&rsquo;est pas celui qui reçoit.</b> C&rsquo;est un cadeau. Le prix se juge au ressenti, pas au comparatif, et le destinataire découvre le produit sans qu&rsquo;on ait payé pour le lui montrer.</li>
+        <li><b>Une date la déclenche.</b> Un anniversaire, un mariage, un décès, le 31 décembre. Sans date, il n&rsquo;y a pas d&rsquo;urgence, et sans urgence il n&rsquo;y a pas d&rsquo;achat d&rsquo;impulsion.</li>
+        <li><b>L&rsquo;objet vendu est un lien.</b> Zéro stock, zéro livraison, zéro service après-vente physique. La marge brute reste au-dessus de 90 %.</li>
+        <li><b>Le lien voyage sur WhatsApp.</b> Pas de « lien en bio ». En Afrique de l&rsquo;Ouest, la surface de diffusion réelle est le message et le statut.</li>
+        <li><b>L&rsquo;encaissement est Mobile Money.</b> Depuis l&rsquo;interopérabilité de juillet 2026, un seul numéro suffit. C&rsquo;est le déverrouillage principal, et il est récent.</li>
+      </ul>
+    </div>
+    <div class="note">
+      <h4>Le vrai avantage n&rsquo;est pas l&rsquo;idée, c&rsquo;est ce que vous avez déjà</h4>
+      <p>Onze vitrines clientes qui finissent toutes sur un bouton WhatsApp. Un réseau de partenaires payé 30 à 40 %. PISTE et ses 7 817 fiches d&rsquo;entreprises au Bénin, au Togo et en Côte d&rsquo;Ivoire. Un studio vidéo qui rend une verticale de 30 secondes à la demande. Une pile qui ne coûte rien de plus à faire tourner. Aucun concurrent qui aurait la même idée demain matin n&rsquo;a ces quatre choses.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap wide stack">
+    <div class="col stack">
+      <div class="snum">Le tableau</div>
+      <h2>Les quinze, classées par ce qu&rsquo;elles rapportent et par la vitesse</h2>
+      <p>Le rang n&rsquo;est pas décoratif : c&rsquo;est l&rsquo;ordre dans lequel je les construirais. Il combine la vitesse d&rsquo;arrivée du premier franc et le coût de construction, pas la beauté de l&rsquo;idée.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>L&rsquo;idée</th><th>Ce qu&rsquo;on vend</th><th>Ticket</th>
+            <th>Réussite</th><th>Rentab.</th><th>Faisab.</th><th>Viralité</th>
+            <th>Il en faut, pour 3 M</th><th>Quand</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="r">01</td>
+            <td class="nm">Les vœux d&rsquo;entreprise</td>
+            <td>Une carte scellée au nom de chaque client de l&rsquo;entreprise, ouverte le 31 décembre à minuit<small>Banques, assurances, hôtels, cliniques. Prospectés dans PISTE.</small></td>
+            <td class="money">150 000 F</td>
+            <td class="pc">70 %</td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td class="fig">20 entreprises</td>
+            <td><span class="tag t-now">Maintenant</span></td>
+          </tr>
+          <tr>
+            <td class="r">02</td>
+            <td class="nm">Le mur</td>
+            <td>Vingt proches écrivent chacun un mot, le mur se scelle, il s&rsquo;ouvre à l&rsquo;heure dite<small>Un acheteur, vingt personnes qui découvrent le produit.</small></td>
+            <td class="money">5 000 F</td>
+            <td class="pc">80 %</td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td class="fig">600 murs</td>
+            <td><span class="tag t-now">Maintenant</span></td>
+          </tr>
+          <tr>
+            <td class="r">03</td>
+            <td class="nm">Le faire-part vivant</td>
+            <td>Invitation, confirmation de présence, plan, tissu de la fête, participation<small>200 à 500 invités, donc 200 à 500 diffusions par vente.</small></td>
+            <td class="money">25 000 F</td>
+            <td class="pc">75 %</td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td class="fig">120 mariages</td>
+            <td><span class="tag t-now">Maintenant</span></td>
+          </tr>
+          <tr>
+            <td class="r">04</td>
+            <td class="nm">Le drop</td>
+            <td>Une page de vente qui s&rsquo;ouvre à l&rsquo;heure dite et ferme quand le stock est fini<small>Le sceau de MINUIT, appliqué au commerce. Hillary, Miss cakes, Djambar.</small></td>
+            <td class="money">15 000 F / mois</td>
+            <td class="pc">65 %</td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td class="fig">17 maisons, 12 mois</td>
+            <td><span class="tag t-now">Maintenant</span></td>
+          </tr>
+          <tr>
+            <td class="r">05</td>
+            <td class="nm">Le cahier de cotisation</td>
+            <td>Le carnet des dons d&rsquo;obsèques, tenu tout seul, et la mémoire de la réciprocité<small>L&rsquo;idée la plus inédite du lot, et la plus délicate.</small></td>
+            <td class="money">15 000 F</td>
+            <td class="pc">65 %</td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td class="fig">200 événements</td>
+            <td><span class="tag t-soon">Cette saison</span></td>
+          </tr>
+          <tr>
+            <td class="r">06</td>
+            <td class="nm">La carte cadeau des maisons</td>
+            <td>La diaspora offre un soin, un gâteau, une robe, chez vos onze clients<small>10 % du bon, plus l&rsquo;abonnement de la maison.</small></td>
+            <td class="money">10 %</td>
+            <td class="pc">70 %</td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td class="fig">hors d&rsquo;atteinte seule</td>
+            <td><span class="tag t-soon">Cette saison</span></td>
+          </tr>
+          <tr>
+            <td class="r">07</td>
+            <td class="nm">L&rsquo;album de la soirée</td>
+            <td>Les invités déposent leurs photos par QR, l&rsquo;album se scelle et s&rsquo;ouvre à minuit<small>Se vend avec le faire-part, jamais seul.</small></td>
+            <td class="money">25 000 F</td>
+            <td class="pc">60 %</td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td class="fig">avec le n° 03</td>
+            <td><span class="tag t-soon">Cette saison</span></td>
+          </tr>
+          <tr>
+            <td class="r">08</td>
+            <td class="nm">Le billet</td>
+            <td>Billetterie Mobile Money, code contrôlé à l&rsquo;entrée<small>L&rsquo;organisateur fait la publicité à votre place.</small></td>
+            <td class="money">6 %</td>
+            <td class="pc">65 %</td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td class="fig">50 M de billets</td>
+            <td><span class="tag t-soon">Cette saison</span></td>
+          </tr>
+          <tr>
+            <td class="r">09</td>
+            <td class="nm">Le statut</td>
+            <td>La vidéo verticale de promo d&rsquo;un commerçant, rendue en deux minutes<small>Le seul produit du lot qu&rsquo;on rachète tous les jours.</small></td>
+            <td class="money">5 000 F / mois</td>
+            <td class="pc">60 %</td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td class="fig">50 abonnés, 12 mois</td>
+            <td><span class="tag t-late">Après</span></td>
+          </tr>
+          <tr>
+            <td class="r">10</td>
+            <td class="nm">La cagnotte</td>
+            <td>Le pot commun : anniversaire, départ, maladie, rentrée scolaire<small>L&rsquo;argent va au bénéficiaire, jamais à NEBULA.</small></td>
+            <td class="money">5 %</td>
+            <td class="pc">60 %</td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td class="fig">60 M collectés</td>
+            <td><span class="tag t-late">Après</span></td>
+          </tr>
+          <tr>
+            <td class="r">11</td>
+            <td class="nm">Le mot de chaque matin</td>
+            <td>Trente messages, un par jour, à l&rsquo;heure choisie, écrits d&rsquo;avance<small>Ne coûte rien de plus : c&rsquo;est le rail de livraison, répété.</small></td>
+            <td class="money">10 000 F</td>
+            <td class="pc">50 %</td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="2 sur 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></td>
+            <td class="fig">300 abonnements</td>
+            <td><span class="tag t-late">Après</span></td>
+          </tr>
+          <tr>
+            <td class="r">12</td>
+            <td class="nm">La capsule</td>
+            <td>La lettre qu&rsquo;on ouvre dans un an, cinq ans, ou le jour des dix-huit ans<small>Vendue à la naissance et au baptême.</small></td>
+            <td class="money">15 000 F</td>
+            <td class="pc">45 %</td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="5 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td><span class="j" role="img" aria-label="2 sur 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></td>
+            <td class="fig">200 capsules</td>
+            <td><span class="tag t-late">Après</span></td>
+          </tr>
+          <tr>
+            <td class="r">13</td>
+            <td class="nm">Les gabarits en dollars</td>
+            <td>Le gabarit de la lettre, vendu hors d&rsquo;Afrique, payé par carte<small>Marge de 100 %, aucune logistique, aucune saison.</small></td>
+            <td class="money">15 $</td>
+            <td class="pc">55 %</td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="2 sur 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></td>
+            <td class="fig">300 ventes</td>
+            <td><span class="tag t-late">Après</span></td>
+          </tr>
+          <tr>
+            <td class="r">14</td>
+            <td class="nm">L&rsquo;enveloppe</td>
+            <td>La lettre qui contient l&rsquo;argent, versé à l&rsquo;ouverture<small>Le geste local par excellence. Et le seul du lot qui touche à une licence.</small></td>
+            <td class="money">1 000 F</td>
+            <td class="pc">40 %</td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="2 sur 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td>
+            <td class="fig">3 000 envois</td>
+            <td><span class="tag t-if">Sous condition</span></td>
+          </tr>
+          <tr>
+            <td class="r">15</td>
+            <td class="nm">La voix des anciens</td>
+            <td>Les voix de la famille, enregistrées, scellées, offertes à la diaspora<small>Magnifique, cher, et pas automatisable.</small></td>
+            <td class="money">75 000 F</td>
+            <td class="pc">40 %</td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="2 sur 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></td>
+            <td><span class="j" role="img" aria-label="3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+            <td class="fig">40 familles</td>
+            <td><span class="tag t-late">Plus tard</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="col" style="font-size:13.5px;color:var(--slate)">Les tickets et les volumes sont de l&rsquo;arithmétique : ils se vérifient. Les quatre notes sont mon jugement, pas une mesure, et elles doivent être corrigées dès les cent premières ventes. La colonne « il en faut » est simplement 3 000 000 F divisés par la marge unitaire, sur douze mois.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack-lg">
+    <div class="col stack">
+      <div class="snum">Les quinze, une par une</div>
+      <h2>Ce que c&rsquo;est, comment on le vend, ce qui peut le tuer</h2>
+    </div>
+
+    <div class="idee">
+      <div class="rk">01</div>
+      <div class="bd">
+        <div class="ttl"><h3>Les vœux d&rsquo;entreprise</h3><span class="tag t-now">Maintenant</span></div>
+        <p>Une banque envoie ses vœux à quatre cents clients. Aujourd&rsquo;hui : un SMS groupé, ou une image fabriquée sur téléphone. Demain : une page scellée qui <b>porte le nom du client</b>, aux couleurs de la maison, qui s&rsquo;ouvre le 31 décembre à minuit pile.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Ce n&rsquo;est pas une vente par publicité, c&rsquo;est une vente en face à face, <b>en novembre</b>, avant que les budgets de fin d&rsquo;année soient arrêtés. PISTE fournit la liste des banques, assurances, hôtels et cliniques. L&rsquo;argument tient en une phrase : « vos clients recevront quarante messages ce soir-là, un seul portera leur nom ».</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v"><b>20 entreprises à 150 000 F.</b> Une seule saison, huit semaines de vente. C&rsquo;est le chemin le plus court des quinze, et le moteur est déjà construit à 90 %.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Tout se joue en six semaines. Manqué novembre, l&rsquo;idée dort un an.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">02</div>
+      <div class="bd">
+        <div class="ttl"><h3>Le mur</h3><span class="tag t-now">Maintenant</span></div>
+        <p>Au lieu d&rsquo;une lettre d&rsquo;une personne, le mur de vingt. L&rsquo;organisateur ouvre le mur, envoie le lien dans le groupe WhatsApp de la famille, chacun laisse son mot et sa photo. À l&rsquo;heure dite, le mur se scelle et s&rsquo;ouvre chez celui qu&rsquo;on fête.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v"><b>C&rsquo;est le seul produit du lot qui paie sa propre publicité.</b> Une vente, c&rsquo;est vingt personnes qui voient le produit de l&rsquo;intérieur et laissent leur numéro. Vendre 5 000 F à l&rsquo;organisateur, pas 500 F à chacun : vingt paiements, ce sont vingt occasions d&rsquo;abandonner.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v"><b>600 murs sur douze mois</b>, soit cinquante par mois. Le pic de février peut en faire cent cinquante à lui seul.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Rien, sinon le construire mal. Deux semaines sur le moteur existant. C&rsquo;est l&rsquo;idée la moins risquée du dossier.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">03</div>
+      <div class="bd">
+        <div class="ttl"><h3>Le faire-part vivant</h3><span class="tag t-now">Maintenant</span></div>
+        <p>L&rsquo;invitation, mais qui compte les invités. Confirmation de présence, plan d&rsquo;accès, tissu de la fête, participation. Déjà chiffré dans le dossier du 27 août : 25 000 F, 75 000 F le pack complet.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">La saison sèche est la saison des mariages, et décembre est le mois où la diaspora rentre. <b>Le vendeur n&rsquo;est pas vous</b> : ce sont les traiteurs, les salles, les photographes et les couturières. Marque blanche à 15 000 F par mois, exactement la grille déjà écrite.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v"><b>120 faire-part</b>, ou 40 packs complets. Deux saisons de mariage.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Le carton imprimé a un avantage réel : on le pose sur un meuble. Ne pas le remplacer, le doubler. <b>Le carton fait l&rsquo;honneur, la page fait la logistique</b> : qui vient, et combien de couverts.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">04</div>
+      <div class="bd">
+        <div class="ttl"><h3>Le drop</h3><span class="tag t-now">Maintenant</span></div>
+        <p>Le sceau de MINUIT, appliqué au commerce. Une page qui n&rsquo;affiche rien avant vingt heures, s&rsquo;ouvre, montre trente pièces, et ferme quand il n&rsquo;y en a plus. Hillary a dix-neuf pièces uniques. Miss cakes prend des commandes. Weinkeller reçoit des arrivages.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Ne pas le vendre comme un site, le vendre comme un <b>événement</b>. La maison annonce l&rsquo;heure trois jours avant sur son statut : c&rsquo;est elle qui fait la publicité, et elle a déjà l&rsquo;audience. Abonnement 15 000 F par mois et par maison.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v"><b>17 maisons abonnées pendant douze mois.</b> Vous en avez déjà onze au carnet, qui vous connaissent et qui vous répondent.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">La rareté doit être <b>vraie</b>. Trente pièces annoncées, trente pièces réelles. Une fausse rareté se voit en deux drops et tue la maison, pas seulement la page.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">05</div>
+      <div class="bd">
+        <div class="ttl"><h3>Le cahier de cotisation</h3><span class="tag t-soon">Cette saison</span></div>
+        <p>À chaque décès, un carnet circule. Chacun écrit son nom et la somme donnée, et on le lit à voix haute. Ce carnet est trois choses en même temps : une comptabilité, une preuve sociale, et <b>une dette de réciprocité</b> que la famille devra rendre un jour. Personne ne l&rsquo;a jamais porté en numérique.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">La page porte l&rsquo;annonce, le programme des obsèques et le registre. Chacun donne par Mobile Money, reçoit son reçu, son nom s&rsquo;inscrit. La famille garde le registre, et le jour où l&rsquo;un des donateurs marie sa fille, <b>elle sait exactement ce qu&rsquo;il avait donné</b>. C&rsquo;est la fonction que le papier ne rend pas, et c&rsquo;est elle qu&rsquo;on vend.</span></div>
+          <div class="ln"><span class="k">L&rsquo;argent</span><span class="v">Sous-compte FedaPay au nom de la famille. <b>Les fonds ne transitent jamais par NEBULA</b> : vous vendez le service, pas la collecte. C&rsquo;est déjà la règle écrite pour les contributions de mariage.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v"><b>200 événements à 15 000 F.</b> L&rsquo;accès ne passe pas par la publicité : il passe par les paroisses, les mosquées, les pompes funèbres et les imprimeurs de programmes.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Le deuil ne se décore pas. Aucune animation, aucun emoji, aucune couleur. À faire relire par quelqu&rsquo;un qui vient d&rsquo;enterrer un proche <b>avant</b> la première vente. Une seule maladresse et le produit est mort dans toute la ville.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">06</div>
+      <div class="bd">
+        <div class="ttl"><h3>La carte cadeau des maisons</h3><span class="tag t-soon">Cette saison</span></div>
+        <p>Deux millions de Béninois vivent loin et envoient de l&rsquo;argent. Ils ne peuvent pas offrir un soin à leur mère : ils ne peuvent que lui virer 20 000 F. Un bon scellé, payé par carte en euros, ouvert par elle, retiré chez Grain d&rsquo;Esthétique.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Le produit qui transforme <b>le carnet clients en réseau de distribution</b>. Chaque vitrine affiche « offrir depuis l&rsquo;étranger ». Commission de 10 % au commerçant, plus l&rsquo;abonnement. Vous vendez à des gens qui vous paient déjà.</span></div>
+          <div class="ln"><span class="k">L&rsquo;argent</span><span class="v">Le commerçant encaisse et doit la prestation. <b>NEBULA ne détient jamais la valeur du bon</b> : un bon prépayé est une dette de la maison, pas de l&rsquo;agence.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">Hors d&rsquo;atteinte seule la première année : il faudrait 30 M de bons vendus. Comptez plutôt <b>1,5 M</b>, adossés à onze clients existants. Ce n&rsquo;est pas le produit des 3 M, c&rsquo;est celui qui rend les onze autres plus solides.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Un commerçant qui refuse d&rsquo;honorer un bon vendu six mois plus tôt. Régler par écrit, avec chaque maison, avant la première vente.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">07</div>
+      <div class="bd">
+        <div class="ttl"><h3>L&rsquo;album de la soirée</h3><span class="tag t-soon">Cette saison</span></div>
+        <p>Un QR sur chaque table. Les invités déposent leurs photos pendant la fête. À minuit, l&rsquo;album se scelle, et il s&rsquo;ouvre chez les mariés <em>et</em> chez les trois cents invités.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Ce n&rsquo;est pas un produit séparé, c&rsquo;est <b>le multiplicateur du n° 03</b>. Il fait passer une vente de 25 000 F à un pack de 50 000 F, et il fait découvrir NEBULA à trois cents personnes le lendemain matin, à l&rsquo;heure où tout le monde ouvre son téléphone.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">Ne se compte pas seul. Il augmente le n° 03 d&rsquo;environ moitié.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Le stockage. Trois cents invités et cinq photos chacun, ce sont de vrais mégaoctets et une vraie facture. Fixer la limite au premier jour, et l&rsquo;écrire sur la page.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">08</div>
+      <div class="bd">
+        <div class="ttl"><h3>Le billet</h3><span class="tag t-soon">Cette saison</span></div>
+        <p>Billetterie Mobile Money, un code par billet, contrôlé à l&rsquo;entrée avec un téléphone.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Ne pas chercher cent petits organisateurs, en chercher <b>trois gros</b>. Les Vodun Days du 10 janvier, un concert, une conférence. L&rsquo;organisateur fait toute la publicité : votre coût d&rsquo;acquisition est nul.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">6 % de 50 M de billets. Un événement de 2 000 billets à 5 000 F rapporte 600 000 F : <b>il en faut cinq</b>.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">La concentration : si l&rsquo;organisateur dit non, il ne reste rien. Et surtout, <b>le contrôle à l&rsquo;entrée doit marcher sans réseau</b>. C&rsquo;est là que le produit se joue, pas dans la vente.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">09</div>
+      <div class="bd">
+        <div class="ttl"><h3>Le statut</h3><span class="tag t-late">Après</span></div>
+        <p>Un commerçant tape son texte, pose sa photo, choisit un habillage, et reçoit deux minutes plus tard une verticale de quinze secondes, prête pour son statut WhatsApp. Le studio qui la rend existe déjà dans le dépôt.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v"><b>Le seul produit du lot qu&rsquo;on rachète tous les jours.</b> Vendre l&rsquo;abonnement, trente statuts pour 5 000 F par mois, jamais l&rsquo;unité.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v"><b>50 abonnés pendant douze mois.</b> Peu de clients, et du récurrent : la meilleure qualité de revenu du catalogue.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Le rendu coûte du calcul, et le calcul coûte de l&rsquo;argent. <b>Mesurer le prix d&rsquo;une vidéo rendue avant de fixer le prix de l&rsquo;abonnement</b>, pas l&rsquo;inverse.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">10</div>
+      <div class="bd">
+        <div class="ttl"><h3>La cagnotte</h3><span class="tag t-late">Après</span></div>
+        <p>Le pot commun. Vingt collègues pour un départ, une famille pour une opération, une promotion pour la rentrée.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Même moteur que le n° 05, autre habillage, autre humeur. <b>Se lance après lui, jamais avant</b> : le deuil impose une exigence de sobriété qui tire tout le reste vers le haut.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">5 % de 60 M collectés. Improbable la première année, seule.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">La confiance : on donne son argent à quelqu&rsquo;un qu&rsquo;on ne voit pas. Le registre public et le reçu automatique sont la réponse. Pas le design.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">11</div>
+      <div class="bd">
+        <div class="ttl"><h3>Le mot de chaque matin</h3><span class="tag t-late">Après</span></div>
+        <p>Trente messages écrits d&rsquo;avance, livrés un par jour, à six heures.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">C&rsquo;est le rail de livraison, répété trente fois : <b>zéro construction supplémentaire</b> une fois n8n en place. Se vend au moment où l&rsquo;un des deux part, pour les études ou pour la saison.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">300 abonnements à 10 000 F.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Trente occasions de tomber en panne au lieu d&rsquo;une. <b>Ne pas le vendre avant que la livraison ait tenu un mois entier sans faute.</b></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">12</div>
+      <div class="bd">
+        <div class="ttl"><h3>La capsule</h3><span class="tag t-late">Après</span></div>
+        <p>La lettre qu&rsquo;on n&rsquo;ouvre pas cette année. Dans un an, dans cinq ans, ou le jour des dix-huit ans de l&rsquo;enfant.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Se vend à la naissance et au baptême, là où le n° 03 vend déjà. Prix élevé, aucune concurrence, marge entière.</span></div>
+          <div class="ln"><span class="k">La promesse</span><span class="v">Ne <b>jamais</b> promettre un serveur pendant dix-huit ans. <code>lettre.html</code> est autonome et ne fait aucun appel réseau : livrer <b>aussi le fichier</b> à l&rsquo;acheteur, le jour de l&rsquo;achat. La promesse tient même si NEBULA n&rsquo;existe plus, et cela devient un argument de vente au lieu d&rsquo;une gêne.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">200 capsules à 15 000 F.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">La vente est lente parce que le bénéfice est lointain. Bon complément, mauvais produit principal.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">13</div>
+      <div class="bd">
+        <div class="ttl"><h3>Les gabarits en dollars</h3><span class="tag t-late">Après</span></div>
+        <p>Le gabarit de la lettre, vendu hors d&rsquo;Afrique, 9 à 19 $. Déjà prévu dans le dossier du 27 août.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Du revenu qui ne dépend d&rsquo;<b>aucune date, aucune saison, aucun réseau local</b>, et qui paie en devise. Le travail est fait une seule fois.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">300 ventes à 15 $.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Le marché est saturé de gabarits à 1 $. Ce qui se vend n&rsquo;est pas le fichier, c&rsquo;est le style. <b>Le vôtre en a un</b>, c&rsquo;est la seule raison d&rsquo;y aller.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">14</div>
+      <div class="bd">
+        <div class="ttl"><h3>L&rsquo;enveloppe</h3><span class="tag t-if">Sous condition</span></div>
+        <p>Au Bénin on ne donne pas de l&rsquo;argent : on donne <em>une enveloppe</em>. La lettre s&rsquo;ouvre à minuit, elle se lit, et à la fin l&rsquo;argent est là.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Ce n&rsquo;est pas un produit à part, c&rsquo;est <b>ce qui ferait passer le panier moyen de 2 000 F à 20 000 F</b>. Le flux existe déjà : environ 300 milliards de francs de transferts par an, et pas un seul produit numérique en face.</span></div>
+          <div class="ln risk"><span class="k">Le blocage</span><span class="v">Verser à un tiers de l&rsquo;argent reçu d&rsquo;un autre tiers, c&rsquo;est du transfert de fonds, pas de l&rsquo;encaissement de commerçant. <b>Question écrite à FedaPay avant d&rsquo;écrire une seule ligne.</b> Si la réponse est non, la variante propre existe : la lettre ne porte pas l&rsquo;argent, elle porte le lien de paiement du destinataire, et c&rsquo;est l&rsquo;acheteur qui envoie.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">3 000 envois à 1 000 F de frais.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Le seul risque réglementaire du dossier. C&rsquo;est ce qui la classe quatorzième, malgré une très bonne idée.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idee">
+      <div class="rk">15</div>
+      <div class="bd">
+        <div class="ttl"><h3>La voix des anciens</h3><span class="tag t-late">Plus tard</span></div>
+        <p>On enregistre la grand-mère, l&rsquo;oncle, celui qui connaît encore les noms. On scelle. On offre à la famille partie loin.</p>
+        <div class="lines">
+          <div class="ln"><span class="k">Stratégie</span><span class="v">Haut de gamme, vendu à la diaspora, 75 000 F. Personne d&rsquo;autre ne peut le faire depuis Cotonou.</span></div>
+          <div class="ln"><span class="k">Vers 3 M</span><span class="v">40 familles.</span></div>
+          <div class="ln risk"><span class="k">Ce qui tue</span><span class="v">Quatre à six heures de travail humain par vente. <b>Ce n&rsquo;est plus un produit numérique, c&rsquo;est une prestation.</b> Excellente pour la réputation, mauvaise pour la marge : à garder pour quand le reste tourne seul.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <h4>Deux mécaniques qui ne se vendent pas, mais qui font vendre tout le reste</h4>
+      <p><b>L&rsquo;agenda des dates.</b> L&rsquo;acheteur enregistre vingt anniversaires une fois. Trois jours avant chacun, on le prévient et la lettre est déjà à moitié écrite. Ce n&rsquo;est pas un produit : c&rsquo;est ce qui transforme un achat unique en achat annuel, sur les quinze idées à la fois.</p>
+      <p><b>Le jeu.</b> Un test gratuit qui finit sur une page personnalisée à envoyer. Il ne rapporte rien directement : il récolte des numéros à un coût très bas, et il meurt en six semaines s&rsquo;il n&rsquo;est pas renouvelé. À traiter comme de la publicité, pas comme un produit.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="col stack">
+      <div class="snum">L&rsquo;arithmétique</div>
+      <h2>Trois chemins vers trois millions, et ils ne se ressemblent pas</h2>
+      <p>Trois millions ne se gagnent pas de la même façon selon le prix. À 2 000 F la pièce, il faut <b>mille cinq cents acheteurs</b> ; à 150 000 F, il en faut <b>vingt</b>. Trouver vingt directeurs commerciaux à Cotonou est un travail de six semaines. Trouver mille cinq cents inconnus qui paient en ligne est un travail d&rsquo;un an. <b>Le prix est la décision la plus importante du dossier, avant l&rsquo;idée elle-même.</b></p>
+    </div>
+    <div class="paths">
+      <div class="path">
+        <div>
+          <div class="sub">Le chemin court</div>
+          <div class="big">8 semaines</div>
+        </div>
+        <ul>
+          <li>Les vœux d&rsquo;entreprise, vendus en novembre</li>
+          <li>20 signatures à 150 000 F</li>
+          <li>Livraison unique, le 31 décembre à minuit</li>
+          <li>Moteur déjà construit à 90 %</li>
+        </ul>
+        <p style="font-size:14px;color:var(--slate)">Le plus rapide, et le plus fragile : tout dépend de six semaines de rendez-vous.</p>
+      </div>
+      <div class="path mid">
+        <div>
+          <div class="sub">Le chemin de la saison</div>
+          <div class="big">6 mois</div>
+        </div>
+        <ul>
+          <li>Faire-part + album, de décembre à avril</li>
+          <li>Cahier de cotisation, toute l&rsquo;année</li>
+          <li>120 mariages ou 200 événements</li>
+          <li>Vendu par des tiers : salles, traiteurs, paroisses</li>
+        </ul>
+        <p style="font-size:14px;color:var(--slate)">Le plus solide : des budgets qui existent déjà, et 300 diffusions par vente.</p>
+      </div>
+      <div class="path slow">
+        <div>
+          <div class="sub">Le chemin lent</div>
+          <div class="big">12 mois</div>
+        </div>
+        <ul>
+          <li>Le drop et le statut, en abonnement</li>
+          <li>Les gabarits, en devise</li>
+          <li>50 à 70 abonnés qui ne partent pas</li>
+          <li>Ne dépend d&rsquo;aucune date</li>
+        </ul>
+        <p style="font-size:14px;color:var(--slate)">Le plus ennuyeux, et le seul qui vaut encore quelque chose en janvier.</p>
+      </div>
+    </div>
+    <div class="note ok">
+      <h4>Ce que je ferais : les trois à la fois, mais pas dans le désordre</h4>
+      <p>Le rail d&rsquo;abord, deux semaines. Puis le mur, parce qu&rsquo;il coûte deux semaines et qu&rsquo;il ramène des numéros. Puis les vœux d&rsquo;entreprise en novembre, parce que la date ne se rattrape pas. Le faire-part se vend pendant ce temps, sans vous, par les salles et les traiteurs. Le reste attend janvier.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="col stack">
+      <div class="snum">La publicité</div>
+      <h2>Ce qui fait une bonne annonce, ici et pas ailleurs</h2>
+      <p>Une très bonne publicité pour ce genre de produit ne montre pas le produit. <b>Elle montre quelqu&rsquo;un en train de l&rsquo;ouvrir.</b> Le cachet qui se brise dure une seconde et demie, et c&rsquo;est cette seconde et demie qui vend, pas la liste des fonctions.</p>
+      <ul class="plain">
+        <li><b>La date est l&rsquo;accroche, pas le produit.</b> « Pour le 31 décembre à minuit » convertit. « Offrez une lettre digitale » ne convertit pas. Chaque annonce doit porter une date et un compte à rebours réel.</li>
+        <li><b>WhatsApp avant TikTok.</b> La surface de diffusion réelle en Afrique de l&rsquo;Ouest est le statut et la liste de diffusion. Il n&rsquo;y a pas de « lien en bio » : le lien doit voyager <em>dans</em> le message. La vidéo doit donc être lisible sans le son, et faire moins d&rsquo;un mégaoctet pour être repartagée.</li>
+        <li><b>La méfiance au paiement est rationnelle.</b> Payer en ligne un inconnu est culturellement suspect, et souvent à raison. Réponse : l&rsquo;aperçu avant le paiement, un vrai numéro WhatsApp visible, et un visage. Pas un logo.</li>
+        <li><b>Trois accroches, 20 000 F chacune, et on garde celle qui gagne.</b> Le montant du test n&rsquo;est pas là pour vendre, il est là pour mesurer. On ne compare pas les vues : on compare le <b>coût par acheteur</b>.</li>
+        <li><b>Personne ne peut vous donner ce coût à l&rsquo;avance.</b> Aucun chiffre de coût par clic au Bénin n&rsquo;est fiable tant que vous ne l&rsquo;avez pas payé vous-même. Les cent premières ventes servent exactement à ça, et à rien d&rsquo;autre.</li>
+        <li><b>Le canal qui coûte zéro franc est déjà à vous</b> : onze vitrines qui reçoivent du trafic tous les jours, un réseau de partenaires payé 30 à 40 %, et des clients qui deviennent revendeurs. Une annonce payante qui tourne avant que ces trois-là soient activés, c&rsquo;est de l&rsquo;argent dépensé à la place d&rsquo;un travail non fait.</li>
+      </ul>
+    </div>
+    <div class="note stop">
+      <h4>Trois choses qui font perdre plus qu&rsquo;elles ne rapportent</h4>
+      <p>Un faux compte à rebours, un faux avis, une fausse rareté. Cotonou est une petite ville : la première personne qui s&rsquo;en aperçoit le dira à cinquante autres. Toutes les preuves affichées doivent être vraies, y compris le nombre de lettres déjà envoyées, surtout s&rsquo;il est petit.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="col stack">
+      <div class="snum">Les dates</div>
+      <h2>Le calendrier de vente, et celui de construction</h2>
+      <p>Ces produits ne se vendent pas tous les jours de l&rsquo;année : ils se vendent autour de dates, et une date manquée coûte douze mois. Voici les deux calendriers en un seul, du plus proche au plus lointain.</p>
+    </div>
+    <div class="frise">
+      <div class="ev">
+        <div class="d">7 au 19 sept.<small>Construire</small></div>
+        <div class="c"><b>Le rail : livraison à l&rsquo;heure dite, et serveur en ligne</b><p>Les deux lignes en attente du <code>README</code> de MINUIT. Rien d&rsquo;autre ne compte avant. Deux semaines.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">21 sept. au 3 oct.<small>Construire</small></div>
+        <div class="c"><b>Le mur</b><p>Deux semaines sur le moteur existant. C&rsquo;est le produit qui ramène les numéros dont tous les autres auront besoin.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">5 au 17 oct.<small>Construire · vendre</small></div>
+        <div class="c"><b>Le faire-part et l&rsquo;album</b><p>Les mariages de décembre se préparent six semaines avant : la vente commence maintenant, pas en décembre.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">19 oct. au 2 nov.<small>Prospecter</small></div>
+        <div class="c"><b>Les vœux d&rsquo;entreprise, avant les budgets</b><p>Extraire la liste dans PISTE, préparer une démonstration au nom de chaque entreprise visée. Une carte à leur nom vaut cinquante arguments.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">1<sup>er</sup> nov.<small>Toussaint</small></div>
+        <div class="c"><b>La première épreuve du cahier de cotisation</b><p>Un seul cas réel, gratuit, accompagné de bout en bout. On n&rsquo;apprend rien de ce produit en le simulant.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">2 au 30 nov.<small>Vendre</small></div>
+        <div class="c"><b>Six semaines de rendez-vous</b><p>C&rsquo;est ici que se gagnent les trois millions du chemin court. Vingt signatures avant le 30 novembre.</p></div>
+      </div>
+      <div class="ev peak">
+        <div class="d">8 déc.<small>Bascule</small></div>
+        <div class="c"><b>Toute la publicité passe sur le 31 décembre</b><p>Et les gabarits, les vidéos et les visuels doivent être prêts <em>ce jour-là</em>. Un pic qui arrive sans stock est un pic manqué : c&rsquo;est écrit noir sur blanc dans le dossier du 27 août, à propos de février.</p></div>
+      </div>
+      <div class="ev peak">
+        <div class="d">31 déc. 00:00<small>Le pic n° 1</small></div>
+        <div class="c"><b>La nuit qui porte le nom du produit</b><p>Il n&rsquo;existe pas de meilleure date pour un produit appelé MINUIT. Vœux d&rsquo;entreprise livrés, lettres de particuliers, murs de famille, diaspora qui appelle à minuit heure de Cotonou. <b>Tout doit tenir cette nuit-là</b>, et rien ne doit être livré à la main.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">10 janv.<small>Dimanche</small></div>
+        <div class="c"><b>Fête des religions traditionnelles, Vodun Days</b><p>Pic de diaspora et d&rsquo;événements. C&rsquo;est la fenêtre du billet, à condition qu&rsquo;un organisateur ait signé avant le 20 décembre. Sinon on attend l&rsquo;événement suivant, sans forcer.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">15 janv. au 10 fév.<small>Préparer</small></div>
+        <div class="c"><b>Le stock de la Saint-Valentin</b><p>Gabarits, vidéos, annonces, tout rendu d&rsquo;avance. Le pic se prépare quatre semaines avant, jamais pendant.</p></div>
+      </div>
+      <div class="ev peak">
+        <div class="d">14 févr.<small>Le pic n° 2</small></div>
+        <div class="c"><b>Saint-Valentin, un dimanche</b><p>Un mois de février peut faire deux à quatre fois un mois ordinaire. Ticket faible, volume fort, et c&rsquo;est le meilleur moment de l&rsquo;année pour le mur.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">déc. → avril<small>Saison</small></div>
+        <div class="c"><b>La saison sèche est la saison des mariages</b><p>Faire-part, album, liste, cotisation. C&rsquo;est la seule saison longue du calendrier : elle porte le chemin des six mois.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">Ramadan, Tabaski<small>Dates mobiles</small></div>
+        <div class="c"><b>À recalculer chaque année</b><p>Elles avancent d&rsquo;environ onze jours par an et tombent autour de février en 2027 : à confirmer avant d&rsquo;y accrocher une campagne. Ce sont des dates de don, donc des dates d&rsquo;enveloppe.</p></div>
+      </div>
+      <div class="ev">
+        <div class="d">mai → juillet<small>Second souffle</small></div>
+        <div class="c"><b>Fête des mères, fête des pères, résultats d&rsquo;examen</b><p>Les dates exactes des fêtes suivent l&rsquo;usage local : à confirmer, ne pas les recopier d&rsquo;un calendrier français. Les résultats du BAC et du BEPC sont la fenêtre naturelle de la capsule.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="col stack">
+      <div class="snum">Les refus</div>
+      <h2>Cinq idées voisines que je ne construirais pas</h2>
+      <p>Elles reviennent toujours dans ce genre de liste. Chacune a une raison précise d&rsquo;être écartée, et la raison vaut mieux que l&rsquo;idée.</p>
+      <ul class="plain">
+        <li><b>La tontine qui garde l&rsquo;argent.</b> Le besoin est réel et immense, mais détenir les dépôts d&rsquo;un groupe, c&rsquo;est une licence, pas un logiciel. La version défendable existe : tenir le carnet, dire qui a payé et à qui c&rsquo;est le tour, sans jamais toucher un franc.</li>
+        <li><b>La tombola, le tirage, le jeu à gagner.</b> Même mécanique virale, même attrait, et c&rsquo;est un jeu d&rsquo;argent. Réglementé, et un mauvais voisin pour une agence qui vend de la confiance.</li>
+        <li><b>Le message posthume.</b> Techniquement identique à la capsule, humainement à l&rsquo;opposé : il faut prouver un décès, et se tromper une fois suffit. Plusieurs entreprises étrangères s&rsquo;y sont cassé les dents.</li>
+        <li><b>La chanson personnalisée générée.</b> Belle idée, mauvaise matière : la contrefaçon est trop facile à commettre sans le savoir, et la maison a déjà tranché sur les MP3 hébergés.</li>
+        <li><b>La carte de visite numérique.</b> Elle existe partout, gratuitement, avec une marge nulle. Ce n&rsquo;est pas un produit, c&rsquo;est un cadeau à offrir avec autre chose.</li>
+      </ul>
+    </div>
+    <div class="note stop">
+      <h4>Et la règle qui ne bouge pas</h4>
+      <p>Aucune photo produit générée par une machine ne devient le catalogue d&rsquo;un client, sur aucune de ces quinze idées. Ambiance et matière : autorisées. Une pièce présentée comme vendable : jamais.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="col stack">
+      <div class="snum">Lundi</div>
+      <h2>Cinq choses, dans cet ordre</h2>
+      <ol class="steps">
+        <li><b>Le rail.</b> Livraison à l&rsquo;heure dite et serveur en ligne. Deux semaines, et les quinze idées deviennent possibles. Sans lui, ce dossier est de la lecture.</li>
+        <li><b>Une question écrite à FedaPay</b> : peut-on reverser à un tiers de l&rsquo;argent encaissé pour lui ? La réponse ouvre ou ferme l&rsquo;enveloppe, la cagnotte et le cahier de cotisation, soit trois idées sur quinze. Elle coûte un courrier.</li>
+        <li><b>Extraire de PISTE la liste des entreprises</b> qui envoient des vœux : banques, assurances, hôtels, cliniques, écoles privées. Cotonou d&rsquo;abord. C&rsquo;est la matière première du chemin le plus court.</li>
+        <li><b>Le mur</b>, construit sur le moteur de MINUIT. Deux semaines. C&rsquo;est le seul produit qui rembourse sa propre publicité.</li>
+        <li><b>Un prix, une date, une annonce.</b> Trois accroches à 20 000 F, et on mesure le coût par acheteur. Le reste du dossier ne vaut que ce que dira ce chiffre.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <b>Comment ce dossier a été fait</b>
+      <ul>
+        <li>Le marché, les rails de paiement et les occasions viennent du dossier MINUIT du 27 août, pas d&rsquo;une nouvelle recherche</li>
+        <li>Les tickets et les volumes sont de l&rsquo;arithmétique, vérifiable ligne à ligne</li>
+        <li>Les quatre notes de chaque idée sont un jugement, pas une mesure : à corriger dès les cent premières ventes</li>
+        <li>Les actifs cités ont été vérifiés dans le dépôt, pas supposés</li>
+        <li>Les dates religieuses mobiles et les fêtes des mères et des pères sont signalées comme à confirmer, jamais affirmées</li>
+      </ul>
+    </div>
+    <div style="text-align:right">
+      <b>NEBULA Agency</b><br>
+      Dossier interne · 3 septembre 2026<br>
+      Suite du dossier MINUIT du 27 août
+    </div>
+  </div>
+</footer>
