@@ -25,8 +25,15 @@ DIST = os.path.join(RACINE, "_dist")
 
 # ce qui ne doit jamais partir en ligne
 EXCLUS_RACINE = {"_dist", "_outils", "_vues", ".wrangler", ".git", ".impeccable",
-                 ".gitignore", "CONTEXT.md"}
+                 ".gitignore", "CONTEXT.md",
+                 # le devis « vitrine sur tablette » (2026-08-29) et son generateur
+                 "_build_devis.py"}
 EXCLUS_ASSETS = {"_inbox", "og-source"}
+# ⚠️ UN DEVIS NE SE PUBLIE PAS (2026-09-11) : il porte un prix negocie avec la
+#    cliente. Il est arrive dans ce dossier par une branche du telephone
+#    (`devis-vitrine-tablette.html` a la racine, `assets/docs/Devis_*.pdf`) et
+#    serait parti en ligne au deploiement suivant. Exclu par son nom, a tout niveau.
+EXCLUS_PREFIXES = ("devis-", "Devis_")
 
 
 def main():
@@ -36,15 +43,16 @@ def main():
 
     poids, fichiers = 0, 0
     for nom in sorted(os.listdir(RACINE)):
-        if nom in EXCLUS_RACINE:
+        if nom in EXCLUS_RACINE or nom.startswith(EXCLUS_PREFIXES):
             continue
         src = os.path.join(RACINE, nom)
         dst = os.path.join(DIST, nom)
         if os.path.isdir(src):
             def ignore(dossier, noms):
+                exclus = [n for n in noms if n.startswith(EXCLUS_PREFIXES)]
                 if os.path.abspath(dossier) == os.path.abspath(os.path.join(RACINE, "assets")):
-                    return [n for n in noms if n in EXCLUS_ASSETS]
-                return []
+                    exclus += [n for n in noms if n in EXCLUS_ASSETS]
+                return exclus
             shutil.copytree(src, dst, ignore=ignore)
         else:
             shutil.copyfile(src, dst)
