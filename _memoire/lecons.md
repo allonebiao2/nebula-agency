@@ -2292,3 +2292,47 @@ changement, pas du déploiement.
 - **Leçon** : avant de retirer une offre, **chercher son nom dans tout le document**, pas
   seulement là où elle est chiffrée. Et lui trouver un remplaçant qui sert le même besoin
   (ici le QR avis Google, qui est au contrat), sinon le script perd son argument.
+
+## 2026-09-11 · un taux corrigé n'est pas une grille corrigée : le reste vit en francs
+
+- **Contexte** : la grille est passée à 30 % / 40 % le 2026-08-02, et tous les
+  **pourcentages** ont été répercutés avec soin sur les 13 documents de vente.
+- **Ce qui restait** : trois montants à **25 %, écrits en FRANCS** — « 1 catalogue =
+  12 500 F », « 1 vitrine = 37 500 F », « QR Google Review → 7 500 F ». **Aucune recherche
+  de « 25 % » ne pouvait les trouver.** Cinq semaines, plusieurs relectures, et le pire des
+  trois vivait **sous un titre « palier 30 % »**.
+- **Plus large** : la grille survit aussi dans les **exemples** (« un mois à 6 ventes →
+  150 000 F » alors que 6 ventes dépassent le seuil de 3, donc 200 000 F), dans les
+  **totaux** (un tableau qui ne tombait même pas juste sur ses propres lignes), et dans la
+  **mécanique racontée** (« à 4 ventes, la 5e fait changer de palier » : le seuil est 3).
+- **Leçon** : la seule vérification qui tient est **arithmétique**, pas textuelle.
+  Recalculer chaque montant à partir du prix et du taux, par un script, et **le brancher sur
+  la fabrication** pour qu'un chiffre faux empêche de publier. Un document de vente faux
+  part chez un partenaire et n'en revient pas.
+
+## 2026-09-11 · un contrôle qui filtre sur le vocabulaire ne lit plus, il suppose
+
+- **Contexte** : le script écrit pour attraper les montants à l'ancienne grille ne signalait
+  un montant que si le mot « commission », « palier » ou « vous gagnez » se trouvait à moins
+  de 240 caractères. Sans ce filtre il criait au loup dix fois (les 5 000 F de réactivation,
+  les 25 000 F du diagnostic).
+- **Ce qui s'est passé** : il est sorti **VERT sur la ligne même pour laquelle il avait été
+  écrit** — « montants recalculés à la main… (1 catalogue = 12 500 F) », où aucun de ces
+  mots n'apparaît. Une commission n'est pas toujours annoncée par le mot commission.
+- **Leçon** : un filtre de vocabulaire est une **supposition sur la façon d'écrire**. On ne
+  filtre pas le bruit en devinant : on **nomme les exceptions une par une, avec leur
+  raison** (`PAS_UNE_COMMISSION`, où chaque montant dit pourquoi il n'en est pas une). Le
+  bruit devient alors une liste qu'on relit, pas une règle qui aveugle.
+- **Et toujours le témoin** : réintroduire les trois défauts d'origine, vérifier que le
+  contrôle vire au rouge, les retirer, vérifier qu'il revient au vert. Sans ça, « vert » ne
+  veut rien dire. C'est exactement ce témoin qui a démasqué le filtre.
+
+## 2026-09-11 · une vérification écrite dans un document n'est pas une vérification faite
+
+- `07-MISE-EN-LIGNE.md` affirmait noir sur blanc : « montants recalculés à la main sur 7 cas
+  de figure, **tous conformes au socle commercial** », et donnait trois montants **à 25 %**.
+- La phrase a survécu au changement de grille précisément **parce qu'elle dit que c'est déjà
+  vérifié** : personne ne relit une affirmation de conformité.
+- **Leçon** : une phrase qui se porte garante d'un chiffre est le premier endroit à relire
+  quand le chiffre change, pas le dernier. Et ce qui doit garantir un chiffre est un
+  **script qu'on relance**, jamais une phrase qu'on écrit.

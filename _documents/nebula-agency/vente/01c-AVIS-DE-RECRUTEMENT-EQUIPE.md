@@ -69,7 +69,7 @@ Ce n’est pas un projet sur papier. **Des clients sont déjà livrés et en lig
 
 - **Djambar Team** (bijouterie, Cotonou) · djambarteam.com
 - **Grain d’Esthétique** (institut de beauté, Cotonou) · graindesthetique.com
-- **Au Braisé d’Or** (restaurant braisé, Cotonou) · 48 plats commandables en ligne
+- **Au Braisé d’Or** (restaurant braisé, Cotonou) · toute sa carte commandable en ligne
 - **Speed × Weinkeller** (cave à vins, Porto-Novo) · catalogue de 60 produits
 - **Miss Cakes**, **HH Design**, **Hillary M. Styl**...
 
@@ -106,7 +106,7 @@ Vous êtes **partenaire commissionné**. Pas de salaire fixe, pas de plafond non
 - Un Catalogue vendu à 50 000 F → **15 000 F**, et **20 000 F** à 40 %
 - Une Vitrine vendue à 150 000 F → **45 000 F**, et **60 000 F** à 40 %
 - Un Outil métier vendu à 300 000 F → **90 000 F**, et **120 000 F** à 40 %
-- Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
+- Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **200 000 F de commission** (6 ventes dépassent le seuil de 3, donc tout le mois est à 40 %)
 
 **Et vos gains ne s’arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
 20 000 F tous les 6 mois : **vous en touchez 20 %, soit 4 000 F par client et par semestre, à

@@ -604,13 +604,13 @@ cette question.
 
 ## 11.3 Le chemin complet, sur un an
 
-| Moment | Ce que vous vendez | Votre commission (palier 30 %) |
-|---|---|---|
-| Jour 1 | Catalogue 50 000 F | 15 000 F |
-| J+21, il est content | QR Google Review 30 000 F | 7 500 F |
-| Mois 3 | Vitrine 150 000 F | 45 000 F |
-| Mois 7 | Outil de suivi 200 000 F | 50 000 F |
-| | **Sur un seul client** | **107 500 F** |
+| Moment | Ce que vous vendez | Votre commission (palier 30 %) | Au palier 40 % |
+|---|---|---|---|
+| Jour 1 | Catalogue 50 000 F | 15 000 F | 20 000 F |
+| J+21, il est content | QR Google Review 30 000 F | 9 000 F | 12 000 F |
+| Mois 3 | Vitrine 150 000 F | 45 000 F | 60 000 F |
+| Mois 7 | Outil de suivi 200 000 F | 60 000 F | 80 000 F |
+| | **Sur un seul client** | **129 000 F** | **172 000 F** |
 
 **Voilà pourquoi on ne brûle jamais un prospect, et pourquoi on ne vend jamais la marche
 du dessus trop tôt.**

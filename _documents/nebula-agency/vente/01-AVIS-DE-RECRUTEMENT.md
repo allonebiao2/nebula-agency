@@ -58,9 +58,9 @@ Ce n'est pas un projet sur papier. **9 clients sont déjà livrés et en ligne**
 
 - **Djambar Team** (bijouterie, Cotonou) · djambarteam.com
 - **Grain d'Esthétique** (institut de beauté, Cotonou) · graindesthetique.com
-- **Au Braisé d'Or** (restaurant braisé, Cotonou) · 48 plats commandables en ligne
+- **Au Braisé d'Or** (restaurant braisé, Cotonou) · toute sa carte commandable en ligne
 - **Speed × Weinkeller** (cave à vins, Porto-Novo) · catalogue de 60 produits
-- **Miss Cakes**, **HH Design**, **Luxury Skin Clinic**...
+- **Miss Cakes**, **HH Design**, **Luxury Club 229**, **Angy Art**...
 
 Vous pouvez ouvrir chacun de ces sites sur votre téléphone, maintenant, avant même de postuler.
 **Nous vous demandons de le faire.**
@@ -99,7 +99,7 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 - Un Catalogue vendu à 50 000 F → **15 000 F**, et **20 000 F** au palier ARGENT
 - Une Vitrine vendue à 150 000 F → **45 000 F**, et **60 000 F** au palier ARGENT
 - Un Outil métier vendu à 300 000 F → **90 000 F**, et **120 000 F** au palier ARGENT
-- Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
+- Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **200 000 F de commission** (6 ventes dépassent le seuil de 3, donc tout le mois est à 40 %)
 
 **Et vos filleuls vous font gagner plus, sans rien prendre à personne.**
 Vous ne touchez **aucune commission** sur leurs ventes. En revanche **leurs ventes du mois
@@ -114,9 +114,6 @@ espace personnel. Chaque commission est tracée du premier jour au versement.
 à vie**, même si un jour vous arrêtez. Avec 30 clients, cela fait **120 000 F par semestre**
 sans vendre quoi que ce soit de nouveau. Ce que vous construisez reste à vous.
 
-**En revanche, aucune commission sur les ventes des autres.** Vos filleuls ne vous versent
-rien : leurs ventes comptent avec les vôtres pour faire monter votre palier, c'est tout.
-Personne ne gagne d'argent sur le dos de personne ici.
 
 ---
 
@@ -192,7 +189,7 @@ et il perd son temps autant que le nôtre.
 **En ligne :** https://partenaires.nebula-agency.online/devenir
 **Par WhatsApp :** +229 96 74 07 32, écrivez simplement **« PARTENAIRE »** et votre prénom.
 
-*Candidatures ouvertes jusqu'au 21 jours après la publication de cette annonce. NEBULA Agency · Cotonou, Bénin ·
+*Candidatures ouvertes. NEBULA Agency · Cotonou, Bénin ·
 www.nebula-agency.online*
 
 ---

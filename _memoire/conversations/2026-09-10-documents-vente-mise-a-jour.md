@@ -149,3 +149,104 @@ correction. **Ce qui n'a pas de source ne se maintient pas.**
 ⚠️ **Relire les octets, pas les noms.** « Le contrat n'est pas à jour » a été démenti en
 extrayant le texte du PDF, pas en regardant sa date ni son nom de fichier. Et c'est cette
 même lecture qui a trouvé le vrai coupable trois dossiers plus loin.
+
+---
+
+# Second temps · 2026-09-11 · l'ancienne grille était aussi écrite EN FRANCS
+
+Mongazi : « Donne-moi les documents du coup. Améliorer, modifier. »
+
+En régénérant les PDF (le socle avait été modifié la veille sans que son PDF soit
+refait), la relecture de `01b-ANNONCE-PUBLIQUE.md` a fait tomber **six défauts de plus**,
+et l'un d'eux ouvrait une famille entière.
+
+## ⛔ Le défaut de fond : 25 % survivait en francs
+
+Le 2026-08-02, la grille est passée à 30 % / 40 % et **tous les pourcentages** ont été
+corrigés. Mais trois montants étaient écrits **en francs** :
+
+| Où | Ce qui était écrit | Ce que c'est | Ce que ça devrait être |
+|---|---|---|---|
+| `07-MISE-EN-LIGNE.md` | « 1 catalogue = **12 500 F** » | 25 % de 50 000 | **15 000 F** |
+| `07-MISE-EN-LIGNE.md` | « 1 vitrine = **37 500 F** » | 25 % de 150 000 | **45 000 F** |
+| `03-GUIDE-CATALOGUE.md` | « QR Google Review 30 000 F → **7 500 F** » | 25 % de 30 000 | **9 000 F** |
+
+⚠️ **Aucune recherche de « 25 % » ne pouvait les trouver.** Ils ont survécu cinq semaines
+à toutes les relectures. Le pire des trois vivait **sous un titre « palier 30 % »**, dans
+le guide que le partenaire lit pour vendre le Catalogue, et la même ligne annonçait
+l'Outil à 200 000 F pour **50 000 F** de commission (25 %) au lieu de 60 000. Le tableau
+« sur un seul client » totalisait **107 500 F** quand la vraie somme fait **129 000 F** :
+⚠️ **il ne tombait même pas juste sur ses propres lignes** (15 000 + 7 500 + 45 000 +
+50 000 = 117 500). Un partenaire perdait 21 500 F sur un client, sur le papier.
+
+⚠️ **Et `07-MISE-EN-LIGNE.md` affirmait que ces montants avaient été « recalculés à la
+main sur 7 cas de figure, tous conformes au socle commercial ».** Une vérification écrite
+n'est pas une vérification faite.
+
+## ⛔ Le mois type valait 150 000 F au lieu de 200 000 F, dans TROIS documents
+
+« Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission** » :
+6 ventes dépassent le seuil de 3, donc le mois entier est à 40 %, donc **200 000 F**.
+Le socle l'a juste (§4.5). `01`, `01b` et `01c` l'avaient faux. ⚠️ **`01` se contredisait
+lui-même** : 200 000 F à la ligne 30, 150 000 F à la ligne 102. Et `07` décrivait un
+partenaire « à 4 ventes qui voit ce que la 5e lui rapporte » : **le seuil est 3**, il
+serait déjà à 40 %. La mécanique de l'ancien escalier à trois paliers, racontée en
+toutes lettres.
+
+**Ces documents sous-vendaient le programme de 50 000 F par mois type.**
+
+## Les autres corrections
+
+- `06-ARSENAL-SCRIPTS` : « Je gagne entre 15 000 et **75 000 F** par vente » → **60 000 F**
+  (75 000 n'est aucun taux de la grille ; 60 000 = une Vitrine à 40 %, et l'Outil n'est
+  pas vendable avant 3 ventes).
+- **Un paragraphe entier disait deux fois la même chose** dans les trois avis de
+  recrutement, avec une phrase recopiée mot pour mot (« Personne ne gagne d'argent sur le
+  dos de personne ici »).
+- « Candidatures ouvertes **jusqu'au 21 jours après la publication** » : phrase cassée, et
+  une date qui ne veut rien dire sur un texte partagé pendant des mois.
+- « Au Braisé d'Or · **48 plats** » : ⚠️ **le site en sert 52** (`index.html`, la source
+  déclarée, et `carte.ts` concordent) **et `CLAUDE.md` en annonce 42**. Trois chiffres pour
+  une carte. Un nombre qu'on ne peut pas prouver ne va pas dans un document public → « toute
+  sa carte commandable en ligne ». ⏳ **L'écart 42 / 52 reste à trancher chez le client 09.**
+- « Luxury Skin Clinic » → **Luxury Club 229** (c'est la maison ; la clinique n'en est qu'un
+  pôle), et **Angy Art** ajoutée aux références.
+
+## `_verifier_montants.py` · le contrôle qui manquait
+
+Il relit **chaque montant en francs** des documents de vente et le recalcule contre la
+grille. Branché sur `_build_pdf.py` : **un montant faux empêche désormais de fabriquer les
+PDF**, il ne se contente pas de s'afficher.
+
+⚠️ **Le premier jet est sorti VERT sur la ligne même pour laquelle il avait été écrit.**
+Il ne signalait un montant que si le mot « commission », « palier » ou « vous gagnez » se
+trouvait à moins de 240 caractères. Or la ligne fautive disait « montants recalculés à la
+main… (1 catalogue = 12 500 F) » : pas un seul de ces mots. **Un filtre de vocabulaire est
+une supposition sur la façon d'écrire, et un contrôle qui suppose ne lit plus.** Le filtre
+est retiré ; les exceptions sont **nommées une par une** dans `PAS_UNE_COMMISSION`, avec
+leur raison (les 5 000 F de réactivation valent par hasard 10 % de 50 000 ; les 25 000 F
+du diagnostic valent par hasard 5 % de 500 000 ; les 10 000 F du gain rétroactif sont
+justes). ⚠️ **Un contrôle qui crie au loup dix fois n'est plus relancé par personne**, et
+c'est comme ça qu'un vrai défaut passe.
+
+**Témoin fait** : les trois défauts d'origine réintroduits → **rouge, code 1** ; retirés →
+**vert, code 0**.
+
+## Publication
+
+Les **12 PDF refaits**, les **10 partenaires synchronisés**, et ⚠️ **`03`, `06` et `01b`
+ont leur version bumpée dans `DOCS_PARTENAIRES`** : sans ça `publier_documents()` compare
+la date, la trouve identique, et **ne republie rien, sans un mot** — les partenaires
+seraient restés sur les PDF à 25 %. Les sept autres gardent leur date : même contenu.
+
+## Ce qu'il faut retenir
+
+⚠️ **Un taux corrigé n'est pas une grille corrigée.** Chercher le pourcentage ne trouve que
+la moitié du travail : le reste vit en francs, en exemples, en totaux, et dans la mécanique
+racontée (« à 4 ventes, la 5e… »). La seule vérification qui tient est **arithmétique** :
+recalculer chaque montant à partir du prix et du taux.
+
+⚠️ **Une vérification écrite dans un document n'est pas une vérification faite.**
+`07-MISE-EN-LIGNE` affirmait noir sur blanc que ses montants étaient « conformes au socle ».
+Ils étaient à 25 %. La phrase a survécu à la correction de la grille parce que personne ne
+relit une phrase qui dit que c'est déjà vérifié.

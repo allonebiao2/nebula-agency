@@ -103,15 +103,17 @@ son palier, et surtout **combien de ventes il lui manque pour changer de palier 
 
 **Deux usages, et le second vaut plus que le premier :**
 
-1. **Motivation interne.** Un partenaire à 4 ventes le 25 du mois voit noir sur blanc que
-   la 5ème lui rapporte sa commission **plus 10 000 F sur ce qu'il a déjà vendu**. Il sort
-   la chercher.
+1. **Motivation interne.** Un partenaire à 2 ventes le 25 du mois voit noir sur blanc que
+   la 3ème lui rapporte sa commission **plus 10 000 F sur ce qu'il a déjà vendu**, puisque
+   tout son mois repasse de 30 % à 40 %. Il sort la chercher.
 2. **Recrutement.** Vous l'ouvrez devant un candidat en entretien, vous entrez 4 catalogues
-   et 2 vitrines, et il voit 150 000 F s'afficher. Aucun discours ne fait ça.
+   et 2 vitrines, et il voit 200 000 F s'afficher. Aucun discours ne fait ça.
 
 **Vérifications faites :** balises équilibrées, JavaScript validé (`node --check`), et les
 montants recalculés à la main sur 7 cas de figure, tous conformes au socle commercial
-(1 catalogue = 12 500 F · 1 vitrine = 37 500 F · 6 ventes à 500 000 F = 150 000 F).
+(1 catalogue = 15 000 F · 1 vitrine = 45 000 F · 6 ventes à 500 000 F = 200 000 F, le
+seuil de 3 étant dépassé). ⚠️ **Ces trois montants étaient ceux de l'ancienne grille à 25 %**,
+écrits en francs : aucune recherche de « 25 % » ne pouvait les trouver. Corrigés le 2026-09-11.
 
 **Pour le mettre en ligne :** le déposer sur Cloudflare Pages comme les autres pages, ou
 simplement le joindre en lien dans la Documentation de l'espace partenaire.

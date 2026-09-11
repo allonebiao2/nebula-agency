@@ -274,8 +274,34 @@ def build(md_name, title, signer=False):
     return pdf
 
 
+def _verifier_montants():
+    """Refuse de fabriquer si un montant de commission est a l'ancienne grille.
+
+    ⛔ Le 2026-09-11, trois montants a 25 % ont ete trouves dans des documents
+    tout a fait a jour sur les POURCENTAGES : ils etaient ecrits en FRANCS
+    (12 500, 37 500, 7 500), donc invisibles a toute recherche de « 25 % », et
+    l'un d'eux vivait sous un titre « palier 30 % ». Un PDF fabrique par-dessus
+    un chiffre faux part chez un partenaire et n'en revient pas.
+    """
+    import importlib.util
+    chemin = os.path.join(ROOT, "_verifier_montants.py")
+    if not os.path.exists(chemin):
+        print("⚠️  _verifier_montants.py est absent : montants NON verifies.\n")
+        return
+    spec = importlib.util.spec_from_file_location("_verif", chemin)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if mod.main() != 0:
+        raise SystemExit(
+            "\n⛔ Aucun PDF n'a ete fabrique. Corrigez les montants ci-dessus "
+            "d'abord : un chiffre faux dans un guide de vente coute la confiance "
+            "d'un partenaire le jour ou il compare avec son virement.")
+    print()
+
+
 if __name__ == "__main__":
     print("Génération des PDF NEBULA\n")
+    _verifier_montants()
     total = 0
     for name, title in DOCS:
         out = build(name, title)
