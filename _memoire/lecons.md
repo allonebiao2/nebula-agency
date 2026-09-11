@@ -2224,3 +2224,154 @@ changement, pas du déploiement.
 - **Le vrai constat, plus large** : « je n'ai pas les identifiants » et « je n'ai
   pas la route » sont deux empêchements différents. J'ai diagnostiqué le premier
   et supposé que c'était le seul.
+
+## 2026-09-10 · « le document n'est pas à jour » désigne rarement le document qu'on croit
+
+- **Contexte** : Mongazi signale que son contrat porte encore l'ancienne grille (25 / 35 %)
+  au lieu de 30 / 40 %. Le réflexe est d'ouvrir le contrat.
+- **Ce qui s'est passé** : le contrat était **juste**, en version 1.4, dans le Markdown
+  **et** dans le PDF (vérifié en extrayant le texte des octets, pas en lisant la date du
+  fichier). Les 22 PDF de vente, le moteur du portail, le site et le cerveau de NOVA étaient
+  justes aussi. Les documents fautifs étaient **quatre autres**, rangés à la racine de
+  `_documents/nebula-agency/`, hors du dossier `vente/` que la vague du 2026-08-02 avait
+  relu avec soin.
+- **Leçon** : quand un chiffre change, la question n'est pas « quels documents **de vente**
+  je dois corriger », c'est **« quels documents, où qu'ils soient »**. Un inventaire par
+  dossier laisse toujours dehors ce qui est rangé ailleurs, et ce sont ces documents-là qui
+  finissent entre les mains d'un candidat.
+- **Corollaire** : ne pas croire la personne sur le fichier, la croire sur le **symptôme**.
+  Elle a bien vu 25 % quelque part. Chercher **où**, au lieu de vérifier ce qu'elle nomme.
+
+## 2026-09-10 · un document en images n'a pas de chiffre à changer, il a un chiffre peint
+
+- **Contexte** : le deck du programme partenaires (14 diapositives) annonce 25 % / 10 % / 5 %
+  et un abonnement à 15 000 F.
+- **Ce qui s'est passé** : impossible de le corriger. Les diapositives du `.pptx` sont des
+  **PNG plein écran** : 14 images, aucune police dans le fichier, **13 caractères de texte**
+  extraits sur tout le document. Son export PDF pareil : 15 pages, 14 images, 0 police.
+- **Pourquoi c'est grave au-delà de ce deck** : **aucune recherche de texte ne peut le
+  trouver**. Il survit à toutes les vagues de correction, silencieusement, et rien ne peut
+  le signaler. Il a menti pendant cinq semaines sans qu'un seul `grep` puisse le savoir.
+- **Leçon** : **ce qui n'a pas de source ne se maintient pas.** Un document destiné à durer
+  se fabrique depuis un fichier texte versionné (le `_build_pdf.py` de `vente/` le fait :
+  Markdown → HTML → Chrome). Un livrable dont on ne garde que l'export est un livrable qu'on
+  ne pourra que jeter. Et quand on hérite d'un tel document, on ne le rafistole pas : on le
+  **range**, et on nomme son remplaçant.
+
+## 2026-09-10 · un outil à moitié mort a l'air vivant
+
+- **Contexte** : le simulateur de commissions cherchait des paliers `t-25` et `t-35`
+  supprimés avec l'ancienne grille. `el("t-25")` rend `null`, `null.classList` lève une
+  TypeError **au milieu** de la fonction de rendu.
+- **Ce qui trompe** : tout ce qui est écrit **avant** la ligne fautive continuait de
+  s'afficher (le gain, le nombre de ventes, le chiffre d'affaires, le badge). Tout ce qui
+  venait **après** ne s'exécutait plus jamais : le palier ne s'allumait plus et le message
+  « il te manque 2 ventes pour passer à 40 % » avait disparu, c'est-à-dire **les deux seules
+  raisons d'être de l'outil**. Un partenaire qui l'ouvre voit des chiffres bouger et conclut
+  qu'il marche.
+- **Leçon** : une exception au milieu d'un rendu ne casse pas la page, elle la **tronque**.
+  Chercher le défaut à ce qui **manque**, pas à ce qui est cassé. Et quand une grille change,
+  balayer le code qui **nomme** ses anciennes valeurs en dur, pas seulement les textes.
+- **Méthode qui a servi** : rejouer le script dans node avec un faux DOM bâti sur les
+  identifiants **réellement présents** dans la page, puis relancer **l'ancienne version dans
+  le même harnais** pour prouver qu'elle casse. Un défaut prouvé vaut mieux qu'un défaut
+  supposé, et le harnais reste pour la prochaine fois.
+
+## 2026-09-10 · retirer une offre d'un document de vente n'est pas retirer une ligne
+
+- **Contexte** : le kit partenaire vendait la Fiche Google Maps et l'Avatar IA, deux offres
+  absentes du tableau 4.1 du contrat, qui dit « et elles seules » (art. 4.4).
+- **Ce qui s'est passé** : la Fiche Google Maps n'était pas une ligne d'un tableau, c'était
+  **un fil dans six endroits du document** : un argument de combo, deux scripts de dialogue
+  complets, une objection avec sa réponse, un choix entre deux oui, et la fiche de rappel des
+  prix. Supprimer la ligne du tableau aurait laissé cinq endroits qui vendent une offre qui
+  n'existe pas.
+- **Même famille** que le plat retiré chez Au Braisé d'Or (2026-08-19), qui était aussi au
+  héros et rendait fausses deux notes de catégorie. **Les données se régénèrent, les phrases
+  ne sont vérifiées par rien.**
+- **Leçon** : avant de retirer une offre, **chercher son nom dans tout le document**, pas
+  seulement là où elle est chiffrée. Et lui trouver un remplaçant qui sert le même besoin
+  (ici le QR avis Google, qui est au contrat), sinon le script perd son argument.
+
+## 2026-09-11 · un taux corrigé n'est pas une grille corrigée : le reste vit en francs
+
+- **Contexte** : la grille est passée à 30 % / 40 % le 2026-08-02, et tous les
+  **pourcentages** ont été répercutés avec soin sur les 13 documents de vente.
+- **Ce qui restait** : trois montants à **25 %, écrits en FRANCS** — « 1 catalogue =
+  12 500 F », « 1 vitrine = 37 500 F », « QR Google Review → 7 500 F ». **Aucune recherche
+  de « 25 % » ne pouvait les trouver.** Cinq semaines, plusieurs relectures, et le pire des
+  trois vivait **sous un titre « palier 30 % »**.
+- **Plus large** : la grille survit aussi dans les **exemples** (« un mois à 6 ventes →
+  150 000 F » alors que 6 ventes dépassent le seuil de 3, donc 200 000 F), dans les
+  **totaux** (un tableau qui ne tombait même pas juste sur ses propres lignes), et dans la
+  **mécanique racontée** (« à 4 ventes, la 5e fait changer de palier » : le seuil est 3).
+- **Leçon** : la seule vérification qui tient est **arithmétique**, pas textuelle.
+  Recalculer chaque montant à partir du prix et du taux, par un script, et **le brancher sur
+  la fabrication** pour qu'un chiffre faux empêche de publier. Un document de vente faux
+  part chez un partenaire et n'en revient pas.
+
+## 2026-09-11 · un contrôle qui filtre sur le vocabulaire ne lit plus, il suppose
+
+- **Contexte** : le script écrit pour attraper les montants à l'ancienne grille ne signalait
+  un montant que si le mot « commission », « palier » ou « vous gagnez » se trouvait à moins
+  de 240 caractères. Sans ce filtre il criait au loup dix fois (les 5 000 F de réactivation,
+  les 25 000 F du diagnostic).
+- **Ce qui s'est passé** : il est sorti **VERT sur la ligne même pour laquelle il avait été
+  écrit** — « montants recalculés à la main… (1 catalogue = 12 500 F) », où aucun de ces
+  mots n'apparaît. Une commission n'est pas toujours annoncée par le mot commission.
+- **Leçon** : un filtre de vocabulaire est une **supposition sur la façon d'écrire**. On ne
+  filtre pas le bruit en devinant : on **nomme les exceptions une par une, avec leur
+  raison** (`PAS_UNE_COMMISSION`, où chaque montant dit pourquoi il n'en est pas une). Le
+  bruit devient alors une liste qu'on relit, pas une règle qui aveugle.
+- **Et toujours le témoin** : réintroduire les trois défauts d'origine, vérifier que le
+  contrôle vire au rouge, les retirer, vérifier qu'il revient au vert. Sans ça, « vert » ne
+  veut rien dire. C'est exactement ce témoin qui a démasqué le filtre.
+
+## 2026-09-11 · une vérification écrite dans un document n'est pas une vérification faite
+
+- `07-MISE-EN-LIGNE.md` affirmait noir sur blanc : « montants recalculés à la main sur 7 cas
+  de figure, **tous conformes au socle commercial** », et donnait trois montants **à 25 %**.
+- La phrase a survécu au changement de grille précisément **parce qu'elle dit que c'est déjà
+  vérifié** : personne ne relit une affirmation de conformité.
+- **Leçon** : une phrase qui se porte garante d'un chiffre est le premier endroit à relire
+  quand le chiffre change, pas le dernier. Et ce qui doit garantir un chiffre est un
+  **script qu'on relance**, jamais une phrase qu'on écrit.
+
+## 2026-09-11 · « le document ne contient pas X » est une affirmation sur la SONDE
+
+- **Contexte** : vérifier qu'une clause neuve était bien dans le PDF servi. Le contrôle
+  « pas même à un filleul » est sorti à **zéro** sur un contrat qui parle huit fois de
+  filleuls.
+- **Ce qui se passait** : les PDF portent des **ligatures typographiques**. « filleul » y
+  est écrit **ﬁlleul**, un seul glyphe pour « fi » ; « offre » devient **oﬀre**. 44 ﬁ et
+  24 ﬀ dans un seul contrat. Toute recherche contenant « fi », « ff » ou « ffi » renvoyait
+  zéro, sur des documents qui les contenaient.
+- **Le coût réel** : toutes les vérifications de PDF de la veille étaient partiellement
+  aveugles. Une fois la sonde réparée (`unicodedata.normalize("NFKC", …)`), la relecture a
+  sorti **deux défauts que je croyais traités** — « 48 plats » vivait encore dans le Guide
+  Catalogue et dans le socle, alors que je n'avais corrigé que les trois avis.
+- **Leçon** : une absence n'est une preuve que si la sonde sait prouver une présence.
+  **Avant de conclure « X n'y est pas », chercher un mot dont on SAIT qu'il y est.** Dix
+  secondes, et ça démasque l'instrument au lieu d'accuser le produit.
+- **Même famille** : les 5 sondes qui ont menti sur Angy Art (26/08), le Resource Timing
+  qui n'expose pas les médias (10/09), le contraste lu sur `background-color` au-dessus
+  d'une photo. **La sonde se vérifie avant le produit**, et c'est la leçon la plus souvent
+  réapprise de ce dépôt.
+
+## 2026-09-11 · une phrase de cinq mots dans un contrat cache quatre décisions
+
+- **Contexte** : « ajoute que je m'engage à apporter des prospects au partenaire ».
+- **Ce qu'il fallait trancher avant d'écrire une ligne** : (1) moyens ou résultat, car sans
+  réserve NEBULA est **en faute** le mois où elle n'apporte rien ; (2) la commission
+  change-t-elle, le silence se lisant dans les deux sens ; (3) à qui appartient un numéro
+  transmis, faute de quoi trois partenaires s'appellent dessus en course ; (4) ce sont des
+  **données personnelles**, et l'article qui les encadrait ne couvrait que celles
+  « recueillies par le Partenaire auprès des prospects », **pas une liste reçue de NEBULA**.
+- **Leçon** : dans un contrat, une faveur mal bornée devient une dette. Écrire l'avantage
+  **et sa limite dans la même clause** protège les deux parties, et se dit sans honte au
+  partenaire : « c'est un coup de main, pas votre gagne-pain » vaut mieux qu'une promesse
+  large qu'on ne tiendra pas tous les mois.
+- **Et regarder les produits voisins** : PISTE vend une **exclusivité de 90 jours**.
+  Transmettre gratuitement une fiche déjà vendue sous exclusivité, c'est **reprendre d'une
+  main ce que l'autre a vendu**. La règle va au socle, côté interne, pas dans le contrat du
+  partenaire qui n'a pas à connaître l'existence de ce stock.

@@ -137,6 +137,34 @@ un paiement en deux fois crée plus d'impayés et de relances que de ventes. Le 
 | Présenter, démontrer, répondre aux objections | Livrer en 5 à 7 jours |
 | Conclure et faire payer NEBULA | Encaisser et déclencher la commission |
 | Récupérer le brief complet | Assurer les corrections après livraison |
+| Appeler les contacts que NEBULA lui transmet | **Transmettre des contacts à appeler** |
+
+### 3.1 Les contacts transmis par NEBULA *(contrat art. 3.5, 3.6, 7.6, 7.7 et 14.6)*
+
+NEBULA envoie au partenaire des **numéros de professionnels à appeler** pour leur présenter
+les offres : numéro, nom de l'établissement, activité.
+
+- **La commission ne change pas.** Une vente faite sur un contact transmis rapporte le
+  **taux plein**, comme une vente trouvée par le partenaire. NEBULA ne prélève rien.
+- **Un contact transmis est à ce partenaire pendant 60 jours**, et à personne d'autre
+  pendant ce temps. Passé ce délai sans vente, il redevient disponible.
+- **Un contact qui refuse d'être rappelé n'est retransmis à personne.** Le partenaire le
+  signale, et il sort du fichier. Le rappeler par quelqu'un d'autre abîmerait le nom.
+- ⚠️ **C'est une aide, pas une garantie, et c'est écrit au contrat.** Aucune quantité,
+  aucune fréquence, aucune qualité promise. **Chercher ses propres prospects reste le
+  métier du partenaire** : un mois sans contact transmis n'est pas un manquement de NEBULA.
+- ⛔ **Ces numéros appartiennent à NEBULA.** Le partenaire ne les donne à personne, pas
+  même à un filleul, ne les verse dans aucune application, et les efface en partant.
+  Le détournement est une **faute grave** (résiliation immédiate).
+
+⛔ **CÔTÉ NEBULA, LA RÈGLE QUI NE SE VOIT PAS : une fiche vendue par PISTE ne se transmet
+pas.** PISTE vend ses fiches avec une **exclusivité de 90 jours** payée par son client.
+Donner cette même fiche à un partenaire pendant ces 90 jours, c'est **reprendre d'une main
+ce que l'autre a vendu**, et le client de PISTE n'a aucun moyen de s'en apercevoir avant
+que son prospect lui dise qu'on l'a déjà appelé. Avant de transmettre une liste :
+**écarter ce qui est sous exclusivité PISTE**. C'est une vérification à faire au départ,
+pas une clause à écrire dans le contrat du partenaire, qui n'a pas à savoir d'où viennent
+les numéros.
 
 **Après la livraison :** le partenaire est le **premier interlocuteur** du client, et NEBULA
 reste joignable directement. Les deux restent en contact sur chaque cas.
@@ -501,7 +529,7 @@ et finance.
 | **Djambar Team** · djambarteam.com | Bijouterie, Cotonou | Vitrine haut de gamme, multi-pages |
 | **Grain d'Esthétique** · graindesthetique.com | Institut de beauté, Cotonou | Vitrine avec prise de rendez-vous |
 | **Speed × Weinkeller** · speed-weinkeller.pages.dev | Cave à vins | Catalogue riche, 60 fiches produits |
-| **Au Braisé d'Or** · au-braise-dor.pages.dev | Restaurant, Cotonou | Catalogue-menu, 48 plats commandables |
+| **Au Braisé d'Or** · au-braise-dor.pages.dev | Restaurant, Cotonou | Catalogue-menu, toute la carte commandable |
 | **Miss Cakes** · miss-cakes.pages.dev | Pâtisserie | Catalogue commandable, une page |
 | **HH Design** · hh-design.pages.dev | Ébénisterie | Vitrine avec fiches produit et devis |
 
@@ -547,12 +575,38 @@ Preuves de capacité sur l'Outil métier : **Boussole**, **Digital HSE**, **Vend
 
 ## 13. Reste à répercuter
 
-- [ ] **Site www.nebula-agency.online** : l'abonnement y est encore affiché à **15 000 F / 6 mois**
-      (section Tarifs et cartes d'offres). À passer à **20 000 F, modifications comprises**.
-- [ ] **Cerveau de NOVA** (`nebula-affilies/server.py`, `agency_brain()`) : à aligner sur les
-      nouveaux prix et l'abonnement unique.
-- [ ] **Anciens guides du back-office partenaires** (`seed_docs`) : ils poussent la Vitrine en
-      premier, ce qui contredit l'escalier. À retirer ou réécrire.
+**Les trois points de cette liste sont faits.** Vérifiés un par un le 2026-09-10, dans les
+fichiers et pas de mémoire.
+
+- [x] **Site www.nebula-agency.online** : `nebula_agency_v9.html` (le fichier servi) affiche
+      **20 000 FCFA / 6 mois, modifications comprises**, aux 6 endroits qui le mentionnent,
+      cartes d'offres, tarifs, formulaire de commande et FAQ compris.
+- [x] **Cerveau de NOVA** (`nebula-affilies/server.py`, `agency_brain()`) : « ABONNEMENT
+      (Catalogue et Vitrine) : 20 000 FCFA TOUS LES 6 MOIS, jamais par mois », modifications
+      comprises, avec le paiement 70/30.
+- [x] **Anciens guides du back-office partenaires** : `seed_docs` **n'existe plus**. Il a été
+      remplacé par `DOCS_PARTENAIRES` + `publier_documents()`, et les 7 anciennes entrées sont
+      nommées dans `DOCS_RETIRES`, qui les supprime de la base à chaque démarrage.
+
+⚠️ **Ce qui reste, et qui n'était pas dans cette liste**, trouvé le 2026-09-10 en relisant tout :
+
+- [x] **Quatre documents à l'ancienne grille** (brochure partenaire, guide de lancement, deck
+      de 14 diapositives, son export PDF) annonçaient encore **25 / 30 / 35 %** et une
+      **commission de réseau de 10 % et 5 %**. Rangés dans `_documents/nebula-agency/_obsolete/`,
+      avec le détail de ce qui a changé. ⛔ **Ils ne sont pas modifiables** : leurs diapositives
+      sont des images, sans source dans le dépôt.
+- [x] **Le simulateur de commissions ne montrait plus ni palier ni message d'incitation** : il
+      cherchait des paliers `t-25` et `t-35` qui n'existent plus depuis la grille unique, et
+      l'erreur coupait le rendu au milieu. Réparé.
+- [x] **Le kit partenaire** (`_kits/kit-nebula.html` et son PDF) vendait la **Fiche Google Maps**
+      et l'**Avatar IA**, hors du tableau 4.1 du contrat, faisait entrer par la Vitrine au lieu du
+      Catalogue, et annonçait l'abonnement à 15 000 F. Refait.
+- [ ] ⏳ **`00-nebula-agency/affiliation/programme-affilies.html`** : page de recrutement d'une
+      génération encore antérieure. Elle annonce une **Vitrine à 100 000 F négociable à 75 000 F**,
+      un **Catalogue à 40 000 F livré en 14 à 21 jours**, des commissions en **montants fixes**
+      (30 000 F et 12 000 F), un versement **sous 7 jours** et un numéro de paiement qui n'est pas
+      celui du contrat. Rien n'y est juste. **Mongazi tranche** : la refaire contre ce socle, ou
+      la ranger dans `_obsolete/` comme les quatre autres.
 
 ---
 

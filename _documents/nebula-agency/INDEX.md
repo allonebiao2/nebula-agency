@@ -4,11 +4,14 @@
 > Mis en place le 2026-06-17. Les originaux restent dans `_kits/`, `_plans/`, `_audit/`, `_partage/` (ce dossier est une copie de regroupement).
 
 ## Présentations (PowerPoint premium)
-- **NEBULA_Programme_Partenaires_PREMIUM.pptx** — Présentation du programme partenaires / affiliés (14 slides, design cosmique, paliers & commissions).
-- **NEBULA_Masterclass_Closing.pptx** — Masterclass de closing (formation à la vente : psychologie de l'achat, objections, scripts WhatsApp — 13 slides).
+- **NEBULA_Masterclass_Closing.pptx** : masterclass de closing (formation à la vente : psychologie de l'achat, objections, scripts WhatsApp, 13 diapositives). **Vérifié le 2026-09-10** : aucun taux de commission, prix conformes au socle.
+- ⛔ **NEBULA_Programme_Partenaires_PREMIUM.pptx est parti dans `_obsolete/`** le 2026-09-10 : il annonce la grille d'avant le 2026-08-02 (STARTER 25 %, SILVER 30 %, GOLD 35 %) et une **commission de réseau de 10 % et 5 %** que le contrat interdit. Voir `_obsolete/README.md`.
+
+## ⛔ Documents périmés (dossier `_obsolete/`)
+Quatre documents rangés le 2026-09-10 parce qu'ils décrivent le programme d'avant la grille unique : la brochure partenaire, le guide de lancement, le deck de 14 diapositives et son export PDF. **Ils ne doivent plus être envoyés.** `_obsolete/README.md` dit ligne par ligne ce qui a changé et par quoi les remplacer.
 
 ## Vente & recrutement (dossier `vente/`)
-- **00-SOCLE-COMMERCIAL.md** — **v2, source de vérité de la vente.** Les 3 services phares et ce qu'ils contiennent exactement, l'abonnement unique à 20 000 F/6 mois modifications comprises, les modalités de paiement (70/30), les commissions (paliers, **récurrent à vie**, réseau), les règles du jeu (prospect à 60 jours, litige, inactivité, territoire, certification, cadre écrit), **les 12 interdits**, le marché, les preuves, la vague 1. *Les 32 décisions de Mongazi y sont consignées ; il fait foi en cas de différence.*
+- **00-SOCLE-COMMERCIAL.md** : **version 2.1, source de vérité de la vente.** Les 3 services phares et ce qu'ils contiennent exactement, l'abonnement unique à 20 000 F/6 mois modifications comprises, les modalités de paiement (70/30), les commissions (**30 % / 40 %**, palier mensuel remis à zéro, **récurrent à vie**, et **aucune commission de réseau**), les règles du jeu (prospect à 60 jours, litige, inactivité, territoire, certification, cadre écrit), **les 12 interdits**, le marché, les preuves, la vague 1. *Les 32 décisions de Mongazi y sont consignées ; il fait foi en cas de différence.*
 - **01-AVIS-DE-RECRUTEMENT.md** — Recrutement vague 1 (Cotonou, 8 places) : annonce complète, versions WhatsApp/affiche/réseaux, grille de sélection, script d'entretien, message de bienvenue, plan de diffusion.
 - **02-MANUEL-DU-PARTENAIRE.md** — Le socle du métier, à lire avant les 3 guides : marché et barrières à l'achat, l'escalier des offres, prospection (les 20 noms, les 3 terrains), **la méthode de vente en 7 temps**, la relance, le brief à ramener, les gains, les 10 interdits, les 7 premiers jours, quiz de certification.
 - **03-GUIDE-CATALOGUE.md** — Guide de vente du Catalogue Digital (50 000 F), l'offre d'entrée : les 12 chapitres (produit, problème vécu, 4 moteurs d'achat, portrait-robot et signaux, 8 questions de diagnostic, pitch flash en 3 variantes, démonstration, prix, **12 objections avec réponses mot pour mot**, conclusion, montée en gamme vers la Vitrine, brief) + **fiche terrain à garder sur soi** + quiz.
@@ -19,9 +22,9 @@
 - **simulateur-commissions.html** — Page autonome (aucune dépendance, fonctionne sur téléphone) : le partenaire entre ses ventes du mois et voit sa commission, son palier, et **combien de ventes il lui manque pour changer de palier et ce que ça rapporte rétroactivement**. Sert aussi en entretien de recrutement.
 - **08-DIAGNOSTIC-DIGITAL.md** — **La consultation professionnelle** qui ouvre les portes de l'Outil métier : le diagnostic offert (valeur 25 000 F), la cartographie en 3 temps (entrée / traitement / sortie, calée sur le configurateur), **les 40 questions dans l'ordre**, le test du cahier, ce qu'on observe sans le demander, **la grille de détection des automatisations**, comment chiffrer la douleur, le rapport à NEBULA, la restitution menée par Mongazi, les 8 erreurs qui tuent un diagnostic.
 - **fiche-diagnostic.html** — Fiche à remplir sur le téléphone chez le client (sauvegarde automatique, marche hors ligne) : un bouton envoie le rapport structuré complet sur le WhatsApp de NEBULA.
-- **09-CONTRAT-PARTENAIRE.md** — **Contrat d'apporteur d'affaires indépendant** à faire signer : indépendance, mission, tarifs, encaissement, commissions (paliers, récurrent à vie, réseau), attribution des clients à 60 jours, 12 engagements, exclusivité de métier, confidentialité, non-sollicitation 24 mois, durée et fin de contrat, réclamations. Avec une annexe résumée pour le partenaire.
+- **09-CONTRAT-PARTENAIRE.md** — **Contrat d'apporteur d'affaires indépendant** à faire signer : indépendance, mission, tarifs, encaissement, commissions (30 % / 40 %, récurrent à vie, aucune commission de réseau), attribution des clients à 60 jours, 12 engagements, exclusivité de métier, confidentialité, non-sollicitation 24 mois, durée et fin de contrat, réclamations. Avec une annexe résumée pour le partenaire.
 - **10-RELANCE-RENOUVELLEMENT.md** — Spécification de la relance automatique des abonnements. ⚠️ Constat : **aucun suivi des abonnements n'existe aujourd'hui dans l'app** (aucune table ne porte de date d'échéance). Contient le modèle de données à créer, le calendrier de relance (J-15 / J-3 / J+3 / J+10), les 5 messages mot pour mot, le workflow n8n, les garde-fous et l'ordre de construction.
-- **pdf/** — Les 9 documents en **PDF à la charte cosmique NEBULA**, prêts à téléverser dans l'espace partenaire. Régénérables avec `_build_pdf.py` (Markdown → HTML stylé → Chrome headless).
+- **pdf/** : les **12 documents** en **PDF à la charte cosmique NEBULA**. Régénérables avec `_build_pdf.py` (Markdown → HTML stylé → Chrome headless). ⚠️ **10 seulement partent chez les partenaires** : le socle commercial et l'avis de recrutement interne restent à l'agence. La liste qui fait foi est `DOCS_PARTENAIRES` dans `nebula-affilies/server.py`, et **un document ne se republie que si sa version y change**.
 - **07-MISE-EN-LIGNE.md** — Procédure : publication dans la Documentation de l'espace partenaire, conversion PDF, ⚠️ nettoyage des anciens guides contradictoires, les 6 actions restantes (IFU, prix du site, cerveau NOVA, rappel automatique de renouvellement), ordre de lancement.
 
 ## Marketing & contenu (dossier `marketing/`)
@@ -32,7 +35,7 @@
 - **Plan-du-Million-NEBULA.pdf** — « Plan du Million » (plan d'objectifs / business plan NEBULA).
 
 ## Kits
-- **kit-nebula.pdf** — Kit de présentation NEBULA Agency.
+- **kit-nebula.pdf** : kit de présentation NEBULA Agency, **refait le 2026-09-10** depuis `_kits/kit-nebula.html` (abonnement porté à 20 000 F modifications comprises, l'escalier remis dans le bon sens, et **Fiche Google Maps et Avatar IA retirés** : le contrat art. 4.4 ne laisse vendre que le Catalogue, le QR avis Google, la Vitrine et l'Outil). La copie de `nebula-affilies/assets/` est identique.
 - **kit-vendora.pdf** — Kit de présentation Vendora.
 
 ## Audit & analyses

@@ -380,7 +380,7 @@ un filleul qui ne vend jamais ne fait pas monter votre palier et encombre l'équ
 ```
 Salut [Prénom],
 Je bosse avec NEBULA Agency, on vend les catalogues et sites des commerçants de Cotonou.
-Je gagne entre 15 000 et 75 000 F par vente.
+Je gagne entre 15 000 et 60 000 F par vente.
 
 Je pense que tu serais bon là-dedans, tu sais parler aux gens.
 

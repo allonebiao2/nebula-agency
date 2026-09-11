@@ -121,8 +121,10 @@ RATE_EQUIPE  = 0.40
 SEUIL_EQUIPE = 3    # lui + ses filleuls directs, ventes validées dans le mois
 # ---- Rôles spéciaux (au-delà de la recrue standard) ----
 # Le rôle « superviseur » ne commande PLUS de barème : depuis la grille unique du
-# 2026-08-02, tout le monde est sur 30/40/50. Il ne reste qu'un insigne d'animation
-# d'équipe, sans effet sur la rémunération.
+# 2026-08-02, tout le monde est sur 30/40, et il n'y a rien au-dessus de 40 %. Il ne
+# reste qu'un insigne d'animation d'équipe, sans effet sur la rémunération.
+# (Ce commentaire annonçait « 30/40/50 » : un troisième palier qui n'a jamais existé
+#  dans le code, RATE_BASE et RATE_EQUIPE étant les deux seuls taux. Corrigé 2026-09-10.)
 ROLE_LABELS = {"superviseur": "Superviseur"}
 
 # ---- FONDATEUR (Mongazi) : titre + rang FIXES, au sommet du réseau (n'évoluent jamais) ----
@@ -1016,18 +1018,24 @@ def seed_content():
 # Pour publier une nouvelle version d'un document : remplacer le fichier dans
 # assets/docs-partenaires/ et changer sa VERSION ci-dessous.
 # ---------------------------------------------------------------------------
+# ⚠️ LA DATE EST L'EMPREINTE. `publier_documents()` compare cette chaine a ce
+# qui est deja en base et ne relit le fichier QUE si elle a change. Un PDF
+# corrige sans bump ici reste invisible pour les partenaires, sans un mot.
+# 2026-09-11 : 03, 06 et 01b passent a cette date, leur CONTENU ayant change
+# (montants de commission a l'ancienne grille, ecrits en francs). Les sept
+# autres gardent la leur : meme contenu, inutile de les repousser.
 DOCS_PARTENAIRES = [
     ("02-MANUEL-DU-PARTENAIRE.pdf", "2026-09-02", "Le manuel du partenaire", "Formation",
      "Ton métier de A à Z : trouver des commerçants, présenter, relancer, être payé. À lire en premier."),
     ("09-CONTRAT-PARTENAIRE.pdf", "2026-09-03", "Ton contrat de partenaire", "Juridique",
      "À imprimer, signer, scanner et renvoyer. Il dit ce que NEBULA te doit et ce que tu dois à NEBULA."),
-    ("03-GUIDE-CATALOGUE.pdf", "2026-08-03", "Vendre le Catalogue (50 000 F)", "Produits",
+    ("03-GUIDE-CATALOGUE.pdf", "2026-09-11", "Vendre le Catalogue (50 000 F)", "Produits",
      "Ton offre d'entrée, celle qui se vend le plus facilement. Commence toujours par elle."),
     ("04-GUIDE-VITRINE.pdf", "2026-08-03", "Vendre la Vitrine (150 000 F)", "Produits",
      "La deuxième marche. Elle se vend presque seule à un client déjà content de son catalogue."),
     ("05-GUIDE-OUTIL-METIER.pdf", "2026-08-03", "Vendre l'Outil sur mesure", "Produits",
      "Pour les commerces qui ont un vrai besoin de gestion. De 55 000 à 500 000 F."),
-    ("06-ARSENAL-SCRIPTS.pdf", "2026-08-03", "Tous les messages prêts à envoyer", "Vente",
+    ("06-ARSENAL-SCRIPTS.pdf", "2026-09-11", "Tous les messages prêts à envoyer", "Vente",
      "Premier contact, relance, réponse aux objections. À copier, coller, envoyer."),
     ("12-GUIDE-DES-APPELS.pdf", "2026-08-03", "Au téléphone", "Vente",
      "Au téléphone on ne vend jamais : on décroche le rendez-vous. Voilà comment."),
@@ -1035,7 +1043,7 @@ DOCS_PARTENAIRES = [
      "Les questions à poser chez le client pour repérer ce dont il a vraiment besoin."),
     ("13-PROSPECTION-BENIN-TOGO.pdf", "2026-08-03", "Trouver des clients : Bénin et Togo", "Vente",
      "Le message exact pour un restaurant, pour un salon de couture, pour un particulier. Où les trouver, et ce que le Togo change."),
-    ("01b-ANNONCE-PUBLIQUE.pdf", "2026-08-03", "L'annonce à partager", "Marketing",
+    ("01b-ANNONCE-PUBLIQUE.pdf", "2026-09-11", "L'annonce à partager", "Marketing",
      "Le texte à publier pour recruter quelqu'un dans ton équipe."),
 ]
 
