@@ -9,7 +9,7 @@ import {Seuil} from './Seuil';
 import {Signature} from './Signature';
 
 /**
- * MINUIT · le montage.
+ * LE PLI · le montage.
  *
  * Six plans, six signatures, toutes tirées de l'enveloppe cachetée :
  *   1 · le cachet respire, puis se brise
@@ -29,7 +29,7 @@ import {Signature} from './Signature';
  * la longueur de la composition est calculée à partir des mêmes valeurs, une
  * durée déplacée ici seulement laisserait du noir en fin de vidéo.
  */
-export const Minuit: React.FC = () => (
+export const LePli: React.FC = () => (
 	<Series>
 		<Series.Sequence durationInFrames={DUREES.seuil} name="1 · Le seuil">
 			<Seuil />

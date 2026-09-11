@@ -8,7 +8,7 @@ import {C, LETTRE, SANS, SERIF} from './donnees';
  * Signature du produit : LE CACHET RESPIRE, PUIS SE BRISE en trois éclats.
  *
  * Le seuil EST le produit : il crée l'attente, rend la page privée, et surtout
- * il RÉUNIT un avant et un après, donc il se filme. Une démonstration de MINUIT
+ * il RÉUNIT un avant et un après, donc il se filme. Une démonstration de LE PLI
  * qui ne montrerait pas ce brisement ne montrerait rien.
  *
  * ⚠️ Le brisement est écrit ici en images (`useCurrentFrame`), pas en

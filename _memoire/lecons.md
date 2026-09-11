@@ -2375,3 +2375,210 @@ changement, pas du déploiement.
   Transmettre gratuitement une fiche déjà vendue sous exclusivité, c'est **reprendre d'une
   main ce que l'autre a vendu**. La règle va au socle, côté interne, pas dans le contrat du
   partenaire qui n'a pas à connaître l'existence de ce stock.
+
+## 2026-09-06 · On ne peut pas mesurer l'absence d'une chose que personne n'a demandée
+
+- **Contexte** : MINUIT, 82 contrôles verts, quatre passages d'affilée.
+- **Ce qui s'est passé** : le produit s'appelle MINUIT parce qu'il remet une
+  lettre **à l'heure dite**. Le constructeur demandait la date et l'heure, les
+  gardait dans son état, et l'écran final annonçait « elle la recevra le
+  14 février à 00:00 ». Ces deux valeurs n'entraient dans aucune lettre livrée,
+  et aucune machine ne les lisait ailleurs. La fonction qui donne son nom au
+  produit n'était écrite à aucun endroit, et **les 82 contrôles étaient verts**.
+- **Leçon** : un contrôle ne peut pas voir un manque dont personne n'a écrit
+  qu'il devait exister. C'est la même famille que la photo livrée et jamais
+  affichée chez Au Braisé d'Or (27/08) : le QC ne voit que ce qu'on lui a
+  appris à regarder.
+- **À appliquer** : quand un produit porte le nom d'une fonction, écrire
+  d'abord le contrôle qui prouve que cette fonction existe. Et relire le code
+  **en face du document qui l'a commandé** : c'est ce qui a trouvé les trois
+  défauts du jour, pas la relecture du code seul.
+
+---
+
+## 2026-09-06 · Une décision d'infrastructure périmée survit dans les plans
+
+- **Contexte** : le dossier (27/08) et le manuel (28/08) de MINUIT confient tous
+  les deux « la livraison à l'heure choisie » à n8n.
+- **Ce qui s'est passé** : n8n était auto-hébergé sur le VPS Hostinger
+  `72.61.103.56`, et la section infrastructure du cerveau dit depuis des
+  semaines que **cette machine n'appartient plus à Mongazi**. Les deux
+  informations vivaient dans le même fichier, à cinq cents lignes d'écart, sans
+  jamais se rencontrer. La fonction la plus vendeuse du produit reposait donc
+  sur un serveur perdu, et le tableau « ce qui reste » disait tranquillement
+  « à faire, avec n8n ».
+- **Leçon** : un plan cite des briques d'infrastructure par leur nom, et
+  personne ne repasse dans les plans quand une brique disparaît. La ligne de
+  stack « n8n self-hosted (VPS …) » n'a jamais été corrigée non plus.
+- **À appliquer** : quand une brique d'infrastructure change de main ou meurt,
+  **chercher son nom dans tout le dépôt le jour même**, pas seulement dans la
+  section infrastructure. Et quand un plan s'appuie sur une brique, vérifier
+  qu'elle existe **avant** de l'inscrire dans « ce qui reste ».
+
+---
+
+## 2026-09-06 · Une promesse tenue par un fichier ne tombe jamais en panne
+
+- **Contexte** : il fallait remettre une lettre à une heure choisie, sans n8n,
+  sans serveur, et sans le modèle WhatsApp que Meta doit approuver.
+- **Ce qui s'est passé** : au lieu de chercher une autre machine à envoyer, on a
+  mis l'heure **dans la lettre** : avant l'heure, le cachet ne se brise pas. La
+  promesse tient hors connexion, tient si l'acheteur envoie son lien trois jours
+  trop tôt, et supprime d'un coup trois dépendances (le modèle Meta, le coût
+  d'envoi, et le risque d'écrire à quelqu'un qui n'a jamais donné son numéro).
+- **Leçon** : avant de chercher où héberger une promesse, se demander si
+  l'objet livré peut la tenir tout seul. Un fichier autonome n'a pas de panne,
+  pas de facture, et pas de compte tiers.
+- **À appliquer** : et dire exactement ce qu'il tient. Le texte d'une lettre est
+  dans la page : **le cachet tient l'heure, il ne chiffre rien**. On ne promet
+  jamais le secret quand on ne vend qu'un emballage.
+
+---
+
+## 2026-09-06 · Deux échelles de prix dans un fichier sont deux vérités
+
+- **Contexte** : le constructeur de MINUIT.
+- **Ce qui s'est passé** : chaque occasion portait un prix affiché en « dès
+  10 000 F », et chaque palier portait le vrai prix. Rien ne reliait les deux :
+  on choisissait « Demande en mariage · dès 10 000 F », puis le palier gratuit,
+  et on partait avec la lettre **sans payer un franc**. Le manuel prix par
+  occasion et le constructeur prix par palier avaient tous les deux raison, dans
+  leur fichier.
+- **Leçon** : quand deux documents fixent le même prix par deux chemins
+  différents, le code finit par porter les deux, et l'un des deux ment.
+- **À appliquer** : une seule échelle par produit, et la structure l'impose (le
+  champ `prix` a été **retiré** des occasions, pas seulement caché à l'écran).
+  Un contrôle lit les deux tableaux dans le fichier et refuse la deuxième.
+
+---
+
+## 2026-09-06 · Un ternaire à deux branches identiques est une intention perdue
+
+- **Contexte** : `aller(p.prix === 0 ? "e-paiement" : "e-paiement")`.
+- **Ce qui s'est passé** : quelqu'un avait vu qu'une lettre offerte ne devait pas
+  passer par la caisse, avait écrit le test, et n'avait jamais écrit la
+  destination. Résultat : le palier gratuit, celui qui porte toute la boucle
+  virale et qui doit être le plus fluide du site, affichait « Envoie exactement
+  cette somme, au franc près » au-dessus d'un numéro Mobile Money, **pour zéro
+  franc**. Aucun contrôle ne regardait cet écran-là.
+- **Leçon** : un ternaire dont les deux branches sont identiques n'est pas du
+  code mort, c'est une décision à moitié écrite, et elle reste invisible parce
+  que tout continue de marcher.
+- **À appliquer** : les chercher (`? "x" : "x"`), et traiter chacun comme une
+  fonctionnalité manquante, pas comme une coquille.
+
+---
+
+## 2026-09-06 · Le même gris ne va pas sur les deux fonds
+
+- **Contexte** : le seuil de MINUIT, fond nuit ; la lettre, fond papier.
+- **Ce qui s'est passé** : `#6d6478` tient **4,8:1** sur le papier de la lettre et
+  tombe à **3,09:1** sur la nuit du seuil, mesuré sur les pixels rendus. Le
+  contrôle de contraste ne regardait que le corps de la lettre. Or une lettre
+  programmée ne montre **que son seuil**, parfois pendant des heures, et c'est là
+  que vit le compte à rebours.
+- **Leçon** : c'est l'inverse exact de l'or d'Angy Art (il fallait une variante
+  **foncée** pour le crème) ; ici il fallait une variante **claire** pour la
+  nuit. Un jeton de couleur unique ne survit pas à un site à deux fonds.
+- **À appliquer** : `--gris` pour le papier, `--gris-nuit` pour la nuit, et un
+  contrôle qui mesure **l'écran le plus regardé**, pas seulement le plus riche.
+
+---
+
+## 2026-09-06 · Un compte à rebours ne se mesure pas avec deux instantanés
+
+- **Contexte** : le contrôle « avant l'heure, le compte descend ».
+- **Ce qui s'est passé** : le texte ne change qu'une fois par seconde. Deux
+  lectures rapprochées tombent dans la même seconde et le contrôle échoue sur un
+  produit sain, au hasard.
+- **Leçon** : même famille que les pastilles animées d'Hillary (20/08) et que la
+  bascule face/dos (18/08) : **on échantillonne, on ne compare pas deux
+  instants**.
+- **À appliquer** : quatre lectures espacées, et on exige seulement que deux
+  valeurs diffèrent. Et un **témoin** à côté de chaque verrou (une heure déjà
+  passée, un palier payé) : sans lui, un verrou resté fermé pour toujours
+  passerait tous les contrôles avec les honneurs.
+
+---
+
+## 2026-09-06 · Une porte qui accepte du HTML est un hébergeur, pas une API
+
+- **Contexte** : la caisse de MINUIT. Le constructeur bâtissait la lettre dans
+  le navigateur et l'envoyait toute faite, comme le fait `vitrina/`.
+- **Ce qui s'est passé** : en écrivant la fonction qui la reçoit, la question
+  s'est posée : que se passe-t-il si quelqu'un poste **autre chose** ? Réponse :
+  on lui sert sa page sur `minuit.nebula-agency.online`, gratuitement,
+  anonymement, avec notre nom de domaine et notre certificat. C'est le
+  nécessaire pour une page qui imite une banque.
+- **Leçon** : accepter du HTML d'un inconnu et le servir sur son propre domaine,
+  ce n'est pas une API, c'est un hébergement gratuit pour n'importe qui.
+- **À appliquer** : **on stocke les DONNÉES, on rebâtit la page côté serveur**
+  à partir d'un gabarit qui, lui, est à nous. Conséquence heureuse : une
+  correction dans le gabarit profite à toutes les lettres déjà vendues.
+
+---
+
+## 2026-09-06 · Un fichier qui documente un piège le contient, presque toujours
+
+- **Contexte** : la fonction qui neutralise U+2028 / U+2029 avant d'écrire des
+  données dans un bloc `<script>`.
+- **Ce qui s'est passé** : **quatre fois** maintenant. Deux fois le 2026-09-02
+  (le commentaire qui expliquait `</script>` le contenait ; la fonction qui
+  neutralise U+2028 les portait en clair dans ses regex), et **deux fois de plus
+  le 2026-09-06** : dans le jumeau TypeScript de cette fonction, puis dans le
+  contrôle écrit pour l'essayer. À chaque fois, le fichier refuse de se charger.
+- **Leçon** : écrire un caractère invisible « pour l'exemple » revient à le
+  poser dans son propre code. Les regex ne s'échappent pas toutes seules.
+- **À appliquer** : **` ` en échappement, jamais le caractère**, et
+  **charger le module une fois** juste après l'avoir écrit. C'est le chargement
+  qui a parlé les deux fois, immédiatement, avant tout contrôle.
+
+---
+
+## 2026-09-06 · On n'attend pas une navigation en interrogeant l'URL
+
+- **Contexte** : le contrôle « une lettre payée s'en va vers la page de
+  paiement ».
+- **Ce qui s'est passé** : la sonde lisait `page.url` toutes les 100 ms. Elle a
+  annoncé que la page n'avait pas bougé, alors qu'elle bougeait ; en
+  l'instrumentant, Playwright a répondu « Execution context was destroyed, most
+  likely because of a navigation ». **Le produit était sain**, la sonde
+  regardait un contexte en train d'être détruit. En isolation, la même séquence
+  passait : le défaut ne se voyait que sous la charge de la suite complète.
+- **Leçon** : une navigation n'est pas un état qu'on échantillonne, c'est un
+  événement. Et `localStorage` **appartient à l'origine** : lu après la
+  navigation, il rend le rangement d'un autre site.
+- **À appliquer** : `wait_for_url()` pour attendre, et **revenir sur la bonne
+  origine** avant de lire un rangement local. Cinquième sonde menteuse de la
+  semaine : vérifier sa sonde avant d'accuser le produit.
+
+---
+
+## 2026-09-06 · Une boucle de tirage au sort doit être bornée
+
+- **Contexte** : `jeton()`, qui fabrique l'adresse indevinable d'une lettre.
+- **Ce qui s'est passé** : elle tirait des octets et rejetait ceux qui
+  fausseraient la répartition, dans un `while` sans borne. Le contrôle écrit
+  pour prouver le rejet lui a donné une source qui ne rend **que** des octets
+  rejetés : la suite de tests s'est arrêtée de tourner, sans un mot.
+- **Leçon** : dans une fonction de bord, une boucle qui peut ne pas se terminer
+  ne rend pas une erreur, elle **cesse de répondre** — et un serveur qui ne
+  répond plus ne dit rien à personne.
+- **À appliquer** : borner, et lever une erreur nommée. Et se rappeler que
+  c'est le contrôle qui l'a trouvé, en donnant à la fonction exactement
+  l'entrée qu'elle ne savait pas refuser.
+
+---
+
+## 2026-09-06 · Trois sérialiseurs pour une règle, trois octets différents
+
+- **Contexte** : les données d'une lettre s'écrivent dans le gabarit depuis
+  Python (`_injecter.py`), depuis le navigateur (`creer.html`) et désormais
+  depuis Deno (`_shared/lettre.ts`).
+- **Ce qui s'est passé** : Python écrivait `"a": 1` là où `JSON.stringify`
+  écrit `"a":1`. Même règle d'échappement, sortie différente : impossible de
+  comparer les trois, donc impossible de prouver qu'ils protègent pareil.
+- **Leçon** : deux implémentations d'une même règle ne se valident que si elles
+  rendent **le même octet**. Sinon on compare des intentions.
+- **À appliquer** : `separators=(",", ":")` côté Python, et un contrôle qui
+  passe la **même batterie hostile** aux deux et exige l'égalité stricte.

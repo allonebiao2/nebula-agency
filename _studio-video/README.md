@@ -25,8 +25,8 @@ Et la démonstration d'un produit de la maison :
 
 | Composition | Contenu | Durée |
 |---|---|---|
-| `minuit-demo` | **MINUIT · la lettre digitale**, six plans | 30 s |
-| `minuit-plans/` | Les six plans, chacun réglable seul | |
+| `lepli-demo` | **LE PLI · la lettre digitale**, six plans | 30 s |
+| `lepli-plans/` | Les six plans, chacun réglable seul | |
 
 Le rythme est celui du document : la question tient **1,5 s**, la réponse
 **1 s**, la carte finale **3 s**, et la coupe est **sèche** (aucune transition,
@@ -72,19 +72,19 @@ src/OuiNon.tsx    le montage : question, coupe, réponse
 src/Root.tsx      toutes les compositions, 1080x1920
 public/           les plans filmés et la musique (hors dépôt)
 
-src/minuit/donnees.ts   MINUIT : couleurs, texte de la lettre, rythme  ← on édite ICI
-src/minuit/Minuit.tsx   le montage des six plans
-src/minuit/*.tsx        un fichier par plan
+src/lepli/donnees.ts   LE PLI : couleurs, texte de la lettre, rythme  ← on édite ICI
+src/lepli/LePli.tsx   le montage des six plans
+src/lepli/*.tsx        un fichier par plan
 ```
 
 ---
 
-## MINUIT · la démonstration du produit
+## LE PLI · la démonstration du produit
 
 > Une lettre digitale, c'est **une enveloppe cachetée qu'on ouvre à l'heure
 > dite.** Toutes les animations sortent de cet objet, et d'aucun autre.
 
-Six plans, six signatures, reprises une par une de `minuit/README.md` :
+Six plans, six signatures, reprises une par une de `lepli/README.md` :
 
 | # | Plan | Signature | Durée |
 |---|---|---|---|
@@ -96,16 +96,16 @@ Six plans, six signatures, reprises une par une de `minuit/README.md` :
 | 6 | La carte | **le cachet qui se referme** : la boucle du plan 1, à l'envers | 4 s |
 
 Le plan 5 est le seul dont la signature n'existe pas dans le produit, et c'est
-lui qui vend : l'heure choisie est ce qui donne son nom à MINUIT. Elle sort
+lui qui vend : l'heure choisie est ce qui donne son nom à LE PLI. Elle sort
 quand même du même objet, le cadran reprenant le cercle et le pointillé **du
 cachet**.
 
 ### Ce qui n'est pas inventé
 
-Rien. Les couleurs sont les jetons de `minuit/lettre.html`, le texte de la
+Rien. Les couleurs sont les jetons de `lepli/lettre.html`, le texte de la
 lettre est celui de la démonstration du produit (accentué, il ne l'était pas
-dans les captures), le prix est celui de `minuit/creer.html`. Tout est recopié
-**une seule fois**, dans `src/minuit/donnees.ts`.
+dans les captures), le prix est celui de `lepli/creer.html`. Tout est recopié
+**une seule fois**, dans `src/lepli/donnees.ts`.
 
 ⚠️ **Aucune police téléchargée**, comme dans le produit : la pile est système,
 Palatino Linotype sous Windows. La vidéo doit ressembler à la lettre que la
@@ -115,9 +115,9 @@ destinataire ouvrira, pas à une version embellie pour la publicité.
 ### ⛔ Avant de publier cette vidéo
 
 Elle promet **« Elle l'ouvre à minuit pile. Pas avant. »** et affiche
-`nebula-agency.online/minuit`. Au 2026-09-03, ni l'un ni l'autre n'existe :
+`lepli.nebula-agency.online`. Au 2026-09-03, ni l'un ni l'autre n'existe :
 la livraison à l'heure choisie (n8n) et le serveur en ligne sont les deux
-chantiers ouverts de `minuit/README.md`. La vidéo est prête, **la promesse ne
+chantiers ouverts de `lepli/README.md`. La vidéo est prête, **la promesse ne
 l'est pas** : elle attend que l'adresse réponde.
 
 ### ⛔ Pas de fondu enchaîné, et ce n'est pas un raccourci

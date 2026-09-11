@@ -10,7 +10,7 @@ import {C, SANS, SERIF} from './donnees';
  * sur une enveloppe cachetée, donc sur une lettre qui n'a pas encore été
  * écrite. C'est exactement l'état où l'on veut laisser celui qui regarde.
  *
- * ⚠️ Les prix sont ceux de `minuit/creer.html` (2 000 F l'occasion la plus
+ * ⚠️ Les prix sont ceux de `lepli/creer.html` (2 000 F l'occasion la plus
  * demandée). Ils sont recopiés dans `donnees.ts`, nulle part ailleurs.
  */
 
@@ -122,7 +122,7 @@ export const Fin: React.FC = () => {
 			</Interactive.Div>
 
 			<Interactive.Div
-				name="MINUIT"
+				name="LE PLI"
 				style={{
 					fontFamily: SANS,
 					fontSize: 104,
@@ -137,7 +137,7 @@ export const Fin: React.FC = () => {
 					}),
 				}}
 			>
-				MINUIT
+				LE PLI
 			</Interactive.Div>
 
 			<Interactive.Div
@@ -193,7 +193,7 @@ export const Fin: React.FC = () => {
 					}),
 				}}
 			>
-				nebula-agency.online/minuit
+				lepli.nebula-agency.online
 			</Interactive.Div>
 		</AbsoluteFill>
 	);
