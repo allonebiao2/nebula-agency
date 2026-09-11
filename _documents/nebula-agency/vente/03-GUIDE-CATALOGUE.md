@@ -253,7 +253,7 @@ Trente secondes, pas plus. Il ne sert pas à vendre, il sert à **obtenir la dé
 > « Votre carte, aujourd'hui, elle est où ? Sur des photos WhatsApp.
 > Nous, on met tout votre menu en ligne, chaque plat avec sa photo et son prix, et le client
 > compose sa commande et vous l'envoie sur WhatsApp, prête, avec l'adresse.
-> On vient de le faire pour un restaurant de braisé à Cotonou, il y a 48 plats dedans.
+> On vient de le faire pour un restaurant de braisé à Cotonou, toute sa carte est dedans.
 > Regardez. »
 
 ## Variante C · La vendeuse en ligne, Instagram, WhatsApp Business
@@ -282,7 +282,7 @@ Trente secondes, pas plus. Il ne sert pas à vendre, il sert à **obtenir la dé
 
 | Son métier | Montrez | Ce que vous dites |
 |---|---|---|
-| Restaurant, maquis, traiteur | **Au Braisé d'Or** · au-braise-dor.pages.dev | « 48 plats, chacun avec sa photo et son prix. Le client compose et envoie » |
+| Restaurant, maquis, traiteur | **Au Braisé d'Or** · au-braise-dor.pages.dev | « toute la carte, chaque plat avec sa photo et son prix. Le client compose et envoie » |
 | Cave, épicerie, boissons, beaucoup de références | **Speed × Weinkeller** · speed-weinkeller.pages.dev | « 60 produits, classés par famille, avec une recherche » |
 | Pâtisserie, gâteaux, commandes sur mesure | **Miss Cakes** · miss-cakes.pages.dev | « Elle prend ses commandes directement d'ici » |
 | Meubles, artisanat, décoration | **HH Design** · hh-design.pages.dev | « Chaque pièce a sa fiche, et le client demande son devis » |

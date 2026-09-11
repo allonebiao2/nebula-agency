@@ -250,3 +250,76 @@ recalculer chaque montant à partir du prix et du taux.
 `07-MISE-EN-LIGNE` affirmait noir sur blanc que ses montants étaient « conformes au socle ».
 Ils étaient à 25 %. La phrase a survécu à la correction de la grille parce que personne ne
 relit une phrase qui dit que c'est déjà vérifié.
+
+---
+
+# Troisième temps · 2026-09-11 · NEBULA s'engage à fournir des contacts
+
+Mongazi : « Dans le contrat, ajoute que je m'engage à apporter des prospects au partenaire.
+Je leur enverrai des numéros de personnes à appeler pour leur proposer nos services. »
+
+## Ce qu'une phrase simple oblige à trancher
+
+« NEBULA apporte des prospects » tient en cinq mots et ouvre **quatre questions** dont
+aucune ne peut rester sans réponse dans un contrat :
+
+**1. Obligation de moyens ou de résultat ?** Écrit sans réserve, « je m'engage à apporter
+des prospects » rend NEBULA **en faute** le mois où elle n'en apporte aucun, et un
+partenaire pourrait s'en prévaloir. L'article 3.5 dit donc noir sur blanc : selon ce dont
+NEBULA dispose, **sans engagement de quantité, de fréquence ni de qualité**, et l'absence
+de contacts **n'est pas un manquement** et n'ouvre droit à aucune indemnité. ⚠️ **Chercher
+ses prospects reste la mission du partenaire (art. 3.1)** : un contrat qui laisserait croire
+l'inverse fabriquerait des partenaires assis qui attendent le téléphone.
+
+**2. La commission bouge-t-elle ?** Rien ne le disait, et le silence se lit dans les deux
+sens. Article 3.6 : **taux plein, NEBULA ne prélève rien**. C'est le choix généreux, et
+c'est celui de Mongazi jusqu'à décision contraire.
+
+**3. À qui appartient un numéro transmis ?** Sans règle, NEBULA enverrait la même liste à
+trois partenaires qui s'appelleraient dessus en course. Article 7.6 : **60 jours au
+partenaire à qui il a été transmis**, à personne d'autre pendant ce temps, puis retour au
+stock. Article 7.7 : **un contact qui refuse d'être rappelé n'est retransmis à personne**,
+sinon on fait rappeler par un deuxième partenaire quelqu'un qui a déjà dit non.
+
+**4. Ce sont des données personnelles, et elles ne sont pas au partenaire.** ⚠️ **L'article
+14.1 ne couvrait pas ce cas** : il parle des données « recueillies par le Partenaire auprès
+des prospects », pas d'une liste **reçue de NEBULA**. Article 14.6 : usage réservé aux
+offres NEBULA, **jamais communiquées, pas même à un filleul**, jamais versées dans une
+application tierce, détruites à la fin du contrat, et **détournement = faute grave**.
+
+## ⛔ La règle qui ne se voit pas : PISTE
+
+**Une fiche vendue par PISTE porte une exclusivité de 90 jours, payée par son client.**
+La donner à un partenaire pendant ces 90 jours, c'est **reprendre d'une main ce que l'autre
+a vendu**, et le client de PISTE ne s'en apercevrait qu'en apprenant qu'on a déjà appelé
+son prospect. Écarter avant d'envoyer. ⚠️ **Cette règle est au socle, pas au contrat du
+partenaire** : il n'a pas à savoir d'où viennent les numéros, et l'écrire dans son contrat
+lui apprendrait l'existence d'un stock qu'il n'a pas à connaître.
+
+## ⚠️ MA SONDE MENTAIT, ET ELLE MENTAIT DEPUIS LE DÉBUT
+
+En vérifiant que la clause était bien dans le PDF servi, le contrôle « pas même à un
+filleul » est sorti à **zéro** sur un contrat qui parle huit fois de filleuls.
+
+**Les PDF portent des ligatures typographiques** : « filleul » y est écrit **ﬁlleul** (un
+seul glyphe pour « fi »), « offre » **oﬀre**. 44 occurrences de ﬁ et 24 de ﬀ dans ce seul
+contrat. Mon extracteur rendait le caractère de ligature, donc toute recherche contenant
+« fi », « ff » ou « ffi » renvoyait zéro.
+
+⛔ **Toutes mes vérifications de PDF depuis la veille étaient donc partiellement aveugles.**
+Une normalisation NFKC les redécompose, et la relecture complète a immédiatement sorti
+**deux défauts de plus que je croyais avoir traités** : « 48 plats » vivait encore **deux
+fois dans le Guide Catalogue et une fois dans le socle**, alors que je pensais l'avoir
+retiré partout (je n'avais corrigé que les trois avis de recrutement).
+
+⚠️ **Leçon** : « le document ne contient pas X » est une affirmation sur **la sonde autant
+que sur le document**. Avant de conclure à l'absence, prouver que la sonde sait trouver la
+présence. Ici, un seul mot connu du document aurait suffi à démasquer le défaut en dix
+secondes.
+
+## Publié
+
+Contrat en **version 1.5**, les 12 PDF refaits, les 10 partenaires synchronisés, la clause
+descendue dans le **socle (§3.1)** et dans les **trois avis de recrutement** (c'est un
+argument de recrutement, pas seulement une clause). **28 PDF relus ligatures comprises,
+0 en défaut.**

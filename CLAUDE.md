@@ -534,9 +534,23 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
   hébergement + sécurité interrompus, données gardées 6 mois · contrat art. 6.2 bis).
   Frais de réactivation 5 000 F, sans commission. Le partenaire relance une semaine avant
   l'échéance : c'est un fait technique qu'on annonce, jamais une menace qu'on brandit
-- **Contrat partenaire en version 1.4** (2026-09-03) : depuis la 1.3, il est **cosigné pour
-  NEBULA par Romaric DJANKAKI**, responsable du réseau partenaires, soit **trois signatures
-  pour deux parties**. Un partenaire encore en 1.1 doit recevoir un préavis écrit de 30 jours
+- **Contrat partenaire en version 1.5** (2026-09-11) : **NEBULA transmet au partenaire des
+  contacts à appeler** (art. 3.5). ⚠️ **Obligation de MOYENS, écrite comme telle** : aucune
+  quantité, aucune fréquence, aucune qualité promise, et un mois sans contact transmis
+  **n'est pas un manquement** ; chercher ses propres prospects reste la mission du
+  partenaire (art. 3.1). **La commission ne bouge pas** (art. 3.6, taux plein, NEBULA ne
+  prélève rien). Un contact transmis est **à ce partenaire 60 jours** et à personne d'autre
+  (art. 7.6) ; **un contact qui refuse n'est retransmis à personne** (art. 7.7). Ces listes
+  sont des **données personnelles qui restent celles de NEBULA** : jamais communiquées, pas
+  même à un filleul, jamais versées dans une application tierce, détruites à la fin du
+  contrat, détournement = **faute grave** (art. 14.6). ⛔ **CÔTÉ NEBULA, LA RÈGLE QUI NE SE
+  VOIT PAS : une fiche sous exclusivité PISTE (90 jours, payée) NE SE TRANSMET PAS** à un
+  partenaire — ce serait reprendre d'une main ce que l'autre a vendu, et le client de PISTE
+  ne s'en apercevrait qu'en apprenant qu'on a déjà appelé son prospect. Écarter avant
+  d'envoyer. **La 1.5 n'enlève rien** : le préavis de l'art. 6.7 ne joue pas, un partenaire
+  en 1.4 signe la 1.5 sans formalité
+- **Version 1.4** (2026-09-03) : cosigné pour NEBULA par **Romaric DJANKAKI**, responsable du
+  réseau partenaires, soit **trois signatures pour deux parties**. Un partenaire encore en 1.1 doit recevoir un préavis écrit de 30 jours
   avant toute baisse de barème (art. 6.7). ⚠️ **Aucun taux ne baisse de la 1.2 à la 1.4** : le
   préavis n'a pas lieu de jouer. ⚠️ **La signature de Romaric est FACULTATIVE** dans
   `_build_pdf.py` : son cadre reste vide tant que le fichier n'est pas là, et l'absence de

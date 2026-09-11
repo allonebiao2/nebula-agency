@@ -2336,3 +2336,42 @@ changement, pas du déploiement.
 - **Leçon** : une phrase qui se porte garante d'un chiffre est le premier endroit à relire
   quand le chiffre change, pas le dernier. Et ce qui doit garantir un chiffre est un
   **script qu'on relance**, jamais une phrase qu'on écrit.
+
+## 2026-09-11 · « le document ne contient pas X » est une affirmation sur la SONDE
+
+- **Contexte** : vérifier qu'une clause neuve était bien dans le PDF servi. Le contrôle
+  « pas même à un filleul » est sorti à **zéro** sur un contrat qui parle huit fois de
+  filleuls.
+- **Ce qui se passait** : les PDF portent des **ligatures typographiques**. « filleul » y
+  est écrit **ﬁlleul**, un seul glyphe pour « fi » ; « offre » devient **oﬀre**. 44 ﬁ et
+  24 ﬀ dans un seul contrat. Toute recherche contenant « fi », « ff » ou « ffi » renvoyait
+  zéro, sur des documents qui les contenaient.
+- **Le coût réel** : toutes les vérifications de PDF de la veille étaient partiellement
+  aveugles. Une fois la sonde réparée (`unicodedata.normalize("NFKC", …)`), la relecture a
+  sorti **deux défauts que je croyais traités** — « 48 plats » vivait encore dans le Guide
+  Catalogue et dans le socle, alors que je n'avais corrigé que les trois avis.
+- **Leçon** : une absence n'est une preuve que si la sonde sait prouver une présence.
+  **Avant de conclure « X n'y est pas », chercher un mot dont on SAIT qu'il y est.** Dix
+  secondes, et ça démasque l'instrument au lieu d'accuser le produit.
+- **Même famille** : les 5 sondes qui ont menti sur Angy Art (26/08), le Resource Timing
+  qui n'expose pas les médias (10/09), le contraste lu sur `background-color` au-dessus
+  d'une photo. **La sonde se vérifie avant le produit**, et c'est la leçon la plus souvent
+  réapprise de ce dépôt.
+
+## 2026-09-11 · une phrase de cinq mots dans un contrat cache quatre décisions
+
+- **Contexte** : « ajoute que je m'engage à apporter des prospects au partenaire ».
+- **Ce qu'il fallait trancher avant d'écrire une ligne** : (1) moyens ou résultat, car sans
+  réserve NEBULA est **en faute** le mois où elle n'apporte rien ; (2) la commission
+  change-t-elle, le silence se lisant dans les deux sens ; (3) à qui appartient un numéro
+  transmis, faute de quoi trois partenaires s'appellent dessus en course ; (4) ce sont des
+  **données personnelles**, et l'article qui les encadrait ne couvrait que celles
+  « recueillies par le Partenaire auprès des prospects », **pas une liste reçue de NEBULA**.
+- **Leçon** : dans un contrat, une faveur mal bornée devient une dette. Écrire l'avantage
+  **et sa limite dans la même clause** protège les deux parties, et se dit sans honte au
+  partenaire : « c'est un coup de main, pas votre gagne-pain » vaut mieux qu'une promesse
+  large qu'on ne tiendra pas tous les mois.
+- **Et regarder les produits voisins** : PISTE vend une **exclusivité de 90 jours**.
+  Transmettre gratuitement une fiche déjà vendue sous exclusivité, c'est **reprendre d'une
+  main ce que l'autre a vendu**. La règle va au socle, côté interne, pas dans le contrat du
+  partenaire qui n'a pas à connaître l'existence de ce stock.

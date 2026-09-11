@@ -137,6 +137,34 @@ un paiement en deux fois crée plus d'impayés et de relances que de ventes. Le 
 | Présenter, démontrer, répondre aux objections | Livrer en 5 à 7 jours |
 | Conclure et faire payer NEBULA | Encaisser et déclencher la commission |
 | Récupérer le brief complet | Assurer les corrections après livraison |
+| Appeler les contacts que NEBULA lui transmet | **Transmettre des contacts à appeler** |
+
+### 3.1 Les contacts transmis par NEBULA *(contrat art. 3.5, 3.6, 7.6, 7.7 et 14.6)*
+
+NEBULA envoie au partenaire des **numéros de professionnels à appeler** pour leur présenter
+les offres : numéro, nom de l'établissement, activité.
+
+- **La commission ne change pas.** Une vente faite sur un contact transmis rapporte le
+  **taux plein**, comme une vente trouvée par le partenaire. NEBULA ne prélève rien.
+- **Un contact transmis est à ce partenaire pendant 60 jours**, et à personne d'autre
+  pendant ce temps. Passé ce délai sans vente, il redevient disponible.
+- **Un contact qui refuse d'être rappelé n'est retransmis à personne.** Le partenaire le
+  signale, et il sort du fichier. Le rappeler par quelqu'un d'autre abîmerait le nom.
+- ⚠️ **C'est une aide, pas une garantie, et c'est écrit au contrat.** Aucune quantité,
+  aucune fréquence, aucune qualité promise. **Chercher ses propres prospects reste le
+  métier du partenaire** : un mois sans contact transmis n'est pas un manquement de NEBULA.
+- ⛔ **Ces numéros appartiennent à NEBULA.** Le partenaire ne les donne à personne, pas
+  même à un filleul, ne les verse dans aucune application, et les efface en partant.
+  Le détournement est une **faute grave** (résiliation immédiate).
+
+⛔ **CÔTÉ NEBULA, LA RÈGLE QUI NE SE VOIT PAS : une fiche vendue par PISTE ne se transmet
+pas.** PISTE vend ses fiches avec une **exclusivité de 90 jours** payée par son client.
+Donner cette même fiche à un partenaire pendant ces 90 jours, c'est **reprendre d'une main
+ce que l'autre a vendu**, et le client de PISTE n'a aucun moyen de s'en apercevoir avant
+que son prospect lui dise qu'on l'a déjà appelé. Avant de transmettre une liste :
+**écarter ce qui est sous exclusivité PISTE**. C'est une vérification à faire au départ,
+pas une clause à écrire dans le contrat du partenaire, qui n'a pas à savoir d'où viennent
+les numéros.
 
 **Après la livraison :** le partenaire est le **premier interlocuteur** du client, et NEBULA
 reste joignable directement. Les deux restent en contact sur chaque cas.
@@ -501,7 +529,7 @@ et finance.
 | **Djambar Team** · djambarteam.com | Bijouterie, Cotonou | Vitrine haut de gamme, multi-pages |
 | **Grain d'Esthétique** · graindesthetique.com | Institut de beauté, Cotonou | Vitrine avec prise de rendez-vous |
 | **Speed × Weinkeller** · speed-weinkeller.pages.dev | Cave à vins | Catalogue riche, 60 fiches produits |
-| **Au Braisé d'Or** · au-braise-dor.pages.dev | Restaurant, Cotonou | Catalogue-menu, 48 plats commandables |
+| **Au Braisé d'Or** · au-braise-dor.pages.dev | Restaurant, Cotonou | Catalogue-menu, toute la carte commandable |
 | **Miss Cakes** · miss-cakes.pages.dev | Pâtisserie | Catalogue commandable, une page |
 | **HH Design** · hh-design.pages.dev | Ébénisterie | Vitrine avec fiches produit et devis |
 

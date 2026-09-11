@@ -126,6 +126,12 @@ espace personnel. Chaque commission est tracée du premier jour au versement.
 
 Vous n’arrivez pas les mains vides. Tout est déjà construit et fonctionne :
 
+- **Des contacts à appeler, envoyés par NEBULA.** Nous vous transmettons des numéros de
+  professionnels à qui proposer nos offres. Ce que vous vendez dessus vous rapporte **le
+  même pourcentage** : nous ne prenons rien au passage, et un contact qu’on vous confie est
+  **à vous pendant 60 jours**. C’est un coup de main, pas votre gagne-pain : aller chercher
+  vos propres prospects reste le cœur du métier, et nous l’écrivons noir sur blanc dans le
+  contrat plutôt que de vous laisser croire le contraire.
 - **Votre espace partenaire en ligne** : vos clients, vos ventes, vos commissions, vos alertes
   en temps réel sur votre téléphone.
 - **Votre lien personnel et votre QR code** : tout ce qui passe par eux vous est attribué

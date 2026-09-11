@@ -10,13 +10,21 @@
 > Pour les premiers partenaires il fait le travail. Au-delà d'une trentaine de partenaires,
 > faites-le relire par un juriste béninois.
 >
-> **Version 1.4 · 2026-09-03.** Un seul changement depuis la 1.3 : le contrat est
-> **cosigné, pour NEBULA, par le responsable du réseau partenaires**. Il y a donc
-> **trois signatures pour deux parties**, et l'interlocuteur quotidien du Partenaire
-> figure au contrat qu'il fait appliquer.
+> **Version 1.5 · 2026-09-11.** NEBULA s'engage à **transmettre au Partenaire des
+> contacts à appeler** : articles **3.5** (ce que NEBULA transmet, et pourquoi ce n'est
+> pas une garantie), **3.6** (la commission reste au taux plein), **7.6 et 7.7**
+> (un contact transmis est à ce Partenaire pendant 60 jours, un contact qui refuse n'est
+> transmis à personne d'autre) et **14.6** (ces listes sont des données personnelles qui
+> restent celles de NEBULA).
 >
-> **Aucune commission ne change entre la 1.3 et la 1.4**, et aucun article n'est
-> retouché : seuls l'identification des parties et le bloc des signatures évoluent.
+> **Aucune commission ne change entre la 1.4 et la 1.5.** La 1.5 **ajoute un avantage**
+> au Partenaire, elle ne lui retire rien : le préavis de l'article 6.7 n'a pas lieu de
+> jouer, et un Partenaire en 1.4 peut signer la 1.5 sans autre formalité.
+>
+> *Version 1.4 du 2026-09-03 :* le contrat est **cosigné, pour NEBULA, par le responsable
+> du réseau partenaires**. Il y a donc **trois signatures pour deux parties**, et
+> l'interlocuteur quotidien du Partenaire figure au contrat qu'il fait appliquer.
+> Aucune commission ne changeait, et aucun article n'était retouché.
 >
 > *Version 1.3 du 2026-09-02 :* le **périmètre de vente du Partenaire** écrit noir sur
 > blanc (art. 4.4), les **frais de réactivation chiffrés à 5 000 F** (art. 4.1 et
@@ -112,6 +120,22 @@ technique à fournir.
 reste joignable directement. Le Partenaire peut écouter, rassurer et transmettre.
 **Il ne peut jamais promettre une correction ni un délai** : seule NEBULA annonce ce qui
 sera fait et quand.
+
+**3.5 NEBULA transmet des contacts à appeler.** NEBULA communique au Partenaire des
+**coordonnées de professionnels à contacter** pour leur présenter ses offres : numéros de
+téléphone, nom de l'établissement et activité. Le Partenaire les appelle en son nom de
+Partenaire NEBULA, dans les conditions de l'article 14.
+
+**C'est une aide, pas une garantie.** NEBULA transmet ces contacts **selon ce dont elle
+dispose**, sans engagement de quantité, de fréquence, ni de qualité, et sans qu'aucun
+résultat ne soit promis. **Le Partenaire ne peut en attendre son activité** : la recherche
+de prospects reste sa mission au titre de l'article 3.1, et l'absence de contacts transmis
+sur une période donnée **n'est pas un manquement de NEBULA** et n'ouvre droit à aucune
+indemnité.
+
+**3.6 La commission ne change pas.** Une vente conclue à partir d'un contact transmis par
+NEBULA est commissionnée **au taux plein de l'article 6.1**, exactement comme une vente
+trouvée par le Partenaire lui-même. NEBULA ne prélève rien pour avoir fourni le contact.
 
 ---
 
@@ -276,6 +300,17 @@ cession au client.
 **7.5** Le Partenaire ne peut ni transférer, ni vendre, ni céder à un tiers son portefeuille
 de clients ou de filleuls, ni le présent contrat, sans l'accord écrit préalable de NEBULA.
 
+**7.6 Les contacts transmis par NEBULA (article 3.5).** Un contact transmis à un Partenaire
+lui est **attribué pour 60 jours** à compter de la transmission, comme un prospect qu'il
+aurait enregistré lui-même. Pendant ce délai, **NEBULA ne le transmet à aucun autre
+Partenaire**. Passé 60 jours sans vente conclue, le contact redevient disponible et NEBULA
+peut le confier à un autre.
+
+**7.7** Le Partenaire signale à NEBULA, sans attendre les 60 jours, **tout contact qui
+demande à ne plus être appelé, qui est injoignable, ou qui n'est plus en activité.** Un
+contact rendu n'est plus le sien, et **un contact qui a refusé n'est transmis à personne
+d'autre** : le rappeler par un autre Partenaire abîmerait le nom de NEBULA.
+
 ---
 
 ## ARTICLE 8 · ENGAGEMENTS DU PARTENAIRE
@@ -418,6 +453,21 @@ détourner un fichier contenant des données de prospects ou de clients. NEBULA 
 responsable du traitement et fait le nécessaire auprès de l'autorité béninoise de
 protection des données à caractère personnel (APDP).
 
+**14.6 Les contacts transmis par NEBULA (article 3.5) sont des données personnelles, et
+elles restent celles de NEBULA.** Le Partenaire :
+
+- les utilise **uniquement** pour présenter les offres de NEBULA, et pour rien d'autre ;
+- ne les **communique à personne**, y compris à un autre Partenaire, à un filleul ou à un
+  proche, et **ne les revend jamais** ;
+- ne les verse dans **aucun outil, aucune application ni aucun service en ligne** autre que
+  son espace partenaire NEBULA ;
+- **les détruit à la fin du contrat**, sur tout support, téléphone personnel compris, dans
+  les conditions de l'article 14.4 ;
+- **dit qui il représente dès le premier mot de l'appel**, conformément à l'article 14.3.
+
+**Le détournement de ces listes constitue une faute grave** entraînant la résiliation
+immédiate du contrat, sans préjudice des indemnités prévues à l'article 8.13.
+
 ---
 
 ## ARTICLE 15 · DOCUMENTS CONTRACTUELS
@@ -497,6 +547,17 @@ qu'après réception de cette signature.**
 - **rien du tout sur les ventes de mes filleuls** : aucune commission de réseau n'existe.
   Leurs ventes comptent seulement avec les miennes pour faire monter mon palier
 - Je suis payé **sous 24 à 72 heures** après réclamation
+
+**On me donne des contacts à appeler**
+- NEBULA m'envoie des **numéros de professionnels à appeler** pour leur proposer ses offres.
+  Ce que je vends dessus me rapporte **le même taux** : NEBULA ne prend rien au passage
+- Un contact qu'on me donne **est à moi 60 jours**, et à personne d'autre pendant ce temps
+- **C'est un coup de main, pas mon activité.** Il peut ne rien venir pendant des semaines :
+  chercher mes propres prospects reste mon métier
+- Je dis **qui je suis dès le premier mot** de l'appel. Quelqu'un qui refuse d'être
+  rappelé, je le signale à NEBULA : on ne le rappellera plus, par personne
+- Ces numéros sont à NEBULA. Je ne les donne à personne, **pas même à un filleul**, je ne
+  les mets dans aucune application, et je les efface quand je m'arrête
 
 **Je dois**
 - Enregistrer chaque prospect le jour même : il est à moi pendant 60 jours
