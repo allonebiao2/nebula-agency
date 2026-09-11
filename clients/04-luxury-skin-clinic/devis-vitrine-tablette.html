@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Devis · Vitrine virtuelle sur tablette — LUXURY CLUB 229</title>
+<style>
+/* ⚠️ POLICES EMBARQUÉES, PAS APPELÉES SUR INTERNET.
+   Le premier rendu est sorti en Liberation/DejaVu : Chrome ne passe pas par le
+   mandataire réseau et n'a jamais reçu Google Fonts, sans le dire. Un devis de
+   maison de luxe en police système, c'est le document qui décrédibilise l'offre.
+   Les fichiers sont dans assets/fonts/ : le PDF se refabrique à l'identique,
+   hors ligne, sur n'importe quelle machine. */
+@font-face{font-family:'Cormorant';src:url('assets/fonts/cormorant-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:block}
+@font-face{font-family:'Cormorant';src:url('assets/fonts/cormorant-600.woff2') format('woff2');font-weight:600;font-style:normal;font-display:block}
+@font-face{font-family:'Cormorant';src:url('assets/fonts/cormorant-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block}
+@font-face{font-family:'Cormorant';src:url('assets/fonts/cormorant-400-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:'Jost';src:url('assets/fonts/jost-300.woff2') format('woff2');font-weight:300;font-style:normal;font-display:block}
+@font-face{font-family:'Jost';src:url('assets/fonts/jost-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:'Jost';src:url('assets/fonts/jost-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:block}
+@font-face{font-family:'Jost';src:url('assets/fonts/jost-600.woff2') format('woff2');font-weight:600;font-style:normal;font-display:block}
+
+:root{
+  --or:#c9a84c; --or-f:#a8862f; --or-c:#e6d3a0;
+  --noir:#0f0d0a; --encre:#2a251c; --doux:#6f6553;
+  --papier:#fff; --creme:#faf7ef; --nacre:#f3ecdd;
+  --ligne:rgba(201,168,76,.32);
+}
+@page{ size:A4; margin:13mm 12mm 14mm; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Jost',system-ui,sans-serif;color:var(--encre);background:var(--papier);
+  font-size:9.1pt;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1,h2,h3{font-family:'Cormorant',Georgia,serif}
+.page{page-break-after:always}
+.page:last-child{page-break-after:auto}
+
+.tete{display:flex;justify-content:space-between;align-items:flex-end;
+  border-bottom:2px solid var(--or);padding-bottom:5mm;margin-bottom:5mm}
+.marque{font-family:'Cormorant',serif;font-size:20pt;font-weight:700;letter-spacing:.16em;
+  color:var(--noir);line-height:1}
+.marque small{display:block;font-family:'Jost',sans-serif;font-size:6.6pt;font-weight:400;
+  letter-spacing:.34em;color:var(--or-f);margin-top:2mm;text-transform:uppercase}
+.ref{text-align:right;font-size:7.6pt;color:var(--doux);line-height:1.7}
+.ref b{color:var(--noir);font-weight:600}
+.titre-doc{font-size:8pt;letter-spacing:.3em;text-transform:uppercase;color:var(--or-f);
+  font-weight:600;margin-bottom:1mm}
+
+h2{font-size:14pt;font-weight:600;color:var(--noir);margin:5.5mm 0 2.5mm;
+  padding-bottom:1.2mm;border-bottom:1px solid var(--ligne)}
+h2:first-of-type{margin-top:0}
+h3{font-size:10.5pt;font-weight:600;color:var(--noir);margin:3.5mm 0 1.2mm}
+p{margin-bottom:2mm}
+ul{margin:0 0 2.5mm 4mm}
+li{margin-bottom:.9mm}
+strong{font-weight:600;color:var(--noir)}
+em{font-style:italic;color:var(--doux)}
+
+.client{background:var(--creme);border-left:3px solid var(--or);padding:3.5mm 4.5mm;margin-bottom:4.5mm}
+.client .nom{font-family:'Cormorant',serif;font-size:13.5pt;font-weight:600;color:var(--noir)}
+.client .det{font-size:8.2pt;color:var(--doux);margin-top:.8mm}
+
+.phrase{font-family:'Cormorant',serif;font-size:13pt;line-height:1.45;color:var(--noir);
+  font-style:italic;border-left:2px solid var(--or);padding:1.5mm 0 1.5mm 4.5mm;margin:3mm 0 4mm}
+
+.grille2{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm;margin-bottom:3mm}
+.carte{background:var(--creme);padding:3mm 3.5mm;border-top:2px solid var(--or)}
+.carte .t{font-weight:600;color:var(--noir);font-size:9pt;margin-bottom:1.2mm}
+.carte ul{margin:0 0 0 3.5mm}
+.carte li{font-size:8.3pt;margin-bottom:.6mm}
+
+.alerte{background:#fdfaf2;border:1px solid var(--ligne);border-left:3px solid var(--or);
+  padding:3.5mm 4.5mm;margin:3mm 0}
+.alerte .t{font-weight:600;color:var(--noir);margin-bottom:1.2mm}
+
+.q{margin-bottom:3.5mm;padding-left:8mm;position:relative}
+.q .n{position:absolute;left:0;top:0;font-family:'Cormorant',serif;font-size:14pt;
+  font-weight:700;color:var(--or);line-height:1}
+.q .t{font-weight:600;color:var(--noir);margin-bottom:.8mm}
+.q p{margin-bottom:1mm;font-size:8.7pt}
+
+table{width:100%;border-collapse:collapse;margin:2.5mm 0 3mm;font-size:8.4pt}
+th{background:var(--noir);color:var(--or-c);font-weight:500;text-align:left;padding:2.2mm 2.8mm;
+  font-size:7.6pt;letter-spacing:.08em;text-transform:uppercase}
+th.num,td.num{text-align:right}
+td{padding:2mm 2.8mm;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+tr.reco td{background:#fdf8ec}
+tr.total td{border-top:1.5px solid var(--or);border-bottom:none;font-weight:600;
+  color:var(--noir);font-size:9.4pt;padding-top:2.5mm}
+.prix{font-family:'Cormorant',serif;font-size:12.5pt;font-weight:700;color:var(--noir);white-space:nowrap}
+.badge{display:inline-block;background:var(--or);color:#fff;font-size:6.4pt;letter-spacing:.14em;
+  text-transform:uppercase;padding:.6mm 1.8mm;border-radius:2px;margin-left:1.5mm;
+  vertical-align:middle;font-weight:600}
+
+.reco-bloc{background:var(--noir);color:#efe6d2;padding:4.5mm 5.5mm;margin:4mm 0}
+.reco-bloc .t{font-family:'Cormorant',serif;font-size:8pt;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--or);margin-bottom:2mm}
+.reco-bloc .gros{font-family:'Cormorant',serif;font-size:25pt;font-weight:700;color:#fff;
+  line-height:1;margin-bottom:1.5mm}
+.reco-bloc .sous{font-size:8.6pt;color:#c9bda3}
+.reco-bloc p{color:#d8ceb8;margin:2.5mm 0 0;font-size:8.6pt}
+/* ⚠️ `strong` est déclaré en encre presque noire pour tout le document. Sur le
+   seul bloc à fond noir, les mots en gras devenaient INVISIBLES — et c'étaient
+   les trois noms de formules, dans la phrase qui porte la recommandation.
+   Vu sur la capture, jamais dans le code : une couleur globale se retourne
+   contre une section inversée. Même famille que le bouton crème sur crème
+   d'Angy Art (2026-08-21). */
+.reco-bloc strong{color:#fff}
+.reco-bloc em{color:#c9bda3}
+
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.sign{margin-top:7mm;display:grid;grid-template-columns:1fr 1fr;gap:9mm}
+.sign .bloc{border-top:1px solid var(--noir);padding-top:1.5mm;font-size:8.2pt}
+.sign .bloc .r{color:var(--doux)}
+.pied{margin-top:6mm;padding-top:2.5mm;border-top:1px solid var(--ligne);font-size:7.2pt;
+  color:var(--doux);text-align:center;letter-spacing:.06em}
+.note{font-size:7.8pt;color:var(--doux);font-style:italic}
+</style>
+</head>
+<body>
+
+<!-- ══════════ PAGE 1 ══════════ -->
+<section class="page">
+  <div class="tete">
+    <div class="marque">NEBULA<small>Agency · Cotonou</small></div>
+    <div class="ref">
+      <div class="titre-doc">Devis</div>
+      <b>N° 2026-04-VVT-01</b><br>Établi le 29 août 2026<br>Valable 30 jours
+    </div>
+  </div>
+
+  <div class="client">
+    <div class="nom">LUXURY CLUB 229</div>
+    <div class="det">
+      À l'attention de Madame Ahouangnimon Gloria · Cotonou, Bénin<br>
+      Objet : <strong>Vitrine virtuelle sur tablette</strong> — espace boutique et gestion
+    </div>
+  </div>
+
+  <h2>Le projet en une phrase</h2>
+  <div class="phrase">
+    Remplacer les étagères par une tablette : la cliente choisit assise, l'assistante
+    encaisse et emballe, et la maison sait enfin, à la pièce près, ce qu'il lui reste.
+  </div>
+
+  <h2>Ce que nous avons compris</h2>
+  <p>
+    Vos notes décrivaient le principe ; les <strong>quatre maquettes</strong> que vous nous
+    avez transmises décrivent le produit. Ce devis est chiffré <strong>sur les maquettes</strong>,
+    parce que c'est ce que vous voulez voir en boutique.
+  </p>
+  <div class="grille2">
+    <div class="carte">
+      <div class="t">1 · L'écran de la cliente</div>
+      <ul>
+        <li>Menu de gauche par univers : Visage, Corps, Cheveux, Solaires, Routines,
+          Sélections, Nouveautés, Best-sellers, Coffrets, Accessoires</li>
+        <li>Filtres rapides : Tous, Sérums, Crèmes, Nettoyants, Masques, Huiles…</li>
+        <li>Recherche en haut d'écran</li>
+        <li>Mise en avant d'un produit vedette, qui défile</li>
+        <li>Cartes produit avec photo, nom, prix, cœur « je le garde », bouton « + »</li>
+        <li>Panneau « Ma sélection » toujours visible, avec le total</li>
+      </ul>
+    </div>
+    <div class="carte">
+      <div class="t">2 · La commande, en quatre temps</div>
+      <ul>
+        <li>Elle choisit · elle ajuste les quantités dans le panneau</li>
+        <li>« Vos informations » : prénom, nom, téléphone</li>
+        <li>Récapitulatif : sous-total, livraison, total</li>
+        <li>« Merci Marie » — la commande est enregistrée</li>
+        <li>Le règlement se fait en boutique, comme aujourd'hui</li>
+      </ul>
+    </div>
+    <div class="carte">
+      <div class="t">3 · L'espace de la maison</div>
+      <ul>
+        <li><strong>Produits</strong> : ajouter, modifier, photo, prix, catégorie</li>
+        <li><strong>Stock</strong> réglable à l'unité, statut Disponible / Rupture</li>
+        <li><strong>Commandes</strong> : En préparation · Prête · Livrée · Annulée</li>
+        <li>Filtre par période, recherche, export</li>
+        <li><strong>Clientes enregistrées</strong> pour le suivi après achat</li>
+        <li><strong>Utilisateurs</strong> : un compte par personne de l'équipe</li>
+      </ul>
+    </div>
+    <div class="carte">
+      <div class="t">4 · L'allure</div>
+      <ul>
+        <li>Crème, noir et or — vos codes, tenus partout</li>
+        <li>Pensée pour une tablette posée en paysage sur son socle</li>
+        <li>Gros boutons : on l'utilise assise, à deux</li>
+        <li>Un panneau QR à côté, pour que la cliente retrouve
+          la boutique sur son propre téléphone</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Ce qui existe déjà, et que vous ne repayez pas</h2>
+  <p>
+    Votre catalogue est vivant sur <strong>luxuryclub229.com</strong>, et nous l'avons relu ce
+    jour : <strong>48 produits INA Luxury</strong> (46 déjà chiffrés), <strong>11 soins</strong>
+    Luxury Skin Clinic, <strong>7 articles Cozy</strong>, avec leurs photos détourées, leurs
+    catégories, leurs routines et leurs prix. <strong>Rien de tout cela n'est à refaire.</strong>
+  </p>
+  <p>
+    C'est ce qui rend ce projet plus court qu'il n'y paraît : nous ne construisons pas un
+    catalogue, nous construisons <em>la caisse, le stock et le carnet de commandes</em> autour
+    d'un catalogue qui existe déjà et qui est le vôtre.
+  </p>
+</section>
+
+<!-- ══════════ PAGE 2 ══════════ -->
+<section class="page">
+  <h2>Cinq points à trancher avant de commencer</h2>
+  <p class="note">
+    Ils ne coûtent rien maintenant. Découverts en cours de route, ils coûtent une refonte.
+  </p>
+
+  <div class="q">
+    <div class="n">1</div>
+    <div class="t">Les maquettes montrent des descriptions. Vos notes disaient « nom et prix uniquement ».</div>
+    <p>Sur les maquettes, chaque produit porte une accroche (« Éclat · Unifie · Corrige les
+      taches ») et le produit vedette a un paragraphe entier. Vos notes demandaient l'inverse :
+      une étagère, rien de plus.</p>
+    <p><strong>Notre avis :</strong> gardez l'accroche courte de trois mots sur la carte, et
+      mettez le texte long derrière « Voir plus de détails ». La cliente assise a le temps de
+      lire ; celle qui est pressée ne voit que le nom et le prix.</p>
+  </div>
+
+  <div class="q">
+    <div class="n">2</div>
+    <div class="t">Quel catalogue va sur la tablette ?</div>
+    <p>Les maquettes portent l'enseigne <strong>Luxury Skin Clinic</strong> et vendent des
+      produits. Or aujourd'hui, sur votre site, Luxury Skin Clinic ce sont les
+      <strong>11 soins en institut</strong>, et les produits sont chez <strong>INA Luxury</strong>.</p>
+    <p><strong>À décider :</strong> la tablette montre-t-elle les produits INA Luxury, les trois
+      marques réunies, ou seulement ce qui est physiquement dans cette boutique ?
+      Le nombre d'articles change du simple au double.</p>
+  </div>
+
+  <div class="q">
+    <div class="n">3</div>
+    <div class="t">Les prix des maquettes ne sont pas les vôtres.</div>
+    <p>Les maquettes affichent 15 000 à 28 000 F. Vos prix réels vont de
+      <strong>4 000 à 40 000 F</strong>, avec une <strong>médiane à 10 000 F</strong> :
+      32 de vos 48 produits sont sous 15 000 F.</p>
+    <p><strong>Nous prendrons vos vrais prix</strong>, ceux du site. Les chiffres des maquettes
+      sont des exemples de mise en page, pas une proposition tarifaire.</p>
+  </div>
+
+  <div class="q">
+    <div class="n">4</div>
+    <div class="t">Des rayons vides tuent une boutique de luxe.</div>
+    <p>Le menu des maquettes annonce Solaires, Coffrets &amp; kits, Accessoires,
+      Nos formulations. Certains de ces rayons n'ont aujourd'hui aucun produit dans votre
+      catalogue. Une cliente qui appuie sur « Coffrets » et tombe sur une page vide comprend
+      que la boutique est mal tenue.</p>
+    <p><strong>Notre règle :</strong> un rayon n'apparaît que s'il a des produits. Il apparaît
+      tout seul le jour où vous en ajoutez un.</p>
+  </div>
+
+  <div class="q">
+    <div class="n">5</div>
+    <div class="t">Le récapitulatif affiche une ligne « Livraison ».</div>
+    <p>Vos notes décrivent une vente en boutique : la cliente paie et repart avec son paquet.
+      Une ligne de livraison suppose autre chose.</p>
+    <p><strong>À décider :</strong> livrez-vous ? Si oui, à quel prix et dans quels quartiers ?
+      Sinon, la ligne disparaît.</p>
+  </div>
+
+  <h2>Le point qui décide du prix</h2>
+  <div class="alerte">
+    <div class="t">Il ne peut pas y avoir deux stocks.</div>
+    <p style="margin-bottom:0">
+      Votre site prend déjà des commandes. Si la tablette tient <em>son</em> stock dans son
+      coin, vous aurez deux vérités : le site dira « en stock » pendant que la boutique aura
+      vendu la dernière pièce. C'est la panne la plus coûteuse de ce genre de système, et elle
+      ne se voit que le jour où une cliente est déçue.
+    </p>
+  </div>
+  <p>Le cœur du projet n'est donc pas l'écran, c'est <strong>une base unique</strong> que la
+    tablette, la seconde tablette et le site interrogent tous les trois. Trois conséquences,
+    et chacune est un vrai travail :</p>
+  <ul>
+    <li><strong>Le stock se retire à la commande validée, jamais à l'ajout au panier</strong> —
+      sinon un panier abandonné bloque une pièce que personne n'a achetée.</li>
+    <li><strong>Deux tablettes ne peuvent pas vendre la même dernière pièce</strong> : le
+      décompte se fait au serveur, pas sur l'appareil.</li>
+    <li><strong>Une coupure d'internet n'annule pas une vente</strong> : la tablette continue,
+      et se remet d'accord avec le serveur au retour du réseau. À Cotonou, ce n'est pas un
+      détail de confort.</li>
+  </ul>
+</section>
+
+<!-- ══════════ PAGE 3 ══════════ -->
+<section class="page">
+  <h2>Les trois formules</h2>
+  <table>
+    <tr>
+      <th style="width:26%">Formule</th>
+      <th>Ce qu'elle contient</th>
+      <th class="num" style="width:19%">Prix</th>
+    </tr>
+    <tr>
+      <td><strong>Boutique</strong><br><span class="note">4 à 5 semaines</span></td>
+      <td>
+        La tablette telle qu'elle est sur vos maquettes : univers, filtres, recherche, produit
+        vedette, favoris, panneau « Ma sélection », commande en quatre temps.<br>
+        L'espace de la maison : <strong>produits</strong> (ajout, modification, photo, prix),
+        <strong>stock à l'unité</strong>, <strong>commandes</strong> avec leurs quatre statuts,
+        recherche, filtre par période et export.<br>
+        <strong>La base unique</strong>, partagée avec votre site, résistante aux coupures.
+      </td>
+      <td class="num"><span class="prix">320 000 F</span></td>
+    </tr>
+    <tr class="reco">
+      <td><strong>Maison</strong><span class="badge">Recommandée</span><br><span class="note">5 à 7 semaines</span></td>
+      <td>
+        Tout Boutique, plus ce qui vous fait <em>piloter</em> au lieu de subir :
+        <strong>tableau de bord</strong> (chiffre du jour, produits qui partent, panier moyen),
+        <strong>statistiques par produit</strong>, <strong>clientes enregistrées</strong> pour
+        le suivi après achat, <strong>comptes utilisateurs</strong> (un par personne de
+        l'équipe, avec ce qu'elle a le droit de voir), réglages, et
+        <strong>alertes avant la rupture</strong>.
+      </td>
+      <td class="num"><span class="prix">420 000 F</span></td>
+    </tr>
+    <tr>
+      <td><strong>Signature</strong><br><span class="note">6 à 8 semaines</span></td>
+      <td>
+        Tout Maison, plus la <strong>seconde tablette configurée et posée</strong>, le
+        <strong>panneau QR</strong> qui prolonge la visite sur le téléphone de la cliente,
+        l'<strong>export comptable</strong> mensuel, et une
+        <strong>demi-journée de prise en main</strong> avec votre équipe, sur place.
+      </td>
+      <td class="num"><span class="prix">480 000 F</span></td>
+    </tr>
+    <tr class="total">
+      <td colspan="2">Abonnement, quelle que soit la formule<br>
+        <span class="note" style="font-weight:400">Hébergement, sécurité, sauvegarde
+        quotidienne et <strong>modifications comprises</strong> · premier semestre offert</span></td>
+      <td class="num">20 000 F <span style="font-size:7.6pt;font-weight:400">/ 6 mois</span></td>
+    </tr>
+  </table>
+
+  <div class="reco-bloc">
+    <div class="t">Notre recommandation</div>
+    <div class="gros">420 000 F</div>
+    <div class="sous">Formule Maison · fourchette du projet : 320 000 à 480 000 F</div>
+    <p>
+      La formule <strong>Boutique</strong> fait tourner le magasin, mais elle vous laisse
+      compter à la main ce que vous vendez. La <strong>Signature</strong> est juste, et se
+      prendra très bien plus tard — la seconde tablette et la formation s'ajoutent sans rien
+      refaire. La <strong>Maison</strong> est celle qui règle le problème que vous avez
+      aujourd'hui : savoir ce qui reste, ce qui part, et qui a acheté quoi.
+    </p>
+  </div>
+
+  <h2>Pourquoi ce montant</h2>
+  <p>
+    Ce n'est plus une vitrine, c'est <strong>un outil de gestion doublé d'un écran de vente</strong>.
+    Deux interfaces à construire, une base de données à tenir juste, et un stock qui doit rester
+    vrai sur trois appareils à la fois. Les maquettes que vous nous avez envoyées montrent un
+    logiciel de boutique complet : nous le chiffrons pour ce qu'il est, et nous vous disons
+    franchement ce qui peut attendre.
+  </p>
+</section>
+
+<!-- ══════════ PAGE 4 ══════════ -->
+<section class="page">
+  <h2>Ce qui n'est pas compris dans ce devis</h2>
+  <div class="deux">
+    <div>
+      <h3>Le matériel, à votre charge</h3>
+      <ul>
+        <li>Une tablette — écran 11 pouces au moins, Wi-Fi, Android récent ou iPad
+          (deux pour la formule Signature)</li>
+        <li>Le socle de comptoir et le mobilier du coin cosy</li>
+        <li>Une connexion Wi-Fi dans la boutique</li>
+      </ul>
+      <p class="note">Nous vous conseillons sur le modèle avant l'achat, et nous configurons
+        la tablette en mode kiosque à la livraison : elle ne peut plus sortir de votre boutique.</p>
+    </div>
+    <div>
+      <h3>Ce qui reste de votre côté</h3>
+      <ul>
+        <li>Les <strong>quantités réelles</strong> de départ, produit par produit</li>
+        <li>Le prix des <strong>deux produits</strong> encore sans prix
+          (Rose Purifiant Sérum, Kojic Beauty Bar)</li>
+        <li>Les réponses aux <strong>cinq points</strong> de la page précédente</li>
+        <li>Les photos des rayons que vous voulez ouvrir et qui n'ont pas encore de produits</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Modalités</h2>
+  <table>
+    <tr><td style="width:32%"><strong>Règlement</strong></td>
+        <td>70 % au démarrage, 30 % à la livraison. Paiement intégral possible.</td></tr>
+    <tr><td><strong>Moyens acceptés</strong></td>
+        <td>Mobile Money sur le numéro officiel NEBULA, ou virement bancaire.</td></tr>
+    <tr><td><strong>Délai</strong></td>
+        <td>Compté à partir du versement d'ouverture, des réponses aux cinq points
+            et de la remise de vos quantités de stock.</td></tr>
+    <tr><td><strong>Abonnement</strong></td>
+        <td>20 000 F tous les 6 mois, modifications comprises. Premier semestre offert.</td></tr>
+    <tr><td><strong>Propriété</strong></td>
+        <td>Vos données, vos photos et votre catalogue restent les vôtres, et vous sont
+            remis sur simple demande.</td></tr>
+    <tr><td><strong>Validité</strong></td>
+        <td>30 jours à compter de la date d'établissement.</td></tr>
+  </table>
+
+  <h2>Ce que nous vous proposons de faire maintenant</h2>
+  <ul>
+    <li>Vous répondez aux <strong>cinq points</strong> — trente minutes, ensemble, suffisent.</li>
+    <li>Nous vous montrons <strong>la tablette avec vos vrais produits dedans</strong>, avant
+      tout engagement de votre part.</li>
+    <li>Vous décidez de la formule en la voyant tourner, pas sur un papier.</li>
+  </ul>
+
+  <div class="sign">
+    <div class="bloc">
+      <div class="r">Pour NEBULA Agency</div>
+      <div style="height:13mm"></div>
+      <strong>Mongazi</strong> · Fondateur
+    </div>
+    <div class="bloc">
+      <div class="r">Bon pour accord · date et signature</div>
+      <div style="height:13mm"></div>
+      <strong>Mme Ahouangnimon Gloria</strong> · LUXURY CLUB 229
+    </div>
+  </div>
+
+  <div class="pied">
+    NEBULA AGENCY · Cotonou, Bénin · Devis N° 2026-04-VVT-01 · établi le 29 août 2026
+  </div>
+</section>
+
+</body>
+</html>
