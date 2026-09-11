@@ -104,12 +104,101 @@ Noter au passage, **ce sont des chiffres qui valent de l'argent** :
 
 ---
 
+## ⚡ 2 bis · CE QUE LA CAPTURE DU 2026-08-27 A TRANCHÉ
+
+Mongazi ouvre « Demander l'accès pour gérer cette entreprise » et l'écran dit :
+
+> « Le restaurant **"AU BRAISÉ D'OR"** appartient à **`bl…@gmail.com`** »
+
+**Quatre faits en une capture, et ils changent le plan.**
+
+### ⛔ 1. Le propriétaire n'est PAS `aubraisedor@gmail.com`
+Google masque le milieu d'une adresse, **jamais le début** : `aubraisedor@`
+s'afficherait `au…@gmail.com`. Le compte propriétaire commence par **`bl`**.
+
+➜ **La porte 1 du §3 change de cible.** Récupérer `aubraisedor@gmail.com` ne
+donne pas la fiche. En revanche **on connaît maintenant les deux premières
+lettres du bon compte**, et ça vaut plus que tout le reste :
+
+1. ⚡ **« Ton adresse Gmail qui commence par `bl`, c'est laquelle ? »**
+   Blandine, Blaise, Blessing… Si c'est le compte de la propriétaire, on repart
+   sur la récupération Google **du bon compte**, depuis son téléphone habituel.
+   **Accès immédiat, zéro attente.**
+2. ⚡ **« Qui t'a créé ta page Google ? »** Un neveu, un ancien employé,
+   quelqu'un qui faisait de la com. Si la personne est joignable, **elle ajoute
+   NEBULA comme propriétaire en deux minutes** depuis son compte.
+
+⚠️ **Ces deux pistes battent la demande d'accès** (3 à 7 jours). La demande est
+le plan B, pas le plan A.
+
+### ✅ 2. La fiche a QUATRE avis
+C'est la démonstration en une ligne du §1.3 : **ces 4 avis ne se transfèrent
+pas.** Une fiche neuve repart à zéro pendant que celle-ci reste en ligne, plus
+ancienne et mieux placée.
+
+### ✅ 3. La fiche porte DÉJÀ une adresse
+Lisible partiellement : « …221, Cotonou, Bénin ». ⚡ **Le blocage 4.2 tombe tout
+seul.** À faire : lire l'adresse en entier sur l'écran, la faire confirmer par
+la propriétaire, et **vérifier que le point est posé sur la porte**.
+
+### ⚠️ 4. Un TROISIÈME nom en circulation
+La fiche s'appelle **« AU BRAISÉ D'OR »**, sans « Restaurant ». On a donc
+« AU BRAISÉ D'OR » (la fiche), « Restaurant Au Braisé d'Or » (le dossier
+interne), « Au Braisé d'Or » (le site). **La photo de l'enseigne reste ce qui
+tranche** (§4.4).
+
+---
+
+## 2 ter · REMPLIR LE FORMULAIRE « DEMANDER L'ACCÈS »
+
+### Depuis quel compte ? *(la question posée le 2026-08-27)*
+
+| | Le compte | Pourquoi |
+|---|---|---|
+| **1er choix** | **le compte de la maison**, créé sur le moment si besoin | la fiche naît au bon endroit, **aucun transfert à faire ensuite**, et si la demande finit en **appel manuel**, un compte au nom de la maison est un dossier bien plus solide qu'un Gmail personnel |
+| **2ᵉ choix** | le compte personnel de Mongazi | ça marche, mais il faudra **transférer la propriété principale** au compte de la maison ensuite, et ce compte doit donc exister de toute façon : autant le créer maintenant |
+
+⛔ **JAMAIS deux demandes depuis deux comptes différents.** Deux demandes en
+parallèle ressemblent à un abus et peuvent se retourner contre le demandeur.
+**Un compte, une demande, on attend.**
+
+### Champ par champ
+
+**« Quel niveau d'accès souhaitez-vous ? »** ➜ **Propriétaire / Possession.**
+⛔ **Jamais « Gestion ».** C'est le piège du formulaire :
+
+- gestionnaire, la fiche **reste la propriété de `bl…`** : on ne peut ni le
+  retirer, ni transférer, et il peut révoquer l'accès quand il veut ;
+- et surtout, c'est la demande de **propriété** qui ouvre le mécanisme
+  « pas de réponse sous 3 jours → tu peux revendiquer ». Une demande de gestion
+  sans réponse reste simplement sans réponse.
+
+**« Votre nom de contact »** ➜ un vrai nom, idéalement **celui de la
+propriétaire du restaurant** : c'est elle la légitime, et c'est ce nom qu'un
+examinateur recoupera avec le registre de commerce.
+
+**« Votre numéro de téléphone »** ➜ ⚠️ **le numéro que la fiche affiche déjà**
+(bouton APPEL), ou celui de l'enseigne. **Pas un numéro personnel.** C'est le
+premier recoupement que fait Google, et c'est exactement pour ça que le test
+des trois liens WhatsApp du §4.1 doit être fait **avant** d'envoyer.
+
+### Après l'envoi
+- [ ] noter **la date d'envoi** : le délai de 3 jours part de là
+- [ ] surveiller la boîte du compte demandeur, **spam compris**
+- [ ] à J+7 sans réponse, chercher le lien **« Faire appel »**
+- [ ] ⛔ **ne rien renvoyer entre-temps**, et ne créer aucune fiche
+
+---
+
 ## 3 · REPRENDRE LA MAIN (trois portes, dans cet ordre)
 
-### Porte 1 : rentrer dans `aubraisedor@gmail.com` — **à essayer en premier, 5 minutes**
+### Porte 1 : rentrer dans le compte propriétaire — **à essayer en premier**
 
-⚡ **Personne n'y a pensé : l'adresse est écrite sur l'enseigne.** Le compte
-n'est pas inconnu, il est juste fermé. Trois angles :
+⚠️ **CORRIGÉ LE 2026-08-27, voir §2 bis** : le propriétaire est **`bl…@gmail.com`**,
+**pas** `aubraisedor@gmail.com`. La récupération doit viser **`bl…`**, et la
+première chose à faire est de demander à la propriétaire **quelle est son
+adresse qui commence par `bl`**. Les trois angles ci-dessous s'appliquent
+alors à ce compte-là :
 
 1. **Le téléphone de la propriétaire, et tous les appareils de la maison.**
    Une session Gmail reste ouverte des années. Le téléphone, l'ancien
@@ -178,6 +267,65 @@ Et alors :
 - on ne crée la nouvelle **qu'après**.
 
 ⛔ Deux fiches vivantes en même temps, c'est le scénario du §1.3.
+
+---
+
+## 3 bis · ⛔ LE COMPTE `bl…` EST PERDU — tranché par Mongazi le 2026-08-27
+
+> « Elle ne se rappelle plus, c'est perdu, considère ça comme ça. »
+
+**La porte 1 est fermée définitivement.** Ni la propriétaire, ni ses appareils,
+ni le formulaire « adresse e-mail oubliée » ne rendront ce compte. On n'y
+revient pas.
+
+⚡ **Ce n'est pas une mauvaise nouvelle : c'est le cas où « Demander l'accès »
+fonctionne le mieux.** Toute la procédure repose sur le fait que le
+propriétaire actuel **ne répond pas** dans les 3 jours. Habituellement c'est un
+pari. Ici c'est une **certitude** : la boîte qui va recevoir le mail de Google
+n'est ouverte par personne.
+
+**Le chemin est donc unique, et il est fiable.**
+
+### J+0 · aujourd'hui, 30 minutes
+
+1. **Créer le compte Google de la maison.** Par exemple
+   `aubraisedor.cotonou@gmail.com`. ⛔ **Pas le compte personnel de Mongazi** :
+   la fiche naîtrait au mauvais endroit et demanderait un transfert ensuite.
+   ⚠️ **Le jour même, sans exception** : adresse de secours **et** numéro de
+   secours renseignés, **notés sur papier**, remis à la propriétaire. C'est
+   toute la raison d'être de ce dossier : **il n'y a pas de troisième fois.**
+2. **Trancher le numéro** (test des trois liens WhatsApp, §4.1) : c'est lui qui
+   va dans le formulaire.
+3. **Envoyer la demande** : Propriétaire / Possession, jamais Gestion (§2 ter).
+4. **Noter la date d'envoi.** Le délai part de là.
+
+### J+3 · le silence devient une clé
+Google a écrit au propriétaire, personne n'a lu. L'option de **revendiquer et
+valider soi-même** apparaît. La prendre.
+
+### J+7 · si rien n'a bougé, « Faire appel »
+⚠️ **C'est désormais le chemin le plus probable**, et c'est là que les preuves
+comptent. Le dossier d'appel, à réunir **pendant l'attente** :
+
+- [ ] photo de **l'enseigne**, nette, nom parfaitement lisible
+- [ ] **RC RB/COT/24 A 102350**
+- [ ] **IFU 0202501441177**
+- [ ] une **facture, un bail ou un document officiel** au nom de
+      l'établissement, portant l'adresse
+- [ ] le site : `https://au-braise-dor.pages.dev`
+- [ ] une photo de la propriétaire **devant l'établissement** (parfois demandée)
+
+### ⛔ Pendant toute l'attente
+- **ne créer aucune fiche**, sous aucun nom ;
+- **ne pas renvoyer la demande**, ni depuis un autre compte ;
+- **ne pas modifier la fiche existante** via « Suggérer une modification » :
+  une fiche qu'on est en train de revendiquer ne se retouche pas de l'extérieur.
+
+### ⚡ Et surtout : l'attente n'est pas du temps mort
+Les 3 à 7 jours servent à réunir **tout ce qui manque** (§11), pour que le jour
+où l'accès tombe, la fiche se remplisse **en une heure** au lieu de trois
+semaines. C'est le vrai chemin critique : **ce n'est pas Google qui fait
+attendre, ce sont l'adresse, les horaires, le numéro et les six photos.**
 
 ---
 

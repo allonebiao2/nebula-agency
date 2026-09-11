@@ -473,6 +473,54 @@ injoignable, et **c'est exactement le cas prévu par « Demander l'accès »** :
 propriétaire ne répond jamais, et **ce silence donne la fiche** au bout de
 3 à 7 jours.
 
+### ⚡ CE QUE LA CAPTURE DU 2026-08-27 A TRANCHÉ
+
+L'écran « Demander l'accès » dit : **« Le restaurant "AU BRAISÉ D'OR" appartient
+à `bl…@gmail.com` »**. Quatre faits :
+
+1. ⛔ **Le propriétaire n'est PAS `aubraisedor@gmail.com`** : Google masque le
+   milieu d'une adresse, jamais le début. Le bon compte commence par **`bl`**.
+   ⚡ **Deux questions à la propriétaire valent mieux que la demande d'accès**
+   (instantané contre 3 à 7 jours) : « ton Gmail qui commence par `bl`, c'est
+   lequel ? » et « qui t'a créé ta page Google ? » (cette personne peut ajouter
+   NEBULA en deux minutes).
+2. ✅ **La fiche a 4 avis** : la démonstration en une ligne de pourquoi on ne
+   recrée pas. Ils ne se transfèrent pas.
+3. ✅ **La fiche porte déjà une adresse** (« …221, Cotonou, Bénin ») : le
+   blocage de l'adresse tombe tout seul. À lire en entier et à faire confirmer,
+   point posé **sur la porte**.
+4. ⚠️ **Un 3ᵉ nom en circulation** : la fiche dit « AU BRAISÉ D'OR », le dossier
+   dit « Restaurant Au Braisé d'Or », le site dit « Au Braisé d'Or ». La photo
+   de l'enseigne tranche.
+
+**Le formulaire** : ➜ **Propriétaire / Possession, JAMAIS « Gestion »** (en
+gestionnaire la fiche reste à `bl…`, révocable, et seule la demande de
+*propriété* ouvre le « pas de réponse sous 3 jours → tu revendiques ») · nom de
+contact = **la propriétaire du restaurant** · téléphone = **celui de la fiche ou
+de l'enseigne**, jamais un numéro perso · ⛔ **jamais deux demandes depuis deux
+comptes** (ça ressemble à un abus). Compte demandeur : **celui de la maison de
+préférence** (aucun transfert ensuite, et dossier bien plus solide si ça finit
+en appel manuel) ; à défaut celui de Mongazi, **avec transfert de la propriété
+principale ensuite**.
+
+### ⛔ LE COMPTE `bl…` EST PERDU (tranché par Mongazi le 2026-08-27)
+
+« Elle ne se rappelle plus, c'est perdu, considère ça comme ça. » **On n'y
+revient plus.** ⚡ Et c'est le cas où « Demander l'accès » marche le mieux : la
+procédure repose sur le **silence du propriétaire pendant 3 jours**, et ce
+silence est désormais **certain**.
+
+Chemin unique : **J+0** créer le compte de la maison *(⛔ pas celui de Mongazi)*
+avec **secours mail + secours téléphone le jour même, notés sur papier**,
+trancher le numéro, envoyer la demande en **Propriétaire** · **J+3** l'option de
+revendiquer apparaît · **J+7** « Faire appel » avec enseigne + RC + IFU +
+document officiel *(c'est le chemin le plus probable)*.
+⛔ Pendant l'attente : aucune fiche créée, aucune 2ᵉ demande, aucune
+modification de la fiche existante.
+⚡ **L'attente n'est pas du temps mort** : c'est le créneau pour réunir adresse,
+horaires, numéro et les six photos. **Le chemin critique n'est pas Google, ce
+sont les informations manquantes.**
+
 ### ⛔ Les quatre blocages, tous antérieurs à la fiche
 
 - **QUATRE numéros en circulation**, et ⚡ **une explication** : le Bénin est
