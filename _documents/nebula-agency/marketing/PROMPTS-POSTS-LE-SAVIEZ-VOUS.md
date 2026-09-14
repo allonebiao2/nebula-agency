@@ -1304,6 +1304,106 @@ court que 5 à 7 jours** : c'est la règle n° 1 du socle commercial.
 | **Aucun prix sur l'image** | le prix vit dans la légende : l'image est éditoriale, c'est ce qui la fait partager |
 | Le label « LE SAVIEZ-VOUS ? » identique aux 16 posts précédents | c'est l'ancre de la série |
 | Réduire à 20 % | si « ARMURE » ne se lit plus, le post est mort dans le fil |
+---
+
+## 10. Quatrième direction artistique · « LE TRAIT ET LA NUIT »
+
+**Référence :** `references/REF-trait-et-nuit.jpg` · l'originale est en **4:5**, la nôtre
+sort en **9:16 pour le statut WhatsApp**.
+
+Les trois premières directions **expliquent**. Celle-ci **fait rire, puis serre le cœur**.
+C'est un dessin au trait sur une nuit presque noire, avec une seule couleur vive, et c'est
+le registre où le commerçant **se reconnaît** au lieu d'apprendre quelque chose. La valeur
+n'est pas dans l'information : elle est dans le « c'est exactement moi » qui arrive avant.
+
+⚠️ **On ne se moque JAMAIS du commerçant.** Le personnage qui galère, c'est nous tous, et
+le dessin est de son côté. Un post qui rit **du** client au lieu de rire **avec** lui est à
+jeter : il nous ferme la porte que le reste de la rubrique essaie d'ouvrir.
+
+### Les huit marqueurs à respecter
+
+1. **Fond presque noir, uni, plein cadre.** Dans la référence `#041704` occupe **80,2 % de
+   la surface** : c'est mesuré, et c'est ce vide qui fait tout. Chez NEBULA, `#070A14`.
+2. **Tout le dessin en trait blanc pur `#FFFFFF`**, épaisseur constante, main levée, **aucun
+   remplissage, aucune ombre, aucun dégradé**. Un dessin, pas une illustration.
+3. **UNE SEULE couleur vive dans toute l'image**, et chez NEBULA c'est le **cyan `#3FD8E6`**.
+   ⚠️ **Choisi sur mesure, pas au goût** : le vert de la référence tient **14,85:1** sur son
+   fond, le cyan **11,46:1** sur le nôtre, le violet seulement **5,05:1**. Un statut se
+   regarde dehors, écran à moitié éteint : le violet y disparaîtrait.
+4. **LE FIL, et c'est la signature de la direction.** Un unique trait cyan continu part d'un
+   point de la scène, traverse la composition en courbe souple et arrive à l'autre. Il
+   **relie les deux choses dont parle le post**. S'il ne relie rien, la direction est ratée.
+5. **L'accroche est une parole étirée**, en capitales arrondies, cyan, posée en haut, avec
+   ses voyelles allongées et ses points de suspension. Ce n'est pas un titre : **c'est
+   quelqu'un qui parle**, et on l'entend.
+6. **Trois textes discrets seulement** : le logo en haut à gauche, la ligne de services en
+   haut à droite, la ligne de copyright en bas. Rien d'autre ne flotte.
+7. **Beaucoup de vide sous le dessin.** La référence laisse le tiers inférieur presque nu.
+8. **Aucun visage identifiable**, des lunettes noires ou un trois-quarts dos suffisent.
+
+### ⚠️ Les trois pièges de cette référence
+
+- **Le modèle veut remplir.** Il ajoutera des ombres, un dégradé de fond, des icônes qui
+  flottent. Le prompt doit refuser explicitement les trois, à chaque fois.
+- **Le vert de la référence va essayer de revenir.** C'est la couleur la plus saillante de
+  l'image jointe : `MODE B` et la couleur nommée en toutes lettres, sinon le post sort en
+  vert Tempos et ce n'est plus notre marque.
+- **La parole étirée est du texte, pas un effet.** Écrite en toutes lettres entre guillemets
+  avec toutes ses voyelles, sinon le modèle en invente une autre.
+
+---
+
+## 11. Post n° 18 · « C'EST APRÈS LE CARREFOUR » *(direction « LE TRAIT ET LA NUIT »)*
+
+**Pourquoi ce sujet.** Au Bénin, **une adresse est un repère, pas une rue.** Ce n'est pas
+une statistique, c'est la vie de tous les jours, et c'est une vérité que les modèles
+étrangers ne connaissent pas : elle nous appartient. Le commerçant explique où il est dix
+fois par jour, avec les mains, au téléphone. Et **celui qui s'est perdu ne dit jamais qu'il
+s'est perdu** : il ne vient pas, c'est tout.
+
+⚠️ **Émotion visée : la reconnaissance, puis le petit vertige.** On rit à l'accroche, on
+comprend au corps de texte que des clients se sont déjà perdus et qu'on ne les a jamais
+comptés.
+
+```
+TOPIC ....... Ici, une adresse est un repère, pas une rue. Le commerçant
+              l'explique dix fois par jour de vive voix, et celui qui se
+              perd ne le dit jamais : il ne vient pas, simplement.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "« C'EST APRÈS LE CARREFOUR LÀÀÀÀÀ… »"
+              Emphasis: les voyelles étirées de "LÀÀÀÀÀ"
+SCENE ....... Dessin au trait blanc, de trois quarts dos. Un commerçant
+              debout derrière son étal, téléphone coincé contre l'oreille,
+              l'autre bras tendu qui trace un itinéraire dans l'air, la main
+              ouverte. Autour de sa tête, deux petits éclairs de trait.
+              LE FIL : un unique trait cyan continu sort du téléphone,
+              descend, s'emmêle en un nœud serré au centre du vide, puis
+              repart et se termine, tout en bas à droite, sur une petite
+              moto à l'arrêt vue de dos, dont le conducteur regarde des
+              deux côtés. Le nœud est le cœur du dessin.
+              Aucune légende dans la scène.
+BODY ........ "Celui qui se perd ne vous rappelle pas."
+              "Il ne vous dira jamais qu'il a cherché."
+CTA ......... "Répondez 1 : on vous pose un repère qui se partage."
+```
+
+**Légende WhatsApp (à coller sous le statut, ou en message) :**
+
+> Vous l'avez dit combien de fois aujourd'hui ? « Après le carrefour, tu vois la pharmacie,
+> tu demandes ». Et ça marche, la plupart du temps.
+>
+> Le problème, ce sont les autres. Ceux qui ont tourné deux fois, qui n'ont pas osé
+> rappeler, et qui sont allés ailleurs. Ceux-là, vous ne les avez jamais comptés : ils
+> n'apparaissent nulle part.
+>
+> Un repère qui se partage en un lien, ça ne se discute pas au téléphone. Ça s'ouvre, et on
+> arrive.
+>
+> Répondez **1**, on vous montre.
+
+⚠️ **Ce qu'on ne dit pas, et pourquoi.** Aucun chiffre de clients perdus n'est avancé :
+personne ne peut les compter, c'est précisément le sujet du post. Écrire « vous perdez 3
+clients par semaine » détruirait la seule chose que ce post a de vrai.
 
 ---
 
