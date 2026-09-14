@@ -610,7 +610,21 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - **Reprise de commission** si un encaissement est remboursé (contrat art. 6.7) —
   sauf si le remboursement vient d'une faute de NEBULA : le partenaire garde alors sa commission
 - Vague 1 : **Cotonou, 8 places**, objectif 30 ventes / 90 jours
-- Rubrique marketing **« LE SAVIEZ-VOUS ? »** : `_documents/nebula-agency/marketing/`
+- Rubrique marketing **« LE SAVIEZ-VOUS ? »** : `_documents/nebula-agency/marketing/`.
+  **Quatre directions artistiques** : nuit cosmique · « MARBRE & ROUGE » (carrousels) ·
+  « BLEU ÉLECTRIQUE » (§7) · **« LE TRAIT ET LA NUIT » (§10, 2026-09-14)** = dessin au trait
+  blanc sur nuit, **une seule couleur vive**, et **UN FIL continu qui relie les deux choses
+  dont parle le post**. Les trois premières expliquent, celle-ci fait rire puis serre le cœur.
+  ⚠️ **FABRIQUER UN POST DEPUIS UNE RÉFÉRENCE TROUVÉE AILLEURS : la méthode est dans
+  `_memoire/apprentissages/2026-09-14-un-post-depuis-une-reference.md`** — on hérite du
+  MÉTIER, jamais de la marque (`MODE B`). ⛔ **La couleur de la référence revient toute
+  seule** (c'est la plus saillante de l'image jointe) : la refuser **en toutes lettres**,
+  pas seulement nommer la nôtre. ⚠️ **L'accent se choisit AU CONTRASTE, pas au goût** : sur
+  `#070A14`, cyan **11,46:1**, violet seulement **5,05:1** — or un statut se regarde dehors,
+  écran à moitié éteint. ⚠️ **Le logo se joint EN PREMIER**, sinon il est traité comme un
+  modèle de style et la marque disparaît. ⛔ **On ne se moque JAMAIS du commerçant** : le
+  personnage qui galère, c'est nous tous. ⛔ **Aucune statistique inventée** — et le sujet le
+  plus fort est souvent celui dont on ne peut PAS donner le chiffre
 
 ## 🎨 STANDARD OBLIGATOIRE — toute vitrine, tout client, à partir du 2026-08-01
 **Avant d'écrire une ligne de CSS : lire `_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`.**
