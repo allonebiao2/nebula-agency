@@ -1,5 +1,5 @@
 /**
- * LA CARTE COMPLÈTE — 52 plats, 9 catégories.
+ * LA CARTE COMPLÈTE — 53 plats, 9 catégories.
  *
  * ⚠️ FICHIER GÉNÉRÉ, NE PAS ÉDITER À LA MAIN.
  * Source : le tableau `CATS` de `../../index.html`, qui reste la vérité.
@@ -24,6 +24,15 @@ export type Plat = {
    *  vend à la boule (1 000 / 1 500 / 2 500 F). Chaque palier porte son
    *  libellé et son prix exact — ce n'est PAS une fourchette. */
   paliers?: [string, number][];
+  /** ⚠️ CHOIX OBLIGATOIRE, À PRIX ÉGAL. L'attiéké se commande au poisson ou à
+   *  la viande, 2 000 F dans les deux cas. Ce n'est ni une taille (le prix ne
+   *  bouge pas), ni une garniture (on en prend un, et un seul). Sans lui, la
+   *  commande arrive en cuisine sans dire ce qu'il y a dans l'assiette. */
+  choix?: { libelle: string; options: string[] };
+  /** ⚠️ LE PLAT PORTE DÉJÀ SON ACCOMPAGNEMENT. La rubrique Grillades en
+   *  propose dix au choix ; l'attiéké EST l'un d'eux. Sans ce drapeau, la
+   *  fiche proposerait « Attiéké » comme accompagnement du plat « Attiéké ». */
+  sansAcc?: boolean;
   joq?: boolean;
   /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
    *  alors une tuile au nom du plat, jamais une image d'emprunt. */
@@ -61,6 +70,7 @@ export const CARTE: Cat[] = [
       { n: "Poulet chair", d: "Poulet chair grillé sur la braise.", p: 2500, p2: 5000, img: "/carte/g-poulet-chair.webp" },
       { n: "Aileron", d: "Aileron mariné et grillé.", p: 3000, img: "/carte/g-aileron.webp" },
       { n: "Mouton frit", d: "Viande frite dorée, tendre à cœur.", p: 3000, img: "/carte/g-lapin-mouton.webp" },
+      { n: "Attiéké", d: "Semoule de manioc, au choix avec du poisson ou de la viande.", p: 2000, choix: { libelle: "Poisson ou viande", options: ["Poisson", "Viande"] }, sansAcc: true },
     ],
   },
   {

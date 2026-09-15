@@ -888,3 +888,63 @@ anti-vapeur », dont la note dit qu'elle ne servait plus sur la krinkrin
 plats-là, il y a bien un panache. ⚠️ **Refaire la planche comparative des
 modèles pour ces deux photos** avant de choisir : `isnet` gagne sur damier,
 `birefnet` sur fond noir, et **le fond change le gagnant**.
+
+---
+
+# 2026-09-15 — L'ATTIÉKÉ ENTRE À LA CARTE (52 → 53 plats)
+
+Demandé par Mongazi. Détail complet :
+`_memoire/conversations/2026-09-15-braise-attieke.md`.
+
+**Attiéké · 2 000 F · rubrique Grillades · au poisson ou à la viande.**
+
+⚠️ **Il n'existait que comme ACCOMPAGNEMENT** (« Attiéké » chez les grillades,
+« Atchiéké » chez les sauces), jamais comme plat. Ni prix ni photo dans la
+maison : les deux ont été demandés avant d'écrire une ligne.
+
+## Deux champs neufs dans le modèle
+
+- **`choix: { libelle, options }`** — un choix **obligatoire, à prix égal**.
+  ⚠️ Ce n'est ni une taille (`p2` : le prix ne bouge pas), ni une garniture
+  (`garn` : facultative et fait monter le prix), ni un barème (`paliers`). Le
+  tordre dans `p2` aurait affiché « 2 000 F / 2 000 F » sur la pastille.
+  Sans réponse, le bouton reste gris : « Poisson ou viande ? ».
+- **`sansAcc: true`** — ⚠️ **l'attiéké EST un des dix accompagnements de la
+  rubrique Grillades** : sans ce drapeau, sa fiche proposait « Attiéké » comme
+  accompagnement de l'attiéké.
+
+Le choix voyage jusqu'au bout : clé de ligne du panier, message WhatsApp
+(« 1 × Attiéké (Poisson) »), et **il partage la parenthèse de la taille** —
+« (Grand, Poisson) », jamais « (Grand) (Poisson) ».
+
+## ⛔ Le piège du 26/08 s'est refermé à l'envers
+
+Le QC accrochait l'ardoise ET l'accompagnement obligatoire **au même clic**.
+L'attiéké redevenant le seul plat sans photo, ce clic tombait sur lui — et
+comme il ne demande pas d'accompagnement, **ce contrôle-là se serait éteint
+sans un mot, tout vert**. → **une règle, une fiche** : trois clics
+indépendants, et les plats à choix sont **lus dans `carte.ts`**.
+
+## ⛔ `button.flex-1` attrapait aussi les boutons de taille
+
+Défaut **antérieur** de la sonde : sur « Sauce Yassa au poulet », seule sauce
+à deux tailles, le QC cliquait « Quart de poulet · 2 500 F » au lieu de
+« Ajouter ». Le héros montrant une sauce au hasard, **ça ne ratait qu'une fois
+sur quatorze**. → prise explicite **`data-ajouter`**, plus deux autres pour
+les contrôles : **`data-plat`** sur chaque carte, **`data-choix`** sur le bloc.
+
+## L'image
+
+⛔ **Aucune image générée.** WaveSpeed était à **0,03 $** (il en faut 0,14) et
+Higgsfield à **0 crédit**, mesurés — et Mongazi a tranché pour **une vraie
+photo**, qu'il envoie. En attendant, **l'ardoise** : le nom du plat sur la
+pierre, le mécanisme du 19/08. Poser la photo = une entrée dans `PHOTO` de
+`index.html`, le fichier dans `assets/images/` **et**
+`experience/public/carte/`, puis `node _outils/_extraire_carte.js`.
+
+**QC 102 → 117 verts** · `_qc_partage` 36 verts, 53 plats balisés ·
+nouveau `_outils/_vues_attieke.py` (6 captures, 390 et 1440).
+
+⏳ **À confirmer** : la photo · la description (écrite par moi) · quel poisson
+et quelle viande · la rubrique (Grillades, faute d'une meilleure).
+

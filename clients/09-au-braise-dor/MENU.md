@@ -215,3 +215,36 @@ confirmation. À trancher avec la maison, en même temps que la question 2.
 pêcheur) sont **confirmées par la photo** : leur second prix est bon.
 Épinards, quatre saisons, fruit de mer et margherita n'ont **pas** de seconde
 taille, la colonne est vide sur le papier.
+
+## Attiéké *(ajouté le 2026-09-15, demandé par Mongazi)*
+
+- **Attiéké** — semoule de manioc, **au poisson ou à la viande** — **2 000 F**
+  · rubrique **Grillades**
+
+⚠️ **L'ATTIÉKÉ N'ÉTAIT NULLE PART SUR LA CARTE PAPIER COMME PLAT.** Il n'y
+figurait qu'en **accompagnement**, deux fois : « attiéké » dans la liste des
+grillades, « Atchiéké » dans celle des sauces. C'est Mongazi qui l'ajoute
+comme plat, avec son prix.
+
+⚠️ **UN CHOIX, PAS UNE TAILLE.** Mongazi : « y'a poisson à part et viande à
+part, donc quand on clique sur attiéké on doit pouvoir choisir entre poisson
+ou viande ». Le prix ne bouge pas d'une option à l'autre : ce n'est donc ni
+une deuxième taille (`p2`), ni une garniture qui fait monter le prix (`garn`),
+ni un barème (`paliers`). Nouveau champ **`choix`**, obligatoire : sans lui la
+commande arriverait en cuisine en disant « 1 × Attiéké » sans dire quoi.
+
+⚠️ **ET IL NE REDEMANDE PAS D'ACCOMPAGNEMENT.** La rubrique Grillades en
+propose dix au choix, et **l'attiéké EST l'un d'eux** : sans le drapeau
+`sansAcc`, sa fiche proposait « Attiéké » comme accompagnement de l'attiéké.
+
+⏳ **CE QUI RESTE À CONFIRMER PAR LA MAISON**
+1. **La photo.** Mongazi en envoie une vraie. En attendant, la carte affiche
+   **l'ardoise** (le nom du plat écrit sur la pierre), le mécanisme prévu pour
+   ça. ⛔ Aucune image générée : WaveSpeed était de toute façon à 0,03 $ et
+   Higgsfield à 0 crédit le jour où le plat a été ajouté.
+2. **La description** est de moi, pas de la maison : « Semoule de manioc, au
+   choix avec du poisson ou de la viande. » À faire relire.
+3. **Le poisson et la viande** : lesquels ? (tilapia ? mouton ? bœuf ?) La
+   fiche dit « Poisson » et « Viande », ce que Mongazi a dit mot pour mot.
+4. **La rubrique** : posé dans **Grillades**, faute d'une meilleure. Le
+   déplacer est une ligne de `index.html` si la maison le voit ailleurs.

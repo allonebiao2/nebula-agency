@@ -35,6 +35,10 @@ type Ligne = {
   acc?: string;
   /** Ce que le client a demandé dans sa sauce. */
   dedans?: string[];
+  /** ⚠️ POISSON OU VIANDE : un choix obligatoire, à prix égal. Il n'entre pas
+   *  dans le calcul, mais il DOIT voyager jusqu'à la cuisine : sans lui, la
+   *  commande dit « 1 × Attiéké » et personne ne sait ce qu'il y a dedans. */
+  choix?: string;
   unite: number;
   /** ⚠️ BORNE HAUTE, quand le prix est une fourchette. Le prix d'une sauce
    *  dépend de ce qu'on met dedans, et la maison le confirme à la commande :
@@ -179,7 +183,7 @@ export default function Carte() {
   }, []);
 
   function ajouter(l: Omit<Ligne, "cle">) {
-    const cle = [l.nom, l.taille ?? "", l.acc ?? "", (l.dedans ?? []).join(",")].join("|");
+    const cle = [l.nom, l.taille ?? "", l.choix ?? "", l.acc ?? "", (l.dedans ?? []).join(",")].join("|");
     setPanier((p) => {
       const i = p.findIndex((x) => x.cle === cle);
       if (i < 0) return [...p, { ...l, cle }];
@@ -197,7 +201,9 @@ export default function Carte() {
       .map(
         (l) =>
           `• ${l.qte} × ${l.nom}` +
-          (l.taille ? ` (${l.taille})` : "") +
+          (l.taille || l.choix
+            ? ` (${[l.taille, l.choix].filter(Boolean).join(", ")})`
+            : "") +
           (l.dedans?.length ? ` avec ${l.dedans.join(", ")}` : "") +
           (l.acc ? ` + ${l.acc}` : "") +
           ` — ${prix(l.unite * l.qte, l.uniteMax ? l.uniteMax * l.qte : undefined)}`
@@ -288,6 +294,7 @@ export default function Carte() {
               {c.items.map((p) => (
                 <article
                   key={p.n}
+                  data-plat={p.n}
                   className="ct-item group cursor-pointer overflow-hidden rounded-3xl border border-white/80 bg-white/70 shadow-[0_14px_40px_rgba(0,0,0,0.06)] backdrop-blur transition hover:-translate-y-1 hover:shadow-[0_24px_56px_rgba(0,0,0,0.10)]"
                   onClick={() => setOuvert({ cat: c, plat: p })}
                 >
@@ -446,10 +453,13 @@ function Fiche({
     ];
   }, [plat]);
   const [iTaille, setITaille] = useState(0);
+  const [choix, setChoix] = useState<string>("");
   const [acc, setAcc] = useState<string>("");
   const [dedans, setDedans] = useState<string[]>([]);
   const [qte, setQte] = useState(1);
-  const accs = cat.acc ? ACC[cat.acc] : null;
+  /* ⚠️ L'ATTIÉKÉ EST DÉJÀ UN ACCOMPAGNEMENT DE LA LISTE. Sans `sansAcc`, la
+     fiche du plat « Attiéké » proposerait « Attiéké » comme accompagnement. */
+  const accs = cat.acc && !plat.sansAcc ? ACC[cat.acc] : null;
 
   /* ⚠️ DEUX CAS SONT EXACTS, UN SEUL EST UNE FOURCHETTE.
      Mongazi : « quand on met tout dedans, c'est le prix le plus cher ».
@@ -470,6 +480,10 @@ function Fiche({
      accompagnement arrive incomplète en cuisine, et c'est le restaurant qui
      rappelle le client. */
   const manqueAcc = !!accs && !acc;
+  /* ⚠️ MÊME RAISON QUE L'ACCOMPAGNEMENT, ET CE N'EST PAS LE MÊME CONTRÔLE.
+     « Attiéké » sans poisson ni viande arrive incomplet en cuisine, et c'est
+     le restaurant qui rappelle le client. */
+  const manqueChoix = !!plat.choix && !choix;
   /* ⚠️ PRIX PAS ENCORE DONNÉ PAR LA MAISON (p = 0). On ne met pas au panier
      un article dont on ignore le prix : le total mentirait, et le message
      WhatsApp partirait avec un « 0 F » que personne ne veut lire. La fiche
@@ -540,6 +554,36 @@ function Fiche({
                     }
                   >
                     {libelle} · {fmt(valeur)} F
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {plat.choix && (
+            <div className="mt-5" data-choix={plat.choix.libelle}>
+              <p className="mb-2 text-[0.75rem] uppercase tracking-widest text-[#a8542f]">
+                {plat.choix.libelle}{" "}
+                <span className="normal-case tracking-normal opacity-70">· à choisir</span>
+              </p>
+              {/* ⚠️ LE PRIX NE BOUGE PAS D'UNE OPTION À L'AUTRE, donc aucune
+                  n'affiche de chiffre : écrire « Poisson · 2 000 F » ferait
+                  croire que l'autre coûte autre chose. */}
+              <div className="flex flex-wrap gap-2">
+                {plat.choix.options.map((o) => (
+                  <button
+                    key={o}
+                    type="button"
+                    onClick={() => setChoix(choix === o ? "" : o)}
+                    aria-pressed={choix === o}
+                    className="rounded-full border px-3 py-1.5 text-[0.8rem] transition"
+                    style={
+                      choix === o
+                        ? { background: "#1d1a17", color: "#f6efe6", borderColor: "#1d1a17" }
+                        : { borderColor: "rgba(29,26,23,.18)" }
+                    }
+                  >
+                    {o}
                   </button>
                 ))}
               </div>
@@ -638,10 +682,12 @@ function Fiche({
             </div>
             <button
               type="button"
+              data-ajouter
               onClick={() =>
                 onAjouter({
                   nom: plat.n,
                   taille: paliers.length ? paliers[iTaille][0] : undefined,
+                  choix: choix || undefined,
                   acc: acc || undefined,
                   dedans: dedans.length ? dedans : undefined,
                   unite: uMin,
@@ -649,11 +695,20 @@ function Fiche({
                   qte,
                 })
               }
-              disabled={manqueAcc}
+              disabled={manqueAcc || manqueChoix}
               className="flex-1 rounded-full px-4 py-3 text-[0.9rem] font-bold text-[#f6efe6] transition hover:brightness-125 disabled:cursor-not-allowed disabled:opacity-45"
               style={{ background: "#1d1a17" }}
             >
-              {manqueAcc
+              {/* ⚠️ DEUX MANQUES POSSIBLES, DEUX PHRASES. Un « Complétez votre
+                  commande » commun laisserait le client chercher lequel des
+                  deux blocs il n'a pas rempli. */}
+              {/* ⚠️ ESPACE FINE INSÉCABLE avant le « ? ». La typographie
+                  française la demande, et elle règle au passage un défaut vu
+                  sur la capture : « Poisson ou viande » tenait sur une ligne
+                  et le « ? » tombait seul sur la suivante. */}
+              {manqueChoix
+                ? `${plat.choix!.libelle}\u202f?`
+                : manqueAcc
                 ? "Choisissez un accompagnement"
                 : `Ajouter · ${prix(uMin * qte, uMax > uMin ? uMax * qte : undefined)}`}
             </button>

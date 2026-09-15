@@ -27,7 +27,7 @@ coûte plus cher qu'un contrôle absent, parce qu'on le croit.
    ⚠️ Et on neutralise l'animation d'apparition avant de photographier, sinon
    on mesure le contraste d'un fondu.
 """
-import functools, http.server, io, os, socketserver, sys, threading
+import functools, http.server, io, os, re, socketserver, sys, threading
 
 # ⚠️ La console de Windows écrit en cp1252 : un simple « ≥ » dans un libellé
 #    faisait planter le contrôle APRÈS l'avoir réussi. On écrit en UTF-8.
@@ -85,6 +85,29 @@ def sauces_attendues():
     i = txt.index('id: "sauces"')
     j = txt.index('id: "petitdej"')
     return txt.count("      { n: ", i, j)
+
+
+def plats_a_choix():
+    """Les plats qui exigent un choix à prix égal (l'attiéké : poisson ou viande).
+
+    ⚠️ LU DANS `carte.ts`, JAMAIS RECOPIÉ. Le jour où la maison ajoute un
+    deuxième plat au choix, ce contrôle doit le réclamer tout seul ; et le
+    jour où l'attiéké est renommé, il ne doit pas se mettre à chercher un
+    plat qui n'existe plus.
+    """
+    out = []
+    for m in re.finditer(r'\{ n: "([^"]+)".*', _carte_src()):
+        ligne = m.group(0)
+        if "choix: {" not in ligne:
+            continue
+        lib = re.search(r'choix: \{ libelle: "([^"]+)", options: \[([^\]]*)\]', ligne)
+        out.append({
+            "nom": m.group(1),
+            "libelle": lib.group(1),
+            "options": re.findall(r'"([^"]+)"', lib.group(2)),
+            "sansAcc": "sansAcc: true" in ligne,
+        })
+    return out
 
 
 def rgb(txt):
@@ -193,65 +216,150 @@ def main():
                 "document.documentElement.scrollWidth - document.documentElement.clientWidth")
             dire(deb <= 0, "[%s] débordement horizontal : %d px" % (nom, deb))
 
-            # ⚠️ CE CONTROLE PLANTAIT SUR UN `null.click()` LE 2026-08-26, le jour
-            #    ou le dernier plat a recu sa photo. Il cherchait « un plat sans
-            #    image » pour ouvrir sa fiche, et il n'y en a plus AUCUN sur les 52.
-            #    Un controle qui plante ne protege plus rien : il doit dire qu'il
-            #    n'a plus de sujet, pas s'arreter au milieu de la suite.
-            # ⚠️ ET SURTOUT : DEUX CHOSES SANS RAPPORT etaient accrochees au meme
-            #    clic. L'ardoise est un cas particulier qui peut disparaitre ;
-            #    l'ACCOMPAGNEMENT OBLIGATOIRE est une regle metier valable pour
-            #    tout plat, et une commande qui part sans lui arrive incomplete en
-            #    cuisine. En laissant les deux ensemble, la seconde serait morte
-            #    avec la premiere, sans un mot. On les separe : a defaut d'ardoise,
-            #    on ouvre une SAUCE, categorie qui exige toujours un accompagnement.
-            vise = pg.evaluate("""() => {
-                const tous = [...document.querySelectorAll(".ct-item")];
-                const sans = tous.find(x => !x.querySelector("img"));
-                if (sans) { sans.click(); return "ardoise"; }
-                const sauce = document.querySelector("#cat-sauces .ct-item");
-                if (sauce) { sauce.click(); return "sauce"; }
-                if (tous[0]) { tous[0].click(); return "premier plat"; }
-                return null; }""")
+            # == TROIS REGLES, TROIS FICHES OUVERTES =====================
+            # ⚠️ ELLES ÉTAIENT ACCROCHÉES AU MÊME CLIC, et le piège du
+            #    2026-08-26 s'est refermé À L'ENVERS le 2026-09-15. L'ardoise
+            #    est un cas particulier, qui apparaît et disparaît au gré des
+            #    photos ; l'ACCOMPAGNEMENT OBLIGATOIRE et le CHOIX OBLIGATOIRE
+            #    sont des règles métier. En ajoutant l'attiéké, seul plat sans
+            #    photo, le clic « ardoise » est tombé sur lui — et comme il ne
+            #    demande PAS d'accompagnement (il EN EST un), le contrôle de
+            #    l'accompagnement se serait éteint sans un mot, tout vert.
+            #    Une règle, une fiche : un contrôle ne partage plus son clic.
+
+            def etat_fiche():
+                return pg.evaluate("""() => {
+                    const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
+                    if (!d) return null;
+                    const b = d.querySelector('button[data-ajouter]');
+                    const ch = d.querySelector('[data-choix]');
+                    return { titre: d.querySelector('h3')?.textContent,
+                             bouton: b ? b.textContent.trim() : null,
+                             bloque: b ? b.disabled : null,
+                             demandeAcc: [...d.querySelectorAll('p')]
+                                 .some(p => /Accompagnement/.test(p.textContent || '')),
+                             choix: ch ? ch.getAttribute('data-choix') : null,
+                             options: ch ? [...ch.querySelectorAll('button')]
+                                 .map(x => x.textContent.trim()) : [],
+                             img: !!d.querySelector('img') }; }""")
+
+            def ferme():
+                pg.keyboard.press("Escape")
+                pg.wait_for_timeout(250)
+
+            # -- 1. L'ARDOISE : un plat sans photo écrit son nom ----------
+            ardoise = pg.evaluate("""() => {
+                const sans = [...document.querySelectorAll(".ct-item")]
+                    .find(x => !x.querySelector("img"));
+                if (!sans) return null;
+                sans.click();
+                return sans.getAttribute("data-plat"); }""")
             pg.wait_for_timeout(900)
-            fiche = pg.evaluate("""() => {
-                const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
-                if (!d) return null;
-                const b = d.querySelector('button.flex-1');
-                const acc = [...d.querySelectorAll('p')]
-                    .some(p => /Accompagnement/.test(p.textContent || ''));
-                return { titre: d.querySelector('h3')?.textContent,
-                         bouton: b ? b.textContent.trim() : null,
-                         bloque: b ? b.disabled : null,
-                         demandeAcc: acc,
-                         img: !!d.querySelector('img') }; }""")
-            dire(fiche is not None,
-                 "[%s] la fiche s'ouvre (%s)" % (nom, vise or "aucun plat a ouvrir"))
-            if fiche:
-                if vise == "ardoise":
-                    dire(not fiche["img"],
+            if ardoise:
+                f1 = etat_fiche()
+                dire(f1 is not None,
+                     "[%s] la fiche de l'ardoise « %s » s'ouvre" % (nom, ardoise))
+                if f1:
+                    dire(not f1["img"],
                          "[%s] la fiche n'appelle aucune image : ardoise « %s »"
-                         % (nom, fiche["titre"]))
-                else:
-                    dire(True, "[%s] plus aucune ardoise au menu : les 52 plats ont leur photo,\n       le controle de la fiche sans image n'a plus de sujet" % nom)
-                # ⚠️ L'ACCOMPAGNEMENT EST OBLIGATOIRE quand la catégorie en propose.
-                # Une commande sans accompagnement arrive incomplète en cuisine.
-                if fiche["demandeAcc"]:
-                    dire(fiche["bloque"] is True,
-                         "[%s] sans accompagnement, la commande est bloquée : « %s »"
-                         % (nom, fiche["bouton"]))
-                    pg.evaluate("""() => {
-                        const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
-                        const t = [...d.querySelectorAll('p')]
-                            .find(p => /Accompagnement/.test(p.textContent || ''));
-                        t.parentElement.querySelector('button').click(); }""")
-                    pg.wait_for_timeout(300)
-                    fiche = pg.evaluate("""() => {
-                        const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
-                        const b = d.querySelector('button.flex-1');
-                        return { bouton: b.textContent.trim(), bloque: b.disabled }; }""")
-                dire(bool(fiche["bouton"]) and not fiche["bloque"],
-                     "[%s] le bouton de commande est là : %s" % (nom, fiche["bouton"]))
+                         % (nom, f1["titre"]))
+                ferme()
+            else:
+                dire(True, "[%s] plus aucune ardoise au menu : tous les plats"
+                           " ont leur photo, le contrôle n'a plus de sujet" % nom)
+
+            # -- 2. L'ACCOMPAGNEMENT OBLIGATOIRE -------------------------
+            # ⚠️ ON OUVRE TOUJOURS UNE SAUCE : sa catégorie en exige un, quoi
+            #    qu'il arrive aux photos et aux plats des autres rubriques.
+            sauce = pg.evaluate("""() => {
+                const s = document.querySelector("#cat-sauces .ct-item");
+                if (!s) return null;
+                s.click();
+                return s.getAttribute("data-plat"); }""")
+            pg.wait_for_timeout(900)
+            f2 = etat_fiche()
+            dire(f2 is not None,
+                 "[%s] la fiche d'une sauce s'ouvre (%s)" % (nom, sauce or "aucune"))
+            if f2:
+                dire(f2["demandeAcc"] is True,
+                     "[%s] « %s » demande bien un accompagnement" % (nom, f2["titre"]))
+                dire(f2["bloque"] is True,
+                     "[%s] sans accompagnement, la commande est bloquée : « %s »"
+                     % (nom, f2["bouton"]))
+                pg.evaluate("""() => {
+                    const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
+                    const t = [...d.querySelectorAll('p')]
+                        .find(p => /Accompagnement/.test(p.textContent || ''));
+                    t.parentElement.querySelector('button').click(); }""")
+                pg.wait_for_timeout(300)
+                f2b = etat_fiche()
+                dire(bool(f2b) and f2b["bloque"] is False,
+                     "[%s] accompagnement choisi, le bouton s'ouvre : « %s »"
+                     % (nom, f2b["bouton"] if f2b else "?"))
+                ferme()
+
+            # -- 3. LE CHOIX OBLIGATOIRE, A PRIX EGAL --------------------
+            # ⚠️ « Attiéké » sans poisson ni viande arrive incomplet en
+            #    cuisine, exactement comme une sauce sans accompagnement.
+            #    Les plats concernés sont LUS dans la carte, jamais recopiés.
+            for p in plats_a_choix():
+                ouvert = pg.evaluate("""(n) => {
+                    const c = document.querySelector('.ct-item[data-plat="' + n + '"]');
+                    if (!c) return false;
+                    c.click(); return true; }""", p["nom"])
+                dire(ouvert, "[%s] « %s » est bien sur la carte" % (nom, p["nom"]))
+                if not ouvert:
+                    continue
+                pg.wait_for_timeout(900)
+                f3 = etat_fiche()
+                dire(f3 is not None, "[%s] la fiche de « %s » s'ouvre" % (nom, p["nom"]))
+                if not f3:
+                    continue
+                dire(f3["choix"] == p["libelle"],
+                     "[%s] « %s » demande « %s »" % (nom, p["nom"], f3["choix"]))
+                dire(f3["options"] == p["options"],
+                     "[%s] les %d options de « %s » sont là : %s"
+                     % (nom, len(p["options"]), p["nom"], ", ".join(f3["options"])))
+                dire(f3["bloque"] is True,
+                     "[%s] sans choix, la commande est bloquée : « %s »"
+                     % (nom, f3["bouton"]))
+                # ⚠️ UN PLAT QUI PORTE DÉJÀ SON ACCOMPAGNEMENT N'EN REDEMANDE
+                #    PAS UN : la fiche de l'attiéké proposait « Attiéké ».
+                if p["sansAcc"]:
+                    dire(f3["demandeAcc"] is False,
+                         "[%s] « %s » ne redemande pas d'accompagnement" % (nom, p["nom"]))
+                pg.evaluate("() => document.querySelector('[data-choix] button').click()")
+                pg.wait_for_timeout(300)
+                f3b = etat_fiche()
+                dire(bool(f3b) and f3b["bloque"] is False,
+                     "[%s] choix fait, le bouton s'ouvre : « %s »"
+                     % (nom, f3b["bouton"] if f3b else "?"))
+
+                # ⚠️ ET SURTOUT : LE CHOIX DOIT ARRIVER EN CUISINE. Tout le
+                #    reste peut être vert — le bloc s'affiche, le bouton
+                #    bloque, il se débloque — et la commande partir en disant
+                #    « 1 × Attiéké » sans dire poisson ou viande. C'est le
+                #    seul contrôle qui regarde ce que la maison recevra.
+                pg.evaluate("""() => {
+                    const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
+                    d.querySelector('button[data-ajouter]').click(); }""")
+                pg.wait_for_timeout(600)
+                lien = pg.evaluate("""() => {
+                    const a = [...document.querySelectorAll('a[href*="wa.me"]')]
+                        .find(x => /Envoyer la commande/.test(x.textContent || ''));
+                    return a ? decodeURIComponent(a.getAttribute('href')) : null; }""")
+                dire(lien is not None,
+                     "[%s] la barre du panier porte le lien de commande" % nom)
+                if lien:
+                    # ⚠️ PAS `attendu` : ce nom appartient au compte de plats
+                    #    de la boucle. Le premier jet l'a écrasé, et le
+                    #    deuxième passage (bureau) est mort sur un « %d » qui
+                    #    recevait « Attiéké (Poisson) ».
+                    dit = "%s (%s)" % (p["nom"], p["options"][0])
+                    dire(dit in lien,
+                         "[%s] le message dit « %s »%s"
+                         % (nom, dit, "" if dit in lien else " → absent"))
+                ferme()
 
             # ── ce que la propriétaire a fait retirer le 2026-08-19 ──────
             # ⚠️ un plat retiré de la carte mais laissé sur la page se
@@ -507,7 +615,7 @@ def main():
                 if (t) t.parentElement.querySelector('button').click(); }""")
             pg.wait_for_timeout(250)
             pg.evaluate("""() => document
-                .querySelector('[role=dialog][aria-label^="Commander"] button.flex-1').click()""")
+                .querySelector('[role=dialog][aria-label^="Commander"] button[data-ajouter]').click()""")
             pg.wait_for_timeout(600)
             barre = pg.evaluate("""() => {
                 const a = [...document.querySelectorAll('a')]

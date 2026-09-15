@@ -78,6 +78,15 @@ export type Plat = {
    *  vend à la boule (1 000 / 1 500 / 2 500 F). Chaque palier porte son
    *  libellé et son prix exact — ce n'est PAS une fourchette. */
   paliers?: [string, number][];
+  /** ⚠️ CHOIX OBLIGATOIRE, À PRIX ÉGAL. L'attiéké se commande au poisson ou à
+   *  la viande, 2 000 F dans les deux cas. Ce n'est ni une taille (le prix ne
+   *  bouge pas), ni une garniture (on en prend un, et un seul). Sans lui, la
+   *  commande arrive en cuisine sans dire ce qu'il y a dans l'assiette. */
+  choix?: { libelle: string; options: string[] };
+  /** ⚠️ LE PLAT PORTE DÉJÀ SON ACCOMPAGNEMENT. La rubrique Grillades en
+   *  propose dix au choix ; l'attiéké EST l'un d'eux. Sans ce drapeau, la
+   *  fiche proposerait « Attiéké » comme accompagnement du plat « Attiéké ». */
+  sansAcc?: boolean;
   joq?: boolean;
   /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
    *  alors une tuile au nom du plat, jamais une image d'emprunt. */
@@ -129,6 +138,11 @@ CATS.forEach((c) => {
       out += `, paliers: [${it.paliers
         .map(([l, v]) => `["${esc(l)}", ${v}]`)
         .join(", ")}]`;
+    if (it.choix)
+      out += `, choix: { libelle: "${esc(it.choix.libelle)}", options: [${it.choix.options
+        .map((o) => `"${esc(o)}"`)
+        .join(", ")}] }`;
+    if (it.sansAcc) out += `, sansAcc: true`;
     if (it.joq) out += `, joq: true`;
     // ⚠️ SANS PHOTO, PAS DE CHAMP. Écrire `/carte/undefined.webp`
     // fabriquait un lien mort que rien n'aurait signalé.

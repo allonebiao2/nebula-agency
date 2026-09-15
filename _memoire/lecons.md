@@ -2621,3 +2621,44 @@ peut déplacer la référence, on compare contre l'empreinte (`caa0748`).
 de lecture ; un octet UTF-8 inconnu tue le fil sans lever d'exception, et
 `stdout` revient à `None`. Toujours `encoding="utf-8", errors="replace"` et
 `PYTHONIOENCODING=utf-8` pour l'enfant.
+
+## 2026-09-15 · Un choix obligatoire à prix égal n'est aucune des formes connues
+
+Au Braisé d'Or, l'attiéké se commande au poisson ou à la viande, **2 000 F des
+deux côtés**. Le modèle avait quatre façons d'avoir un prix (simple, deux
+tailles, fourchette, barème à N crans) et une façon de choisir : les
+garnitures, **facultatives et qui font MONTER le prix**. Aucune ne convient.
+Tordre ça dans « deux tailles » aurait affiché « 2 000 F / 2 000 F » sur la
+pastille et appelé taille ce qui n'en est pas une.
+
+Quand une notion nouvelle ne rentre dans aucune case, **c'est une case
+nouvelle**, avec son verrou : ici le bouton reste gris tant que le client n'a
+pas répondu, parce qu'une commande qui n'indique pas ce qu'il y a dans
+l'assiette arrive incomplète en cuisine.
+
+## 2026-09-15 · Deux contrôles sur un même clic : le cas particulier éteint la règle
+
+Le QC ouvrait « un plat sans image » et vérifiait sur cette même fiche
+l'ardoise **et** l'accompagnement obligatoire. Le 26/08 il avait planté quand
+les ardoises ont disparu. Le 15/09 l'attiéké est devenu **le seul plat sans
+photo** : le clic tombait sur lui, et comme il ne demande pas
+d'accompagnement, **le second contrôle s'est éteint sans un mot, tout vert**.
+
+Un cas particulier (qui apparaît et disparaît) et une règle métier (toujours
+vraie) ne partagent jamais le même clic. **Une règle, une fiche** — et on
+ouvre pour la règle un sujet qui la satisfait *toujours* (ici une sauce, dont
+la catégorie exige un accompagnement quoi qu'il arrive).
+
+## 2026-09-15 · Une classe utilitaire n'est pas une prise
+
+Le QC visait le bouton d'ajout par `button.flex-1`. **Les boutons de taille
+portent `flex-1` eux aussi** : sur la seule sauce à deux tailles, il cliquait
+« Quart de poulet » au lieu de « Ajouter ». Le héros montrant une sauce au
+hasard, ça ne ratait **qu'une fois sur quatorze** — défaut antérieur, presque
+toujours invisible.
+
+Une classe Tailwind décrit une mise en page, elle ne désigne pas un rôle. Ce
+qu'un contrôle doit viser porte une **prise explicite** (`data-ajouter`,
+`data-plat`, `data-choix`) : elle survit à un changement de style, et elle dit
+ce qu'elle désigne.
+
