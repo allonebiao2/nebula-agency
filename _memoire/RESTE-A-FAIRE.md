@@ -218,6 +218,17 @@ Le gabarit à recopier : `clients/11-angy-art/_headers`.
 > `wrangler pages deploy out --project-name au-braise-dor --branch main`.
 > Les sept pièges du projet sont documentés dans son `CONTEXT.md`.
 
+- [ ] 🆕 **LA PHOTO DE L'ATTIÉKÉ** (2026-09-15). Le plat est **en ligne et
+      commandable à 2 000 F**, mais il porte **l'ardoise** : c'est le seul
+      plat de la carte sans photo. ⛔ **Rien de généré** : Mongazi a tranché
+      pour une vraie photo (WaveSpeed était de toute façon à **0,03 $** et
+      Higgsfield à **0 crédit**). La poser prend cinq minutes, la marche à
+      suivre est dans
+      `_memoire/apprentissages/2026-09-15-ajouter-un-plat-braise.md`.
+- [ ] 🆕 **Faire relire l'attiéké par la maison** : la **description** est de
+      moi (« Semoule de manioc, au choix avec du poisson ou de la viande »),
+      **quel poisson et quelle viande** n'est pas dit, et la **rubrique**
+      (Grillades) a été choisie faute d'une meilleure.
 - [ ] **La vraie photo de la salle.** Le fond de l'expérience est un mur
       neutre, pas leur restaurant. ⚠️ La vidéo `hero.mp4` montre **le gril**,
       pas la salle : elle a été essayée puis retirée à la demande de Mongazi.

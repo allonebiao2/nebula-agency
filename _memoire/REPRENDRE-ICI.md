@@ -1,9 +1,40 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-11
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-15
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 duodecies. LE 2026-09-15 — AU BRAISÉ D'OR : L'ATTIÉKÉ EST À LA CARTE, ET IL ATTEND SA PHOTO
+
+✅ **En ligne et vérifié** sur https://au-braise-dor.pages.dev (page servie
+identique au disque en MD5, fichier absent → 404). **52 → 53 plats.**
+
+**Attiéké · 2 000 F · rubrique Grillades · au poisson ou à la viande.** Il
+n'existait que comme **accompagnement** : Mongazi en fait un plat, donne le
+prix, et veut qu'on puisse **choisir poisson ou viande en ouvrant la fiche**.
+
+⏳ **CE QUI ATTEND MONGAZI — QUATRE CHOSES**
+1. **La vraie photo** (il l'envoie). ⛔ Rien de généré : WaveSpeed mesuré à
+   **0,03 $** (il en faut 0,14) et Higgsfield à **0 crédit**. En attendant, le
+   plat porte **l'ardoise**. La poser : voir
+   `_memoire/apprentissages/2026-09-15-ajouter-un-plat-braise.md`.
+2. **La description**, écrite par moi : « Semoule de manioc, au choix avec du
+   poisson ou de la viande. » À faire relire par la maison.
+3. **Quel poisson, quelle viande** : la fiche dit « Poisson » et « Viande ».
+4. **La rubrique** : Grillades, faute d'une meilleure.
+
+⚠️ **Deux champs neufs dans le modèle de plat** : `choix` (obligatoire, **à
+prix égal** — ni une taille, ni une garniture, ni un barème) et `sansAcc`
+(le plat EST déjà un des dix accompagnements de sa rubrique).
+
+⛔ **Deux défauts de QC réparés au passage** : l'ardoise et l'accompagnement
+obligatoire partageaient un clic (le second se serait éteint **tout vert**),
+et `button.flex-1` attrapait aussi les boutons de taille. **QC 102 → 117.**
+
+Détail : `_memoire/conversations/2026-09-15-braise-attieke.md`.
 
 ---
 

@@ -839,3 +839,33 @@ partenaire, je leur enverrai des numéros à appeler pour proposer nos services 
 - Aucun taux ne baisse de la 1.4 à la 1.5 : le préavis de l'art. 6.7 ne joue pas.
 
 ✅ **Publié chez les partenaires le 2026-09-11** (Render `9e28b91`, vérifié en base).
+
+---
+
+## 2026-09-15 · Au Braisé d'Or : l'attiéké, et comment on le vend
+
+**Demande de Mongazi** : « ajoute le plat d'attiéké, avec son image, dans le
+même style que les autres ».
+
+- **L'attiéké devient un plat**, à **2 000 F**, dans la rubrique **Grillades**.
+  ⚠️ Il n'existait jusque-là **que comme accompagnement**, deux fois sur la
+  carte. Ni prix ni photo dans la maison : **les deux ont été demandés avant
+  d'écrire une ligne** (règle née le 19/08, quand la propriétaire a corrigé la
+  carte : on n'invente pas un prix).
+- **Poisson ou viande est un CHOIX, pas une taille.** Mongazi : « y'a poisson
+  à part et viande à part ». Même prix des deux côtés, **obligatoire**, un
+  seul. Le bouton reste gris tant qu'on n'a pas répondu, parce qu'une commande
+  qui ne dit pas ce qu'il y a dans l'assiette arrive incomplète en cuisine.
+- **La photo sera une VRAIE photo**, que Mongazi envoie. ⛔ Rien de généré :
+  l'exception nommée sur ce client le 2026-08-26 couvrait des **produits de
+  commodité** (un café serré, une boule de glace), pas un plat de la maison.
+  WaveSpeed était de toute façon à **0,03 $** et Higgsfield à **0 crédit**.
+- **Le plat part en ligne sans attendre la photo**, avec l'ardoise. Même
+  raisonnement que chez Hillary le 18/08 : un plat listé se vend, un plat
+  absent ne se vend pas.
+- **Posé dans Grillades faute d'une meilleure rubrique** : à confirmer par la
+  maison, le déplacer est une ligne de `index.html`.
+
+✅ **En ligne et vérifié le 2026-09-15** (page servie identique au disque en
+MD5, 53 plats balisés, fichier absent → 404).
+
