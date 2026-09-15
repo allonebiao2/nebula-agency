@@ -1407,4 +1407,65 @@ clients par semaine » détruirait la seule chose que ce post a de vrai.
 
 ---
 
+## 12. Post n° 19 · « JE DEMANDE À MA SŒUR » *(direction « LE TRAIT ET LA NUIT »)*
+
+**2026-09-15 · statut WhatsApp · prompt prêt : `PROMPT-DU-JOUR-LA-SOEUR.txt`**
+
+**Pourquoi ce sujet, et pourquoi il vend plus fort que le 18.** Le post 18 parlait du client
+qui **se perd**. Celui-ci parle de **celui qu'on ne voit jamais**.
+
+Quand une cliente hésite, elle ne décide pas seule : elle envoie à sa sœur, à son mari, à une
+amie. **Le vrai acheteur est cette deuxième personne, et le commerçant ne lui parlera jamais.**
+Elle reçoit une photo seule, sans prix, sans nom, sortie de son contexte. Elle hausse les
+épaules. La vente meurt là, et le commerçant croit que la cliente a changé d'avis.
+
+⚠️ **C'est vrai et vérifiable sans aucun chiffre** : tout le monde à Cotonou a déjà fait
+suivre une photo de produit en demandant « tu penses quoi ? ». Personne ne l'avait formulé,
+et c'est exactement ce que la rubrique cherche.
+
+**La ligne de clôture fait tout le travail commercial** : « Ce que vous envoyez doit tenir
+debout sans vous. » Un catalogue tient debout sans le commerçant. Une photo WhatsApp, non.
+On vend le produit sans jamais prononcer son nom.
+
+```
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "« ATTENDS, JE DEMANDE À MA SŒUUUUR… »"
+              Voyelles étirées et ligature Œ conservées.
+SCENE ....... À gauche, une cliente devant un étal, téléphone levé, l'autre
+              main en « attends » vers le commerçant qui patiente, bras
+              ouverts. LE FIL : un unique trait cyan part de son téléphone,
+              traverse le vide vers la droite, passe à travers un petit
+              cadre photo VIDE (aucun prix, aucun nom, rien dedans), puis
+              se termine sur une DEUXIÈME personne, plus petite, de dos,
+              son propre téléphone à la main, qui HAUSSE LES ÉPAULES.
+              Ce haussement d'épaules est le cœur du dessin.
+BODY ........ "Celui qui décide n'est pas celui qui vous parle."
+              "Il reçoit une photo sans prix, et il hausse les épaules."
+CLÔTURE ..... "Ce que vous envoyez doit tenir debout sans vous."
+              ⚠️ Une AFFIRMATION, pas un appel à l'action.
+```
+
+### ⛔ La décision de Mongazi : plus d'appel à l'action sur un statut
+
+Le post 18 finissait par « Répondez 1 : on vous pose un repère qui se partage. » Mongazi, le
+2026-09-15 : **« évite de mettre un call to action qui donne envie de venir écrire en inbox,
+car c'est un post WhatsApp. »**
+
+Et il a raison, pour une raison qui ne saute pas aux yeux : **sur un statut, ces gens ont
+déjà votre numéro.** Leur dire « écrivez-nous » revient à leur demander ce qu'ils peuvent
+déjà faire, et ça fait basculer le post de l'éditorial vers la publicité. L'envie doit venir
+de l'idée, jamais d'une instruction.
+
+⚠️ **Le refus est écrit EN DUR dans le prompt**, avec les mots nommés un par un (« inbox »,
+« répondez », « contactez », un numéro, une flèche) : sans ça le modèle en rajoute un tout
+seul, c'est son réflexe.
+
+⏳ **Ceci CONTREDIT la règle actuelle de `PROMPTS-WHATSAPP-STATUT.md` §1** (« l'appel à
+l'action est une réponse, jamais un abonnement »). La règle n'est **pas** réécrite tant que
+Mongazi n'a pas tranché : on ne change pas une règle de la maison sur une seule application.
+
+---
+
+---
+
 *NEBULA Agency · Cotonou, Bénin · Document vivant. Ajouter chaque nouveau post ici.*

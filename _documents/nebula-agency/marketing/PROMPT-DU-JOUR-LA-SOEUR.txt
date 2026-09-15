@@ -1,0 +1,157 @@
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS · "LE TRAIT ET LA NUIT"
+Post 19 · « JE DEMANDE À MA SŒUR »
+===========================================================
+
+ATTACHED INPUTS — read these roles carefully, do not confuse them.
+Attach them in THIS order: logo first, style reference second.
+
+  IMAGE 1 = THE LOGO.
+     Official NEBULA Agency logo. It is an ASSET TO PLACE, pixel-faithful.
+     It is NEVER a style reference and NEVER a subject to reinterpret.
+
+  IMAGE 2 = THE STYLE REFERENCE (a "Tempos Digital" post).
+     Reference for CRAFT ONLY: how the line art is drawn, how empty the
+     canvas is, how the single bright colour is used, how the stretched
+     spoken headline is set.
+     Its subject, its words, its brand, its logo and ITS GREEN COLOUR are
+     irrelevant and must NEVER appear in the output.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp status graphic for NEBULA Agency, a digital
+studio in Cotonou, Benin, serving West African merchants.
+Register: warm humour first, then a quiet sting. The merchant must
+recognise himself and smile before he understands the point.
+This is editorial content, not an advertisement.
+
+-----------------------------------------------------------
+STYLE INHERITANCE — what to take from IMAGE 2
+-----------------------------------------------------------
+  - pure white line art, CONSTANT stroke weight, hand-drawn feel
+  - absolutely NO fill, NO shading, NO gradient, NO shadow, NO texture
+  - a near-black solid background filling the whole canvas
+  - ONE single bright colour in the entire image, nothing else coloured
+  - ONE continuous curved thread of that colour crossing the composition
+  - a spoken headline in rounded caps with stretched vowels and an ellipsis
+  - very generous emptiness, especially under the drawing
+  - tiny discreet type only at the very top and the very bottom
+
+DO NOT take from IMAGE 2: its subject, its characters, its words, its
+brand, its logo, and above all ITS GREEN PALETTE.
+
+-----------------------------------------------------------
+BRAND LOCK — non-negotiable, overrides the reference
+-----------------------------------------------------------
+MODE B — inherit structure and craft only, keep the NEBULA palette.
+
+  background   #070A14   very dark navy-black, solid, edge to edge
+  line art     #FFFFFF   pure white, constant weight
+  THE accent   #3FD8E6   cyan — THE ONLY bright colour in the image
+  small type   #9AA6C4   muted grey-blue
+
+There is NO green anywhere in this image. Not one pixel.
+The cyan appears in exactly two places and nowhere else:
+  1. the headline text
+  2. the continuous thread
+Nothing else in the image is coloured.
+
+LOGO PLACEMENT:
+  Place IMAGE 1 exactly as provided, TOP-LEFT, about 14% of canvas width,
+  clear margin. Do not redraw, restyle, recolour, crop, rotate, or add a
+  wordmark of your own.
+
+-----------------------------------------------------------
+SERIES ANCHOR
+-----------------------------------------------------------
+This belongs to the recurring rubric "LE SAVIEZ-VOUS ?".
+Render the label exactly "LE SAVIEZ-VOUS ?", uppercase, small,
+letter-spaced, in #9AA6C4, directly under the logo. Same place every time.
+
+-----------------------------------------------------------
+CONTENT — render these strings VERBATIM, in French
+-----------------------------------------------------------
+LABEL ....... "LE SAVIEZ-VOUS ?"
+
+HEADLINE .... "« ATTENDS, JE DEMANDE À MA SŒUUUUR… »"
+              Rounded bold caps, cyan, upper area, on two lines if needed.
+              Keep EVERY stretched vowel of "SŒUUUUR" and the ellipsis.
+              Keep the "Œ" ligature. This is a human voice, not a title.
+
+SCENE (white line art, centre of canvas):
+              LEFT, larger: a woman standing in front of a market stall,
+              phone raised in one hand, her other hand half-lifted in a
+              "wait a second" gesture toward the merchant. The merchant is
+              behind his stall, arms open, waiting. Both seen in three-
+              quarter view. No identifiable faces.
+
+              THE THREAD — the signature of this layout, draw it carefully:
+              ONE single continuous cyan line leaves her phone, curves
+              across the wide empty space to the RIGHT, and passes through
+              a small EMPTY rectangle floating alone in the void: a photo
+              frame with nothing inside it, no price, no name, no words.
+              The thread continues and ends at a SECOND person, drawn much
+              smaller, far right and slightly lower, seen from behind,
+              holding their own phone and SHRUGGING, both shoulders raised,
+              one hand open. That shrug is the heart of the drawing.
+              No captions inside the scene.
+
+BODY ........ "Celui qui décide n'est pas celui qui vous parle."
+              "Il reçoit une photo sans prix, et il hausse les épaules."
+              Small white type, lower area, two short lines.
+
+CLOSING ..... "Ce que vous envoyez doit tenir debout sans vous."
+              One line, cyan, slightly larger than the body. This is a
+              statement, NOT a call to action: no instruction, no verb
+              addressed to the reader, nothing to reply to.
+
+FOOTER ...... "nebula-agency.online"
+              Tiny, #9AA6C4, bottom, centred.
+
+-----------------------------------------------------------
+LAYOUT — WhatsApp status
+-----------------------------------------------------------
+Format: 9:16 vertical, 1080 x 1920 px.
+
+WhatsApp draws its own interface ON TOP of the image. Keep the top 220 px
+and the bottom 340 px COMPLETELY EMPTY — background only. Every element,
+logo included, lives between y=220 and y=1580.
+
+  logo + label ....... ~ y 260
+  headline ........... ~ y 420
+  scene + thread ..... ~ y 700 to 1250
+  body ............... ~ y 1350
+  closing ............ ~ y 1470
+  footer ............. ~ y 1550
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Reproduce them VERBATIM.
+- Do not translate, rephrase, shorten, complete or "fix" them.
+- Correct French diacritics: é è ê à â î ô û ç ù, the "Œ" ligature, and
+  correct apostrophes (l'; d'; n'; s'; c'). French quotation marks « ».
+- The headline must stay legible when the image is viewed at 20% size.
+- Absolutely NO other words, labels, captions, tags, numbers or UI text.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO green. The reference is green; this image is cyan on navy-black.
+- NO call to action of any kind. Do not add "écrivez-nous", "contactez",
+  "DM", "inbox", "répondez", a phone number, or any arrow inviting a
+  reply. The desire must come from the idea, never from an instruction.
+- NO invented statistics, percentages or figures of any kind.
+- NO faces, no recognisable people, no readable third-party brands.
+- NO shading, no gradient, no drop shadow, no glow, no grain, no texture.
+- NO floating icons, no frame, no border, no watermark, no signature.
+- The drawing must never mock the merchant or the customer. Nobody here
+  is stupid: the sale simply had no chance of surviving the forward.
+- One single idea. Generous emptiness. Nothing touches the edges.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 graphic, publication-ready, high-fidelity text.
+===========================================================
