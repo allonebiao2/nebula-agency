@@ -186,14 +186,14 @@ rendement promis ».
 
 Chaque vague : QC vert avec témoins, captures 1440 et 390, paquet reconstruit, push.
 
-1. **Profils PRO / BOOST** : plafonds du code, paliers anti-martingale, poche épargne, verrou
+1. ✅ **Profils PRO / BOOST** (`418f4be`) : plafonds du code, paliers anti-martingale, poche épargne, verrou
    de levier effectif, trades/jour et R:R par profil, sélecteur dans l'interface (BOOST confirmé
    avec ses probabilités), colonnes symbole et profil dans le journal.
-2. **Monte Carlo** : `backtest/montecarlo.py`, seuils de drawdown calibrés proposés, alerte du
+2. ✅ **Monte Carlo** (`418f4be`) : `backtest/montecarlo.py`, seuils de drawdown calibrés proposés, alerte du
    videur sous le p95, affichage Stratégies et BOOST, outil de lecture pour l'agent.
-3. **Auto-surveillance** : CUSUM par stratégie, rapport hebdomadaire et page « Évolution », porte
+3. ✅ **Auto-surveillance** (`4db053b`) : CUSUM par stratégie, rapport hebdomadaire et page « Évolution », porte
    démo, chien de garde, glissement mesuré par ordre.
-4. **EUR/USD + NAS100** : alias du symbole vérifiés chez Deriv, boucle multi-instruments,
+4. 🔧 **EUR/USD + NAS100** (`724fe99`, en cours : écrite, jamais lancée ; reste QC, exposition par facteur, séances, relance ; voir `JOURNAL.md`) : alias du symbole vérifiés chez Deriv, boucle multi-instruments,
    exposition par facteur, historique, walk-forward et Monte Carlo par instrument.
 
 **Ensuite** : filtre D1, stratégies momentum, range et cassure de structure, indicateurs RSI,

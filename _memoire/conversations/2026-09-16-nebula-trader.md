@@ -303,12 +303,50 @@ reste derrière la règle de son propre cahier : 60 jours de PRO rentable d'abor
 
 ---
 
-## Ce qui reste, par priorité
+## La nuit, suite : vagues 1, 2 et 3 livrées, vague 4 commencée
 
-**Maintenant** : vague 1 profils PRO/BOOST · vague 2 Monte Carlo · vague 3 auto-surveillance,
-auto-analyse, porte démo, chien de garde · vague 4 NAS100
-**Ensuite** : filtre D1 · 3 stratégies (momentum, range, cassure de structure) · garde contre les
-tests multiples · méta-labeling · Telegram
-**Hors code** : page de vente, prix et paiement (décisions de Mongazi) · révoquer le jeton collé
+**Vagues 1-2** (commit `418f4be`) : profils **PRO** (1 %, plafond 2 % dans le code) et **BOOST**
+(jusqu'à 10 %, disjoncteurs recalculés en escalier) · paliers anti-martingale
+`[10, 5, 3, 2, 1,5, 1]` à chaque doublement · poche épargne (à +50 %, 25 % du gain sort du
+dimensionnement) · **levier effectif plafonné en réduisant la taille** (PRO x3, BOOST x30) ·
+Monte Carlo par blocs (`backtest/montecarlo.py`) et **seuil d'arrêt calibré** = p99 sur deux ans
+× 1,2, plafonné à 35 % (PRO 1 % → **23 %** ; 3 % et 10 % touchent le plafond, signalé) ·
+sélecteur de profil, curseur BOOST avec ses probabilités de perte, confirmation en tapant
+« BOOST ».
+
+**Vague 3** (commit `4db053b`) : santé **CUSUM** contre les R du walk-forward (0 % de fausses
+pauses, 76 % de détection d'une chute de 0,6 R en 60 trades ; la règle « 5 pertes d'affilée »
+du cahier se déclenche 97 % du temps) · rapport hebdomadaire · **porte démo** (30 jours ET
+30 trades, 100 % des ordres avec stop, glissement ≤ 2 × modèle, santé non en pause) · porte
+**BOOST réel** (60 jours de PRO réel rentable) · **chien de garde** (3 rejets en 1 h, position
+sans stop, chute d'équité, terminal muet) · glissement mesuré par ordre · page Évolution.
+⛔ **Plantage en direct, QC vert** : `_publier` lisait un attribut renommé
+(`porte_boost_franchie`), chemin qu'aucun contrôle n'exerçait → corrigé et contrôle ajouté,
+prouvé rouge sur l'ancien code. **QC 134 verts.**
+
+**Vague 4 · EUR/USD + NAS100** (commit `724fe99`, **en cours, jamais lancée en direct**) :
+alias de symbole (« US Tech 100 » chez Deriv), export de l'historique NAS100 (**depuis le
+2024-01-22 seulement** : Exness répond −6, Dukascopy injoignable), swap en % annuel,
+walk-forward **en mois**, rapports nommés par symbole, agent multi-instruments (une position
+par instrument, deux au total), Monte Carlo par symbole, symbole affiché dans l'interface.
+Mesuré sur le NAS100 : walk-forward 12 → 6 mois = **2 trades** en cassure, **0** en retour à la
+moyenne ; lot minimum 0,1 = **33,72 $** de risque sur un stop médian, donc **3 372 $ minimum
+à 1 %** (EUR/USD : 440 $).
+
+## 🔴 Où la session s'est arrêtée, et ce qui reste
+
+**Point d'arrêt exact et liste ordonnée : `trading/JOURNAL.md`, section « POINT D'ARRÊT
+EXACT ».** En bref :
+1. QC du multi-instruments avec témoins (alias, `Marche.liste`, mois, swap, Monte Carlo par
+   symbole, une position EURUSD ne bloque pas le NAS100).
+2. Exposition par facteur USD.
+3. Heures de séance du NAS100.
+4. Relancer `python -m trading.app`, vérifier les deux marchés dans le journal, captures.
+5. Reconstruire le paquet, mémoire, push.
+
+**Ensuite** : filtre D1 · momentum, range, cassure de structure · garde contre les tests
+multiples · méta-labeling · Telegram.
+**Hors code (Mongazi)** : prix, page de vente, paiement · révoquer le jeton `pat_…` · capital du
+NAS100 · risque BOOST.
 
 Détail et pourcentages : **`trading/JOURNAL.md`**.

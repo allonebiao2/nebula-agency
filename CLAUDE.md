@@ -512,14 +512,19 @@
 - Détail : `whatsapp-agent/README.md` et
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
-### NEBULA TRADER · agent de trading EUR/USD (bientôt NAS100)  *(produit interne, 2026-09-16)*
+### NEBULA TRADER · agent de trading EUR/USD + NAS100  *(produit interne, 2026-09-16)*
+- 🔴 **REPRENDRE ICI : `trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT ».** Au
+  2026-09-16 au soir : vagues 1-3 du cahier v2 **livrées** (profils PRO/BOOST, Monte Carlo,
+  CUSUM, portes, chien de garde), **vague 4 NAS100 écrite mais jamais lancée en direct**
+  (commit `724fe99`, QC 134 verts, application arrêtée). Reste : QC multi-instruments,
+  exposition par facteur USD, heures de séance de l'indice, relance + captures, paquet.
 - **Trois objectifs, dans cet ordre** : **être rentable** · **s'améliorer tout seul** ·
   **être vendable** (installable chez n'importe qui, vendu en ligne). ⚠️ **Le 3 découle du
   1** : un robot se vend sur un historique réel vérifié, jamais sur un backtest.
 - **Où** : `trading/` · **`trading/CAHIER-DES-CHARGES.md`** (v2, la référence) ·
   `trading/JOURNAL.md` (avancement) · `trading/DOCTRINE.md` · `trading/README.md`.
   **Lancer** : `python -m trading.app` (agent + interface sur http://127.0.0.1:8765/) ·
-  **QC** : `python -m trading.outils.qc` (79 verts) · **produit** :
+  **QC** : `python -m trading.outils.qc` (**134 verts**) · **produit** :
   `python -m trading.empaquetage.construire` (zip 44 Mo, `NEBULA Trader.exe`, sans Python).
 - ✅ **FAIT le 2026-09-16** : pont MT5 ouvert (compte démo Deriv `6305888`, identifiants
   explicites) · historique MT5 **par année** (34 876 H4 depuis 2005) · profil de coûts
@@ -545,6 +550,17 @@
   affiché au moment du choix, BOOST réel verrouillé derrière la porte PRO de 60 jours de son
   propre cahier) · **seuils de drawdown calibrés au Monte Carlo** · **marchés : EUR/USD et
   NAS100 uniquement**. Détail et intégration par vagues : `trading/CAHIER-DES-CHARGES.md`.
+- ✅ **Livré la nuit du 2026-09-16** : profils **PRO** (1 %, plafond 2 %) et **BOOST** (≤ 10 %,
+  disjoncteurs en escalier, paliers `[10, 5, 3, 2, 1,5, 1]` à chaque ×2, poche épargne à +50 %) ·
+  levier effectif plafonné **en réduisant la taille** · arrêt total **calibré au Monte Carlo**
+  (PRO 1 % → 23 %) · santé **CUSUM** (remplace « 5 pertes d'affilée », qui sonne 97 % du
+  temps) · **porte démo** (30 jours ET 30 trades, soit ~1 an en H4) · porte BOOST réel
+  (60 jours de PRO réel) · chien de garde · page Évolution.
+- ⚠️ **NAS100 chez Deriv** : symbole **« US Tech 100 »**, historique **depuis 2024-01-22
+  seulement** (walk-forward en mois : 2 trades, rien de prouvé), lot minimum 0,1 = **33,72 $**
+  de risque sur un stop médian → **3 372 $ minimum à 1 %** (EUR/USD : 440 $), pas de compte
+  cent. ⛔ **Un QC vert après une refonte ne prouve pas le chemin neuf** : `_publier` a planté
+  en direct sur un attribut renommé que rien n'exerçait.
 - **Décidé** : H4, risque PRO **1 %** (plafond **2 %** écrit dans le code), **positions gardées
   le week-end** (la fermeture du vendredi tue la tendance : 197 sorties forcées, coûts = 344 %
   du brut ; 2 gaps en 15 ans), code agnostique du courtier, **tout ordre part avec son stop

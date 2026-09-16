@@ -2738,3 +2738,24 @@ flex }` l'emporte sur l'attribut `hidden`. Règle globale posée : `[hidden] { d
 !important; }` (déjà vu sur Angy Art, à mettre dans tout gabarit). Et pour contrôler le rendu
 téléphone dans un cadre de 390 px, `X-Frame-Options: DENY` refusait l'iframe de la MÊME origine :
 `SAMEORIGIN` + `frame-ancestors 'self'` protège autant du vol de clic (qui vient d'un site tiers).
+
+## 2026-09-16 · Un QC vert après une refonte ne prouve pas le chemin neuf
+
+NEBULA Trader, vague 3 : l'agent a planté en direct (`'Agent' object has no attribute
+'porte_boost_franchie'`) alors que le QC affichait tout vert. L'instantané publié à chaque cycle
+(`_publier`) lisait un attribut renommé, et **aucun contrôle n'appelait `_publier`**. Un QC vert
+dit que ce qu'il exerce n'est pas cassé ; il ne dit rien du code qu'il ne touche pas.
+**Règle** : après une refonte, lister les chemins neufs ou modifiés et vérifier qu'un contrôle
+passe par chacun ; le nouveau contrôle doit être **prouvé rouge sur l'ancien code**. Même
+famille : la vague 4 (multi-instruments) est restée à 134 verts sans qu'un seul contrôle
+n'exerce la boucle par marché.
+
+## 2026-09-16 · Un nouvel instrument apporte son propre capital minimum
+
+Ajouter le NAS100 à côté de l'EUR/USD semblait une ligne de configuration. Mesuré chez Deriv :
+lot minimum **0,1**, stop médian H4 de **33 721 points**, soit **33,72 $** de risque au plus petit
+lot, donc **3 372 $ minimum à 1 %** (EUR/USD : 440 $), et pas de compte cent. Et l'historique ne
+remonte qu'à **janvier 2024** : un walk-forward en années n'a même pas une fenêtre.
+**Règle** : avant d'ajouter un instrument, mesurer le **capital minimum** (stop médian × lot
+minimum × valeur du point) et la **profondeur d'historique** ; ce sont eux qui disent s'il sera
+tradé, pas la configuration.

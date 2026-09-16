@@ -1,9 +1,36 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-15
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-16
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 terdecies. LE 2026-09-16 — NEBULA TRADER : VAGUE 4 (NAS100) ÉCRITE, PAS ENCORE LANCÉE
+
+**Où on en est** : le cahier des charges de Mongazi est passé au Monte Carlo et intégré en
+vagues. **Vagues 1, 2, 3 livrées et poussées** (profils PRO/BOOST, Monte Carlo, CUSUM, portes,
+chien de garde). **Vague 4 (EUR/USD + NAS100) : code écrit et commité (`724fe99`), QC 134
+verts, mais JAMAIS lancé en direct** ; l'application est arrêtée.
+
+🔴 **Par quoi commencer** : lire **`trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT »**, qui
+liste fichier par fichier ce qui est fait et, dans l'ordre, ce qui reste :
+1. QC du multi-instruments avec témoins (`outils/qc.py`).
+2. Exposition par facteur USD.
+3. Heures de séance du NAS100.
+4. `python -m trading.app`, vérifier les deux marchés dans le journal, captures 1440 et 390.
+5. `python -m trading.empaquetage.construire`, mémoire, push.
+
+Puis, décidé : filtre D1, 3 stratégies, méta-labeling, Telegram.
+
+⏳ **À Mongazi** : prix et page de vente · **révoquer le jeton `pat_…`** · le NAS100 demande
+**~3 400 $ à 1 %** chez Deriv · la porte démo, c'est **~1 an** en H4.
+
+⛔ **Aucun avantage prouvé** (EUR/USD +0,040 R sur 436 trades, NAS100 2 trades) : ni réel, ni
+vente sur la performance.
+
+Détail : `_memoire/conversations/2026-09-16-nebula-trader.md`.
 
 ---
 
