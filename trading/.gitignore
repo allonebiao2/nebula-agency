@@ -1,0 +1,7 @@
+donnees/
+rapports/
+*.db
+*.parquet
+*.log
+__pycache__/
+modeles/

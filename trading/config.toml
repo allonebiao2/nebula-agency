@@ -1,0 +1,259 @@
+# =============================================================================
+#  NEBULA TRADER  ·  Le tableau de bord du risque
+# =============================================================================
+#  TOUT ce qui peut te ruiner se décide ICI, à froid, avant l'ouverture du
+#  marché. Jamais dans le feu de l'action, jamais en dur dans le code.
+#
+#  Règle du métier : un système à espérance positive avec un mauvais
+#  dimensionnement finit à zéro. Un système médiocre avec un dimensionnement
+#  correct survit assez longtemps pour s'améliorer. Ce fichier compte plus
+#  que la stratégie.
+#
+#  Le chargeur (noyau/config.py) REFUSE de démarrer si une valeur est
+#  dangereuse. Ce n'est pas une suggestion : il s'arrête.
+# =============================================================================
+
+
+[compte]
+# -----------------------------------------------------------------------------
+# PLAFOND ABSOLU. Le bot ne calcule JAMAIS une taille de position à partir du
+# solde réel du compte, mais à partir de ce chiffre-ci (ou du solde s'il est
+# plus petit). Conséquence : même avec 5 000 $ sur le compte, si tu écris 200
+# ici, le bot se comporte comme un compte de 200 $.
+# C'est ton plafond de perte maximale sur ce projet. Écris un montant que tu
+# peux perdre entièrement sans que ça change quoi que ce soit à ta vie.
+# -----------------------------------------------------------------------------
+capital_max_engage = 0.0        # 0 = NON DÉFINI -> le mode réel est bloqué
+devise = "USD"
+mode = "demo"                   # "demo" | "reel"  (le passage en réel est manuel, jamais automatique)
+
+courtier = "Deriv"
+serveur = ""                    # rempli après la 1re connexion, ex. "Deriv-Demo"
+terminal = "C:\\Program Files\\MetaTrader 5 Terminal\\terminal64.exe"
+
+# Identifiant des ordres du bot. Il ne touchera JAMAIS une position qui ne
+# porte pas ce numéro : tes trades manuels sont invisibles pour lui.
+magic_number = 20260916
+
+
+[marche]
+symbole = "EURUSD"              # à ajuster après la 1re connexion (Deriv peut nommer "EURUSD.a")
+timeframe = "H4"                # unité de décision
+timeframe_filtre = "D1"         # unité de tendance (filtre de contexte)
+
+
+[risque_position]
+# -----------------------------------------------------------------------------
+# LE CHIFFRE LE PLUS IMPORTANT DE TOUT LE SYSTÈME.
+# 1 % par trade : avec un taux de réussite de 40 % et un gain moyen de 2R, une
+# série de 10 pertes consécutives (qui ARRIVE, environ une fois par an) coûte
+# 10 % du compte. Récupérable.
+# À 5 % par trade, la même série coûte 40 % : il faut ensuite +67 % pour
+# revenir à l'équilibre. C'est la mort lente, et c'est le réglage par défaut de
+# la quasi-totalité des robots vendus en ligne.
+# -----------------------------------------------------------------------------
+risque_par_trade_pct = 1.0
+risque_par_trade_pct_max = 2.0  # plafond dur : le chargeur refuse au-delà
+
+# Le stop suit la VOLATILITÉ, jamais un nombre de pips fixe. Un stop de 20 pips
+# est large en août et serré un jour de FOMC : le même chiffre ne veut pas dire
+# la même chose selon le marché.
+stop_loss_atr_multiple = 2.0
+atr_periode = 14
+
+# Objectif exprimé en multiples du risque (R). En dessous de 1.5R, le taux de
+# réussite requis devient irréaliste une fois les coûts payés.
+take_profit_r_multiple = 2.0
+
+# Plancher absolu du ratio rendement/risque : un plan de trade qui vise moins
+# que ça est REFUSÉ, même si la stratégie y croit.
+# Repère : à 1:2, le seuil d'équilibre est de 33,3 % de réussite ; à 1:1 il
+# monte à 50 %, ce qui ne laisse plus aucune marge une fois les coûts payés.
+ratio_rr_minimum = 1.5
+
+# Suiveur : on ne déplace le stop qu'APRÈS avoir encaissé 1R de mouvement,
+# jamais avant. Déplacer un stop trop tôt transforme un système gagnant en
+# machine à petits gains et grosses pertes.
+trailing_actif = true
+trailing_declenche_a_r = 1.0
+trailing_atr_multiple = 2.5
+
+# Perte maximale tolérée sur une seule position, en % de l'équité. Filet de
+# sécurité contre un bug de calcul de lot : si le dimensionnement sort une
+# taille qui risque plus que ça, l'ordre est REFUSÉ.
+perte_max_par_position_pct = 3.0
+
+
+[coupe_circuits]
+# -----------------------------------------------------------------------------
+# Les disjoncteurs. Un bot qui perd dans un marché qu'il ne comprend plus doit
+# s'ARRÊTER, pas « se rattraper ». Ces seuils sont calibrés sur ceux qu'exigent
+# les sociétés de prop trading, qui les ont mesurés sur des dizaines de
+# milliers de comptes.
+# -----------------------------------------------------------------------------
+perte_max_jour_pct = 3.0        # atteint -> plus aucune entrée jusqu'à demain
+perte_max_semaine_pct = 6.0     # atteint -> plus aucune entrée jusqu'à lundi
+perte_max_mois_pct = 10.0       # atteint -> plus aucune entrée jusqu'au 1er
+
+# Arrêt COMPLET. Nécessite une intervention humaine pour redémarrer. C'est le
+# seuil où l'on admet que le système ne fonctionne plus, au lieu d'espérer.
+drawdown_max_total_pct = 20.0
+
+# Une série noire est statistiquement normale. Mais au-delà, la probabilité que
+# le régime de marché ait changé devient plus forte que celle de la malchance.
+pertes_consecutives_max = 6
+pause_apres_serie_heures = 24
+
+# Interdictions absolues. Ce sont les trois façons dont un compte meurt en une
+# seule nuit. Le code ne les implémente même pas.
+interdit_martingale = true            # jamais doubler après une perte
+interdit_moyenner_a_la_baisse = true  # jamais renforcer une position perdante
+interdit_grille = true                # jamais de grid
+
+
+[exposition]
+positions_simultanees_max = 1   # une paire, une position. Pas de superposition.
+lots_total_max = 0.50           # plafond dur en lots, tous ordres confondus
+
+# Risque cumulé de TOUTES les positions ouvertes en même temps.
+# Piège du change : la diversification y est souvent fausse. EUR/USD, GBP/USD et
+# AUD/USD sont corrélés de 0,7 à 0,9 — trois positions à 2 % sur ces trois
+# paires ne font pas 6 % réparti, elles font presque 6 % sur un seul pari
+# (le dollar). L'exposition se compte par FACTEUR de risque, pas par symbole.
+exposition_totale_max_pct = 6.0
+
+
+[discipline]
+# -----------------------------------------------------------------------------
+# Ce dont un humain est incapable, et qui devient gratuit pour une machine.
+# -----------------------------------------------------------------------------
+# Anti-revenge trading : après une perte, le bot attend. Un humain ne sait pas
+# faire ça ; c'est pourtant le geste qui sépare une mauvaise journée d'un
+# mauvais mois.
+refroidissement_apres_perte_minutes = 240
+
+# La qualité prime sur la quantité. Un plafond de trades rend impossible la
+# dérive la plus courante : combler l'attente en prenant des signaux médiocres.
+trades_max_par_jour = 3
+trades_max_par_semaine = 8
+
+# Stop temporel : un trade qui n'a rien fait après N barres immobilise du
+# capital et du risque sans rien produire. On le ferme et on passe à autre
+# chose. (En H4, 12 barres = 2 jours de marché.)
+stop_temporel_barres = 12
+
+# INVARIANT. Un stop ne se déplace QUE dans la direction du profit.
+# « Ne jamais déplacer son stop » est une formule fausse : c'est « ne jamais
+# l'ÉLARGIR ». Le resserrer est le mécanisme même du suiveur. Toute tentative
+# d'élargissement est refusée et journalisée comme anomalie, même si elle vient
+# d'un module du bot lui-même.
+stop_jamais_elargi = true
+
+# Le risque se déplace sur l'opérateur. Si le risque par trade est relevé alors
+# que le compte est en perte, le bot le signale : c'est le geste n°2 qui tue un
+# bot rentable.
+alerter_si_risque_releve_en_drawdown = true
+
+
+[execution]
+# -----------------------------------------------------------------------------
+# C'est ici que se joue la différence entre un backtest flatteur et un compte
+# réel. Les coûts ne sont pas un détail : sur une stratégie qui gagne 15 pips
+# nets, 2 pips de spread, c'est 13 % du brut qui part chez le courtier.
+# -----------------------------------------------------------------------------
+# Ne PAS trader si le spread dépasse ce seuil (en points). Chez un courtier
+# retail, le spread s'écarte violemment à l'ouverture asiatique, au rollover et
+# sur les annonces. Entrer à ce moment-là, c'est payer trois fois le prix.
+spread_max_points = 20
+
+# Déviation maximale acceptée entre le prix demandé et le prix obtenu.
+slippage_max_points = 10
+
+# TOUT ordre part avec son stop et son objectif posés CÔTÉ SERVEUR, dès la
+# seconde où il s'ouvre. C'est la règle qui rend le PC de Cotonou acceptable :
+# une coupure de courant ou d'internet ne laisse jamais une position nue.
+# Le code REFUSE d'ouvrir une position sans SL côté serveur.
+stops_cote_serveur_obligatoire = true
+
+# Nombre de tentatives si le courtier renvoie « requote » ou « prix changé ».
+tentatives_max = 3
+
+
+[calendrier]
+# -----------------------------------------------------------------------------
+# Quand NE PAS trader. Un trader rentable passe plus de temps hors du marché
+# que dedans. Les heures ci-dessous sont en heure du SERVEUR du courtier, pas
+# en heure de Cotonou : le bot fait la conversion et la journalise.
+# -----------------------------------------------------------------------------
+# Rollover : le spread explose (parfois x10) pendant le calcul des swaps.
+eviter_rollover = true
+rollover_debut = "22:45"
+rollover_fin = "23:15"
+
+# Liquidité trop faible : les mouvements sont du bruit, les spreads sont larges.
+eviter_asie_creuse = true
+asie_debut = "00:00"
+asie_fin = "06:00"
+
+# Vendredi soir : le gap du week-end saute par-dessus les stops. Un stop n'est
+# pas une garantie, c'est une instruction ; un gap l'exécute au prix suivant.
+fermer_avant_weekend = true
+vendredi_derniere_entree = "18:00"
+vendredi_tout_fermer = "20:30"
+
+# Dimanche : ouverture erratique, spreads larges, pas de volume.
+eviter_ouverture_dimanche = true
+
+# Fenêtre d'aveuglement autour des annonces à fort impact (NFP, CPI, FOMC, BCE).
+# Le mouvement est violent, le spread s'écarte et le slippage devient énorme :
+# c'est le pire moment possible pour une entrée automatique.
+blackout_news_actif = true
+blackout_avant_minutes = 30
+blackout_apres_minutes = 15
+
+
+[apprentissage]
+# -----------------------------------------------------------------------------
+# Comment le bot s'améliore, sans se suicider.
+# -----------------------------------------------------------------------------
+# JAMAIS d'apprentissage en direct. Un modèle qui se réajuste après chaque
+# perte court après le bruit et finit par miser gros sur sa dernière idée.
+apprentissage_en_ligne = false      # NE JAMAIS METTRE À true
+
+# Champion / challenger : le modèle en production ne bouge pas. Un challenger
+# est réentraîné périodiquement et ne le remplace QUE s'il le bat sur une
+# période qu'il n'a jamais vue.
+reentrainement_jours = 30
+echantillon_min_trades = 200        # en dessous, on n'apprend rien, on devine
+amelioration_min_requise_pct = 10.0 # le challenger doit battre le champion de 10 %
+validation = "walk_forward"
+
+# Rôle du modèle : il ne prédit PAS la direction (quasi impossible à 5 % de
+# signal). Il filtre les signaux de la règle primaire : « ce trade-là, dans ce
+# contexte-là, la règle a-t-elle historiquement tort ? »
+role = "meta_labeling"
+
+# Le deep learning est autorisé, mais jamais seul et jamais sans garde-fou :
+# sur ce rapport signal/bruit, le gradient boosting bat presque toujours un
+# réseau profond. Les deux se branchent, le walk-forward tranche.
+modele = "gradient_boosting"        # "gradient_boosting" | "reseau_profond" | "logistique"
+
+
+[surveillance]
+# Suivi depuis le portable. Telegram : gratuit, instantané, et il accepte des
+# COMMANDES (état, pause, tout fermer) -> c'est ton coupe-circuit à distance.
+telegram_actif = true
+alerte_a_chaque_trade = true
+rapport_quotidien = true
+rapport_heure = "21:00"
+alerte_coupe_circuit = true         # non désactivable dans le code
+
+
+[journal]
+# Le journal n'est pas de la comptabilité : c'est le jeu de données
+# d'entraînement. Chaque trade enregistre son contexte complet au moment de
+# l'entrée (régime, volatilité, spread RÉEL payé, session, slippage constaté).
+# Sans lui, il n'y a rigoureusement rien à apprendre.
+base = "donnees/journal.db"
+enregistrer_contexte_complet = true
+enregistrer_signaux_refuses = true  # les trades NON pris sont aussi des données
