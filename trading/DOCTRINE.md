@@ -228,3 +228,20 @@ plafond dans le code est là pour ça, et pas pour être prudent par principe.
 
 *Établi le 2026-09-16. Toute modification de cette doctrine doit se traduire par
 un changement de code ou de configuration le même jour, sinon elle n'existe pas.*
+
+## 8. Les règles d'or
+
+Reprises du cahier des charges de Mongazi (2026-09-16), écrites en tête des modules qu'elles
+gouvernent :
+
+1. **Survivre d'abord, performer ensuite.**
+2. **Un trade sans stop n'existe pas.**
+3. **Le backtest ment, le walk-forward vérifie, le marché décide.**
+4. **Le bot ne cherche pas à avoir raison, il cherche à être rentable.**
+5. **Aucune modification live sans validation sur compte démo.**
+
+Et deux ajoutées après le Monte Carlo du cahier :
+
+6. **Un seuil se calibre sur la distribution de la stratégie, jamais en chiffre rond** : un
+   arrêt qui se déclenche sur du bruit apprend à l'opérateur à le désactiver.
+7. **Aucun rendement promis** : ni en % par mois, ni dans l'interface, ni dans la vente.

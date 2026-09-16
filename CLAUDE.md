@@ -512,105 +512,60 @@
 - Détail : `whatsapp-agent/README.md` et
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
-### NEBULA TRADER — robot de trading EUR/USD  *(produit interne, 2026-09-16)*
-- **Trois objectifs, dans cet ordre** : **être rentable** sur une seule paire ·
-  **s'améliorer tout seul** (« un super agent, pas un simple bot ») · **être
-  vendable**, donc tourner chez **n'importe quel courtier MT5**.
-  ⚠️ **Le 3 DÉCOULE du 1** : un EA se vend sur un historique réel vérifié
-  (signal MQL5 / Myfxbook), **jamais sur un backtest**. Il faut gagner d'abord,
-  petit, pendant des mois. Les deux ne sont pas en concurrence.
-- **Où** : `trading/` · avancement et priorités chiffrés : **`trading/JOURNAL.md`**
-  · les principes traduits en code : **`trading/DOCTRINE.md`**.
-  `python trading/noyau/config.py` (posture de risque) ·
-  `python trading/outils/demo_verrous.py` (voir le bot refuser 9 trades) ·
-  `python trading/outils/essai_moteur.py`.
-- **Décidé** : **EUR/USD**, **H4** filtré par **D1**, risque **1 %** (plafond
-  **2 %** écrit dans le code, non desserrable depuis le fichier), courtier
-  **Deriv** démo mais **code agnostique**. ⚠️ Le PC de Cotonou héberge au
-  départ, **d'où : tout ordre part avec son stop déposé CÔTÉ SERVEUR** — une
-  coupure ne doit jamais laisser une position nue.
-- ⚠️ **LE CHIFFRE QUI DÉCIDE DE TOUT, C'EST LE COÛT EN R.** Il est fixe en pips,
-  donc son poids dépend de l'unité de temps : même système à 40 % de réussite et
-  1:2, **+0,18 R en H4 contre +0,01 R en M5**. Le spread n'a pas bougé, c'est R
-  qui a rétréci. C'est ce calcul qui a tranché l'unité de temps et qui tue le
-  scalping retail.
-- ✅ **LE PONT PYTHON ↔ MT5 MARCHE depuis le 2026-09-16** : le `-6
-  Authorization failed` venait du **mot de passe maître manquant**. Connexion
-  par **identifiants explicites** (`secrets/mt5.env`, compte `6305888` @
-  `Deriv-Demo`, 10 000 $ démo, 1:1000, couverture, serveur **UTC+0**), les
-  **quatre autorisations vertes** (compte, robots, bouton Trading Algo, API
-  Python) et un ordre fictif de 0,01 lot **accepté en `order_check`** (FOK,
-  stops level 20 points). ⛔ **Aucun ordre envoyé.**
-- ⛔ **`[Experts] Api=1` dans `common.ini` COUPE l'API, il ne l'ouvre pas** :
-  c'est la case « **désactiver** le trading algorithmique via l'API Python
-  externe » (comme `Account`/`Profile` sont des « désactiver quand… »). Passée
-  de 0 à 1 le matin en croyant ouvrir, elle laissait **lire** mais aurait fait
-  **refuser tout ordre** (`tradeapi_disabled = True`). Rétablie à 0 dans les deux
-  terminaux. ⚠️ **Une clé d'ini se lit dans l'interface qui l'écrit, pas d'après
-  son nom**, et on ne l'édite pas pendant que le terminal tourne (il l'écrase).
-  ⚠️ **MT5 éteint le Trading Algo à chaque changement de compte** (`Account=1`) :
-  le bot **vérifie les quatre autorisations** avant d'armer.
-- ✅ **L'HISTORIQUE N'EST PLUS UN BLOCAGE** : MT5 donne **25 000 barres H4
-  depuis le 2011-02-24** (~15 ans, ~500 trades), téléchargées **à la minute**,
-  ~22 Mo par année. ⏳ l'export vers `trading/donnees/` reste à écrire.
-  ⚠️ **Le disque C: n'avait que 6 Go libres** le 2026-09-16.
-  **Spread vérifié** sur 149 485 ticks : médiane **3 points** = ce que facture le
-  backtest ; **seule heure à éviter : 21 h UTC** (bascule, médiane 15).
-- ⛔ **CE QUI BLOQUE ENCORE N'APPARTIENT QU'À MONGAZI : la décision de capital**
-  (⚠️ **sous ~700 $ à 1 %, le code refuse TOUS les trades**, le lot minimum
-  risquant déjà 7 $ ; sorties = compte cent, 2 % de risque, ou attendre).
-- ⛔ **`notepad secrets\mt5.env` tapé dans Git Bash crée `secretsmt5.env` À LA
-  RACINE** (antislash mangé) : le mot de passe s'est retrouvé **hors de
-  `secrets/`, visible par git, dans un dépôt public**. Jamais commité, supprimé,
-  et `.gitignore` refuse désormais `*.env` et `secrets*`. Sous Git Bash : `/`.
-- ✅ **L'API PUBLIQUE DE DERIV DONNE DE VRAIES BOUGIES SANS AUCUN JETON**
-  (`wss://ws.derivws.com/websockets/v3?app_id=1089`, `frxEURUSD`,
-  `ticks_history` en `candles`, granularité 14400 pour H4) : c'est ce qui a
-  débloqué le projet. **1 555 barres H4, 0 bougie incohérente**, les 2 seuls
-  trous étant Noël et le Nouvel An.
-- ⚠️ **12 CHOSES CHANGENT D'UN COURTIER À L'AUTRE et se LISENT, jamais ne se
-  supposent** (`noyau/courtier.py`) : nom du symbole (`EURUSD` chez Deriv,
-  **`EURUSDm` chez Exness**), **fuseau du serveur** (le piège n°1 : se tromper
-  d'une heure fait entrer au pire moment, ça se **mesure** sur le dernier tick),
-  décimales, taille du contrat, lot min/pas, **mode de remplissage FOK/IOC/
-  RETURN**, stops level, couverture ou compensation, devise, commission, swaps,
-  heures de séance.
-- ⛔ **DÉFAUT GRAVE TROUVÉ ET CORRIGÉ : le disjoncteur de série noire se
-  verrouillait POUR TOUJOURS.** Le compteur de pertes consécutives ne retombe
-  que sur un gain, et aucun gain n'est possible tant que les entrées sont
-  bloquées — **mesuré : le bot cessait de trader en octobre 2021** sur un jeu
-  allant à fin 2024. En production ça se serait vu comme « le bot ne trade
-  plus », sans explication. ⚠️ **Trouvé parce que le nombre de trades n'était
-  PAS MONOTONE** dans un balayage (123 → 25 → 64 là où la physique impose une
-  décroissance) : *un résultat non monotone là où la monotonie est imposée est
-  un défaut d'INSTRUMENT, pas une découverte.*
-- ⚠️ **4 CORRECTIONS AU DOCUMENT DE TRADING DE MONGAZI** (2026-09-16) : « 1:2 à
-  40 % est profitable » est vrai **hors coûts**, absents de tout le texte ·
-  « ne jamais déplacer un stop » est faux, c'est **ne jamais l'ÉLARGIR** (le
-  resserrer EST le suiveur, et c'est un invariant imposé en code) · « quelle est
-  mon émotion » se traduit en **dérive d'état** (série, spread, volatilité,
-  régime, confiance) · **le risque psychologique se DÉPLACE sur l'opérateur** :
-  couper le bot pendant une série de pertes, monter le risque après un drawdown,
-  désactiver un disjoncteur, ré-optimiser après chaque perte, reprendre en
-  manuel.
-- ⛔ **INTERDITS PAR CONCEPTION, non implémentés** : martingale, moyenne à la
-  baisse, grille. Et **jamais d'apprentissage en direct** (le signal FX est à
-  ~5 % : un modèle qui se réajuste après chaque perte court après le bruit) →
-  **champion / challenger**, réentraînement hors ligne, promotion seulement sur
-  gain **hors échantillon**.
-- ⚠️ **POUR LA REVENTE : l'architecture ONNX.** Un bot Python ne se vend pas à
-  des traders retail (ils n'installeront pas Python) ; le canal est le **MQL5
-  Market**. MT5 embarque un **runtime ONNX** depuis 2023 → on entraîne en
-  Python, on exporte en ONNX, **l'EA `.ex5` fait l'inférence nativement**.
-  ⚠️ **La doctrine, les verrous et le dimensionnement doivent exister des DEUX
-  côtés à l'identique** : c'est pourquoi ils sont écrits comme des règles pures,
-  sans dépendance. ⚠️ Le MQL5 Market **déclasse** les EA à martingale et à
-  grille · ⛔ **ne jamais promettre un rendement** dans une fiche produit.
-- 🔐 **Le dépôt est PUBLIC** : identifiants uniquement dans `secrets/`
-  (`mt5.env`, `deriv.env`). ⛔ **Un mot de passe n'entre JAMAIS dans une
-  conversation** — le 2026-09-16 un jeton a été collé en clair (testé :
-  `InvalidToken`, format `pat_` qui n'est pas celui de Deriv) et **doit être
-  révoqué quel que soit le service auquel il appartient**.
+### NEBULA TRADER · agent de trading EUR/USD (bientôt NAS100)  *(produit interne, 2026-09-16)*
+- **Trois objectifs, dans cet ordre** : **être rentable** · **s'améliorer tout seul** ·
+  **être vendable** (installable chez n'importe qui, vendu en ligne). ⚠️ **Le 3 découle du
+  1** : un robot se vend sur un historique réel vérifié, jamais sur un backtest.
+- **Où** : `trading/` · **`trading/CAHIER-DES-CHARGES.md`** (v2, la référence) ·
+  `trading/JOURNAL.md` (avancement) · `trading/DOCTRINE.md` · `trading/README.md`.
+  **Lancer** : `python -m trading.app` (agent + interface sur http://127.0.0.1:8765/) ·
+  **QC** : `python -m trading.outils.qc` (79 verts) · **produit** :
+  `python -m trading.empaquetage.construire` (zip 44 Mo, `NEBULA Trader.exe`, sans Python).
+- ✅ **FAIT le 2026-09-16** : pont MT5 ouvert (compte démo Deriv `6305888`, identifiants
+  explicites) · historique MT5 **par année** (34 876 H4 depuis 2005) · profil de coûts
+  mesuré (spread médian **3 points** sur 147 161 ticks) · **walk-forward** 4 ans → 1 an ·
+  **agent live** (`live/agent.py`, seul fil qui parle à MT5) en **observation** · journal
+  SQLite des décisions ET des refus · calendrier économique (indisponible = abstention) ·
+  **interface 8 pages** (FastAPI local, jeton de session, HTML sans bibliothèque) ·
+  conversation (Claude `claude-sonnet-5` avec outils, ou répondeur local) · réglages validés
+  par le videur · coffre **DPAPI** · **licences Ed25519** hors ligne (clé privée dans
+  `secrets/nebula-trader-licence.pem`, jamais publiée ; `python -m trading.outils.licence`).
+- ⛔ **AUCUNE STRATÉGIE N'A D'AVANTAGE PROUVÉ** (walk-forward 2011-2026, coûts réels) :
+  cassure positions gardées le week-end **436 trades, +0,040 R, PF 1,07, 10 000 → 11 488** ·
+  cassure fermée le vendredi −0,007 R · retour à la moyenne −0,081 R. Rien n'est
+  distinguable de zéro. **Ne pas passer en réel, ne pas vendre de performance.**
+- **Capital pour tous, jamais au-delà du risque** : **compte cent** détecté (10 $ prennent les
+  mêmes 71 trades que 10 000 $) · **lot minimum toléré** jusqu'à 2 % · **attente** d'un stop plus
+  court. Sur compte standard, rien ne passe sous 250 $ (stop médian 527 points).
+- 📐 **CAHIER DES CHARGES DE MONGAZI passé au Monte Carlo** (436 trades, 20 000 tirages) :
+  arrêt −10 % à 1 % touché **99 %** du temps · 5 pertes d'affilée sur 100 trades **97 %** ·
+  3 %/mois exige **1,30 R/trade** · 30 jours de paper = **2 trades** en H4 · levier x5 et 10 %
+  de risque incompatibles (**x21,7** médian). **Décisions de Mongazi** : **BOOST jusqu'à 10 %
+  par trade** (mesuré à la stratégie actuelle : 46 % de chances de perdre la moitié en un an,
+  affiché au moment du choix, BOOST réel verrouillé derrière la porte PRO de 60 jours de son
+  propre cahier) · **seuils de drawdown calibrés au Monte Carlo** · **marchés : EUR/USD et
+  NAS100 uniquement**. Détail et intégration par vagues : `trading/CAHIER-DES-CHARGES.md`.
+- **Décidé** : H4, risque PRO **1 %** (plafond **2 %** écrit dans le code), **positions gardées
+  le week-end** (la fermeture du vendredi tue la tendance : 197 sorties forcées, coûts = 344 %
+  du brut ; 2 gaps en 15 ans), code agnostique du courtier, **tout ordre part avec son stop
+  chez le courtier et la position est RELUE** (sans stop, elle est fermée).
+- ⚠️ **LE COÛT EN R décide de l'unité de temps** : 0,02 R en H4 contre 0,19 R en M5.
+- ⛔ **PIÈGES MT5 MESURÉS** : `[Experts] Api=1` **coupe** l'API Python (case « désactiver ») ·
+  MT5 **éteint le Trading Algo à chaque changement de compte** · `SYMBOL_FILLING_FOK/IOC`
+  n'existent pas dans le paquet Python (drapeaux 1 et 2) · une plage de 20 ans d'un coup =
+  `Call failed`, **lire par année** · le terminal télécharge l'historique de TOUS les symboles de
+  l'Observation du marché (bases 1,2 Go, disque à 4,4 Go) · le champ `spread` d'une bougie n'est
+  pas le spread payé.
+- ⛔ **DÉFAUTS DU MOTEUR TROUVÉS ET CORRIGÉS** : disjoncteur de série noire verrouillé pour
+  toujours (le matin) · **verrous datés à l'ouverture de la barre du signal** (entrée à 00 h
+  acceptée pendant « Asie ») · **fermeture du vendredi jamais déclenchée en H4** (la dernière
+  barre ouvre à 20 h 00, avant le seuil de 20 h 30 : on compare la FIN de la barre).
+- 🔐 **Dépôt PUBLIC** : identifiants dans `secrets/` ou dans le coffre DPAPI de l'application ·
+  `.gitignore` refuse `*.env` et `secrets*` (un `notepad secrets\mt5.env` sous Git Bash avait créé
+  `secretsmt5.env` à la racine avec le mot de passe) · la construction du paquet **refuse** un
+  secret, cherché par nom ET par contenu · ⛔ un jeton collé en clair le 2026-09-16 est à révoquer.
+- ⛔ **Interdits par conception** : martingale, grille, moyenne à la baisse, stop élargi,
+  apprentissage en direct. Aucun rendement promis nulle part.
 - Détail : `_memoire/conversations/2026-09-16-nebula-trader.md`
 
 ## Infrastructure — où tourne quoi (2026-08-02)

@@ -2685,3 +2685,56 @@ dépôt public**. Rien n'a fui parce que `git status` a été lu avant de commit
 Sous Git Bash, des barres obliques. Et `.gitignore` refuse désormais `*.env` et
 `secrets*` : la règle protège aussi de la faute de frappe.
 
+## 2026-09-16 · Un contrôle qui ne peut pas échouer n'est pas un contrôle
+
+En écrivant la suite QC de NEBULA Trader, deux contrôles sont sortis de ma main truqués :
+`verifier(... or True, "drawdown mesuré")` et un calendrier « indisponible » testé par
+`... if False else (True, "indisponible")`. Tous deux étaient verts quoi qu'il arrive. Repérés
+en relisant, pas par un échec. C'est au moins la troisième fois dans le dépôt (un `or True`
+retiré sur Au Braisé d'Or le 2026-09-15).
+
+Règle : **avant de déclarer une suite verte, chercher `or True`, `if False`, `except: pass` et
+toute condition qui ne dépend pas de la mesure**. Et un verrou a toujours son TÉMOIN (prouver
+qu'il laisse passer avant de prouver qu'il refuse).
+
+## 2026-09-16 · Une règle horaire comparée à l'OUVERTURE d'une barre ne voit pas sa fin
+
+Deux défauts du moteur de backtest, de la même famille. La fermeture du vendredi comparait
+l'ouverture de la barre (20 h 00, dernière barre H4) au seuil de 20 h 30 : **elle ne s'est
+jamais déclenchée**, et les positions traversaient le week-end que la règle devait leur éviter.
+Les verrous d'horaire recevaient l'ouverture de la barre du SIGNAL au lieu de l'heure d'ENTRÉE,
+quatre heures plus tard : une entrée à 00 h passait le filtre « heures creuses d'Asie ».
+
+Une barre est un intervalle. Une règle d'heure dit si elle vise le début, la fin, ou l'instant où
+l'ordre part, et le contrôle vérifie le cas limite (la dernière barre du vendredi, l'entrée de
+minuit). Corrigée, la fermeture du vendredi est devenue le premier motif de sortie : elle tuait
+la stratégie de tendance.
+
+## 2026-09-16 · Le témoin a trouvé un réglage de test faux
+
+Le contrôle « le moteur trade sur données synthétiques » est sorti rouge : 0 trade. Le moteur
+n'avait rien : les barres synthétiques déclaraient 15 points de spread, le test en facturait 3,
+et le verrou « marché négociable » voyait un spread cinq fois supérieur à la normale, donc
+refusait tout. **Exactement son rôle.** Sans témoin, les contrôles de refus seraient restés verts
+sur un moteur qui ne tradait plus. Quand un témoin rougit, lire d'abord le réglage du test.
+
+## 2026-09-16 · Un seuil de risque se calibre au Monte Carlo, pas en chiffre rond
+
+Le cahier des charges de Mongazi fixait « arrêt total à −10 % » avec 1 % de risque par trade, et
+« pause après 5 pertes d'affilée ». Rejoués sur les 436 vrais trades hors échantillon (bootstrap,
+20 000 tirages) : −10 % est touché **99 %** du temps sur 15 ans, 5 pertes d'affilée arrivent **97 %**
+du temps sur 100 trades. Des seuils ronds qui se déclenchent sur du bruit arrêtent un système sain,
+et apprennent à l'opérateur à les désactiver.
+
+Un seuil d'arrêt se tire de la distribution des trades de LA stratégie (p95, p99 du drawdown), et
+une pause se décide sur un écart statistique à cette distribution (CUSUM), pas sur un compte rond.
+Même méthode pour un objectif : « 3 %/mois » exige 1,30 R par trade à 1 % de risque et 2,3 trades
+par mois, soit six fois ce que le meilleur système connu du dépôt produit.
+
+## 2026-09-16 · `[hidden]` perd contre `display`, et `DENY` bloque aussi ton propre cadre
+
+La barre « Enregistrer » des réglages était visible sans aucun changement : `.barre { display:
+flex }` l'emporte sur l'attribut `hidden`. Règle globale posée : `[hidden] { display: none
+!important; }` (déjà vu sur Angy Art, à mettre dans tout gabarit). Et pour contrôler le rendu
+téléphone dans un cadre de 390 px, `X-Frame-Options: DENY` refusait l'iframe de la MÊME origine :
+`SAMEORIGIN` + `frame-ancestors 'self'` protège autant du vol de clic (qui vient d'un site tiers).

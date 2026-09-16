@@ -231,12 +231,84 @@ l'historique MT5 vers `trading/donnees/`, puis le walk-forward sur 15 ans.
 
 ---
 
+## Le soir : l'agent, l'interface, le produit (commit `74e96a9`)
+
+Demande de Mongazi : « applique les 3, fais en sorte qu'il passe, on doit pouvoir trader avec
+n'importe quel capital en restant performant », « une interface pour parler à l'agent, voir son
+évolution, régler, désactiver, voir le risque », « le vendre, l'installer partout ».
+
+**Les données.** Historique MT5 lu **année par année** (une plage de 20 ans d'un coup renvoie
+`Call failed`) : 34 876 barres H4 depuis 2005, 6 767 D1, 100 000 H1 depuis 2010. Profil du
+courtier mesuré et gardé en JSON (spread médian **3 points** sur 147 161 ticks, swaps en points).
+
+**Le verdict, sans fard.** Walk-forward (4 ans d'apprentissage → 1 an de test, 2011-2026, coûts
+réels) :
+
+| Stratégie | Trades | Espérance | PF | 10 000 → |
+|---|---|---|---|---|
+| Cassure, positions gardées le week-end | 436 | +0,040 R | 1,07 | 11 488 |
+| Cassure, fermeture du vendredi | 497 | −0,007 R | 0,97 | 9 415 |
+| Retour à la moyenne (nouvelle) | 311 | −0,081 R | 0,82 | 7 663 |
+
+**Aucune n'est distinguable de zéro.** Le réglage par défaut passe à « garder le week-end »
+(197 sorties forcées sinon, coûts = 344 % du brut ; 2 gaps en 15 ans).
+
+**Deux défauts du moteur** trouvés en le relisant : les verrous étaient datés à l'ouverture de
+la barre du SIGNAL (une entrée à 00 h passait le filtre « Asie » en se datant de 20 h) et la
+fermeture du vendredi ne se déclenchait JAMAIS en H4 (dernière barre ouverte à 20 h 00, seuil
+20 h 30 : on compare maintenant la fin de la barre).
+
+**Le capital.** Trois réponses automatiques : compte cent détecté (10 $ prennent les mêmes 71
+trades que 10 000 $), lot minimum toléré jusqu'à 2 %, attente d'un stop plus court. ⚠️ Le 1er
+jet simulait le compte cent en multipliant AUSSI la valeur du point : les lignes « cent »
+recopiaient le compte standard.
+
+**L'agent et le produit.** `live/agent.py` (seul fil qui parle à MT5, commandes en file),
+`live/execution.py` (stop relu chez le courtier), `live/journal.py` (SQLite), calendrier
+Forex Factory, interface FastAPI locale en 8 pages, conversation Claude avec outils (l'agent
+rend le système plus prudent seul, jamais plus risqué), coffre DPAPI, licences Ed25519,
+QC de 79 contrôles, exécutable PyInstaller de 44 Mo testé sur un premier lancement réel.
+
+**Vu sur les captures, QC vert** : barre « Enregistrer » visible sans changement (`[hidden]`
+écrasé par `display:flex`), libellés de courbe écrasés par un SVG étiré, variante non active
+affichée en premier, défilement conservé d'une page à l'autre, 8 entrées qui débordaient la
+barre du téléphone. ⚠️ L'iframe de contrôle à 390 px était bloquée par `X-Frame-Options: DENY`
+(passé à `SAMEORIGIN` + `frame-ancestors 'self'`).
+
+**Deux contrôles truqués de ma main dans le QC** (`or True`, `if False`), repérés en relisant et
+remplacés par de vraies mesures. Et le témoin du moteur a trouvé un réglage de TEST faux : spread
+facturé 3 contre des barres à 15, le verrou 8 refusait tout, exactement son rôle.
+
+---
+
+## La nuit : le cahier des charges de Mongazi passé au Monte Carlo
+
+Mongazi colle un cahier des charges complet (« Agent de trading autonome auto-améliorant » :
+8 modules, modes PRO et BOOST, self-learning, KPIs). Copie verbatim :
+`trading/CAHIER-DES-CHARGES-v1.md` ; version corrigée : `trading/CAHIER-DES-CHARGES.md`.
+
+Chiffré sur les 436 vrais trades (bootstrap 20 000 tirages) :
+- arrêt total −10 % à 1 %/trade : touché **99 %** du temps sur 15 ans ;
+- pause après 5 pertes d'affilée : **97 %** sur 100 trades à 40 % de réussite ;
+- 3 à 8 %/mois : il faudrait **1,30 R** par trade (son propre KPI 0,2 R donne 0,46 %/mois) ;
+- 30 jours de paper trading : **2 trades** en H4 ;
+- levier x5 : incompatible avec 3 % (x6,6) et a fortiori 10 % (**x21,7**, 0 % des signaux) ;
+- BOOST à 10 % avec la stratégie actuelle : **46 %** de chances de perdre la moitié en un an,
+  **92 %** en trois ans ; dix pertes d'affilée laissent 35 % du capital.
+
+**Décisions de Mongazi** : BOOST jusqu'à **10 %** par trade avec n'importe quel capital · seuils
+de drawdown **calibrés au Monte Carlo** · marchés **EUR/USD et NAS100** seulement · intégration
+par vagues (profils, Monte Carlo, auto-surveillance et porte démo, puis NAS100). Le BOOST réel
+reste derrière la règle de son propre cahier : 60 jours de PRO rentable d'abord.
+
+---
+
 ## Ce qui reste, par priorité
 
-**P0** — ~~le mot de passe MT5~~ ✅ · ~~l'historique long~~ ✅ (export à écrire) · la décision de capital
-**P1** — journal SQLite (= le jeu d'entraînement) · walk-forward · calendrier économique
-**P2** — 3 stratégies de plus · meta-labeling · auto-surveillance réel vs backtest
-**P3** — exécution live · Telegram (alertes + commandes depuis le portable)
-**P4** — export ONNX + EA MQL5
+**Maintenant** : vague 1 profils PRO/BOOST · vague 2 Monte Carlo · vague 3 auto-surveillance,
+auto-analyse, porte démo, chien de garde · vague 4 NAS100
+**Ensuite** : filtre D1 · 3 stratégies (momentum, range, cassure de structure) · garde contre les
+tests multiples · méta-labeling · Telegram
+**Hors code** : page de vente, prix et paiement (décisions de Mongazi) · révoquer le jeton collé
 
 Détail et pourcentages : **`trading/JOURNAL.md`**.

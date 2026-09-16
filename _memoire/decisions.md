@@ -869,3 +869,26 @@ même style que les autres ».
 ✅ **En ligne et vérifié le 2026-09-15** (page servie identique au disque en
 MD5, 53 plats balisés, fichier absent → 404).
 
+## 2026-09-16 · NEBULA TRADER : les décisions de la nuit
+
+- **Contexte** : livraison de l'agent live, de l'interface et du produit installable ; puis
+  cahier des charges de Mongazi analysé au Monte Carlo avant intégration.
+- **Décisions** :
+  - **Positions gardées le week-end par défaut** : mesuré en walk-forward, fermer le vendredi
+    fait passer la cassure de +0,040 R à −0,007 R (197 sorties forcées) ; 2 gaps en 15 ans.
+  - **Assistant de conversation : `claude-sonnet-5`** (règle maison « Sonnet pour le texte
+    client »), Opus 5 sélectionnable dans l'interface.
+  - **Capital en trois temps** : compte cent détecté · lot minimum toléré jusqu'à 2 % · attente.
+  - **Évaluation sans licence = observation + démo** ; le réel exige licence, compte réel et
+    plafond de capital.
+  - **Mode BOOST jusqu'à 10 % de risque par trade**, n'importe quel capital (décision de
+    Mongazi). Mesuré et affiché au moment du choix : à la stratégie actuelle, 46 % de chances de
+    perdre la moitié du capital en un an. BOOST réel verrouillé derrière 60 jours de PRO rentable
+    (règle de son propre cahier).
+  - **Seuils de drawdown calibrés au Monte Carlo** de chaque stratégie, pas −10 % / −20 % en dur.
+  - **Marchés : EUR/USD et NAS100 uniquement** (ni Binance, ni yfinance).
+- **Alternatives écartées** : BOOST refondu à 2 % (recommandé, refusé par Mongazi) · crypto via
+  ccxt · objectifs en % par mois (impossibles, retirés du code et de la vente) · backtrader et
+  Streamlit (notre moteur appelle les mêmes verrous que le live).
+- **Conséquences** : intégration en 4 vagues (profils, Monte Carlo, auto-surveillance et porte
+  démo, NAS100), puis la recherche d'avantage (filtre D1, nouvelles stratégies).
