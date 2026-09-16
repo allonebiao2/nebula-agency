@@ -1,5 +1,7 @@
 # CLIENT 10 — HILLARY M. STYL
 
+> 📌 **Le résumé qui vivait dans `CLAUDE.md` jusqu'au 2026-09-16 est recopié en fin de fichier**, section « Résumé transféré de `CLAUDE.md` ».
+
 > **Maison de couture · prêt-à-porter & sur-mesure**
 > Vitrine avec catalogue commandable et prise de mesures en ligne.
 > Créé le 2026-07-31 · moteur de mesures refait (v2) · direction artistique « LE FIL » (v3, 2026-08-01)
@@ -1326,3 +1328,173 @@ barre et le pied sont `sticky` — ils se repeignent au bord de la fenêtre et
 **cachent tout ce qui suit**. Sur les deux premières planches, les deux messages
 promis et le récapitulatif étaient **absents de l'image sans que rien ne le
 signale**. La fenêtre est donc haute, et toute la modale y tient.
+
+---
+
+## 📌 Résumé transféré de `CLAUDE.md` (2026-09-16)
+
+> Cette ligne vivait dans le tableau « Clients actifs » de `CLAUDE.md`, où elle pesait **27 287 caractères**. `CLAUDE.md` est chargé à chaque session et avait dépassé la limite de 150 000 caractères de Claude Code : le détail vit désormais ici, et `CLAUDE.md` n'en garde qu'un résumé qui renvoie à ce fichier.
+> Le texte est recopié **sans un mot changé**, découpé en puces aux séparateurs `·` d'origine. C'est un **historique** : chaque puce porte sa date, et quand deux puces se contredisent, la plus récente fait foi.
+
+**Métier** : **HILLARY M. STYL** — maison de couture (monogramme H.M.S) · prêt-à-porter par tailles **+ sur-mesure** · magenta `#E6007E` + noir, Archivo + Manrope
+
+**WhatsApp** : **+229 51 37 47 93** ✅ posé et EN LIGNE (`wa.me/22951374793`, donné 2026-08-01 · ⚠️ tester une fois : le dépôt a 2 formats, sinon `2290151374793`)
+
+**État, dans l'ordre où il a été écrit :**
+
+- **EN LIGNE : https://hillary-m-styl.pages.dev** ✅ **la V4 « LA COUPE » EST en ligne ET sur `main`** (déployée le 2026-08-06 · image servie comparée en MD5 au fichier du disque : identique, transparence comprise)
+- vitrine + moteur de commande livrée 2026-07-31, refaite en V2 le même jour
+- ⚠️ **on édite `_vitrine_src.html`, jamais `vitrine.html`** (généré par `python3 _build.py`, 177 Ko ; QC = `python _qc.py`, **91 contrôles** ; ⚠️ **la V4 se monte depuis `_v4/` : `python _v4/_assembler.py` d'abord**, il refuse d'écrire si l'un des 18 identifiants du moteur manque)
+- **🚀 DÉPLOIEMENT depuis `main` : `clients/10-hillary-m-styl/DEPLOIEMENT.md`** ; `python3 _predeploy.py` vérifie tout et refuse un déploiement douteux
+- ⛔ **la branche `claude/github-repo-context-nisd2r` est PÉRIMÉE : la fusionner supprimerait 30 790 lignes de `main`** (tout PISTE, `purger.py`, `rapatrier.py`)
+- **V2 = les mesures dépendent du TYPE DE VÊTEMENT, pas du genre** : robe coupée à la taille **9**, robe droite **15**, robe ovale **11 ⚠️ à valider par l'atelier**, pantalon **6**, chemise/haut **8** (champs regroupés haut/longueurs/manches ; une mesure vide part en « à prendre ensemble », la moitié suffit pour avancer ; pièce « Création libre » = le client choisit le vêtement)
+- **prix ET délai sur chaque carte**, catalogue 2 colonnes mobile
+- **express 1 à 3 jours** / normal 7-14
+- **date précise de disponibilité affichée** dès les options validées, calculée sur la **borne haute** du délai + acheminement du pays (promettre la borne basse fabrique un client déçu)
+- **WhatsApp OU email** (un des deux suffit)
+- **Mobile Money seul moyen de règlement**, aucun paiement sur le site
+- À propos
+- double notification expliquée
+- message d'aide mesures mot pour mot
+- QC : 0 débordement 390/768/1440 page+modale, 0 erreur JS, cibles ≥44px, 0 image externe
+- ⚠️ **8 informations à confirmer avant mise en ligne** (bloc « ZONE À COMPLÉTER » en haut du script, §6 du CONTEXT.md) frais+acheminement par pays, **mesures robe ovale jamais fournies**
+- paiement Momo réel = FedaPay + notifications auto = n8n/Twilio, hors périmètre du statique
+- **V3 « LE FIL » 2026-08-01** = direction artistique complète, moteur inchangé : **Bodoni Moda** (didone mode) + Archivo + Manrope, fond encre `#0B0A0C` / papier `#F4F1EC` / magenta, rythme sombre-clair alterné
+- **une animation signature par section, toutes tirées du métier** (rideau d'ouverture au fil · héros titre-craie + **croquis de robe qui se dessine** + mètre-ruban gradué · 01 la piqûre · 02 le patron à la craie · 03 le fil qui relie · 04 le drapé + chiffres comptés · 05 la coupe aux ciseaux · modale = carnet + date tamponnée)
+- permanent : grain, fil de progression, **aiguille-curseur aimantée**, ruban défilant
+- ⚠️ **pas de photos IA pour le catalogue** (promesse fausse) — héros prêt à recevoir une vraie photo
+- perf : `prefers-reduced-motion`, grain figé + 1 nappe retirée sur mobile, **contrôle auto « aucune animation infinie sous backdrop-filter »**
+- **🚀 V4 « LA COUPE » CONSTRUITE ET EN LIGNE le 2026-08-06** (spec `BRIEF-V4.md`, fusion de 3 références) : loader qui se fend
+- **héros slider éditorial** avec **numéro géant DERRIÈRE la silhouette** et le nom qui la chevauche (⚠️ ne marche QUE sur fond blanc uni)
+- **4 badges flottants**
+- coverflow des collections
+- **lookbook à compteur fixe + mosaïque en parallaxe**
+- processus qui se remplit
+- **74 contrôles verts**, moteur de commande INTACT
+- ⛔ **ZÉRO bibliothèque** là où le brief demandait Next.js/GSAP/ScrollTrigger/SplitText/Lenis/Swiper
+- ✅ pagne tranché : « elle fait tout, la maison mère » → le wax est une **matière et une collection, pas l'identité** ; **magenta = sa signature** ; « Collection Kente » abandonné (ghanéen)
+- ⚠️ **chaque accent wax n'est lisible que sur UN seul fond** (ocre 2,2:1 sur papier ⛔, indigo 1,26:1 et vert 1,77:1 sur noir ⛔)
+- ⚠️ **on édite `_v4/*` puis `python _v4/_assembler.py`**, jamais `_vitrine_src.html` à la main ; les 4 morceaux `garde-*` (modale, toucher, **moteur**) ne sont JAMAIS régénérés
+- ✅ **SES 4 VRAIES PIÈCES REÇUES ET POSÉES le 2026-08-06** (Robe de cérémonie 100k · Ensemble Mira 50k · Ensemble JOSY 65k · Robe de ville 30k, toutes en sur-mesure robe ovale) : elles occupent le **catalogue, le carrousel ET le héros** (détourées au rembg)
+- les 12 pièces d'EXEMPLE ont disparu
+- ✨ **la couleur du héros suit le tissu** (teinte dominante relevée sur chaque photo → `--piece` sur `:root`, ⚠️ ne jamais la redéclarer sur `.hero`)
+- ⚠️ **le supplément express est PROPRE À CHAQUE PIÈCE** (+40k sur 100k, +15k sur 30k) : le moteur appliquait 10k à tout le monde et Hillary absorbait l'écart
+- délai express aussi par pièce (JOSY 2-5 j, autres 2-4 j)
+- onglet vide masqué (ses 4 pièces sont toutes en sur-mesure)
+- prix affichés en **FCFA + € + $** tels qu'elle les donne, jamais recalculés
+- **9 images d'ambiance régénérées d'après SES tissus** (atelier + lookbook)
+- ⏳ reste à confirmer : **les 11 mesures de la robe ovale** (les 4 pièces en dépendent), la matière de chaque pièce, le jeu « haut + jupe » de Mira, le libellé « Robe de ville »
+- détail `_sources/hillary/PIECES-RECUES.md` 
+- **PASSE DU 2026-08-06** : **une seule photo par pièce**, détourée, partagée par le héros, le carrousel ET les cartes (`piece-*.webp` ; les `coll-*.webp` en double sont supprimés) — sans détourage le chiffre géant du héros était entièrement couvert et chaque pièce tenait dans une boîte blanche
+- transparence livrée en **WebP `quality=94, alpha_quality=100, exact=True`** = alpha **bit pour bit celui du PNG** pour 761 Ko au lieu de 3 560 Ko (sources PNG dans `_sources/detoure/`)
+- « 14 à 14 jours » → `libDelai()` n'annonce qu'un chiffre quand les bornes se rejoignent
+- prix et délais **insécables** (« 100 000 » / « F » se cassait sur téléphone)
+- **`404.html` écrite par `_predeploy.py`** — sans elle un fichier absent répond **200** et ce 200 se met en cache **un an** (panne PISTE)
+- **84 contrôles** : alpha réellement transparent lu au pixel, aucun cadre, aucune coupure de ligne, chiffre du héros synchrone
+- ⚠️ `curl -w "%{size_download}"` a annoncé un poids faux et fait croire à un cache empoisonné : **comparer les octets (MD5), pas les compteurs**
+- **MOUVEMENT DU HÉROS RÉPARÉ (2026-08-06)** — Mongazi : « ça bugue un peu, surtout sur les chiffres, ça doit suivre » : ⚠️ **`cubic-bezier(.45,.02,.2,1)` partait À PLAT**, la pièce restait immobile **580 ms mesurées** après le clic puis se précipitait → `cubic-bezier(.25,1,.5,1)` sur 1 s
+- le chiffre géant porte **la même durée ET la même courbe** que la pièce (2 chiffres qui se croisent dans le sens du mouvement)
+- ⚠️ **le travail lourd ne doit pas précéder le mouvement** (un glyphe de 30 rem = un calcul de mise en page ; `--piece` sur `:root` = un recalcul de tout le document) : `preparerNum()` prépare hors du chemin critique, `aller()` déclenche tout dans **la même image**, couleur et textes à l'image suivante
+- ⚠️ **verrou et retrait tombaient tous deux à 1050 ms** = une course qui empilait « 0302 » au clic rapide → seule la transition la plus récente fait le ménage
+- nappe en **`color-mix(in oklab)`** (en srgb un bleu à 22 % sur crème = gris sale)
+- pied du « 2 » de Bodoni fondu au `mask-image`
+- héros **jamais en `loading="lazy"`** + `decode()` en fond
+- ombres coupées pendant le mouvement (`.hsc.bouge`)
+- mesuré téléphone 4× ralenti : **17 ms au repos, 21 ms en glissant** — ce n'était pas la performance, c'était la courbe
+- **AUDIT COMPLET 2026-08-06** (9 défauts corrigés) : ⛔ **adresse email INVENTÉE en ligne** (`contact@hillarymstyl.com`) qui servait de vrai `mailto:` au repli « je n'ai pas WhatsApp » — les commandes partaient dans le vide ; `EMAIL` est **vide**, la ligne se retire seule et le repli devient un **`tel:`** vers son vrai numéro
+- ⛔ le bloc contact annonçait **« 7 à 14 j · 1 à 3 j express »** contre « 2 semaines · 2 à 5 j » sur chaque carte (corrigé partout + badge du héros + valeurs de secours)
+- ⛔ `.et span{grid-column:2}` frappait aussi le numéro (un `<span>`) : titres dans la colonne de 86 px et **« L'essayage » chevauchait le « 04 »** → `.et>span:not(.n)` ; ⚠️ la spécificité ne prévient pas, `grid-column` n'était déclaré que là
+- ⛔ **le bouton « Écrire sur WhatsApp » avait `href="#"`** (posé par le script) : sans JS on ne pouvait pas joindre la maison → liens WhatsApp **écrits en dur**
+- **3 contrastes réparés** : bouton WhatsApp **3,09→5,0** (`#128040` ; le vert de la marque porte du texte FONCÉ), étiquette carrousel 4,13→5,2 (`--rose-f #c9006c`, ⚠️ `--rose` intact = sa signature), badge 4,21→5,9 (`--terre #a8452a`)
+- **textes d'attente retirés** (« Photo à venir »→« Votre modèle », 6 légendes lookbook)
+- **menu illisible pendant son fondu** (texte 0,4 s / fond 0,5 s se croisaient au même gris, **1,01:1 mesuré**) → les deux à 0,22 s
+- lien téléphone porté à 44 px
+- ✅ vérifié bon : CLS **0,025**, WebKit réel, 0 erreur JS, 0 réponse ≥400, 0 débordement
+- **PANIER + VENTE 2026-08-16/17** : **un panier** (plusieurs pièces, une seule commande, un seul message) — ligne = `expPrix` si express × quantité, frais de livraison **une seule fois**, ⚠️ **délai = la borne haute de la pièce la PLUS LENTE** (tout part ensemble ; le mélange express/normal est annoncé), **aucun prix stocké dans le panier** (relu dans `PIECES`, sinon un panier oublié ressort à un prix périmé), mesures reportées d'une pièce à l'autre
+- ⚠️ le voile du tiroir **avalait les clics 350 ms après sa fermeture** (`visibility` bascule à la FIN de la transition → `pointer-events`)
+- le bouton du son a **son couloir de 78 px** dans les pieds de page (le QC refuse qu'on le cache)
+- **AUDIT VENTE** : ⛔ **aucune `og:image`** (un lien WhatsApp n'était qu'une ligne grise : le défaut le plus cher, et invisible depuis le site) → `python _og.py` fabrique `og.jpg` **en JPEG** + `google-logo.jpg` 720² + `google-couverture.jpg` 1024×576
+- ⛔ **`FAQPage` déclaré sans aucune question visible** → section « Les questions » en `<details>`, et **un contrôle compare le balisage et la page**
+- **8 fiches `Product`/`Offer` LUES dans `PIECES`** par l'assembleur
+- `robots.txt` + `sitemap.xml`
+- meta description qui disait encore « 1 à 3 jours » corrigée + contrôle
+- ⚠️ `_predeploy.py` ne copiait **que les `.webp`** et **ne lance PAS l'assembleur**
+- **121 contrôles**
+- **FICHE GOOGLE : dossier complet dans `GOOGLE-BUSINESS.md`** (nom SANS mot-clé = motif n°1 de suspension, description 665 car., catégories, services, procédure) — ⛔ **impossible à créer d'ici** (son compte Google + validation vidéo) et **bloquée par l'adresse**, qu'elle n'a jamais donnée
+- **9 modèles reçus le 2026-08-16** notés dans `_sources/hillary/` (prix, délais, mesures) ⚠️ **leurs photos ne sont pas des fichiers**, rien ne se pose tant qu'elles ne sont pas dans `_partage/`
+- **2026-08-18** : sur ordre de Mongazi, **les 11 modèles sont AU CATALOGUE SANS leurs photos** (9 → **20 cartes**) — nom, description, prix en 3 monnaies, délai, mesures, **commande complète** ; à la place de l'image, le monogramme et **« Photo sur WhatsApp »** (drapeau `photoWa:true`, ⚠️ **jamais « photo à venir »** : ça dit que la maison n'est pas prête)
+- ⚠️ **ni héros ni carrousel** tant qu'il n'y a pas d'image
+- vérifié EN LIGNE sur **iPhone (WebKit réel), Android et 360 px** : 12/12 affichées, 0 débordement, 0 erreur, la fiche s'ouvre au toucher
+- ⛔ **pourquoi les photos n'arrivent pas** : une session lancée DEPUIS LE TÉLÉPHONE tourne dans le nuage et y reçoit de vrais fichiers, une session sur le PC voit l'image sans pouvoir l'écrire (prouvé : `_sources/` ignoré par git + le lot du 10/08 livré sans sources)
+- `_nouveaux_modeles.py` porte les 11 fiches et **refuse de poser tant qu'une photo manque**
+- **2026-08-17** : **héros 4 → 7 pièces** et **carrousel 4 → 8** (les 4 reçues le 10/08 n'y étaient jamais passées ; la robe à tulle reste au seul carrousel, son violet doublait)
+- **une signature par section** (l'ourlet, le portant, les patrons épinglés, le fil qui se dénoue, la couture qui se ferme) + `section{overflow-x:clip}`
+- ⚠️ **quand le QC échoue, `_predeploy.py` s'arrête AVANT de préparer `_dist/` : déployer juste après republie la version précédente sans un mot**
+- ⚠️ le QC échouait 1 fois sur 2 sur « Page.goto: Timeout » = **serveur de test mono-tâche** (`TCPServer` → `ThreadingTCPServer`), pas un défaut du site
+- **2026-08-18 — LES PIÈCES ENVOYÉES EN DOUBLE BASCULENT TOUTES SEULES** (détail `_memoire/conversations/2026-08-18-hillary-deux-vues.md`) : une pièce à deux photos montre **face puis dos**, au catalogue (`img2`) ET au carrousel (`f2`), ⚠️ **hors de l'écran rien ne tourne**, onglet caché ou fiche ouverte **tout se fige ET l'échéance est repoussée** (sans ce report, toutes les cartes rattrapent leur retard d'un coup au retour), **décalage d'une carte à l'autre** (synchrones elles clignoteraient comme une panne), 1re bascule à 1,6 s puis 3,6 s
+- ⛔ **jamais de bascule vers une image pas encore chargée** (la 2e vue est en `lazy` : sur une 4G on révélerait du VIDE 3,6 s)
+- ⛔ **le héros ne prend QUE la face** (son glissement réglé au millième le 06/08 ne partage pas la place)
+- pastille active **plus large**, pas seulement rose
+- **le héros prend désormais TOUTES les nouvelles** (fini la liste de 3 élues), écrites au format exact des anciennes, et **`poser_heros()` choisit l'ORDRE** pour que deux nappes de même teinte ne se suivent jamais (**écart ≥ 28°, boucle comprise**) — la règle du 17/08 passe dans le code, et **on déplace la pièce au lieu de l'exclure**
+- ⏳ **2 voisinages de même nappe subsistent PARMI LES 7 DÉJÀ EN PLACE** (`hero-3→hero-4` 19°, `violette→orange` 23°) : intouchés sur ordre de Mongazi, **à trancher**
+- ⛔ **3 bugs qui auraient fait perdre les photos** dans `_nouveaux_modeles.py` : `injecter()` **sautait les 11 fiches** déjà au catalogue (photos détourées, posées… et jamais raccrochées, sans un mot), **`motion.js` n'était JAMAIS réécrit** (carrousel et héros calculés puis jetés), et les chaînes JS bâties en `'%s'` (1re apostrophe = site cassé)
+- la légende du carrousel coupait **au milieu d'un mot**
+- ⚠️ **la règle du tout ou rien est INVERSÉE** : les 11 fiches étant en ligne avec « Photo sur WhatsApp », chaque photo posée est un gain net — attendre la dernière laisse 10 pièces sans image
+- **QC 121 → 138** (face et dos comparés en **MD5** : deux fois la même photo donne une bascule invisible ; opacité **réellement calculée** ; **témoin** « sous les yeux ça tourne » ; pause hors écran / fiche ouverte ; mouvement réduit ; **2e vue coupée au réseau**)
+- ⚠️ **3 leçons de contrôle** : un contrôle de PAUSE a besoin d'un TÉMOIN (sinon il passe aussi quand le mécanisme est mort), on **échantillonne** au lieu de comparer 2 instantanés (période 7,2 s = échec au hasard 1 fois sur 5, même famille que le contrôle du 17/08), et un contrôle **nomme** ce qui manque
+- ⚠️ **faux positif antérieur corrigé** : les 6 `.mp3` échouaient car la boucle ouvre la page en `file://` où Chromium **interdit `fetch()`** — vérifié identique sur `main`
+- ⏳ **les photos ne sont pas encore arrivées** : `python _nouveaux_modeles.py` dit ce qui manque, `--poser` pose ce qui est prêt
+- ✅ **PUBLIÉ ET VÉRIFIÉ LE 2026-08-20** : les photos du téléphone (8 modèles, **Robe Soleil**, organza face+dos, sirène, orange uni) sont **en ligne** — page servie **identique au disque (MD5)**, 25 images distinctes, **2 cartes seulement en « Photo sur WhatsApp »** (h8 tulle, h19, h20 Volants)
+- **héros 16 diapositives**, écart des nappes mesuré en **L\*a\*b\* (ΔE 18)** et non plus en angle de teinte (l'angle ignore clarté et saturation, et fabriquait un problème insoluble)
+- ⚠️ **un contrôle échouait sur un site sain** : la largeur des pastilles est ANIMÉE, il mesurait un instant qui tombait dans la transition (9,18 vs 10,31 px quand l'écart au repos est de **9,7 px constant**) → il échantillonne 6 fois et garde le meilleur écart
+- ⚠️ **`npx wrangler` ne marche plus ici** (paquet supprimé avec les `node_modules`, cache npm vidé) → **wrangler 3 installé globalement**
+- ⚠️ **`npx playwright install` ≠ `python -m playwright install`** : Node épingle 1234, Python veut 1223, **430 Mo téléchargés pour rien**
+- **2026-08-20 — 9 DES 11 MODÈLES ONT LEURS VRAIES PHOTOS** (détail `_memoire/conversations/2026-08-20-hillary-photos-recues.md`) : restent Robe d'été et Ensemble Volants
+- **4 pièces basculent face/dos**
+- **9 prix et 9 types de mesures vérifiés au centime** contre ce qu'Hillary avait donné le 16/08
+- ⛔ **2 photos écartées** (la face de la Sirène porte un **emoji ❤️ collé sur la poitrine**)
+- ⛔ **DÉTOURAGE = `birefnet-general`, PLUS `isnet`** : isnet rendait le train d'organza **gris sale** sur la face et l'**effaçait entièrement** sur le dos (il ne restait qu'un disque rouge flottant) — les tissus translucides sont ce qu'il ne sait pas voir
+- ⚠️ **un processus par photo** (birefnet se faisait TUER sur la 2e image, code 137, avec 15 Go libres : onnxruntime ne rend pas ce qu'il prend)
+- ⛔ **la couleur du héros suivait LA PEAU** (bras et jambes nus = 23 % de la photo contre 17 % pour le tissu, la robe verte sortait en BRUN) → on prend **la teinte la plus SATURÉE parmi celles qui occupent ≥ 15 %** ; ⚠️ un détecteur de peau par bande de teinte casserait les tissus orange
+- ⚠️ **FAUX DÉFAUT SIGNALÉ PUIS CORRIGÉ** : la règle des nappes comparait des ANGLES de teinte et accusait `hero-3→hero-4` (19°) alors que leur écart perçu est de **33 ΔE** — **on mesure en L\*a\*b\*, seuil ΔE 18**, jamais en degrés ; avec l'ancienne mesure aucun ordre parfait n'existait (6 pièces chaudes contre 3 séparateurs)
+- **héros 7 → 16 diapositives, aucune transition invisible**
+- ⛔ **3 bourdes de découpe** (virgule après un commentaire « `*/,` » · **tout l'en-tête du fichier effacé** = site muet · **7 fonctions effacées** découvertes après 10 min de détourage) → **`node --check` AVANT d'écrire** + `main()` vérifie ses fonctions avant de lancer ce qui est coûteux
+- ⏳ **à trancher** : le **sac beige** de l'Ensemble Orange, la teinte **crème** du dos de l'organza (fond jaune vu à travers), et ⚠️ **les originaux ne sont PAS sauvegardés** (`clients/*/_sources/` ignoré, dépôt PUBLIC)
+- ⚠️ le héros affiche encore **« PRÊT-À-PORTER »** alors que les 20 pièces sont toutes en sur-mesure
+- **2026-08-21 — PLUS AUCUN TEXTE SOUS UNE IMAGE NI SOUS UN INSTRUMENT** (14 chevauchements trouvés par un détecteur, → 0, aux 3 largeurs) : ⛔ **carrousel** — sous 1180 px `.cars-t` repassait dans le flux mais restait DANS `.cars`, boîte de hauteur fixe dont la piste est `absolute` et couvre tout (**65 % du texte recouvert à 390 px**) → `.cars` devient une colonne, la hauteur passe sur `.cars-p`
+- ⛔ **le bouton du son mangeait le premier mot** de tout texte passant en bas à gauche (11 endroits) → **il rejoint la barre du haut** (bande de bord opaque) ; ⚠️ `.nav-d` était **entièrement masqué sous 880 px**, on masque ses autres enfants pas le conteneur
+- ⚠️ **IL CHANGE DE PARENT, PAS DE STYLE** : la barre porte `z-index:50` donc crée un **contexte d'empilement** — de l'intérieur un `z-index:130` VAUT 50 et ne passe pas au-dessus de la fiche (120) ; `parDessus()` le sort de la barre pendant la commande et l'y remet
+- **contrôle `chevauchements()` aux 3 largeurs** : défaut = texte **dans le flux** recouvert par un élément positionné ; PAS un défaut = texte posé exprès (chiffre géant, légende, badge, « Commander ») car `absolute` — sans cette distinction un 1er jet annonçait **105** défauts ; PAS un défaut = **bande de bord** opaque traversant l'écran, ⚠️ mais une pastille de 46 px n'en est pas une (sans ce resserrement **le détecteur s'excluait lui-même et annonçait zéro**)
+- **138 → 141 contrôles**
+- **2026-08-21 — LE CARROUSEL AVANCE TOUT SEUL** (le héros tournait déjà, lui non) : ⚠️ **la durée SUIT LA PIÈCE** — deux vues → **7,4 s** (face, dos, puis on avance), une seule vue → **5,5 s** ; une cadence ordinaire de 4 s aurait fait passer au suivant AVANT que le dos ait eu le temps de se montrer, écrasant un mécanisme par l'autre
+- s'arrête au survol, onglet caché et **hors de l'écran**, un geste le relance, rien sous mouvement réduit
+- **VAGUE 2026-08-25** : **Robe d'été posée** (détourée birefnet, vérifiée sur damier, prix vérifiés au franc près) → **19 cartes sur 20 ont leur photo**
+- ⛔ **la 2e photo envoyée ce jour-là ÉTAIT DÉJÀ EN LIGNE** — au MD5 près le dos de `h10 Robe de ville organza`, qui porte déjà exactement ces six prix → **`h20 Ensemble Volants` est EN DOUTE** (mêmes prix que h10, jamais de photo propre : peut-être un doublon fabriqué le 16/08) ; rien n'est supprimé, la note est à côté de la fiche, ⏳ **seule Hillary peut trancher**
+- **CARROUSELS PLUS FLUIDES** : ⛔ le héros **jetait les clics** (`occupe` 1 050 ms, sortie silencieuse) → le dernier geste est **retenu** et joué à l'arrivée (mesuré : 2 clics = 2 pas)
+- ⛔ le 2e carrousel n'avait **JAMAIS reçu la correction du 06/08** (`cubic-bezier(.4,0,.2,1)` part à plat) → même ease-out quart qu'au héros ; **une correction faite à un endroit n'est pas faite partout**
+- cadences héros 1 s→**.72 s** / 5 s→**4,2 s**, cartes .8 s→**.6 s** / 5,5 s→**4,4 s** (**6,8 s** à deux vues : 3 600 ms sont dus à la face)
+- ⚠️ **le chiffre géant et la pièce changent de durée ENSEMBLE**
+- **AUDIT PROFOND** : catalogue, prix, panier, liens et message WhatsApp **sains** (5 suppléments express propres à chaque pièce, délai = la pièce la plus lente, **aucun prix par défaut**) mais ⛔ **AU CLAVIER ON NE POUVAIT PAS COMMANDER** — `role="dialog"` sur un `<div>` n'apporte QUE l'étiquette : focus resté sur `<body>`, **UNE SEULE** tabulation en sortait vers le catalogue caché, rien d'`inert` (un lecteur d'écran lisait les 20 cartes du fond), focus perdu en refermant → les 4 gestes posés sur la fiche ET le tiroir ; ⚠️ **le bouton du son reste dans la boucle** (la maison exige qu'on coupe le son en donnant ses mesures) et **`focus({preventScroll:true})`** partout
+- ⛔ **le défilement lissé écrasait tout le monde, 3e site** (saut à 200 px ramené à 5 996) : correctif identique à Angy
+- **QC 141 → 150**
+- ⚠️ **4 fausses pistes dues à mes sondes** (panier au mauvais format, rideau de 4 800 ms, ce n'est pas un `<dialog>`, le bouton du son) : vérifier sa sonde avant d'accuser le produit
+- **VAGUE 2026-08-27** : ⛔ **« Ensemble Volants » RETIRÉ — la fiche n'a jamais existé.** C'est **moi** qui l'avais fabriquée le 16/08 en décrivant deux fois la même robe depuis une photo montrée en conversation. Trois preuves : les **six prix identiques** à `h10 Robe de ville organza` (au franc et au centime près), la seule photo jamais associée = **au pixel près** (`c2c3d9d2389a4c57`) le **dos de h10** déjà en ligne (mesurée le 25 ET le 27), et la description de h10 qui disait déjà ce que montre la photo
+- ⚠️ **une description inventée coûte plus cher qu'une case vide** : un vêtement que la maison ne coud pas a occupé une carte **onze jours**, commandable
+- ⚠️ **garde-fou qui manquait** : comparer les prix d'une fiche neuve à ceux des existantes — **six valeurs qui se répètent = doublon jusqu'à preuve du contraire**
+- **CATALOGUE 20 → 19 CARTES, TOUTES AVEC LEUR PHOTO**, plus une seule « Photo sur WhatsApp »
+- le mécanisme `photoWa` reste en place (une place qui attend, pas du code mort)
+- **150 contrôles verts**
+- ✅ **PUBLIÉ LE 2026-09-04 depuis le PC** (tout ce qui dormait dans `main` est en ligne, la Robe d'été comprise)
+- **VAGUE 2026-09-04 — CE QU'HILLARY DOIT SAVOIR AVANT DE COUPER** (sa liste : lieu de résidence · nom · prénom · numéro · lieu de livraison ou retrait ; détail `_memoire/conversations/2026-09-04-hillary-informations-commande.md`) : ⛔ **trois des cinq n'étaient pas tenues** — le **lieu de résidence n'existait pas** (seule la ville de LIVRAISON était demandée, et seulement en expédition), le **nom était facultatif**, et le **numéro était remplaçable par un email** → une commande pouvait arriver à l'atelier **sans aucun moyen d'appeler la cliente**, alors qu'Hillary annonce qu'elle appellera ; la **ville de livraison n'était pas exigée** non plus (« Côte d'Ivoire » pouvait être toute l'adresse)
+- ⚠️ **une liste de champs est une règle métier, pas une liste de champs** : les ajouter sans changer ce qui est EXIGÉ aurait laissé le défaut entier
+- en place = **4 champs obligatoires** (prénom, nom, **téléphone**, **lieu de résidence**), **ville de livraison obligatoire** + **« quartier ou point de repère »** facultatif (⚠️ **au Bénin une adresse est un repère, pas une rue**), et les **deux messages qu'elle promet** écrits au-dessus du récapitulatif puis à l'envoi (« un message dès que la commande est validée, puis un message ou un appel dès que la tenue est prête ») + **7e question de FAQ**
+- ⚠️ **le numéro n'exclut personne** : qui n'a pas WhatsApp a un téléphone, et c'est celui-là qu'on appelle — l'email reste offert **en plus**, jamais **à la place**
+- ⚠️ **le lieu de résidence n'est PAS le lieu de livraison** (une cliente de Cotonou fait livrer sa sœur à Abidjan) : on ne le suppose pas, une **puce « J'habite à … »** le recopie en un geste
+- le message WhatsApp porte les 5 informations **chacune sous son nom** (fini le `Prénom Nom` collé : elle les recopie dans son carnet)
+- ⛔ **DÉFAUT VU SUR UNE CAPTURE, QC VERT** : à l'étape 1 un pays sans ville laissait « CONTINUER » **gris et muet** — la ligne « Encore : … » n'existait qu'à l'étape 2, **une règle appliquée à un seul endroit n'est pas une règle** ; ⚠️ **« a commencé » ≠ « a choisi un mode »** (le 1er jet reprochait à la cliente de ne pas avoir fait ce qu'elle était en train de faire) et ⚠️ **`innerText` d'un élément `display:none` renvoie quand même son texte** → la ligne n'écrit que ce qu'elle montre
+- ⛔ **LE CONTRASTE DE LA MODALE N'ÉTAIT MESURÉ PAR RIEN** : la puce au survol sortait à **3,91:1**, trouvée à la main — **4e fois** que `--rose` est posé sur du texte sur ce site (le trait le garde, la lettre prend `--rose-f`, 4,93:1), et un contrôle mesure désormais les **pixels rendus** en remontant au 1er ancêtre opaque
+- ⛔ **`_predeploy.py` NE LANÇAIT PAS L'ASSEMBLEUR** (défaut noté depuis le 2026-08-16, jamais refermé) : modifier `_v4/` puis déployer publiait un livrable bâti sur une source **périmée**, tout vert et le changement absent **sans un mot** — corrigé
+- ⚠️ **un contrôle qui devient faux ne se supprime pas, il se RETOURNE** (« email seul suffit » → « email seul ne suffit plus ») et ⚠️ **il mesurait une page qui se souvient** (`cmd` reporte les coordonnées d'une commande sur la suivante : il lisait un numéro rempli par le parcours précédent et concluait l'inverse)
+- **QC 150 → 192**
+- **nouveau `_vues_commande.py`** : 10 écrans en 390 et 1440 ⚠️ **ni `full_page` ni `.sheet`** — la barre et le pied sont `sticky` et se repeignent au bord de la fenêtre, **les deux promesses et le récapitulatif étaient absents des images** sans que rien ne le signale
+- ✅ **déployé et vérifié** (page servie identique au disque en MD5, 404 sur un fichier absent)

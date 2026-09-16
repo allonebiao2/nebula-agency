@@ -1,5 +1,7 @@
 # AU BRAISÉ D'OR — client 09
 
+> 📌 **Le résumé qui vivait dans `CLAUDE.md` jusqu'au 2026-09-16 est recopié en fin de fichier**, section « Résumé transféré de `CLAUDE.md` ».
+
 > ## 🔥 EN LIGNE : **https://au-braise-dor.pages.dev**
 > **⚠️ LE SITE N'EST PLUS `index.html`.** Depuis le 2026-08-12 l'adresse du
 > client sert le projet **Next.js de `experience/`** : **le héros des 14 sauces**
@@ -948,3 +950,97 @@ nouveau `_outils/_vues_attieke.py` (6 captures, 390 et 1440).
 ⏳ **À confirmer** : la photo · la description (écrite par moi) · quel poisson
 et quelle viande · la rubrique (Grillades, faute d'une meilleure).
 
+---
+
+## 📌 Résumé transféré de `CLAUDE.md` (2026-09-16)
+
+> Cette ligne vivait dans le tableau « Clients actifs » de `CLAUDE.md`, où elle pesait **17 623 caractères**. `CLAUDE.md` est chargé à chaque session et avait dépassé la limite de 150 000 caractères de Claude Code : le détail vit désormais ici, et `CLAUDE.md` n'en garde qu'un résumé qui renvoie à ce fichier.
+> Le texte est recopié **sans un mot changé**, découpé en puces aux séparateurs `·` d'origine. C'est un **historique** : chaque puce porte sa date, et quand deux puces se contredisent, la plus récente fait foi.
+
+**Métier** : **Au Braisé d'Or** — restaurant **braisé / grillades au feu de bois** à Cotonou (« De Paris à Cotonou ») · **catalogue digital** + traiteur & place des fêtes
+
+**WhatsApp** : 0156057157 (à confirmer, vs 43 99 29 29 enseigne · ⚠️ **et `dishes.ts` en utilise un AUTRE, sans le `01`**)
+
+**État, dans l'ordre où il a été écrit :**
+
+- **LIVE https://au-braise-dor.pages.dev**
+- ⚠️ **DEPUIS LE 2026-08-12 LE SITE N'EST PLUS `index.html`** : l'adresse sert le projet **Next.js de `clients/09-au-braise-dor/experience/`** (Next 14 + TypeScript + Tailwind + **GSAP/ScrollTrigger/CustomEase + Swiper + Lenis**, pile demandée par Mongazi ; j'avais recommandé le natif, il a maintenu ; **179 kB de JS** au premier chargement). `index.html` reste dans le dépôt, un retour arrière est un déploiement
+- **expérience à 4 plats signature** (défilement **automatique** 5,5 s, assiettes détourées qui **ROULENT sur un arc**, titre en deux lignes qui se dédouble, carte de verre, prix qui compte de 0, carrousel Swiper, **tiroir des 8 univers** ouvert depuis le héros) **puis les 48 plats commandables** (toujours tous affichés : le filtre en cachait 38 ; chips en ancres + scroll-spy ; fiche taille/accompagnement/quantité ; panier ; message WhatsApp rédigé)
+- ⛔ **NI NOTE, NI CHEF, NI LIKES INVENTÉS** (la référence en affichait ; le carré coloré porte **le prix**, qui est vrai)
+- ⚠️ **7 pièges documentés** : `background-image` non différable (4,3 Mo avant le menu), **`gsap.from()` laisse l'élément invisible si on l'interrompt**, `fixed` qui ne se décolle jamais, pourcentages de hauteur sur téléphone, `width:auto` = boîte de zéro, **conteneur plein écran qui avale les clics**, et **LENIS QUI INTERROMPT TOUT `scrollIntoView`** (saut arrêté à 7 382 px de sa cible)
+- ⚠️ **une vidéo de référence se MESURE image par image**
+- publier = `npm run build` + `cp -r ../assets/docs out/` + `wrangler pages deploy out`
+- ✅ affiche A4 + 2 QR faite
+- **VAGUE 2026-08-26 — LES 52 PLATS ONT LEUR PHOTO** (plus une seule ardoise) : 9 assiettes posées ou refaites
+- ⚠️ **les fichiers reçus sont TOUJOURS opaques** (celui qui montre un damier est un JPEG, damier peint dans les pixels ; le `.png` est la photo fond noir)
+- **planche comparative refaite à chaque lot, isnet gagne 6 fois sur 6 sur damier** — mais la refaire a évité de poser **une viande sans assiette** sur la tête de mouton (écart 26 points)
+- ⛔ **`_photos_sauces.py` mourait en CODE 137 à la 2e photo** (fuite onnxruntime, comme chez Hillary) → **une photo, un processus**
+- ⚠️ **le réparer a réveillé 2 cartes qu'il n'atteignait plus et les a écrasées** → drapeau de **gel**, et ⚠️ **le gel suit le FICHIER, pas le slug**
+- ⛔ **une photo portait le nom d'un autre plat depuis le 19/08** : la « graine » était **l'arachide** (beige et crémeuse vs rouge palme, bol cuivré vs assiette octogonale) → réattribuée, sources renommées
+- ⛔ **le contrôle du bouton du héros mentait déjà sur `main`** : il photographiait l'opacité au milieu d'une animation permanente (mesuré : **max 1,00, pleine opacité 71 % du temps**) → il échantillonne
+- ⛔ **le QC PLANTAIT sur un `null.click()`** le jour où le dernier plat a eu sa photo, et **2 contrôles sans rapport étaient sur le même clic** : l'ardoise (cas particulier) et **l'accompagnement obligatoire** (règle métier) → séparés, le second reste vert
+- **`reboucher()`** neuf : cavités + **fentes ligne par ligne** (jamais colonne, on souderait la vapeur), **seuil 8 % mesuré sur les 10 assiettes**
+- **QC 92 verts / 0 rouge**
+- ⏳ **« gbata » ou « gbotâ »** à trancher
+- reste : **vraie photo de la salle**, confirmer n° WhatsApp, vrais avis, adresse/Maps, logo, réseaux
+- **VAGUE CATALOGUE 2026-08-19** (détail `_memoire/conversations/2026-08-19-braise-catalogue.md`) : carte relue **contre les 5 photos du menu papier**, pas contre `MENU.md` qui n'en est que le résumé → **48 → 52 plats** (les 4 lignes de petit-déj que la maison vend et que le site ne proposait pas : café chaud serré 500, Lipton citron 500, œuf sur plat 1 000, café au lait écrémé 1 000)
+- ⛔ **le PRIX était illisible sur les 52 cartes** : la pastille n'avait aucune couleur de texte et posait `--encre #1d1a17` sur `rgba(0,0,0,.65)`, **1,1:1 mesuré** → `#f6efe6` sur 70 %, **13,9:1 à 18:1**
+- **l'ARDOISE** = un plat sans photo porte son nom écrit (⛔ ni cadre vide ni « photo à venir »), et c'est **le mécanisme prêt pour le jour où les 48 images générées sortiront**
+- **`python _outils/_qc.py` = 30 contrôles** (le client 09 n'en avait aucun)
+- ⚠️ **pêcheur 6 000 est BON** : `MENU.md` disait « à confirmer », le 6 est lisible en recadrant la photo — **on ne corrige pas une donnée contre un résumé**
+- ⏳ **napolitaine et oriental ont une 2e taille ABSENTE du site** (prix coupé, commence par 5) et **l'aileron porte une correction manuscrite au surligneur** illisible
+- ✅ **LES 48 PHOTOS GÉNÉRÉES PAR IA SONT GARDÉES** (z_image, 20/07, avant la règle) — **tranché par Mongazi le 2026-08-20 : « on les garde, oublie ça »**. Héritage assumé, **pas une exception** : la règle du 2026-08-01 reste absolue et aucun nouveau visuel généré n'entre dans un catalogue. ⛔ Sujet clos, ne plus le remonter
+- **CORRECTIONS DE LA PROPRIÉTAIRE le même soir (note manuscrite)** : prix validés, **13 plats RETIRÉS et la catégorie Desserts ajoutée → 52 → 42 plats** (pizza : napolitaine/oriental/margherita/pili chaud/à la crème/**pêcheur** = 6 sur 10 · grillades : lapin ou mouton frit + viande de caille · burgers : crispy + nugget · cocktails : « tout sauf les jus de fruit » = les 3 alcoolisés)
+- ⚠️ **RETIRER UN PLAT N'EST PAS SUPPRIMER UNE LIGNE** : la **pizza pêcheur était un des 4 plats signature du HÉROS** (→ remplacée par la paysanne) et **2 notes de catégorie devenaient fausses** (« sauf crispy, nugget » sans crispy ni nugget, « avec ou sans alcool » sans alcool) — les données se régénèrent, **les phrases ne sont vérifiées par rien**
+- **Desserts (yaourt/glace/cocktail) SANS PRIX** → convention **`p:0` = prix pas encore donné**, la carte affiche « Prix sur demande » et la fiche remplace le panier par « Demander le prix sur WhatsApp » (⚠️ **un article à 0 n'entre JAMAIS au panier** : le total mentirait)
+- **QC = 62 contrôles**, dont **un par plat retiré** et « aucun prix à 0 F »
+- ✅ **Mongazi tranche le soir même** : ⚠️ **le MOUTON FRIT RESTE à 3 000 F** — la note disait « Lapin », la ligne du menu dit « lapin **ou mouton** frit », et retirer la ligne entière avait **supprimé un plat que la maison vend** (→ **une ligne de menu avec un « ou » est deux produits**)
+- le « cocktail » **sort des desserts** (doublon avec les 3 cocktails de fruits à 2 500 F) → desserts = **yaourt + glace**, prix demandés plus tard, « Prix sur demande » assumé
+- ⏳ 3 questions restantes en bas de `MENU.md` (prix yaourt/glace · aileron · n° WhatsApp)
+- **VAGUE SAUCES + MISE EN LIGNE 2026-08-19** : catégorie **Sauces (14)** ajoutée avec ses fourchettes de prix et **4 vraies photos de la maison** (gombo, krinkrin, graine, feuille — les 4 sont AU HÉROS, qui ne montre plus que les sauces, détourées par la maison)
+- ⚠️ **la krinkrin n'était pas mal détourée, elle était RECADRÉE TROP SERRÉ à la source** : mesurer si le sujet touche le bord avant de chercher un masque, sinon redemander la photo, « tout dedans » = le prix le plus cher
+- **carte à 9 rubriques / 52 plats**
+- ✅ **PUBLIÉ ET VÉRIFIÉ DANS LE CORPS DE LA PAGE SERVIE** (« Monyo » 0 fois, Napolitaine/Mojito/Crispy/JOQ absents, « Mouton frit » présent, photos 200, fichier absent → **404**)
+- ⚠️ **`_outils/_qc.py` ne démarrait pas sur le PC** : chemin de navigateur codé en dur pour la machine du nuage, attente fixe de 1,5 s au lieu d'attendre l'élément, et console Windows **cp1252** qui plantait sur un « ≥ » **après** avoir réussi le contrôle → **78 contrôles verts** 
+- **VAGUE PARTAGE + SEO 2026-08-20** : la vitrine avait tout ce qui se regarde et **rien de ce qui ne se voit pas** → **`og.jpg` en JPEG** (braise + **vraie** photo de la maison, `_outils/_og.py`), `robots.txt` (robots IA autorisés), `sitemap.xml`, et un **`Restaurant` + `Menu` LU dans `CARTE`** (9 rubriques, 52 plats, vrais numéros)
+- ⛔ **ni note, ni avis, ni adresse de rue, ni horaire inventés**
+- ⚠️ **UN PLAT A TROIS FAÇONS D'AVOIR UN PRIX** : `pMax` = fourchette (sauces) → `AggregateOffer`, `p2` = 2e taille → 2 offres, `p:0` = pas de prix → aucune offre ; le 1er jet ne lisait que `p` et annonçait **« jusqu'à 5 000 F » quand la carte monte à 6 000**
+- ⚠️ **l'instrument mesurait le TEXTE au lieu du FOND** (contraste du titre à 1,1:1 sur une image parfaitement lisible : relever le fond AVANT d'écrire dessus → 10,8:1)
+- **`_outils/_qc_partage.py` = 35 contrôles SANS navigateur** (les navigateurs Playwright ont été supprimés pour le disque : `npx playwright install chromium`, 267 Mo, pour relancer les 76)· détail `clients/09-au-braise-dor/CONTEXT.md` et `_memoire/conversations/2026-08-12-braise-experience-next.md`
+- **2026-08-21 — LA SCÈNE NE MEURT PLUS AU DERNIER PLAT** : `if (iRef.current >= N-1) return;` arrêtait la rotation DÉFINITIVEMENT, le site avait l'air mort au bout de 22 s ; elle reboucle désormais, ⚠️ avec **un tour de plus sur le dernier plat** avant de remonter (une boucle qui se referme sans respirer ressemble à un bug)
+- la crainte d'origine (⚠️ `aller()` fait défiler LA PAGE, donc reboucler la fait REMONTER) était **déjà couverte deux fois** : rien ne bouge hors écran, et un geste repousse de 12 s
+- **VAGUE 2026-08-26 — LES 6 DERNIÈRES PHOTOS, LA GLACE À LA BOULE, ET LE HÉROS QUI DEVIENT LE COMPTOIR** (détail `_memoire/conversations/2026-08-26-braise-heros-sauces.md`) : **6 images générées et posées** (œuf sur plat, café au lait écrémé, café serré, Lipton citron, yaourt, glace ; `_outils/_gen_plats.py`, nano-banana-pro, 0,84 $) sur **ordre explicite de Mongazi** — ⚠️ **exception nommée sur CE client** (produits de commodité, héritage déjà assumé), **la règle du 2026-08-01 reste entière ailleurs**
+- **prix reçus** : yaourt **600 F**, glace **1 000 / 1 500 / 2 500 F** ⛔ **le modèle ne portait que DEUX tailles** (`p`/`p2`, et la fiche tenait la taille dans un **booléen**) → le 3e palier disparaissait et la maison encaissait 1 500 au lieu de 2 500 → **`paliers: [libellé, prix][]`**, la fiche ne connaît plus qu'un **index** ; ⚠️ **le balisage a maintenant QUATRE façons d'avoir un prix** (`pMax`→AggregateOffer · `p2`→2 offres · `paliers`→N offres · `p:0`→aucune)
+- **HÉROS : les 14 sauces, il avance seul toutes les 2,8 s (était 5,5), on y commande** ⛔ **le DÉFILEMENT était le moteur** (piste de N×100vh) : à 14 sauces ça faisait **1 400vh**, quatorze écrans avant la carte, et « plus vite » aurait fait **défiler la page toute seule** → **la scène tient sur UN écran**, l'index est un tween sur un nombre, **le mouvement des assiettes n'a pas bougé d'un pixel** ✅ la crainte du 21/08 (« reboucler fait REMONTER ») **n'existe plus**, boucle franche, chemin le plus court sur l'anneau
+- ⚠️ **Lenis reste** (`aller.ts` en dépend)
+- ⚠️ **la pause au survol aurait tué le carrousel** : `onPointerEnter` sur une scène qui fait TOUT L'ÉCRAN = il ne repart jamais sur un PC → on ne s'arrête que sur la carte de verre et la bande des miniatures
+- **`DISHES` est LU dans `carte.ts`** (4 sauces y étaient recopiées avec leur prix = deux vérités), sans photo → **ardoise ronde au filet de la couleur de la sauce** ; ⚠️ **Béchamel et Crème n'auront jamais de découpe** (documenté depuis le 19/08)
+- **optimisation mesurée** : 14 découpes = 2 Mo → fenêtre glissante (**4 images au 1er écran**), et hors fenêtre une assiette est **rangée une fois** au lieu d'être repositionnée à chaque image
+- **commander depuis le héros = un PONT, pas un 2e moteur** (`data/commande.ts` : le héros demande, la carte ouvre SA fiche → accompagnement obligatoire, fourchette, panier, message : un seul de chaque)
+- ⚠️ **la barre du panier recouvrait la scène** → `body.a-panier` + **`--barre-h` MESURÉE** (les rem écrites à la main laissaient 8 px de recouvrement à 390 px)
+- ⛔ **la carte de verre listait les accompagnements des GRILLADES sous des SAUCES** → lue dans la carte
+- ⛔ **LE SITE A DEUX NUMÉROS WHATSAPP** : `index.html` `2290156057157` vs `dishes.ts` (**le fichier servi**) `22956057157`, **le `01` a sauté** — rien touché, à trancher
+- ⛔ **4 DÉFAUTS QUE LE QC VERT NE VOYAIT PAS**, trouvés **sur les captures** (`_outils/_vues_heros.py` photographie les 14 sauces en 390 et 1440) : **`clearProps: "all"` VIDE l'attribut `style`** — le **bouton de commande était INVISIBLE** (fond transparent, texte crème sur verre clair, **1,1:1**), ⚠️ **défaut ANTÉRIEUR, l'ancien bouton vert avait le même sort EN LIGNE**, et le corps du titre calculé par sauce était effacé (**la 2e ligne ressortait plus petite que la 1re**) → `clearProps: "opacity,visibility,transform"` + couleurs fixes dans une **classe**
+- **l'ardoise ronde sortait de sa boîte de 100 px** à 390 (`inset-0` fixe déjà les 2 dimensions donc **`aspect-ratio` est ignoré**) → conteneur mesuré + `min(100cqw,100cqh)`
+- **la pile de points se posait sur le texte** sur téléphone → masquée sous 768 px
+- **les 2 flèches du carrousel étaient posées SUR des miniatures** → `overflow-x: clip` (garder la verticale, sinon l'ombre est rognée)
+- **QC 64 → 102 contrôles** (+ `_qc_partage` 35 → 36) ⚠️ **2 pannes d'instrument, aucune du site** : le contrôle de débordement mesurait le **X d'une animation GSAP** (GSAP ignore `prefers-reduced-motion`) et accusait « KRINKRIN dépasse de 36 px » → `scrollWidth - clientWidth`, insensible aux transformations ; et le contrôle « ça avance seul » a un **TÉMOIN** avant celui de la pause
+- **2026-08-27 — SIX PHOTOS LIVRÉES, AFFICHÉES NULLE PART** (détail `_memoire/conversations/2026-08-27-braise-deux-machines.md`) : les six découpes de sauce étaient dans `main` depuis la veille, propres, pesées, en 200 — **et le héros posait quand même son ardoise sur les six**, en plein premier écran ⚠️ **le héros ne lit pas le dossier, il lit le `DECO` de `dishes.ts`** (`img: d?.img`, absent = ardoise) et aucun des 7 commits qui ont posé les images ne l'a touché ⛔ **RIEN NE POUVAIT LE SIGNALER** : le contrôle « 0 image cassée » ne voit que les images **demandées**, et une image qu'on ne réclame jamais ne peut pas être cassée — **un fichier livré n'est pas un fichier affiché**
+- posé : les 6 `img:` du `DECO`, les 6 correspondances de `index.html`, les images de carte manquantes dans `assets/images/`
+- **nouveau contrôle** « aucune découpe inutilisée dans /plats » (il lit les DEUX côtés dans les fichiers)
+- **héros 6 → 12 sauces montrées, 8 → 2 ardoises** (Béchamel et Crème n'en auront jamais)
+- ⚠️ **LE MÊME TRAVAIL A ÉTÉ FAIT DEUX FOIS** : le PC avait une chaîne complète non commitée pendant que `main` portait déjà le même travail, mêmes sources au bit près — la version de `main` est gardée (rembg/isnet contre une reconstruction d'alpha **déjà mesurée et rejetée** dans `_damier.py`), le commit local `70e3d8b` **écarté** (le garder aurait réécrit en silence les cadrages gelés exprès)
+- **2026-09-15 — L'ATTIÉKÉ ENTRE À LA CARTE, 52 → 53 plats** (détail `_memoire/conversations/2026-09-15-braise-attieke.md`) : **Attiéké 2 000 F dans Grillades, au poisson ou à la viande** ⚠️ **il n'existait que comme ACCOMPAGNEMENT** (deux fois : « Attiéké » chez les grillades, « Atchiéké » chez les sauces), ni prix ni photo dans la maison — **les deux ont été demandés avant d'écrire une ligne**
+- ⚠️ **UN CHOIX OBLIGATOIRE À PRIX ÉGAL N'EST NI UNE TAILLE, NI UNE GARNITURE, NI UN BARÈME** : le modèle avait quatre façons d'avoir un prix et une façon de choisir (`garn`, facultative et qui fait MONTER le prix), poisson/viande n'entre dans aucune (le tordre dans `p2` affichait **« 2 000 F / 2 000 F »** sur la pastille) → champ **`choix`**, et sans réponse le bouton reste gris « Poisson ou viande ? »
+- ⚠️ **UN PLAT QUI EST DÉJÀ UN ACCOMPAGNEMENT N'EN REDEMANDE PAS UN** : la fiche proposait « Attiéké » comme accompagnement de l'attiéké → **`sansAcc`**
+- le choix voyage jusqu'au **message WhatsApp** (« 1 × Attiéké (Poisson) ») et **partage la parenthèse de la taille**
+- ⛔ **LE PIÈGE DU 26/08 S'EST REFERMÉ À L'ENVERS** : le QC accrochait l'ardoise ET l'accompagnement obligatoire **au même clic**, l'attiéké redevenant le seul plat sans photo ce clic tombait sur lui, et **le contrôle de l'accompagnement se serait éteint sans un mot, tout vert** → **une règle, une fiche** (l'ardoise · **toujours une sauce** pour l'accompagnement · les plats à choix **lus dans `carte.ts`**)
+- ⛔ **`button.flex-1` ATTRAPAIT AUSSI LES BOUTONS DE TAILLE** : sur « Sauce Yassa au poulet », **seule sauce à deux tailles**, le QC cliquait « Quart de poulet · 2 500 F » au lieu de « Ajouter » — défaut **antérieur** qui ne ratait **qu'une fois sur quatorze** (le héros montre une sauce au hasard) → prises explicites **`data-ajouter`**, **`data-plat`**, **`data-choix`**
+- ⚠️ **ma propre sonde a cassé l'instrument** (variable `attendu` écrasée : le 2e passage mourait sur un `%d`) et ⛔ **un `dire(… or True, "")` écrit de ma main** retiré
+- ⚠️ **défaut vu sur la CAPTURE, QC vert** : le « ? » tombait seul sur sa ligne → **espace fine insécable**, que le français demande de toute façon
+- ⛔ **AUCUNE IMAGE GÉNÉRÉE** : WaveSpeed mesuré à **0,03 $** (il en faut 0,14) et Higgsfield à **0 crédit**, et **Mongazi a tranché pour une vraie photo** qu'il envoie → **l'ardoise** en attendant (poser la photo = une entrée dans `PHOTO` de `index.html`, le fichier aux **deux** endroits, puis `node _outils/_extraire_carte.js`)
+- **QC 102 → 117 verts**, `_qc_partage` 36
+- ⏳ **à confirmer** : la photo
+- la description (écrite par moi)
+- quel poisson, quelle viande
+- la rubrique

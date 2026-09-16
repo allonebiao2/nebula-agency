@@ -2759,3 +2759,13 @@ remonte qu'à **janvier 2024** : un walk-forward en années n'a même pas une fe
 **Règle** : avant d'ajouter un instrument, mesurer le **capital minimum** (stop médian × lot
 minimum × valeur du point) et la **profondeur d'historique** ; ce sont eux qui disent s'il sera
 tradé, pas la configuration.
+
+## 2026-09-16 · Un fichier chargé à chaque session grossit tant qu'on l'allonge
+
+`CLAUDE.md` a dépassé la limite de 150 000 caractères de Claude Code. Trois lignes du tableau
+des clients en pesaient **73 819** : chaque vague ajoutait son récit au bout de la ligne au lieu
+de la réécrire. Et l'une d'elles (Angy Art) était **en retard sur ses propres commits** : un
+résumé qu'on allonge finit par contredire le dépôt, parce que personne ne relit le début.
+**Règle** : dans `CLAUDE.md`, une ligne est un résumé qu'on **réécrit** ; le récit va dans le
+`CONTEXT.md`. Mesurer avec `python scripts/poids_claude_md.py`, et au-delà de 140 000 alléger
+sans demander : recopier intégralement, vérifier chaque morceau, puis seulement résumer.

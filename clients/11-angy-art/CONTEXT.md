@@ -1,5 +1,7 @@
 # Client 11 — ANGY ART
 
+> 📌 **Le résumé qui vivait dans `CLAUDE.md` jusqu'au 2026-09-16 est recopié en fin de fichier**, section « Résumé transféré de `CLAUDE.md` ».
+
 **Angélique AVOCEVOU** · artiste plasticienne · Cotonou, Bénin
 Commande reçue le **2026-08-05** via le formulaire nebula-agency.online.
 
@@ -16,7 +18,7 @@ Commande reçue le **2026-08-05** via le formulaire nebula-agency.online.
 | Style demandé | Luxe & élégant · immersif · épuré · émotionnel |
 | Couleurs imposées | aucune (choix NEBULA) |
 | Options | boutons WhatsApp · galerie photos · musique d'ambiance · section avis |
-| En ligne | https://angy-art.pages.dev (Cloudflare Pages, projet `angy-art`) |
+| En ligne | **https://angyart.online** (son nom de domaine depuis le 2026-09-10 · Cloudflare Pages, projet `angy-art` · l'origine `angy-art.pages.dev` répond toujours) |
 
 ## 0. ⚡ LA FLUIDITÉ (2026-08-26) — lire avant de toucher au CSS
 
@@ -1060,3 +1062,157 @@ serait resté sur le disque sans jamais partir en ligne, **et rien ne l'aurait
 signalé**.
 
 **QC : 220 → 224 contrôles.**
+
+---
+
+## 📌 Résumé transféré de `CLAUDE.md` (2026-09-16)
+
+> Cette ligne vivait dans le tableau « Clients actifs » de `CLAUDE.md`, où elle pesait **28 909 caractères**. `CLAUDE.md` est chargé à chaque session et avait dépassé la limite de 150 000 caractères de Claude Code : le détail vit désormais ici, et `CLAUDE.md` n'en garde qu'un résumé qui renvoie à ce fichier.
+> Le texte est recopié **sans un mot changé**, découpé en puces aux séparateurs `·` d'origine. C'est un **historique** : chaque puce porte sa date, et quand deux puces se contredisent, la plus récente fait foi.
+
+**Métier** : **ANGY ART** — **artiste plasticienne** · Cotonou · œuvres contemporaines en relief sur l'identité, la mémoire et le patrimoine africain (scarifications, symboles, masques, textiles) · portfolio + moteur de demande
+
+**WhatsApp** : **+229 01 52 00 64 90** (⚠️ à tester une fois : 8 et 10 chiffres coexistent)
+
+**État, dans l'ordre où il a été écrit :**
+
+- **LIVE https://angyart.online** (son nom de domaine depuis le 2026-09-10 ; Cloudflare Pages `angy-art`, l'origine `angy-art.pages.dev` répond toujours et le `canonical` la déréférence)
+- direction **éditoriale noir `#0a0a0a` / crème `#f3efe6`** demandée par Mongazi (réf. « Selva Toscana ») : **Playfair Display + Public Sans**, italiques dorés, curseur suiveur, défilement lourd, **carrousel coverflow**, modale de demande → WhatsApp rédigé
+- ✅ **VRAI LOGO POSÉ** (glyphe or détouré : nav, pied, modale, favicon, OG, affiche) + son accroche officielle **« Inspiré d'en haut, enraciné ici. »**
+- **l'or du site est SON or `#bd9f64`** (relevé sur le logo, 7,8:1 sur noir) ; ⚠️ sur le crème il tombe à 2,2:1 → `#7e6d3a` pour tout ce qui est sur clair
+- **ZÉRO bibliothèque** là où le brief demandait Next.js/GSAP/Lenis/Swiper, tout réécrit en natif
+- citation signée **d'Angélique**, jamais d'un critique inventé
+- **VAGUE 2026-08-08 `?v=20260808a` — LE SITE NE CONTIENT PLUS UNE SEULE IMAGE GÉNÉRÉE** (détail `_memoire/conversations/2026-08-08-angy-art-vraies-photos.md`) : les **13 visuels IA sont SUPPRIMÉS** (dont les 8 fausses œuvres du carrousel) avec `_gen_images.py`/`_pose_images.py`, remplacés par **15 vraies photos** envoyées par Mongazi
+- **7 photos d'atelier 100 % réelles** (elle pose l'enduit, mélange le pigment, trace le trait, peint une toile de 2 m) + **8 mises en situation** ⚠️ **les MASQUES sont bien les siens, les INTÉRIEURS sont des rendus** (preuve : le terracotta de `situ-1` est celui qu'elle peint sur `temps-3`) → le mot **« MISE EN SITUATION »** est le cartel, la vue en grand ET le texte alternatif ; ⛔ **aucun prix, aucune dimension, aucun titre d'œuvre inventé**
+- **7 sections** : nouvelles **« La main, en quatre temps »** (l'enduit → le pigment → le trait → l'échelle, remplace l'ancien plein écran ATELIER) et **« Pour un lieu »** (hôtels/restaurants/halls)
+- **signature du héros tirée de son geste** : la photo se révèle sans couleur puis le pigment monte (2 calques du même fichier, **seule l'opacité s'anime**, animer un `filter` faisait tressauter le héros sur téléphone)
+- **og.png porte une vraie photo** (la vignette WhatsApp = la 1re impression au Bénin)
+- affiche A4 régénérée (photo 76→106 mm, elle traînait encore l'image IA)
+- **106 contrôles** (67 avant) dont **3 familles neuves** : arrivée par le menu, chevauchement des boîtes, et surtout **contraste mesuré sur les PIXELS RENDUS** (on masque le texte, on photographie, on prend le décile le plus clair) — ⚠️ le contrôle de contraste habituel lit `background-color`, **transparent au-dessus d'une photo, donc aveugle**
+- ⛔ **3 défauts antérieurs corrigés** : cliquer le menu posait l'étiquette **à 6 px sous la barre fixe** (le défilement est écrit à la main, `scroll-margin-top` n'est PAS appliqué tout seul → le lire et le retrancher ; 6→90 px), le texte de « Pour un lieu » se posait **sur un masque orange vif**, et à 768 px « DÉCOUVRIR L'ATELIER » **barrait** « PIÈCES · UNIQUES »
+- ⚠️ **le cache de bordure garde les vieilles images un an et on ne peut PAS le purger sur un `*.pages.dev`** (`cf-cache-status: HIT` alors que l'alias du déploiement renvoie 404)
+- nouveaux scripts `_photos.py` `_affiche.py` `_dist.py`
+- **2e temps du 2026-08-08 `?v=20260808c`** : ⛔ **Mongazi voyait encore l'ancienne image IA alors que le serveur envoyait la vraie (MD5 identique au disque)** = son propre navigateur, nos images portant `immutable` un an → **toute URL d'image porte désormais `?v=`** (y compris `og:image` et les chemins construits par `app.js`, constante `VER`) + contrôle dédié
+- **le HÉROS porte une ŒUVRE** (duo terracotta, arche passée en carré) : choisi parmi 5 cadrages serrés regardés côte à côte, **le seul sur fond sombre** — les 4 autres posent leur masque sur un mur beige qui devient un rectangle lumineux sur page noire
+- **navigation alignée sur la référence Selva Toscana** (vidéo envoyée par Mongazi, relue image par image) : le site avait déjà défilement lissé/curseur/coverflow/rythme/typo, il manquait **le rideau d'ouverture** (panneau crème, filet doré, compteur 00→100 en 1 s, puis retrait) et **le volet de section** (chaque section masquée par la couleur OPPOSÉE, qui se retire quand elle entre → la suivante semble glisser par-dessus ; ⚠️ `scaleY` sur un **pseudo-élément**, jamais sur la section, sinon la barre fixe casse)
+- ⚠️ **le compte du rideau tourne au minuteur, pas sur rAF**
+- ⚠️ **ne jamais mesurer une animation d'ouverture avec des `wait_for_timeout` empilés autour de captures** (une capture coûte des centaines de ms : deux diagnostics ont conclu à tort) → faire mesurer la PAGE
+- QC attend 3 400 ms
+- **109 contrôles**
+- **VAGUE ŒUVRES 2026-08-22 `?v=20260822a`** : ⛔ le travail du téléphone (ses **6 œuvres nommées et chiffrées**, son vocabulaire, la collection **ÉNERGIES**, les créations personnalisées) dormait dans `main` **sans être publié** — 6 images en **404**, page servie de 20 953 o contre 59 976 aujourd'hui (⚠️ une session en conteneur **n'a pas les jetons Cloudflare**, `secrets/` est ignoré par git : c'est le PC qui publie)
+- ✅ en ligne et vérifié (6 fichiers 200, prix 100k/200k/350k/500k FCFA, `app.js` servi **identique au disque en MD5**)
+- ⚠️ **VRAI DÉFAUT TROUVÉ** : le défilement maison avançait **d'un cran fixe PAR IMAGE** (`courant += (cible-courant)*.095`) → à 30 images/s le trajet dure **deux fois plus longtemps**, « accueil » laissait la page à **284 px** du haut sur ordinateur ; il interpole désormais **AU TEMPS** (`k = 1-(1-.095)^(dt/16.7)`) — **c'est le téléphone bas de gamme qui payait**, et le moteur ne tournant que sur pointeur fin, aucun contrôle mobile ne l'aurait vu
+- ⚠️ **2 pannes de contrôle, aucune du site** : serveur de test **mono-tâche** (`Page.goto: Timeout`, même panne qu'Hillary) et une **attente fixe de 1 700 ms** là où il fallait attendre que la page se pose
+- **150 contrôles verts**
+- · reste : **photos des œuvres seules** (fond neutre + titre + dimensions, dans un tableau `OEUVRES` SÉPARÉ de `SITUATIONS`), adresse, vrais avis, **tester le n° WhatsApp**
+- détail `clients/11-angy-art/CONTEXT.md` + `DESIGN.md`
+- **2026-08-21 — LES CRÉATIONS PERSONNALISÉES** (brief d'Angélique, détail dans son `CONTEXT.md`) : section `#personnalise` + **15 questions en TROIS TEMPS**
+- ⚠️ **la distinction Collections / Créations personnalisées est exigée par le brief** — deux blocs, dite en toutes lettres, **aucun prix** (œuvre sur commande, pas produit décoratif)
+- signature **« l'entaille qui se creuse »** (2 traits sur le même chemin, arête +1px, creux −1px tracé 160 ms après)
+- ⚠️ **le formulaire ne SOUMET rien** : site statique, il RÉDIGE le brief et ouvre WhatsApp ; la **question 11 (téléversement) devient une phrase** (pas de serveur = un bouton « Parcourir » serait un mensonge) ; **le nom et la date sont dans le message** faute de base
+- ⛔ **3 défauts vus sur les CAPTURES, pas dans le code** : `.pill--plein` est crème sur noir donc **invisible sur une section claire** (le site n'avait aucun bouton pour fond crème → `.pill--encre` 15,2:1)
+- **`hidden` ne cache rien quand un `display` est déclaré** (3 étapes empilées, champs conditionnels ouverts)
+- **un enfant de grille a `min-width:auto`** donc la piste s'élargit au contenu intrinsèque et les champs débordaient
+- ⚠️ la largeur d'une modale se déclare sur `[open]`, un `max-width` seul ne sert à rien
+- **QC 106 → 121, tous verts**, dont **2 contrôles qui MENTAIENT** (l'un ouvrait vraiment `wa.me` = il testait le réseau, pas le message ; l'autre attendait Google Fonts)
+- ⏳ à trancher : le brief écrit **« ANGYART »**, le site **« Angy Art »** ; et le bouton du son est encore flottant comme l'était celui d'Hillary
+- **2026-08-21 — SES SIX ŒUVRES ENTRENT** (le manque le plus ancien du site) : **Bonheur éternel** 1m20×80 *prix sur demande*
+- **L'Équilibre des Âmes** et **Alliance Solaire** 75×65 à 250 000 F
+- **Âmes Sœurs** 120 000 F
+- **Force Silencieuse** 110 000 F
+- **Aura** 100 000 F — titres, techniques, palettes, dimensions, prix et textes **d'elle, mot pour mot**
+- ⚠️ **`situ-1/2/3` du carrousel ÉTAIENT déjà ces œuvres**, mais anonymes et sans prix : elles ont enfin leur identité
+- ⚠️ **ses textes sont écrits EN DUR dans la page, pas dans le script** (sans JS et pour les moteurs, c'est ce qui fait la valeur du site) + **6 fiches `VisualArtwork`** avec leur `Offer`
+- ⚠️ **« MISE EN SITUATION » sur 3 photos** (les masques sont d'elle, les niches de marbre sont des rendus)
+- signature **« le cartel qui s'écrit »**
+- ⚠️ **boîte commune mais vraie proportion** : recadrer en carré alignerait les cartes et MENTIRAIT sur une pièce d'1m20
+- 663 Ko différés
+- **QC 121 → 129**
+- **VAGUE 2026-08-21 — SON VOCABULAIRE** (récapitulatif d'Angélique) : menu **L'ARTISTE / LA COLLECTION / SUR MESURE / LE JOURNAL / CONTACT** et étiquettes de sections alignées dessus
+- héros → **« DÉCOUVRIR LES ŒUVRES »** (`#oeuvres`) et **second appel en bas de page** vers le sur-mesure
+- la section porte le **nom de la collection AVANT son titre** (`COLLECTION ÉNERGIES`), titre = sa phrase telle quelle « Donner une forme à ce qui ne se voit pas. »
+- ⚠️ **`ACCUEIL` du menu non ajouté** (le logo tient le rôle, 6 entrées cassent à 390 px) — à lui dire
+- ⛔ **LE DÉFILEMENT LISSÉ ÉCRASAIT TOUT LE MONDE** : le moteur maison ne relisait sa cible que `if (!anime)`, donc pendant qu'il glissait il annulait recherche du navigateur, lecteur d'écran, touche Fin, tout `scrollIntoView` (mesuré : un saut à 200 px ramené à **5 992 px**) — 3e apparition de la famille après Lenis sur Au Braisé d'Or
+- ⚠️ **le correctif naïf est pire que le défaut** (adopter tout écart arrête le glissement net sur une image perdue) → **on regarde OÙ** : entre `courant` et `cible` c'est nous, ailleurs c'est quelqu'un d'autre
+- ⚠️ **4 contrôles qui RECOPIAIENT au lieu de LIRE** : 3 ancres de menu (→ `null.click()`, le contrôle plantait), les étiquettes en dur (→ il accusait le site d'avoir perdu des textes seulement renommés), **les 8 sélecteurs de `SECTIONS`** (→ **les 2 sections neuves n'ont JAMAIS été photographiées et personne ne l'a vu** : une liste de captures ne se plaint pas de ce qu'elle ne montre pas), et l'attente de 500 ms avant mesure (→ `placer()` : on se place PUIS on vérifie qu'on y est, sinon on le dit avec le chiffre)
+- **le contrôle du moteur a un TÉMOIN** (on prouve d'abord que ça glisse, sinon un moteur mort passerait)
+- **QC 129 → 146**
+- **6 QUESTIONS TRANCHÉES le 2026-08-21** sur ordre de Mongazi (« fais appliquer ce qui est meilleur, elle observera et me dira ») : **`ACCUEIL` ajouté au menu** (mesuré avant : 31 px de marge à 1024 px, 101 à 309 px au-delà, 7 entrées dans le tiroir)
+- **les SIX œuvres restent et AUCUN NOMBRE n'est annoncé** (elle en décrit 5, en a envoyé 6 : en cacher une = perte sèche, se tromper de laquelle = pire ; le jour où elle dit laquelle est à part, c'est un attribut, pas une refonte)
+- **son texte d'intro de collection tient sa place** (il n'assemble que ses mots, remplaçable en une ligne)
+- ⚠️ **AUCUN statut vendue/disponible inventé** → une phrase vraie dans les deux cas, posée AVANT la grille : « un mot suffit pour savoir si elle est encore disponible »
+- **« Angy Art » en deux mots** (logo, barre, pied, OG, JSON-LD, affiche le portent déjà)
+- L'ARTISTE garde son texte de démarche
+- ⚠️ le sur-mesure reste **court dans la barre** (sa formule complète déborde à 1024 px)
+- ⚠️ **une entrée « ACCUEIL » testée depuis le haut ne prouve rien** (arriver à 0 en partant de 0) → le contrôle part du BAS, 12 082 → 0 px
+- **QC 146 → 149**
+- ✅ **DÉPLOYÉ ET VÉRIFIÉ LE 2026-09-02 depuis le PC** (tout ce qui dormait dans `main` est en ligne : les 4 corrections d'Angélique, le bouton devenu sommaire, la vague fluidité) — **150 contrôles verts**, `index.html`/`app.js`/`app.css` servis **identiques au disque en MD5**, **34 fichiers sur 37 en 200** et les 3 autres sont corrects (`_headers` en 404 = fichier de configuration, jamais public ; `index.html` et `404.html` en 308 vers leurs adresses propres), un fichier absent répond **404**
+- publier = `python clients/11-angy-art/_dist.py` puis `wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main` (⚠️ **`wrangler` global, pas `npx`**, et le jeton vient de `secrets/cloudflare.env` : une session en conteneur ne peut pas publier)
+- **VAGUE FLUIDITÉ 2026-08-26 `?v=20260826a`** (détail `_memoire/conversations/2026-08-26-angy-art-fluidite.md`) : le site était **vert à 150 contrôles ET tournait à 15 images/s** sur processeur ×6, avec une tâche de **1 557 ms** — *un QC vert dit que rien n'est cassé, pas que ça glisse* → **60 i/s, 0 à 1 tâche longue**, téléphone p95 **16,8 ms**
+- ⛔ **NE PAS REMETTRE LE GRAIN PLEIN ÉCRAN** : `body::after` en `fixed` + **`mix-blend-mode:overlay`** coûtait **⅓ à ¾ du budget d'une image** et valait **0,90/255** à l'œil (agrandi 3×, indiscernable) ; ⚠️ **ce n'est pas l'image de bruit qui coûte, c'est le MÉLANGE** (retirer `background-image` ne change rien, passer à `normal` rapporte autant que tout supprimer) et ⚠️ **aucun remède de compositing ne le sauve** (`will-change`/`translateZ(0)`/`contain:strict`/`isolation`, 4 essais × 3 mesures, tous inchangés)
+- **on lit tout PUIS on écrit tout** dans les 2 balayages du défilement (`classList.add` au milieu d'une boucle de `getBoundingClientRect` = un recalcul de mise en page **par élément**, jusqu'à 100 par image)
+- **`marque.png` 199 Ko pour un rendu de 57×44 px**, demandé 2e à 2 298 ms sur 3G → **`marque.webp` 9,7 Ko** pour les pages (⚠️ le PNG **reste** : affiche A4, OG, favicons)
+- **`og.png` 566 Ko PNG → `og.jpg` 96 Ko** (règle de la maison)
+- **la barre du haut était à 92 %** et on lisait au travers → une bande de bord doit être **vraiment opaque** (0/255 mesuré)
+- **chemin critique 3G : 244 Ko** avant le héros
+- nouveaux instruments `_fluidite.py` `_attribuer.py` `_audit.py` (**22 contrôles**)
+- ⚠️ **5 de mes sondes ont menti avant de dire vrai** : mesurer le poids sur **localhost** (le seuil de `loading="lazy"` grandit avec la vitesse — j'ai failli réécrire le carrousel pour rien), **`*` n'atteint pas les pseudo-éléments**, un bouton de modale mal visé rendant 2 contrôles vides, les 44 px appliqués à un **lien dans une phrase**, et une barre jugée translucide alors que **la police finissait de charger**
+- **VAGUE 2026-08-27** (4 corrections d'Angélique) : ⚠️ le bouton du héros n'est pas supprimé mais **transformé en SOMMAIRE** de 6 entrées — elle regarde **sur téléphone**, où le burger ne lui suffit pas
+- ⚠️ **dans le flux**, pas en absolu (l'ancien se posait SUR la ligne des métriques à 768 px)
+- ⛔ **le bouton du son se posait dessus** : 11 × 34 px sur « DÉCOUVRIR LES ŒUVRES », **à 390 px et nulle part ailleurs** — pile la pastille qu'elle a nommée, pile sa largeur → couloir réservé + contrôle
+- ordre : **la collection AVANT le journal**, « Dans un lieu » après, étiquettes renumérotées 01→05 (elles allaient 01,02,03,04,**06**)
+- ⚠️ **réordonner = découper en tranches qui se touchent**, jamais recoller des morceaux choisis (longueur identique au caractère près ; la 1re version perdait les commentaires d'en-tête, le garde-fou a refusé d'écrire)
+- ⚠️ **MESURER AVANT D'APPLIQUER UNE RÈGLE DE STYLE DU CLIENT** : elle dit « le texte est plus grand que les titres », pris au pied de la lettre ça vise les `h2` — **faux**, ils font déjà 80 px contre 14-19. Le vrai coupable : l'**étiquette** à 10,5 px sous une phrase à 80 px, **7,5×**, et c'était le SEUL endroit du site → le nom prend la taille d'affichage
+- ⚠️ **à spécificité égale la dernière règle gagne** (ma requête média était placée avant celle qu'elle corrige, elle ne servait à rien)
+- **QC 146 → 149**
+- ✅ **ÉNERGIES au pluriel** tranché par Mongazi (« non ça va »)
+- **VAGUE 2026-09-04 `?v=20260904a` — UN SEUL BOUTON « DÉCOUVRIR », VISIBLE PARTOUT** (détail `_memoire/conversations/2026-09-04-angy-art-bouton-decouvrir.md`) : le sommaire du 27/08 faisait son travail **au bas du héros et nulle part ailleurs** — passée la première section il ne restait que le burger, exactement ce dont Angélique se plaignait (**ce n'est pas la liste qui manquait, c'est sa présence**)
+- **un seul contrôle, deux places, jamais deux à l'écran** : pastille dans le héros (**dans le flux**) + pilule dans la barre **à toutes les largeurs** (elle remplace le burger, qui n'avait pas de nom), celle de la barre **s'efface tant que celle du héros est à l'écran** et **par défaut elle est VISIBLE** (observateur mort = un bouton, jamais zéro) ; mesuré : à **390 px le bouton du héros est sous la ligne de flottaison**, donc c'est celui de la barre qu'on voit d'abord
+- **le panneau porte SON sommaire entier** (ACCUEIL · L'ARTISTE · DÉCOUVRIR LES ŒUVRES · LE JOURNAL · DANS UN LIEU · CRÉATIONS SUR MESURE · CONTACT · WHATSAPP) — ⚠️ **les deux listes ont fusionné** : la barre portait des libellés **raccourcis** faute de place à 1024 px et n'avait pas « DANS UN LIEU »
+- ⚠️ **pas de pastille flottante** (interdit depuis Mon Bénin, payé ici le 27/08 avec le bouton du son sur « DÉCOUVRIR LES ŒUVRES ») : **la barre est la seule chose de ce site qui ait le droit de passer devant une phrase**, parce qu'elle est vraiment opaque
+- ⛔ **3 défauts vus SUR LES CAPTURES, QC vert** (`_vue_decouvrir.py`) : **le panneau recouvrait le bouton qui l'avait ouvert** — plus aucune croix, car **un enfant de la barre compte son `z-index` à l'intérieur de la barre** (même famille que « il change de parent, pas de style », Hillary 21/08)
+- **« DEMANDER UNE VISITE » coupé en deux** par le bord du panneau
+- **cadre de focus sur le 1er lien au simple toucher** (le focus va au panneau, `tabindex="-1"`)
+- **sans JS** le bouton **se retire**, le panneau redevient la rangée repliée et **la barre cesse de flotter** (`position:static`)
+- **au clavier** le reste de la page est **inerte**, Échap referme, le focus revient au bouton
+- ⚠️ **panneau centré par marges automatiques, pas `justify-content:center`** (qui **coupe le début** d'un conteneur qui défile)
+- **QC 150 → 188** ⚠️ **« toujours un » et « jamais deux » sont DEUX contrôles** (l'un seul laisse passer deux boutons, l'autre seul une page sans aucun) et **« se voit » se mesure** (8 boîtes réellement dans la fenêtre, panneau à défiler refusé)
+- ✅ **déployé et vérifié** (app.css/app.js **identiques au disque en MD5**, plus aucune trace de `hero-plan`, 404 sur un fichier absent)
+- **SECOND TEMPS LE MÊME JOUR `?v=20260904b`** — Mongazi après avoir vu le résultat : « il y avait directement tout qui était visible, remets ça » : le bouton unique avait **remplacé** les liens de la barre, or ⚠️ **une contrainte de téléphone ne se généralise pas à l'ordinateur** (la demande d'Angélique venait de son usage mobile ; l'appliquer partout retirait, là où la place ne manque pas, une navigation qu'on VOIT pour une qu'on OUVRE) → **la barre garde ses 6 entrées + WhatsApp**, le burger reste sur téléphone, **le sommaire du héros revient**, et **le bouton flottant s'AJOUTE au lieu de remplacer** (trois portes, un seul mécanisme, ouvrir l'une referme l'autre, chacune gèle ce qui n'est pas elle)
+- ⚠️ **les deux instruments flottants partagent UN couloir réservé, pas deux**
+- ⛔ **UN RECOUVREMENT SE CALCULE, IL NE S'ÉCHANTILLONNE PAS** : le 1er jet balayait par paliers de 400 px, il est passé **au vert** en laissant une vraie collision (« ÉQUIPER UN LIEU », **54 px à 390 px**, fenêtre de croisement de **102 px** = manquée 4 fois sur 5) → on résout l'intervalle de défilement où le fixe croise la cible, en écartant ce qui ne défile pas
+- ⚠️ **le `?v=` n'avait pas été bumpé** alors que feuille et script avaient changé de 307 et 107 lignes : nos assets étant `immutable` un an, tous ceux qui avaient ouvert le site le matin, **Mongazi le premier**, seraient restés sur l'ancienne version (défaut du 2026-08-08 à l'identique)
+- **QC 188 → 209 verts**, déployé et servi identique au disque en MD5
+- **VAGUE 2026-09-05 `?v=20260905a` — LES PRIX S'EN VONT, UNE SÉLECTION ARRIVE** (détail `_memoire/conversations/2026-09-05-angy-art-prix-et-selection.md`) : ⚠️ **un prix vivait à QUATRE endroits, dont trois invisibles depuis la page** — la ligne `PRIX` du cartel (6), le **message WhatsApp pré-écrit** (5), le **balisage `Offer` du JSON-LD** (5, celui-là part chez Google et **s'affiche dans les résultats**), et deux phrases qui **annonçaient** que les prix sont donnés
+- ⛔ **ce qui reste exprès** : les tranches de **budget** du formulaire sur mesure, qui ne sont pas un prix d'Angélique mais la question posée AU client (⏳ à lui confirmer)
+- ⚠️ **le contrôle a été RETOURNÉ**, pas supprimé
+- **LA SÉLECTION** = le « panier » demandé par Mongazi ⚠️ **sans prix il n'y a pas de total** : c'est une LISTE et **un seul message** au lieu d'un par œuvre (le panier d'Hillary moins l'addition)
+- ⛔ **pas dans la barre** (mesuré : 31 px de marge à 1024 px) ⛔ **pas en pastille flottante** (interdit depuis Mon Bénin, payé ici le 27/08) → **bande de bord vraiment opaque**, visible seulement si la sélection n'est pas vide, `body` réserve sa **hauteur MESURÉE** et les deux instruments du couloir montent d'autant
+- les œuvres sont **LUES dans la fiche**, jamais recopiées
+- modale = `<dialog>` natif (clavier, Échap, inertie, sans une ligne de plus)
+- ⛔ **vu sur une capture** : la flèche du bouton sortait en **triangle plein** (`.pill` n'avait jamais porté d'icône)
+- **QC 209 → 220 verts**, déployé et vérifié en ligne
+- 🤖 **GEO 2026-09-09** : robots d'IA **vérifiés** (200) et **`/llms.txt` produit en LISANT la page** — ⚠️ **le piège** : Angélique venait de retirer ses prix, reprendre le modèle de la clinique les aurait **remis en ligne par la porte que personne ne regarde** → **zéro FCFA dans le fichier, et un contrôle le vérifie** ; il porte aussi les **mises en situation**, pour qu'une IA ne prenne pas les décors montés pour son atelier
+- ⚠️ **`_dist.py` liste ses fichiers un par un** : sans l'y ajouter, `llms.txt` serait resté sur le disque **sans que rien ne le signale**
+- 🌐 **NOM DE DOMAINE BRANCHÉ 2026-09-10** (détail `_memoire/conversations/2026-09-10-angy-art-nom-de-domaine.md`) : le nom était acheté, sa zone **active** dans notre compte et ses **NS déjà délégués**, et pourtant il servait la **page de parking Hostinger** (`A` vers `2.57.91.91`) — ⚠️ **un branchement a DEUX moitiés** : le nom déclaré dans *Custom domains* du projet Pages **et** l'enregistrement DNS qui pointe vers lui ; **l'un sans l'autre ne donne rien** (le nom seul reste en « Verifying » pour toujours, l'enregistrement seul tombe sur une erreur, Pages ne servant que les hôtes qu'il connaît)
+- racine passée en `CNAME` vers `angy-art.pages.dev`, puis `_domaine.py` : **30 occurrences dans 9 fichiers**, dont les `@id` du JSON-LD, le pied **IMPRIMÉ** de l'affiche et `qr-site.png` refait **puis décodé** ; carte de visite et affiche réimprimées (⛔ leur QR menait à une adresse qu'on abandonnait)
+- ✅ **224 contrôles verts, déployé et vérifié sur le domaine** (canonical/og:url/og:image à la nouvelle adresse, `app.js`/`app.css`/`llms.txt`/`sitemap.xml` **identiques au disque en MD5**, fichier absent → **404**)
+- ⚠️ **AUCUN de nos 3 jetons Cloudflare n'a `Zone · DNS` ni les réglages de zone** (mesuré) : ces deux gestes se font dans le tableau de bord
+- ⛔ **TROIS PIÈGES QUI N'EXISTAIENT PAS SUR `*.pages.dev`, parce qu'un `*.pages.dev` N'EST PAS UNE ZONE** : le **cache de zone servait encore l'ancien HTML** après un déploiement réussi (mes propres requêtes de diagnostic l'avaient rempli ; `purge_everything` a suffi, mais **un 200 ne prouvait rien, c'est le CORPS qui le disait**)
+- **Cloudflare PRÉPOSE son `robots.txt` géré au nôtre** et il **interdit exactement les robots que nous accueillons** (ClaudeBot, GPTBot, Google-Extended, CCBot, Bytespider, Amazonbot, Applebot-Extended, meta-externalagent) avec `ai-train=no`, le bloc qui refuse arrivant **en premier** : le travail GEO de la veille défait par un réglage de zone, ✅ **désactivé dans AI Crawl Control le 2026-09-10** : le fichier servi ne porte plus que le nôtre, 14 lignes, et les 4 robots restent en 200 (⚠️ la **porte**, elle, est ouverte : les 4 robots reçoivent **200**, c'est le fichier qui ment)
+- **l'obfuscation d'e-mail** remplace son `mailto:` par un script `/cdn-cgi/l/email-protection` : illisible **sans JavaScript, donc pour un robot aussi** — arbitrage à trancher
+- ✅ **`www` réglé le 2026-09-10** (son `CNAME` visait la racine, donc le proxy tournait en rond : 522 ; il vise le projet Pages, 200, et son `canonical` renvoie à la racine)
+- ✅ **SPF vide + DMARC en refus posés et vérifiés le 2026-09-10** (`v=spf1 -all` à la racine, `v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s` sur `_dmarc`, **aucun MX** : personne n'écrit depuis ce domaine, son adresse est un Gmail) ⚠️ **le nom d'un enregistrement n'est pas son contenu** — la politique collée dans *Name* fabrique un sous-domaine qui s'appelle comme elle, et Cloudflare ne dit pas que c'est le champ qui est faux 
+- 🎵 **LA MUSIQUE POSÉE 2026-09-10** (détail `_memoire/conversations/2026-09-10-angy-art-musique-ambiance.md`) : jazz lofi fourni par Mongazi, **elle REMPLACE l'ambiance synthétisée**, elle part **au premier contact** et se coupe d'un bouton (**`localStorage angy:son`** : couper reste coupé)
+- **2 112 → 677 Ko**, mono 32 kHz 48 kb/s, **−11,9 LUFS** ⛔ **le 1er jet était DEUX FOIS TROP BAS** (fichier −17,4 **et** volume 0,34 = **−26,8 LUFS entendus** contre **−18,0** au site de l'agence, sa propre référence ; « j'entends un bruit tout bas ») ⚠️ **LE TAMISÉ SE FAIT AU VOLUME DE LECTURE, JAMAIS DANS LE FICHIER** — le volume est une ligne qui s'entend tout de suite, un fichier trop bas a l'air propre donc on ne le soupçonne pas → **−16,7 / −15,5 entendus** ⚠️ **et le QC validait le défaut** (la plage bornait « trop fort », pas « inaudible ») : **un contrôle de confort borne LES DEUX côtés** ⛔ **le morceau portait un fondu de sortie de 4 s** : en boucle le site se serait éteint puis rallumé toutes les deux minutes ⚠️ **et ça ne se voit PAS dans le débit des trames MP3** (la complexité reste haute quand le niveau s'effondre) → `_son.py` rogne et **referme le morceau par un fondu croisé**, raccord **100 % → 14 %** (⚠️ `amix` **divise** par le nombre d'entrées : `normalize=0` ; fondus en **`qsin`**, deux rampes linéaires laissent un trou de 3 dB)
+- ⚠️ **LE TAMISÉ VIENT DU NIVEAU, PAS DU FILTRE** : mesuré, un `lowpass` 3200 Hz creuse l'aigu de **2,0 dB** et trois filtres empilés de **2,3** — le lofi n'a rien au-dessus de 4 kHz, ⛔ ne pas empiler des filtres en croyant feutrer
+- moteur = celui de **nebula-agency.online** : **`<audio loop>` NU, pas de Web Audio** (un `<audio>` non routé joue sur **iPhone en mode silencieux**)
+- ⛔ **L'ASTUCE DE LA MAISON NE MARCHE PAS** : Djambar (05) et Au Braisé d'Or (09) lancent une lecture *en sourdine* au chargement en la croyant « autorisée partout » — **mesuré, Chromium la refuse aussi** (`NotAllowedError`), **ces deux sites croient bufferiser et ne bufferisent rien** (⏳ dette ouverte chez eux) → ce qui marche est **`preload='auto'` + `load()`** posé **après `load`** : avant tout geste `readyState = 4`, et **le son sort 33 ms après le contact**
+- ⛔ **aucun navigateur ne laisse sortir du son sans geste**, et **une molette n'est pas un geste** sur Chrome de bureau
+- ⚠️ **le son a sa PROPRE marque de version** (`VER_SON`) : partager `VER` avec les images ferait retélécharger 677 Ko à chaque photo changée
+- **crédit au pied** « Musique : Tama's Little Music Shop » ✅ **licence tranchée par Mongazi le 2026-09-10** (« c'est écrit no copyright sur le titre ») : j'avais signalé que ça n'est pas le domaine public, il a maintenu, **le crédit au pied reste** et c'est ce que ces chaînes demandent ⛔ **sujet clos**
+- ⚠️ **2 contrôles RETOURNÉS le même jour** (« le son est éteint par défaut » devenu faux par construction ; « le lecteur ne précharge rien », écrit le matin, faux l'après-midi) et ⚠️ **une sonde qui mentait** : le **Resource Timing n'expose pas les requêtes média**, elle annonçait « rien n'est préchargé » avec 59 s en tampon
+- **QC 224 → 241**
+- ✅ **niveau écouté et validé par Mongazi le 2026-09-10** (« c'est parfait ») grâce à un **banc d'essai en artefact** (morceau en base64 + mécanisme exact du site) ⚠️ **sans lui, trois échanges perdus** : il testait le site NON DÉPLOYÉ et entendait l'ancienne ambiance synthétisée en croyant écouter son morceau — **quand un client ne peut pas essayer, lui donner un moyen d'essayer** ⏳ reste : fusionner, déployer, **purger** (`python scripts/purger.py angy`), vérifier sur le vrai site
+
+⚠️ **Mise à jour du 2026-09-16, au moment du transfert** : la fin de cette ligne était en retard sur le dépôt. La musique **a été déployée le 2026-09-10** et le morceau lofi **remplacé par WETHU** (*Culture Capital*) le même jour, publication en une commande par `_publier.py`, QC **244 verts** (commits `a7b9afb` à `caa0748`).
