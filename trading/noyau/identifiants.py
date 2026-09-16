@@ -80,7 +80,17 @@ def _lire_env(chemin: Path) -> dict[str, str]:
 
 
 def charger(profil: str = "defaut", *, chemin: Path | None = None) -> Identifiants:
-    """Lit un profil. Les variables d'environnement l'emportent sur le fichier."""
+    """Lit un profil. Ordre : variables d'environnement, coffre de l'application
+    (identifiants saisis dans l'interface, chiffrés par Windows), puis fichier.
+    """
+    if profil in ("defaut", "", None) and chemin is None and not any(
+            k.startswith("MT5_") for k in os.environ):
+        from .coffre import lire_compte
+        compte = lire_compte()
+        if compte and compte.get("motdepasse"):
+            return Identifiants(login=compte["login"], motdepasse=compte["motdepasse"],
+                                serveur=compte["serveur"], terminal=compte.get("terminal") or None,
+                                profil="application")
     valeurs = _lire_env(chemin or FICHIER)
     valeurs.update({k: v for k, v in os.environ.items() if k.startswith("MT5_")})
 

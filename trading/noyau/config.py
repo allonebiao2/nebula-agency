@@ -78,6 +78,10 @@ class RisquePosition:
     trailing_declenche_a_r: float
     trailing_atr_multiple: float
     perte_max_par_position_pct: float
+    # Politique du petit compte : jusqu'où le lot minimum peut relever le
+    # risque d'un trade quand le capital ne permet pas mieux. Égal à
+    # risque_par_trade_pct = politique désactivée (refus strict).
+    risque_max_petit_compte_pct: float = 2.0
 
 
 @dataclass(frozen=True)
@@ -184,14 +188,25 @@ def _heure(texte: str, champ: str) -> time:
         ) from exc
 
 
-def charger(chemin: Path | str | None = None) -> Config:
-    """Lit config.toml, le valide, et refuse tout réglage dangereux."""
+def charger(chemin: Path | str | None = None, *, surcharges: dict | None = None) -> Config:
+    """Lit config.toml, le valide, et refuse tout réglage dangereux.
+
+    `surcharges` = {"section.cle": valeur} : les réglages changés depuis
+    l'interface. Ils passent par le MÊME videur que le fichier : une surcharge
+    ne desserre rien que le fichier n'aurait pas pu desserrer.
+    """
     chemin = Path(chemin) if chemin else RACINE / "config.toml"
     if not chemin.exists():
         raise ConfigDangereuse(f"Configuration introuvable : {chemin}")
 
     with open(chemin, "rb") as f:
         d = tomllib.load(f)
+
+    for cle_complete, valeur in (surcharges or {}).items():
+        section, _, cle = cle_complete.partition(".")
+        if section not in d or cle not in d[section]:
+            raise ConfigDangereuse(f"Réglage inconnu : {cle_complete}")
+        d[section][cle] = valeur
 
     cal = d["calendrier"]
     cfg = Config(
@@ -287,6 +302,23 @@ def _valider(c: Config) -> None:
 
     if r.atr_periode < 2:
         fautes.append("[risque_position] atr_periode doit être >= 2.")
+
+    if r.risque_max_petit_compte_pct < r.risque_par_trade_pct:
+        fautes.append(
+            f"[risque_position] risque_max_petit_compte_pct ({r.risque_max_petit_compte_pct} %) "
+            f"est sous le risque nominal ({r.risque_par_trade_pct} %) : pour désactiver la "
+            f"politique du petit compte, écrire la même valeur que le risque nominal.")
+    if r.risque_max_petit_compte_pct > PLAFOND_RISQUE_PAR_TRADE:
+        fautes.append(
+            f"[risque_position] risque_max_petit_compte_pct = {r.risque_max_petit_compte_pct} % "
+            f"dépasse le plafond écrit dans le code ({PLAFOND_RISQUE_PAR_TRADE} %).\n"
+            f"        Un petit compte n'a pas le droit de risquer plus qu'un gros : il a "
+            f"moins de marge pour encaisser une série noire, pas plus.")
+    if r.perte_max_par_position_pct < r.risque_max_petit_compte_pct:
+        fautes.append(
+            f"[risque_position] perte_max_par_position_pct ({r.perte_max_par_position_pct} %) "
+            f"est sous risque_max_petit_compte_pct ({r.risque_max_petit_compte_pct} %) : le "
+            f"filet refuserait les trades que la politique du petit compte autorise.")
 
     if r.perte_max_par_position_pct < r.risque_par_trade_pct:
         fautes.append(

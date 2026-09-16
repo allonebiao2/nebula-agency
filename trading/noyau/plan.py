@@ -201,6 +201,7 @@ def controle_prealable(
     dimensionnement: Dimensionnement | None = None,
     annonce_imminente: Callable[[datetime], tuple[bool, str]] | None = None,
     maintenant: datetime | None = None,
+    risque_pct_plafond: float | None = None,
 ) -> Verdict:
     """Les six questions, plus deux verrous de la maison. Tout doit passer."""
     from .risque import dimensionner
@@ -240,6 +241,7 @@ def controle_prealable(
             lots_total_max=cfg.exposition.lots_total_max,
             lots_deja_ouverts=etat.lots_deja_ouverts,
             perte_max_par_position_pct=cfg.risque.perte_max_par_position_pct,
+            risque_pct_plafond=risque_pct_plafond,
         )
     if not dimensionnement.autorise:
         v.append(Verrou(3, "Combien je risque, en devise et en % ?", False,
@@ -255,7 +257,8 @@ def controle_prealable(
             v.append(Verrou(3, "Combien je risque, en devise et en % ?", True,
                             f"{dimensionnement.risque_devise:.2f} {cfg.compte.devise} = "
                             f"{dimensionnement.risque_pct:.2f} % "
-                            f"({dimensionnement.lots:g} lot)"))
+                            f"({dimensionnement.lots:g} lot)"
+                            + (f" · {dimensionnement.note}" if dimensionnement.note else "")))
 
     # --- Q4 : quel est mon ratio R:R ? --------------------------------------
     mini = cfg.risque.ratio_rr_minimum

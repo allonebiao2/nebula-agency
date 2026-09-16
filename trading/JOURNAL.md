@@ -8,20 +8,21 @@ Mis à jour le **2026-09-16**. Une ligne par brique, avec son pourcentage réel.
 
 ---
 
-## Avancement global : **36 %**
+## Avancement global : **58 %**
 
 ```
-Socle de discipline   ████████████████████  100 %   fait et testé
-Mesure (backtest)     █████████████████░░░   87 %   tourne sur données réelles
-Données               █████████████░░░░░░░   65 %   15 ans chez MT5, pas encore exportés
-Courtier / exécution  ███████████░░░░░░░░░   55 %   connecté, ordre validé, aucun envoyé
-Intelligence          ░░░░░░░░░░░░░░░░░░░░    0 %   rien de commencé
-Revente (MQL5/ONNX)   ░░░░░░░░░░░░░░░░░░░░    0 %   rien de commencé
+Socle de discipline   ████████████████████  100 %   fait et testé (QC 79 verts)
+Mesure (backtest)     ████████████████████  100 %   walk-forward 15 ans, coûts réels
+Données               ██████████████████░░   90 %   20 ans H4/D1, 16 ans H1, profil courtier mesuré
+Courtier / exécution  ███████████████░░░░░   75 %   agent live en observation, ordres jamais envoyés
+Interface + produit   ████████████████░░░░   80 %   8 pages, conversation, licence, .exe de 44 Mo
+Intelligence          ░░░░░░░░░░░░░░░░░░░░    0 %   AUCUN AVANTAGE PROUVÉ : c'est la priorité
+Vente en ligne        ██░░░░░░░░░░░░░░░░░░   10 %   licences signées prêtes, ni page ni paiement
 ```
 
-L'ordre est voulu : **la discipline d'abord, l'intelligence ensuite.** Un modèle
-brillant sur un socle de risque troué vide un compte plus vite qu'une règle
-bête bien encadrée.
+⚠️ **Le chiffre qui compte n'est pas le pourcentage : c'est que le walk-forward
+n'a trouvé aucun avantage statistique.** Un produit fini autour d'une stratégie
+sans edge reste un produit qui ne gagne rien.
 
 ---
 
@@ -29,26 +30,26 @@ bête bien encadrée.
 
 | Brique | % | État |
 |---|---|---|
-| `config.toml` — paramètres de risque en amont | **100 %** | ✅ |
-| `noyau/config.py` — le videur | **100 %** | ✅ 6 refus vérifiés |
-| `noyau/risque.py` — dimensionnement + invariant du stop | **100 %** | ✅ testé sur 6 tailles de compte |
-| `noyau/plan.py` — PlanDeTrade + 8 verrous | **90 %** | ✅ 9 scénarios · ⏳ manque le vrai calendrier économique |
-| `backtest/metriques.py` — dont la taille d'échantillon | **100 %** | ✅ |
-| `backtest/couts.py` — spread, slippage, commission, swap | **95 %** | ✅ · ⏳ commission réelle à lire chez le courtier |
-| `backtest/moteur.py` — simulateur barre par barre | **85 %** | ✅ tourne · ⏳ calendrier, journal SQLite |
-| `noyau/donnees_deriv.py` — historique API publique | **60 %** | ✅ marche sans jeton · ⛔ **1 an maximum** |
-| `noyau/courtier.py` — adaptateur 12 valeurs lues | **90 %** | ✅ **exécuté le 2026-09-16** · 2 défauts corrigés · `order_check` accepté |
-| Historique MT5 (Deriv-Demo) | **20 %** | ✅ **25 000 barres H4 depuis 2011-02-24** mesurées · ⏳ export vers `donnees/` pas écrit |
-| `noyau/identifiants.py` — profils multi-courtiers | **100 %** | ✅ connexion réelle par identifiants explicites |
-| `strategies/` — cassure Donchian | **20 %** | 1 candidate sur 4 prévues |
-| Walk-forward | **0 %** | rien |
-| Journal SQLite (= jeu d'entraînement) | **0 %** | rien |
-| Meta-labeling | **0 %** | conçu, pas codé |
-| Champion / challenger | **0 %** | conçu, pas codé |
-| Auto-surveillance réel vs backtest | **0 %** | conçu, pas codé |
-| Exécution live | **0 %** | rien |
-| Telegram (alertes + commandes) | **0 %** | rien |
-| Export ONNX + EA MQL5 | **0 %** | rien |
+| `noyau/config.py` le videur, `config.toml` | **100 %** | ✅ 10 refus + témoins, surcharges comprises |
+| `noyau/risque.py` dimensionnement + **politique du petit compte** | **100 %** | ✅ lot minimum jusqu'au plafond, jamais au-delà |
+| `noyau/capital.py` compte cent + viabilité | **100 %** | ✅ 10 $ en cent = mêmes trades que 10 000 $ |
+| `noyau/plan.py` 8 verrous | **100 %** | ✅ calendrier branché |
+| `noyau/calendrier.py` annonces à fort impact | **90 %** | ✅ flux public, cache 6 h, indisponible = abstention · ⏳ pas d'historique pour le backtest |
+| `noyau/donnees_mt5.py` historique + profil courtier | **100 %** | ✅ 34 876 H4 (2005), 6 767 D1, 100 000 H1 (2010) |
+| `noyau/courtier.py` · `identifiants.py` · `coffre.py` | **95 %** | ✅ connexion réelle, DPAPI testé |
+| `noyau/reglages.py` 34 réglages, 6 verrouillés | **100 %** | ✅ tout passe par le videur, journalisé |
+| `noyau/licence.py` Ed25519 hors ligne | **100 %** | ✅ émission, falsification, expiration testées |
+| `backtest/moteur.py` | **100 %** | ✅ 2 défauts corrigés : heure des verrous, fermeture du vendredi |
+| `backtest/walkforward.py` | **100 %** | ✅ SQN, capital reporté, 3 variantes mesurées |
+| `strategies/` | **30 %** | 2 écrites, **0 rentable** · ⏳ filtre D1, momentum, session |
+| `live/journal.py` SQLite | **100 %** | ✅ décisions, refus, trades, équité, réglages, conversation |
+| `live/execution.py` | **80 %** | ✅ `order_check` accepté, modes testés · ⛔ **aucun ordre réel envoyé** |
+| `live/agent.py` la boucle | **75 %** | ✅ tourne en observation sur le démo · ⏳ premier trade démo à observer |
+| `interface/` serveur + chat + 8 pages | **85 %** | ✅ QC, captures 1440 et 390 · ⏳ chat avec clé API jamais essayé |
+| `empaquetage/construire.py` | **80 %** | ✅ exe lancé, rapports livrés, aucun secret · ⏳ pas d'installateur ni de signature |
+| Meta-labeling · champion/challenger | **0 %** | conçu, pas codé |
+| Telegram | **0 %** | rien |
+| Page de vente + paiement + remise de licence | **0 %** | ⛔ attend les décisions de Mongazi |
 
 ---
 

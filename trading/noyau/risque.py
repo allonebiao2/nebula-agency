@@ -64,12 +64,20 @@ class Dimensionnement:
     valeur_point_par_lot: float
     autorise: bool
     raison: str = ""
+    note: str = ""               # ex. « lot minimum, risque relevé à 1,4 % »
+    capital_requis: float = 0.0  # si refusé faute de capital : ce qu'il faudrait
+
+    @property
+    def petit_compte(self) -> bool:
+        """Vrai si le trade n'a été possible qu'en relevant le risque vers le plafond."""
+        return bool(self.note)
 
     def __str__(self) -> str:
         if not self.autorise:
             return f"REFUSÉ — {self.raison}"
         return (f"{self.lots:g} lot(s)  ·  risque {self.risque_devise:.2f} "
-                f"({self.risque_pct:.2f} %)  ·  stop {self.points_de_risque:.0f} points")
+                f"({self.risque_pct:.2f} %)  ·  stop {self.points_de_risque:.0f} points"
+                + (f"  ·  {self.note}" if self.note else ""))
 
 
 def _arrondir_vers_le_bas(valeur: float, pas: float) -> float:
@@ -91,11 +99,18 @@ def dimensionner(
     lots_total_max: float,
     lots_deja_ouverts: float = 0.0,
     perte_max_par_position_pct: float | None = None,
+    risque_pct_plafond: float | None = None,
 ) -> Dimensionnement:
     """Combien de lots, pour risquer exactement `risque_pct` % et pas un cent de plus.
 
     Renvoie toujours un Dimensionnement : s'il n'est pas `autorise`, la raison
     est écrite en clair et destinée au journal.
+
+    LA POLITIQUE DU PETIT COMPTE (`risque_pct_plafond`). Quand le lot minimum
+    risque plus que `risque_pct` mais pas plus que le plafond, on prend le lot
+    minimum et on le DIT (champ `note`). Au-delà du plafond, on refuse CE trade
+    seulement : le bot attend un signal dont le stop tient dans le capital. Il
+    ne plante pas, il ne dépasse pas, il ne « se rattrape » pas.
     """
     vide = dict(lots=0.0, risque_devise=0.0, risque_pct=0.0,
                 points_de_risque=points_de_risque,
@@ -123,20 +138,29 @@ def dimensionner(
     lots = _arrondir_vers_le_bas(lots_bruts, specs.volume_step)
 
     # --- Le compte est-il assez gros pour ce stop ? -------------------------
+    note = ""
     if lots < specs.volume_min:
         risque_au_min = specs.volume_min * points_de_risque * vpl
         pct_au_min = 100 * risque_au_min / capital
-        capital_requis = risque_au_min * 100 / risque_pct
-        return Dimensionnement(
-            **{**vide, "valeur_point_par_lot": vpl},
-            raison=(
-                f"trade refusé : le lot minimum ({specs.volume_min:g}) risquerait "
-                f"{risque_au_min:.2f} = {pct_au_min:.2f} % du capital, "
-                f"au-delà des {risque_pct:.2f} % autorisés.\n"
-                f"    Il faudrait ~{capital_requis:.0f} de capital pour ce stop de "
-                f"{points_de_risque:.0f} points, ou un stop plus serré.\n"
-                f"    On ne contourne pas : dépasser « juste cette fois » est la façon "
-                f"n°1 dont un petit compte meurt."))
+        plafond = max(risque_pct, risque_pct_plafond or risque_pct)
+        if pct_au_min <= plafond + 1e-9:
+            lots = specs.volume_min
+            note = (f"petit compte : lot minimum, risque relevé à {pct_au_min:.2f} % "
+                    f"(plafond {plafond:g} %)")
+        else:
+            capital_requis = risque_au_min * 100 / plafond
+            return Dimensionnement(
+                **{**vide, "valeur_point_par_lot": vpl},
+                capital_requis=capital_requis,
+                raison=(
+                    f"capital insuffisant pour CE stop : le lot minimum "
+                    f"({specs.volume_min:g}) risquerait {risque_au_min:.2f} = "
+                    f"{pct_au_min:.2f} % du capital, au-delà du plafond de {plafond:g} %.\n"
+                    f"    Il faudrait ~{capital_requis:.0f} pour ce stop de "
+                    f"{points_de_risque:.0f} points. Le bot attend un signal au stop plus "
+                    f"court, ou un compte cent (lot 100 fois plus petit).\n"
+                    f"    On ne contourne pas : dépasser « juste cette fois » est la façon "
+                    f"n°1 dont un petit compte meurt."))
 
     # --- Plafonds d'exposition ---------------------------------------------
     place_restante = lots_total_max - lots_deja_ouverts
@@ -168,6 +192,7 @@ def dimensionner(
         points_de_risque=points_de_risque,
         valeur_point_par_lot=vpl,
         autorise=True,
+        note=note,
     )
 
 

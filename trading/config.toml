@@ -55,6 +55,18 @@ timeframe_filtre = "D1"         # unité de tendance (filtre de contexte)
 risque_par_trade_pct = 1.0
 risque_par_trade_pct_max = 2.0  # plafond dur : le chargeur refuse au-delà
 
+# POLITIQUE DU PETIT COMPTE. Le lot minimum (0,01) risque déjà ~7 $ sur un stop
+# H4 de 70 pips : à 1 %, tout compte sous 700 $ verrait TOUS ses trades refusés.
+# Trois réponses, appliquées automatiquement et dans cet ordre :
+#   1. COMPTE CENT détecté (devise USC/EUC) : le lot est 100 fois plus petit,
+#      le 1 % redevient exact dès une dizaine de dollars.
+#   2. Sinon, le lot minimum est accepté tant qu'il ne risque pas plus que
+#      ce plafond-ci, et le journal le dit trade par trade.
+#   3. Au-delà, CE trade est refusé et le bot attend un signal au stop plus
+#      court. Il ne plante pas et ne dépasse jamais le plafond.
+# Écrire la même valeur que risque_par_trade_pct désactive le point 2.
+risque_max_petit_compte_pct = 2.0
+
 # Le stop suit la VOLATILITÉ, jamais un nombre de pips fixe. Un stop de 20 pips
 # est large en août et serré un jour de FOMC : le même chiffre ne veut pas dire
 # la même chose selon le marché.
@@ -204,7 +216,18 @@ asie_fin = "06:00"
 
 # Vendredi soir : le gap du week-end saute par-dessus les stops. Un stop n'est
 # pas une garantie, c'est une instruction ; un gap l'exécute au prix suivant.
-fermer_avant_weekend = true
+#
+# ⚠️ MESURÉ le 2026-09-16, walk-forward 2011-2026, cassure Donchian H4, coûts
+# réels Deriv, résultats HORS ÉCHANTILLON uniquement :
+#   fermer le vendredi   497 trades · -0,007 R · PF 0,97 · 10 000 -> 9 415
+#                        197 sorties forcées, coûts = 344 % du brut
+#   garder le week-end   436 trades · +0,040 R · PF 1,07 · 10 000 -> 11 488
+#                        stops sautés par un gap : 2 en quinze ans
+# Une stratégie de TENDANCE vit de trades qui durent : la couper chaque vendredi
+# la tue. Aucune des deux n'est statistiquement distinguable de zéro : ce choix
+# suit la mesure, il ne prouve pas un edge. À re-mesurer avec toute nouvelle
+# stratégie (un système court, lui, aurait intérêt à fermer).
+fermer_avant_weekend = false
 vendredi_derniere_entree = "18:00"
 vendredi_tout_fermer = "20:30"
 

@@ -5,3 +5,6 @@ rapports/
 *.log
 __pycache__/
 modeles/
+__pycache__/
+empaquetage/sortie/
+empaquetage/travail/

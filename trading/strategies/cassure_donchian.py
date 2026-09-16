@@ -30,6 +30,7 @@ from .indicateurs import atr, canal_donchian, pente_ema, ratio_efficacite
 
 class CassureDonchian(Strategie):
     nom = "cassure_donchian"
+    libelle = "Cassure de canal (Donchian)"
     these_generale = ("Le prix qui sort de son couloir récent dans le sens de sa "
                       "tendance continue plus souvent qu'il ne rebrousse.")
 

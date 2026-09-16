@@ -84,12 +84,16 @@ class Resultat:
 
 class Moteur:
     def __init__(self, cfg, specs: SpecsSymbole, couts: ModeleCouts,
-                 strategie: Strategie, *, journaliser_refus: bool = True):
+                 strategie: Strategie, *, journaliser_refus: bool = True,
+                 annonce_imminente=None):
         self.cfg = cfg
         self.specs = specs
         self.couts = couts
         self.strategie = strategie
         self.journaliser_refus = journaliser_refus
+        # Sans calendrier économique historique, le backtest ne peut pas
+        # reproduire le blackout : il le déclare, il ne le simule pas.
+        self.annonce_imminente = annonce_imminente or (lambda _t: (False, ""))
 
     # ------------------------------------------------------------------ #
     def lancer(self, barres: Barres, capital_initial: float,
@@ -208,10 +212,16 @@ class Moteur:
                 if self.strategie.regime_favorable(ctx) else ("aucun",),
             )
 
+            # L'heure qui compte pour les verrous est celle de l'ENTRÉE (ouverture
+            # de la barre suivante), pas l'ouverture de la barre du signal : en H4
+            # l'écart est de quatre heures, assez pour qu'une entrée à 00 h passe
+            # le filtre des heures creuses asiatiques en se faisant dater de 20 h.
+            entree_le = barres.quand(i + 1)
             verdict = controle_prealable(
                 plan, self.cfg, etat, capital=capital, specs=self.specs,
-                annonce_imminente=lambda _t: (False, ""),   # calendrier : à brancher
-                maintenant=quand)
+                annonce_imminente=self.annonce_imminente,
+                maintenant=entree_le,
+                risque_pct_plafond=self.cfg.risque.risque_max_petit_compte_pct)
 
             if not verdict.autorise:
                 if self.journaliser_refus:
@@ -331,9 +341,15 @@ class Moteur:
                     float(barres.cloture[i]))
 
         # --- Fermeture avant le week-end ------------------------------------
+        # On regarde la FIN de la barre, pas son ouverture. En H4 la dernière
+        # barre du vendredi ouvre à 20 h 00 : comparer son ouverture au seuil de
+        # 20 h 30 ne déclenchait JAMAIS la fermeture, et les positions
+        # traversaient le week-end que la règle devait leur éviter.
         cal = self.cfg.calendrier
-        if cal.fermer_avant_weekend and quand.weekday() == 4 \
-                and quand.time() >= cal.vendredi_tout_fermer:
+        fin_barre = quand + timedelta(hours=heures_barre)
+        if cal.fermer_avant_weekend and quand.weekday() == 4 and (
+                fin_barre.time() >= cal.vendredi_tout_fermer
+                or fin_barre.date() > quand.date()):
             return (self._fermer(pos, barres, i, float(barres.cloture[i]), "week-end"),
                     float(barres.cloture[i]))
 

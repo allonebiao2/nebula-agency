@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr" data-theme="sombre">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="jeton" content="{{JETON}}">
+<meta name="robots" content="noindex">
+<title>NEBULA Trader</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0e13'/%3E%3Cpath d='M6 22 L12 14 L17 18 L26 8' stroke='%2368e1a8' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/statique/app.css?v={{VERSION}}">
+</head>
+<body>
+<div class="app">
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="marque" href="#/" aria-label="NEBULA Trader, tableau de bord">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="marque-fond"/><path d="M6 22 L12 14 L17 18 L26 8" class="marque-trait"/></svg>
+      <span><b>NEBULA</b> Trader</span>
+    </a>
+    <ul>
+      <li><a href="#/" data-route="tableau" title="Tableau de bord"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4zm0 7h6v-5H4zm10 0h6v-9h-6zm0-16v5h6V4z"/></svg><span>Tableau de bord</span></a></li>
+      <li><a href="#/conversation" data-route="conversation" title="Parler à l'agent"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg><span>Parler à l'agent</span><i class="pastille" id="pastille-propositions" hidden></i></a></li>
+      <li><a href="#/risque" data-route="risque" title="Risque"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/></svg><span>Risque</span></a></li>
+      <li><a href="#/decisions" data-route="decisions" title="Décisions"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg><span>Décisions</span></a></li>
+      <li><a href="#/trades" data-route="trades" title="Trades"><svg viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8M14 8h6v6"/></svg><span>Trades</span></a></li>
+      <li><a href="#/strategies" data-route="strategies" title="Stratégies"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg><span>Stratégies</span></a></li>
+      <li><a href="#/reglages" data-route="reglages" title="Réglages"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8M14 4v6M8 14v6"/></svg><span>Réglages</span></a></li>
+      <li><a href="#/installation" data-route="installation" title="Compte et licence"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0110 0v3M5 11h14v10H5z"/></svg><span>Compte et licence</span></a></li>
+    </ul>
+    <div class="nav-pied">
+      <span id="pied-licence">…</span>
+      <span>v{{VERSION}}</span>
+    </div>
+  </nav>
+
+  <div class="principal">
+    <header class="barre">
+      <div class="connexion" id="connexion"><i class="voyant"></i><span>Démarrage…</span></div>
+      <div class="modes" role="radiogroup" aria-label="Mode d'exécution" id="modes">
+        <button role="radio" data-mode="observation">Observation</button>
+        <button role="radio" data-mode="demo">Démo</button>
+        <button role="radio" data-mode="reel">Réel</button>
+      </div>
+      <div class="barre-actions">
+        <button class="btn" id="btn-pause">Pause</button>
+        <button class="btn btn-danger" id="btn-urgence" title="Ferme toutes les positions de l'agent et le met en pause">Arrêt d'urgence</button>
+        <button class="btn-icone" id="btn-theme" aria-label="Changer de thème"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 109 9 7 7 0 01-9-9z"/></svg></button>
+      </div>
+    </header>
+    <div class="bandeau" id="bandeau" hidden></div>
+    <main id="vue" tabindex="-1"></main>
+  </div>
+</div>
+
+<dialog id="dialogue">
+  <form method="dialog" class="dialogue">
+    <h2 id="dialogue-titre"></h2>
+    <div id="dialogue-corps"></div>
+    <label class="champ" id="dialogue-saisie-champ" hidden>
+      <span id="dialogue-saisie-libelle"></span>
+      <input id="dialogue-saisie" autocomplete="off">
+    </label>
+    <div class="dialogue-actions">
+      <button value="annuler" class="btn">Annuler</button>
+      <button value="ok" class="btn btn-primaire" id="dialogue-ok">Confirmer</button>
+    </div>
+  </form>
+</dialog>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="/statique/app.js?v={{VERSION}}"></script>
+</body>
+</html>
