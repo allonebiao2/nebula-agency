@@ -191,9 +191,49 @@ promettre un rendement** dans une fiche produit · un EA se vend sur un
 
 ---
 
+## ✅ L'après-midi : le pont s'ouvre (13 h 00 - 13 h 30)
+
+**Le `-6` venait du mot de passe maître manquant.** Une fois posé, la connexion
+par identifiants explicites passe du premier coup : compte `6305888` @
+`Deriv-Demo`, 10 000 $ démo, 1:1000, couverture, serveur UTC+0.
+
+Ce que la première vraie connexion a révélé, dans l'ordre :
+
+1. **Le mot de passe était dans le mauvais fichier** (`deriv.env`), puis une
+   copie **à la racine du dépôt** : `notepad secrets\mt5.env` tapé dans Git Bash
+   crée `secretsmt5.env` (antislash mangé), **non ignoré par git**. Jamais
+   commité, supprimé, `.gitignore` refuse désormais `*.env` et `secrets*`.
+   Le mot de passe a été déplacé et comparé **sans jamais être affiché**.
+2. **Deux défauts de `courtier.py`** écrits sans connexion : `trade_expert` lu
+   sur le terminal (il appartient au compte) et `SYMBOL_FILLING_FOK/IOC`, que le
+   paquet Python n'exporte pas (drapeaux 1 et 2 en MQL5).
+3. **`profil_courtier.py` n'envoyait que le chemin du terminal**, la voie même
+   qui renvoyait `-6` : il lit désormais les profils de `secrets/mt5.env`.
+4. **Le bouton Trading Algo était éteint** : MT5 le coupe **à chaque changement
+   de compte** (journal du terminal). Mongazi l'a rallumé.
+5. ⛔ **`Api=1` coupait l'API au lieu de l'ouvrir.** La correction du matin était
+   inversée : c'est la case « désactiver le trading algorithmique via l'API
+   Python externe ». La lecture passait, **tout ordre aurait été refusé**
+   (`tradeapi_disabled = True`). Case décochée par Mongazi (Deriv), valeur
+   d'origine rétablie dans le terminal Exness, fermé.
+6. **Validé sans rien envoyer** : `order_check` sur 0,01 lot avec stop et
+   objectif → « Done », remplissage FOK, marge 1,15 $, 0 position, 0 ordre.
+
+**L'historique n'est plus un blocage** : 25 000 barres H4 depuis le
+2011-02-24 (~15 ans, ~500 trades). Le terminal télécharge **à la minute**, une
+année par minute en remontant, ~22 Mo par année. ⚠️ Disque C: à **6 Go libres**.
+
+**Le spread du backtest est juste** : 149 485 ticks réels sur 24 h, médiane
+3 points, p90 4, p99 15. Seule heure à éviter : **21 h UTC** (médiane 15).
+
+**Reste à Mongazi : la décision de capital.** Reste à écrire : l'export de
+l'historique MT5 vers `trading/donnees/`, puis le walk-forward sur 15 ans.
+
+---
+
 ## Ce qui reste, par priorité
 
-**P0** — le mot de passe MT5 · l'historique long · la décision de capital
+**P0** — ~~le mot de passe MT5~~ ✅ · ~~l'historique long~~ ✅ (export à écrire) · la décision de capital
 **P1** — journal SQLite (= le jeu d'entraînement) · walk-forward · calendrier économique
 **P2** — 3 stratégies de plus · meta-labeling · auto-surveillance réel vs backtest
 **P3** — exécution live · Telegram (alertes + commandes depuis le portable)

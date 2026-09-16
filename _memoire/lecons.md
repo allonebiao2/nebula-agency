@@ -2662,3 +2662,26 @@ qu'un contrôle doit viser porte une **prise explicite** (`data-ajouter`,
 `data-plat`, `data-choix`) : elle survit à un changement de style, et elle dit
 ce qu'elle désigne.
 
+## 2026-09-16 · Une clé de configuration se lit dans l'interface qui l'écrit
+
+Le pont MT5 refusait de s'ouvrir. En fouillant `common.ini`, `[Experts] Api=0`
+a été lu « accès API désactivé » et passé à 1. **C'était l'inverse** : la clé
+est la case « **désactiver** le trading algorithmique via l'API Python
+externe », de la même famille que `Account=1` (« désactiver quand le compte
+change »). La connexion en lecture marchait, donc rien ne signalait l'erreur :
+**tout ordre aurait été refusé**, et ça se serait vu le jour du premier trade.
+
+Prouvé en faisant cocher et décocher la case par l'interface et en relisant le
+fichier et `terminal_info().tradeapi_disabled` à chaque fois. Un nom de clé est
+un indice, **l'interface qui l'écrit est la preuve**. Et un correctif appliqué
+« à tout hasard » à deux endroits se défait aux deux endroits.
+
+## 2026-09-16 · Un antislash dans Git Bash publie un secret
+
+`notepad secrets\mt5.env` tapé dans Git Bash : l'antislash est un caractère
+d'échappement, la commande ouvre `secretsmt5.env` **à la racine du dépôt**.
+Le mot de passe y a été tapé, hors de `secrets/`, **visible par git dans un
+dépôt public**. Rien n'a fui parce que `git status` a été lu avant de committer.
+Sous Git Bash, des barres obliques. Et `.gitignore` refuse désormais `*.env` et
+`secrets*` : la règle protège aussi de la faute de frappe.
+

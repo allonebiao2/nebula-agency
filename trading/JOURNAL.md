@@ -8,13 +8,13 @@ Mis à jour le **2026-09-16**. Une ligne par brique, avec son pourcentage réel.
 
 ---
 
-## Avancement global : **31 %**
+## Avancement global : **36 %**
 
 ```
 Socle de discipline   ████████████████████  100 %   fait et testé
 Mesure (backtest)     █████████████████░░░   87 %   tourne sur données réelles
-Données               ████████████░░░░░░░░   60 %   1 an seulement
-Courtier / exécution  ██████░░░░░░░░░░░░░░   30 %   écrit, jamais connecté
+Données               █████████████░░░░░░░   65 %   15 ans chez MT5, pas encore exportés
+Courtier / exécution  ███████████░░░░░░░░░   55 %   connecté, ordre validé, aucun envoyé
 Intelligence          ░░░░░░░░░░░░░░░░░░░░    0 %   rien de commencé
 Revente (MQL5/ONNX)   ░░░░░░░░░░░░░░░░░░░░    0 %   rien de commencé
 ```
@@ -37,8 +37,9 @@ bête bien encadrée.
 | `backtest/couts.py` — spread, slippage, commission, swap | **95 %** | ✅ · ⏳ commission réelle à lire chez le courtier |
 | `backtest/moteur.py` — simulateur barre par barre | **85 %** | ✅ tourne · ⏳ calendrier, journal SQLite |
 | `noyau/donnees_deriv.py` — historique API publique | **60 %** | ✅ marche sans jeton · ⛔ **1 an maximum** |
-| `noyau/courtier.py` — adaptateur 12 valeurs lues | **70 %** | 🔧 écrit, **jamais exécuté** (pont MT5 bloqué) |
-| `noyau/identifiants.py` — profils multi-courtiers | **90 %** | ✅ · ⏳ mot de passe manquant |
+| `noyau/courtier.py` — adaptateur 12 valeurs lues | **90 %** | ✅ **exécuté le 2026-09-16** · 2 défauts corrigés · `order_check` accepté |
+| Historique MT5 (Deriv-Demo) | **20 %** | ✅ **25 000 barres H4 depuis 2011-02-24** mesurées · ⏳ export vers `donnees/` pas écrit |
+| `noyau/identifiants.py` — profils multi-courtiers | **100 %** | ✅ connexion réelle par identifiants explicites |
 | `strategies/` — cassure Donchian | **20 %** | 1 candidate sur 4 prévues |
 | Walk-forward | **0 %** | rien |
 | Journal SQLite (= jeu d'entraînement) | **0 %** | rien |
@@ -53,12 +54,13 @@ bête bien encadrée.
 
 ## ⛔ Ce qui bloque, par ordre de coût
 
-### P0-1 · Le mot de passe du compte démo MT5
-**Bloque : l'historique long, les vrais spreads, et toute exécution.**
-À coller dans `secrets/mt5.env` (login `31759703` et serveur `Deriv-Demo` déjà
-remplis). ⚠️ Le mot de passe **maître**, pas celui d'investisseur : l'investisseur
-donne un accès en lecture seule, le terminal se connecte quand même et **tous
-les ordres sont rejetés** — une panne qui ressemble à un bug.
+### ✅ P0-1 · Le mot de passe du compte démo MT5 : RÉSOLU le 2026-09-16
+Posé dans `secrets/mt5.env` (compte `6305888` @ `Deriv-Demo`, mot de passe
+**maître**). Connexion réelle, 10 000 $ démo, levier 1:1000, couverture, serveur
+**UTC+0**. Les quatre autorisations sont vertes (compte, robots, bouton Trading
+Algo, API Python) et le courtier **accepte** un ordre fictif de 0,01 lot en
+`order_check` (remplissage **FOK**, stops level 20 points, marge 1,15 $).
+**Aucun ordre n'a été envoyé.**
 
 ### P0-2 · L'historique est trop court pour conclure
 Mesuré le 2026-09-16 : l'API publique Deriv plafonne à **un an**, quelle que
@@ -67,7 +69,11 @@ soit l'unité de temps (D1 260 barres, H4 1 555, H1 3 471). À ~3 trades par moi
 réussite veuille dire quelque chose.
 
 Trois sorties :
-1. **Le terminal MT5** en porte plusieurs années — dépend de P0-1.
+1. ✅ **Le terminal MT5 : 25 000 barres H4 depuis le 2011-02-24** (mesuré le
+   2026-09-16), soit ~15 ans et **~500 trades** au rythme actuel. Le terminal
+   télécharge l'historique **à la minute**, une année par minute en remontant,
+   ~22 Mo par année. ⏳ **Reste à écrire l'export** vers `trading/donnees/`.
+   ⚠️ Le disque C: n'avait que **6 Go libres** ce jour-là.
 2. **Dukascopy** (gratuit, sans clé, remonte à 2003). ⏳ Le format d'URL essayé
    le 2026-09-16 rend 404/503, à creuser.
 3. **Stooq / Yahoo** : quotidien seulement, donc inutile pour un système H4.
@@ -116,14 +122,43 @@ synthétiques.
 **✅ L'API publique de Deriv donne de vraies bougies sans aucun jeton.** C'est ce
 qui a débloqué le projet alors que le pont MT5 refusait de s'ouvrir.
 
-**⛔ Le pont MT5 refuse toujours : `-6 Authorization failed`.** Éliminé en
-mesurant : identifiants, chemin, bac à sable, Git Bash, version du paquet
-(5735 et 6180), courtier (Deriv **et** Exness échouent pareil), état du
-terminal, et le bouton Trading Algo (vérifié vert par Mongazi).
-Corrigé en route sans que ça suffise : `[Experts] Api=0 -> 1` et `Enabled=0 -> 1`
-dans les deux terminaux (`AllowDllImport` laissé à 0, sauvegardes
-`.avant-nebula`). **Reste à essayer : la connexion par identifiants explicites**
-(`mt5.initialize(login=, password=, server=)`), c'est P0-1.
+**✅ Le `-6 Authorization failed` venait du mot de passe manquant.** La
+connexion par identifiants explicites (`mt5.initialize(login=, password=,
+server=)`) passe du premier coup. `profil_courtier.py`, qui n'envoyait que le
+chemin du terminal, lit désormais les profils de `secrets/mt5.env`.
+
+**⛔ `Api=1` NE DONNE PAS l'accès à l'API, IL LE COUPE.** La clé `[Experts] Api`
+de `common.ini` est la case « **désactiver** le trading algorithmique via l'API
+Python externe », comme `Account` et `Profile` sont des « désactiver quand… ».
+Elle avait été passée de 0 à 1 en croyant l'ouvrir : la lecture restait
+possible, **tout ordre aurait été refusé**. Prouvé : `Api=1` donnait
+`tradeapi_disabled = True`, la case décochée donne `Api=0` et `False`.
+*Une clé d'ini se lit dans l'interface qui l'écrit, pas d'après son nom.*
+Et on ne corrige pas `common.ini` à la main pendant que le terminal tourne : il
+l'écrase en se fermant.
+
+**⚠️ MT5 coupe le Trading Algo à chaque CHANGEMENT DE COMPTE** (`Account=1`,
+journal : « automated trading is disabled because the account has been
+changed »). Le terminal portait un autre compte, la première connexion du bot
+l'a éteint. Réglage laissé tel quel, c'est une sécurité : c'est au bot de
+**vérifier les quatre autorisations** avant d'armer, pas au terminal de se taire.
+
+**⛔ Deux défauts de `courtier.py`, écrits sans connexion et invisibles jusqu'à
+la première** : `trade_expert` lu sur le terminal alors qu'il appartient au
+**compte** (plantage dès la connexion), et `SYMBOL_FILLING_FOK/IOC` que le paquet
+Python **n'exporte pas** (drapeaux 1 et 2 en MQL5, à ne pas confondre avec
+`ORDER_FILLING_*` qui valent 0, 1, 2 et ne sont pas des bits). Contrôlé depuis :
+toutes les autres constantes `mt5.*` du code existent.
+
+**✅ Le spread du backtest est juste.** 149 485 ticks réels sur 24 h : médiane
+**3 points**, p90 4, p99 15. Le « 11 points » affiché à la connexion était un
+pic. **Seule heure à éviter : 21 h UTC** (bascule de journée, médiane 15).
+
+**⛔ `notepad secrets\mt5.env` tapé dans Git Bash crée `secretsmt5.env` À LA
+RACINE** (l'antislash est mangé). Le mot de passe s'y est retrouvé, **hors de
+`secrets/` et visible par git**, dans un dépôt public. Jamais commité, supprimé,
+et `.gitignore` refuse désormais `*.env` et `secrets*`. Sous Git Bash : des
+barres obliques (`notepad secrets/mt5.env`).
 
 **⛔ Le jeton collé le 2026-09-16 n'est pas un jeton Deriv** (`InvalidToken` ;
 format `pat_` + 64 hex, alors que Deriv utilise `a1-…`). Il a été collé en clair

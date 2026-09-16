@@ -534,23 +534,35 @@
   1:2, **+0,18 R en H4 contre +0,01 R en M5**. Le spread n'a pas bougé, c'est R
   qui a rétréci. C'est ce calcul qui a tranché l'unité de temps et qui tue le
   scalping retail.
-- ⛔ **TROIS CHOSES BLOQUENT, ET DEUX N'APPARTIENNENT QU'À MONGAZI** :
-  **le mot de passe** du compte démo MT5 (`secrets/mt5.env`, login `6305888` @
-  `Deriv-Demo` déjà posé ; ⚠️ le **maître**, pas l'investisseur, qui donne un
-  accès lecture seule où **tous les ordres sont rejetés**) · **l'historique**
-  (l'API Deriv plafonne à **un an** = ~35 trades, très en dessous des **100**
-  nécessaires) · **la décision de capital** (⚠️ **sous ~700 $ à 1 %, le code
-  refuse TOUS les trades**, le lot minimum risquant déjà 7 $ ; sorties = compte
-  cent, 2 % de risque, ou attendre).
-- ⛔ **LE PONT PYTHON ↔ MT5 REFUSE : `-6 Authorization failed`**, chez Deriv
-  **ET** Exness. Éliminé **en mesurant** : identifiants, chemin, bac à sable,
-  Git Bash contre PowerShell, version du paquet (**5735 et 6180**), courtier,
-  état du terminal, bouton Trading Algo (vérifié vert). **Corrigé en route sans
-  que ça suffise** : `[Experts] Enabled=0 → 1` et **`Api=0 → 1`** dans les deux
-  terminaux (⚠️ **`AllowDllImport` laissé à 0** : le pont n'en a pas besoin et
-  l'activer desserrerait la sécurité pour rien ; sauvegardes
-  `common.ini.avant-nebula`). ⏳ Reste : la connexion par **identifiants
-  explicites**, qui est de toute façon la bonne architecture multi-courtiers.
+- ✅ **LE PONT PYTHON ↔ MT5 MARCHE depuis le 2026-09-16** : le `-6
+  Authorization failed` venait du **mot de passe maître manquant**. Connexion
+  par **identifiants explicites** (`secrets/mt5.env`, compte `6305888` @
+  `Deriv-Demo`, 10 000 $ démo, 1:1000, couverture, serveur **UTC+0**), les
+  **quatre autorisations vertes** (compte, robots, bouton Trading Algo, API
+  Python) et un ordre fictif de 0,01 lot **accepté en `order_check`** (FOK,
+  stops level 20 points). ⛔ **Aucun ordre envoyé.**
+- ⛔ **`[Experts] Api=1` dans `common.ini` COUPE l'API, il ne l'ouvre pas** :
+  c'est la case « **désactiver** le trading algorithmique via l'API Python
+  externe » (comme `Account`/`Profile` sont des « désactiver quand… »). Passée
+  de 0 à 1 le matin en croyant ouvrir, elle laissait **lire** mais aurait fait
+  **refuser tout ordre** (`tradeapi_disabled = True`). Rétablie à 0 dans les deux
+  terminaux. ⚠️ **Une clé d'ini se lit dans l'interface qui l'écrit, pas d'après
+  son nom**, et on ne l'édite pas pendant que le terminal tourne (il l'écrase).
+  ⚠️ **MT5 éteint le Trading Algo à chaque changement de compte** (`Account=1`) :
+  le bot **vérifie les quatre autorisations** avant d'armer.
+- ✅ **L'HISTORIQUE N'EST PLUS UN BLOCAGE** : MT5 donne **25 000 barres H4
+  depuis le 2011-02-24** (~15 ans, ~500 trades), téléchargées **à la minute**,
+  ~22 Mo par année. ⏳ l'export vers `trading/donnees/` reste à écrire.
+  ⚠️ **Le disque C: n'avait que 6 Go libres** le 2026-09-16.
+  **Spread vérifié** sur 149 485 ticks : médiane **3 points** = ce que facture le
+  backtest ; **seule heure à éviter : 21 h UTC** (bascule, médiane 15).
+- ⛔ **CE QUI BLOQUE ENCORE N'APPARTIENT QU'À MONGAZI : la décision de capital**
+  (⚠️ **sous ~700 $ à 1 %, le code refuse TOUS les trades**, le lot minimum
+  risquant déjà 7 $ ; sorties = compte cent, 2 % de risque, ou attendre).
+- ⛔ **`notepad secrets\mt5.env` tapé dans Git Bash crée `secretsmt5.env` À LA
+  RACINE** (antislash mangé) : le mot de passe s'est retrouvé **hors de
+  `secrets/`, visible par git, dans un dépôt public**. Jamais commité, supprimé,
+  et `.gitignore` refuse désormais `*.env` et `secrets*`. Sous Git Bash : `/`.
 - ✅ **L'API PUBLIQUE DE DERIV DONNE DE VRAIES BOUGIES SANS AUCUN JETON**
   (`wss://ws.derivws.com/websockets/v3?app_id=1089`, `frxEURUSD`,
   `ticks_history` en `candles`, granularité 14400 pour H4) : c'est ce qui a

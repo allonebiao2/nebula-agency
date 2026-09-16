@@ -22,6 +22,11 @@ skill claude code/
 .env.local
 *.key
 secrets/
+# `notepad secrets\mt5.env` tapé dans Git Bash crée `secretsmt5.env` À LA RACINE
+# (l'antislash est mangé) : le mot de passe MT5 s'y est retrouvé le 2026-09-16,
+# hors de secrets/ et visible par git. Tout fichier .env et tout `secrets*` restent dehors.
+*.env
+secrets*
 
 # Documents SIGNÉS — la signature manuscrite de Mongazi ne va jamais sur un
 # dépôt public : une signature qui traîne se colle sur n'importe quel papier.

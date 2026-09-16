@@ -18,6 +18,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from trading.noyau.courtier import Courtier, CourtierIndisponible   # noqa: E402
+from trading.noyau.identifiants import charger, profils_disponibles  # noqa: E402
 
 TERMINAUX_CONNUS = {
     "Deriv (demo)":  r"C:\Program Files\MetaTrader 5 Terminal\terminal64.exe",
@@ -27,20 +28,42 @@ TERMINAUX_CONNUS = {
 }
 
 
-def main() -> int:
+def _sessions() -> dict[str, Courtier]:
+    """Qui interroger, dans l'ordre de fiabilité.
+
+    1. Un chemin donné en argument : on l'ouvre tel quel.
+    2. Les profils COMPLETS de `secrets/mt5.env` (compte, mot de passe et
+       serveur nommés) : la seule voie qui a franchi le `-6` (2026-09-16).
+    3. À défaut, les terminaux connus, en espérant qu'ils aient mémorisé un
+       compte : c'est la voie qui renvoyait `-6 Authorization failed`.
+    """
     if len(sys.argv) > 1:
-        chemins = {"(argument)": sys.argv[1]}
-    else:
-        chemins = {n: c for n, c in TERMINAUX_CONNUS.items() if Path(c).exists()}
-        if not chemins:
-            print("Aucun terminal MT5 trouvé aux emplacements habituels.")
-            return 1
+        return {f"(argument)\n    {sys.argv[1]}": Courtier(chemin_terminal=sys.argv[1])}
+    profils = {}
+    for nom in profils_disponibles():
+        ids = charger(nom)
+        if ids.complets:
+            profils[str(ids)] = Courtier.depuis_profil(nom)
+        else:
+            print(f"  profil incomplet, ignoré : {ids}")
+    if profils:
+        return profils
+    return {f"{n}\n    {c}": Courtier(chemin_terminal=c)
+            for n, c in TERMINAUX_CONNUS.items() if Path(c).exists()}
+
+
+def main() -> int:
+    sessions = _sessions()
+    if not sessions:
+        print("Aucun profil complet dans secrets/mt5.env, "
+              "et aucun terminal MT5 aux emplacements habituels.")
+        return 1
 
     trouve = False
-    for nom, chemin in chemins.items():
-        print(f"\n### {nom}\n    {chemin}")
+    for nom, session in sessions.items():
+        print(f"\n### {nom}")
         try:
-            with Courtier(chemin_terminal=chemin) as c:
+            with session as c:
                 print()
                 print(c.diagnostic("EURUSD"))
                 trouve = True

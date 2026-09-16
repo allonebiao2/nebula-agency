@@ -37,6 +37,10 @@ except ImportError:                                            # pragma: no cove
 
 from .risque import SpecsSymbole
 
+# Drapeaux de symbole MQL5, absents du paquet Python (voir mode_remplissage).
+_SYMBOL_FILLING_FOK = 1
+_SYMBOL_FILLING_IOC = 2
+
 
 class CourtierIndisponible(Exception):
     """Impossible de parler au terminal, ou le terminal ne sait pas répondre."""
@@ -177,8 +181,12 @@ class Courtier:
             levier=a.leverage, solde=a.balance, equite=a.equity,
             demo=(a.trade_mode == mt5.ACCOUNT_TRADE_MODE_DEMO),
             couverture=(a.margin_mode == mt5.ACCOUNT_MARGIN_MODE_RETAIL_HEDGING),
-            trading_autorise=bool(t.trade_allowed) if t else False,
-            algo_autorise=bool(t.trade_expert) if t else False,
+            # Le COMPTE dit s'il accepte des ordres et s'il accepte ceux d'un
+            # robot ; le TERMINAL dit si le bouton « Trading Algo » est enfoncé
+            # et si l'API n'est pas coupée. Il faut les trois pour trader.
+            trading_autorise=bool(a.trade_allowed),
+            algo_autorise=(bool(a.trade_expert) and bool(t.trade_allowed)
+                           and not t.tradeapi_disabled) if t else False,
             decalage_serveur_h=self.decalage_serveur(),
             terminal=t.name if t else "", build=t.build if t else 0,
         )
@@ -326,10 +334,14 @@ class Courtier:
         info = mt5.symbol_info(symbole)
         if info is None:
             raise CourtierIndisponible(f"Symbole inconnu : {symbole}")
+        # `filling_mode` est un champ de BITS (SYMBOL_FILLING_FOK = 1,
+        # SYMBOL_FILLING_IOC = 2 en MQL5). Le paquet Python n'exporte pas ces
+        # deux constantes, seulement les ORDER_FILLING_*, qui valent 0, 1, 2
+        # et ne sont PAS des drapeaux : les confondre ferait tester le mauvais bit.
         drapeaux = info.filling_mode
-        if drapeaux & mt5.SYMBOL_FILLING_FOK:
+        if drapeaux & _SYMBOL_FILLING_FOK:
             return mt5.ORDER_FILLING_FOK
-        if drapeaux & mt5.SYMBOL_FILLING_IOC:
+        if drapeaux & _SYMBOL_FILLING_IOC:
             return mt5.ORDER_FILLING_IOC
         return mt5.ORDER_FILLING_RETURN
 
