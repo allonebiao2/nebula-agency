@@ -147,6 +147,12 @@ async function rafraichirEtat() {
   pause.textContent = ETAT.pause ? "Reprendre" : "Pause";
   pause.className = "btn" + (ETAT.pause ? " btn-succes" : "");
   $("#pied-licence").textContent = ETAT.licence?.valide ? `Licence ${ETAT.licence.edition}` : "Évaluation";
+  const pr = ETAT.profil, pp = $("#pastille-profil");
+  if (pr) {
+    pp.textContent = `${pr.actif.toUpperCase()} · ${nf(pr.risque_courant, 1)} %`;
+    pp.classList.toggle("boost", pr.actif === "boost");
+    pp.title = pr.note_palier || `Profil ${pr.actif.toUpperCase()}, risque par trade ${nf(pr.risque_courant, 1)} %`;
+  } else pp.textContent = "Profil";
   $("#pastille-propositions").hidden = !(ETAT.propositions || []).length;
 
   const bandeau = $("#bandeau");
@@ -373,6 +379,7 @@ async function vueRisque() {
   const cap = await api("/api/capital");
   const r = ETAT.risque || {}, lim = r.limites || {}, c = ETAT.compte;
   const via = cap.viabilite || {};
+  const prof = await api("/api/profil"), pa = ETAT.profil || prof.agent || {}, calib = prof.calibrage || {};
   const conseil = !c ? "" : c.cent
     ? (c.solde_reel > 600 ? "Au-delà d'environ 500 $, le plafond de lots bride un compte cent : un compte standard devient plus efficace." : "Compte cent : même avec un petit capital, le risque de 1 % reste exact sur presque tous les signaux.")
     : (c.solde_reel < 250 ? "Sous 250 $ sur un compte standard, aucun signal ne tient dans le risque autorisé. Un compte cent chez ton courtier règle le problème sans relever le risque."
@@ -395,6 +402,16 @@ async function vueRisque() {
           jauge("Exposition ouverte", r.exposition_pct, lim.exposition_totale_max_pct),
         ].join("") + `<p class="discret">Risque par trade : <b>${nf(lim.risque_par_trade_pct, 1)} %</b> · plafond petit compte <b>${nf(lim.risque_max_petit_compte_pct, 1)} %</b> · martingale, grille et stop élargi : impossibles, pas des réglages.</p>` : ""}</section>
     </div>
+    <section class="carte" style="margin-top:16px"><div class="carte-tete"><h2>Profil ${esc((prof.actif || "").toUpperCase())}</h2><a class="btn btn-petit" href="#/reglages">Changer</a></div>
+      <div class="metriques">
+        <div class="metrique"><span>Risque par trade</span><b>${nf(pa.risque_courant ?? prof.effectif.risque_pct, 1)} %</b></div>
+        <div class="metrique"><span>Levier effectif max</span><b>x${nf(prof.effectif.levier_max, 1)}</b></div>
+        <div class="metrique"><span>Arrêt total</span><b>${nf(prof.effectif.drawdown_max_total_pct, 0)} %</b></div>
+        <div class="metrique"><span>Poche épargne</span><b>${nf(pa.poche?.verrouille_reel ?? 0)} ${esc(ETAT.compte?.devise_reelle || "")}</b></div>
+      </div>
+      ${pa.note_palier ? `<p class="alerte-txt">${esc(pa.note_palier)}</p>` : ""}
+      <p class="discret">${calib.valide ? `Arrêt total calibré au Monte Carlo : ${nf(calib.seuil_pct, 0)} % (sur deux ans de variance normale, 1 cas sur 100 atteint ${nf(calib.p99, 0)} %).${calib.plafonne ? " ⚠ À ce risque, la variance normale dépasse le plafond du code (35 %) : l'arrêt total peut être touché par du simple bruit." : ""}` : esc(calib.raison || "")}</p>
+    </section>
     <section class="carte" style="margin-top:16px"><div class="carte-tete"><h2>Trader avec n'importe quel capital</h2><span class="discret">mesuré le ${esc(cap.calcule_le || "·")}</span></div>
       ${c ? `<p><b>Ton compte :</b> ${esc(c.type_compte)} · capital de travail ${nf(c.capital_travail_reel)} ${esc(c.devise_reelle)}. ${esc(conseil)}</p>` : ""}
       <p class="sous-titre">Le lot minimum d'EUR/USD vaut environ 1 $ par pip. Stop médian mesuré sur deux ans : <b>${nf((cap.stop_median_points || 0) / 10, 0)} pips</b>. Trois réponses, appliquées automatiquement : le <b>compte cent</b> (lot 100 fois plus petit), le <b>lot minimum toléré</b> jusqu'au plafond du petit compte, et l'<b>attente</b> d'un signal au stop plus court. Jamais de dépassement.</p>
@@ -504,12 +521,14 @@ async function vueReglages() {
   const modifs = {};
   vue.innerHTML = `<div class="entete-vue"><div><h1>Réglages</h1><p class="sous-titre">Chaque changement repasse par le videur : un réglage dangereux est refusé avec sa raison, et rien n'est enregistré. Les réglages qui augmentent le risque sont signalés.</p></div>
     <button class="btn" id="btn-defaut">Revenir aux valeurs du fichier</button></div>
+    <div class="grille moitie" id="profils" style="margin-bottom:16px"></div>
     <div class="grille deux"><div class="pile" id="groupes"></div>
       <div class="pile"><section class="carte"><div class="carte-tete"><h2>Protections non modifiables</h2></div>
         <ul class="liste-verrous">${d.verrouilles.map(v => `<li><span class="marque-v gain">✓</span><span class="q">verrou</span><span><b>${esc(v.libelle)}</b><br><span class="d">${esc(v.raison)}</span></span></li>`).join("")}</ul></section>
         <section class="carte"><div class="carte-tete"><h2>Historique des changements</h2></div>
         ${d.historique.length ? `<ul class="flux">${d.historique.map(h => `<li><time>${esc(dateCourte(h.ts))}</time><span class="msg"><span class="type">${esc(h.auteur)}</span>${esc(h.cle)} : ${esc(h.avant)} → ${esc(h.apres)}</span></li>`).join("")}</ul>` : `<p class="discret">Aucun changement.</p>`}</section></div></div>
     <div class="barre-enregistrer" id="barre-enr" hidden><span id="resume-modifs"></span><div style="display:flex;gap:8px"><button class="btn" id="btn-annuler">Annuler</button><button class="btn btn-primaire" id="btn-enregistrer">Enregistrer</button></div><div class="erreurs" id="erreurs" style="flex-basis:100%" hidden></div></div>`;
+  rendreProfils();
   $("#groupes").innerHTML = Object.entries(groupes).map(([g, rs]) => `<section class="carte"><div class="carte-tete"><h2>${esc(g)}</h2></div>${rs.map(champReglage).join("")}</section>`).join("");
   const maj = () => {
     const n = Object.keys(modifs).length;
@@ -539,6 +558,69 @@ async function vueReglages() {
   $("#btn-defaut").onclick = async () => {
     if (!await confirmer({ titre: "Revenir aux valeurs du fichier ?", corps: "<p>Tous les changements faits dans l'interface seront retirés. Les valeurs de <span class=\"mono\">config.toml</span> s'appliquent de nouveau.</p>" })) return;
     await api("/api/reglages/reinitialiser", { corps: {} }); toast("Réglages remis par défaut"); vueReglages();
+  };
+}
+function probaHTML(sim, risque) {
+  if (!sim || !sim.valide) return `<p class="proba-note">${esc(sim?.raison || "Monte Carlo indisponible")}</p>`;
+  const niveau = (x, moyen, grave) => x >= grave ? "grave" : x >= moyen ? "moyen" : "";
+  const p20 = 100 * sim.p_drawdown["20"], p50 = 100 * sim.p_drawdown["50"], pire = sim.resultat.p5;
+  return `<div class="metrique"><span>Perdre 20 % dans l'année</span><b class="${niveau(p20, 10, 50)}">${nf(p20, 0)} %</b></div>
+    <div class="metrique"><span>Perdre la moitié</span><b class="${niveau(p50, 1, 10)}">${nf(p50, 0)} %</b></div>
+    <div class="metrique"><span>Pire 5 % des années</span><b class="${niveau(-pire, 15, 40)}">${signe(pire, 0)} %</b></div>
+    <p class="proba-note">${nf(risque, 1)} % par trade, ${sim.n_trades} trades sur un an, rejoués ${nf(sim.tirages, 0)} fois à partir de ${sim.trades_source} trades hors échantillon (espérance ${signe(sim.esperance_R, 3)} R${sim.credible ? "" : ", avantage non prouvé"}). Drawdown médian ${nf(sim.drawdown.p50, 0)} %, 1 année sur 100 : ${nf(sim.drawdown.p99, 0)} %.</p>`;
+}
+async function rendreProfils() {
+  const el = $("#profils"); if (!el) return;
+  const p = await api("/api/profil");
+  const rb = p.boost.risque_par_trade_pct, cal = p.calibrage || {};
+  el.innerHTML = `
+    <section class="carte carte-profil ${p.actif === "pro" ? "actif" : ""}">
+      <div class="carte-tete"><h2>PRO · capital protégé</h2>${p.actif === "pro" ? `<span class="etiquette gain">actif</span>` : ""}</div>
+      <p class="sous-titre">${nf(p.pro.risque_par_trade_pct, 1)} % par trade (plafond du code 2 %), gain visé ≥ ${nf(p.pro.ratio_rr_minimum, 1)} fois le risque, perte du jour ${nf(p.pro.perte_max_jour_pct, 1)} %, levier ≤ x${nf(p.pro.levier_effectif_max, 1)}.</p>
+      <div class="proba" id="proba-pro"><p class="proba-note">Calcul…</p></div>
+      ${p.actif === "pro" && cal.valide ? `<p class="discret">Arrêt total calibré : <b>${nf(cal.seuil_pct, 0)} %</b> (1 cas sur 100 sur deux ans : ${nf(cal.p99, 0)} %).</p>` : ""}
+      ${p.actif !== "pro" ? `<button class="btn btn-succes" id="btn-pro">Revenir en PRO</button>` : ""}
+    </section>
+    <section class="carte carte-profil ${p.actif === "boost" ? "actif boost" : ""}">
+      <div class="carte-tete"><h2>BOOST · croissance agressive</h2>${p.actif === "boost" ? `<span class="etiquette perte">actif</span>` : ""}</div>
+      <label class="champ"><span>Risque par trade : <b id="boost-val">${nf(rb, 1)} %</b> (plafond du code 10 %)</span>
+        <input type="range" id="boost-risque" min="0.5" max="10" step="0.5" value="${rb}" aria-label="Risque par trade en BOOST"></label>
+      <div class="proba" id="proba-boost"><p class="proba-note">Calcul…</p></div>
+      <p class="discret">Paliers anti-martingale ${p.boost.paliers_actifs ? "actifs" : "désactivés"} (le risque baisse à chaque doublement du capital) · poche épargne : à +${nf(p.boost.poche_declencheur_pct, 0)} %, ${nf(p.boost.poche_part_pct, 0)} % du gain mis à l'abri · en réel, 60 jours de PRO rentable exigés.</p>
+      <button class="btn btn-danger" id="btn-boost">${p.actif === "boost" ? "Appliquer" : "Activer BOOST"} à <span id="boost-bouton">${nf(rb, 1)}</span> %</button>
+    </section>`;
+  api(`/api/montecarlo?risque=${p.pro.risque_par_trade_pct}`).then(sim => { const x = $("#proba-pro"); if (x) x.innerHTML = probaHTML(sim, p.pro.risque_par_trade_pct); });
+  let dernierSim = null, attente = null;
+  const majBoost = () => {
+    const r = +$("#boost-risque").value;
+    $("#boost-val").textContent = `${nf(r, 1)} %`; $("#boost-bouton").textContent = nf(r, 1);
+    clearTimeout(attente);
+    attente = setTimeout(async () => {
+      dernierSim = await api(`/api/montecarlo?risque=${r}`);
+      const x = $("#proba-boost"); if (x) x.innerHTML = probaHTML(dernierSim, r);
+    }, 180);
+  };
+  $("#boost-risque").oninput = majBoost;
+  majBoost();
+  const pro = $("#btn-pro");
+  if (pro) pro.onclick = async () => {
+    await api("/api/profil", { corps: { actif: "pro" } }); toast("Profil PRO actif"); rendreProfils(); rafraichirEtat();
+  };
+  $("#btn-boost").onclick = async () => {
+    const r = +$("#boost-risque").value;
+    const sim = dernierSim && dernierSim.risque_pct === r ? dernierSim : await api(`/api/montecarlo?risque=${r}`);
+    const ok = await confirmer({
+      titre: `BOOST à ${nf(r, 1)} % par trade ?`, danger: true, saisie: "BOOST", libelleOk: "Activer",
+      corps: `<p>Mesuré sur les trades hors échantillon de la stratégie active${sim.credible ? "" : ", dont l'avantage n'est <b>pas</b> prouvé"} :</p>
+        <div class="proba">${probaHTML(sim, r)}</div>
+        <p>En démo, BOOST est libre. En réel, il exige 60 jours de PRO rentable.</p>` });
+    if (!ok) return;
+    try {
+      const res = await api("/api/profil", { corps: { actif: "boost", risque: r, confirme: true } });
+      if (!res.ok) { toast((res.erreurs || []).join(" "), true); return; }
+      (res.alertes || []).forEach(a => toast(a, true));
+      toast(`BOOST actif à ${nf(r, 1)} %`); rendreProfils(); rafraichirEtat();
+    } catch (err) { toast(err.message, true); }
   };
 }
 function plusRisque(r, v) {

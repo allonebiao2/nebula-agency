@@ -39,9 +39,9 @@ except ImportError:                                            # pragma: no cove
     mt5 = None
 
 from ..noyau import capital as capital_mod
-from ..noyau import reglages
+from ..noyau import profils, reglages
 from ..noyau.calendrier import Calendrier, verrou_annonces
-from ..noyau.chemins import dossier_rapports
+from ..noyau.chemins import dossier_rapports, fichier
 from ..noyau.plan import ACHAT, EtatSysteme, controle_prealable
 from ..strategies import catalogue
 from ..strategies.base import ContexteStrategie
@@ -111,6 +111,9 @@ class Agent:
         self.pause_motif = ""
         self.arret_total = False
         self.decalage_h = 0.0
+        self.etat_profil: profils.EtatProfil | None = self._lire_etat_profil()
+        self.risque_du_palier: tuple[float, str] = (0.0, "")
+        self.porte_boost_franchie = lambda: False      # branchée par la vague 3 (porte PRO 60 jours)
         self.cycles = 0
         self._instantane: dict = {"etat": "démarrage"}
 
@@ -137,6 +140,39 @@ class Agent:
     def commander(self, action: str, valeur=None, auteur: str = "interface") -> None:
         self._commandes.put(Commande(action, valeur, auteur))
         self._reveil.set()
+
+    @staticmethod
+    def _lire_etat_profil() -> profils.EtatProfil | None:
+        p = fichier("profil_etat.json")
+        try:
+            return profils.EtatProfil.depuis_json(p.read_text(encoding="utf-8")) if p.exists() else None
+        except Exception:                                     # noqa: BLE001
+            return None
+
+    def _ecrire_etat_profil(self) -> None:
+        if self.etat_profil:
+            fichier("profil_etat.json").write_text(self.etat_profil.en_json(), encoding="utf-8")
+
+    def _suivre_profil(self, cfg, compte) -> None:
+        """Point de départ des paliers et poche épargne, remis à zéro à chaque changement
+        de profil ; et mise à l'abri des gains quand le seuil est franchi."""
+        if self.etat_profil is None or self.etat_profil.profil != cfg.profil.actif:
+            ancien = self.etat_profil.profil if self.etat_profil else None
+            self.etat_profil = profils.initialiser(cfg.profil.actif, compte.equity)
+            self._ecrire_etat_profil()
+            depart = f"{compte.equity:,.2f}".replace(",", " ")
+            self.journal.evenement(
+                "profil", f"profil {cfg.profil.actif.upper()} actif"
+                          + (f" (était {ancien.upper()})" if ancien else "")
+                          + f" : point de départ des paliers {depart}",
+                niveau="alerte" if cfg.profil.boost else "info")
+        part = profils.mettre_a_l_abri(cfg, self.etat_profil, compte.equity)
+        if part > 0:
+            self._ecrire_etat_profil()
+            texte = f"{part:,.2f} mis à l'abri (total {self.etat_profil.verrouille:,.2f})"
+            self.journal.evenement("poche", texte.replace(",", " ")
+                                   + " : ces gains ne seront plus jamais risqués")
+        self.risque_du_palier = profils.risque_courant(cfg, self.etat_profil, compte.equity)
 
     def instantane(self) -> dict:
         with self._verrou:
@@ -183,8 +219,10 @@ class Agent:
             self.journal.point_equite(compte.balance, compte.equity, compte.margin_free)
             self._dernier_point = time.time()
 
-        capital = capital_mod.capital_de_travail(compte.balance, cfg.compte.capital_max_engage,
-                                                 self.type_compte)
+        self._suivre_profil(cfg, compte)
+        capital = capital_mod.capital_de_travail(
+            profils.capital_disponible(compte.balance, self.etat_profil),
+            cfg.compte.capital_max_engage, self.type_compte)
         risque = self._etat_du_risque(cfg, capital)
 
         if risque["drawdown_pct"] >= cfg.circuits.drawdown_max_total_pct and not self.arret_total:
@@ -198,7 +236,8 @@ class Agent:
         peut_trader, raison_mode = autorisation(
             mode, compte_demo=compte.trade_mode == mt5.ACCOUNT_TRADE_MODE_DEMO,
             mode_config=cfg.compte.mode, capital_max_engage=cfg.compte.capital_max_engage,
-            licence_valide=self.licence_valide())
+            licence_valide=self.licence_valide(),
+            profil_boost=cfg.profil.boost, porte_boost_franchie=self.porte_boost_franchie())
 
         self._gerer_positions(cfg, positions, maintenant_serveur, peut_trader)
 
@@ -499,15 +538,19 @@ class Agent:
             en_pause=bool(motif_blocage), motif_pause=motif_blocage,
         )
         annonces = verrou_annonces(self.calendrier) if self.calendrier else None
+        risque_du_palier, _note_palier = self.risque_du_palier
         verdict = controle_prealable(
             plan, cfg, etat, capital=capital, specs=self.specs,
             annonce_imminente=annonces, maintenant=maintenant_serveur,
-            risque_pct_plafond=cfg.risque.risque_max_petit_compte_pct)
+            risque_pct_plafond=cfg.risque.risque_max_petit_compte_pct,
+            risque_pct=risque_du_palier or None,
+            prix=(tick.ask if plan.sens == ACHAT else tick.bid) if tick else None)
+        profil = cfg.profil.actif
 
         if not verdict.autorise:
             motif = " · ".join(f"Q{v.numero} {v.detail.splitlines()[0]}" for v in verdict.refus)
             self.journal.decision(verdict_obj=verdict, verdict="refuse", motif=motif, mode=mode,
-                                  barre=barre_close)
+                                  barre=barre_close, profil=profil, risque_choisi=risque_du_palier)
             self.journal.evenement("decision", f"{nom} proposait {plan.sens.upper()} : REFUSÉ "
                                                f"({len(verdict.refus)} verrou(s))",
                                    niveau="info", donnees={"motif": motif})
@@ -525,7 +568,8 @@ class Agent:
 
         if not peut_trader:
             self.journal.decision(verdict_obj=verdict, verdict="observe", motif=raison_mode,
-                                  mode=mode, barre=barre_close)
+                                  mode=mode, barre=barre_close, profil=profil,
+                                  risque_choisi=risque_du_palier)
             self.journal.evenement("decision", f"{nom} : {plan.sens.upper()} autorisé par les "
                                                f"8 verrous, NON envoyé ({raison_mode})")
             return
@@ -535,18 +579,20 @@ class Agent:
                                   commentaire=f"nebula {nom[:12]}")
         self.journal.ordre(action="ouvrir", ticket=r.ticket, sens=plan.sens, lots=dim.lots,
                            prix=r.prix, sl=r.sl, tp=r.tp, retcode=r.retcode,
-                           commentaire=r.message, mode=mode)
+                           commentaire=r.message, mode=mode, prix_demande=r.prix_demande,
+                           glissement_points=r.glissement_points)
         if r.ok:
             self.journal.decision(verdict_obj=verdict, verdict="pris", mode=mode,
-                                  barre=barre_close)
+                                  barre=barre_close, profil=profil, risque_choisi=risque_du_palier)
             self.journal.ouvrir_trade(ticket=r.ticket, plan=plan, lots=dim.lots, prix=r.prix,
-                                      risque_devise=dim.risque_devise, mode=mode)
+                                      risque_devise=dim.risque_devise, mode=mode, profil=profil)
             self.journal.evenement("trade", f"{plan.sens.upper()} {dim.lots:g} lot à {r.prix} · "
                                             f"stop {r.sl} · objectif {r.tp} · risque "
                                             f"{dim.risque_pct:.2f} %", niveau="info")
         else:
             self.journal.decision(verdict_obj=verdict, verdict="echec", motif=r.message,
-                                  mode=mode, barre=barre_close)
+                                  mode=mode, barre=barre_close, profil=profil,
+                                  risque_choisi=risque_du_palier)
             self.journal.evenement("trade", f"ordre refusé par le courtier : {r.message}",
                                    niveau="alerte")
 
@@ -592,6 +638,21 @@ class Agent:
             if prochaine else None,
             "positions": pos, "calendrier": prochaines,
             "calendrier_ok": bool(self.calendrier and self.calendrier.disponible),
+        }
+        ep = self.etat_profil
+        instant["profil"] = {
+            "actif": cfg.profil.actif, "risque_choisi": cfg.risque.risque_par_trade_pct,
+            "risque_courant": self.risque_du_palier[0] or cfg.risque.risque_par_trade_pct,
+            "note_palier": self.risque_du_palier[1], "plafond_code": cfg.profil.plafond_risque_pct,
+            "levier_max": cfg.profil.levier_effectif_max, "paliers": list(cfg.profil.paliers),
+            "paliers_actifs": cfg.profil.paliers_actifs,
+            "poche": {"declencheur_pct": cfg.profil.poche_declencheur_pct,
+                      "part_pct": cfg.profil.poche_part_pct,
+                      "verrouille": ep.verrouille if ep else 0.0,
+                      "verrouille_reel": (tc.en_reel(ep.verrouille) if (ep and tc) else 0.0),
+                      "mises_a_l_abri": ep.mises_a_l_abri if ep else 0},
+            "capital_depart": ep.capital_depart if ep else None,
+            "porte_boost_franchie": bool(self.porte_boost_franchie()),
         }
         if compte is not None and tc is not None:
             instant["compte"] = {

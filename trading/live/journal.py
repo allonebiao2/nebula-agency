@@ -73,6 +73,15 @@ class Journal:
         self._verrou = threading.Lock()
         with self._cx() as cx:
             cx.executescript(SCHEMA)
+            # Migrations : un journal existant garde ses lignes, on ajoute les colonnes.
+            for table, colonne, type_ in (("decisions", "symbole", "TEXT"), ("decisions", "profil", "TEXT"),
+                                          ("decisions", "risque_choisi", "REAL"),
+                                          ("trades", "symbole", "TEXT"), ("trades", "profil", "TEXT"),
+                                          ("ordres", "prix_demande", "REAL"),
+                                          ("ordres", "glissement_points", "REAL")):
+                existantes = {r[1] for r in cx.execute(f"PRAGMA table_info({table})")}
+                if colonne not in existantes:
+                    cx.execute(f"ALTER TABLE {table} ADD COLUMN {colonne} {type_}")
 
     @contextmanager
     def _cx(self):
@@ -103,7 +112,8 @@ class Journal:
              json.dumps(donnees, ensure_ascii=False, default=str) if donnees else None))
 
     def decision(self, *, verdict_obj=None, plan=None, verdict: str, motif: str = "",
-                 mode: str, barre: datetime | None = None) -> int:
+                 mode: str, barre: datetime | None = None, profil: str = "",
+                 risque_choisi: float | None = None) -> int:
         plan = plan or (verdict_obj.plan if verdict_obj else None)
         dim = verdict_obj.dimensionnement if verdict_obj else None
         verrous = ([{"n": v.numero, "question": v.question, "passe": v.passe,
@@ -111,8 +121,9 @@ class Journal:
                    if verdict_obj else [])
         return self._ecrire(
             """INSERT INTO decisions (ts, barre, strategie, sens, entree, stop, objectif, these,
-               verdict, motif, verrous, lots, risque_pct, risque_devise, note, mode, contexte)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+               verdict, motif, verrous, lots, risque_pct, risque_devise, note, mode, contexte,
+               symbole, profil, risque_choisi)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (maintenant(), barre.isoformat() if barre else None,
              plan.strategie if plan else None, plan.sens if plan else None,
              plan.entree if plan else None, plan.stop if plan else None,
@@ -122,24 +133,30 @@ class Journal:
              dim.risque_pct if dim and dim.autorise else None,
              dim.risque_devise if dim and dim.autorise else None,
              dim.note if dim else None, mode,
-             json.dumps(plan.contexte, ensure_ascii=False, default=str) if plan else None))
+             json.dumps(plan.contexte, ensure_ascii=False, default=str) if plan else None,
+             plan.symbole if plan else None, profil or None, risque_choisi))
 
     def ordre(self, *, action: str, ticket=None, sens=None, lots=None, prix=None, sl=None,
-              tp=None, retcode=None, commentaire="", mode="") -> int:
+              tp=None, retcode=None, commentaire="", mode="", prix_demande=None,
+              glissement_points=None) -> int:
         return self._ecrire(
             """INSERT INTO ordres (ts, action, ticket, sens, lots, prix, sl, tp, retcode,
-               commentaire, mode) VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
-            (maintenant(), action, ticket, sens, lots, prix, sl, tp, retcode, commentaire, mode))
+               commentaire, mode, prix_demande, glissement_points)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (maintenant(), action, ticket, sens, lots, prix, sl, tp, retcode, commentaire, mode,
+             prix_demande, glissement_points))
 
     def ouvrir_trade(self, *, ticket: int, plan, lots: float, prix: float,
-                     risque_devise: float, mode: str) -> None:
+                     risque_devise: float, mode: str, profil: str = "") -> None:
         self._ecrire(
             """INSERT OR IGNORE INTO trades (ticket, strategie, sens, lots, ouvert_le,
-               prix_entree, stop_initial, objectif, risque_devise, these, contexte, mode)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+               prix_entree, stop_initial, objectif, risque_devise, these, contexte, mode,
+               symbole, profil)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (ticket, plan.strategie, plan.sens, lots, maintenant(), prix, plan.stop,
              plan.objectif, risque_devise, plan.these,
-             json.dumps(plan.contexte, ensure_ascii=False, default=str), mode))
+             json.dumps(plan.contexte, ensure_ascii=False, default=str), mode,
+             plan.symbole, profil or None))
 
     def fermer_trade(self, *, ticket: int, prix: float, resultat: float, motif: str,
                      ferme_le: str | None = None) -> None:

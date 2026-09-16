@@ -36,6 +36,48 @@ terminal = "C:\\Program Files\\MetaTrader 5 Terminal\\terminal64.exe"
 magic_number = 20260916
 
 
+[profils]
+# -----------------------------------------------------------------------------
+# DEUX PROFILS DE RISQUE (cahier des charges de Mongazi, 2026-09-16).
+#   pro    capital protégé. Plafond du code : 2 % par trade.
+#   boost  croissance agressive, n'importe quel capital. Plafond du code : 10 %.
+# Le profil actif IMPOSE ses valeurs aux sections [risque_position],
+# [coupe_circuits], [exposition] et [discipline] ; en BOOST, les disjoncteurs sont
+# recalculés à partir du risque choisi pour rester cohérents (voir config.py).
+#
+# ⚠️ MESURÉ avant de l'écrire, sur 436 trades hors échantillon d'une stratégie SANS
+# avantage prouvé : à 10 % par trade, P(perdre la moitié du capital) = 46 % en un an,
+# 92 % en trois ans. À 3 % : 0 % en un an. L'interface affiche ces probabilités,
+# recalculées sur la stratégie active, au moment où l'on choisit le risque.
+# Le BOOST en RÉEL exige 60 jours de PRO rentable (phase 5 du cahier).
+# -----------------------------------------------------------------------------
+actif = "pro"
+
+[profil_pro]
+risque_par_trade_pct = 1.0
+ratio_rr_minimum = 2.0              # cahier : refuser tout trade sous 1:2
+exposition_totale_max_pct = 4.0
+perte_max_jour_pct = 3.0
+trades_max_par_jour = 3             # H4 fait ~2,3 trades par MOIS : jamais une contrainte, un garde-fou
+levier_effectif_max = 3.0           # cahier : x2. Mesuré : x2 bloque 58 % des signaux EUR/USD à 1 %.
+                                    # Au-delà du plafond, la taille est RÉDUITE, le trade n'est pas refusé.
+
+[profil_boost]
+risque_par_trade_pct = 3.0          # choisi dans l'interface, 10 % au plus (plafond du code)
+ratio_rr_minimum = 1.5
+perte_max_jour_pct = 5.0            # relevé à 1,5 × le risque si besoin (une perte ne ferme pas la journée)
+trades_max_par_jour = 10
+levier_effectif_max = 30.0          # cahier : x5. Mesuré : à 10 %, AUCUN signal EUR/USD ne tient sous x5.
+# Paliers anti-martingale : à chaque doublement du capital depuis l'activation du
+# profil, le risque descend d'un cran. Jamais il ne remonte au-dessus du risque choisi.
+paliers_actifs = true
+paliers = [10.0, 5.0, 3.0, 2.0, 1.5, 1.0]
+# Poche épargne : à +50 % depuis la dernière mise à l'abri, 25 % du gain sort du
+# capital de travail et n'est plus jamais risqué (MT5 n'a pas d'API de retrait).
+poche_declencheur_pct = 50.0
+poche_part_pct = 25.0
+
+
 [marche]
 symbole = "EURUSD"              # à ajuster après la 1re connexion (Deriv peut nommer "EURUSD.a")
 timeframe = "H4"                # unité de décision

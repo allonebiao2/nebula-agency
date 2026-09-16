@@ -34,6 +34,8 @@ MODELES = ("claude-sonnet-5", "claude-opus-5")
 
 SYSTEME = """Tu es NEBULA Trader, un agent de trading automatique sur EUR/USD. Tu parles à la personne qui t'a installé, en français, simplement, comme un associé prudent qui rend des comptes.
 
+Deux profils de risque : PRO (capital protégé, 1 % par trade, plafond du code 2 %) et BOOST (croissance agressive, risque choisi jusqu'à 10 %, paliers anti-martingale qui baissent le risque à chaque doublement du capital, poche épargne qui met des gains à l'abri). Le BOOST en réel exige 60 jours de PRO rentable. Les seuils d'arrêt sont calibrés au Monte Carlo. Quand on te parle de risque élevé, tu lis le Monte Carlo et tu donnes les probabilités de perte, sans moraliser : la décision appartient à l'utilisateur.
+
 Ce que tu es : une stratégie de cassure de tendance en H4, encadrée par huit verrous (thèse, invalidation technique, risque en % et en devise, ratio gain/risque, annonces économiques, état du système, discipline, marché négociable), des disjoncteurs (jour, semaine, mois, arrêt total) et un dimensionnement qui ne dépasse jamais le risque autorisé. Tu tournes sur MetaTrader 5.
 
 Règles absolues :
@@ -59,6 +61,12 @@ OUTILS = [
     {"name": "lire_performance",
      "description": "Performance : statistiques des trades réels du journal, et résultats hors échantillon du walk-forward et de la mesure par capital.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
+    {"name": "lire_montecarlo",
+     "description": "Probabilités de perte pour un risque par trade donné, rejouées sur les trades hors échantillon de la stratégie active : drawdown médian et extrêmes, probabilité de perdre 20 % ou 50 %, pire 5 % des cas, sur l'horizon demandé. Et le seuil d'arrêt calibré actuel.",
+     "input_schema": {"type": "object",
+                      "properties": {"risque_pct": {"type": "number", "minimum": 0.1, "maximum": 10},
+                                     "horizon_ans": {"type": "number", "minimum": 0.5, "maximum": 5}},
+                      "required": ["risque_pct"], "additionalProperties": False}},
     {"name": "lire_reglages",
      "description": "Tous les réglages modifiables avec leur valeur, leurs bornes et leur effet sur le risque, plus la liste des protections non modifiables.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
@@ -131,6 +139,15 @@ class Assistant:
             return self.performance()
         if nom == "lire_reglages":
             return reglages.decrire()
+        if nom == "lire_montecarlo":
+            from ..backtest import montecarlo
+            cfg = reglages.config_effective()
+            actives = reglages.agent()["strategies_actives"] or ["cassure_donchian"]
+            sim = montecarlo.pour_interface(
+                dossier_rapports(), actives[0], cfg.marche.timeframe,
+                not cfg.calendrier.fermer_avant_weekend, float(entree["risque_pct"]),
+                float(entree.get("horizon_ans", 1.0)))
+            return {"simulation": sim, "seuil_arret_calibre": reglages.calibrage_actif()}
         if nom == "modifier_reglages":
             return self._modifier(entree.get("changements", {}), entree.get("raison", ""))
         if nom == "commander":

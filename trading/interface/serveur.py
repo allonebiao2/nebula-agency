@@ -90,6 +90,35 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
                 "stats": journal.statistiques(),
                 "assistant": {**assistant.config(), "cle": bool(assistant.cle_api())}}
 
+    @app.get("/api/profil")
+    def profil():
+        cfg = reglages.config_effective()
+        brut = reglages._brut()
+        return {
+            "actif": cfg.profil.actif,
+            "pro": brut.get("profil_pro", {}), "boost": brut.get("profil_boost", {}),
+            "plafonds": {"pro": 2.0, "boost": cfg.profil.plafond_risque_pct if cfg.profil.boost else 10.0},
+            "effectif": {"risque_pct": cfg.risque.risque_par_trade_pct,
+                         "perte_max_jour_pct": cfg.circuits.perte_max_jour_pct,
+                         "perte_max_semaine_pct": cfg.circuits.perte_max_semaine_pct,
+                         "perte_max_mois_pct": cfg.circuits.perte_max_mois_pct,
+                         "drawdown_max_total_pct": cfg.circuits.drawdown_max_total_pct,
+                         "exposition_totale_max_pct": cfg.exposition.exposition_totale_max_pct,
+                         "levier_max": cfg.profil.levier_effectif_max},
+            "calibrage": reglages.calibrage_actif(),
+            "agent": agent.instantane().get("profil"),
+        }
+
+    @app.get("/api/montecarlo")
+    def monte_carlo(risque: float = 1.0, horizon: float = 1.0):
+        from ..backtest import montecarlo
+        cfg = reglages.config_effective()
+        actives = reglages.agent()["strategies_actives"] or ["cassure_donchian"]
+        risque = max(0.1, min(float(risque), 10.0))
+        return montecarlo.pour_interface(dossier_rapports(), actives[0], cfg.marche.timeframe,
+                                         not cfg.calendrier.fermer_avant_weekend, risque,
+                                         max(0.5, min(float(horizon), 5.0)))
+
     @app.get("/api/equite")
     def equite(jours: int = 90):
         return journal.courbe(depuis_jours=max(1, min(jours, 3650)))
@@ -218,6 +247,27 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
             agent.commander("mode", valeur, auteur="interface")
             return {"ok": True}
         raise HTTPException(400, f"action inconnue : {action}")
+
+    @app.post("/api/profil")
+    def changer_profil(corps: dict = Body(...)):
+        actif = corps.get("actif")
+        if actif not in ("pro", "boost"):
+            raise HTTPException(400, "profil attendu : pro ou boost")
+        changements = {"profils.actif": actif}
+        if actif == "boost":
+            if not corps.get("confirme"):
+                raise HTTPException(400, "le passage en BOOST doit être confirmé")
+            if corps.get("risque") is not None:
+                changements["profil_boost.risque_par_trade_pct"] = corps["risque"]
+        dd = (agent.instantane().get("risque") or {}).get("drawdown_pct", 0.0)
+        r = reglages.modifier(changements, auteur="interface", drawdown_pct=dd, journal=journal)
+        if r["ok"] and r["changes"]:
+            cfg = reglages.config_effective()
+            journal.evenement("profil", f"profil {actif.upper()} choisi dans l'interface, risque "
+                                        f"{cfg.risque.risque_par_trade_pct:g} % par trade",
+                              niveau="alerte" if actif == "boost" else "info")
+            agent.commander("analyser", auteur="profil")
+        return r
 
     @app.post("/api/chat")
     def chat(corps: dict = Body(...)):

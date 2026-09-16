@@ -66,6 +66,7 @@ class Dimensionnement:
     raison: str = ""
     note: str = ""               # ex. « lot minimum, risque relevé à 1,4 % »
     capital_requis: float = 0.0  # si refusé faute de capital : ce qu'il faudrait
+    levier: float = 0.0          # notionnel / capital, 0 si le prix n'est pas connu
 
     @property
     def petit_compte(self) -> bool:
@@ -100,6 +101,8 @@ def dimensionner(
     lots_deja_ouverts: float = 0.0,
     perte_max_par_position_pct: float | None = None,
     risque_pct_plafond: float | None = None,
+    prix: float | None = None,
+    levier_max: float | None = None,
 ) -> Dimensionnement:
     """Combien de lots, pour risquer exactement `risque_pct` % et pas un cent de plus.
 
@@ -174,6 +177,30 @@ def dimensionner(
 
     lots = min(lots, specs.volume_max)
 
+    # --- Levier effectif : notionnel / capital -----------------------------
+    # Le levier du COMPTE (1:1000 chez Deriv) ne dit rien du risque. Ce qui compte
+    # est la taille engagée rapportée au capital. Au-delà du plafond du profil, on
+    # RÉDUIT la taille (le trade risque alors moins que prévu, et le journal le dit) ;
+    # on ne refuse que si même le lot minimum dépasse. Le notionnel est exprimé dans
+    # l'unité du compte : juste pour les symboles cotés dans la devise du compte
+    # (EUR/USD et NAS100 sur un compte en USD ou en cents de USD).
+    levier = 0.0
+    if prix and prix > 0 and specs.taille_contrat > 0:
+        notionnel_par_lot = specs.taille_contrat * prix
+        levier = lots * notionnel_par_lot / capital
+        if levier_max and levier > levier_max + 1e-9:
+            lots_max = _arrondir_vers_le_bas(levier_max * capital / notionnel_par_lot, specs.volume_step)
+            if lots_max < specs.volume_min:
+                return Dimensionnement(
+                    **{**vide, "valeur_point_par_lot": vpl},
+                    raison=(f"levier : même le lot minimum ({specs.volume_min:g}) engagerait "
+                            f"x{specs.volume_min * notionnel_par_lot / capital:.1f} le capital, "
+                            f"au-delà du plafond du profil (x{levier_max:g})."))
+            note = (note + " · " if note else "") + (
+                f"levier ramené de x{levier:.1f} à x{levier_max:g} : taille réduite")
+            lots = lots_max
+            levier = lots * notionnel_par_lot / capital
+
     risque_reel = lots * points_de_risque * vpl
     pct_reel = 100 * risque_reel / capital
 
@@ -193,6 +220,7 @@ def dimensionner(
         valeur_point_par_lot=vpl,
         autorise=True,
         note=note,
+        levier=levier,
     )
 
 

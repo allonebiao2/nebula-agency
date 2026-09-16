@@ -48,11 +48,18 @@ class ResultatOrdre:
     tp: float | None = None
     retcode: int | None = None
     message: str = ""
+    prix_demande: float | None = None
+    glissement_points: float | None = None   # positif = défavorable
 
 
 def autorisation(mode: str, *, compte_demo: bool, mode_config: str,
-                 capital_max_engage: float, licence_valide: bool) -> tuple[bool, str]:
-    """Le mode permet-il d'envoyer un ordre sur CE compte ? Raison en clair."""
+                 capital_max_engage: float, licence_valide: bool,
+                 profil_boost: bool = False, porte_boost_franchie: bool = False) -> tuple[bool, str]:
+    """Le mode permet-il d'envoyer un ordre sur CE compte ? Raison en clair.
+
+    BOOST en RÉEL : exige la porte de la phase 5 du cahier des charges (60 jours de
+    PRO rentable). En démo, BOOST est libre : c'est là qu'on l'essaie.
+    """
     if mode not in MODES:
         return False, f"mode inconnu : {mode}"
     if mode == "observation":
@@ -71,6 +78,9 @@ def autorisation(mode: str, *, compte_demo: bool, mode_config: str,
         return False, "aucun plafond de capital défini : le mode réel reste bloqué"
     if not licence_valide:
         return False, "licence absente ou expirée : le mode réel est réservé aux licences"
+    if profil_boost and not porte_boost_franchie:
+        return False, ("profil BOOST en réel refusé : il faut d'abord 60 jours de PRO rentable "
+                       "(phase 5 du cahier des charges). En démo, BOOST est libre.")
     return True, ""
 
 
@@ -141,8 +151,13 @@ class Executeur:
                 verif = self._verifier_stop(ticket)
                 if not verif.ok:
                     return verif
-                return ResultatOrdre(True, ticket=ticket, prix=r.price or prix, sl=sl, tp=tp,
-                                     retcode=r.retcode, message=r.comment)
+                obtenu = r.price or prix
+                # Le glissement mesuré ordre par ordre : c'est ce que la porte démo compare
+                # au modèle de coûts du backtest.
+                glisse = (obtenu - prix) / specs.point * (1 if achat else -1)
+                return ResultatOrdre(True, ticket=ticket, prix=obtenu, sl=sl, tp=tp,
+                                     retcode=r.retcode, message=r.comment,
+                                     prix_demande=prix, glissement_points=round(glisse, 1))
             if r.retcode not in A_REESSAYER:
                 break
         return ResultatOrdre(False, retcode=derniere.retcode if derniere else None,

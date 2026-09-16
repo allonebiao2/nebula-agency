@@ -35,16 +35,50 @@ SCHEMA: list[dict] = [
     # le passage en réel se décide d'un geste explicite, pas d'un menu déroulant.
     dict(cle="compte.mode", groupe="Compte", type="choix", choix=["demo", "reel"], sens="risque",
          cache=True, libelle="Mode du compte"),
+    # --- Profils (le choix du profil actif a son propre écran) -------------
+    dict(cle="profils.actif", groupe="Profil", type="choix", choix=["pro", "boost"], sens="risque",
+         cache=True, libelle="Profil actif"),
+    dict(cle="profil_pro.risque_par_trade_pct", groupe="Profil PRO", type="nombre",
+         min=0.1, max=2.0, pas=0.1, unite="%", sens="risque", libelle="Risque par trade",
+         aide="Plafond du code : 2 %. À 1 %, dix pertes d'affilée coûtent 10 %."),
+    dict(cle="profil_pro.ratio_rr_minimum", groupe="Profil PRO", type="nombre",
+         min=1.0, max=3.0, pas=0.1, unite="", sens="prudence", libelle="Ratio gain/risque minimum"),
+    dict(cle="profil_pro.exposition_totale_max_pct", groupe="Profil PRO", type="nombre",
+         min=1, max=10, pas=0.5, unite="%", sens="risque", libelle="Exposition totale"),
+    dict(cle="profil_pro.perte_max_jour_pct", groupe="Profil PRO", type="nombre",
+         min=1, max=10, pas=0.5, unite="%", sens="risque", libelle="Perte max du jour"),
+    dict(cle="profil_pro.trades_max_par_jour", groupe="Profil PRO", type="entier",
+         min=1, max=10, pas=1, unite="", sens="risque", libelle="Trades par jour"),
+    dict(cle="profil_pro.levier_effectif_max", groupe="Profil PRO", type="nombre",
+         min=1, max=30, pas=0.5, unite="×", sens="risque", libelle="Levier effectif maximum",
+         aide="Taille engagée / capital. Au-delà, la taille est réduite, le trade n'est pas refusé."),
+    dict(cle="profil_boost.risque_par_trade_pct", groupe="Profil BOOST", type="nombre",
+         min=0.5, max=10.0, pas=0.5, unite="%", sens="risque", libelle="Risque par trade",
+         aide="Plafond du code : 10 %. Les probabilités de perte se lisent dans l'écran du profil."),
+    dict(cle="profil_boost.ratio_rr_minimum", groupe="Profil BOOST", type="nombre",
+         min=1.0, max=3.0, pas=0.1, unite="", sens="prudence", libelle="Ratio gain/risque minimum"),
+    dict(cle="profil_boost.perte_max_jour_pct", groupe="Profil BOOST", type="nombre",
+         min=1, max=35, pas=0.5, unite="%", sens="risque", libelle="Perte max du jour",
+         aide="Relevée automatiquement à 1,5 × le risque : une seule perte ne ferme pas la journée."),
+    dict(cle="profil_boost.trades_max_par_jour", groupe="Profil BOOST", type="entier",
+         min=1, max=20, pas=1, unite="", sens="risque", libelle="Trades par jour"),
+    dict(cle="profil_boost.levier_effectif_max", groupe="Profil BOOST", type="nombre",
+         min=1, max=30, pas=0.5, unite="×", sens="risque", libelle="Levier effectif maximum"),
+    dict(cle="profil_boost.paliers_actifs", groupe="Profil BOOST", type="bool", sens="prudence",
+         libelle="Paliers anti-martingale",
+         aide="À chaque doublement du capital, le risque descend d'un cran. Jamais il ne remonte."),
+    dict(cle="profil_boost.poche_declencheur_pct", groupe="Profil BOOST", type="nombre",
+         min=0, max=500, pas=5, unite="%", sens=None, libelle="Poche épargne : à partir de",
+         aide="Gain depuis la dernière mise à l'abri qui déclenche le verrouillage. 0 = désactivée."),
+    dict(cle="profil_boost.poche_part_pct", groupe="Profil BOOST", type="nombre",
+         min=0, max=100, pas=5, unite="%", sens="prudence", libelle="Poche épargne : part du gain",
+         aide="Part du gain qui sort du capital de travail et n'est plus jamais risquée."),
     # --- Capital & risque par trade ---------------------------------------
     dict(cle="compte.capital_max_engage", groupe="Capital", type="nombre", min=0, max=10_000_000,
          pas=10, unite="$", sens="risque",
          libelle="Capital engagé au maximum",
          aide="Le bot dimensionne sur le plus petit entre ce montant et le solde. 0 = le solde entier "
               "(le mode réel exige un plafond)."),
-    dict(cle="risque_position.risque_par_trade_pct", groupe="Risque par trade", type="nombre",
-         min=0.1, max=2.0, pas=0.1, unite="%", sens="risque",
-         libelle="Risque par trade",
-         aide="Part du capital perdue si le stop est touché. 1 % : dix pertes d'affilée coûtent 10 %."),
     dict(cle="risque_position.risque_max_petit_compte_pct", groupe="Risque par trade", type="nombre",
          min=0.1, max=2.0, pas=0.1, unite="%", sens="risque",
          libelle="Plafond petit compte",
@@ -58,9 +92,6 @@ SCHEMA: list[dict] = [
     dict(cle="risque_position.take_profit_r_multiple", groupe="Risque par trade", type="nombre",
          min=1.0, max=5.0, pas=0.25, unite="R", sens=None,
          libelle="Objectif", aide="En multiples du risque. À 2 R, l'équilibre est à 33 % de réussite."),
-    dict(cle="risque_position.ratio_rr_minimum", groupe="Risque par trade", type="nombre",
-         min=1.0, max=3.0, pas=0.1, unite="", sens="prudence",
-         libelle="Ratio gain/risque minimum", aide="Un plan qui vise moins est refusé."),
     dict(cle="risque_position.trailing_actif", groupe="Risque par trade", type="bool", sens=None,
          libelle="Stop suiveur", aide="Resserre le stop après un gain de 1 R. Il ne l'élargit jamais."),
     dict(cle="risque_position.trailing_declenche_a_r", groupe="Risque par trade", type="nombre",
@@ -70,15 +101,14 @@ SCHEMA: list[dict] = [
          libelle="Filet anti-bug", aide="Au-delà, l'ordre est bloqué comme une anomalie de calcul."),
 
     # --- Disjoncteurs -------------------------------------------------------
-    dict(cle="coupe_circuits.perte_max_jour_pct", groupe="Disjoncteurs", type="nombre",
-         min=1, max=10, pas=0.5, unite="%", sens="risque", libelle="Perte max du jour"),
     dict(cle="coupe_circuits.perte_max_semaine_pct", groupe="Disjoncteurs", type="nombre",
          min=2, max=15, pas=0.5, unite="%", sens="risque", libelle="Perte max de la semaine"),
     dict(cle="coupe_circuits.perte_max_mois_pct", groupe="Disjoncteurs", type="nombre",
          min=3, max=25, pas=1, unite="%", sens="risque", libelle="Perte max du mois"),
     dict(cle="coupe_circuits.drawdown_max_total_pct", groupe="Disjoncteurs", type="nombre",
          min=5, max=35, pas=1, unite="%", sens="risque", libelle="Arrêt total",
-         aide="Arrêt complet, redémarrage manuel. Au-delà de 35 %, il faut +54 % pour revenir."),
+         aide="Calibré au Monte Carlo de la stratégie active (au-delà de deux ans de variance "
+              "normale), tant qu'on ne le fixe pas soi-même. Redémarrage manuel."),
     dict(cle="coupe_circuits.pertes_consecutives_max", groupe="Disjoncteurs", type="entier",
          min=3, max=15, pas=1, unite="pertes", sens="risque", libelle="Série noire"),
     dict(cle="coupe_circuits.pause_apres_serie_heures", groupe="Disjoncteurs", type="entier",
@@ -89,10 +119,6 @@ SCHEMA: list[dict] = [
          min=1, max=3, pas=1, unite="", sens="risque", libelle="Positions simultanées"),
     dict(cle="exposition.lots_total_max", groupe="Discipline", type="nombre",
          min=0.01, max=20, pas=0.01, unite="lots", sens="risque", libelle="Lots au total"),
-    dict(cle="exposition.exposition_totale_max_pct", groupe="Discipline", type="nombre",
-         min=1, max=10, pas=0.5, unite="%", sens="risque", libelle="Exposition totale"),
-    dict(cle="discipline.trades_max_par_jour", groupe="Discipline", type="entier",
-         min=1, max=10, pas=1, unite="", sens="risque", libelle="Trades par jour"),
     dict(cle="discipline.trades_max_par_semaine", groupe="Discipline", type="entier",
          min=1, max=30, pas=1, unite="", sens="risque", libelle="Trades par semaine"),
     dict(cle="discipline.refroidissement_apres_perte_minutes", groupe="Discipline", type="entier",
@@ -186,12 +212,69 @@ def agent() -> dict:
     return _lire()["agent"]
 
 
+def calibrage_actif(s: dict | None = None) -> dict:
+    """Le seuil d'arrêt total calibré au Monte Carlo pour la stratégie et le risque actifs.
+
+    Seuil = p99 du drawdown sur deux ans × 1,2, borné au plafond du code. S'il est
+    plafonné, la variance normale de la stratégie à ce risque dépasse ce que le code
+    tolère : l'arrêt total sera touché par du bruit, et on le dit.
+    """
+    from ..backtest import montecarlo
+    from .chemins import dossier_rapports
+    s = surcharges() if s is None else s
+    try:
+        cfg0 = charger(surcharges=s)
+    except ConfigDangereuse:
+        return {"valide": False, "raison": "configuration refusée"}
+    actives = agent().get("strategies_actives") or []
+    if not actives:
+        return {"valide": False, "raison": "aucune stratégie active"}
+    d = montecarlo.rapport_actif(dossier_rapports(), actives[0], cfg0.marche.timeframe,
+                                 not cfg0.calendrier.fermer_avant_weekend)
+    if not d:
+        return {"valide": False, "raison": "aucun walk-forward pour la stratégie active"}
+    cle_cache = (actives[0], d.get("variante"), d.get("calcule_le"), cfg0.risque.risque_par_trade_pct)
+    if cle_cache not in _CALIBRAGES:
+        R = montecarlo.rendements_en_R(d)
+        par_an = (d.get("metriques") or {}).get("trades_par_mois", 2.3) * 12
+        c = montecarlo.seuil_arret_calibre(R, risque_pct=cfg0.risque.risque_par_trade_pct,
+                                           trades_par_an=par_an)
+        c.update(strategie=actives[0], profil=cfg0.profil.actif)
+        _CALIBRAGES[cle_cache] = c
+    return dict(_CALIBRAGES[cle_cache])
+
+
+_CALIBRAGES: dict = {}
+
+
 def config_effective() -> Config:
-    return charger(surcharges=surcharges())
+    s = surcharges()
+    if "coupe_circuits.drawdown_max_total_pct" not in s:
+        c = calibrage_actif(s)
+        if c.get("valide"):
+            s = {**s, "coupe_circuits.drawdown_max_total_pct": c["seuil_pct"]}
+    return charger(surcharges=s)
+
+
+def _brut(s: dict | None = None) -> dict:
+    """Le fichier de configuration avec les surcharges, AVANT application du profil.
+    C'est là que vivent les réglages des profils, qui n'ont pas de section propre dans
+    la configuration effective."""
+    import tomllib
+    from .config import RACINE
+    with open(RACINE / "config.toml", "rb") as f:
+        d = tomllib.load(f)
+    for cle, v in (surcharges() if s is None else s).items():
+        section, _, nom = cle.partition(".")
+        if section in d and nom in d[section]:
+            d[section][nom] = v
+    return d
 
 
 def valeur_actuelle(cfg: Config, cle: str):
     section, _, nom = cle.partition(".")
+    if section == "profils" or section.startswith("profil_"):
+        return _brut()[section][nom]
     objet = {"compte": cfg.compte, "marche": cfg.marche, "risque_position": cfg.risque,
              "coupe_circuits": cfg.circuits, "exposition": cfg.exposition,
              "discipline": cfg.discipline, "execution": cfg.execution,
@@ -267,6 +350,8 @@ def modifier(changements: dict, *, auteur: str = "interface", drawdown_pct: floa
         nouvelles[cle] = v
         hausse = isinstance(v, (int, float)) and not isinstance(v, bool) and v > avant
         sens = entree.get("sens")
+        if cle == "profils.actif":
+            hausse = v == "boost"
         plus_risque = (sens == "risque" and hausse) or (sens == "prudence" and not hausse
                                                         and entree["type"] != "bool") \
             or (sens == "prudence" and entree["type"] == "bool" and v is False)

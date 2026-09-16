@@ -111,6 +111,15 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .modes button[data-mode="reel"][aria-checked="true"] { background: var(--perte-fond); color: var(--perte); }
 .modes button[data-mode="demo"][aria-checked="true"] { color: var(--accent); }
 .barre-actions { display: flex; gap: 8px; align-items: center; }
+.pastille-profil { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--bord-fort); color: var(--texte-2); text-decoration: none; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pastille-profil.boost { color: var(--perte); border-color: color-mix(in oklab, var(--perte) 50%, transparent); background: var(--perte-fond); }
+.carte-profil.actif { border-color: color-mix(in oklab, var(--gain) 45%, transparent); }
+.carte-profil.actif.boost { border-color: color-mix(in oklab, var(--perte) 55%, transparent); }
+.proba { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
+.proba .metrique b.grave { color: var(--perte); }
+.proba .metrique b.moyen { color: var(--alerte); }
+.proba-note { grid-column: 1 / -1; font-size: 12.5px; color: var(--texte-3); margin: 0; }
+input[type="range"] { width: 100%; accent-color: var(--perte); min-height: 32px; }
 
 .bandeau { margin: 16px 28px 0; padding: 12px 16px; border-radius: var(--rayon); border: 1px solid; }
 .bandeau.alerte { background: var(--alerte-fond); border-color: color-mix(in oklab, var(--alerte) 40%, transparent); color: var(--texte); }
@@ -321,6 +330,7 @@ dialog::backdrop { background: rgba(5, 7, 10, .65); }
   main { padding: 18px 16px 96px; }
   .bandeau { margin: 12px 16px 0; }
   .grille.kpi { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .proba { grid-template-columns: minmax(0, 1fr); }
   .kpi-valeur { font-size: 22px; }
   .reglage { grid-template-columns: minmax(0, 1fr); }
   .formulaire .ligne { grid-template-columns: minmax(0, 1fr); }

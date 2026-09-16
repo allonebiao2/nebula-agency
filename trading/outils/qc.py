@@ -53,13 +53,17 @@ def qc_config():
     cfg = charger()
     verifier(cfg.risque.risque_par_trade_pct == 1.0, "TÉMOIN : la configuration livrée se charge")
     dangers = {
-        "risque 5 %": {"risque_position.risque_par_trade_pct": 5.0},
+        "risque 5 % en PRO": {"profil_pro.risque_par_trade_pct": 5.0},
+        "risque 11 % en BOOST": {"profils.actif": "boost", "profil_boost.risque_par_trade_pct": 11.0},
+        "levier effectif x50": {"profils.actif": "boost", "profil_boost.levier_effectif_max": 50.0},
+        "paliers qui remontent (martingale)": {"profils.actif": "boost", "profil_boost.paliers": [1.0, 3.0]},
+        "profil inconnu": {"profils.actif": "casino"},
         "martingale autorisée": {"coupe_circuits.interdit_martingale": False},
         "grille autorisée": {"coupe_circuits.interdit_grille": False},
         "stop élargissable": {"discipline.stop_jamais_elargi": False},
         "sans stop côté serveur": {"execution.stops_cote_serveur_obligatoire": False},
         "apprentissage en direct": {"apprentissage.apprentissage_en_ligne": True},
-        "escalier des disjoncteurs inversé": {"coupe_circuits.perte_max_jour_pct": 8.0},
+        "escalier des disjoncteurs inversé": {"profil_pro.perte_max_jour_pct": 8.0},
         "drawdown total 40 %": {"coupe_circuits.drawdown_max_total_pct": 40.0},
         "petit compte à 3 %": {"risque_position.risque_max_petit_compte_pct": 3.0},
         "réel sans plafond de capital": {"compte.mode": "reel"},
@@ -70,6 +74,13 @@ def qc_config():
             verifier(False, f"refuse : {nom}")
         except ConfigDangereuse:
             verifier(True, f"refuse : {nom}")
+    b = charger(surcharges={"profils.actif": "boost", "profil_boost.risque_par_trade_pct": 10.0})
+    c = b.circuits
+    verifier(b.risque.risque_par_trade_pct == 10.0
+             and c.perte_max_jour_pct <= c.perte_max_semaine_pct <= c.perte_max_mois_pct <= c.drawdown_max_total_pct <= 35
+             and c.perte_max_jour_pct >= 10.0,
+             "TÉMOIN : BOOST 10 % accepté, disjoncteurs recalculés en escalier cohérent",
+             f"{c.perte_max_jour_pct}/{c.perte_max_semaine_pct}/{c.perte_max_mois_pct}/{c.drawdown_max_total_pct}")
     try:
         charger(surcharges={"compte.mode": "reel", "compte.capital_max_engage": 200.0})
         verifier(True, "TÉMOIN : réel accepté avec un plafond de capital")
@@ -151,21 +162,105 @@ def qc_reglages():
     from trading.noyau import reglages
     section("RÉGLAGES DEPUIS L'INTERFACE")
     j = Journal(TEMP / "qc_reglages.db")
-    r = reglages.modifier({"risque_position.risque_par_trade_pct": 0.5}, journal=j)
+    r = reglages.modifier({"profil_pro.risque_par_trade_pct": 0.5}, journal=j)
     verifier(r["ok"] and reglages.config_effective().risque.risque_par_trade_pct == 0.5,
              "TÉMOIN : baisser le risque à 0,5 % est appliqué")
     verifier(j.historique_reglages()[0]["apres"] == "0.5", "le changement est journalisé")
-    r = reglages.modifier({"risque_position.risque_par_trade_pct": 5})
+    r = reglages.modifier({"profil_pro.risque_par_trade_pct": 5})
     verifier(not r["ok"] and reglages.config_effective().risque.risque_par_trade_pct == 0.5,
              "risque 5 % refusé et rien n'est enregistré")
     r = reglages.modifier({"coupe_circuits.interdit_martingale": False})
     verifier(not r["ok"], "une protection verrouillée n'est pas modifiable")
-    r = reglages.modifier({"coupe_circuits.perte_max_jour_pct": 8})
+    r = reglages.modifier({"profil_pro.perte_max_jour_pct": 8})
     verifier(not r["ok"] and "escalier" in " ".join(r["erreurs"]), "le videur tranche aussi les surcharges")
-    r = reglages.modifier({"coupe_circuits.perte_max_jour_pct": 4}, drawdown_pct=6.0)
+    r = reglages.modifier({"profil_pro.perte_max_jour_pct": 4}, drawdown_pct=6.0)
     verifier(r["ok"] and r["alertes"], "relever un risque en drawdown déclenche une alerte")
     reglages.reinitialiser()
     verifier(reglages.config_effective().risque.risque_par_trade_pct == 1.0, "retour aux valeurs du fichier")
+
+
+def qc_profils():
+    import numpy as np
+    from trading.noyau import profils
+    from trading.noyau.config import charger
+    from trading.noyau.risque import SpecsSymbole, dimensionner
+    section("PROFILS PRO / BOOST")
+    pro = charger()
+    b10 = charger(surcharges={"profils.actif": "boost", "profil_boost.risque_par_trade_pct": 10.0})
+    b3 = charger(surcharges={"profils.actif": "boost", "profil_boost.risque_par_trade_pct": 3.0})
+    e = profils.initialiser("boost", 1000)
+    verifier(profils.risque_courant(b10, e, 1000)[0] == 10.0, "TÉMOIN : au départ, BOOST risque ce qui a été choisi")
+    r2, note = profils.risque_courant(b10, e, 2100)
+    verifier(r2 == 5.0 and note, "capital ×2 : le risque descend d'un palier (10 → 5 %) et le dit", str((r2, note)))
+    verifier(profils.risque_courant(b10, e, 16500)[0] == 1.5,
+             "capital ×16 : quatre paliers plus bas (10 → 5 → 3 → 2 → 1,5 %)")
+    verifier(profils.risque_courant(b10, e, 600)[0] == 10.0,
+             "capital sous le départ : le risque ne REMONTE jamais au-dessus du choix")
+    verifier(profils.echelle(3.0, b3.profil.paliers) == [3.0, 2.0, 1.5, 1.0],
+             "à 3 %, l'échelle ne contient que des paliers inférieurs")
+    ep = profils.initialiser("pro", 1000)
+    verifier(profils.risque_courant(pro, ep, 5000)[0] == pro.risque.risque_par_trade_pct,
+             "TÉMOIN : en PRO, aucun palier ne s'applique")
+    poche = profils.initialiser("boost", 1000)
+    verifier(profils.mettre_a_l_abri(b10, poche, 1400) == 0, "TÉMOIN : à +40 %, rien n'est mis à l'abri")
+    part = profils.mettre_a_l_abri(b10, poche, 1500)
+    verifier(abs(part - 125) < 1e-6 and profils.capital_disponible(1500, poche) == 1375,
+             "à +50 %, 25 % du gain sort du capital de travail (125 sur 500)", str(part))
+    verifier(profils.mettre_a_l_abri(b10, poche, 1500) == 0, "la même poche n'est pas prise deux fois")
+    verifier(profils.mettre_a_l_abri(pro, profils.initialiser("pro", 1000), 5000) == 0,
+             "TÉMOIN : en PRO, pas de poche")
+
+    eurusd = SpecsSymbole(nom="EURUSD", point=1e-5, digits=5, volume_min=0.01, volume_max=20,
+                          volume_step=0.01, valeur_tick=1.0, taille_tick=1e-5, taille_contrat=100000)
+    libre = dimensionner(capital=10000, risque_pct=10.0, points_de_risque=527, specs=eurusd,
+                         lots_total_max=20, perte_max_par_position_pct=15.0, prix=1.16, levier_max=30.0)
+    borne = dimensionner(capital=10000, risque_pct=10.0, points_de_risque=527, specs=eurusd,
+                         lots_total_max=20, perte_max_par_position_pct=15.0, prix=1.16, levier_max=5.0)
+    verifier(libre.autorise and libre.levier > 5 and "levier" not in libre.note,
+             "TÉMOIN : à 10 % et plafond x30, taille pleine", f"x{libre.levier:.1f}")
+    verifier(borne.autorise and borne.levier <= 5.0 + 1e-9 and borne.lots < libre.lots and "levier" in borne.note,
+             "plafond x5 : taille réduite (risque plus bas), jamais au-dessus du plafond", f"x{borne.levier:.1f}")
+    # 500 $ : le capital suffit pour le lot minimum, seul le levier peut refuser.
+    refus = dimensionner(capital=500, risque_pct=10.0, points_de_risque=527, specs=eurusd,
+                         lots_total_max=20, perte_max_par_position_pct=15.0, prix=1.16, levier_max=1.0)
+    verifier(not refus.autorise and "levier" in refus.raison, "même le lot minimum au-delà du levier : refus")
+
+    from trading.backtest.couts import ModeleCouts
+    from trading.backtest.moteur import Moteur
+    from trading.outils.essai_moteur import barres_synthetiques
+    from trading.strategies.cassure_donchian import CassureDonchian
+    import dataclasses as dc
+    b5 = charger(surcharges={"profils.actif": "boost", "profil_boost.risque_par_trade_pct": 5.0})
+    b5 = dc.replace(b5, calendrier=dc.replace(b5.calendrier, fermer_avant_weekend=False))
+    res = Moteur(b5, eurusd, ModeleCouts(spread_points=15, slippage_points=5), CassureDonchian()) \
+        .lancer(barres_synthetiques(6000), 10000)
+    verifier(len(res.trades) > 5, "TÉMOIN : le moteur trade en BOOST", str(len(res.trades)))
+    pires = [t.resultat_R for t in res.trades]
+    verifier(min(pires) > -1.6, "en BOOST, aucune perte au-delà du stop (hors gap et coûts)", f"{min(pires):.2f} R")
+
+
+def qc_montecarlo():
+    import numpy as np
+    from trading.backtest import montecarlo
+    section("MONTE CARLO")
+    rng = np.random.default_rng(3)
+    R = np.where(rng.random(400) < 0.4, 2.0, -1.0)          # 40 % à +2 R : espérance +0,2 R
+    a = montecarlo.simuler(R, risque_pct=2, n_trades=60)
+    b = montecarlo.simuler(R, risque_pct=2, n_trades=60)
+    verifier(a == b, "même graine, même résultat (reproductible)")
+    probs = [montecarlo.simuler(R, risque_pct=r, n_trades=60)["p_drawdown"]["20"] for r in (1, 3, 10)]
+    verifier(probs[0] <= probs[1] <= probs[2] and probs[2] > probs[0],
+             "TÉMOIN d'instrument : plus de risque, plus de chances de perdre 20 % (monotone)", str(probs))
+    c1 = montecarlo.seuil_arret_calibre(R, risque_pct=1, trades_par_an=28)
+    c10 = montecarlo.seuil_arret_calibre(R, risque_pct=10, trades_par_an=28)
+    verifier(c1["valide"] and c1["seuil_pct"] >= c1["p99"] and not c1["plafonne"],
+             "arrêt calibré à 1 % : au-delà du p99, non plafonné", str(c1.get("seuil_pct")))
+    verifier(c10["seuil_pct"] == 35.0 and c10["plafonne"], "à 10 % : plafonné à 35 % et signalé")
+    verifier(not montecarlo.simuler(R[:5], risque_pct=1, n_trades=30)["valide"],
+             "moins de 10 trades : le Monte Carlo refuse de conclure")
+    rapport = {"capital_initial": 10000, "courbe_equite": [["t1", 10100.0], ["t2", 10049.5]]}
+    rr = montecarlo.rendements_en_R(rapport)
+    verifier(np.allclose(rr, [1.0, -0.5]), "R retrouvés depuis une courbe d'équité (anciens rapports)", str(rr))
 
 
 def qc_execution():
@@ -181,6 +276,12 @@ def qc_execution():
     verifier(not autorisation("reel", compte_demo=False, **{**base, "capital_max_engage": 0})[0],
              "réel sans plafond de capital : refus")
     verifier(not autorisation("reel", compte_demo=True, **base)[0], "réel sur un compte démo : refus")
+    verifier(not autorisation("reel", compte_demo=False, profil_boost=True, **base)[0],
+             "BOOST en réel sans 60 jours de PRO rentable : refus")
+    verifier(autorisation("reel", compte_demo=False, profil_boost=True, porte_boost_franchie=True, **base)[0],
+             "TÉMOIN : BOOST en réel, porte franchie : autorisé")
+    verifier(autorisation("demo", compte_demo=True, profil_boost=True, **base)[0],
+             "BOOST en démo : libre")
 
 
 def qc_journal():
@@ -244,9 +345,9 @@ def qc_conversation():
     pid = r["propositions"][0]["id"]
     a.repondre_proposition(pid, True)
     verifier(any(c[0] == "urgence" for c in agent.commandes), "confirmée, l'urgence est exécutée")
-    res = a._modifier({"risque_position.risque_par_trade_pct": 1.8}, "test")
+    res = a._modifier({"profil_pro.risque_par_trade_pct": 1.8}, "test")
     verifier(res["proposition"] and not res["appliques"], "relever le risque passe par une proposition")
-    res = a._modifier({"risque_position.risque_par_trade_pct": 0.5}, "test")
+    res = a._modifier({"profil_pro.risque_par_trade_pct": 0.5}, "test")
     verifier(res["appliques"] and res["appliques"]["ok"], "TÉMOIN : baisser le risque s'applique seul")
     from trading.noyau import reglages
     reglages.reinitialiser()
@@ -286,6 +387,17 @@ def qc_serveur():
     rep = c.get("/api/reglages").json()
     verifier(not any(x.get("cache") for x in rep["reglages"]), "le mode du compte n'est pas un champ de formulaire")
     verifier(c.get("/statique/app.js").status_code == 200, "script de l'interface servi")
+    verifier(c.post("/api/profil", json={"actif": "boost", "risque": 8}, headers=H).status_code == 400,
+             "BOOST non confirmé refusé")
+    r = c.post("/api/profil", json={"actif": "boost", "risque": 8, "confirme": True}, headers=H).json()
+    prof = c.get("/api/profil").json()
+    verifier(r.get("ok") and prof["actif"] == "boost" and prof["effectif"]["risque_pct"] == 8.0,
+             "TÉMOIN : BOOST confirmé à 8 % appliqué", str(prof.get("effectif")))
+    mc = c.get("/api/montecarlo?risque=8").json()
+    verifier(mc.get("valide") and 0 <= mc["p_drawdown"]["50"] <= 1, "probabilités de perte servies au curseur",
+             str(mc.get("raison", "")))
+    r = c.post("/api/profil", json={"actif": "pro"}, headers=H).json()
+    verifier(r.get("ok") and c.get("/api/profil").json()["actif"] == "pro", "retour en PRO sans confirmation")
     verifier(c.get("/api/etat").headers.get("x-frame-options") == "SAMEORIGIN",
              "interface non encadrable par un site tiers")
 
@@ -362,7 +474,8 @@ def main() -> int:
     print("=" * 64)
     print("  QC NEBULA TRADER")
     print("=" * 64)
-    for f in (qc_config, qc_dimensionnement, qc_capital, qc_licence, qc_reglages, qc_execution,
+    for f in (qc_config, qc_dimensionnement, qc_capital, qc_licence, qc_reglages, qc_profils,
+              qc_montecarlo, qc_execution,
               qc_journal, qc_conversation, qc_serveur, qc_calendrier, qc_moteur, qc_interface):
         try:
             f()

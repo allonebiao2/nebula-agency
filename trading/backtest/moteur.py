@@ -32,6 +32,7 @@ from datetime import datetime, timedelta
 
 import numpy as np
 
+from ..noyau import profils
 from ..noyau.plan import ACHAT, EtatSysteme, PlanDeTrade, controle_prealable
 from ..noyau.risque import SpecsSymbole, deplacement_de_stop_autorise, dimensionner
 from ..strategies.base import Barres, ContexteStrategie, Strategie
@@ -70,6 +71,8 @@ class Resultat:
     signaux_proposes: int = 0
     capital_initial: float = 0.0
     metriques: Metriques | None = None
+    verrouille: float = 0.0            # poche épargne mise à l'abri (profil BOOST)
+    mises_a_l_abri: int = 0
 
     @property
     def taux_de_refus(self) -> float:
@@ -101,6 +104,7 @@ class Moteur:
         self.strategie.preparer(barres)
 
         res = Resultat(capital_initial=capital_initial)
+        etat_profil = profils.initialiser(self.cfg.profil.actif, capital_initial)
         equite = capital_initial
         sommet = capital_initial
         position: Position | None = None
@@ -174,7 +178,11 @@ class Moteur:
             if position is not None:
                 continue
 
-            capital = self.cfg.compte.capital_effectif(equite)
+            # Mêmes règles que l'agent : la poche épargne sort du capital de travail,
+            # le palier fixe le risque du trade.
+            profils.mettre_a_l_abri(self.cfg, etat_profil, equite)
+            capital = self.cfg.compte.capital_effectif(profils.capital_disponible(equite, etat_profil))
+            risque_du_palier, _ = profils.risque_courant(self.cfg, etat_profil, equite)
             ctx = self._contexte(barres, i, quand)
             if ctx is None:
                 continue
@@ -221,7 +229,8 @@ class Moteur:
                 plan, self.cfg, etat, capital=capital, specs=self.specs,
                 annonce_imminente=self.annonce_imminente,
                 maintenant=entree_le,
-                risque_pct_plafond=self.cfg.risque.risque_max_petit_compte_pct)
+                risque_pct_plafond=self.cfg.risque.risque_max_petit_compte_pct,
+                risque_pct=risque_du_palier)
 
             if not verdict.autorise:
                 if self.journaliser_refus:
@@ -245,6 +254,7 @@ class Moteur:
             res.courbe_equite.append((trade.sortie_le, equite))
 
         res.barres_vues = max(0, n - 1 - echauffement)
+        res.verrouille, res.mises_a_l_abri = etat_profil.verrouille, etat_profil.mises_a_l_abri
         res.metriques = calculer(res.trades, capital_initial=capital_initial,
                                  courbe_equite=res.courbe_equite)
         return res

@@ -202,8 +202,14 @@ def controle_prealable(
     annonce_imminente: Callable[[datetime], tuple[bool, str]] | None = None,
     maintenant: datetime | None = None,
     risque_pct_plafond: float | None = None,
+    risque_pct: float | None = None,
+    prix: float | None = None,
 ) -> Verdict:
-    """Les six questions, plus deux verrous de la maison. Tout doit passer."""
+    """Les six questions, plus deux verrous de la maison. Tout doit passer.
+
+    `risque_pct` : le risque du palier courant (profil BOOST), sinon celui du profil.
+    `prix` : sert à mesurer le levier effectif contre le plafond du profil.
+    """
     from .risque import dimensionner
 
     maintenant = maintenant or plan.horodatage
@@ -233,15 +239,23 @@ def controle_prealable(
 
     # --- Q3 : combien je risque, en devise et en % ? ------------------------
     if dimensionnement is None:
+        r = risque_pct if risque_pct is not None else cfg.risque.risque_par_trade_pct
+        profil = getattr(cfg, "profil", None)
+        # En BOOST, la politique du petit compte ne relève jamais au-dessus du palier
+        # courant : sinon le lot minimum ramènerait par la porte de derrière le risque
+        # que le palier vient de baisser.
+        plafond_pc = r if (profil and profil.boost) else risque_pct_plafond
         dimensionnement = dimensionner(
             capital=capital,
-            risque_pct=cfg.risque.risque_par_trade_pct,
+            risque_pct=r,
             points_de_risque=plan.risque_points(specs),
             specs=specs,
             lots_total_max=cfg.exposition.lots_total_max,
             lots_deja_ouverts=etat.lots_deja_ouverts,
             perte_max_par_position_pct=cfg.risque.perte_max_par_position_pct,
-            risque_pct_plafond=risque_pct_plafond,
+            risque_pct_plafond=plafond_pc,
+            prix=prix or plan.entree,
+            levier_max=profil.levier_effectif_max if profil else None,
         )
     if not dimensionnement.autorise:
         v.append(Verrou(3, "Combien je risque, en devise et en % ?", False,
@@ -257,7 +271,9 @@ def controle_prealable(
             v.append(Verrou(3, "Combien je risque, en devise et en % ?", True,
                             f"{dimensionnement.risque_devise:.2f} {cfg.compte.devise} = "
                             f"{dimensionnement.risque_pct:.2f} % "
-                            f"({dimensionnement.lots:g} lot)"
+                            f"({dimensionnement.lots:g} lot"
+                            + (f", levier x{dimensionnement.levier:.1f}" if dimensionnement.levier else "")
+                            + ")"
                             + (f" · {dimensionnement.note}" if dimensionnement.note else "")))
 
     # --- Q4 : quel est mon ratio R:R ? --------------------------------------

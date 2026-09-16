@@ -25,8 +25,17 @@ RACINE = Path(__file__).resolve().parent.parent
 # les mettre ici plutôt que dans le TOML est délibéré : on ne doit pas pouvoir
 # les relever un soir de frustration en éditant un fichier texte.
 # -----------------------------------------------------------------------------
-PLAFOND_RISQUE_PAR_TRADE = 2.0    # % de l'équité. Au-delà, la ruine devient probable.
+PLAFOND_RISQUE_PAR_TRADE = 2.0    # % de l'équité, profil PRO. Au-delà, la ruine devient probable.
 PLAFOND_DRAWDOWN_TOTAL = 35.0     # % . Au-delà, il faut +54 % pour revenir à zéro.
+
+# Profil BOOST : décision de Mongazi le 2026-09-16, « on peut risquer jusqu'à 10 % ».
+# Mesuré avant de l'écrire (436 trades hors échantillon, stratégie sans avantage
+# prouvé) : à 10 % par trade, 46 % de chances de perdre la moitié du capital en un
+# an, 92 % en trois ans. Le plafond est dans le code ; le risque réel est choisi dans
+# l'interface, qui affiche ces probabilités au moment du choix.
+PLAFOND_RISQUE_BOOST = 10.0
+PLAFOND_LEVIER_EFFECTIF = 30.0    # notionnel / capital. Au-delà, un stop court devient un pari.
+PROFILS = ("pro", "boost")
 PLANCHER_ECHANTILLON = 100        # trades. En dessous, « apprendre » = inventer.
 
 TIMEFRAMES = {"M1", "M5", "M15", "M30", "H1", "H4", "D1", "W1", "MN1"}
@@ -158,6 +167,24 @@ class Marche:
 
 
 @dataclass(frozen=True)
+class Profil:
+    """Le jeu de plafonds actif. Ses valeurs sont DÉJÀ appliquées aux sections
+    (risque, disjoncteurs, exposition, discipline) : ceci garde ce qui n'a pas de
+    section propre et ce que l'interface doit afficher."""
+    actif: str = "pro"
+    plafond_risque_pct: float = PLAFOND_RISQUE_PAR_TRADE
+    levier_effectif_max: float = 3.0
+    paliers_actifs: bool = False
+    paliers: tuple[float, ...] = ()
+    poche_declencheur_pct: float = 0.0     # 0 = poche épargne désactivée
+    poche_part_pct: float = 0.0
+
+    @property
+    def boost(self) -> bool:
+        return self.actif == "boost"
+
+
+@dataclass(frozen=True)
 class Config:
     compte: Compte
     marche: Marche
@@ -171,6 +198,7 @@ class Config:
     surveillance: dict
     journal: dict
     chemin: Path = field(default_factory=lambda: RACINE / "config.toml")
+    profil: Profil = field(default_factory=Profil)
 
 
 # =============================================================================
@@ -208,6 +236,7 @@ def charger(chemin: Path | str | None = None, *, surcharges: dict | None = None)
             raise ConfigDangereuse(f"Réglage inconnu : {cle_complete}")
         d[section][cle] = valeur
 
+    profil = _appliquer_profil(d)
     cal = d["calendrier"]
     cfg = Config(
         compte=Compte(**d["compte"]),
@@ -236,9 +265,71 @@ def charger(chemin: Path | str | None = None, *, surcharges: dict | None = None)
         surveillance=d["surveillance"],
         journal=d["journal"],
         chemin=chemin,
+        profil=profil,
     )
     _valider(cfg)
     return cfg
+
+
+def _appliquer_profil(d: dict) -> Profil:
+    """Impose les valeurs du profil actif aux sections qu'il gouverne.
+
+    PRO : ses valeurs remplacent celles des sections, sans rien desserrer d'autre.
+    BOOST : le risque est choisi (≤ 10 %), et TOUT ce qui en dépend est recalculé
+    pour rester cohérent, sinon le videur refuserait l'escalier ou le filet :
+      perte du jour     max(valeur choisie, 1,5 × risque)   une perte ne ferme pas la journée
+      semaine / mois    au moins 2 × et 3 × la perte du jour, bornés au plafond du code
+      exposition        3 × le risque (trois positions au plus)
+      filet anti-bug    1,5 × le risque
+      petit compte      = risque (on ne relève pas au-delà de ce qui est déjà choisi)
+    """
+    profils = d.get("profils")
+    if not profils:
+        return Profil()
+    actif = profils.get("actif", "pro")
+    if actif not in PROFILS:
+        raise ConfigDangereuse(f"[profils] actif = {actif!r} : attendu {PROFILS}.")
+    p = d.get(f"profil_{actif}", {})
+    r = float(p["risque_par_trade_pct"])
+    rp, cc, ex, di = d["risque_position"], d["coupe_circuits"], d["exposition"], d["discipline"]
+
+    rp["risque_par_trade_pct"] = r
+    rp["ratio_rr_minimum"] = float(p.get("ratio_rr_minimum", rp["ratio_rr_minimum"]))
+    rp["take_profit_r_multiple"] = max(rp["take_profit_r_multiple"], rp["ratio_rr_minimum"])
+    di["trades_max_par_jour"] = int(p.get("trades_max_par_jour", di["trades_max_par_jour"]))
+    di["trades_max_par_semaine"] = max(di["trades_max_par_semaine"], di["trades_max_par_jour"])
+
+    if actif == "pro":
+        rp["risque_par_trade_pct_max"] = PLAFOND_RISQUE_PAR_TRADE
+        ex["exposition_totale_max_pct"] = float(p.get("exposition_totale_max_pct",
+                                                      ex["exposition_totale_max_pct"]))
+        cc["perte_max_jour_pct"] = float(p.get("perte_max_jour_pct", cc["perte_max_jour_pct"]))
+        plafond = PLAFOND_RISQUE_PAR_TRADE
+        paliers, poche_decl, poche_part, paliers_actifs = (), 0.0, 0.0, False
+    else:
+        plafond = PLAFOND_RISQUE_BOOST
+        rp["risque_par_trade_pct_max"] = PLAFOND_RISQUE_BOOST
+        rp["risque_max_petit_compte_pct"] = r
+        rp["perte_max_par_position_pct"] = max(rp["perte_max_par_position_pct"], round(1.5 * r, 2))
+        ex["exposition_totale_max_pct"] = round(3 * r, 2)
+        ex["positions_simultanees_max"] = max(ex["positions_simultanees_max"], 1)
+        jour = max(float(p.get("perte_max_jour_pct", 5.0)), round(1.5 * r, 2))
+        cc["perte_max_jour_pct"] = min(jour, PLAFOND_DRAWDOWN_TOTAL)
+        cc["perte_max_semaine_pct"] = min(max(cc["perte_max_semaine_pct"], 2 * jour), PLAFOND_DRAWDOWN_TOTAL)
+        cc["perte_max_mois_pct"] = min(max(cc["perte_max_mois_pct"], 3 * jour), PLAFOND_DRAWDOWN_TOTAL)
+        cc["drawdown_max_total_pct"] = min(max(cc["drawdown_max_total_pct"], cc["perte_max_mois_pct"]),
+                                           PLAFOND_DRAWDOWN_TOTAL)
+        paliers_actifs = bool(p.get("paliers_actifs", True))
+        paliers = tuple(float(x) for x in p.get("paliers", ()))
+        poche_decl = float(p.get("poche_declencheur_pct", 0.0))
+        poche_part = float(p.get("poche_part_pct", 0.0))
+
+    return Profil(
+        actif=actif, plafond_risque_pct=plafond,
+        levier_effectif_max=float(p.get("levier_effectif_max", 3.0)),
+        paliers_actifs=paliers_actifs, paliers=paliers,
+        poche_declencheur_pct=poche_decl, poche_part_pct=poche_part,
+    )
 
 
 # =============================================================================
@@ -280,10 +371,11 @@ def _valider(c: Config) -> None:
             f"son propre plafond risque_par_trade_pct_max ({r.risque_par_trade_pct_max} %)."
         )
 
-    if r.risque_par_trade_pct > PLAFOND_RISQUE_PAR_TRADE:
+    plafond = c.profil.plafond_risque_pct
+    if r.risque_par_trade_pct > plafond:
         fautes.append(
             f"[risque_position] risque_par_trade_pct = {r.risque_par_trade_pct} % dépasse le\n"
-            f"        plafond écrit dans le code ({PLAFOND_RISQUE_PAR_TRADE} %).\n"
+            f"        plafond écrit dans le code pour le profil {c.profil.actif.upper()} ({plafond} %).\n"
             f"        À ce niveau, une série de 10 pertes consécutives (qui arrive environ\n"
             f"        une fois par an) coûte {r.risque_par_trade_pct * 10:.0f} % du compte.\n"
             f"        Ce plafond n'est pas desserrable depuis le fichier, volontairement."
@@ -308,10 +400,10 @@ def _valider(c: Config) -> None:
             f"[risque_position] risque_max_petit_compte_pct ({r.risque_max_petit_compte_pct} %) "
             f"est sous le risque nominal ({r.risque_par_trade_pct} %) : pour désactiver la "
             f"politique du petit compte, écrire la même valeur que le risque nominal.")
-    if r.risque_max_petit_compte_pct > PLAFOND_RISQUE_PAR_TRADE:
+    if r.risque_max_petit_compte_pct > plafond:
         fautes.append(
             f"[risque_position] risque_max_petit_compte_pct = {r.risque_max_petit_compte_pct} % "
-            f"dépasse le plafond écrit dans le code ({PLAFOND_RISQUE_PAR_TRADE} %).\n"
+            f"dépasse le plafond écrit dans le code ({plafond} %).\n"
             f"        Un petit compte n'a pas le droit de risquer plus qu'un gros : il a "
             f"moins de marge pour encaisser une série noire, pas plus.")
     if r.perte_max_par_position_pct < r.risque_max_petit_compte_pct:
@@ -411,7 +503,22 @@ def _valider(c: Config) -> None:
             f"        est inférieur au risque d'un seul trade "
             f"({c.risque.risque_par_trade_pct} %) : aucune position ne pourrait s'ouvrir."
         )
-    if c.exposition.exposition_totale_max_pct > 10.0:
+    # --- Profil ------------------------------------------------------------
+    pr = c.profil
+    if not 1.0 <= pr.levier_effectif_max <= PLAFOND_LEVIER_EFFECTIF:
+        fautes.append(
+            f"[profil_{pr.actif}] levier_effectif_max = {pr.levier_effectif_max} : attendu entre 1 et "
+            f"{PLAFOND_LEVIER_EFFECTIF} (plafond du code).")
+    if pr.paliers:
+        if any(b > a for a, b in zip(pr.paliers, pr.paliers[1:])):
+            fautes.append(f"[profil_{pr.actif}] paliers {list(pr.paliers)} : ils doivent DÉCROÎTRE. "
+                          f"Un palier qui remonte le risque quand le capital grandit est une martingale.")
+        if pr.paliers[0] > plafond or pr.paliers[-1] < 0.1:
+            fautes.append(f"[profil_{pr.actif}] paliers hors de [0,1 ; {plafond}] %.")
+    if pr.poche_declencheur_pct < 0 or not 0 <= pr.poche_part_pct <= 100:
+        fautes.append(f"[profil_{pr.actif}] poche épargne : déclencheur ≥ 0 et part entre 0 et 100 %.")
+
+    if c.exposition.exposition_totale_max_pct > (3 * PLAFOND_RISQUE_BOOST if pr.boost else 10.0):
         fautes.append(
             f"[exposition] exposition_totale_max_pct = {c.exposition.exposition_totale_max_pct} % :\n"
             f"        au-delà de 10 %, une seule séance défavorable suffit à creuser un trou\n"
