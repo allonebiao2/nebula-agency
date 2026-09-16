@@ -101,6 +101,19 @@ class Courtier:
     serveur: str | None = None
     _ouvert: bool = field(default=False, init=False, repr=False)
 
+    @classmethod
+    def depuis_profil(cls, profil: str = "defaut") -> "Courtier":
+        """Construit une session à partir de `secrets/mt5.env`.
+
+        C'est la voie normale : un bot qui doit tourner chez n'importe quel
+        courtier nomme son compte et son serveur au lieu d'espérer que le
+        terminal ait mémorisé les bons.
+        """
+        from .identifiants import charger
+        ids = charger(profil)
+        return cls(chemin_terminal=ids.terminal, login=ids.login,
+                   motdepasse=ids.motdepasse, serveur=ids.serveur)
+
     # --- Cycle de vie -------------------------------------------------------
     def __enter__(self) -> "Courtier":
         self.connecter()
@@ -122,9 +135,23 @@ class Courtier:
             kwargs.update(login=int(self.login), password=self.motdepasse,
                           server=self.serveur)
 
-        if not mt5.initialize(timeout=60_000, **kwargs):
+        if not mt5.initialize(timeout=120_000, **kwargs):
             code, message = mt5.last_error()
-            raise CourtierIndisponible(_expliquer_erreur(code, message, self.chemin_terminal))
+            # Deuxième chance : attacher d'abord, se connecter ensuite. Certains
+            # terminaux refusent l'authentification pendant le démarrage mais
+            # l'acceptent une fois la session établie.
+            rattrape = False
+            if self.login and mt5.initialize(timeout=120_000,
+                                             **({"path": self.chemin_terminal}
+                                                if self.chemin_terminal else {})):
+                rattrape = mt5.login(int(self.login), password=self.motdepasse,
+                                     server=self.serveur)
+                if not rattrape:
+                    code, message = mt5.last_error()
+                    mt5.shutdown()
+            if not rattrape:
+                raise CourtierIndisponible(
+                    _expliquer_erreur(code, message, self.chemin_terminal))
 
         self._ouvert = True
         if mt5.account_info() is None:

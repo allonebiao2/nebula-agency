@@ -15,9 +15,9 @@ import sys
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-from noyau.courtier import Courtier, CourtierIndisponible   # noqa: E402
+from trading.noyau.courtier import Courtier, CourtierIndisponible   # noqa: E402
 
 TERMINAUX_CONNUS = {
     "Deriv (demo)":  r"C:\Program Files\MetaTrader 5 Terminal\terminal64.exe",

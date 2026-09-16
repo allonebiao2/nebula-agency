@@ -15,12 +15,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-from noyau.config import charger                                   # noqa: E402
-from noyau.plan import (ACHAT, EtatSysteme, PlanDeTrade,            # noqa: E402
+from trading.noyau.config import charger                                   # noqa: E402
+from trading.noyau.plan import (ACHAT, EtatSysteme, PlanDeTrade,            # noqa: E402
                         PlanInvalide, controle_prealable)
-from noyau.risque import SpecsSymbole                               # noqa: E402
+from trading.noyau.risque import SpecsSymbole                               # noqa: E402
 
 cfg = charger()
 

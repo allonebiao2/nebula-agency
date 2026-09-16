@@ -138,9 +138,16 @@ trades_max_par_jour = 3
 trades_max_par_semaine = 8
 
 # Stop temporel : un trade qui n'a rien fait après N barres immobilise du
-# capital et du risque sans rien produire. On le ferme et on passe à autre
-# chose. (En H4, 12 barres = 2 jours de marché.)
-stop_temporel_barres = 12
+# capital et du risque sans rien produire. On le ferme et on passe à autre chose.
+#
+# ⚠️ MESURÉ le 2026-09-16 : à 12 barres, il devenait le mode de sortie PRINCIPAL
+# (83 sorties sur 123) et étranglait les trades avant qu'ils atteignent leur
+# objectif. Ce n'est pas son rôle : c'est un filet, pas une porte de sortie.
+# À 36 barres (6 jours de marché en H4) il ne se déclenche plus que sur les
+# trades réellement immobiles.
+# ⏳ Valeur PROVISOIRE, choisie sur un argument de conception et non sur une
+# performance : elle sera tranchée en walk-forward sur l'historique réel.
+stop_temporel_barres = 36
 
 # INVARIANT. Un stop ne se déplace QUE dans la direction du profit.
 # « Ne jamais déplacer son stop » est une formule fausse : c'est « ne jamais
