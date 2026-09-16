@@ -133,6 +133,7 @@ class EtatSysteme:
     """
     spread_points: float = 0.0
     spread_habituel_points: float = 0.0
+    spread_max_points: float = 0.0              # plafond DE CET instrument ; 0 = celui de la config
     atr_courant: float = 0.0
     atr_plage_connue: tuple[float, float] | None = None   # plage vue à l'entraînement
     pertes_consecutives: int = 0
@@ -141,6 +142,8 @@ class EtatSysteme:
     trades_cette_semaine: int = 0
     lots_deja_ouverts: float = 0.0
     exposition_courante_pct: float = 0.0
+    facteurs: tuple[str, ...] = ()              # facteurs de risque de l'instrument du plan
+    exposition_par_facteur: dict = field(default_factory=dict)   # % déjà engagé par facteur
     drawdown_courant_pct: float = 0.0
     confiance_modele: float | None = None      # 0..1, None si pas de modèle
     regime: str | None = None
@@ -262,11 +265,21 @@ def controle_prealable(
                         dimensionnement.raison))
     else:
         total = etat.exposition_courante_pct + dimensionnement.risque_pct
-        if total > cfg.exposition.exposition_totale_max_pct:
+        plafond_expo = cfg.exposition.exposition_totale_max_pct
+        # EUR/USD et NAS100 sont deux lignes mais un seul pari sur le dollar : le plafond
+        # vaut aussi pour chaque FACTEUR de risque que l'instrument partage.
+        charges = sorted(((etat.exposition_par_facteur.get(f, 0.0) + dimensionnement.risque_pct, f)
+                          for f in etat.facteurs), reverse=True)
+        if total > plafond_expo:
             v.append(Verrou(3, "Combien je risque, en devise et en % ?", False,
                             f"ce trade porterait l'exposition totale à {total:.2f} %, "
                             f"au-delà du plafond de "
                             f"{cfg.exposition.exposition_totale_max_pct} %."))
+        elif charges and charges[0][0] > plafond_expo:
+            v.append(Verrou(3, "Combien je risque, en devise et en % ?", False,
+                            f"ce trade porterait l'exposition au facteur {charges[0][1]} à "
+                            f"{charges[0][0]:.2f} %, au-delà du plafond de {plafond_expo} % "
+                            f"(les positions qui partagent ce facteur sont un seul pari)."))
         else:
             v.append(Verrou(3, "Combien je risque, en devise et en % ?", True,
                             f"{dimensionnement.risque_devise:.2f} {cfg.compte.devise} = "
@@ -352,9 +365,10 @@ def controle_prealable(
 
     # --- Maison 2 : le marché est-il négociable maintenant ? ----------------
     conditions: list[str] = []
-    if etat.spread_points > cfg.execution.spread_max_points:
+    plafond_spread = etat.spread_max_points or cfg.execution.spread_max_points
+    if etat.spread_points > plafond_spread:
         conditions.append(f"spread {etat.spread_points:.0f} points > "
-                          f"{cfg.execution.spread_max_points} autorisés")
+                          f"{plafond_spread:g} autorisés")
     elif etat.spread_habituel_points and etat.spread_points > 3 * etat.spread_habituel_points:
         conditions.append(f"spread {etat.spread_points:.0f} points = "
                           f"{etat.spread_points / etat.spread_habituel_points:.1f}x son niveau "

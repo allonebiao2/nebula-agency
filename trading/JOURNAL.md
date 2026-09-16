@@ -1,6 +1,6 @@
 # NEBULA TRADER — journal d'avancement
 
-Mis à jour le **2026-09-16, fin de nuit** (code au commit `724fe99`). Une ligne par brique,
+Mis à jour le **2026-09-17** (vague 4 finie, QC 176 verts). Une ligne par brique,
 avec son pourcentage réel.
 
 > ⚠️ **Un pourcentage ici mesure ce qui est ÉCRIT ET TESTÉ, pas ce qui est
@@ -11,105 +11,110 @@ avec son pourcentage réel.
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
 
-**On est au milieu de la VAGUE 4 (EUR/USD + NAS100)** du plan d'intégration du cahier des
-charges v2 (`trading/CAHIER-DES-CHARGES.md` §9). Les vagues 1, 2 et 3 sont finies, commitées
-et poussées (`418f4be`, `4db053b`).
+**La VAGUE 4 (EUR/USD + NAS100) est finie** le 2026-09-17 : écrite, contrôlée, **lancée en
+direct en observation** sur le démo Deriv `6305888`, captures regardées. QC **176 verts / 0
+rouge** (`python -m trading.outils.qc`), dont **42 contrôles multi-instruments** prouvés rouges
+sur l'ancien code. Détail de la session : `_memoire/conversations/2026-09-17-nebula-trader-vague4.md`.
 
-**État du code à l'arrêt** : tout compile, **QC 134 verts / 0 rouge**, commité en
-`724fe99`. ⚠️ **Rien de la vague 4 n'a tourné en direct** : l'application est **arrêtée**
-(port 8765 libre) et aucun contrôle QC n'exerce encore la boucle multi-instruments.
-Un QC vert ici veut dire « rien d'ancien n'est cassé », pas « le NAS100 marche ».
+### ⛔ Ce que la vague 4 a fait tomber : les chiffres d'hier étaient faux
+
+| | Affiché jusqu'au 2026-09-16 | **Mesuré sous les règles appliquées** |
+|---|---|---|
+| EUR/USD cassure, week-end gardé | 436 trades · **+0,040 R** · 10 000 → 11 488 | **372 trades · −0,045 R** · PF 0,89 · 10 000 → 8 074 · DD 27,5 % |
+| EUR/USD cassure, fermeture du vendredi | 497 trades · −0,007 R | **454 trades · −0,021 R** · PF 0,91 · 10 000 → 8 632 · DD 26,3 % |
+| EUR/USD retour à la moyenne (vendredi / week-end) | 311 trades · −0,081 R | **308 · −0,059 R** / **348 · −0,077 R** |
+| NAS100 cassure (12 → 6 mois) | 2 trades · « rien de prouvé » | **49 trades · −0,095 R** · PF 0,80 |
+| NAS100 retour à la moyenne | 0 trade | **39 trades · −0,218 R** · PF 0,64 |
+
+Trois causes, toutes mesurées :
+
+1. **Les rapports EUR/USD dataient d'avant « R:R minimum 1:2 »** (vague 1, cahier). Preuve : en
+   rejouant un réglage à la fois, **seul le R:R à 1,0 ramène les 436 trades et +0,0399 R** ; le
+   plafond de levier et la limite de trades par jour ne changent rien. L'agent prenait ses
+   réglages et le Monte Carlo ses seuils dans des rapports qui ne décrivaient plus l'agent.
+   → **`empreinte_regles(cfg)`** écrite dans chaque rapport, comparée par l'interface (bandeau
+   « mesuré sous d'autres règles ») et par l'agent (alerte une fois par instrument).
+   ⚠️ **Premier jet faux positif, vu EN DIRECT** : l'arrêt total est calibré au Monte Carlo À
+   PARTIR du rapport (20 % dans le fichier, 26 % appliqués), tous les rapports sortaient
+   périmés à la minute. Exclu de l'empreinte, et un contrôle le garde.
+2. **Le plafond de spread de 20 points était commun aux deux instruments.** Il refusait
+   **92,8 % des bougies du NAS100** (spread FIXE de 70 points chez Deriv). Le « 2 trades »
+   mesurait le plafond. → `[execution.par_instrument.NAS100]` en **prix** (2,0 = 200 points),
+   converti avec le point du courtier ; la **déviation** suit la même règle.
+3. **L'outil de walk-forward n'imposait que `--sans-weekend`.** Sans le drapeau il héritait du
+   `config.toml`, qui garde le week-end : la variante « fermeture du vendredi » ne fermait rien
+   et l'écrivait quand même. → `configurer()` impose la variante, contrôle ajouté.
+
+⚠️ **Preuve que la vague 4 est neutre pour l'EUR/USD** : même walk-forward sur le code d'avant
+(`git archive HEAD`) et d'après, **trades_R et courbe d'équité identiques**.
+
+⚠️ **Conséquences à dire à Mongazi, pas à trancher seul** :
+- **La décision « positions gardées le week-end » reposait sur +0,040 contre −0,007.** Sous les
+  règles actuelles c'est l'inverse : fermer le vendredi perd moins (−0,021 contre −0,045). Les
+  deux sont négatifs et aucun n'est distinguable de zéro. `config.toml` n'a pas été touché.
+- **Arrêt total PRO calibré : 26 %** (23 % annoncé). **BOOST à 10 % : 55 %** de chances de
+  perdre la moitié en un an (46 % annoncé), lu par `montecarlo.pour_interface`.
 
 ### Ce qui est FAIT dans la vague 4
 
 | Fichier | Ce qui a été fait |
 |---|---|
-| `noyau/courtier.py` | `ALIAS` (NAS100 → NAS100, US Tech 100, USTEC, US100, NDX100…) + `candidats_symbole(base, noms)` fonction pure, utilisée par `trouver_symbole` |
-| `noyau/donnees_mt5.py` | `--base NAS100` : historique + profil exportés. **Swap mode 5/6** (taux annuel en %) converti en points par lot par nuit |
-| `trading/donnees/` (ignoré par git) | `NAS100_H4_mt5.npz` (4 250 barres **depuis le 2024-01-22 seulement**), `NAS100_D1_mt5.npz`, `NAS100_courtier_mt5.json` (Deriv : symbole **« US Tech 100 »**, point 0,01, lot min **0,1**, pas 0,1, contrat 1, stops level 150, spread médian **70 points**, swap_mode 5) |
-| `backtest/walkforward.py` | fenêtres **en mois** (`_decaler_mois`, `mois_apprentissage`, `mois_test`), `trades_R` dans le rapport |
-| `outils/walkforward.py` | `--symbole`, `--mois-apprentissage`, `--mois-test`, `--min-trades` ; rapport nommé **`walkforward_{strat}_{SYM}_{tf}[_variante].json`** avec `symbole`, `fenetres_mois`, `min_trades_apprentissage` (les rapports EURUSD ont été renommés ; `trading/rapports/` est ignoré par git) |
-| `config.toml` · `noyau/config.py` | `[marche] symboles = ["EURUSD", "NAS100"]`, `positions_simultanees_max = 2` ; `Marche.symboles` + propriété **`liste`** (`symboles` ou, à défaut, `(symbole,)`). `symbole` reste l'instrument **principal** (Monte Carlo, calibrage) |
-| `live/agent.py` | `@dataclass MarcheLive(base, nom, specs, executeur)`, `self.marches` construit dans `_assurer_connexion` depuis `cfg.marche.liste` (symbole introuvable = alerte et on continue ; le 1er = principal, recopié dans `self.symbole/specs/executeur` pour la compatibilité) · `_toutes_positions()` · `_marche_de(position)` · le cycle boucle **marchés × stratégies** vers `_analyser(nom, marche, …)` · santé CUSUM par clé **`"stratégie · SYMBOLE"`** · **une position par instrument** (« une position déjà ouverte sur NAS100 ») · urgence, gestion des positions, fermeture et chien de garde passent par l'exécuteur **du marché de la position** · `symbole` dans les positions et `marches` dans l'instantané |
-| `backtest/montecarlo.py` | `rapport_actif(…, symbole)` et `pour_interface(…, symbole)` cherchent le rapport **de l'instrument** |
-| `noyau/reglages.py` · `interface/serveur.py` · `interface/chat.py` · `outils/capital.py` | passent le symbole principal (capital : EURUSD) ; `/api/strategies` renvoie `symbole` et `fenetres_mois` |
-| `interface/statique/app.js` | onglets de rapport « EURUSD · week-end gardé · actif », avertissement **« Historique court »** sous 48 mois d'apprentissage, colonne **Instrument** dans les positions, symbole dans les décisions |
+| `noyau/instruments.py` (neuf) | alias et `candidats_symbole` (déplacés de `courtier.py`, réexportés) · ⛔ **« US1000 » était pris pour « US100 » + suffixe** : un suffixe de compte ne commence pas par un chiffre · `base_de` · `FACTEURS` et `exposition_par_facteur` · `limites_execution` |
+| `noyau/config.py` · `config.toml` | `Execution.par_instrument` validé par le videur · `empreinte_regles` |
+| `noyau/plan.py` | Q8 lit le plafond de l'instrument · Q3 refuse aussi par **facteur** (« le facteur USD porterait l'exposition à 4,5 % ») · ⚠️ avec deux instruments qui partagent le dollar, c'est l'équivalent du plafond total : la règle vaut quand on en ajoute un troisième |
+| `backtest/moteur.py` | plafond de spread de l'instrument |
+| `live/execution.py` | **`marche_ferme()`** : à l'échelle H4 aucune bougie du NAS100 ne manque (coupure quotidienne d'une heure DANS la bougie de 20 h), ce qui ferme l'indice ce sont les **jours fériés US** (4 vendredis sur 49 sans bougie de 20 h). Un ordre là revient rejeté, et **3 rejets en une heure mettent TOUT l'agent en pause**. Fraîcheur comparée à la cotation la plus fraîche des marchés, pas à l'horloge |
+| `live/agent.py` | ⛔ **EUR/USD et NAS100 ferment leur bougie H4 à la même heure** : le second décidait sur l'état d'avant la première position (plafond d'exposition franchissable à deux) → `_analyser_marches` relit positions et risque après chaque ouverture · `_motif_blocage` extrait (testable sans terminal) · déviation par instrument · alerte « autres règles » |
+| `outils/walkforward.py` | `configurer()` impose la variante · empreinte dans le rapport |
+| `interface/` | `regles_a_jour` par rapport, bandeau si périmé |
+| `outils/qc.py` | bloc **MULTI-INSTRUMENTS** : noms, configuration, plafonds, facteurs, séances, swap mode 5, rapports par instrument, routage d'une position vers SON exécuteur, blocage par instrument, cycle commun, variantes, empreinte |
+| `trading/rapports/_archive/` | les rapports faux, gardés pour comparaison (hors de la recherche des rapports actifs) |
 
-### Ce que le NAS100 a donné (mesuré, à ne pas sur-interpréter)
+**Vérifié en direct** : connexion, **« US Tech 100 » trouvé par l'agent**, une analyse par
+instrument et par bougie, réglages du NAS100 lus dans son walk-forward, aucune erreur de cycle,
+`/api/etat` publie les deux marchés, captures Tableau, Stratégies, Décisions, Évolution en 1440
+et 390 : **0 débordement, 0 erreur JavaScript**.
 
-- **Walk-forward 12 mois → 6 mois, 15 trades minimum, week-end gardé** :
-  `cassure_donchian` = **1 fenêtre tradée sur 3, 2 trades** (+1,06 R) → **rien de prouvé** ;
-  `retour_moyenne` = **0 fenêtre tradée** (aucun réglage n'atteint 15 trades en 12 mois).
-- Conséquence dans l'agent : cassure prend les réglages de la seule fenêtre
-  (`periode_canal 20, atr_stop 2.0, rr 3.0`), retour à la moyenne tourne avec ses
-  **réglages par défaut** (« walk-forward vide »). En démo et en observation c'est acceptable ;
-  **ce n'est pas une validation**.
-- **Capital minimum mesuré** (stop médian 2 × ATR H4 sur un an) : EUR/USD stop 440 points,
-  lot minimum = **4,40 $** de risque → **440 $ à 1 %**, 220 $ à 2 %. **NAS100 stop 33 721
-  points, lot minimum 0,1 = 33,72 $ de risque → 3 372 $ à 1 %, 1 686 $ à 2 %**. Deriv n'a pas
-  de compte cent : **sous ~1 700 $, le NAS100 ne passera presque jamais** en PRO. En BOOST à
-  10 %, ~340 $.
+### Ce qui RESTE, dans cet ordre
 
-### Ce qui RESTE dans la vague 4, dans cet ordre
-
-1. **QC du multi-instruments, avec témoins** (bloc à ajouter dans `outils/qc.py`) :
-   `candidats_symbole` (NAS100 trouve « US Tech 100 », EURUSD trouve `EURUSDm`, rien de faux) ·
-   `Marche.liste` (repli sur `symbole`) · walk-forward en mois (`_decaler_mois` en fin de mois) ·
-   coût de swap mode 5 · `montecarlo.rapport_actif(symbole="NAS100")` **ne prend jamais** un
-   rapport EURUSD · agent : `_marche_de` route une position vers le bon exécuteur, **une position
-   EURUSD ouverte ne bloque PAS le NAS100** (témoin) mais bloque un 2e EURUSD, instantané publié
-   avec deux marchés.
-2. **Exposition par facteur** (les deux instruments sont exposés au USD) : non fait. Aujourd'hui
-   seuls `positions_simultanees_max = 2` et `exposition_totale_max_pct` s'appliquent.
-3. **Heures de séance de l'indice** (le NAS100 a une coupure quotidienne et ferme plus tôt le
-   vendredi) : non lues chez le courtier, non gérées. Le calendrier économique filtre
-   `USD, EUR`, ce qui couvre déjà le NAS100.
-4. **Relancer l'agent** (`python -m trading.app`) et vérifier dans le journal : connexion,
-   `trouver_symbole` trouve « US Tech 100 » **en direct**, une analyse par bougie H4 **par
-   marché**, aucun plantage sur un cycle complet ; captures **1440 et 390** des pages
-   Stratégies, Positions, Décisions.
-5. **Reconstruire le paquet** (`python -m trading.empaquetage.construire`) et vérifier qu'il
-   embarque les rapports NAS100 et aucun secret.
-6. **Mettre à jour** ce journal, `CAHIER-DES-CHARGES.md` §9, `CLAUDE.md`, la conversation du
-   jour ; commit + push après `git grep` du mot de passe et de la clé privée.
-
-### Après la vague 4 (déjà décidé, pas commencé)
-
-Filtre **D1** · 3 stratégies (**momentum, range, cassure de structure**) · indicateurs RSI,
-MACD, Bollinger, structure HH/HL · **garde contre les tests multiples** (plus on essaie de
-stratégies, plus l'une gagne par hasard) · **méta-labeling** (scikit-learn, surveiller le
-disque) · **Telegram**.
+1. **Mongazi tranche** : week-end gardé ou fermeture du vendredi (voir plus haut), et s'il veut
+   garder le NAS100 malgré −0,095 R sur 49 trades (échantillon court, rien de prouvé dans un
+   sens ou dans l'autre).
+2. **Après la vague 4 (déjà décidé, pas commencé)** : filtre **D1** · 3 stratégies (**momentum,
+   range, cassure de structure**) · RSI, MACD, Bollinger, structure HH/HL · **garde contre les
+   tests multiples** · **méta-labeling** (scikit-learn, surveiller le disque) · **Telegram**.
+   ⚠️ **Priorité absolue : un avantage.** Tout le reste du produit est prêt autour d'un moteur
+   qui, mesuré honnêtement, perd.
 
 ### Ce qui n'appartient qu'à Mongazi
 
 - Prix, page de vente, paiement, remise de licence.
 - ⛔ **Révoquer le jeton `pat_…` collé en clair** le 2026-09-16.
-- La **porte démo** exige 30 jours ET 30 trades : au rythme EUR/USD H4 (~2,3 trades/mois),
-  c'est **environ un an** de démo avant le réel.
-- Le capital du NAS100 (voir ci-dessus) et le risque BOOST à 10 % (46 % de chances de perdre
-  la moitié en un an avec la stratégie actuelle).
-- Retirer de l'Observation du marché MT5 les symboles inutiles (le terminal télécharge
-  l'historique de tout ce qui y est affiché ; disque C: à **14 Go libres** le 2026-09-16).
+- La **porte démo** exige 30 jours ET 30 trades : au rythme EUR/USD H4 (~2 trades/mois),
+  c'est **plus d'un an** de démo avant le réel.
+- Le capital du NAS100 (**3 372 $ minimum à 1 %** chez Deriv, lot minimum 0,1) et le risque BOOST.
+- Retirer de l'Observation du marché MT5 les symboles inutiles (disque C: à **14 Go libres**).
 
 ---
 
-## Avancement global : **66 %**
+## Avancement global : **70 %**
 
 ```
-Socle de discipline   ████████████████████  100 %   videur, 8 verrous, profils PRO/BOOST (QC 134 verts)
-Mesure (backtest)     ████████████████████  100 %   walk-forward en années ou en mois, Monte Carlo
+Socle de discipline   ████████████████████  100 %   videur, 8 verrous, profils, plafonds par instrument (QC 176)
+Mesure (backtest)     ████████████████████  100 %   walk-forward, Monte Carlo, empreinte des règles par rapport
 Données               ██████████████████░░   90 %   EUR/USD 20 ans · NAS100 depuis 2024-01 seulement
-Courtier / exécution  ███████████████░░░░░   75 %   agent en observation · multi-instruments jamais lancé
+Courtier / exécution  ████████████████░░░░   80 %   agent multi-instruments EN DIRECT en observation · aucun ordre
 Surveillance          ████████████████░░░░   80 %   CUSUM, chien de garde, portes, rapport hebdo
-Interface + produit   █████████████████░░░   85 %   profils, BOOST, Évolution · paquet pas reconstruit depuis
+Interface + produit   ██████████████████░░   90 %   profils, BOOST, Évolution, rapports périmés signalés
 Intelligence          ░░░░░░░░░░░░░░░░░░░░    0 %   AUCUN AVANTAGE PROUVÉ : la priorité après la vague 4
 Vente en ligne        ██░░░░░░░░░░░░░░░░░░   10 %   licences signées prêtes, ni page ni paiement
 ```
 
-⚠️ **Le chiffre qui compte n'est pas le pourcentage : c'est que le walk-forward
-n'a trouvé aucun avantage statistique**, ni sur EUR/USD (+0,040 R sur 436 trades) ni sur
-NAS100 (2 trades). Un produit fini autour d'une stratégie sans edge reste un produit qui ne
-gagne rien.
+⚠️ **Le chiffre qui compte n'est pas le pourcentage : c'est que le walk-forward,
+mesuré sous les règles réellement appliquées, PERD sur les six variantes** : EUR/USD cassure
+−0,045 R (372 trades) ou −0,021 R en fermant le vendredi, NAS100 −0,095 R (49 trades). Le
+« +0,040 R » affiché jusqu'au 2026-09-16 datait d'avant la règle R:R 1:2. Un produit fini autour
+d'une stratégie sans edge reste un produit qui ne gagne rien.
 
 ---
 
@@ -124,11 +129,11 @@ gagne rien.
 | `noyau/plan.py` 8 verrous | **100 %** | ✅ levier dans le détail du verrou 3 |
 | `noyau/calendrier.py` annonces à fort impact | **90 %** | ✅ USD + EUR · ⏳ pas d'historique pour le backtest |
 | `noyau/donnees_mt5.py` historique + profil courtier | **100 %** | ✅ EUR/USD 34 876 H4 · NAS100 4 250 H4 · swap en % annuel |
-| `noyau/courtier.py` · `identifiants.py` · `coffre.py` | **90 %** | ✅ alias de symboles · ⏳ « US Tech 100 » trouvé à l'export, pas encore par l'agent en direct |
+| `noyau/courtier.py` · `identifiants.py` · `coffre.py` · `instruments.py` | **100 %** | ✅ « US Tech 100 » trouvé **par l'agent en direct** · « US1000 » n'est plus pris pour le NAS100 · plafonds et facteurs par instrument |
 | `noyau/reglages.py` | **100 %** | ✅ profils, seuil d'arrêt **calibré au Monte Carlo** injecté (en cache) |
 | `noyau/licence.py` Ed25519 hors ligne | **100 %** | ✅ |
 | `backtest/moteur.py` | **100 %** | ✅ suit paliers et poche comme le direct |
-| `backtest/walkforward.py` | **100 %** | ✅ années ou mois, `trades_R` |
+| `backtest/walkforward.py` | **100 %** | ✅ années ou mois, `trades_R`, **empreinte des règles**, variante IMPOSÉE (`outils/walkforward.configurer`) |
 | `backtest/montecarlo.py` | **100 %** | ✅ bootstrap par blocs de 5, seuil = p99 sur 2 ans × 1,2 plafonné à 35 %, par instrument |
 | `apprentissage/sante.py` CUSUM | **90 %** | ✅ 0 % de fausses pauses, 76 % de détection d'une chute de 0,6 R en 60 trades · ⏳ jamais déclenché en direct |
 | `apprentissage/analyse.py` rapport hebdo | **85 %** | ✅ par stratégie, symbole, heure, jour, régime ; non concluant sous 20 trades |
@@ -136,8 +141,8 @@ gagne rien.
 | `strategies/` | **30 %** | 2 écrites, **0 rentable** · ⏳ filtre D1, momentum, range, cassure de structure |
 | `live/journal.py` SQLite | **100 %** | ✅ `symbole`, `profil`, `risque_choisi`, glissement par ordre (migrations) |
 | `live/execution.py` | **80 %** | ✅ glissement mesuré, `poser_stop` · ⛔ **aucun ordre réel envoyé** |
-| `live/agent.py` la boucle | **65 %** | ✅ vagues 1-3 tournées en observation · ⏳ **boucle multi-instruments écrite, jamais lancée** |
-| `interface/` serveur + chat + pages | **85 %** | ✅ profils, BOOST avec probabilités, Évolution · ⏳ onglets par symbole jamais regardés en capture |
+| `live/agent.py` la boucle | **80 %** | ✅ **multi-instruments lancé en direct** (observation) · risque relu après chaque ouverture · séance fermée détectée · ⛔ aucun ordre envoyé |
+| `interface/` serveur + chat + pages | **90 %** | ✅ onglets par instrument regardés en capture 1440 et 390 · bandeau « mesuré sous d'autres règles » |
 | `empaquetage/construire.py` | **75 %** | ✅ exe 44 Mo (avant les vagues) · ⏳ à reconstruire |
 | Méta-labeling · champion/challenger | **0 %** | conçu, pas codé |
 | Telegram | **0 %** | rien |

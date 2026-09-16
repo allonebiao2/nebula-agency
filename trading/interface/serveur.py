@@ -168,6 +168,8 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
         actives = reglages.agent()["strategies_actives"]
         variante_courante = ("reference" if reglages.config_effective().calendrier.fermer_avant_weekend
                              else "sans_weekend")
+        from ..noyau.config import empreinte_regles
+        empreinte = empreinte_regles(reglages.config_effective())
         rapports = {}
         for p in sorted(dossier_rapports().glob("walkforward_*.json")):
             d = _json(p)
@@ -177,6 +179,8 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
                 "fichier": p.name, "variante": d.get("variante"), "calcule_le": d.get("calcule_le"),
                 "symbole": d.get("symbole", "EURUSD"), "fenetres_mois": d.get("fenetres_mois"),
                 "correspond_config": d.get("variante") == variante_courante,
+                # None = rapport antérieur aux empreintes ; False = mesuré sous d'autres règles.
+                "regles_a_jour": (d["empreinte_regles"] == empreinte) if d.get("empreinte_regles") else None,
                 "metriques": d.get("metriques"), "credible": d.get("credible"),
                 "efficacite": d.get("efficacite"), "fenetres": d.get("fenetres"),
                 "stabilite": d.get("stabilite"), "sorties": d.get("sorties"),

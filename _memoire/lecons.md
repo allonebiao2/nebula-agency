@@ -2769,3 +2769,35 @@ résumé qu'on allonge finit par contredire le dépôt, parce que personne ne re
 **Règle** : dans `CLAUDE.md`, une ligne est un résumé qu'on **réécrit** ; le récit va dans le
 `CONTEXT.md`. Mesurer avec `python scripts/poids_claude_md.py`, et au-delà de 140 000 alléger
 sans demander : recopier intégralement, vérifier chaque morceau, puis seulement résumer.
+
+## 2026-09-17 · Un plafond en POINTS n'appartient qu'à un instrument
+
+NEBULA Trader est passé de l'EUR/USD seul à EUR/USD + NAS100. Le plafond de spread de 20 points,
+calibré sur l'EUR/USD (spread médian 2 à 3 points), est resté commun. Mesuré : il refusait
+**92,8 % des bougies du NAS100**, dont le spread est fixe à 70 points chez Deriv. Le walk-forward
+de l'indice annonçait « 2 trades en 12 mois, rien de prouvé » : il mesurait le plafond, pas
+l'indice. Corrigé (plafond propre à l'instrument, exprimé en prix) : **49 trades, -0,095 R**.
+**Règle** : quand on ajoute un instrument, relire chaque nombre de la configuration exprimé en
+points, en lots ou en pips ; un seuil « raisonnable » pour le premier est souvent absurde pour
+le second, et le résultat faux a l'air d'un résultat honnête (« échantillon trop court »).
+
+## 2026-09-17 · Un rapport de mesure vieillit quand une règle change
+
+Les rapports de walk-forward EUR/USD affichaient **+0,040 R sur 436 trades**, chiffre cité partout.
+Ils dataient d'avant la règle « R:R minimum 1:2 » du cahier des charges. Sous les règles que
+l'agent applique vraiment, le même walk-forward donne **-0,045 R sur 372 trades**. Trouvé en
+voulant prouver qu'une AUTRE modification était neutre : le code d'avant et le code d'après
+étaient identiques entre eux, et tous deux loin du rapport affiché. Cause isolée en rejouant un
+réglage à la fois (seul le R:R ramène les 436 trades). L'agent prenait ses réglages et le Monte
+Carlo ses seuils dans ces rapports, et rien ne le signalait.
+**Règle** : un résultat mesuré porte l'**empreinte des règles** sous lesquelles il a été mesuré,
+et tout ce qui le lit la compare aux règles du moment (`empreinte_regles`, interface + agent).
+
+## 2026-09-17 · Un outil qui n'impose qu'une variante hérite de l'autre
+
+L'outil de walk-forward forçait `--sans-weekend` et, sans le drapeau, prenait la valeur du
+`config.toml`. Le jour où le fichier est passé à « positions gardées le week-end », la variante
+« fermeture du vendredi » a cessé de fermer quoi que ce soit, tout en écrivant « fermeture du
+vendredi : oui » en tête du rapport. Les deux rapports étaient identiques au trade près.
+**Règle** : une variante nommée est IMPOSÉE par l'outil, jamais héritée ; et deux mesures qui
+devraient différer et sortent identiques sont un signal, pas une coïncidence.

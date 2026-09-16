@@ -529,7 +529,10 @@ async function vueStrategies() {
       const r = rapports[i], m = r.metriques || {};
       $$(".onglets button", sec).forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.i === i)));
       const court = (r.fenetres_mois && r.fenetres_mois[0] < 48) ? `<p class="alerte-txt">Historique court : apprentissage ${r.fenetres_mois[0]} mois, test ${r.fenetres_mois[1]} mois. Indication, pas preuve.</p>` : "";
-      $(".rapport", sec).innerHTML = `${court}
+      const perime = r.regles_a_jour === true ? "" : `<p class="alerte-txt">${r.regles_a_jour === false
+        ? "Mesuré sous d'autres règles que celles appliquées aujourd'hui (R:R, spread, horaires, risque…) : ces chiffres ne décrivent plus ce que l'agent ferait. À relancer."
+        : "Rapport sans empreinte des règles : impossible de savoir s'il décrit l'agent actuel. À relancer."}</p>`;
+      $(".rapport", sec).innerHTML = `${perime}${court}
         <div class="verdict ${r.credible ? "ok" : "non"}">${r.credible ? "<b>Avantage statistiquement distinguable de zéro.</b>" : `<b>Pas d'avantage prouvé.</b> Sur ${m.trades} trades hors échantillon, le résultat reste compatible avec un système qui ne gagne rien.`}</div>
         <div class="metriques">
           <div class="metrique"><span>Trades</span><b>${m.trades}</b></div>

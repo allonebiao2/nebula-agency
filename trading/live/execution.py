@@ -88,6 +88,36 @@ def autorisation(mode: str, *, compte_demo: bool, mode_config: str,
     return True, ""
 
 
+def marche_ferme(*, achat: bool, trade_mode: int | None, cotation_s: float | None,
+                 reference_s: float | None, age_max_s: float = 600) -> str:
+    """Pourquoi on ne peut PAS ouvrir sur cet instrument maintenant ; vide si on peut.
+
+    À l'échelle H4, aucune bougie du NAS100 n'est absente chez Deriv (mesuré sur 4 250
+    barres) : la coupure quotidienne d'une heure tombe DANS la bougie de 20 h. Ce qui
+    ferme vraiment l'indice, ce sont les jours fériés américains et les clôtures
+    anticipées (4 vendredis sur 49 sans bougie de 20 h). Un ordre envoyé là revient
+    rejeté, et trois rejets en une heure mettent TOUT l'agent en pause, EUR/USD compris.
+
+    `trade_mode` : SYMBOL_TRADE_MODE du courtier (0 désactivé, 1 achats seuls, 2 ventes
+    seules, 3 clôture seule, 4 complet). La fraîcheur de la cotation se compare à la
+    cotation la plus FRAÎCHE des instruments suivis, pas à l'horloge : un décalage
+    horaire du serveur mal mesuré ne fabrique ainsi ni fausse fermeture ni fausse ouverture.
+    """
+    if trade_mode is not None:
+        if trade_mode in (0, 3):
+            return "instrument fermé aux ouvertures chez le courtier (clôture seule ou désactivé)"
+        if trade_mode == 1 and not achat:
+            return "le courtier n'autorise que les achats sur cet instrument"
+        if trade_mode == 2 and achat:
+            return "le courtier n'autorise que les ventes sur cet instrument"
+    if not cotation_s:
+        return "aucune cotation reçue : marché fermé"
+    if reference_s and reference_s - cotation_s > age_max_s:
+        return (f"dernière cotation {int((reference_s - cotation_s) / 60)} min plus ancienne que les "
+                f"autres marchés : séance fermée (jour férié, clôture anticipée)")
+    return ""
+
+
 class Executeur:
     def __init__(self, symbole: str, magic: int, *, deviation_points: int = 10,
                  tentatives: int = 3, mode_remplissage: int | None = None):

@@ -97,6 +97,10 @@ class Moteur:
         # Sans calendrier économique historique, le backtest ne peut pas
         # reproduire le blackout : il le déclare, il ne le simule pas.
         self.annonce_imminente = annonce_imminente or (lambda _t: (False, ""))
+        # Le plafond de spread de CET instrument : celui de l'EUR/USD refusait 92,8 % des
+        # bougies du NAS100 (spread fixe de 70 points), le backtest mesurait le plafond.
+        from ..noyau.instruments import limites_execution
+        self.spread_max_points = limites_execution(cfg.execution, specs.nom, specs.point)[0]
 
     # ------------------------------------------------------------------ #
     def lancer(self, barres: Barres, capital_initial: float,
@@ -207,6 +211,7 @@ class Moteur:
                              if en_pause else ""),
                 spread_points=self._spread(barres, i),
                 spread_habituel_points=self.couts.spread_points,
+                spread_max_points=self.spread_max_points,
                 atr_courant=ctx.atr,
                 pertes_consecutives=pertes_consecutives,
                 minutes_depuis_derniere_perte=(

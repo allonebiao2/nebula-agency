@@ -602,13 +602,248 @@ def qc_interface():
     verifier("prefers-reduced-motion" in css, "mouvement réduit respecté")
 
 
+def qc_multi_instruments():
+    import numpy as np
+    from trading.backtest import montecarlo
+    from trading.backtest.couts import ModeleCouts
+    from trading.backtest.moteur import Moteur
+    from trading.backtest.walkforward import _decaler_mois
+    from trading.live.agent import Agent, MarcheLive
+    from trading.live.execution import ResultatOrdre, marche_ferme
+    from trading.live.journal import Journal
+    from trading.noyau import donnees_mt5, reglages
+    from trading.noyau.config import Marche, charger
+    from trading.noyau.instruments import (base_de, candidats_symbole, exposition_par_facteur,
+                                           limites_execution)
+    from trading.noyau.plan import ACHAT, EtatSysteme, PlanDeTrade, controle_prealable
+    from trading.noyau.risque import SpecsSymbole
+    from trading.strategies.cassure_donchian import CassureDonchian
+    section("MULTI-INSTRUMENTS (EUR/USD + NAS100)")
+
+    # --- noms chez le courtier ---------------------------------------------
+    verifier(candidats_symbole("NAS100", ["EURUSD", "US Tech 100", "US30", "US500"]) == ["US Tech 100"],
+             "TÉMOIN : NAS100 trouve « US Tech 100 » (Deriv)")
+    verifier(candidats_symbole("NAS100", ["NAS100.cash", "US30"]) == ["NAS100.cash"],
+             "TÉMOIN : un suffixe de compte est accepté (NAS100.cash)")
+    verifier(candidats_symbole("EURUSD", ["EURUSDm", "EURGBPm", "USDJPYm"]) == ["EURUSDm"],
+             "EURUSD trouve EURUSDm (Exness), et rien d'autre")
+    faux = candidats_symbole("NAS100", ["US30", "US500", "US2000", "US1000", "GER40"])
+    verifier(faux == [], "NAS100 ne prend jamais un autre indice (US1000 n'est pas US100 + suffixe)", str(faux))
+    verifier(base_de("US Tech 100") == "NAS100" and base_de("EURUSDm") == "EURUSD",
+             "un nom de courtier ramène à son instrument")
+
+    # --- configuration -----------------------------------------------------
+    cfg = charger()
+    verifier(Marche("EURUSD", "H4", "D1").liste == ("EURUSD",), "sans liste, le seul instrument est le principal")
+    verifier(cfg.marche.liste == ("EURUSD", "NAS100"), "TÉMOIN : la configuration livrée trade les deux",
+             str(cfg.marche.liste))
+    verifier(_decaler_mois(datetime(2024, 11, 1), 3) == datetime(2025, 2, 1)
+             and _decaler_mois(datetime(2024, 12, 1), 1) == datetime(2025, 1, 1),
+             "walk-forward en mois : le décalage passe la fin d'année")
+
+    # --- plafonds propres à chaque instrument ------------------------------
+    verifier(limites_execution(cfg.execution, "EURUSD", 1e-5) == (20.0, 10.0),
+             "TÉMOIN : l'EUR/USD garde ses 20 points de spread et 10 de déviation")
+    verifier(limites_execution(cfg.execution, "US Tech 100", 0.01) == (200.0, 200.0),
+             "NAS100 : plafonds en prix convertis avec le point du courtier (2,0 = 200 points)")
+    verifier(limites_execution(cfg.execution, "GER40", 0.1)[0] == 20.0,
+             "un instrument sans ligne propre retombe sur la règle générale")
+    nas = SpecsSymbole(nom="US Tech 100", point=0.01, digits=2, volume_min=0.1, volume_max=50,
+                       volume_step=0.1, valeur_tick=0.01, taille_tick=0.01, taille_contrat=1)
+    eur = SpecsSymbole(nom="EURUSD", point=1e-5, digits=5, volume_min=0.01, volume_max=20,
+                       volume_step=0.01, valeur_tick=1.0, taille_tick=1e-5, taille_contrat=100000)
+    couts = ModeleCouts(spread_points=70, slippage_points=5)
+    verifier(Moteur(cfg, nas, couts, CassureDonchian()).spread_max_points == 200.0
+             and Moteur(cfg, eur, couts, CassureDonchian()).spread_max_points == 20.0,
+             "le backtest applique le plafond de l'instrument (NAS100 200, EUR/USD 20)")
+
+    mardi = datetime(2026, 9, 15, 14, 0)
+    plan_nas = PlanDeTrade(symbole="US Tech 100", sens=ACHAT, entree=25000.0, stop=24700.0, objectif=25900.0,
+                           these="Cassure du couloir de vingt barres dans le sens de la tendance.",
+                           atr=150.0, horodatage=mardi, strategie="qc")
+
+    def q(numero, verdict):
+        return next(v for v in verdict.verrous if v.numero == numero)
+
+    def verdict_nas(**etat):
+        base = dict(spread_points=70, spread_habituel_points=70, atr_courant=150.0, regime="tendance",
+                    regimes_favorables=("tendance",))
+        return controle_prealable(plan_nas, cfg, EtatSysteme(**{**base, **etat}), capital=10000, specs=nas,
+                                  annonce_imminente=lambda _t: (False, ""), maintenant=mardi,
+                                  risque_pct_plafond=2.0, prix=25000.0)
+    verifier(q(8, verdict_nas(spread_max_points=200)).passe,
+             "TÉMOIN : NAS100 à son spread fixe de 70 points, plafond de l'instrument : marché négociable",
+             q(8, verdict_nas(spread_max_points=200)).detail)
+    verifier(not q(8, verdict_nas()).passe,
+             "sans plafond propre, les 20 points de l'EUR/USD refusent le NAS100 (le défaut mesuré)")
+
+    # --- exposition par facteur --------------------------------------------
+    expo = exposition_par_facteur([("EURUSD", 1.0), ("US Tech 100", 2.0)])
+    verifier(expo == {"EUR": 1.0, "USD": 3.0, "actions US": 2.0},
+             "EUR/USD et NAS100 additionnent leur risque sur le facteur USD", str(expo))
+    plafond = cfg.exposition.exposition_totale_max_pct
+    libre = verdict_nas(spread_max_points=200, facteurs=("USD", "actions US"),
+                        exposition_par_facteur={"USD": 1.0})
+    plein = verdict_nas(spread_max_points=200, facteurs=("USD", "actions US"),
+                        exposition_par_facteur={"USD": plafond - 0.5})
+    verifier(q(3, libre).passe, "TÉMOIN : facteur USD peu chargé, le NAS100 passe", q(3, libre).detail)
+    verifier(not q(3, plein).passe and "facteur USD" in q(3, plein).detail,
+             "facteur USD déjà presque plein : le NAS100 est refusé, et le facteur est nommé",
+             q(3, plein).detail)
+
+    # --- séance fermée ------------------------------------------------------
+    verifier(marche_ferme(achat=True, trade_mode=4, cotation_s=1000, reference_s=1005) == "",
+             "TÉMOIN : cotation fraîche, instrument ouvert : on peut entrer")
+    verifier("min" in marche_ferme(achat=True, trade_mode=4, cotation_s=1000, reference_s=1000 + 1800),
+             "cotation vieille de 30 min quand l'autre marché vit : séance fermée, aucun ordre")
+    verifier(marche_ferme(achat=True, trade_mode=3, cotation_s=1000, reference_s=1000) != ""
+             and marche_ferme(achat=False, trade_mode=1, cotation_s=1000, reference_s=1000) != ""
+             and marche_ferme(achat=True, trade_mode=1, cotation_s=1000, reference_s=1000) == "",
+             "clôture seule refusée ; achats seuls : vente refusée, achat accepté (témoin)")
+    verifier(marche_ferme(achat=True, trade_mode=4, cotation_s=None, reference_s=1000) != "",
+             "aucune cotation : on n'envoie rien")
+
+    # --- swap en taux annuel (mode 5, indices Deriv) -----------------------
+    profil = {"specs": {k: getattr(nas, k) for k in nas.__dataclass_fields__}, "swap_mode": 5,
+              "swap_long": -6.03, "swap_short": 1.79, "prix_reference": 28987.05, "spread_median_points": 70}
+    (TEMP / "NAS100_profil_qc.json").write_text(json.dumps(profil), encoding="utf-8")
+    ancien = donnees_mt5.chemin_profil
+    donnees_mt5.chemin_profil = lambda base: TEMP / "NAS100_profil_qc.json"
+    try:
+        _, c5 = donnees_mt5.specs_et_couts("NAS100")
+        attendu = 28987.05 * -6.03 / 100 / 360 / 0.01
+        verifier(abs(c5.swap_long_points - attendu) < 1e-6 and c5.swap_short_points > 0,
+                 "swap mode 5 : taux annuel converti en points par nuit (~ -486 pts, soit -4,86 $/lot)",
+                 f"{c5.swap_long_points:.1f}")
+        profil.update(swap_mode=1, swap_long=-3.0)
+        (TEMP / "NAS100_profil_qc.json").write_text(json.dumps(profil), encoding="utf-8")
+        _, c1 = donnees_mt5.specs_et_couts("NAS100")
+        verifier(c1.swap_long_points == -3.0, "TÉMOIN : swap mode 1 (points) repris tel quel")
+    finally:
+        donnees_mt5.chemin_profil = ancien
+
+    # --- rapports par instrument --------------------------------------------
+    dossier = TEMP / "rapports_multi"
+    dossier.mkdir()
+    (dossier / "walkforward_cassure_donchian_EURUSD_H4_sans_weekend.json").write_text(
+        json.dumps({"symbole": "EURUSD", "variante": "sans_weekend", "trades_R": [1.0] * 12}), encoding="utf-8")
+    verifier(montecarlo.rapport_actif(dossier, "cassure_donchian", "H4", True, symbole="EURUSD"),
+             "TÉMOIN : le rapport EURUSD est trouvé pour l'EURUSD")
+    verifier(montecarlo.rapport_actif(dossier, "cassure_donchian", "H4", True, symbole="NAS100") is None,
+             "le NAS100 ne prend JAMAIS le rapport de l'EURUSD")
+    (dossier / "walkforward_cassure_donchian_NAS100_H4_sans_weekend.json").write_text(
+        json.dumps({"symbole": "NAS100", "variante": "sans_weekend", "trades_R": [0.5] * 12}), encoding="utf-8")
+    d = montecarlo.rapport_actif(dossier, "cassure_donchian", "H4", True, symbole="NAS100")
+    verifier(d and d["symbole"] == "NAS100", "le NAS100 lit son propre rapport")
+
+    # --- l'agent : routage, blocage, cycle commun ---------------------------
+    class Pos:
+        def __init__(self, ticket, symbol, volume=0.1):
+            self.ticket, self.symbol, self.volume, self.sl, self.tp = ticket, symbol, volume, 1.0, 0.0
+
+    class Exec:
+        def __init__(self, nom):
+            self.nom, self.ouvertes, self.fermees = nom, [], []
+
+        def positions(self):
+            return list(self.ouvertes)
+
+        def fermer(self, pos, motif=""):
+            self.fermees.append(pos.ticket)
+            return ResultatOrdre(True, ticket=pos.ticket, prix=1.0, retcode=10009)
+
+    ag = Agent(Journal(TEMP / "qc_multi.db"))
+    ex_eur, ex_nas = Exec("EURUSD"), Exec("US Tech 100")
+    ag.marches = {"EURUSD": MarcheLive("EURUSD", "EURUSD", eur, ex_eur),
+                  "NAS100": MarcheLive("NAS100", "US Tech 100", nas, ex_nas)}
+    ag.symbole, ag.specs, ag.executeur = "EURUSD", eur, ex_eur
+    p_nas, p_eur = Pos(71, "US Tech 100"), Pos(72, "EURUSD")
+    verifier(ag._marche_de(p_nas).base == "NAS100" and ag._marche_de(p_eur).base == "EURUSD",
+             "une position est rattachée à SON instrument")
+    ag._fermer(p_nas, "qc")
+    verifier(ex_nas.fermees == [71] and not ex_eur.fermees,
+             "fermer une position NAS100 passe par l'exécuteur du NAS100, pas celui de l'EUR/USD")
+    sain = {"pnl_jour_pct": 0.0, "pnl_semaine_pct": 0.0, "pnl_mois_pct": 0.0}
+    verifier(ag._motif_blocage("cassure_donchian · NAS100", ag.marches["NAS100"], [p_eur], cfg, sain) == "",
+             "TÉMOIN : une position EUR/USD ouverte ne bloque PAS le NAS100")
+    verifier("déjà ouverte sur EURUSD" in ag._motif_blocage("cassure_donchian · EURUSD", ag.marches["EURUSD"],
+                                                            [p_eur], cfg, sain),
+             "une position EUR/USD ouverte bloque un second EUR/USD")
+    verifier("plafond" in ag._motif_blocage("cassure_donchian · NAS100", ag.marches["NAS100"],
+                                            [p_eur, Pos(73, "EURUSD")], cfg, sain),
+             "le plafond de positions simultanées tient l'ensemble")
+
+    vus = []
+
+    def analyser_factice(nom, marche, cfg_, compte, capital, risque, positions, *reste):
+        vus.append((marche.base, len(positions), risque["exposition_pct"]))
+        if marche.base == "EURUSD":
+            ex_eur.ouvertes.append(Pos(80, "EURUSD"))
+            return True
+        return False
+    ag._analyser = analyser_factice
+    ag._etat_du_risque = lambda cfg_, capital: {"exposition_pct": 1.0 * len(ag._toutes_positions())}
+    ag._analyser_marches({"strategies_actives": ["cassure_donchian"]}, cfg, None, 10000.0,
+                         {"exposition_pct": 0.0}, [], None, "demo", True, "")
+    verifier(vus and vus[0] == ("EURUSD", 0, 0.0), "TÉMOIN : l'EUR/USD décide sur un compte vide", str(vus))
+    verifier(len(vus) == 2 and vus[1] == ("NAS100", 1, 1.0),
+             "même cycle : le NAS100 voit la position et l'exposition que l'EUR/USD vient d'ouvrir", str(vus))
+
+    ag._publier(cfg, reglages.agent(), None, [])
+    verifier(ag.instantane()["connexion"]["marches"] == {"EURUSD": "EURUSD", "NAS100": "US Tech 100"},
+             "l'instantané publie les deux instruments et leur nom chez le courtier")
+
+    # --- la variante d'un rapport est imposée, pas héritée du fichier --------
+    from trading.outils.walkforward import configurer
+    import dataclasses as dc
+    fichier_garde = dc.replace(cfg, calendrier=dc.replace(cfg.calendrier, fermer_avant_weekend=False))
+    fichier_ferme = dc.replace(cfg, calendrier=dc.replace(cfg.calendrier, fermer_avant_weekend=True))
+    verifier(not configurer(fichier_ferme, True).calendrier.fermer_avant_weekend,
+             "TÉMOIN : --sans-weekend garde les positions même si le fichier dit de fermer")
+    verifier(configurer(fichier_garde, False).calendrier.fermer_avant_weekend,
+             "variante « fermeture du vendredi » : elle ferme même si le fichier garde le week-end")
+
+    # --- un rapport mesuré sous d'autres règles se voit ---------------------
+    from trading.noyau.config import empreinte_regles
+    import dataclasses as dc
+    e = empreinte_regles(cfg)
+    verifier(e == empreinte_regles(charger()), "TÉMOIN : mêmes règles, même empreinte")
+    verifier(empreinte_regles(charger(surcharges={"profil_pro.ratio_rr_minimum": 1.5})) != e,
+             "R:R minimum changé : l'empreinte change (le défaut des rapports EUR/USD du 16/09)")
+    verifier(empreinte_regles(dc.replace(cfg, calendrier=dc.replace(cfg.calendrier, fermer_avant_weekend=True))) == e
+             and empreinte_regles(dc.replace(cfg, marche=dc.replace(cfg.marche, symboles=("EURUSD",)))) == e,
+             "fermeture du vendredi (portée par la variante) et liste des instruments : hors empreinte")
+    verifier(empreinte_regles(dc.replace(cfg, circuits=dc.replace(cfg.circuits, drawdown_max_total_pct=26.0))) == e,
+             "l'arrêt total calibré À PARTIR du rapport ne rend pas ce rapport périmé (faux positif vu en direct)")
+    ag2 = Agent(Journal(TEMP / "qc_regles.db"))
+    ag2.marches = ag.marches
+    ancien_rapport = montecarlo.rapport_actif
+    montecarlo.rapport_actif = lambda *a, **k: {"calcule_le": "qc", "trades_R": [1.0] * 12,
+                                                  "empreinte_regles": "0000000000000000"}
+    try:
+        ag2._evaluer_sante(cfg, {"strategies_actives": ["cassure_donchian"]})
+        alertes = [x for x in ag2.journal.evenements(50) if "autres règles" in x["message"]]
+        montecarlo.rapport_actif = lambda *a, **k: {"calcule_le": "qc2", "trades_R": [1.0] * 12,
+                                                      "empreinte_regles": e}
+        ag3 = Agent(Journal(TEMP / "qc_regles_ok.db"))
+        ag3.marches = ag.marches
+        ag3._evaluer_sante(cfg, {"strategies_actives": ["cassure_donchian"]})
+        sains = [x for x in ag3.journal.evenements(50) if "autres règles" in x["message"]]
+    finally:
+        montecarlo.rapport_actif = ancien_rapport
+    verifier(not sains, "TÉMOIN : rapport aux règles actuelles, aucune alerte")
+    verifier(len(alertes) == 2, "rapport mesuré sous d'autres règles : l'agent le dit, une fois par instrument",
+             str(len(alertes)))
+
+
 def main() -> int:
     print("=" * 64)
     print("  QC NEBULA TRADER")
     print("=" * 64)
     for f in (qc_config, qc_dimensionnement, qc_capital, qc_licence, qc_reglages, qc_profils,
               qc_montecarlo, qc_surveillance, qc_execution,
-              qc_journal, qc_conversation, qc_serveur, qc_calendrier, qc_moteur, qc_interface):
+              qc_journal, qc_conversation, qc_serveur, qc_calendrier, qc_moteur, qc_multi_instruments,
+              qc_interface):
         try:
             f()
         except Exception as exc:                                  # noqa: BLE001

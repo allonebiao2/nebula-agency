@@ -244,6 +244,15 @@ stops_cote_serveur_obligatoire = true
 # Nombre de tentatives si le courtier renvoie « requote » ou « prix changé ».
 tentatives_max = 3
 
+# ⚠️ Les deux plafonds ci-dessus sont en POINTS et ne valent que pour l'EUR/USD
+# (spread médian 2 à 3 points chez Deriv). Mesuré le 2026-09-16 : appliqués au
+# NAS100, dont le spread est FIXE à 70 points, ils refusaient 92,8 % des bougies.
+# Un autre instrument porte ses plafonds en PRIX (un point d'indice n'a pas la même
+# taille chez tous les courtiers), convertis avec le point du courtier.
+[execution.par_instrument.NAS100]
+spread_max_prix = 2.0     # 200 points chez Deriv, ~3 fois son spread fixe de 0,70
+slippage_max_prix = 2.0   # même rapport que 10 points sur l'EUR/USD (~4 fois son spread)
+
 
 [calendrier]
 # -----------------------------------------------------------------------------

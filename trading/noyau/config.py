@@ -125,10 +125,13 @@ class Discipline:
 
 @dataclass(frozen=True)
 class Execution:
-    spread_max_points: int
+    spread_max_points: int              # EUR/USD et tout instrument sans ligne propre
     slippage_max_points: int
     stops_cote_serveur_obligatoire: bool
     tentatives_max: int
+    # {"NAS100": {"spread_max_prix": 2.0, "slippage_max_prix": 2.0}} : plafonds en PRIX,
+    # convertis en points par instruments.limites_execution avec le point du courtier.
+    par_instrument: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -219,6 +222,34 @@ def _heure(texte: str, champ: str) -> time:
             f"[calendrier] {champ} = {texte!r} n'est pas une heure valide "
             f"(format attendu \"HH:MM\")."
         ) from exc
+
+
+def empreinte_regles(cfg: Config) -> str:
+    """Les règles qui décident QUELS trades passent, résumées en 16 caractères.
+
+    Écrite dans chaque rapport de walk-forward, comparée par l'agent et l'interface.
+    ⛔ 2026-09-16 : les rapports EUR/USD dataient d'avant « R:R minimum 1:2 » (vague 1).
+    Ils affichaient +0,040 R sur 436 trades ; sous les règles réellement appliquées par
+    l'agent, le même walk-forward donne -0,045 R sur 372 trades. L'agent y prenait ses
+    réglages et le Monte Carlo ses seuils, et rien ne le signalait.
+
+    Hors empreinte : le compte et la liste des instruments (ils ne jugent aucun trade),
+    l'apprentissage, la fermeture du vendredi, que la VARIANTE du rapport porte déjà, et
+    l'arrêt total : il est CALIBRÉ au Monte Carlo à partir du rapport lui-même (20 % dans le
+    fichier, 26 % appliqués), un rapport ne peut pas être mesuré sous le seuil qu'il produit.
+    Mesuré : aucun walk-forward ne l'a jamais déclenché. Sans cette exclusion, tous les
+    rapports, même recalculés à la minute, étaient déclarés périmés.
+    """
+    import dataclasses
+    import hashlib
+    import json
+    d = dataclasses.asdict(cfg)
+    for cle in ("compte", "marche", "apprentissage", "surveillance", "journal", "chemin"):
+        d.pop(cle, None)
+    d["calendrier"].pop("fermer_avant_weekend", None)
+    d["circuits"].pop("drawdown_max_total_pct", None)
+    texte = json.dumps(d, sort_keys=True, default=str, ensure_ascii=False)
+    return hashlib.sha256(texte.encode("utf-8")).hexdigest()[:16]
 
 
 def charger(chemin: Path | str | None = None, *, surcharges: dict | None = None) -> Config:
@@ -564,6 +595,11 @@ def _valider(c: Config) -> None:
                       "le bot entrera au rollover et paiera dix fois le prix normal.")
     if c.execution.tentatives_max < 1:
         fautes.append("[execution] tentatives_max doit être >= 1.")
+    for instrument, plafonds in (c.execution.par_instrument or {}).items():
+        for cle in ("spread_max_prix", "slippage_max_prix"):
+            if cle in plafonds and not float(plafonds[cle]) > 0:
+                fautes.append(f"[execution.par_instrument.{instrument}] {cle} doit être > 0 : "
+                              f"sans filtre de spread, le bot entrera au rollover.")
 
     # --- Calendrier ---------------------------------------------------------
     if c.calendrier.fermer_avant_weekend:
@@ -669,7 +705,9 @@ def resume(c: Config) -> str:
         f"    Exposition totale   {c.exposition.exposition_totale_max_pct} % max",
         "",
         "  FILTRES",
-        f"    Spread max          {c.execution.spread_max_points} points",
+        f"    Spread max          {c.execution.spread_max_points} points"
+        + "".join(f" · {k} {v.get('spread_max_prix', '?')} en prix"
+                  for k, v in (c.execution.par_instrument or {}).items()),
         f"    Stops côté serveur  {'OUI' if c.execution.stops_cote_serveur_obligatoire else 'NON'}",
         f"    Rollover évité      {'oui' if c.calendrier.eviter_rollover else 'non'}"
         f"   ({c.calendrier.rollover_debut:%H:%M}-{c.calendrier.rollover_fin:%H:%M})",

@@ -35,6 +35,7 @@ try:
 except ImportError:                                            # pragma: no cover
     mt5 = None
 
+from .instruments import ALIAS, candidats_symbole  # noqa: F401  (réexportés)
 from .risque import SpecsSymbole
 
 # Drapeaux de symbole MQL5, absents du paquet Python (voir mode_remplissage).
@@ -403,33 +404,6 @@ class Courtier:
 
 # Les noms d'un même instrument d'un courtier à l'autre. Mesuré le 2026-09-16 :
 # chez Deriv, le Nasdaq 100 s'appelle « US Tech 100 » (famille Stock Indices).
-ALIAS = {
-    "NAS100": ("NAS100", "US Tech 100", "USTEC", "US100", "NDX100", "NQ100", "USTECH", "NASDAQ100",
-               "US TECH 100", "Nasdaq 100", "USTech100"),
-    "EURUSD": ("EURUSD",),
-}
-
-
-def _normaliser(nom: str) -> str:
-    return "".join(ch for ch in nom.upper() if ch.isalnum())
-
-
-def candidats_symbole(base: str, noms) -> list[str]:
-    """Les noms du terminal qui désignent `base` : exact, puis alias, puis suffixe de compte
-    (EURUSDm chez Exness, US Tech 100.cash…). Fonction pure, testée sans terminal."""
-    noms = list(noms)
-    base_u = base.upper()
-    exacts = [n for n in noms if n.upper() == base_u]
-    if exacts:
-        return exacts
-    alias = {_normaliser(a) for a in ALIAS.get(base_u, (base_u,))}
-    trouves = [n for n in noms if _normaliser(n) in alias]
-    if trouves:
-        return trouves
-    return [n for n in noms
-            if any(_normaliser(n).startswith(a) and len(_normaliser(n)) <= len(a) + 4 for a in alias)]
-
-
 def _expliquer_erreur(code: int, message: str, chemin: str | None) -> str:
     aides = {
         -6: ("Le terminal refuse l'autorisation : aucun compte enregistré.\n"

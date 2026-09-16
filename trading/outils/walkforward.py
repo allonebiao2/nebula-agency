@@ -29,11 +29,24 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from trading.backtest.metriques import rapport                     # noqa: E402
 from trading.backtest.walkforward import walk_forward               # noqa: E402
-from trading.noyau.config import charger                            # noqa: E402
+from trading.noyau.config import charger, empreinte_regles          # noqa: E402
 from trading.noyau.donnees_mt5 import charger_historique, specs_et_couts  # noqa: E402
 from trading.strategies import catalogue                            # noqa: E402
 
 RAPPORTS = Path(__file__).resolve().parent.parent / "rapports"
+
+
+def configurer(cfg, sans_weekend: bool):
+    """La variante demandée, IMPOSÉE, quelle que soit la valeur du config.toml.
+
+    ⛔ 2026-09-16 : le config.toml est passé à « positions gardées le week-end ». L'outil
+    ne forçait que la variante --sans-weekend : sans le drapeau il héritait du fichier,
+    ne fermait donc plus rien le vendredi, et écrivait quand même un rapport
+    « fermeture du vendredi : oui ». Les deux rapports EUR/USD étaient identiques au
+    trade près.
+    """
+    return dataclasses.replace(
+        cfg, calendrier=dataclasses.replace(cfg.calendrier, fermer_avant_weekend=not sans_weekend))
 
 
 def main() -> int:
@@ -52,10 +65,7 @@ def main() -> int:
     ap.add_argument("--nom", default="")
     args = ap.parse_args()
 
-    cfg = charger()
-    if args.sans_weekend:
-        cfg = dataclasses.replace(
-            cfg, calendrier=dataclasses.replace(cfg.calendrier, fermer_avant_weekend=False))
+    cfg = configurer(charger(), args.sans_weekend)
     barres = charger_historique(args.symbole, args.tf)
     specs, couts = specs_et_couts(args.symbole)
     if specs is None:
@@ -104,6 +114,7 @@ def main() -> int:
                                       args.mois_test or 12],
                     "variante": suffixe or "reference", "couts": str(couts),
                     "min_trades_apprentissage": args.min_trades,
+                    "empreinte_regles": empreinte_regles(cfg),
                     "sorties": motifs, "calcule_le": time.strftime("%Y-%m-%d %H:%M")})
     sortie.write_text(json.dumps(donnees, ensure_ascii=False, indent=1, default=str),
                       encoding="utf-8")

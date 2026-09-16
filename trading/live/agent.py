@@ -50,7 +50,9 @@ from ..apprentissage import analyse as analyse_mod
 from ..apprentissage import porte as porte_mod
 from ..apprentissage import sante as sante_mod
 from ..backtest import montecarlo
-from .execution import Executeur, autorisation
+from ..noyau.config import empreinte_regles
+from ..noyau.instruments import exposition_par_facteur, facteurs_de, limites_execution
+from .execution import Executeur, autorisation, marche_ferme
 from .journal import Journal
 
 HEURES_TF = {"M15": .25, "M30": .5, "H1": 1, "H4": 4, "D1": 24}
@@ -212,6 +214,12 @@ class Agent:
                 d = montecarlo.rapport_actif(dossier_rapports(), nom, cfg.marche.timeframe,
                                              not cfg.calendrier.fermer_avant_weekend, symbole=base)
                 reference = montecarlo.rendements_en_R(d) if d else []
+                if d and d.get("empreinte_regles") != empreinte_regles(cfg):
+                    self._alerte_unique(
+                        f"regles-{cle}-{d.get('calcule_le')}",
+                        f"{cle} : son walk-forward ({d.get('calcule_le')}) a été mesuré sous d'autres "
+                        f"règles que celles de l'agent. Ses réglages et sa référence de santé ne "
+                        f"décrivent plus ce qui est tradé : relancer le walk-forward.", niveau="alerte")
                 reprise = (ag.get("reprises_sante") or {}).get(cle)
                 live = [t["resultat_R"] for t in reversed(self.journal.trades(2000, ouverts=False))
                         if t.get("strategie") == nom and t.get("mode") in ("demo", "reel")
@@ -369,14 +377,29 @@ class Agent:
 
         self._gerer_positions(cfg, positions, maintenant_serveur, peut_trader)
 
-        for marche in self.marches.values():
-            for nom in ag["strategies_actives"]:
-                if nom in catalogue.STRATEGIES:
-                    self._analyser(nom, marche, cfg, compte, capital, risque, positions,
-                                   maintenant_serveur, mode, peut_trader, raison_mode)
+        self._analyser_marches(ag, cfg, compte, capital, risque, positions,
+                               maintenant_serveur, mode, peut_trader, raison_mode)
 
         self._publier(cfg, ag, compte, self._toutes_positions(), risque=risque,
                       capital=capital, raison_mode=raison_mode, peut_trader=peut_trader)
+
+    def _analyser_marches(self, ag, cfg, compte, capital, risque, positions,
+                          maintenant_serveur, mode, peut_trader, raison_mode) -> None:
+        """Chaque stratégie active sur chaque instrument.
+
+        ⚠️ EUR/USD et NAS100 ferment leur bougie H4 à la MÊME heure : ils sont analysés
+        dans le même cycle. Après une ouverture, positions et exposition sont RELUES ;
+        sinon le second instrument décide sur l'état d'avant la première position, et
+        les deux franchissent ensemble le plafond d'exposition.
+        """
+        for marche in self.marches.values():
+            for nom in ag["strategies_actives"]:
+                if nom not in catalogue.STRATEGIES:
+                    continue
+                if self._analyser(nom, marche, cfg, compte, capital, risque, positions,
+                                  maintenant_serveur, mode, peut_trader, raison_mode):
+                    positions = self._toutes_positions()
+                    risque = self._etat_du_risque(cfg, capital)
 
     # ------------------------------------------------------------------ #
     def _assurer_connexion(self, cfg) -> bool:
@@ -396,10 +419,14 @@ class Agent:
                     self.journal.evenement("connexion", f"{base} introuvable chez ce courtier : "
                                                         f"instrument ignoré", niveau="alerte")
                     continue
+                specs = self.courtier.specs(nom)
+                # La déviation se compte en points DE CET instrument : 10 points valent un
+                # pip sur l'EUR/USD et un dixième de point d'indice sur le NAS100.
+                deviation = limites_execution(cfg.execution, base, specs.point)[1]
                 self.marches[base] = MarcheLive(
-                    base=base, nom=nom, specs=self.courtier.specs(nom),
+                    base=base, nom=nom, specs=specs,
                     executeur=Executeur(nom, cfg.compte.magic_number,
-                                        deviation_points=cfg.execution.slippage_max_points,
+                                        deviation_points=int(round(deviation)),
                                         tentatives=cfg.execution.tentatives_max))
             if not self.marches:
                 raise RuntimeError("aucun des instruments configurés n'existe chez ce courtier")
@@ -624,7 +651,31 @@ class Agent:
             "trades_jour": self.journal.ouverts_depuis(debut_jour),
             "trades_semaine": self.journal.ouverts_depuis(debut_semaine),
             "exposition_pct": 100 * exposition / capital if capital else 0.0,
+            "exposition_par_facteur": exposition_par_facteur(
+                (t.get("symbole") or "EURUSD", 100 * (t["risque_devise"] or 0) / capital)
+                for t in ouverts) if capital else {},
         }
+
+    def _motif_blocage(self, cle: str, marche: MarcheLive, positions, cfg, risque) -> str:
+        """Ce qui interdit d'entrer sur CET instrument, avant même les huit verrous.
+
+        Une position par instrument : une position EUR/USD ouverte bloque un second
+        EUR/USD, jamais le NAS100 (le plafond total et l'exposition par facteur tiennent
+        l'ensemble).
+        """
+        diag = self.sante.get(cle, {})
+        if diag.get("statut") == "pause":
+            return f"stratégie en pause de santé (CUSUM) : {diag.get('message', '')}"
+        if self.arret_total:
+            return "arrêt total en cours (redémarrage manuel requis)"
+        if self.pause_motif:
+            return f"agent en pause : {self.pause_motif}"
+        if any(q.symbol == marche.nom for q in positions):
+            return f"une position déjà ouverte sur {marche.base} (une par instrument)"
+        if len(positions) >= cfg.exposition.positions_simultanees_max:
+            return (f"{len(positions)} position(s) déjà ouverte(s), plafond "
+                    f"{cfg.exposition.positions_simultanees_max}")
+        return self._disjoncteur(cfg, risque)
 
     def _disjoncteur(self, cfg, risque) -> str:
         c = cfg.circuits
@@ -639,7 +690,8 @@ class Agent:
     #  Analyse d'une bougie close
     # ------------------------------------------------------------------ #
     def _analyser(self, nom, marche: MarcheLive, cfg, compte, capital, risque, positions,
-                  maintenant_serveur, mode, peut_trader, raison_mode) -> None:
+                  maintenant_serveur, mode, peut_trader, raison_mode) -> bool:
+        """Vrai si une position vient d'être ouverte."""
         from ..noyau.donnees_mt5 import dernieres_barres
         tf = cfg.marche.timeframe
         barres = dernieres_barres(marche.nom, tf, 700)
@@ -647,7 +699,7 @@ class Agent:
         barre_close = barres.quand(i)
         cle = f"{nom} · {marche.base}"
         if self._derniere_barre.get(cle) == barre_close:
-            return
+            return False
         self._derniere_barre[cle] = barre_close
 
         params, origine = parametres_du_walkforward(nom, tf, not cfg.calendrier.fermer_avant_weekend,
@@ -665,24 +717,10 @@ class Agent:
                 "analyse", f"{cle} · bougie {tf} de {barre_close:%d/%m %H:%M} close à "
                            f"{barres.cloture[i]:.{marche.specs.digits}f} : pas de signal (régime {regime})",
                 donnees={"strategie": nom, "regime": regime, "atr": atr_i, "origine": origine})
-            return
+            return False
 
-        motif_blocage = ""
-        diag = self.sante.get(cle, {})
         memes = [q for q in positions if q.symbol == marche.nom]
-        if diag.get("statut") == "pause":
-            motif_blocage = f"stratégie en pause de santé (CUSUM) : {diag.get('message', '')}"
-        elif self.arret_total:
-            motif_blocage = "arrêt total en cours (redémarrage manuel requis)"
-        elif self.pause_motif:
-            motif_blocage = f"agent en pause : {self.pause_motif}"
-        elif memes:
-            motif_blocage = f"une position déjà ouverte sur {marche.base} (une par instrument)"
-        elif len(positions) >= cfg.exposition.positions_simultanees_max:
-            motif_blocage = (f"{len(positions)} position(s) déjà ouverte(s), plafond "
-                             f"{cfg.exposition.positions_simultanees_max}")
-        else:
-            motif_blocage = self._disjoncteur(cfg, risque)
+        motif_blocage = self._motif_blocage(cle, marche, positions, cfg, risque)
 
         tick = mt5.symbol_info_tick(marche.nom)
         spread = (tick.ask - tick.bid) / marche.specs.point if tick else 0.0
@@ -691,6 +729,9 @@ class Agent:
         etat = EtatSysteme(
             spread_points=spread,
             spread_habituel_points=prof.get("spread_median_points") or 0.0,
+            spread_max_points=limites_execution(cfg.execution, marche.base, marche.specs.point)[0],
+            facteurs=facteurs_de(marche.base),
+            exposition_par_facteur=risque.get("exposition_par_facteur") or {},
             atr_courant=atr_i,
             pertes_consecutives=risque["pertes_consecutives"],
             minutes_depuis_derniere_perte=risque["minutes_depuis_perte"],
@@ -720,7 +761,7 @@ class Agent:
             self.journal.evenement("decision", f"{cle} proposait {plan.sens.upper()} : REFUSÉ "
                                                f"({len(verdict.refus)} verrou(s))",
                                    niveau="info", donnees={"motif": motif})
-            return
+            return False
 
         # Le backtest entre à l'OUVERTURE de la bougie suivante. Un signal
         # découvert tard (démarrage, reconnexion) n'est plus le même trade :
@@ -732,13 +773,23 @@ class Agent:
             raison_mode = (f"signal de la bougie close il y a {retard_min:.0f} min : entrée trop "
                            f"tardive par rapport à ce que mesure le backtest")
 
+        if peut_trader:
+            info = mt5.symbol_info(marche.nom)
+            cotations = [getattr(mt5.symbol_info_tick(m.nom), "time", 0) or 0
+                         for m in self.marches.values()]
+            ferme = marche_ferme(achat=plan.sens == ACHAT, trade_mode=getattr(info, "trade_mode", None),
+                                 cotation_s=getattr(tick, "time", None),
+                                 reference_s=max(cotations, default=0))
+            if ferme:
+                peut_trader, raison_mode = False, ferme
+
         if not peut_trader:
             self.journal.decision(verdict_obj=verdict, verdict="observe", motif=raison_mode,
                                   mode=mode, barre=barre_close, profil=profil,
                                   risque_choisi=risque_du_palier)
             self.journal.evenement("decision", f"{cle} : {plan.sens.upper()} autorisé par les "
                                                f"8 verrous, NON envoyé ({raison_mode})")
-            return
+            return False
 
         dim = verdict.dimensionnement
         r = marche.executeur.ouvrir(plan, dim.lots, specs=marche.specs,
@@ -759,8 +810,9 @@ class Agent:
             self.journal.decision(verdict_obj=verdict, verdict="echec", motif=r.message,
                                   mode=mode, barre=barre_close, profil=profil,
                                   risque_choisi=risque_du_palier)
-            self.journal.evenement("trade", f"ordre refusé par le courtier : {r.message}",
+            self.journal.evenement("trade", f"{marche.base} : ordre refusé par le courtier : {r.message}",
                                    niveau="alerte")
+        return r.ok
 
     # ------------------------------------------------------------------ #
     #  Instantané pour l'interface

@@ -193,8 +193,11 @@ Chaque vague : QC vert avec témoins, captures 1440 et 390, paquet reconstruit, 
    videur sous le p95, affichage Stratégies et BOOST, outil de lecture pour l'agent.
 3. ✅ **Auto-surveillance** (`4db053b`) : CUSUM par stratégie, rapport hebdomadaire et page « Évolution », porte
    démo, chien de garde, glissement mesuré par ordre.
-4. 🔧 **EUR/USD + NAS100** (`724fe99`, en cours : écrite, jamais lancée ; reste QC, exposition par facteur, séances, relance ; voir `JOURNAL.md`) : alias du symbole vérifiés chez Deriv, boucle multi-instruments,
-   exposition par facteur, historique, walk-forward et Monte Carlo par instrument.
+4. ✅ **EUR/USD + NAS100** (2026-09-17, QC 176 verts, lancée en direct en observation) : alias du symbole
+   vérifiés chez Deriv, boucle multi-instruments, **plafonds de spread et de déviation par instrument**,
+   exposition par facteur, séance fermée détectée, historique, walk-forward et Monte Carlo par instrument,
+   **empreinte des règles** dans chaque rapport. ⛔ Les résultats de walk-forward d'avant sont faux (voir
+   `JOURNAL.md`) : **sous les règles appliquées, les six variantes perdent**.
 
 **Ensuite** : filtre D1, stratégies momentum, range et cassure de structure, indicateurs RSI,
 MACD, Bollinger et structure HH/HL, garde contre les tests multiples, méta-labeling, Telegram.
