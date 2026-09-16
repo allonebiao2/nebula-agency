@@ -263,16 +263,144 @@ def qc_montecarlo():
     verifier(np.allclose(rr, [1.0, -0.5]), "R retrouvés depuis une courbe d'équité (anciens rapports)", str(rr))
 
 
+def qc_surveillance():
+    import sqlite3
+    import numpy as np
+    from trading.apprentissage import analyse, porte, sante
+    from trading.live.journal import Journal
+    section("AUTO-SURVEILLANCE, PORTES, CHIEN DE GARDE")
+    rng = np.random.default_rng(9)
+    ref = np.where(rng.random(400) < 0.4, 2.0, -1.0)
+    verifier(sante.diagnostiquer([], ref, cle="qc")["statut"] == "saine", "aucun trade réel : stratégie saine")
+    fausses = sum(sante.diagnostiquer(ref[rng.integers(0, 400, 100)], ref, cle="qc")["statut"] == "pause"
+                  for _ in range(100))
+    verifier(fausses <= 10, "TÉMOIN : une stratégie conforme à sa mesure n'est presque jamais mise en pause",
+             f"{fausses}/100")
+    morte = ref[rng.integers(0, 400, 80)] - 1.0
+    verifier(sante.diagnostiquer(morte, ref, cle="qc")["statut"] == "pause",
+             "un avantage effondré (−1 R) est mis en pause")
+    verifier(sante.diagnostiquer([0.5], ref[:10], cle="qc2")["statut"] == "inconnu",
+             "sans référence walk-forward suffisante : statut inconnu, pas de verdict")
+
+    j = Journal(TEMP / "qc_surveillance.db")
+    vide = analyse.analyser(j)
+    verifier(vide["global"]["trades"] == 0 and "Aucun trade" in vide["constats"][0],
+             "auto-analyse sur un journal vide : le dit, ne conclut rien")
+    verifier(not porte.porte_demo(j)["franchie"], "porte démo fermée sans historique")
+    verifier(not porte.porte_boost_reel(j)["franchie"], "porte BOOST réel fermée sans PRO réel")
+
+    cx = sqlite3.connect(j.chemin)
+    from datetime import datetime, timedelta, timezone
+    debut = datetime.now(timezone.utc) - timedelta(days=40)
+    for k in range(32):
+        ouvert = (debut + timedelta(days=k)).isoformat()
+        ferme = (debut + timedelta(days=k, hours=8)).isoformat()
+        gain = k % 5 < 2
+        cx.execute("INSERT INTO trades (ticket, strategie, sens, lots, ouvert_le, prix_entree, stop_initial, "
+                   "objectif, risque_devise, ferme_le, prix_sortie, resultat_devise, resultat_R, motif, contexte, "
+                   "mode, symbole, profil) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                   (1000 + k, "cassure_donchian", "achat", 0.1, ouvert, 1.1, 1.095, 1.11, 50, ferme,
+                    1.11 if gain else 1.095, 100 if gain else -50, 2.0 if gain else -1.0,
+                    "objectif" if gain else "stop", '{"efficacite": 0.4}', "demo", "EURUSD", "pro"))
+        cx.execute("INSERT INTO ordres (ts, action, ticket, sens, lots, prix, sl, tp, retcode, mode, "
+                   "prix_demande, glissement_points) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                   (ouvert, "ouvrir", 1000 + k, "achat", 0.1, 1.1, 1.095, 1.11, 10009, "demo", 1.1, 0.5))
+    cx.commit()
+    ok = porte.porte_demo(j, sante={"statut": "saine"})
+    verifier(ok["franchie"], "TÉMOIN : 40 jours, 32 trades, stops posés, glissement 0,5 pt : porte démo franchie",
+             str([c for c in ok["criteres"] if not c["ok"]]))
+    verifier(not porte.porte_demo(j, sante={"statut": "pause"})["franchie"],
+             "stratégie en pause de santé : porte démo refermée")
+    cx.execute("INSERT INTO ordres (ts, action, ticket, retcode, mode, sl) VALUES (?,?,?,?,?,?)",
+               (datetime.now(timezone.utc).isoformat(), "ouvrir", 9999, 10009, "demo", 0))
+    cx.commit()
+    verifier(not porte.porte_demo(j, sante={"statut": "saine"})["franchie"],
+             "un seul ordre parti sans stop : porte démo refermée")
+    cx.close()
+    a = analyse.analyser(j)
+    verifier(a["par_regime"]["tendance"]["trades"] == 32 and a["par_regime"]["tendance"]["concluant"],
+             "analyse par régime avec effectif, concluante à partir de 20 trades")
+    verifier(all(not v["concluant"] for v in a["par_jour"].values()),
+             "tranches par jour de moins de 20 trades marquées non concluantes")
+
+    from trading.live.agent import Agent
+    from trading.noyau.config import charger
+
+    class ExecFactice:
+        def __init__(self):
+            self.poses, self.fermees = [], []
+
+        def poser_stop(self, pos, sl, digits):
+            from trading.live.execution import ResultatOrdre
+            self.poses.append((pos.ticket, sl))
+            return ResultatOrdre(True, ticket=pos.ticket, sl=sl)
+
+        def fermer(self, pos, motif=""):
+            from trading.live.execution import ResultatOrdre
+            self.fermees.append(pos.ticket)
+            return ResultatOrdre(True, ticket=pos.ticket)
+
+    class Pos:
+        def __init__(self, ticket, sl):
+            self.ticket, self.sl, self.tp = ticket, sl, 0.0
+
+    class Compte:
+        equity = 10000.0
+
+    cfg = charger()
+    jg = Journal(TEMP / "qc_garde.db")
+    ag = Agent(jg)
+    # L'instantané publié à chaque cycle : ce chemin n'était exercé par aucun contrôle,
+    # et un attribut renommé l'a fait planter en direct (vu dans le journal, QC vert).
+    from trading.noyau import reglages as _r
+    try:
+        ag._publier(cfg, _r.agent(), None, [])
+        inst = ag.instantane()
+        verifier("profil" in inst and "portes" in inst and "sante" in inst,
+                 "l'instantané de l'agent se publie sans compte connecté")
+    except Exception as exc:                                          # noqa: BLE001
+        verifier(False, "l'instantané de l'agent se publie sans compte connecté", repr(exc))
+    ag.executeur, ag.specs = ExecFactice(), type("S", (), {"digits": 5})()
+    for _ in range(2):
+        jg.ordre(action="ouvrir", retcode=10019, mode="demo")
+    ag._chien_de_garde(cfg, Compte(), [])
+    verifier(not ag.pause_motif, "TÉMOIN : deux ordres rejetés ne mettent pas en pause")
+    jg.ordre(action="ouvrir", retcode=10019, mode="demo")
+    ag._chien_de_garde(cfg, Compte(), [])
+    verifier("rejet" in ag.pause_motif, "trois ordres rejetés en une heure : plus aucune entrée", ag.pause_motif)
+    ag.pause_motif = ""
+    ag._chien_de_garde(cfg, Compte(), [Pos(7, 1.09)])
+    verifier(not ag.executeur.poses, "TÉMOIN : une position avec stop n'est pas touchée")
+    ag._chien_de_garde(cfg, Compte(), [Pos(8, 0.0)])
+    verifier(ag.executeur.fermees == [8], "position sans stop et sans stop connu : fermée")
+    # Journal NEUF : l'ancien porte encore les 3 rejets, qui mettraient en pause
+    # avant la règle mesurée ici (un contrôle hérite de l'état du précédent).
+    jc = Journal(TEMP / "qc_garde_equite.db")
+    ag = Agent(jc)
+    ag.executeur, ag.specs = ExecFactice(), type("S", (), {"digits": 5})()
+    jc.point_equite(10000, 10000, 10000)
+
+    class CompteChute:
+        equity = 9500.0
+
+    ag._chien_de_garde(cfg, Compte(), [])
+    verifier(not ag.pause_motif, "TÉMOIN : équité stable, pas de pause")
+    ag._chien_de_garde(cfg, CompteChute(), [])
+    verifier("équité" in ag.pause_motif, "équité −5 % en une heure : pause", ag.pause_motif)
+
+
 def qc_execution():
     from trading.live.execution import autorisation
     section("MODES D'EXÉCUTION")
-    base = dict(mode_config="reel", capital_max_engage=200, licence_valide=True)
+    base = dict(mode_config="reel", capital_max_engage=200, licence_valide=True, porte_demo_franchie=True)
     verifier(not autorisation("observation", compte_demo=True, **base)[0], "observation : aucun ordre")
     verifier(autorisation("demo", compte_demo=True, **base)[0], "TÉMOIN : démo sur compte démo autorisée")
     verifier(not autorisation("demo", compte_demo=False, **base)[0], "démo branchée sur un compte réel : refus")
     verifier(autorisation("reel", compte_demo=False, **base)[0], "TÉMOIN : réel complet autorisé")
     verifier(not autorisation("reel", compte_demo=False, **{**base, "licence_valide": False})[0],
              "réel sans licence : refus")
+    verifier(not autorisation("reel", compte_demo=False, **{**base, "porte_demo_franchie": False})[0],
+             "réel sans porte démo franchie : refus")
     verifier(not autorisation("reel", compte_demo=False, **{**base, "capital_max_engage": 0})[0],
              "réel sans plafond de capital : refus")
     verifier(not autorisation("reel", compte_demo=True, **base)[0], "réel sur un compte démo : refus")
@@ -396,6 +524,10 @@ def qc_serveur():
     mc = c.get("/api/montecarlo?risque=8").json()
     verifier(mc.get("valide") and 0 <= mc["p_drawdown"]["50"] <= 1, "probabilités de perte servies au curseur",
              str(mc.get("raison", "")))
+    ev = c.get("/api/evolution").json()
+    verifier({"total", "semaine", "sante", "portes", "trades"} <= set(ev), "page Évolution servie")
+    verifier(c.post("/api/commande", json={"action": "reprendre_strategie", "valeur": "cassure_donchian"},
+                    headers=H).status_code == 400, "reprise d'une stratégie en pause : confirmation exigée")
     r = c.post("/api/profil", json={"actif": "pro"}, headers=H).json()
     verifier(r.get("ok") and c.get("/api/profil").json()["actif"] == "pro", "retour en PRO sans confirmation")
     verifier(c.get("/api/etat").headers.get("x-frame-options") == "SAMEORIGIN",
@@ -475,7 +607,7 @@ def main() -> int:
     print("  QC NEBULA TRADER")
     print("=" * 64)
     for f in (qc_config, qc_dimensionnement, qc_capital, qc_licence, qc_reglages, qc_profils,
-              qc_montecarlo, qc_execution,
+              qc_montecarlo, qc_surveillance, qc_execution,
               qc_journal, qc_conversation, qc_serveur, qc_calendrier, qc_moteur, qc_interface):
         try:
             f()

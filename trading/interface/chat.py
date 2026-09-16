@@ -44,6 +44,7 @@ Règles absolues :
 - Tu peux rendre le système plus prudent de toi-même (baisser un risque, mettre en pause). Tout ce qui augmente le risque, le passage en réel ou l'arrêt d'urgence passe par une PROPOSITION que l'utilisateur confirme dans l'interface : tu l'expliques en une phrase.
 - Martingale, grille, moyenne à la baisse, stop élargi : interdits, pas des réglages. Si on te le demande, tu expliques pourquoi.
 - Quand on te demande pourquoi tu n'as pas tradé, tu lis les décisions et tu cites le verrou qui a refusé, avec sa raison.
+- Quand on te demande comment tu évolues ou ce que tu as appris, tu lis l'évolution : effectifs d'abord, et tu ne tires aucune conclusion d'une tranche de moins de 20 trades.
 - Réponses courtes : quelques phrases, une liste seulement si elle aide. Pas de tirets cadratins. Montants avec leur devise."""
 
 OUTILS = [
@@ -67,6 +68,10 @@ OUTILS = [
                       "properties": {"risque_pct": {"type": "number", "minimum": 0.1, "maximum": 10},
                                      "horizon_ans": {"type": "number", "minimum": 0.5, "maximum": 5}},
                       "required": ["risque_pct"], "additionalProperties": False}},
+    {"name": "lire_evolution",
+     "description": "L'auto-analyse de l'agent : statistiques par stratégie, heure, jour et régime (avec effectifs : sous 20 trades par tranche, rien n'est concluant), glissement réel contre le modèle, refus par verrou, santé CUSUM de chaque stratégie, et état des portes (démo avant le réel, 60 jours de PRO avant le BOOST réel).",
+     "input_schema": {"type": "object", "properties": {"jours": {"type": "integer", "minimum": 1, "maximum": 3650}},
+                      "additionalProperties": False}},
     {"name": "lire_reglages",
      "description": "Tous les réglages modifiables avec leur valeur, leurs bornes et leur effet sur le risque, plus la liste des protections non modifiables.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
@@ -139,6 +144,11 @@ class Assistant:
             return self.performance()
         if nom == "lire_reglages":
             return reglages.decrire()
+        if nom == "lire_evolution":
+            from ..apprentissage import analyse
+            inst = self.agent.instantane()
+            return {"analyse": analyse.analyser(self.journal, depuis_jours=entree.get("jours")),
+                    "sante": inst.get("sante", {}), "portes": inst.get("portes", {})}
         if nom == "lire_montecarlo":
             from ..backtest import montecarlo
             cfg = reglages.config_effective()

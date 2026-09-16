@@ -184,6 +184,9 @@ AGENT_DEFAUT = {
     "strategies_actives": ["cassure_donchian"],
     "intervalle_cycle_s": 20,
     "mode": "observation",          # observation | demo | reel
+    # Reprise manuelle après une pause de santé : le CUSUM repart des trades fermés
+    # APRÈS cette date. {strategie: horodatage ISO}
+    "reprises_sante": {},
 }
 
 

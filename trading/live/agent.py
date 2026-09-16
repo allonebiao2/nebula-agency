@@ -46,6 +46,10 @@ from ..noyau.plan import ACHAT, EtatSysteme, controle_prealable
 from ..strategies import catalogue
 from ..strategies.base import ContexteStrategie
 from ..strategies.indicateurs import atr as calc_atr
+from ..apprentissage import analyse as analyse_mod
+from ..apprentissage import porte as porte_mod
+from ..apprentissage import sante as sante_mod
+from ..backtest import montecarlo
 from .execution import Executeur, autorisation
 from .journal import Journal
 
@@ -113,7 +117,12 @@ class Agent:
         self.decalage_h = 0.0
         self.etat_profil: profils.EtatProfil | None = self._lire_etat_profil()
         self.risque_du_palier: tuple[float, str] = (0.0, "")
-        self.porte_boost_franchie = lambda: False      # branchée par la vague 3 (porte PRO 60 jours)
+        self.sante: dict[str, dict] = {}
+        self.portes: dict = {}
+        self._portes_le = 0.0
+        self._alertes_emises: set[str] = set()
+        self._deconnecte_depuis: float | None = None
+        self._positions_connues = 0
         self.cycles = 0
         self._instantane: dict = {"etat": "démarrage"}
 
@@ -174,6 +183,97 @@ class Agent:
                                    + " : ces gains ne seront plus jamais risqués")
         self.risque_du_palier = profils.risque_courant(cfg, self.etat_profil, compte.equity)
 
+    # ------------------------------------------------------------------ #
+    #  Santé, portes, chien de garde, rapport hebdomadaire
+    # ------------------------------------------------------------------ #
+    def _alerte_unique(self, cle: str, message: str, niveau: str = "critique") -> None:
+        if cle not in self._alertes_emises:
+            self._alertes_emises.add(cle)
+            self.journal.evenement("chien de garde", message, niveau=niveau)
+
+    def _evaluer_sante(self, cfg, ag) -> None:
+        """CUSUM de chaque stratégie active contre son walk-forward ; portes toutes les minutes."""
+        for nom in ag["strategies_actives"]:
+            d = montecarlo.rapport_actif(dossier_rapports(), nom, cfg.marche.timeframe,
+                                         not cfg.calendrier.fermer_avant_weekend)
+            reference = montecarlo.rendements_en_R(d) if d else []
+            reprise = (ag.get("reprises_sante") or {}).get(nom)
+            live = [t["resultat_R"] for t in reversed(self.journal.trades(2000, ouverts=False))
+                    if t.get("strategie") == nom and t.get("mode") in ("demo", "reel")
+                    and (not reprise or (t.get("ferme_le") or "") > reprise)]
+            diag = sante_mod.diagnostiquer(live, reference, cle=f"{nom}:{d.get('calcule_le') if d else ''}")
+            ancien = self.sante.get(nom, {}).get("statut")
+            self.sante[nom] = diag
+            if diag["statut"] != ancien and ancien is not None and diag["statut"] in ("pause", "surveillance"):
+                self.journal.evenement("santé", f"{nom} : {diag['statut'].upper()} · {diag['message']}",
+                                       niveau="critique" if diag["statut"] == "pause" else "alerte")
+        if time.time() - self._portes_le > 60:
+            principale = self.sante.get((ag["strategies_actives"] or [""])[0], {})
+            self.portes = {"demo": porte_mod.porte_demo(self.journal, sante=principale),
+                           "boost_reel": porte_mod.porte_boost_reel(self.journal, sante=principale)}
+            self._portes_le = time.time()
+
+    def _chien_de_garde(self, cfg, compte, positions) -> None:
+        """Ce qui doit arrêter les entrées sans attendre un humain."""
+        maintenant = datetime.now(timezone.utc)
+        # 1. ordres rejetés en série : le courtier refuse, on n'insiste pas
+        heure = (maintenant - timedelta(hours=1)).isoformat()
+        rejets = [o for o in self.journal.ordres(50)
+                  if o["action"] == "ouvrir" and o["ts"] >= heure and o.get("retcode") not in (10009, None)]
+        if len(rejets) >= 3 and not self.pause_motif:
+            self.pause_motif = f"chien de garde : {len(rejets)} ordres rejetés en une heure"
+            self.journal.evenement("chien de garde", self.pause_motif + " ; plus aucune entrée",
+                                   niveau="critique")
+        # 2. position sans stop chez le courtier : on en pose un, sinon on ferme
+        for p in positions:
+            if p.sl:
+                continue
+            trade = self.journal.trade_par_ticket(p.ticket) or {}
+            stop = trade.get("stop_initial")
+            r = self.executeur.poser_stop(p, stop, digits=self.specs.digits) if stop else None
+            if r is not None and r.ok:
+                self.journal.evenement("chien de garde", f"position {p.ticket} trouvée SANS stop : "
+                                                         f"stop posé à {stop}", niveau="critique")
+            else:
+                f = self.executeur.fermer(p, motif="sans stop")
+                self.journal.evenement("chien de garde", f"position {p.ticket} SANS stop et stop impossible "
+                                                         f"à poser : fermeture {'faite' if f.ok else 'REFUSÉE'}",
+                                       niveau="critique")
+        # 3. chute brutale de l'équité
+        seuil = max(3.0, 2 * cfg.risque.risque_par_trade_pct)
+        points = self.journal.courbe(depuis_jours=1, points_max=5000)
+        recents = [q for q in points if q["ts"] >= heure]
+        if recents:
+            haut = max(q["equite"] for q in recents)
+            chute = 100 * (haut - compte.equity) / haut if haut else 0.0
+            if chute >= seuil and not self.pause_motif:
+                self.pause_motif = f"chien de garde : équité −{chute:.1f} % en une heure (seuil {seuil:g} %)"
+                self.journal.evenement("chien de garde", self.pause_motif, niveau="critique")
+
+    def _garde_deconnexion(self) -> None:
+        if self._deconnecte_depuis is None:
+            self._deconnecte_depuis = time.time()
+            return
+        if self._positions_connues and time.time() - self._deconnecte_depuis > 600:
+            self._alerte_unique(
+                f"deconnexion-{int(self._deconnecte_depuis)}",
+                f"terminal muet depuis {int((time.time() - self._deconnecte_depuis) / 60)} min avec "
+                f"{self._positions_connues} position(s) ouverte(s) : l'agent ne peut plus agir, "
+                f"seuls les stops déposés chez le courtier protègent le compte")
+
+    def _rapport_hebdomadaire(self) -> None:
+        semaine = datetime.now(timezone.utc).strftime("%G-S%V")
+        marque = fichier("dernier_rapport_hebdo.txt")
+        if marque.exists() and marque.read_text(encoding="utf-8").strip() == semaine:
+            return
+        rapport = analyse_mod.analyser(self.journal, depuis_jours=7)
+        dossier = fichier("rapports_hebdo")
+        dossier.mkdir(exist_ok=True)
+        (dossier / f"{semaine}.json").write_text(json.dumps(rapport, ensure_ascii=False, indent=1),
+                                                 encoding="utf-8")
+        marque.write_text(semaine, encoding="utf-8")
+        self.journal.evenement("analyse hebdo", f"rapport {semaine} : " + " ".join(rapport["constats"][:2]))
+
     def instantane(self) -> dict:
         with self._verrou:
             return dict(self._instantane)
@@ -200,8 +300,10 @@ class Agent:
         self._traiter_commandes(cfg)
 
         if not self._assurer_connexion(cfg):
+            self._garde_deconnexion()
             self._publier(cfg, ag, None, [])
             return
+        self._deconnecte_depuis = None
 
         compte = mt5.account_info()
         if compte is None:
@@ -232,12 +334,19 @@ class Agent:
                                    f"(seuil {cfg.circuits.drawdown_max_total_pct} %). "
                                    f"Redémarrage manuel requis.", niveau="critique")
 
+        self._evaluer_sante(cfg, ag)
+        self._chien_de_garde(cfg, compte, positions)
+        self._rapport_hebdomadaire()
+        self._positions_connues = len(positions)
+
         mode = ag["mode"]
         peut_trader, raison_mode = autorisation(
             mode, compte_demo=compte.trade_mode == mt5.ACCOUNT_TRADE_MODE_DEMO,
             mode_config=cfg.compte.mode, capital_max_engage=cfg.compte.capital_max_engage,
             licence_valide=self.licence_valide(),
-            profil_boost=cfg.profil.boost, porte_boost_franchie=self.porte_boost_franchie())
+            profil_boost=cfg.profil.boost,
+            porte_boost_franchie=self.portes.get("boost_reel", {}).get("franchie", False),
+            porte_demo_franchie=self.portes.get("demo", {}).get("franchie", False))
 
         self._gerer_positions(cfg, positions, maintenant_serveur, peut_trader)
 
@@ -352,6 +461,13 @@ class Agent:
         elif c.action == "analyser":
             self._derniere_barre.clear()
             self.journal.evenement("commande", "nouvelle analyse de la dernière bougie demandée")
+        elif c.action == "reprendre_strategie":
+            reprises = dict(reglages.agent().get("reprises_sante") or {})
+            reprises[str(c.valeur)] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+            reglages.modifier_agent({"reprises_sante": reprises})
+            self.sante.pop(str(c.valeur), None)
+            self.journal.evenement("santé", f"{c.valeur} reprise manuellement par {c.auteur} : le CUSUM "
+                                            f"repart de zéro", niveau="alerte")
         elif c.action == "reconnecter":
             if mt5 is not None:
                 mt5.shutdown()
@@ -508,7 +624,10 @@ class Agent:
             return
 
         motif_blocage = ""
-        if self.arret_total:
+        diag = self.sante.get(nom, {})
+        if diag.get("statut") == "pause":
+            motif_blocage = f"stratégie en pause de santé (CUSUM) : {diag.get('message', '')}"
+        elif self.arret_total:
             motif_blocage = "arrêt total en cours (redémarrage manuel requis)"
         elif self.pause_motif:
             motif_blocage = f"agent en pause : {self.pause_motif}"
@@ -637,6 +756,8 @@ class Agent:
             "prochaine_bougie_utc": ((prochaine - timedelta(hours=self.decalage_h)).isoformat() + "Z")
             if prochaine else None,
             "positions": pos, "calendrier": prochaines,
+            "sante": {k: {x: y for x, y in v.items() if x != "trajet"} for k, v in self.sante.items()},
+            "portes": self.portes,
             "calendrier_ok": bool(self.calendrier and self.calendrier.disponible),
         }
         ep = self.etat_profil
@@ -652,7 +773,7 @@ class Agent:
                       "verrouille_reel": (tc.en_reel(ep.verrouille) if (ep and tc) else 0.0),
                       "mises_a_l_abri": ep.mises_a_l_abri if ep else 0},
             "capital_depart": ep.capital_depart if ep else None,
-            "porte_boost_franchie": bool(self.porte_boost_franchie()),
+            "porte_boost_franchie": bool(self.portes.get("boost_reel", {}).get("franchie", False)),
         }
         if compte is not None and tc is not None:
             instant["compte"] = {

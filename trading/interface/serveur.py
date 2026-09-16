@@ -119,6 +119,27 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
                                          not cfg.calendrier.fermer_avant_weekend, risque,
                                          max(0.5, min(float(horizon), 5.0)))
 
+    @app.get("/api/evolution")
+    def evolution():
+        from ..apprentissage import analyse
+        from ..noyau.chemins import fichier as fichier_donnees
+        dossier = fichier_donnees("rapports_hebdo")
+        hebdos = []
+        if dossier.exists():
+            for p in sorted(dossier.glob("*.json"), reverse=True)[:12]:
+                d = _json(p) or {}
+                hebdos.append({"semaine": p.stem, "global": d.get("global"), "constats": d.get("constats", [])})
+        inst = agent.instantane()
+        return {
+            "total": analyse.analyser(journal),
+            "semaine": analyse.analyser(journal, depuis_jours=7),
+            "hebdos": hebdos,
+            "sante": inst.get("sante", {}),
+            "portes": inst.get("portes", {}),
+            "trades": journal.trades(200),
+            "stats": journal.statistiques(),
+        }
+
     @app.get("/api/equite")
     def equite(jours: int = 90):
         return journal.courbe(depuis_jours=max(1, min(jours, 3650)))
@@ -210,6 +231,13 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
     @app.post("/api/commande")
     def commande(corps: dict = Body(...)):
         action, valeur = corps.get("action"), corps.get("valeur")
+        if action == "reprendre_strategie":
+            if valeur not in catalogue.STRATEGIES:
+                raise HTTPException(400, f"stratégie inconnue : {valeur}")
+            if not corps.get("confirme"):
+                raise HTTPException(400, "la reprise d'une stratégie en pause de santé doit être confirmée")
+            agent.commander("reprendre_strategie", valeur, auteur="interface")
+            return {"ok": True}
         if action in ("pause", "reprendre", "analyser", "reconnecter"):
             agent.commander(action, valeur, auteur="interface")
             return {"ok": True}

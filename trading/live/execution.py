@@ -54,7 +54,8 @@ class ResultatOrdre:
 
 def autorisation(mode: str, *, compte_demo: bool, mode_config: str,
                  capital_max_engage: float, licence_valide: bool,
-                 profil_boost: bool = False, porte_boost_franchie: bool = False) -> tuple[bool, str]:
+                 profil_boost: bool = False, porte_boost_franchie: bool = False,
+                 porte_demo_franchie: bool = False) -> tuple[bool, str]:
     """Le mode permet-il d'envoyer un ordre sur CE compte ? Raison en clair.
 
     BOOST en RÉEL : exige la porte de la phase 5 du cahier des charges (60 jours de
@@ -78,6 +79,9 @@ def autorisation(mode: str, *, compte_demo: bool, mode_config: str,
         return False, "aucun plafond de capital défini : le mode réel reste bloqué"
     if not licence_valide:
         return False, "licence absente ou expirée : le mode réel est réservé aux licences"
+    if not porte_demo_franchie:
+        return False, ("porte démo non franchie : 30 jours, 30 trades, 100 % d'ordres avec stop et "
+                       "glissement conforme sur compte démo d'abord (page Évolution)")
     if profil_boost and not porte_boost_franchie:
         return False, ("profil BOOST en réel refusé : il faut d'abord 60 jours de PRO rentable "
                        "(phase 5 du cahier des charges). En démo, BOOST est libre.")
@@ -200,6 +204,21 @@ class Executeur:
                                  retcode=getattr(r, "retcode", None),
                                  message=getattr(r, "comment", "") or str(mt5.last_error()))
         return ResultatOrdre(True, ticket=position.ticket, sl=nouveau_sl)
+
+    def poser_stop(self, position, sl: float, *, digits: int) -> ResultatOrdre:
+        """Pose un stop sur une position qui n'en a AUCUN. Ce n'est pas un élargissement :
+        l'invariant ne s'applique qu'entre deux stops. Utilisé par le chien de garde."""
+        if position.sl:
+            return ResultatOrdre(False, ticket=position.ticket, message="la position a déjà un stop")
+        r = mt5.order_send({
+            "action": mt5.TRADE_ACTION_SLTP, "symbol": self.symbole,
+            "position": position.ticket, "sl": round(sl, digits), "tp": position.tp,
+            "magic": self.magic,
+        })
+        if r is None or r.retcode != mt5.TRADE_RETCODE_DONE:
+            return ResultatOrdre(False, ticket=position.ticket, retcode=getattr(r, "retcode", None),
+                                 message=getattr(r, "comment", "") or str(mt5.last_error()))
+        return ResultatOrdre(True, ticket=position.ticket, sl=sl)
 
     def fermer(self, position, *, motif: str = "") -> ResultatOrdre:
         tick = mt5.symbol_info_tick(self.symbole)

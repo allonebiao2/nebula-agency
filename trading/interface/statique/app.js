@@ -119,9 +119,10 @@ function listeVerrous(verrous) {
 }
 const VERDICTS = { pris: ["Pris", "gain"], refuse: ["Refusé", "perte"], observe: ["Observé", "accent"], echec: ["Échec", "alerte"] };
 const etiquetteVerdict = v => { const [t, c] = VERDICTS[v] || [v, ""]; return `<span class="etiquette ${c}">${esc(t)}</span>`; };
-function jauge(libelle, valeur, limite, { unite = " %", inverse = false, texte = null } = {}) {
+function jauge(libelle, valeur, limite, { unite = " %", inverse = false, texte = null, neutre = false } = {}) {
   const ratio = limite ? Math.max(0, Math.min(1, (inverse ? -valeur : valeur) / limite)) : 0;
-  const niveau = ratio >= .85 ? "haut" : ratio >= .5 ? "moyen" : "";
+  // Une jauge de COMPTE (refus, effectifs) n'est pas une alerte : pas de rouge.
+  const niveau = neutre ? "neutre" : ratio >= .85 ? "haut" : ratio >= .5 ? "moyen" : "";
   return `<div class="jauge"><div class="jauge-tete"><span>${esc(libelle)}</span><b>${texte ?? `${nf(valeur, unite === " %" ? 2 : 0)}${unite} / ${nf(limite, unite === " %" ? 1 : 0)}${unite}`}</b></div>
     <div class="jauge-piste"><div class="jauge-remplie ${niveau}" style="transform:scaleX(${ratio.toFixed(3)})"></div></div></div>`;
 }
@@ -204,7 +205,7 @@ try { const t = localStorage.getItem("nebula-theme"); if (t) document.documentEl
 // ------------------------------------------------------------------ routeur
 const ROUTES = {
   "": ["tableau", vueTableau], conversation: ["conversation", vueConversation], risque: ["risque", vueRisque],
-  decisions: ["decisions", vueDecisions], trades: ["trades", vueTrades], strategies: ["strategies", vueStrategies],
+  decisions: ["decisions", vueDecisions], trades: ["trades", vueEvolution], evolution: ["trades", vueEvolution], strategies: ["strategies", vueStrategies],
   reglages: ["reglages", vueReglages], installation: ["installation", vueInstallation],
 };
 async function naviguer() {
@@ -446,21 +447,67 @@ async function vueDecisions() {
   $("#filtre").onclick = e => { const b = e.target.closest("button"); if (!b) return; $$("#filtre button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); rendre(b.dataset.v); };
 }
 
-// ------------------------------------------------------------------ trades
-async function vueTrades() {
-  const d = await api("/api/trades");
+// ------------------------------------------------------------------ évolution
+let periodeEvolution = "semaine";
+async function vueEvolution() {
+  const d = await api("/api/evolution");
   const s = d.stats;
-  vue.innerHTML = `<div class="entete-vue"><div><h1>Trades</h1><p class="sous-titre">Les trades réellement exécutés par l'agent sur ce compte.</p></div></div>
+  const statutSante = { saine: ["saine", "gain"], surveillance: ["sous surveillance", "alerte"], pause: ["en pause", "perte"], inconnu: ["inconnue", ""] };
+  const porte = (titre, p) => !p || !p.criteres ? "" : `<section class="carte"><div class="carte-tete"><h2>${esc(titre)}</h2>${p.franchie ? `<span class="etiquette gain">franchie</span>` : `<span class="etiquette alerte">pas encore</span>`}</div>
+    <ul class="liste-verrous">${p.criteres.map(c => `<li><span class="marque-v ${c.ok ? "gain" : "perte"}">${c.ok ? "✓" : "✕"}</span><span class="q">${esc(c.seuil)}</span><span><b>${esc(c.nom)}</b><br><span class="d">${esc(c.valeur ?? "aucune mesure")}</span></span></li>`).join("")}</ul></section>`;
+  vue.innerHTML = `<div class="entete-vue"><div><h1>Évolution</h1><p class="sous-titre">Ce que l'agent a fait, ce qu'il en apprend, et ce qu'il lui reste à prouver avant d'engager plus. Sous 20 trades par tranche, rien n'est concluant, et c'est écrit.</p></div></div>
     <div class="grille kpi">
       <div class="carte"><div class="kpi-libelle">Trades fermés</div><div class="kpi-valeur">${s.trades}</div><div class="kpi-detail">${s.trades < 100 ? "sous 100, un taux de réussite ne dit rien" : "échantillon exploitable"}</div></div>
       <div class="carte"><div class="kpi-libelle">Réussite</div><div class="kpi-valeur">${s.taux_reussite == null ? "·" : pct(100 * s.taux_reussite, 0)}</div><div class="kpi-detail">${s.gagnants} gagnant(s)</div></div>
       <div class="carte"><div class="kpi-libelle">Espérance</div><div class="kpi-valeur ${classe(s.esperance_R)}">${s.esperance_R == null ? "·" : signe(s.esperance_R, 3) + " R"}</div><div class="kpi-detail">profit factor ${s.profit_factor == null ? "·" : nf(s.profit_factor)}</div></div>
       <div class="carte"><div class="kpi-libelle">Résultat net</div><div class="kpi-valeur ${classe(s.resultat_net)}">${signe(s.resultat_net)}</div><div class="kpi-detail">${s.decisions} décision(s) · ${s.refus} refus</div></div>
     </div>
-    <section class="carte" style="margin-top:16px"><div class="carte-tete"><h2>Historique</h2></div>
-      ${d.trades.length ? `<div class="defile-x"><table><thead><tr><th>Ouvert</th><th>Sens</th><th>Stratégie</th><th class="num">Lots</th><th class="num">Entrée</th><th class="num">Sortie</th><th>Motif</th><th class="num">R</th><th class="num">Résultat</th></tr></thead><tbody>
-      ${d.trades.map(t => `<tr><td>${esc(dateCourte(t.ouvert_le))}</td><td><span class="etiquette ${t.sens === "achat" ? "gain" : "perte"}">${esc(t.sens)}</span></td><td>${esc(t.strategie)}</td><td class="num">${t.lots}</td><td class="num mono">${t.prix_entree}</td><td class="num mono">${t.prix_sortie ?? "ouvert"}</td><td>${esc(t.motif || "")}</td><td class="num ${classe(t.resultat_R)}">${t.resultat_R == null ? "·" : signe(t.resultat_R)}</td><td class="num ${classe(t.resultat_devise)}">${t.resultat_devise == null ? "·" : signe(t.resultat_devise)}</td></tr>`).join("")}
+    <div class="grille moitie" style="margin-top:16px">${porte("Porte démo · avant le réel", d.portes.demo)}${porte("Porte BOOST réel · 60 jours de PRO", d.portes.boost_reel)}</div>
+    <section class="carte" style="margin-top:16px"><div class="carte-tete"><h2>Santé des stratégies</h2><span class="discret">CUSUM contre le walk-forward</span></div>
+      ${Object.keys(d.sante).length ? Object.entries(d.sante).map(([nom, v]) => {
+        const [t, c] = statutSante[v.statut] || [v.statut, ""];
+        return `<div class="pile" style="margin-bottom:14px"><div class="carte-tete" style="margin-bottom:6px"><b>${esc(nom)}</b><span class="etiquette ${c}">${esc(t)}</span></div>
+          ${v.h ? jauge("Écart défavorable cumulé", Math.abs(v.S || 0), v.h, { unite: "", texte: `${nf(Math.abs(v.S || 0), 1)} / ${nf(v.h, 1)}` }) : ""}
+          <p class="discret">${esc(v.message)}</p>
+          ${v.statut === "pause" ? `<button class="btn btn-danger btn-petit" data-reprendre="${esc(nom)}">Reprendre cette stratégie</button>` : ""}</div>`;
+      }).join("") : `<div class="vide">Aucune stratégie active surveillée pour l'instant.</div>`}
+      <p class="discret">Une stratégie qui se comporte comme mesuré ne déclenche une fausse pause que dans 5 % des cas sur 100 trades. La règle « 5 pertes d'affilée » se serait déclenchée dans 97 % des cas.</p></section>
+    <section class="carte" style="margin-top:16px"><div class="carte-tete"><h2>Auto-analyse</h2>
+      <div class="segmentes" id="periode-evol"><button data-p="semaine" aria-pressed="${periodeEvolution === "semaine"}">7 jours</button><button data-p="total" aria-pressed="${periodeEvolution === "total"}">Depuis le début</button></div></div>
+      <div id="analyse"></div></section>
+    ${d.hebdos.length ? `<section class="carte" style="margin-top:16px"><div class="carte-tete"><h2>Rapports hebdomadaires</h2></div><ul class="flux">${d.hebdos.map(h => `<li><time>${esc(h.semaine)}</time><span class="msg">${esc((h.constats || []).join(" "))}</span></li>`).join("")}</ul></section>` : ""}
+    <section class="carte" style="margin-top:16px"><div class="carte-tete"><h2>Historique des trades</h2></div>
+      ${d.trades.length ? `<div class="defile-x"><table><thead><tr><th>Ouvert</th><th>Sens</th><th>Stratégie</th><th>Profil</th><th class="num">Lots</th><th class="num">Entrée</th><th class="num">Sortie</th><th>Motif</th><th class="num">R</th><th class="num">Résultat</th></tr></thead><tbody>
+      ${d.trades.map(t => `<tr><td>${esc(dateCourte(t.ouvert_le))}</td><td><span class="etiquette ${t.sens === "achat" ? "gain" : "perte"}">${esc(t.sens)}</span></td><td>${esc(t.strategie)}</td><td>${esc((t.profil || "").toUpperCase())}</td><td class="num">${t.lots}</td><td class="num mono">${t.prix_entree}</td><td class="num mono">${t.prix_sortie ?? "ouvert"}</td><td>${esc(t.motif || "")}</td><td class="num ${classe(t.resultat_R)}">${t.resultat_R == null ? "·" : signe(t.resultat_R)}</td><td class="num ${classe(t.resultat_devise)}">${t.resultat_devise == null ? "·" : signe(t.resultat_devise)}</td></tr>`).join("")}
       </tbody></table></div>` : `<div class="vide">Aucun trade exécuté. En mode observation, l'agent décide mais n'envoie rien : regarde l'onglet Décisions.</div>`}</section>`;
+  const tranche = (titre, groupes) => {
+    const lignes = Object.entries(groupes || {});
+    if (!lignes.length) return "";
+    return `<h3 style="margin-top:16px">${esc(titre)}</h3><div class="defile-x"><table><thead><tr><th></th><th class="num">Trades</th><th class="num">Réussite</th><th class="num">Espérance</th><th class="num">PF</th><th></th></tr></thead><tbody>
+      ${lignes.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${v.trades}</td><td class="num">${v.reussite == null ? "·" : pct(100 * v.reussite, 0)}</td><td class="num ${classe(v.esperance_R)}">${v.esperance_R == null ? "·" : signe(v.esperance_R, 2) + " R"}</td><td class="num">${v.profit_factor == null ? "·" : nf(v.profit_factor)}</td><td class="discret">${v.concluant ? "" : "non concluant"}</td></tr>`).join("")}
+      </tbody></table></div>`;
+  };
+  const afficherAnalyse = () => {
+    const a = periodeEvolution === "semaine" ? d.semaine : d.total, g = a.glissement;
+    $("#analyse").innerHTML = `<ul class="flux">${a.constats.map(c => `<li><time></time><span class="msg">${esc(c)}</span></li>`).join("")}</ul>
+      <div class="metriques" style="margin-top:12px">
+        <div class="metrique"><span>Glissement moyen</span><b>${g.moyen_points == null ? "·" : nf(g.moyen_points, 1) + " pt"}</b></div>
+        <div class="metrique"><span>Modèle du backtest</span><b>${nf(g.modele_points, 1)} pt</b></div>
+        <div class="metrique"><span>Ordres mesurés</span><b>${g.ordres}</b></div>
+      </div>
+      ${tranche("Par stratégie", a.par_strategie)}${tranche("Par régime", a.par_regime)}${tranche("Par jour", a.par_jour)}${tranche("Par heure d'entrée (UTC)", a.par_heure_utc)}
+      ${Object.keys(a.refus_par_verrou).length ? `<h3 style="margin-top:16px">Refus par verrou</h3><div class="pile">${Object.entries(a.refus_par_verrou).slice(0, 8).map(([k, n]) => jauge(k, n, Math.max(...Object.values(a.refus_par_verrou)), { unite: "", texte: `${n}`, neutre: true })).join("")}</div>` : ""}`;
+  };
+  afficherAnalyse();
+  $("#periode-evol").onclick = e => { const b = e.target.closest("button"); if (!b) return; periodeEvolution = b.dataset.p; $$("#periode-evol button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); afficherAnalyse(); };
+  $$("[data-reprendre]").forEach(b => b.onclick = async () => {
+    const nom = b.dataset.reprendre;
+    const ok = await confirmer({ titre: `Reprendre ${nom} ?`, danger: true, libelleOk: "Reprendre",
+      corps: `<p>Le CUSUM a mesuré un écart durable entre ses trades réels et son walk-forward : son avantage a peut-être disparu. Reprendre remet le compteur à zéro. Regarde d'abord l'auto-analyse.</p>` });
+    if (!ok) return;
+    await api("/api/commande", { corps: { action: "reprendre_strategie", valeur: nom, confirme: true } });
+    toast(`${nom} reprise`); setTimeout(vueEvolution, 1500);
+  });
 }
 
 // ------------------------------------------------------------------ stratégies

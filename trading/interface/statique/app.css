@@ -206,6 +206,7 @@ h3 { font-size: 13px; font-weight: 600; margin: 0 0 8px; color: var(--texte-2); 
 .jauge-remplie { height: 100%; width: 100%; border-radius: 99px; background: var(--gain); transform-origin: left; transition: transform .4s ease; }
 .jauge-remplie.moyen { background: var(--alerte); }
 .jauge-remplie.haut { background: var(--perte); }
+.jauge-remplie.neutre { background: var(--accent); }
 
 /* ---------------------------------------------------------------- tableaux */
 .defile-x { overflow-x: auto; }
