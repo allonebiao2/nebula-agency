@@ -67,7 +67,7 @@ def main() -> int:
     # --- 2. backtest par capital, depuis 2019 ------------------------------
     nom = "cassure_donchian"
     params, origine = parametres_du_walkforward(nom, cfg.marche.timeframe,
-                                                not cfg.calendrier.fermer_avant_weekend)
+                                                not cfg.calendrier.fermer_avant_weekend, "EURUSD")
     debut = int(np.searchsorted(barres.temps, np.datetime64("2019-01-01")))
     tranche = barres.tronquer(debut - 300, len(barres))
     # Compte cent : le solde est en CENTS, la valeur du point par lot garde le

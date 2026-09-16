@@ -266,8 +266,8 @@ function majTableau() {
   if (p) {
     const pos = ETAT.positions || [];
     p.innerHTML = `<div class="carte-tete"><h2>Positions ouvertes</h2><span class="discret">stops déposés chez le courtier</span></div>` + (pos.length ? `<div class="defile-x"><table>
-      <thead><tr><th>Sens</th><th class="num">Lots</th><th class="num">Entrée</th><th class="num">Stop</th><th class="num">Objectif</th><th class="num">R</th><th class="num">Résultat</th></tr></thead><tbody>
-      ${pos.map(x => `<tr><td><span class="etiquette ${x.sens === "achat" ? "gain" : "perte"}">${esc(x.sens)}</span></td><td class="num">${nf(x.lots)}</td><td class="num mono">${x.prix_entree}</td><td class="num mono">${x.sl}</td><td class="num mono">${x.tp}</td><td class="num ${classe(x.R)}">${signe(x.R)}</td><td class="num ${classe(x.profit)}">${signe(x.profit)}</td></tr>`).join("")}
+      <thead><tr><th>Instrument</th><th>Sens</th><th class="num">Lots</th><th class="num">Entrée</th><th class="num">Stop</th><th class="num">Objectif</th><th class="num">R</th><th class="num">Résultat</th></tr></thead><tbody>
+      ${pos.map(x => `<tr><td>${esc(x.symbole || "")}</td><td><span class="etiquette ${x.sens === "achat" ? "gain" : "perte"}">${esc(x.sens)}</span></td><td class="num">${nf(x.lots)}</td><td class="num mono">${x.prix_entree}</td><td class="num mono">${x.sl}</td><td class="num mono">${x.tp}</td><td class="num ${classe(x.R)}">${signe(x.R)}</td><td class="num ${classe(x.profit)}">${signe(x.profit)}</td></tr>`).join("")}
       </tbody></table></div>` : `<div class="vide">Aucune position. L'agent attend un signal qui passe les 8 verrous.</div>`);
   }
   const pr = $("#prochaine");
@@ -437,7 +437,7 @@ async function vueDecisions() {
     const l = ds.filter(d => !f || d.verdict === f);
     $("#liste-decisions").innerHTML = l.length ? l.map(d => `<details class="details-decision"><summary>
       <span class="discret num">${esc(dateCourte(d.ts))}</span>
-      <span><b>${esc((d.sens || "").toUpperCase())}</b> ${esc(d.strategie)} ${etiquetteVerdict(d.verdict)}<br><span class="discret">${esc(d.motif || d.these || "")}</span></span>
+      <span><b>${esc((d.sens || "").toUpperCase())}</b> ${esc(d.symbole || "")} · ${esc(d.strategie)} ${etiquetteVerdict(d.verdict)}<br><span class="discret">${esc(d.motif || d.these || "")}</span></span>
       ${miniVerrous(d.verrous)}</summary>
       <p class="these">« ${esc(d.these)} »</p>
       <p class="kpi-detail mono">entrée ${d.entree} · stop ${d.stop} · objectif ${d.objectif}${d.lots ? ` · ${d.lots} lot · risque ${pct(d.risque_pct)}` : ""}${d.note ? ` · ${esc(d.note)}` : ""}</p>
@@ -519,7 +519,7 @@ async function vueStrategies() {
     const rapports = d.rapports[s.nom] || [];
     return `<section class="carte" data-strategie="${esc(s.nom)}"><div class="carte-tete"><div><h2>${esc(s.libelle)}</h2><p class="sous-titre">${esc(s.these)}</p></div>
       <label class="interrupteur" title="${s.active ? "Désactiver" : "Activer"}"><input type="checkbox" ${s.active ? "checked" : ""} aria-label="Stratégie active"><span></span></label></div>
-      ${rapports.length ? `<div class="onglets">${rapports.map((r, i) => `<button class="btn btn-petit" data-i="${i}" aria-pressed="${!!r.correspond_config}">${esc(r.variante === "sans_weekend" ? "positions gardées le week-end" : r.variante === "reference" ? "fermeture du vendredi" : r.variante)}${r.correspond_config ? " · réglage actuel" : ""}</button>`).join("")}</div><div class="rapport"></div>`
+      ${rapports.length ? `<div class="onglets">${rapports.map((r, i) => `<button class="btn btn-petit" data-i="${i}" aria-pressed="${i === Math.max(0, rapports.findIndex(x => x.correspond_config))}">${esc(r.symbole || "EURUSD")} · ${esc(r.variante === "sans_weekend" ? "week-end gardé" : r.variante === "reference" ? "fermeture du vendredi" : r.variante)}${r.correspond_config ? " · actif" : ""}</button>`).join("")}</div><div class="rapport"></div>`
         : `<div class="vide">Pas encore de walk-forward : <span class="mono">python -m trading.outils.walkforward --strategie ${esc(s.nom)}</span></div>`}
     </section>`;
   }).join("");
@@ -528,7 +528,8 @@ async function vueStrategies() {
     const afficher = i => {
       const r = rapports[i], m = r.metriques || {};
       $$(".onglets button", sec).forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.i === i)));
-      $(".rapport", sec).innerHTML = `
+      const court = (r.fenetres_mois && r.fenetres_mois[0] < 48) ? `<p class="alerte-txt">Historique court : apprentissage ${r.fenetres_mois[0]} mois, test ${r.fenetres_mois[1]} mois. Indication, pas preuve.</p>` : "";
+      $(".rapport", sec).innerHTML = `${court}
         <div class="verdict ${r.credible ? "ok" : "non"}">${r.credible ? "<b>Avantage statistiquement distinguable de zéro.</b>" : `<b>Pas d'avantage prouvé.</b> Sur ${m.trades} trades hors échantillon, le résultat reste compatible avec un système qui ne gagne rien.`}</div>
         <div class="metriques">
           <div class="metrique"><span>Trades</span><b>${m.trades}</b></div>

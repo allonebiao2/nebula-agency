@@ -117,7 +117,7 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
         risque = max(0.1, min(float(risque), 10.0))
         return montecarlo.pour_interface(dossier_rapports(), actives[0], cfg.marche.timeframe,
                                          not cfg.calendrier.fermer_avant_weekend, risque,
-                                         max(0.5, min(float(horizon), 5.0)))
+                                         max(0.5, min(float(horizon), 5.0)), cfg.marche.symbole)
 
     @app.get("/api/evolution")
     def evolution():
@@ -175,6 +175,7 @@ def creer_app(agent, journal, assistant, *, port: int) -> FastAPI:
                 continue
             rapports.setdefault(d.get("strategie", p.stem), []).append({
                 "fichier": p.name, "variante": d.get("variante"), "calcule_le": d.get("calcule_le"),
+                "symbole": d.get("symbole", "EURUSD"), "fenetres_mois": d.get("fenetres_mois"),
                 "correspond_config": d.get("variante") == variante_courante,
                 "metriques": d.get("metriques"), "credible": d.get("credible"),
                 "efficacite": d.get("efficacite"), "fenetres": d.get("fenetres"),

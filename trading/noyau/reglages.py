@@ -233,7 +233,7 @@ def calibrage_actif(s: dict | None = None) -> dict:
     if not actives:
         return {"valide": False, "raison": "aucune stratégie active"}
     d = montecarlo.rapport_actif(dossier_rapports(), actives[0], cfg0.marche.timeframe,
-                                 not cfg0.calendrier.fermer_avant_weekend)
+                                 not cfg0.calendrier.fermer_avant_weekend, cfg0.marche.symbole)
     if not d:
         return {"valide": False, "raison": "aucun walk-forward pour la stratégie active"}
     cle_cache = (actives[0], d.get("variante"), d.get("calcule_le"), cfg0.risque.risque_par_trade_pct)

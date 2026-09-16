@@ -102,10 +102,11 @@ def seuil_arret_calibre(R: np.ndarray, *, risque_pct: float, trades_par_an: floa
 #  Lecture du rapport actif
 # --------------------------------------------------------------------------- #
 
-def rapport_actif(dossier: Path, strategie: str, timeframe: str, garder_weekend: bool) -> dict | None:
+def rapport_actif(dossier: Path, strategie: str, timeframe: str, garder_weekend: bool,
+                  symbole: str = "EURUSD") -> dict | None:
     variante = "sans_weekend" if garder_weekend else "reference"
     choix = None
-    for p in sorted(dossier.glob(f"walkforward_{strategie}_{timeframe}*.json")):
+    for p in sorted(dossier.glob(f"walkforward_{strategie}_{symbole.upper()}_{timeframe}*.json")):
         try:
             d = json.loads(p.read_text(encoding="utf-8"))
         except Exception:                                      # noqa: BLE001
@@ -128,9 +129,10 @@ def _cache(chemin: str, mtime: float, risque_pct: float, horizon_ans: float) -> 
 
 
 def pour_interface(dossier: Path, strategie: str, timeframe: str, garder_weekend: bool,
-                   risque_pct: float, horizon_ans: float = 1.0) -> dict:
+                   risque_pct: float, horizon_ans: float = 1.0, symbole: str = "EURUSD") -> dict:
     variante = "sans_weekend" if garder_weekend else "reference"
-    candidats = [p for p in sorted(dossier.glob(f"walkforward_{strategie}_{timeframe}*.json"))]
+    candidats = [p for p in sorted(dossier.glob(
+        f"walkforward_{strategie}_{symbole.upper()}_{timeframe}*.json"))]
     choisi = None
     for p in candidats:
         try:

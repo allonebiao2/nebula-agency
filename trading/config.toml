@@ -79,7 +79,12 @@ poche_part_pct = 25.0
 
 
 [marche]
-symbole = "EURUSD"              # à ajuster après la 1re connexion (Deriv peut nommer "EURUSD.a")
+symbole = "EURUSD"              # l'instrument principal (Monte Carlo, calibrage des seuils)
+# Décision de Mongazi (2026-09-16) : EUR/USD et NAS100, rien d'autre. Les noms réels se
+# lisent chez le courtier (« US Tech 100 » chez Deriv, voir noyau/courtier.ALIAS).
+# ⚠️ Chez Deriv, l'historique du NAS100 ne remonte qu'à janvier 2024 : son walk-forward
+# (12 mois → 6 mois) est une indication, pas une preuve.
+symboles = ["EURUSD", "NAS100"]
 timeframe = "H4"                # unité de décision
 timeframe_filtre = "D1"         # unité de tendance (filtre de contexte)
 
@@ -166,7 +171,7 @@ interdit_grille = true                # jamais de grid
 
 
 [exposition]
-positions_simultanees_max = 1   # une paire, une position. Pas de superposition.
+positions_simultanees_max = 2   # une position PAR INSTRUMENT au plus (cahier, règle 6), deux au total
 lots_total_max = 0.50           # plafond dur en lots, tous ordres confondus
 
 # Risque cumulé de TOUTES les positions ouvertes en même temps.

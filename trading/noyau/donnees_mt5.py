@@ -4,6 +4,7 @@ L'historique long, lu dans le terminal MT5 du courtier.
 
     python -m trading.noyau.donnees_mt5                 # H4, D1 et H1
     python -m trading.noyau.donnees_mt5 H4              # une seule unité
+    python -m trading.noyau.donnees_mt5 H4 D1 --base NAS100   # « US Tech 100 » chez Deriv
 
 Mesuré le 2026-09-16 chez Deriv-Demo : **25 000 barres H4 depuis le
 2011-02-24**, contre un an par l'API publique. C'est ce qui rend un
@@ -210,6 +211,7 @@ def mesurer_profil(c, symbole: str, *, jours_ticks: int = 1) -> dict:
         # swap_mode 1 = en points. Tout autre mode est noté et non facturé en
         # points, pour ne pas facturer un chiffre dans la mauvaise unité.
         "swap_mode": int(info.swap_mode),
+        "prix_reference": float(mt5.symbol_info_tick(symbole).bid or 0.0),
         "swap_long": float(info.swap_long), "swap_short": float(info.swap_short),
         "mode_remplissage": int(c.mode_remplissage(symbole)),
         "limite_compte": {"limit_orders": int(compte.limit_orders) if compte else 0},
@@ -233,13 +235,24 @@ def specs_et_couts(base: str = "EURUSD", *, slippage_points: float = 1.0):
     if not prof:
         return None, None
     specs = SpecsSymbole(**prof["specs"])
-    en_points = prof.get("swap_mode") == 1
+    mode = prof.get("swap_mode")
+    prix = prof.get("prix_reference") or 0.0
+    if mode == 1:                                  # en points par lot et par nuit
+        swap_l, swap_c = prof["swap_long"], prof["swap_short"]
+    elif mode in (5, 6) and prix > 0:
+        # En TAUX ANNUEL (%) : c'est le cas des indices chez Deriv (US Tech 100, mode 5).
+        # Ramené en points par lot et par nuit au prix de référence mesuré. Ignorer ce
+        # swap sous-estimait le portage d'une position tenue plusieurs jours.
+        par_nuit = lambda taux: prix * taux / 100 / 360 / specs.point   # noqa: E731
+        swap_l, swap_c = par_nuit(prof["swap_long"]), par_nuit(prof["swap_short"])
+    else:
+        swap_l = swap_c = 0.0
     couts = ModeleCouts(
         spread_points=prof.get("spread_median_points") or 3.0,
         spread_points_max=prof.get("spread_p90_points"),
         slippage_points=slippage_points,
-        swap_long_points=prof["swap_long"] if en_points else 0.0,
-        swap_short_points=prof["swap_short"] if en_points else 0.0,
+        swap_long_points=swap_l,
+        swap_short_points=swap_c,
     )
     return specs, couts
 
@@ -285,4 +298,5 @@ def exporter(timeframes=("H4", "D1", "H1"), base: str = "EURUSD",
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     demandes = tuple(a for a in sys.argv[1:] if a in TIMEFRAMES_MT5) or ("H4", "D1", "H1")
-    exporter(demandes)
+    base = sys.argv[sys.argv.index("--base") + 1] if "--base" in sys.argv else "EURUSD"
+    exporter(demandes, base=base)

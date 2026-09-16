@@ -156,7 +156,7 @@ class Assistant:
             sim = montecarlo.pour_interface(
                 dossier_rapports(), actives[0], cfg.marche.timeframe,
                 not cfg.calendrier.fermer_avant_weekend, float(entree["risque_pct"]),
-                float(entree.get("horizon_ans", 1.0)))
+                float(entree.get("horizon_ans", 1.0)), cfg.marche.symbole)
             return {"simulation": sim, "seuil_arret_calibre": reglages.calibrage_actif()}
         if nom == "modifier_reglages":
             return self._modifier(entree.get("changements", {}), entree.get("raison", ""))

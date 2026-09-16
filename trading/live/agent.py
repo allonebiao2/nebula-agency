@@ -57,20 +57,30 @@ HEURES_TF = {"M15": .25, "M30": .5, "H1": 1, "H4": 4, "D1": 24}
 
 
 @dataclass
+class MarcheLive:
+    """Un instrument tradé : son nom chez CE courtier, ses spécifications, son exécuteur."""
+    base: str                 # EURUSD, NAS100
+    nom: str                  # EURUSD, « US Tech 100 »
+    specs: object
+    executeur: Executeur
+
+
+@dataclass
 class Commande:
     action: str
     valeur: object = None
     auteur: str = "interface"
 
 
-def parametres_du_walkforward(nom: str, timeframe: str, garder_weekend: bool) -> tuple[dict, str]:
+def parametres_du_walkforward(nom: str, timeframe: str, garder_weekend: bool,
+                              symbole: str = "EURUSD") -> tuple[dict, str]:
     """Les réglages choisis par la DERNIÈRE fenêtre du walk-forward.
 
     C'est la définition même du walk-forward en production : on trade l'année
     qui vient avec ce que les quatre années précédentes ont choisi.
     """
     variante = "sans_weekend" if garder_weekend else "reference"
-    candidats = sorted(dossier_rapports().glob(f"walkforward_{nom}_{timeframe}*.json"))
+    candidats = sorted(dossier_rapports().glob(f"walkforward_{nom}_{symbole.upper()}_{timeframe}*.json"))
     choisi = None
     for p in candidats:
         try:
@@ -105,6 +115,7 @@ class Agent:
         self.symbole = None
         self.specs = None
         self.executeur: Executeur | None = None
+        self.marches: dict[str, MarcheLive] = {}
         self.type_compte = None
         self.calendrier: Calendrier | None = None
         self.connecte = False
@@ -193,22 +204,27 @@ class Agent:
 
     def _evaluer_sante(self, cfg, ag) -> None:
         """CUSUM de chaque stratégie active contre son walk-forward ; portes toutes les minutes."""
-        for nom in ag["strategies_actives"]:
-            d = montecarlo.rapport_actif(dossier_rapports(), nom, cfg.marche.timeframe,
-                                         not cfg.calendrier.fermer_avant_weekend)
-            reference = montecarlo.rendements_en_R(d) if d else []
-            reprise = (ag.get("reprises_sante") or {}).get(nom)
-            live = [t["resultat_R"] for t in reversed(self.journal.trades(2000, ouverts=False))
-                    if t.get("strategie") == nom and t.get("mode") in ("demo", "reel")
-                    and (not reprise or (t.get("ferme_le") or "") > reprise)]
-            diag = sante_mod.diagnostiquer(live, reference, cle=f"{nom}:{d.get('calcule_le') if d else ''}")
-            ancien = self.sante.get(nom, {}).get("statut")
-            self.sante[nom] = diag
-            if diag["statut"] != ancien and ancien is not None and diag["statut"] in ("pause", "surveillance"):
-                self.journal.evenement("santé", f"{nom} : {diag['statut'].upper()} · {diag['message']}",
-                                       niveau="critique" if diag["statut"] == "pause" else "alerte")
+        bases = list(self.marches) or list(cfg.marche.liste)
+        for base in bases:
+            nom_courtier = self.marches[base].nom if base in self.marches else base
+            for nom in ag["strategies_actives"]:
+                cle = f"{nom} · {base}"
+                d = montecarlo.rapport_actif(dossier_rapports(), nom, cfg.marche.timeframe,
+                                             not cfg.calendrier.fermer_avant_weekend, symbole=base)
+                reference = montecarlo.rendements_en_R(d) if d else []
+                reprise = (ag.get("reprises_sante") or {}).get(cle)
+                live = [t["resultat_R"] for t in reversed(self.journal.trades(2000, ouverts=False))
+                        if t.get("strategie") == nom and t.get("mode") in ("demo", "reel")
+                        and (t.get("symbole") or "EURUSD") in (base, nom_courtier)
+                        and (not reprise or (t.get("ferme_le") or "") > reprise)]
+                diag = sante_mod.diagnostiquer(live, reference, cle=f"{cle}:{d.get('calcule_le') if d else ''}")
+                ancien = self.sante.get(cle, {}).get("statut")
+                self.sante[cle] = diag
+                if diag["statut"] != ancien and ancien is not None and diag["statut"] in ("pause", "surveillance"):
+                    self.journal.evenement("santé", f"{cle} : {diag['statut'].upper()} · {diag['message']}",
+                                           niveau="critique" if diag["statut"] == "pause" else "alerte")
         if time.time() - self._portes_le > 60:
-            principale = self.sante.get((ag["strategies_actives"] or [""])[0], {})
+            principale = next(iter(self.sante.values()), {})
             self.portes = {"demo": porte_mod.porte_demo(self.journal, sante=principale),
                            "boost_reel": porte_mod.porte_boost_reel(self.journal, sante=principale)}
             self._portes_le = time.time()
@@ -230,12 +246,15 @@ class Agent:
                 continue
             trade = self.journal.trade_par_ticket(p.ticket) or {}
             stop = trade.get("stop_initial")
-            r = self.executeur.poser_stop(p, stop, digits=self.specs.digits) if stop else None
+            m = self._marche_de(p) if self.marches else None
+            execu = m.executeur if m else self.executeur
+            chiffres = m.specs.digits if m else self.specs.digits
+            r = execu.poser_stop(p, stop, digits=chiffres) if stop else None
             if r is not None and r.ok:
                 self.journal.evenement("chien de garde", f"position {p.ticket} trouvée SANS stop : "
                                                          f"stop posé à {stop}", niveau="critique")
             else:
-                f = self.executeur.fermer(p, motif="sans stop")
+                f = execu.fermer(p, motif="sans stop")
                 self.journal.evenement("chien de garde", f"position {p.ticket} SANS stop et stop impossible "
                                                          f"à poser : fermeture {'faite' if f.ok else 'REFUSÉE'}",
                                        niveau="critique")
@@ -313,9 +332,9 @@ class Agent:
             return
 
         maintenant_serveur = self._heure_serveur()
-        positions = self.executeur.positions()
+        positions = self._toutes_positions()
         self._solder_positions_fermees(positions)
-        positions = self.executeur.positions()
+        positions = self._toutes_positions()
 
         if time.time() - self._dernier_point >= 60:
             self.journal.point_equite(compte.balance, compte.equity, compte.margin_free)
@@ -350,12 +369,13 @@ class Agent:
 
         self._gerer_positions(cfg, positions, maintenant_serveur, peut_trader)
 
-        for nom in ag["strategies_actives"]:
-            if nom in catalogue.STRATEGIES:
-                self._analyser(nom, cfg, compte, capital, risque, positions, maintenant_serveur,
-                               mode, peut_trader, raison_mode)
+        for marche in self.marches.values():
+            for nom in ag["strategies_actives"]:
+                if nom in catalogue.STRATEGIES:
+                    self._analyser(nom, marche, cfg, compte, capital, risque, positions,
+                                   maintenant_serveur, mode, peut_trader, raison_mode)
 
-        self._publier(cfg, ag, compte, self.executeur.positions(), risque=risque,
+        self._publier(cfg, ag, compte, self._toutes_positions(), risque=risque,
                       capital=capital, raison_mode=raison_mode, peut_trader=peut_trader)
 
     # ------------------------------------------------------------------ #
@@ -369,11 +389,22 @@ class Agent:
         try:
             self.courtier = Courtier.depuis_profil(self.profil)
             profil = self.courtier.connecter()
-            self.symbole = self.courtier.trouver_symbole(cfg.marche.symbole)
-            self.specs = self.courtier.specs(self.symbole)
-            self.executeur = Executeur(self.symbole, cfg.compte.magic_number,
-                                       deviation_points=cfg.execution.slippage_max_points,
-                                       tentatives=cfg.execution.tentatives_max)
+            self.marches = {}
+            for base in cfg.marche.liste:
+                nom = self.courtier.trouver_symbole(base, silencieux=True)
+                if not nom:
+                    self.journal.evenement("connexion", f"{base} introuvable chez ce courtier : "
+                                                        f"instrument ignoré", niveau="alerte")
+                    continue
+                self.marches[base] = MarcheLive(
+                    base=base, nom=nom, specs=self.courtier.specs(nom),
+                    executeur=Executeur(nom, cfg.compte.magic_number,
+                                        deviation_points=cfg.execution.slippage_max_points,
+                                        tentatives=cfg.execution.tentatives_max))
+            if not self.marches:
+                raise RuntimeError("aucun des instruments configurés n'existe chez ce courtier")
+            principal = next(iter(self.marches.values()))
+            self.symbole, self.specs, self.executeur = principal.nom, principal.specs, principal.executeur
             self.type_compte = capital_mod.detecter(profil.devise, profil.serveur, self.symbole)
             self.decalage_h = profil.decalage_serveur_h or 0.0
             self.calendrier = Calendrier(
@@ -385,7 +416,7 @@ class Agent:
             self.message_connexion = (f"connecté à {profil.serveur} · compte {profil.login} "
                                       f"{'DÉMO' if profil.demo else 'RÉEL'}")
             self.journal.evenement("connexion", self.message_connexion,
-                                   donnees={"symbole": self.symbole,
+                                   donnees={"symboles": {b: m.nom for b, m in self.marches.items()},
                                             "type_compte": self.type_compte.libelle(),
                                             "algo_autorise": profil.algo_autorise})
             if not profil.algo_autorise:
@@ -401,6 +432,15 @@ class Agent:
             self.journal.evenement("connexion", f"connexion impossible : {self.message_connexion}",
                                    niveau="alerte")
             return False
+
+    def _toutes_positions(self) -> list:
+        return [q for m in self.marches.values() for q in m.executeur.positions()]
+
+    def _marche_de(self, position) -> MarcheLive:
+        for m in self.marches.values():
+            if m.nom == position.symbol:
+                return m
+        return next(iter(self.marches.values()))
 
     def _heure_serveur(self) -> datetime:
         tick = mt5.symbol_info_tick(self.symbole)
@@ -435,9 +475,9 @@ class Agent:
         elif c.action == "urgence":
             self.pause_motif = "arrêt d'urgence"
             fermees = 0
-            if self.connecte and self.executeur:
-                for p in self.executeur.positions():
-                    r = self.executeur.fermer(p, motif="urgence")
+            if self.connecte and self.marches:
+                for p in self._toutes_positions():
+                    r = self._marche_de(p).executeur.fermer(p, motif="urgence")
                     self.journal.ordre(action="fermer", ticket=p.ticket, lots=p.volume,
                                        prix=r.prix, retcode=r.retcode, commentaire=r.message,
                                        mode=reglages.agent()["mode"])
@@ -502,9 +542,10 @@ class Agent:
             return
         tf = cfg.marche.timeframe
         heures = HEURES_TF.get(tf, 4)
-        barres = None
+        barres_par_symbole: dict = {}
         cal = cfg.calendrier
         for p in positions:
+            m = self._marche_de(p)
             achat = p.type == mt5.POSITION_TYPE_BUY
             # --- week-end -------------------------------------------------
             if cal.fermer_avant_weekend and maintenant_serveur.weekday() == 4 \
@@ -530,9 +571,10 @@ class Agent:
             avance = (p.price_current - p.price_open) / risque_prix * (1 if achat else -1)
             if avance < cfg.risque.trailing_declenche_a_r:
                 continue
-            if barres is None:
+            if m.nom not in barres_par_symbole:
                 from ..noyau.donnees_mt5 import dernieres_barres
-                barres = dernieres_barres(self.symbole, tf, 100)
+                barres_par_symbole[m.nom] = dernieres_barres(m.nom, tf, 100)
+            barres = barres_par_symbole[m.nom]
             a = calc_atr(barres.haut, barres.bas, barres.cloture, cfg.risque.atr_periode)[-1]
             if np.isnan(a):
                 continue
@@ -540,13 +582,13 @@ class Agent:
             propose = p.price_current - marge if achat else p.price_current + marge
             meilleur = (propose > p.sl) if achat else (p.sl == 0 or propose < p.sl)
             if meilleur:
-                r = self.executeur.modifier_stop(p, propose, digits=self.specs.digits)
+                r = m.executeur.modifier_stop(p, propose, digits=m.specs.digits)
                 if r.ok:
-                    self.journal.evenement("suiveur", f"stop de {p.ticket} resserré à "
-                                                      f"{propose:.{self.specs.digits}f}")
+                    self.journal.evenement("suiveur", f"{m.base} : stop de {p.ticket} resserré à "
+                                                      f"{propose:.{m.specs.digits}f}")
 
     def _fermer(self, p, motif: str) -> None:
-        r = self.executeur.fermer(p, motif=motif)
+        r = self._marche_de(p).executeur.fermer(p, motif=motif)
         self.journal.ordre(action="fermer", ticket=p.ticket, lots=p.volume, prix=r.prix,
                            retcode=r.retcode, commentaire=f"{motif} · {r.message}",
                            mode=reglages.agent()["mode"])
@@ -596,18 +638,20 @@ class Agent:
     # ------------------------------------------------------------------ #
     #  Analyse d'une bougie close
     # ------------------------------------------------------------------ #
-    def _analyser(self, nom, cfg, compte, capital, risque, positions, maintenant_serveur,
-                  mode, peut_trader, raison_mode) -> None:
+    def _analyser(self, nom, marche: MarcheLive, cfg, compte, capital, risque, positions,
+                  maintenant_serveur, mode, peut_trader, raison_mode) -> None:
         from ..noyau.donnees_mt5 import dernieres_barres
         tf = cfg.marche.timeframe
-        barres = dernieres_barres(self.symbole, tf, 700)
+        barres = dernieres_barres(marche.nom, tf, 700)
         i = len(barres) - 1
         barre_close = barres.quand(i)
-        if self._derniere_barre.get(nom) == barre_close:
+        cle = f"{nom} · {marche.base}"
+        if self._derniere_barre.get(cle) == barre_close:
             return
-        self._derniere_barre[nom] = barre_close
+        self._derniere_barre[cle] = barre_close
 
-        params, origine = parametres_du_walkforward(nom, tf, not cfg.calendrier.fermer_avant_weekend)
+        params, origine = parametres_du_walkforward(nom, tf, not cfg.calendrier.fermer_avant_weekend,
+                                                    marche.base)
         strategie = catalogue.STRATEGIES[nom](**params)
         strategie.preparer(barres)
         atr_i = float(strategie._atr[i]) if not np.isnan(strategie._atr[i]) else 0.0
@@ -618,29 +662,32 @@ class Agent:
 
         if plan is None:
             self.journal.evenement(
-                "analyse", f"{nom} · bougie {tf} de {barre_close:%d/%m %H:%M} close à "
-                           f"{barres.cloture[i]:.5f} : pas de signal (régime {regime})",
+                "analyse", f"{cle} · bougie {tf} de {barre_close:%d/%m %H:%M} close à "
+                           f"{barres.cloture[i]:.{marche.specs.digits}f} : pas de signal (régime {regime})",
                 donnees={"strategie": nom, "regime": regime, "atr": atr_i, "origine": origine})
             return
 
         motif_blocage = ""
-        diag = self.sante.get(nom, {})
+        diag = self.sante.get(cle, {})
+        memes = [q for q in positions if q.symbol == marche.nom]
         if diag.get("statut") == "pause":
             motif_blocage = f"stratégie en pause de santé (CUSUM) : {diag.get('message', '')}"
         elif self.arret_total:
             motif_blocage = "arrêt total en cours (redémarrage manuel requis)"
         elif self.pause_motif:
             motif_blocage = f"agent en pause : {self.pause_motif}"
+        elif memes:
+            motif_blocage = f"une position déjà ouverte sur {marche.base} (une par instrument)"
         elif len(positions) >= cfg.exposition.positions_simultanees_max:
             motif_blocage = (f"{len(positions)} position(s) déjà ouverte(s), plafond "
                              f"{cfg.exposition.positions_simultanees_max}")
         else:
             motif_blocage = self._disjoncteur(cfg, risque)
 
-        tick = mt5.symbol_info_tick(self.symbole)
-        spread = (tick.ask - tick.bid) / self.specs.point if tick else 0.0
+        tick = mt5.symbol_info_tick(marche.nom)
+        spread = (tick.ask - tick.bid) / marche.specs.point if tick else 0.0
         from ..noyau.donnees_mt5 import charger_profil
-        prof = charger_profil(cfg.marche.symbole) or {}
+        prof = charger_profil(marche.base) or {}
         etat = EtatSysteme(
             spread_points=spread,
             spread_habituel_points=prof.get("spread_median_points") or 0.0,
@@ -649,7 +696,7 @@ class Agent:
             minutes_depuis_derniere_perte=risque["minutes_depuis_perte"],
             trades_aujourdhui=risque["trades_jour"],
             trades_cette_semaine=risque["trades_semaine"],
-            lots_deja_ouverts=sum(p.volume for p in positions),
+            lots_deja_ouverts=sum(q.volume for q in memes),
             exposition_courante_pct=risque["exposition_pct"],
             drawdown_courant_pct=risque["drawdown_pct"],
             regime=regime,
@@ -659,7 +706,7 @@ class Agent:
         annonces = verrou_annonces(self.calendrier) if self.calendrier else None
         risque_du_palier, _note_palier = self.risque_du_palier
         verdict = controle_prealable(
-            plan, cfg, etat, capital=capital, specs=self.specs,
+            plan, cfg, etat, capital=capital, specs=marche.specs,
             annonce_imminente=annonces, maintenant=maintenant_serveur,
             risque_pct_plafond=cfg.risque.risque_max_petit_compte_pct,
             risque_pct=risque_du_palier or None,
@@ -670,7 +717,7 @@ class Agent:
             motif = " · ".join(f"Q{v.numero} {v.detail.splitlines()[0]}" for v in verdict.refus)
             self.journal.decision(verdict_obj=verdict, verdict="refuse", motif=motif, mode=mode,
                                   barre=barre_close, profil=profil, risque_choisi=risque_du_palier)
-            self.journal.evenement("decision", f"{nom} proposait {plan.sens.upper()} : REFUSÉ "
+            self.journal.evenement("decision", f"{cle} proposait {plan.sens.upper()} : REFUSÉ "
                                                f"({len(verdict.refus)} verrou(s))",
                                    niveau="info", donnees={"motif": motif})
             return
@@ -689,13 +736,13 @@ class Agent:
             self.journal.decision(verdict_obj=verdict, verdict="observe", motif=raison_mode,
                                   mode=mode, barre=barre_close, profil=profil,
                                   risque_choisi=risque_du_palier)
-            self.journal.evenement("decision", f"{nom} : {plan.sens.upper()} autorisé par les "
+            self.journal.evenement("decision", f"{cle} : {plan.sens.upper()} autorisé par les "
                                                f"8 verrous, NON envoyé ({raison_mode})")
             return
 
         dim = verdict.dimensionnement
-        r = self.executeur.ouvrir(plan, dim.lots, specs=self.specs,
-                                  commentaire=f"nebula {nom[:12]}")
+        r = marche.executeur.ouvrir(plan, dim.lots, specs=marche.specs,
+                                    commentaire=f"nebula {nom[:12]}")
         self.journal.ordre(action="ouvrir", ticket=r.ticket, sens=plan.sens, lots=dim.lots,
                            prix=r.prix, sl=r.sl, tp=r.tp, retcode=r.retcode,
                            commentaire=r.message, mode=mode, prix_demande=r.prix_demande,
@@ -705,7 +752,7 @@ class Agent:
                                   barre=barre_close, profil=profil, risque_choisi=risque_du_palier)
             self.journal.ouvrir_trade(ticket=r.ticket, plan=plan, lots=dim.lots, prix=r.prix,
                                       risque_devise=dim.risque_devise, mode=mode, profil=profil)
-            self.journal.evenement("trade", f"{plan.sens.upper()} {dim.lots:g} lot à {r.prix} · "
+            self.journal.evenement("trade", f"{marche.base} {plan.sens.upper()} {dim.lots:g} lot à {r.prix} · "
                                             f"stop {r.sl} · objectif {r.tp} · risque "
                                             f"{dim.risque_pct:.2f} %", niveau="info")
         else:
@@ -733,7 +780,7 @@ class Agent:
             achat = p.type == mt5.POSITION_TYPE_BUY
             r_courant = ((p.price_current - p.price_open) / risque_prix * (1 if achat else -1)
                          if risque_prix else None)
-            pos.append({"ticket": p.ticket, "sens": "achat" if achat else "vente",
+            pos.append({"ticket": p.ticket, "sens": "achat" if achat else "vente", "symbole": p.symbol,
                         "lots": p.volume, "prix_entree": p.price_open,
                         "prix_actuel": p.price_current, "sl": p.sl, "tp": p.tp,
                         "profit": p.profit + p.swap, "R": r_courant,
@@ -747,7 +794,8 @@ class Agent:
             "maj": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "cycles": self.cycles,
             "connexion": {"ok": self.connecte, "message": self.message_connexion,
-                          "symbole": self.symbole},
+                          "symbole": self.symbole,
+                          "marches": {b: m.nom for b, m in self.marches.items()}},
             "mode": ag["mode"], "peut_trader": peut_trader, "raison_mode": raison_mode,
             "pause": self.pause_motif, "arret_total": self.arret_total,
             "strategies_actives": ag["strategies_actives"],

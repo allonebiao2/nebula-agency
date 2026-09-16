@@ -104,6 +104,7 @@ class RapportWalkForward:
             "credible": m.esperance_credible,
             "echantillon_suffisant": m.echantillon_suffisant,
             "courbe_equite": [(t.isoformat(), round(e, 2)) for t, e in self.courbe_equite],
+            "trades_R": [round(t.resultat_R, 4) for t in self.trades],
             "stabilite": {k: {str(a): b for a, b in d.items()}
                           for k, d in self.stabilite_parametres().items()},
             "refus": self.refus,
@@ -125,11 +126,9 @@ def _indice(barres, quand: datetime) -> int:
     return int(np.searchsorted(barres.temps, np.datetime64(quand, "s")))
 
 
-def _decaler_annees(d: datetime, annees: int) -> datetime:
-    try:
-        return d.replace(year=d.year + annees)
-    except ValueError:                        # 29 février
-        return d.replace(year=d.year + annees, day=28)
+def _decaler_mois(d: datetime, mois: int) -> datetime:
+    total = d.year * 12 + (d.month - 1) + mois
+    return d.replace(year=total // 12, month=total % 12 + 1, day=1)
 
 
 def walk_forward(
@@ -143,11 +142,19 @@ def walk_forward(
     capital: float,
     annees_apprentissage: int = 4,
     annees_test: int = 1,
+    mois_apprentissage: int | None = None,
+    mois_test: int | None = None,
     echauffement: int = 300,
     min_trades_is: int = 25,
     rappel: Callable[[str], None] | None = None,
 ) -> RapportWalkForward:
-    """Déroule le walk-forward complet et renvoie les seuls résultats de test."""
+    """Déroule le walk-forward complet et renvoie les seuls résultats de test.
+
+    Les fenêtres se comptent en mois (`mois_apprentissage`, `mois_test`) quand
+    l'historique est court : le NAS100 de Deriv ne remonte qu'à janvier 2024.
+    """
+    m_app = mois_apprentissage or 12 * annees_apprentissage
+    m_test = mois_test or 12 * annees_test
     dire = rappel or (lambda _m: None)
     cles = list(espace)
     combinaisons = [dict(zip(cles, vals)) for vals in itertools.product(*espace.values())] \
@@ -162,10 +169,12 @@ def walk_forward(
     refus: dict[str, int] = {}
     equite = capital
 
-    debut_app = datetime(premier.year + 1, 1, 1)      # une année pleine
+    # Premier mois PLEIN après l'échauffement (une année pleine pour les longues histoires).
+    debut_app = (datetime(premier.year + 1, 1, 1) if m_app >= 24
+                 else _decaler_mois(datetime(premier.year, premier.month, 1), 1))
     while True:
-        debut_test = _decaler_annees(debut_app, annees_apprentissage)
-        fin_test = _decaler_annees(debut_test, annees_test)
+        debut_test = _decaler_mois(debut_app, m_app)
+        fin_test = _decaler_mois(debut_test, m_test)
         if debut_test >= dernier:
             break
         fin_test = min(fin_test, dernier)
@@ -193,7 +202,7 @@ def walk_forward(
                  f"en apprentissage -> fenêtre non tradée")
             fenetres.append(Fenetre(debut_app, debut_test, fin_test, {}, 0.0, 0, 0.0,
                                     capital_debut=equite, capital_fin=equite))
-            debut_app = _decaler_annees(debut_app, annees_test)
+            debut_app = _decaler_mois(debut_app, m_test)
             continue
 
         # --- 2. l'appliquer à l'année suivante, jamais vue -------------------
@@ -223,7 +232,7 @@ def walk_forward(
              f"{f.esperance_R_apprentissage:+.2f} R · TEST {f.trades_test} trades "
              f"{f.esperance_R_test:+.2f} R · capital {equite:,.0f}".replace(",", " "))
 
-        debut_app = _decaler_annees(debut_app, annees_test)
+        debut_app = _decaler_mois(debut_app, m_test)
 
     m = calculer(tous_trades, capital_initial=capital, courbe_equite=courbe or None)
     return RapportWalkForward(fenetres=fenetres, trades=tous_trades, courbe_equite=courbe,

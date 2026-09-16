@@ -161,9 +161,14 @@ class Apprentissage:
 
 @dataclass(frozen=True)
 class Marche:
-    symbole: str
+    symbole: str                       # l'instrument PRINCIPAL (Monte Carlo, calibrage)
     timeframe: str
     timeframe_filtre: str
+    symboles: tuple = ()               # tous les instruments tradés
+
+    @property
+    def liste(self) -> tuple:
+        return tuple(self.symboles) or (self.symbole,)
 
 
 @dataclass(frozen=True)
