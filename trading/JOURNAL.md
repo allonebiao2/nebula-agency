@@ -77,10 +77,11 @@ et 390 : **0 débordement, 0 erreur JavaScript**.
 
 ### Ce qui RESTE, dans cet ordre
 
-1. **Mongazi tranche** : week-end gardé ou fermeture du vendredi (voir plus haut), et s'il veut
+1. **Reconstruire le paquet** : `python -m trading.empaquetage.construire` après avoir fermé Chrome et VS Code (tué 3 fois par manque de RAM le 2026-09-17, `sortie/` est vide). Vérifier qu'il embarque les six rapports et aucun secret.
+2. **Mongazi tranche** : week-end gardé ou fermeture du vendredi (voir plus haut), et s'il veut
    garder le NAS100 malgré −0,095 R sur 49 trades (échantillon court, rien de prouvé dans un
    sens ou dans l'autre).
-2. **Après la vague 4 (déjà décidé, pas commencé)** : filtre **D1** · 3 stratégies (**momentum,
+3. **Après la vague 4 (déjà décidé, pas commencé)** : filtre **D1** · 3 stratégies (**momentum,
    range, cassure de structure**) · RSI, MACD, Bollinger, structure HH/HL · **garde contre les
    tests multiples** · **méta-labeling** (scikit-learn, surveiller le disque) · **Telegram**.
    ⚠️ **Priorité absolue : un avantage.** Tout le reste du produit est prêt autour d'un moteur
@@ -143,7 +144,7 @@ d'une stratégie sans edge reste un produit qui ne gagne rien.
 | `live/execution.py` | **80 %** | ✅ glissement mesuré, `poser_stop` · ⛔ **aucun ordre réel envoyé** |
 | `live/agent.py` la boucle | **80 %** | ✅ **multi-instruments lancé en direct** (observation) · risque relu après chaque ouverture · séance fermée détectée · ⛔ aucun ordre envoyé |
 | `interface/` serveur + chat + pages | **90 %** | ✅ onglets par instrument regardés en capture 1440 et 390 · bandeau « mesuré sous d'autres règles » |
-| `empaquetage/construire.py` | **75 %** | ✅ exe 44 Mo (avant les vagues) · ⏳ à reconstruire |
+| `empaquetage/construire.py` | **60 %** | ⛔ **plus de paquet sur le disque** : la construction du 2026-09-17 vide `sortie/` en démarrant, puis a été tuée **trois fois par manque de mémoire vive** (1,5 Go libres sur 7,9 ; PyInstaller meurt pendant l'analyse des modules). ⏳ fermer Chrome et VS Code, puis `python -m trading.empaquetage.construire` |
 | Méta-labeling · champion/challenger | **0 %** | conçu, pas codé |
 | Telegram | **0 %** | rien |
 | Page de vente + paiement + remise de licence | **0 %** | ⛔ attend les décisions de Mongazi |
