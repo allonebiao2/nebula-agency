@@ -512,6 +512,95 @@
 - Détail : `whatsapp-agent/README.md` et
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
+### NEBULA TRADER — robot de trading EUR/USD  *(produit interne, 2026-09-16)*
+- **Trois objectifs, dans cet ordre** : **être rentable** sur une seule paire ·
+  **s'améliorer tout seul** (« un super agent, pas un simple bot ») · **être
+  vendable**, donc tourner chez **n'importe quel courtier MT5**.
+  ⚠️ **Le 3 DÉCOULE du 1** : un EA se vend sur un historique réel vérifié
+  (signal MQL5 / Myfxbook), **jamais sur un backtest**. Il faut gagner d'abord,
+  petit, pendant des mois. Les deux ne sont pas en concurrence.
+- **Où** : `trading/` · avancement et priorités chiffrés : **`trading/JOURNAL.md`**
+  · les principes traduits en code : **`trading/DOCTRINE.md`**.
+  `python trading/noyau/config.py` (posture de risque) ·
+  `python trading/outils/demo_verrous.py` (voir le bot refuser 9 trades) ·
+  `python trading/outils/essai_moteur.py`.
+- **Décidé** : **EUR/USD**, **H4** filtré par **D1**, risque **1 %** (plafond
+  **2 %** écrit dans le code, non desserrable depuis le fichier), courtier
+  **Deriv** démo mais **code agnostique**. ⚠️ Le PC de Cotonou héberge au
+  départ, **d'où : tout ordre part avec son stop déposé CÔTÉ SERVEUR** — une
+  coupure ne doit jamais laisser une position nue.
+- ⚠️ **LE CHIFFRE QUI DÉCIDE DE TOUT, C'EST LE COÛT EN R.** Il est fixe en pips,
+  donc son poids dépend de l'unité de temps : même système à 40 % de réussite et
+  1:2, **+0,18 R en H4 contre +0,01 R en M5**. Le spread n'a pas bougé, c'est R
+  qui a rétréci. C'est ce calcul qui a tranché l'unité de temps et qui tue le
+  scalping retail.
+- ⛔ **TROIS CHOSES BLOQUENT, ET DEUX N'APPARTIENNENT QU'À MONGAZI** :
+  **le mot de passe** du compte démo MT5 (`secrets/mt5.env`, login `6305888` @
+  `Deriv-Demo` déjà posé ; ⚠️ le **maître**, pas l'investisseur, qui donne un
+  accès lecture seule où **tous les ordres sont rejetés**) · **l'historique**
+  (l'API Deriv plafonne à **un an** = ~35 trades, très en dessous des **100**
+  nécessaires) · **la décision de capital** (⚠️ **sous ~700 $ à 1 %, le code
+  refuse TOUS les trades**, le lot minimum risquant déjà 7 $ ; sorties = compte
+  cent, 2 % de risque, ou attendre).
+- ⛔ **LE PONT PYTHON ↔ MT5 REFUSE : `-6 Authorization failed`**, chez Deriv
+  **ET** Exness. Éliminé **en mesurant** : identifiants, chemin, bac à sable,
+  Git Bash contre PowerShell, version du paquet (**5735 et 6180**), courtier,
+  état du terminal, bouton Trading Algo (vérifié vert). **Corrigé en route sans
+  que ça suffise** : `[Experts] Enabled=0 → 1` et **`Api=0 → 1`** dans les deux
+  terminaux (⚠️ **`AllowDllImport` laissé à 0** : le pont n'en a pas besoin et
+  l'activer desserrerait la sécurité pour rien ; sauvegardes
+  `common.ini.avant-nebula`). ⏳ Reste : la connexion par **identifiants
+  explicites**, qui est de toute façon la bonne architecture multi-courtiers.
+- ✅ **L'API PUBLIQUE DE DERIV DONNE DE VRAIES BOUGIES SANS AUCUN JETON**
+  (`wss://ws.derivws.com/websockets/v3?app_id=1089`, `frxEURUSD`,
+  `ticks_history` en `candles`, granularité 14400 pour H4) : c'est ce qui a
+  débloqué le projet. **1 555 barres H4, 0 bougie incohérente**, les 2 seuls
+  trous étant Noël et le Nouvel An.
+- ⚠️ **12 CHOSES CHANGENT D'UN COURTIER À L'AUTRE et se LISENT, jamais ne se
+  supposent** (`noyau/courtier.py`) : nom du symbole (`EURUSD` chez Deriv,
+  **`EURUSDm` chez Exness**), **fuseau du serveur** (le piège n°1 : se tromper
+  d'une heure fait entrer au pire moment, ça se **mesure** sur le dernier tick),
+  décimales, taille du contrat, lot min/pas, **mode de remplissage FOK/IOC/
+  RETURN**, stops level, couverture ou compensation, devise, commission, swaps,
+  heures de séance.
+- ⛔ **DÉFAUT GRAVE TROUVÉ ET CORRIGÉ : le disjoncteur de série noire se
+  verrouillait POUR TOUJOURS.** Le compteur de pertes consécutives ne retombe
+  que sur un gain, et aucun gain n'est possible tant que les entrées sont
+  bloquées — **mesuré : le bot cessait de trader en octobre 2021** sur un jeu
+  allant à fin 2024. En production ça se serait vu comme « le bot ne trade
+  plus », sans explication. ⚠️ **Trouvé parce que le nombre de trades n'était
+  PAS MONOTONE** dans un balayage (123 → 25 → 64 là où la physique impose une
+  décroissance) : *un résultat non monotone là où la monotonie est imposée est
+  un défaut d'INSTRUMENT, pas une découverte.*
+- ⚠️ **4 CORRECTIONS AU DOCUMENT DE TRADING DE MONGAZI** (2026-09-16) : « 1:2 à
+  40 % est profitable » est vrai **hors coûts**, absents de tout le texte ·
+  « ne jamais déplacer un stop » est faux, c'est **ne jamais l'ÉLARGIR** (le
+  resserrer EST le suiveur, et c'est un invariant imposé en code) · « quelle est
+  mon émotion » se traduit en **dérive d'état** (série, spread, volatilité,
+  régime, confiance) · **le risque psychologique se DÉPLACE sur l'opérateur** :
+  couper le bot pendant une série de pertes, monter le risque après un drawdown,
+  désactiver un disjoncteur, ré-optimiser après chaque perte, reprendre en
+  manuel.
+- ⛔ **INTERDITS PAR CONCEPTION, non implémentés** : martingale, moyenne à la
+  baisse, grille. Et **jamais d'apprentissage en direct** (le signal FX est à
+  ~5 % : un modèle qui se réajuste après chaque perte court après le bruit) →
+  **champion / challenger**, réentraînement hors ligne, promotion seulement sur
+  gain **hors échantillon**.
+- ⚠️ **POUR LA REVENTE : l'architecture ONNX.** Un bot Python ne se vend pas à
+  des traders retail (ils n'installeront pas Python) ; le canal est le **MQL5
+  Market**. MT5 embarque un **runtime ONNX** depuis 2023 → on entraîne en
+  Python, on exporte en ONNX, **l'EA `.ex5` fait l'inférence nativement**.
+  ⚠️ **La doctrine, les verrous et le dimensionnement doivent exister des DEUX
+  côtés à l'identique** : c'est pourquoi ils sont écrits comme des règles pures,
+  sans dépendance. ⚠️ Le MQL5 Market **déclasse** les EA à martingale et à
+  grille · ⛔ **ne jamais promettre un rendement** dans une fiche produit.
+- 🔐 **Le dépôt est PUBLIC** : identifiants uniquement dans `secrets/`
+  (`mt5.env`, `deriv.env`). ⛔ **Un mot de passe n'entre JAMAIS dans une
+  conversation** — le 2026-09-16 un jeton a été collé en clair (testé :
+  `InvalidToken`, format `pat_` qui n'est pas celui de Deriv) et **doit être
+  révoqué quel que soit le service auquel il appartient**.
+- Détail : `_memoire/conversations/2026-09-16-nebula-trader.md`
+
 ## Infrastructure — où tourne quoi (2026-08-02)
 
 | Ce qui tourne | Où | Notes |
