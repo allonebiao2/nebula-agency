@@ -1,6 +1,6 @@
 # NEBULA TRADER — journal d'avancement
 
-Mis à jour le **2026-09-17, soir** (vague 4 finie, recherche de stratégies faite, 3e vidéo « Sniper Entry » testée, QC 209 verts).
+Mis à jour le **2026-09-17, soir** (vague 4 finie, recherche de stratégies faite, 3e vidéo « Sniper Entry » et figures chartistes testées, QC 219 verts).
 Une ligne par brique, avec son pourcentage réel.
 
 > ⚠️ **Un pourcentage ici mesure ce qui est ÉCRIT ET TESTÉ, pas ce qui est
@@ -10,6 +10,25 @@ Une ligne par brique, avec son pourcentage réel.
 ---
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
+
+### 📐 FIGURES CHARTISTES + RSI + EMA 50 du 2026-09-17 nuit : verdict NON (rapport : `trading/RECHERCHE-FIGURES.md`)
+
+Mongazi : « et les biseaux ? et l'épaule-tête-épaule et l'inversé ? et si on ajoute le RSI et l'EMA 50 ?
+backtestons ».
+- **192 versions fixées avant le premier résultat** (`trading/recherche/figures.py`) : 4 figures × 4 filtres
+  (aucun, divergence RSI 14, confirmation EMA 50, les deux) × 2 stops (proche, loin) × H1, H4, D1 × EUR/USD
+  et NAS100, objectif 2 R, coûts Deriv. Registre 146 → **312 tests, 0 survit**. **0 version** à plus de
+  50 % sur au moins 100 trades. 18 positives sur 40 avec au moins 30 trades : le hasard.
+- EUR/USD sans filtre : ETE H4 **89 trades, 42,7 %, +0,175 R (p 0,12)** → 10 000 $ = 11 550 $ en 21 ans
+  (+0,7 %/an) ; ETE inversé H4 −0,288 R ; biseaux négatifs sauf ascendant H1 +0,086 R. ETE D1 59 % mais
+  22 trades et 4 objectifs atteints.
+- **RSI** : 0 point de réussite en plus, garde 31 % des trades. **EMA 50** : +2,3 points, +0,025 R, garde
+  59 %. Filtres = moins de trades, pas moins de pertes.
+- NAS100 : quelques dizaines de figures depuis 2024, rien à conclure.
+- **Planches regardées** avant les tableaux ; stop « proche » des biseaux corrigé (tombait au prix du
+  « loin »). `_qc_figures.py` **11 contrôles**, dont 2 fuites du futur injectées et attrapées (la seconde
+  seulement après avoir corrigé l'échantillonnage du contrôle). QC **219 verts**.
+- Relancer : `python -m trading.recherche.figures_lancer` puis `figures_rapport` et `rapport`.
 
 ### 🎯 3e VIDÉO « SNIPER ENTRY » du 2026-09-17 soir : verdict NON (rapport : `trading/RECHERCHE-SNIPER.md`)
 

@@ -32,8 +32,19 @@ NOMS = {
     "sniper_auteur_stop_saute": "Vidéo Sniper Entry, stop trop court sauté",
     "sniper_meilleures_heures": "Vidéo Sniper Entry, meilleures heures (contrôle)",
     "sniper_variantes": "Vidéo Sniper Entry, variantes (walk-forward)",
+    "figures_ete": "Figure : épaule-tête-épaule", "figures_ete_inverse": "Figure : ETE inversé",
+    "figures_biseau_ascendant": "Figure : biseau ascendant", "figures_biseau_descendant": "Figure : biseau descendant",
 }
 SNIPER = DOSSIER / "sniper"
+
+
+def motifs_figures(cle: str) -> dict:
+    """Motifs de sortie d'un test de figure chartiste, relus dans `figures/resultats.json`."""
+    try:
+        d = json.loads((DOSSIER / "figures" / "resultats.json").read_text(encoding="utf-8"))
+        return d[cle]["mesures"].get("motifs", {})
+    except (FileNotFoundError, KeyError):
+        return {}
 
 
 def motifs_sniper(cle: str) -> dict:
@@ -65,10 +76,18 @@ def fr(x, fmt):
     return format(x, fmt).replace(".", ",")
 
 
+def variante_de(e) -> str:
+    if e["cle"].startswith("figures_"):
+        filtre, stop = e["cle"][len(e["candidate"]) + 1:].rsplit("_", 3)[:2]
+        noms = {"aucun": "sans filtre", "rsi": "divergence RSI", "ema50": "EMA 50", "rsi_ema50": "RSI + EMA 50"}
+        return f" ({noms[filtre]}, stop {stop})"
+    return (" (auteur)" if e["cle"].endswith("_auteur") else " (auteur + point mort)" if e["cle"].endswith("_auteur_be")
+            else " (adaptée, hors échantillon)" if e["cle"].endswith("_adaptee") else "")
+
+
 def ligne(e):
     nom = NOMS.get(e["candidate"], e["candidate"])
-    variante = (" (auteur)" if e["cle"].endswith("_auteur") else " (auteur + point mort)" if e["cle"].endswith("_auteur_be")
-                else " (adaptée, hors échantillon)" if e["cle"].endswith("_adaptee") else "")
+    variante = variante_de(e)
     pf ="infini" if e["profit_factor"] == float("inf") else fr(e["profit_factor"], ".2f")
     return (f"| {nom}{variante} | {e['base']} {e['tf']} | {e['trades']} | {pct(e['taux_reussite'])} | "
             f"{r(e['esperance_R'])} | {pf} | {fr(e['R_par_mois'], '+.2f')} | "
@@ -102,6 +121,8 @@ def main() -> int:
     def motifs_de(e):
         if e["cle"].startswith("sniper_"):
             return motifs_sniper(e["cle"])
+        if e["cle"].startswith("figures_"):
+            return motifs_figures(e["cle"])
         if e["cle"].startswith("videos_"):
             base_cle, variante = e["cle"].rsplit("_", 1)
             if variante == "be":
@@ -190,6 +211,15 @@ def main() -> int:
             L.append(f"| {annee} | {v['trades']} | {pct(v['taux_reussite'])} | {fr(v['somme_R'], '+.1f')} |")
         L.append("")
 
+    figs = [e for e in registre if e["cle"].startswith("figures_")]
+    if figs:
+        L.append("\n## 2 bis. Les figures chartistes (ETE, ETE inversé, biseaux, avec ou sans RSI et EMA 50)\n")
+        L.append(f"{len(figs)} versions avec au moins un trade, en H1, H4 et D1, objectif 2 R : **détail complet dans "
+                 "`trading/RECHERCHE-FIGURES.md`**. Les 10 meilleures par p, sur au moins 30 trades :\n")
+        L.append(entete)
+        for e in sorted((e for e in figs if e["trades"] >= 30), key=lambda e: e["p_valeur"])[:10]:
+            L.append(ligne(e))
+
     L.append("\n## 3. Le taux de réussite\n")
     L.append(f"- Le plus haut sur au moins 100 trades : **{pct(meilleur_taux['taux_reussite'])}**, "
              f"{NOMS.get(meilleur_taux['candidate'])} sur {meilleur_taux['base']} {meilleur_taux['tf']} "
@@ -213,7 +243,7 @@ def main() -> int:
         pistes = [e for e in comptes if e["esperance_R"] > 0 and e["trades"] >= 14]
         for e in sorted(pistes, key=lambda e: e["p_valeur"])[:4]:
             L.append(f"- **{NOMS.get(e['candidate'])}** · {e['base']} {e['tf']}"
-                     f"{' (auteur)' if e['cle'].endswith('_auteur') else ''} : {e['trades']} trades, "
+                     f"{variante_de(e)} : {e['trades']} trades, "
                      f"{pct(e['taux_reussite'])}, {r(e['esperance_R'])} R, p = {fr(e['p_valeur'], '.2f')}.")
         L.append("")
 

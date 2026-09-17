@@ -1,13 +1,13 @@
 # NEBULA Trader · recherche de stratégies scalping et intraday (EUR/USD, NAS100)
 
-## Verdict : NON, pas avec nos données. Aucun des 146 tests ne montre une rentabilité qu'on puisse distinguer de la chance après correction statistique.
+## Verdict : NON, pas avec nos données. Aucun des 312 tests ne montre une rentabilité qu'on puisse distinguer de la chance après correction statistique.
 
 *Généré par `python -m trading.recherche.rapport` à partir des résultats bruts. Coûts réels Deriv (spread médian mesuré sur ticks, 1 point de glissement par sens, swap), entrée à l'ouverture suivante, stop avant objectif dans une même bougie, objectif ≥ 2 R, stop jamais plus court que le minimum du courtier.*
 
 ## 0. Ton objectif : R:R d'au moins 1:2 ET plus de 50 % de réussite
 
-- Tests avec **plus de 50 % de trades gagnants, au moins 100 trades et une espérance positive** : **1** sur 146.
-- Tests où **plus de la moitié des trades atteignent vraiment leur objectif d'au moins 2 R** : **0** sur 146.
+- Tests avec **plus de 50 % de trades gagnants, au moins 100 trades et une espérance positive** : **1** sur 312.
+- Tests où **plus de la moitié des trades atteignent vraiment leur objectif d'au moins 2 R** : **0** sur 312.
 - ⚠️ « Gagnant » compte tout trade fini au-dessus de zéro, y compris une petite sortie par le temps ou en fin de séance. C'est pour ça que les deux lignes diffèrent : seule la seconde dit « j'ai pris mes 2 R ».
 - **Le calcul qui borne l'ambition** : à 1:2, gagner 2 R une fois sur deux rapporte **+0,5 R par trade** avant coûts. La meilleure espérance mesurée ici sur au moins 100 trades est de **+0,094 R**.
 
@@ -21,8 +21,8 @@ Les plus hauts taux de réussite sur au moins 100 trades :
 | Range de séance (Asie→Londres, ouverture US) | NAS100 M5 | 304 | 49,3 % | 2,6 % | +0,035 |
 | Range de séance (Asie→Londres, ouverture US) | EURUSD H4 | 1366 | 47,1 % | 2,3 % | -0,018 |
 | Vidéo MambaFx (zone M5 + cassure M1) | EURUSD M5 | 262 | 41,2 % | 1,1 % | +0,061 |
+| Figure : ETE inversé | EURUSD H1 | 145 | 40,7 % | 26,2 % | +0,004 |
 | IBS / 3 barres en baisse | NAS100 M1 | 4943 | 40,2 % | 7,0 % | -0,027 |
-| IBS / 3 barres en baisse | EURUSD M15 | 6014 | 40,0 % | 20,4 % | -0,009 |
 
 ## Les données utilisées
 
@@ -433,6 +433,23 @@ Testée à part, en M1 avec simulation bid/ask minute par minute, historique des
 | 2026 | 14 | 57,1 % | +6,0 |
 
 
+## 2 bis. Les figures chartistes (ETE, ETE inversé, biseaux, avec ou sans RSI et EMA 50)
+
+166 versions avec au moins un trade, en H1, H4 et D1, objectif 2 R : **détail complet dans `trading/RECHERCHE-FIGURES.md`**. Les 10 meilleures par p, sur au moins 30 trades :
+
+| Stratégie | Marché | Trades | Réussite | Espérance (R) | PF | R/mois | Drawdown à 1 % | p | Correction |
+|---|---|---|---|---|---|---|---|---|---|
+| Figure : biseau ascendant (divergence RSI, stop proche) | EURUSD H1 | 41 | 46,3 % | +0,382 | 1,71 | +0,06 | 4,0 % | 0,053 | non |
+| Figure : épaule-tête-épaule (sans filtre, stop proche) | EURUSD H4 | 89 | 42,7 % | +0,175 | 1,31 | +0,06 | 9,5 % | 0,119 | non |
+| Figure : biseau ascendant (EMA 50, stop loin) | EURUSD H1 | 30 | 43,3 % | +0,302 | 1,53 | +0,04 | 3,9 % | 0,138 | non |
+| Figure : ETE inversé (RSI + EMA 50, stop proche) | EURUSD H1 | 41 | 43,9 % | +0,201 | 1,34 | +0,03 | 4,1 % | 0,189 | non |
+| Figure : épaule-tête-épaule (sans filtre, stop loin) | EURUSD H4 | 88 | 44,3 % | +0,109 | 1,23 | +0,04 | 8,4 % | 0,201 | non |
+| Figure : biseau ascendant (EMA 50, stop proche) | EURUSD H1 | 30 | 40,0 % | +0,199 | 1,33 | +0,02 | 3,9 % | 0,234 | non |
+| Figure : biseau ascendant (sans filtre, stop proche) | EURUSD H1 | 140 | 36,4 % | +0,086 | 1,13 | +0,05 | 11,4 % | 0,240 | non |
+| Figure : biseau descendant (divergence RSI, stop proche) | EURUSD H1 | 44 | 40,9 % | +0,138 | 1,22 | +0,02 | 7,2 % | 0,263 | non |
+| Figure : ETE inversé (divergence RSI, stop loin) | EURUSD H1 | 58 | 43,1 % | +0,094 | 1,16 | +0,02 | 11,1 % | 0,298 | non |
+| Figure : épaule-tête-épaule (EMA 50, stop loin) | EURUSD H4 | 63 | 44,4 % | +0,075 | 1,16 | +0,02 | 7,3 % | 0,305 | non |
+
 ## 3. Le taux de réussite
 
 - Le plus haut sur au moins 100 trades : **53,8 %**, Range de séance (Asie→Londres, ouverture US) sur NAS100 M1 (320 trades, espérance +0,032 R).
@@ -443,10 +460,10 @@ Testée à part, en M1 avec simulation bid/ask minute par minute, historique des
 
 **Aucune.** Retenir deux stratégies par profil sur ces chiffres, ce serait choisir au hasard parmi des résultats qu'on ne peut pas distinguer de zéro. Les pistes qui méritent plus de données :
 
+- **Figure : biseau ascendant** · EURUSD H1 (divergence RSI, stop proche) : 41 trades, 46,3 %, +0,382 R, p = 0,05.
+- **Figure : épaule-tête-épaule** · EURUSD D1 (sans filtre, stop proche) : 22 trades, 59,1 %, +0,379 R, p = 0,06.
+- **Figure : épaule-tête-épaule** · NAS100 H1 (sans filtre, stop loin) : 17 trades, 47,1 %, +0,501 R, p = 0,08.
 - **Vidéo MambaFx (zone M5 + cassure M1)** · EURUSD M15 (auteur) : 51 trades, 41,2 %, +0,282 R, p = 0,09.
-- **Vidéo Hugo FX (CRT H1 + swing M15)** · EURUSD H4 (auteur) : 70 trades, 25,7 %, +0,366 R, p = 0,10.
-- **Vidéo Hugo FX (CRT H1 + swing M15)** · EURUSD H1 (auteur) : 72 trades, 29,2 %, +0,307 R, p = 0,12.
-- **Vidéo MambaFx (zone M5 + cassure M1)** · EURUSD H4 : 16 trades, 56,2 %, +0,378 R, p = 0,13.
 
 ## 5. Le million de dollars
 

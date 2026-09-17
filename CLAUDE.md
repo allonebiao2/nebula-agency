@@ -514,10 +514,11 @@
 
 ### NEBULA TRADER · agent de trading EUR/USD + NAS100  *(produit interne, 2026-09-16)*
 - 🔴 **REPRENDRE ICI : `trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT ».** Au
-  2026-09-17 : vagues 1 à 4 **livrées**, EUR/USD + NAS100 en observation, QC 209 verts.
+  2026-09-17 : vagues 1 à 4 **livrées**, EUR/USD + NAS100 en observation, QC 219 verts.
   🔬 **Recherche de stratégies faite** (`trading/RECHERCHE-STRATEGIES.md`, banc `trading/recherche/`) :
-  5 stratégies publiées + 3 vidéos, sur M1 à H4 et jusqu'à 21 ans (MT5 passé en « Unlimited »),
-  **146 tests, 0 survit à la correction**, aucun où plus de 50 % des trades atteignent 2 R, rien
+  5 stratégies publiées + 3 vidéos + 4 figures chartistes (ETE, biseaux, avec RSI/EMA 50 :
+  `trading/RECHERCHE-FIGURES.md`), de M1 à D1 et jusqu'à 21 ans (MT5 passé en « Unlimited »),
+  **312 tests, 0 survit à la correction**, aucun où plus de 50 % des trades atteignent 2 R, rien
   intégré. **R:R 1:2 imposé en PRO et BOOST.** ⚠️ Export MT5 « Unlimited » = bougies factices
   depuis 1971 en M15/H1 : filtrées à la lecture.
   🎯 **3e vidéo « Sniper Entry » (2026-09-17 soir, `trading/RECHERCHE-SNIPER.md`)** : méthode apprise
@@ -531,7 +532,7 @@
 - **Où** : `trading/` · **`trading/CAHIER-DES-CHARGES.md`** (v2, la référence) ·
   `trading/JOURNAL.md` (avancement) · `trading/DOCTRINE.md` · `trading/README.md`.
   **Lancer** : `python -m trading.app` (agent + interface sur http://127.0.0.1:8765/) ·
-  **QC** : `python -m trading.outils.qc` (**209 verts**) · **produit** :
+  **QC** : `python -m trading.outils.qc` (**219 verts**) · **produit** :
   `python -m trading.empaquetage.construire` (zip 44 Mo, `NEBULA Trader.exe`, sans Python).
 - ✅ **FAIT le 2026-09-16** : pont MT5 ouvert (compte démo Deriv `6305888`, identifiants
   explicites) · historique MT5 **par année** (34 876 H4 depuis 2005) · profil de coûts

@@ -139,6 +139,10 @@ def controles(verifier) -> None:
     from trading.recherche import _qc_sniper
     _qc_sniper.controles(verifier)
 
+    # --- 4. figures chartistes (ETE, biseaux) : détection sur figures dessinées, futur ---
+    from trading.recherche import _qc_figures
+    _qc_figures.controles(verifier)
+
 
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

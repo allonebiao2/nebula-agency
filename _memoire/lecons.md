@@ -2879,3 +2879,19 @@ Le spread de l'EUR/USD explose au rollover, à **17:00 New York** toute l'année
 22:00 UTC l'hiver. Un premier profil par minute en UTC plaçait le pic à 21:00 seulement : faux six mois
 sur douze. **Règle** : un profil horaire (spread, volatilité, séances) se calcule dans le fuseau du
 marché qui le cause, avec ses changements d'heure.
+
+## 2026-09-17 · Deux variantes identiques sont un test compté deux fois
+
+Pour les biseaux, le stop « proche » (plus haut depuis le dernier sommet) et le stop « loin » (plus haut
+du biseau) tombaient toujours au même prix : dans un biseau ascendant, le dernier sommet EST le plus haut.
+Deux lignes au registre pour un seul test, qui gonflent la correction statistique sans rien apprendre.
+Vu sur les planches, pas dans le code. **Règle** : avant de lancer une grille, vérifier sur quelques cas
+que chaque variante produit réellement un chiffre différent de sa voisine.
+
+## 2026-09-17 · Un contrôle qui tire ses cas parmi les changements ne voit pas une disparition
+
+Le contrôle « les pivots connus à une bougie ne changent pas si les données s'arrêtent là » tirait ses
+bougies parmi celles où l'état des pivots change. Une fuite injectée (une bougie de trop lue à droite)
+ne CRÉE pas de changement : elle en SUPPRIME un, quand le futur dément le pivot. Rien à tirer, contrôle
+vert. **Règle** : un contrôle de causalité échantillonne toutes les positions, pas seulement celles où
+quelque chose arrive ; et une fuite injectée qui ne rougit rien se démontre avant de déclarer le code sain.
