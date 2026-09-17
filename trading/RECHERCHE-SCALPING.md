@@ -1,12 +1,21 @@
 # NEBULA Trader · recherche d'une stratégie de SCALPING (EUR/USD, NAS100)
 
-## Verdict : **l'objectif tel qu'il est écrit n'est pas atteignable en intraday**, et ce n'est pas une opinion : c'est mesuré.
+## Verdict : **oui, sur NAS100, en étant très sélectif — et voici les trois chiffres, mesurés sur des années scellées.**
 
-Un devin qui choisirait toujours le bon sens atteindrait **63,8 %** de 2 R sur NAS100 M1 et **57,7 %** sur EUR/USD M1 (section 2). Viser « plus de 50 % » revient donc à exiger de choisir le bon sens **trois fois sur quatre**, et viser 60-70 % est au-dessus du plafond lui-même. Sur tous les tests de cette recherche, le meilleur taux de 2 R atteints est de **41 %**.
+| | mesuré | ce que demande Mongazi | |
+|---|---|---|---|
+| 2 R réellement atteints | **66.7 %** | plus de 50 %, idéal 60-70 % | ✅ |
+| R:R réalisé | **1.85** | au moins 1:2 | ✅ |
+| P(5 pertes d'affilée sur 100) | **22 %** · P(6) **8 %** · plus longue série observée **5** | « extrêmement bas » | ⚠️ |
 
-**Mais la recherche a trouvé quelque chose d'autre** : une stratégie qui gagne de l'argent sans remplir ces critères — 40.3 % de 2 R, +0.165 R par trade, **confirmée sur des années scellées** (29362 trades jamais regardés). C'est le profil que Mongazi appelait « nul » : un taux de réussite bas, compensé par un gain moyen presque deux fois la perte moyenne. Section 1.
+1467 trades sur quatre années **jamais regardées pendant la recherche** (2020-2023), soit environ un trade par jour, **+0.960 R par trade**. Les mêmes réglages donnent 58.6 % de 2 R si l'on est trois fois moins sélectif, et le tout se rejoue à l'identique sur 2024-2026, chez **deux fournisseurs de données indépendants**.
 
-- Meilleur taux de 2 R atteints : **41.2 %** (candidat_rabais_SCELLÉ · coût relatif au pri, 29893 trades, point mort 33.5 %).
+⚠️ **Le troisième chiffre est au minimum de ce que permettent les mathématiques** : à 67 % de réussite, 5 pertes d'affilée sur 100 trades arrivent 21 % du temps. Descendre plus bas exigerait un taux de réussite encore plus haut, pas une autre stratégie.
+⛔ **Rien n'est en réel, et rien ne doit l'être avant la démo** : un ordre limite servi dans une simulation n'est pas un ordre limite servi par un courtier.
+
+Sans le filtre, la même stratégie atteint 2 R dans 40.3 % des cas (+0.165 R par trade sur 29362 trades scellés) : rentable, mais loin des critères. **C'est la sélectivité qui fait la différence**, pas le signal d'entrée. Sections 1 et 2.
+
+- Meilleur taux de 2 R atteints de toute la recherche : **66.7 %** (filtre_SCELLÉ · Dukascopy 2020-2023_5pct, 1467 trades, point mort 34.5 %).
 
 - Objectif de Mongazi : **plus de 50 %** (idéal 60-70 %) de 2 R atteints, R:R 1:2, et un risque très bas de 5-6 pertes d'affilée.
 - Rappel calculé : à 50 % de 2 R, la probabilité de 5 pertes d'affilée sur 100 trades vaut encore **81 %** ; elle ne tombe sous 5 % (6 pertes) qu'à partir de **70 %**.
@@ -41,7 +50,81 @@ Ce qu'il fait, lui : **+0.165 R par trade**, 613 trades par mois, positif chaque
 ⚠️ **Il échoue sur 2013-2019 au coût absolu d'aujourd'hui** (70 points sur un indice à 5 000, c'est quatre fois plus cher en proportion) et **réussit au coût relatif** (+0,164 R). Le mécanisme est ancien ; sa rentabilité est récente, et tient au spread.
 ⛔ **Rien n'est en réel.** Le juge est la démo en observation : un ordre limite servi dans une simulation n'est pas un ordre limite servi par un courtier.
 
-## 2. Le plafond : jusqu'où 2 R peut tomber avant 1 R, dans la journée
+## 2. Le filtre : apprendre QUAND ne pas prendre le candidat
+
+Le candidat décide du sens ; un second modèle décide s'il faut y aller. Il est appris **une seule fois, sur 2013-2019** (39915 trades), puis appliqué tel quel au reste. Les caractéristiques sont lues sur la **dernière barre close avant le remplissage** : lire la barre du remplissage utiliserait sa clôture, donc une partie du rebond qu'on prétend prédire (mesuré : 65 % de 2 R au lieu de 62,5 %, même sur une période où la stratégie perd).
+
+**SCELLÉ · Dukascopy 2020-2023** · 29332 trades avant filtre
+
+| part gardée | trades | 2 R atteints | R:R réalisé | espérance | P(5 pertes/100) | P(6/100) | plus longue série |
+|---|---|---|---|---|---|---|---|
+| 100 % | 29332 | **40.3 %** | 1.79 | +0.165 R | 97 % | 84 % | 21 |
+| 50 % | 14666 | **48.9 %** | 1.82 | +0.415 R | 83 % | 57 % | 11 |
+| 30 % | 8800 | **54.8 %** | 1.82 | +0.593 R | 64 % | 36 % | 11 |
+| 20 % | 5867 | **58.6 %** | 1.83 | +0.711 R | 49 % | 24 % | 9 |
+| 10 % | 2934 | **62.5 %** | 1.84 | +0.833 R | 35 % | 15 % | 7 |
+| 5 % | 1467 | **66.7 %** | 1.85 | +0.960 R | 22 % | 8 % | 5 |
+
+**Deriv 2024-2026** · 19323 trades avant filtre
+
+| part gardée | trades | 2 R atteints | R:R réalisé | espérance | P(5 pertes/100) | P(6/100) | plus longue série |
+|---|---|---|---|---|---|---|---|
+| 100 % | 19323 | **39.8 %** | 1.83 | +0.169 R | 97 % | 85 % | 16 |
+| 50 % | 9662 | **47.6 %** | 1.85 | +0.389 R | 86 % | 62 % | 13 |
+| 30 % | 5797 | **52.7 %** | 1.85 | +0.544 R | 71 % | 42 % | 10 |
+| 20 % | 3865 | **56.2 %** | 1.85 | +0.651 R | 58 % | 30 % | 12 |
+| 10 % | 1933 | **61.1 %** | 1.86 | +0.803 R | 39 % | 17 % | 8 |
+| 5 % | 967 | **66.3 %** | 1.87 | +0.966 R | 22 % | 7 % | 6 |
+
+**Dukascopy 2024-2026** · 19360 trades avant filtre
+
+| part gardée | trades | 2 R atteints | R:R réalisé | espérance | P(5 pertes/100) | P(6/100) | plus longue série |
+|---|---|---|---|---|---|---|---|
+| 100 % | 19360 | **40.1 %** | 1.83 | +0.175 R | 97 % | 85 % | 16 |
+| 50 % | 9680 | **47.5 %** | 1.84 | +0.390 R | 86 % | 62 % | 13 |
+| 30 % | 5808 | **52.6 %** | 1.84 | +0.545 R | 71 % | 42 % | 9 |
+| 20 % | 3872 | **55.9 %** | 1.85 | +0.642 R | 59 % | 31 % | 15 |
+| 10 % | 1936 | **61.3 %** | 1.86 | +0.814 R | 38 % | 16 % | 8 |
+| 5 % | 968 | **66.1 %** | 1.86 | +0.969 R | 21 % | 7 % | 6 |
+
+**Deriv 2024-2026 · coût ×2** · 18921 trades avant filtre
+
+| part gardée | trades | 2 R atteints | R:R réalisé | espérance | P(5 pertes/100) | P(6/100) | plus longue série |
+|---|---|---|---|---|---|---|---|
+| 100 % | 18921 | **38.6 %** | 1.71 | +0.088 R | 98 % | 88 % | 16 |
+| 50 % | 9461 | **46.4 %** | 1.74 | +0.313 R | 89 % | 66 % | 13 |
+| 30 % | 5677 | **51.7 %** | 1.74 | +0.475 R | 74 % | 46 % | 10 |
+| 20 % | 3785 | **55.2 %** | 1.75 | +0.582 R | 62 % | 34 % | 11 |
+| 10 % | 1893 | **61.0 %** | 1.77 | +0.761 R | 40 % | 18 % | 9 |
+| 5 % | 947 | **64.6 %** | 1.78 | +0.880 R | 27 % | 10 % | 10 |
+
+**Deriv 2024-2026 · coût ×3** · 18471 trades avant filtre
+
+| part gardée | trades | 2 R atteints | R:R réalisé | espérance | P(5 pertes/100) | P(6/100) | plus longue série |
+|---|---|---|---|---|---|---|---|
+| 100 % | 18471 | **37.4 %** | 1.62 | +0.014 R | 98 % | 90 % | 17 |
+| 50 % | 9236 | **45.0 %** | 1.65 | +0.239 R | 91 % | 71 % | 14 |
+| 30 % | 5542 | **50.5 %** | 1.65 | +0.405 R | 78 % | 50 % | 11 |
+| 20 % | 3695 | **54.0 %** | 1.67 | +0.517 R | 66 % | 37 % | 8 |
+| 10 % | 1848 | **59.6 %** | 1.69 | +0.689 R | 45 % | 21 % | 7 |
+| 5 % | 924 | **63.7 %** | 1.72 | +0.829 R | 29 % | 11 % | 8 |
+
+**Deriv 2024-2026 · coût ×5** · 16967 trades avant filtre
+
+| part gardée | trades | 2 R atteints | R:R réalisé | espérance | P(5 pertes/100) | P(6/100) | plus longue série |
+|---|---|---|---|---|---|---|---|
+| 100 % | 16967 | **35.4 %** | 1.5 | -0.099 R | 99 % | 94 % | 22 |
+| 50 % | 8484 | **43.3 %** | 1.54 | +0.140 R | 94 % | 76 % | 14 |
+| 30 % | 5090 | **48.8 %** | 1.54 | +0.306 R | 83 % | 57 % | 11 |
+| 20 % | 3394 | **53.2 %** | 1.55 | +0.441 R | 69 % | 40 % | 13 |
+| 10 % | 1697 | **59.8 %** | 1.59 | +0.650 R | 44 % | 21 % | 9 |
+| 5 % | 850 | **63.4 %** | 1.6 | +0.779 R | 29 % | 11 % | 6 |
+
+⚠️ **Témoin obligatoire** : le même pipeline avec des étiquettes **mélangées** donne 45.2 % en gardant 5 %, contre 40.3 % sans filtre. Cet écart-là n'est pas de la prédiction : c'est l'effet de **sélection** (choisir un sous-ensemble du marché en change le taux de base). Le gain du modèle est ce qui dépasse ce témoin.
+
+⚠️ **Ce que ça exige en pratique** : la décision se prend sur la dernière minute close avant l'entrée. Concrètement, l'agent doit, à chaque minute, décider de garder ou d'annuler son ordre pour la minute suivante. L'agent actuel travaille en H4, au marché : c'est un autre objet.
+
+## 3. Le plafond : jusqu'où 2 R peut tomber avant 1 R, dans la journée
 
 Sur chaque minute, on regarde ce qui serait arrivé dans les DEUX sens. Un devin qui choisirait toujours le bon sens atteindrait le « plafond ». **Aucune règle, aucun modèle, aucune intuition ne peut le dépasser.** En face, le « point mort » est le taux d'objectif qui rend l'espérance nulle, coûts et fins de journée compris.
 
@@ -70,11 +153,11 @@ Sur chaque minute, on regarde ce qui serait arrivé dans les DEUX sens. Un devin
 | 2000 points | **62.8 %** | 32.7 % | 0.036 R | 16 barres |
 | 3500 points | **58.3 %** | 29.5 % | 0.021 R | 44 barres |
 
-## 3. Entrer sur un retour de prix (ordre limite)
+## 4. Entrer sur un retour de prix (ordre limite)
 
 La géométrie change : depuis un meilleur prix, l'objectif est plus près en valeur absolue. ⛔ Piège mesuré : à 0,5 R de retrait les deux sens sont des miroirs exacts, donc « au moins un des deux gagne » vaut 99 % **par construction**. Seuls comptent les taux par sens, rapportés aux ordres servis.
 
-## 4. Le modèle : ce qu'on sait prévoir, mesuré hors échantillon
+## 5. Le modèle : ce qu'on sait prévoir, mesuré hors échantillon
 
 Un modèle par sens apprend P(2 R avant 1 R) sur les caractéristiques causales, walk-forward purgé. On lit la précision parmi les minutes où il est le plus sûr : si les 1 % les plus sûres ne dépassent pas le point mort, il n'y a rien à prendre.
 
@@ -97,7 +180,7 @@ Un modèle par sens apprend P(2 R avant 1 R) sur les caractéristiques causales,
   - seuil 0.55 : 1206 trades, objectif atteint 33.1 % (point mort 34.4 %), espérance -0.039 R
   - seuil 0.60 : 580 trades, objectif atteint 31.6 % (point mort 34.1 %), espérance -0.075 R
 
-## 5. La recherche exhaustive de règles
+## 6. La recherche exhaustive de règles
 
 Toutes les paires de conditions (puis les meilleurs triplets) sont essayées sur la période d'apprentissage, puis rejouées après la coupe et passées au simulateur. **Le nombre d'essais est publié** : c'est lui qui décide de ce qu'on a le droit de croire.
 
@@ -127,23 +210,23 @@ Toutes les paires de conditions (puis les meilleurs triplets) sont essayées sur
 | depuis_ouverture_jour<=-13.8963 ET ecart_ema200>3.72689 | vente | 42.4 % (n=784) | 37.2 % (n=656) | 166 | 31.9 % |
 | dist_bas_jour>26.2961 ET dist_haut_jour>12.2286 | vente | 43.0 % (n=839) | 36.9 % (n=797) | 164 | 34.8 % |
 
-## 6. Le registre
+## 7. Le registre
 
-- **389 tests comptés** (témoins exclus), correction de Holm à 5 % sur le registre entier.
-- **16 survivant(s).**
+- **407 tests comptés** (témoins exclus), correction de Holm à 5 % sur le registre entier.
+- **34 survivant(s).**
 
 Les plus hauts taux de 2 R atteints, sur au moins 100 trades :
 
 | test | trades | 2 R atteints | point mort | espérance | p |
 |---|---|---|---|---|---|
-| candidat_rabais_SCELLÉ · coût relatif au pri | 29893 | **41.2 %** | 33.5 % | +0.227 R | 0.000 |
-| t6_rabais_EURUSD_M1_mt52019 | 29173 | **41.0 %** | 37.6 % | +0.101 R | 0.000 |
-| t7_rabais_EURUSD_M1_mt52019 | 29173 | **41.0 %** | 37.6 % | +0.101 R | 0.000 |
-| t6_rabais_NAS100_M1_mt52024 | 9560 | **40.9 %** | 34.2 % | +0.199 R | 0.000 |
-| t7_rabais_NAS100_M1_mt52024 | 9560 | **40.9 %** | 34.2 % | +0.199 R | 0.000 |
-| candidat_rabais_SCELLÉ · Dukascopy 2020-2023 | 29362 | **40.3 %** | 34.7 % | +0.165 R | 0.000 |
-| t6_rabais_NAS100_M1_duka2013 | 25786 | **40.1 %** | 39.9 % | +0.006 R | 0.240 |
-| t7_rabais_NAS100_M1_duka2013 | 25786 | **40.1 %** | 39.9 % | +0.006 R | 0.240 |
-| candidat_rabais_découverte · Dukascopy 2024- | 19389 | **40.1 %** | 34.1 % | +0.176 R | 0.000 |
-| candidat_rabais_découverte · Deriv 2024-2026 | 19346 | **39.8 %** | 34.1 % | +0.169 R | 0.000 |
+| filtre_SCELLÉ · Dukascopy 2020-2023_5pct | 1467 | **66.7 %** | 34.5 % | +0.960 R | 0.000 |
+| filtre_Deriv 2024-2026_5pct | 967 | **66.3 %** | 33.6 % | +0.966 R | 0.000 |
+| filtre_Dukascopy 2024-2026_5pct | 968 | **66.1 %** | 33.0 % | +0.969 R | 0.000 |
+| filtre_Deriv 2024-2026 · coût ×2_5pct | 947 | **64.6 %** | 34.9 % | +0.880 R | 0.000 |
+| meta_candidat_NAS100_M1_duka_0.05 | 630 | **63.8 %** | 33.3 % | +0.897 R | 0.000 |
+| filtre_Deriv 2024-2026 · coût ×3_5pct | 924 | **63.7 %** | 35.7 % | +0.829 R | 0.000 |
+| filtre_Deriv 2024-2026 · coût ×5_5pct | 850 | **63.4 %** | 37.0 % | +0.779 R | 0.000 |
+| meta_candidat_NAS100_M1_mt5_0.05 | 628 | **63.2 %** | 33.8 % | +0.871 R | 0.000 |
+| meta_candidat_NAS100_M1_duka_0.1 | 1260 | **59.8 %** | 33.5 % | +0.777 R | 0.000 |
+| meta_candidat_NAS100_M1_mt5_0.1 | 1257 | **58.8 %** | 34.3 % | +0.731 R | 0.000 |
 

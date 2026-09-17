@@ -78,8 +78,46 @@ def section_candidat() -> list[str]:
     return out
 
 
+def section_filtre() -> list[str]:
+    d = _lire(DOSSIER / "meta" / "candidat_filtre.json")
+    if not d:
+        return []
+    out = ["## 2. Le filtre : apprendre QUAND ne pas prendre le candidat", "",
+           "Le candidat décide du sens ; un second modèle décide s'il faut y aller. Il est appris"
+           f" **une seule fois, sur 2013-2019** ({d['trades_appris']} trades), puis appliqué tel quel"
+           " au reste. Les caractéristiques sont lues sur la **dernière barre close avant le"
+           " remplissage** : lire la barre du remplissage utiliserait sa clôture, donc une partie du"
+           " rebond qu'on prétend prédire (mesuré : 65 % de 2 R au lieu de 62,5 %, même sur une"
+           " période où la stratégie perd).", ""]
+    for r in d["resultats"]:
+        if not r.get("paliers"):
+            continue
+        out += [f"**{r['libelle']}** · {r['trades']} trades avant filtre", "",
+                "| part gardée | trades | 2 R atteints | R:R réalisé | espérance | P(5 pertes/100) |"
+                " P(6/100) | plus longue série |", "|---|---|---|---|---|---|---|---|"]
+        for p in r["paliers"]:
+            out.append(f"| {100 * p['part_gardee']:.0f} % | {p['trades']} | "
+                       f"**{100 * p['taux_objectif']:.1f} %** | {p['rr_realise']} | "
+                       f"{p['esperance_R']:+.3f} R | {100 * p['p_5_pertes_sur_100']:.0f} % | "
+                       f"{100 * p['p_6_pertes_sur_100']:.0f} % | {p['plus_longue_serie']} |")
+        out.append("")
+    t = d.get("temoin_melange") or {}
+    t5 = next((x for x in t.get("paliers", []) if x["part_gardee"] == 0.05), None)
+    if t5:
+        out += [f"⚠️ **Témoin obligatoire** : le même pipeline avec des étiquettes **mélangées** donne"
+                f" {100 * t5['taux_objectif']:.1f} % en gardant 5 %, contre"
+                f" {100 * t['taux_sans_filtre']:.1f} % sans filtre. Cet écart-là n'est pas de la"
+                f" prédiction : c'est l'effet de **sélection** (choisir un sous-ensemble du marché"
+                f" en change le taux de base). Le gain du modèle est ce qui dépasse ce témoin.", ""]
+    out += ["⚠️ **Ce que ça exige en pratique** : la décision se prend sur la dernière minute close"
+            " avant l'entrée. Concrètement, l'agent doit, à chaque minute, décider de garder ou"
+            " d'annuler son ordre pour la minute suivante. L'agent actuel travaille en H4, au"
+            " marché : c'est un autre objet.", ""]
+    return out
+
+
 def section_plafonds() -> list[str]:
-    out = ["## 2. Le plafond : jusqu'où 2 R peut tomber avant 1 R, dans la journée", "",
+    out = ["## 3. Le plafond : jusqu'où 2 R peut tomber avant 1 R, dans la journée", "",
            "Sur chaque minute, on regarde ce qui serait arrivé dans les DEUX sens. Un devin qui"
            " choisirait toujours le bon sens atteindrait le « plafond ». **Aucune règle, aucun"
            " modèle, aucune intuition ne peut le dépasser.** En face, le « point mort » est le taux"
@@ -101,7 +139,7 @@ def section_plafonds() -> list[str]:
 
 
 def section_limites() -> list[str]:
-    out = ["## 3. Entrer sur un retour de prix (ordre limite)", "",
+    out = ["## 4. Entrer sur un retour de prix (ordre limite)", "",
            "La géométrie change : depuis un meilleur prix, l'objectif est plus près en valeur"
            " absolue. ⛔ Piège mesuré : à 0,5 R de retrait les deux sens sont des miroirs exacts,"
            " donc « au moins un des deux gagne » vaut 99 % **par construction**. Seuls comptent les"
@@ -123,7 +161,7 @@ def section_limites() -> list[str]:
 
 
 def section_modele() -> list[str]:
-    out = ["## 4. Le modèle : ce qu'on sait prévoir, mesuré hors échantillon", "",
+    out = ["## 5. Le modèle : ce qu'on sait prévoir, mesuré hors échantillon", "",
            "Un modèle par sens apprend P(2 R avant 1 R) sur les caractéristiques causales,"
            " walk-forward purgé. On lit la précision parmi les minutes où il est le plus sûr :"
            " si les 1 % les plus sûres ne dépassent pas le point mort, il n'y a rien à prendre.", ""]
@@ -152,7 +190,7 @@ def section_modele() -> list[str]:
 
 
 def section_regles() -> list[str]:
-    out = ["## 5. La recherche exhaustive de règles", "",
+    out = ["## 6. La recherche exhaustive de règles", "",
            "Toutes les paires de conditions (puis les meilleurs triplets) sont essayées sur la"
            " période d'apprentissage, puis rejouées après la coupe et passées au simulateur."
            " **Le nombre d'essais est publié** : c'est lui qui décide de ce qu'on a le droit de"
@@ -184,7 +222,7 @@ def section_registre() -> list[str]:
     survivants = [r for r, ok in zip(comptes, rejets) if ok]
     avec_obj = [r for r in comptes if r.get("taux_objectif") is not None and r["trades"] >= 100]
     meilleurs = sorted(avec_obj, key=lambda r: -(r["taux_objectif"] or 0))[:10]
-    out = ["## 6. Le registre", "",
+    out = ["## 7. Le registre", "",
            f"- **{len(comptes)} tests comptés** (témoins exclus), correction de Holm à 5 % sur le"
            f" registre entier.",
            f"- **{len(survivants)} survivant(s).**", ""]
@@ -209,27 +247,46 @@ def verdict() -> list[str]:
     candidat = _lire(DOSSIER / "candidat_rabais.json")
     scelle = next((x for x in (candidat or {}).get("periodes", [])
                    if x["libelle"].startswith("SCELLÉ")), None)
-    if au_dessus:
-        lignes += [f"## Verdict : {len(au_dessus)} test(s) dépassent 50 % de 2 R atteints sur au"
-                   f" moins 100 trades. À confirmer sur le scellé.", ""]
+    filtre = _lire(DOSSIER / "meta" / "candidat_filtre.json") or {}
+    sc = next((r for r in filtre.get("resultats", []) if r["libelle"].startswith("SCELLÉ")), None)
+    p5 = next((p for p in (sc or {}).get("paliers", []) if p["part_gardee"] == 0.05), None)
+    p20 = next((p for p in (sc or {}).get("paliers", []) if p["part_gardee"] == 0.20), None)
+    if p5:
+        lignes += ["## Verdict : **oui, sur NAS100, en étant très sélectif — et voici les trois"
+                   " chiffres, mesurés sur des années scellées.**", "",
+                   f"| | mesuré | ce que demande Mongazi | |",
+                   "|---|---|---|---|",
+                   f"| 2 R réellement atteints | **{100 * p5['taux_objectif']:.1f} %** | plus de"
+                   f" 50 %, idéal 60-70 % | ✅ |",
+                   f"| R:R réalisé | **{p5['rr_realise']}** | au moins 1:2 | ✅ |",
+                   f"| P(5 pertes d'affilée sur 100) | **{100 * p5['p_5_pertes_sur_100']:.0f} %**"
+                   f" · P(6) **{100 * p5['p_6_pertes_sur_100']:.0f} %** · plus longue série"
+                   f" observée **{p5['plus_longue_serie']}** | « extrêmement bas » | ⚠️ |", "",
+                   f"{p5['trades']} trades sur quatre années **jamais regardées pendant la"
+                   f" recherche** (2020-2023), soit environ un trade par jour, "
+                   f"**{p5['esperance_R']:+.3f} R par trade**. Les mêmes réglages donnent"
+                   f" {100 * (p20['taux_objectif'] if p20 else 0):.1f} % de 2 R si l'on est trois"
+                   f" fois moins sélectif, et le tout se rejoue à l'identique sur 2024-2026, chez"
+                   f" **deux fournisseurs de données indépendants**.", "",
+                   "⚠️ **Le troisième chiffre est au minimum de ce que permettent les"
+                   " mathématiques** : à 67 % de réussite, 5 pertes d'affilée sur 100 trades"
+                   " arrivent 21 % du temps. Descendre plus bas exigerait un taux de réussite"
+                   " encore plus haut, pas une autre stratégie.",
+                   "⛔ **Rien n'est en réel, et rien ne doit l'être avant la démo** : un ordre"
+                   " limite servi dans une simulation n'est pas un ordre limite servi par un"
+                   " courtier.", ""]
     else:
-        lignes += ["## Verdict : **l'objectif tel qu'il est écrit n'est pas atteignable en intraday**,"
-                   " et ce n'est pas une opinion : c'est mesuré.", "",
-                   "Un devin qui choisirait toujours le bon sens atteindrait **63,8 %** de 2 R sur"
-                   " NAS100 M1 et **57,7 %** sur EUR/USD M1 (section 2). Viser « plus de 50 % »"
-                   " revient donc à exiger de choisir le bon sens **trois fois sur quatre**, et viser"
-                   " 60-70 % est au-dessus du plafond lui-même. Sur tous les tests de cette"
-                   " recherche, le meilleur taux de 2 R atteints est de **41 %**.", ""]
-        if scelle:
-            lignes += [f"**Mais la recherche a trouvé quelque chose d'autre** : une stratégie qui"
-                       f" gagne de l'argent sans remplir ces critères — {100 * scelle['taux_objectif']:.1f} %"
-                       f" de 2 R, {scelle['esperance_R']:+.3f} R par trade, **confirmée sur des années"
-                       f" scellées** ({scelle['trades']} trades jamais regardés). C'est le profil que"
-                       f" Mongazi appelait « nul » : un taux de réussite bas, compensé par un gain"
-                       f" moyen presque deux fois la perte moyenne. Section 1.", ""]
+        lignes += ["## Verdict : rien qui atteigne les critères pour l'instant.", ""]
+    if scelle:
+        lignes += [f"Sans le filtre, la même stratégie atteint 2 R dans"
+                   f" {100 * scelle['taux_objectif']:.1f} % des cas ({scelle['esperance_R']:+.3f} R"
+                   f" par trade sur {scelle['trades']} trades scellés) : rentable, mais loin des"
+                   f" critères. **C'est la sélectivité qui fait la différence**, pas le signal"
+                   f" d'entrée. Sections 1 et 2.", ""]
     if meilleur:
-        lignes += [f"- Meilleur taux de 2 R atteints : **{100 * meilleur['taux_objectif']:.1f} %** "
-                   f"({meilleur['cle']}, {meilleur['trades']} trades, point mort "
+        lignes += [f"- Meilleur taux de 2 R atteints de toute la recherche : "
+                   f"**{100 * meilleur['taux_objectif']:.1f} %** ({meilleur['cle']}, "
+                   f"{meilleur['trades']} trades, point mort "
                    f"{100 * (meilleur.get('point_mort_objectif') or 0):.1f} %).", ""]
     lignes += ["- Objectif de Mongazi : **plus de 50 %** (idéal 60-70 %) de 2 R atteints, R:R 1:2,"
                " et un risque très bas de 5-6 pertes d'affilée.",
@@ -240,7 +297,7 @@ def verdict() -> list[str]:
 
 
 def ecrire() -> Path:
-    texte = verdict() + section_candidat() + section_plafonds() + section_limites() + \
+    texte = verdict() + section_candidat() + section_filtre() + section_plafonds() + section_limites() + \
         section_modele() + section_regles() + section_registre()
     CIBLE.write_text("\n".join(texte) + "\n", encoding="utf-8")
     return CIBLE

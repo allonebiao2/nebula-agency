@@ -121,17 +121,27 @@ La vague 5 se déclenche dès qu'un candidat existe, sans attendre la fin des au
    5 points — **jamais le point mort**. Tous les seuils testés sont négatifs.
 4. **Les règles minées** (vague 4) : 55 000 paires et 6 500 triplets par marché. Meilleure règle
    validée : 37,6 % de 2 R sur 744 trades, contre 34 % de point mort. **Rien après correction.**
-5. ✅ **UN CANDIDAT, et un seul** : l'entrée limite « au rabais » sur NAS100 M1
-   (`trading/recherche/candidat.py`). **Scellé ouvert le 2026-09-17** pour lui, une seule fois :
-   **29 362 trades, 40,3 % de 2 R, +0,165 R par trade, PF 1,26**, positif chaque année et dans les
-   deux sens. ⛔ Il **ne remplit pas** les critères de Mongazi (40 % au lieu de 50 %, P(5 pertes/100)
-   = 97 %). ⚠️ Il vit et meurt par le spread : il survit à ×3 le coût Deriv, pas ×4.
+5. ✅ **UN CANDIDAT** : l'entrée limite « au rabais » sur NAS100 M1 (`trading/recherche/candidat.py`).
+   **Scellé ouvert le 2026-09-17** pour lui : **29 362 trades, 40,3 % de 2 R, +0,165 R par trade,
+   PF 1,26**, positif chaque année et dans les deux sens. Seul, il **ne remplit pas** les critères.
+6. ✅ **LE FILTRE, et c'est lui qui atteint les critères** (`trading/recherche/meta_candidat.py`) :
+   un second modèle, appris **une seule fois sur 2013-2019**, décide s'il faut prendre le trade.
+   Sur le scellé 2020-2023, en gardant les **5 %** les plus sûrs : **1 467 trades (≈ 1 par jour),
+   66,7 % de 2 R, R:R réalisé 1,85, +0,960 R par trade, P(5 pertes/100) 22 %, P(6) 8 %, plus longue
+   série 5**. Les mêmes réglages donnent 58,6 % en gardant 20 %, et se rejouent à l'identique sur
+   2024-2026 **chez les deux fournisseurs** (66,3 % et 66,1 %).
+   ⚠️ **Témoin obligatoire** : étiquettes mélangées → 45,2 % au lieu de 66,7 %. L'écart qui reste
+   (40,3 → 45,2) est un effet de **sélection**, pas de prédiction ; le gain du modèle est ce qui
+   dépasse ce témoin.
+   ⛔ **Fuite d'une minute attrapée en chemin** : lire les caractéristiques de la barre où l'ordre est
+   servi utilise sa clôture, donc une partie du rebond à prédire. On lit la **dernière barre close
+   avant le remplissage**.
 
 **Prochaine étape, dans cet ordre** :
-- **décision de Mongazi** : ce profil (40 % de réussite, R:R réalisé 1,79) l'intéresse-t-il, ou
-  tient-il la barre des 50 % — auquel cas l'intraday est clos et il faut changer d'horizon ou de
-  marché (ce qui demande sa décision, les marchés étant limités à deux) ;
-- si oui : **démo en observation** sur `6305888` (c'est le seul juge qui reste), puis l'ingénierie
-  d'un agent à ordres limites M1 — l'agent actuel travaille en H4 au marché ;
-- dans tous les cas : ouvrir le scellé EUR/USD n'a **pas** encore été fait (aucune candidate ne le
-  méritait) ; il reste intact.
+- **démo en observation** sur `6305888` : c'est le seul juge qui reste. Un ordre limite servi dans
+  une simulation n'est pas un ordre limite servi par un courtier ;
+- l'ingénierie : l'agent actuel travaille en **H4 au marché**, celui-ci demande une boucle **M1 avec
+  gestion d'ordres limites** et une décision à chaque minute (garder ou annuler l'ordre) ;
+- **le scellé EUR/USD n'a pas été ouvert** : il reste intact pour la prochaine idée.
+- ⚠️ Le scellé NAS100 a été ouvert **deux fois** (une par candidate, comme le protocole l'autorise) :
+  sa valeur de juge s'use. La prochaine confirmation devra se faire **en avant**, sur la démo.

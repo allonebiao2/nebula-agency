@@ -16,11 +16,10 @@ Une ligne par brique, avec son pourcentage réel.
 Mongazi : « recherche une stratégie qui puisse atteindre ces objectifs, tant qu'on ne trouve pas tu ne
 peux pas t'arrêter », puis « je veux plus de scalping, ouvrable et fermable dans la même journée ».
 
-- ⛔ **L'objectif tel qu'il est écrit n'est pas atteignable en intraday, et c'est mesuré** : un devin
-  parfait (qui connaîtrait le sens à l'avance) atteindrait **63,8 %** de 2 R sur NAS100 M1 et **57,7 %**
-  sur EUR/USD M1, tout fermé le jour même. Viser « plus de 50 % » exige donc de deviner juste **3 fois
-  sur 4** ; viser 60-70 % passe au-dessus du plafond. Le point mort n'est pas 33 % mais **34 à 41 %**
-  selon le stop (coûts, gaps, clôture du soir).
+- ⚠️ **Le plafond, mesuré** : un devin parfait qui trade **toutes** les occasions atteindrait **63,8 %**
+  de 2 R sur NAS100 M1 et **57,7 %** sur EUR/USD M1, tout fermé le jour même. Le point mort n'est pas
+  33 % mais **34 à 41 %** selon le stop. ⚠️ **Ce plafond borne une stratégie qui prend tout, pas une
+  stratégie SÉLECTIVE** : c'est exactement par là que le filtre passe (il garde 5 % des occasions).
 - ✅ **UN CANDIDAT survit à tout** (`trading/recherche/candidat.py`) : **entrée limite « au rabais »**
   sur **NAS100 M1** — dans le sens de l'EMA 60 min, ordre limite à 0,5 R sous le prix, stop 2 × ATR(14),
   objectif 2 R, ordre annulé après 60 min, tout fermé le soir.
@@ -47,12 +46,24 @@ peux pas t'arrêter », puis « je veux plus de scalping, ouvrable et fermable d
   ferme le jour même, heure de New York) · `etiquettes.py` (triple barrière par barre, marché et limite)
   · `carte.py` (plafonds) · `caracteristiques.py` · `meta.py` · `regles.py` · `comparer_flux.py` ·
   `candidat.py` · `_qc_sans_fin.py` **35 contrôles** · coût **minute par minute** dans le banc.
-- ⏳ **Ce qui attend Mongazi** : ce profil (40 % de réussite, R:R réalisé 1,79) l'intéresse-t-il ? Si
-  oui → **démo en observation** puis un agent à ordres limites M1 (l'agent actuel est en H4 au marché).
-  Si non → l'intraday est clos par la mesure, et il faut changer d'horizon ou de marché, ce qui est sa
-  décision. **Le scellé EUR/USD n'a pas été ouvert**, il reste intact.
-- Relancer : `python -m trading.recherche.candidat` · `python -m trading.recherche.rapport_sans_fin` ·
-  `python -m trading.recherche._qc_sans_fin`.
+- ✅ **ET LE FILTRE ATTEINT LES CRITÈRES** (`trading/recherche/meta_candidat.py`) : un second modèle,
+  appris **une seule fois sur 2013-2019**, décide s'il faut prendre le trade que le candidat propose.
+  Sur le **scellé 2020-2023**, en gardant les **5 %** les plus sûrs : **1 467 trades (≈ 1 par jour),
+  66,7 % de 2 R, R:R réalisé 1,85, +0,960 R par trade, P(5 pertes/100) 22 %, P(6) 8 %, plus longue
+  série 5**. En gardant 20 % : 58,6 %. Rejoué à l'identique sur 2024-2026 : **66,3 % (Deriv) et
+  66,1 % (Dukascopy)**. Équilibré achat/vente (61/39), positif **chaque année, 2022 compris**, et il
+  survit à un spread **×5**.
+  ⚠️ **Témoin** : étiquettes mélangées → 45,2 % au lieu de 66,7 %. L'écart 40,3 → 45,2 est un effet
+  de **sélection** (choisir un sous-ensemble du marché change le taux de base), pas de prédiction.
+  ⛔ **Fuite d'une minute attrapée** : lire la barre où l'ordre est SERVI utilise sa clôture, donc une
+  partie du rebond à prédire (65 % au lieu de 62,5 %). On lit la dernière barre close avant.
+  ⚠️ **Ce que ça exige** : décider à chaque minute de garder ou d'annuler l'ordre. L'agent actuel est
+  en H4 au marché : c'est un autre objet à construire.
+- ⏳ **Ce qui attend Mongazi** : **la démo en observation** (seul juge restant), puis l'ingénierie de
+  l'agent M1 à ordres limites. **Le scellé EUR/USD n'a pas été ouvert**, il reste intact ; celui du
+  NAS100 a servi **deux fois** (une par candidate), donc la prochaine confirmation se fera en avant.
+- Relancer : `python -m trading.recherche.candidat` · `python -m trading.recherche.meta_candidat` ·
+  `python -m trading.recherche.rapport_sans_fin` · `python -m trading.recherche._qc_sans_fin`.
 
 ### 📐 FIGURES CHARTISTES + RSI + EMA 50 du 2026-09-17 nuit : verdict NON (rapport : `trading/RECHERCHE-FIGURES.md`)
 
