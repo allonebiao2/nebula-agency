@@ -95,14 +95,28 @@ def lire_plage(symbole: str, timeframe: str, debut: datetime | None = None,
         if n == 0:
             break
         morceaux.append(rates)
+    # ⚠️ MESURÉ le 2026-09-17 : le terminal ne rend que les barres du réglage « Max. barres
+    # dans le graphique » (100 000 par défaut). Une année qui DÉPASSE cette limite rend 0 barre,
+    # même si sa fin est dedans : en M5, la lecture par année s'arrêtait à 2026 et perdait
+    # 47 000 barres chargées. Les N dernières barres se lisent d'un bloc et complètent.
+    # Mesuré aussi : demander EXACTEMENT la limite rend None ; 99 000 passe.
+    info = mt5.terminal_info()
+    plafond = int(getattr(info, "maxbars", 100_000) or 100_000)
+    for combien in (plafond - 1_000, plafond // 2):
+        derniere = mt5.copy_rates_from_pos(symbole, tf, 0, combien)
+        if derniere is not None and len(derniere):
+            morceaux.insert(0, derniere)
+            break
     if not morceaux:
         code, message = mt5.last_error()
         raise RuntimeError(f"{symbole} {timeframe} : aucune barre ({code}, {message}). "
                            f"Le terminal télécharge peut-être encore l'historique.")
     tout = np.concatenate(morceaux[::-1])
     # Les bornes d'année se touchent : une barre peut apparaître deux fois.
+    # np.unique rend les indices dans l'ORDRE DES TEMPS : c'est l'ordre chronologique, même
+    # quand les morceaux ne se suivent pas (le bloc des dernières barres chevauche les années).
     _, uniques = np.unique(tout["time"], return_index=True)
-    return Barres.depuis_mt5(tout[np.sort(uniques)], symbole=symbole, timeframe=timeframe)
+    return Barres.depuis_mt5(tout[uniques], symbole=symbole, timeframe=timeframe)
 
 
 def dernieres_barres(symbole: str, timeframe: str, combien: int = 600,

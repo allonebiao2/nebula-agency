@@ -512,7 +512,12 @@ def _valider(c: Config) -> None:
                 f"        Ce comportement n'est pas implémenté dans le moteur."
             )
 
-    if r.ratio_rr_minimum < 1.0:
+    if r.ratio_rr_minimum < 2.0:
+        fautes.append(
+            f"[profil] ratio_rr_minimum = {r.ratio_rr_minimum} : le cahier exige un objectif d'au "
+            f"moins 2 fois le risque, en PRO comme en BOOST (Mongazi, 2026-09-17)."
+        )
+    elif r.ratio_rr_minimum < 1.0:
         seuil = 100 / (1 + r.ratio_rr_minimum)
         fautes.append(
             f"[risque_position] ratio_rr_minimum = {r.ratio_rr_minimum} : viser moins que\n"

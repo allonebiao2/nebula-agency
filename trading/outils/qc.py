@@ -67,6 +67,8 @@ def qc_config():
         "drawdown total 40 %": {"coupe_circuits.drawdown_max_total_pct": 40.0},
         "petit compte à 3 %": {"risque_position.risque_max_petit_compte_pct": 3.0},
         "réel sans plafond de capital": {"compte.mode": "reel"},
+        "R:R 1:1,5 en PRO": {"profil_pro.ratio_rr_minimum": 1.5},
+        "R:R 1:1,5 en BOOST": {"profils.actif": "boost", "profil_boost.ratio_rr_minimum": 1.5},
     }
     for nom, s in dangers.items():
         try:
@@ -75,6 +77,8 @@ def qc_config():
         except ConfigDangereuse:
             verifier(True, f"refuse : {nom}")
     b = charger(surcharges={"profils.actif": "boost", "profil_boost.risque_par_trade_pct": 10.0})
+    verifier(b.risque.ratio_rr_minimum == 2.0 and cfg.risque.ratio_rr_minimum == 2.0,
+             "TÉMOIN : PRO et BOOST exigent tous deux un objectif d'au moins 2 R (Mongazi, 2026-09-17)")
     c = b.circuits
     verifier(b.risque.risque_par_trade_pct == 10.0
              and c.perte_max_jour_pct <= c.perte_max_semaine_pct <= c.perte_max_mois_pct <= c.drawdown_max_total_pct <= 35
@@ -808,7 +812,7 @@ def qc_multi_instruments():
     import dataclasses as dc
     e = empreinte_regles(cfg)
     verifier(e == empreinte_regles(charger()), "TÉMOIN : mêmes règles, même empreinte")
-    verifier(empreinte_regles(charger(surcharges={"profil_pro.ratio_rr_minimum": 1.5})) != e,
+    verifier(empreinte_regles(charger(surcharges={"profil_pro.ratio_rr_minimum": 3.0})) != e,
              "R:R minimum changé : l'empreinte change (le défaut des rapports EUR/USD du 16/09)")
     verifier(empreinte_regles(dc.replace(cfg, calendrier=dc.replace(cfg.calendrier, fermer_avant_weekend=True))) == e
              and empreinte_regles(dc.replace(cfg, marche=dc.replace(cfg.marche, symboles=("EURUSD",)))) == e,
@@ -836,13 +840,50 @@ def qc_multi_instruments():
              str(len(alertes)))
 
 
+def qc_recherche():
+    section("BANC DE RECHERCHE ET PORTAGE DU MOTEUR")
+    from trading.recherche import _qc_banc
+    _qc_banc.controles(verifier)
+
+    import numpy as np
+    from trading.backtest.couts import ModeleCouts
+    from trading.backtest.moteur import Moteur, Position
+    from trading.noyau.config import charger
+    from trading.noyau.plan import ACHAT, PlanDeTrade
+    from trading.noyau.risque import SpecsSymbole
+    from trading.strategies.base import Barres
+    from trading.strategies.cassure_donchian import CassureDonchian
+    cfg = charger()
+    specs = SpecsSymbole(nom="EURUSD", point=1e-5, digits=5, volume_min=0.01, volume_max=20,
+                         volume_step=0.01, valeur_tick=1.0, taille_tick=1e-5, taille_contrat=100000)
+    moteur = Moteur(cfg, specs, ModeleCouts(spread_points=3, slippage_points=1), CassureDonchian())
+
+    def nuits(tf: str, minutes: int, n: int) -> int:
+        temps = (np.datetime64("2026-03-10T22:00") + np.arange(n) * np.timedelta64(minutes, "m")).astype("datetime64[s]")
+        prix = np.full(n, 1.1)
+        b = Barres(temps, prix, prix + 1e-5, prix - 1e-5, prix, timeframe=tf)
+        plan = PlanDeTrade(symbole="EURUSD", sens=ACHAT, entree=1.1, stop=1.0, objectif=1.3, these="Position de contrôle tenue à travers minuit pour compter les nuits de swap facturées.",
+                           atr=0.001, horodatage=b.quand(0), strategie="qc")
+        pos = Position(plan=plan, lots=0.1, prix_entree=1.1, stop=1.0, objectif=1.3, ouverte_le=b.quand(0),
+                       barre_entree=0, risque_prix=0.1, cout_entree=0.0)
+        heures = {"M5": 5 / 60, "M15": .25, "H1": 1}[tf]
+        for i in range(1, n):
+            if moteur._gerer(pos, b, i, heures) is not None:
+                break
+        return pos.nuits
+    verifier(nuits("H1", 60, 5) == 1, "TÉMOIN : en H1, une nuit franchie = une nuit de swap")
+    verifier(nuits("M15", 15, 20) == 1 and nuits("M5", 5, 34) == 1,
+             "en M15 et en M5, une nuit franchie = UNE nuit de swap (4 et 12 avant la correction)",
+             f"M15 {nuits('M15', 15, 20)} · M5 {nuits('M5', 5, 34)}")
+
+
 def main() -> int:
     print("=" * 64)
     print("  QC NEBULA TRADER")
     print("=" * 64)
     for f in (qc_config, qc_dimensionnement, qc_capital, qc_licence, qc_reglages, qc_profils,
               qc_montecarlo, qc_surveillance, qc_execution,
-              qc_journal, qc_conversation, qc_serveur, qc_calendrier, qc_moteur, qc_multi_instruments,
+              qc_journal, qc_conversation, qc_serveur, qc_calendrier, qc_moteur, qc_multi_instruments, qc_recherche,
               qc_interface):
         try:
             f()

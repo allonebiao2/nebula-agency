@@ -514,17 +514,18 @@
 
 ### NEBULA TRADER · agent de trading EUR/USD + NAS100  *(produit interne, 2026-09-16)*
 - 🔴 **REPRENDRE ICI : `trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT ».** Au
-  2026-09-17 : vagues 1 à 4 du cahier v2 **livrées**, la 4 (EUR/USD + NAS100) **lancée en
-  direct en observation**, QC 176 verts. ⏳ Mongazi tranche : week-end gardé ou fermeture du
-  vendredi, et garder ou non le NAS100. Ensuite : **trouver un avantage** (filtre D1, nouvelles
-  stratégies, garde contre les tests multiples, méta-labeling).
+  2026-09-17 : vagues 1 à 4 **livrées**, EUR/USD + NAS100 en observation, QC 190 verts.
+  🔬 **Recherche de stratégies faite** (`trading/RECHERCHE-STRATEGIES.md`, banc `trading/recherche/`) :
+  5 stratégies publiées + les 2 vidéos de Mongazi, **50 tests, 0 survit à la correction**, aucun
+  80 % réel, rien intégré. **R:R 1:2 imposé en PRO et BOOST.** ⏳ Mongazi : passer MT5 en
+  « Max. barres = Unlimited » (3 mois de M1 seulement) pour tester les vidéos sur plusieurs années.
 - **Trois objectifs, dans cet ordre** : **être rentable** · **s'améliorer tout seul** ·
   **être vendable** (installable chez n'importe qui, vendu en ligne). ⚠️ **Le 3 découle du
   1** : un robot se vend sur un historique réel vérifié, jamais sur un backtest.
 - **Où** : `trading/` · **`trading/CAHIER-DES-CHARGES.md`** (v2, la référence) ·
   `trading/JOURNAL.md` (avancement) · `trading/DOCTRINE.md` · `trading/README.md`.
   **Lancer** : `python -m trading.app` (agent + interface sur http://127.0.0.1:8765/) ·
-  **QC** : `python -m trading.outils.qc` (**176 verts**) · **produit** :
+  **QC** : `python -m trading.outils.qc` (**190 verts**) · **produit** :
   `python -m trading.empaquetage.construire` (zip 44 Mo, `NEBULA Trader.exe`, sans Python).
 - ✅ **FAIT le 2026-09-16** : pont MT5 ouvert (compte démo Deriv `6305888`, identifiants
   explicites) · historique MT5 **par année** (34 876 H4 depuis 2005) · profil de coûts

@@ -1,7 +1,7 @@
 # NEBULA TRADER — journal d'avancement
 
-Mis à jour le **2026-09-17** (vague 4 finie, QC 176 verts). Une ligne par brique,
-avec son pourcentage réel.
+Mis à jour le **2026-09-17, fin de journée** (vague 4 finie, recherche de stratégies faite, QC 190 verts).
+Une ligne par brique, avec son pourcentage réel.
 
 > ⚠️ **Un pourcentage ici mesure ce qui est ÉCRIT ET TESTÉ, pas ce qui est
 > prévu.** Une brique conçue mais non codée vaut 0 %. Une brique codée mais
@@ -10,6 +10,26 @@ avec son pourcentage réel.
 ---
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
+
+### 🔬 RECHERCHE DE STRATÉGIES du 2026-09-17 : verdict NON (rapport : `trading/RECHERCHE-STRATEGIES.md`)
+
+Demande de Mongazi : les 5 meilleures stratégies scalping et intraday « à plus de 80 % », plus les
+deux vidéos qu'il a envoyées (MambaFx, scalping M1 sur US30 ; Hugo FX, CRT H1 + swing M15 + entrée
+M1), testées sur EUR/USD et NAS100, R:R d'au moins 1:2, 2 stratégies pour PRO et 2 pour BOOST.
+- **50 tests, 0 survit à la correction de Holm.** Aucune stratégie retenue pour PRO ni pour BOOST,
+  **rien d'intégré dans l'agent** (plan : on n'intègre rien de perdant).
+- **Aucun 80 % sur un échantillon qui compte** (le 83 % MambaFx NAS100 M1 = 6 trades).
+- Pistes à creuser, pas à trader : **MambaFx version auteur**, positive sur tous ses échantillons
+  EUR/USD mais sur 14 à 28 trades ; **range de séance EUR/USD M15** (+0,087 R, 358 trades, p = 0,15).
+- **Bloquant** : MT5 plafonne à 100 000 bougies (`MaxBars` de `common.ini`) = **3 mois de M1**.
+  Fermer MT5 pour le relever a été **refusé par le garde de sécurité** de Claude Code : geste de
+  Mongazi (Outils → Options → Graphiques → Max. barres = Unlimited, redémarrer), puis
+  `python -m trading.noyau.donnees_mt5 M1 M5 --base EURUSD` (et NAS100) et
+  `python -m trading.recherche.videos_lancer`, puis `python -m trading.recherche.rapport`.
+- **Fait en chemin** : banc `trading/recherche/` (numba, ordres limites, agrégation multi-unités,
+  plancher de stop du courtier, registre + Holm, projection vers le million) · **R:R 1:2 imposé en
+  PRO ET en BOOST** par le videur · `lire_plage` récupère les 100 000 dernières barres (le M5 perdait
+  47 000 barres) · moteur : **une nuit de swap par nuit** en M5/M15 (12 et 4 avant) · QC 176 → 190.
 
 **La VAGUE 4 (EUR/USD + NAS100) est finie** le 2026-09-17 : écrite, contrôlée, **lancée en
 direct en observation** sur le démo Deriv `6305888`, captures regardées. QC **176 verts / 0

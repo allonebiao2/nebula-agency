@@ -369,7 +369,12 @@ class Moteur:
                     float(barres.cloture[i]))
 
         # --- Portage --------------------------------------------------------
-        if heures_barre >= 24 or quand.hour == 0:
+        # Une nuit par jour : seule la PREMIÈRE barre de l'heure 0 compte.
+        # ⛔ 2026-09-17 : « quand.hour == 0 » comptait chaque barre commençant entre 0 h et
+        # 1 h : juste en H4 et H1 (une seule barre), mais 4 nuits par nuit en M15 et 12 en M5.
+        # Le swap du NAS100 (~486 points par lot et par nuit) en était multiplié d'autant.
+        # Inchangé en H1, H4, D1 : les rapports déjà mesurés restent valables.
+        if heures_barre >= 24 or (quand.hour == 0 and quand.minute < 60 * heures_barre):
             pos.nuits += 1
         return None
 

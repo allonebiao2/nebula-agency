@@ -122,3 +122,74 @@ def percentile_glissant(valeurs: np.ndarray, periode: int = 100) -> np.ndarray:
         if len(fenetre) and not np.isnan(valeurs[i]):
             out[i] = (fenetre < valeurs[i]).mean()
     return out
+
+
+def sma(valeurs: np.ndarray, periode: int) -> np.ndarray:
+    """Moyenne mobile simple ; l'indice i ne dépend que des barres <= i."""
+    out = np.full(len(valeurs), np.nan)
+    if len(valeurs) < periode:
+        return out
+    cumul = np.cumsum(np.insert(valeurs.astype(float), 0, 0.0))
+    out[periode - 1:] = (cumul[periode:] - cumul[:-periode]) / periode
+    return out
+
+
+def rsi(cloture: np.ndarray, periode: int = 14) -> np.ndarray:
+    """RSI au lissage de Wilder, celui de MT5 (le RSI(2) de Connors est periode=2)."""
+    n = len(cloture)
+    out = np.full(n, np.nan)
+    if n <= periode:
+        return out
+    delta = np.diff(cloture.astype(float))
+    hausses, baisses = np.maximum(delta, 0.0), np.maximum(-delta, 0.0)
+    moy_h, moy_b = hausses[:periode].mean(), baisses[:periode].mean()
+    out[periode] = 100.0 if moy_b == 0 else 100.0 - 100.0 / (1.0 + moy_h / moy_b)
+    for i in range(periode + 1, n):
+        moy_h = (moy_h * (periode - 1) + hausses[i - 1]) / periode
+        moy_b = (moy_b * (periode - 1) + baisses[i - 1]) / periode
+        out[i] = 100.0 if moy_b == 0 else 100.0 - 100.0 / (1.0 + moy_h / moy_b)
+    return out
+
+
+def bandes_bollinger(cloture: np.ndarray, periode: int = 20,
+                     ecarts: float = 2.0) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(basse, milieu, haute), écart-type de population comme MT5."""
+    milieu = sma(cloture, periode)
+    carre = sma(cloture.astype(float) ** 2, periode)
+    ecart = np.sqrt(np.maximum(carre - milieu ** 2, 0.0))
+    return milieu - ecarts * ecart, milieu, milieu + ecarts * ecart
+
+
+def stochastique(haut: np.ndarray, bas: np.ndarray, cloture: np.ndarray,
+                 periode_k: int = 14, lissage_k: int = 3,
+                 periode_d: int = 3) -> tuple[np.ndarray, np.ndarray]:
+    """Stochastique lent (%K lissé, %D), sur les barres <= i."""
+    n = len(cloture)
+    k_brut = np.full(n, np.nan)
+    if n >= periode_k:
+        from numpy.lib.stride_tricks import sliding_window_view
+        hh = sliding_window_view(haut, periode_k).max(axis=1)
+        ll = sliding_window_view(bas, periode_k).min(axis=1)
+        amplitude = hh - ll
+        with np.errstate(divide="ignore", invalid="ignore"):
+            k_brut[periode_k - 1:] = np.where(amplitude > 0,
+                                              100.0 * (cloture[periode_k - 1:] - ll) / amplitude, 50.0)
+    k = _sma_nan(k_brut, lissage_k)
+    return k, _sma_nan(k, periode_d)
+
+
+def _sma_nan(valeurs: np.ndarray, periode: int) -> np.ndarray:
+    out = np.full(len(valeurs), np.nan)
+    valides = np.flatnonzero(~np.isnan(valeurs))
+    if len(valides) == 0:
+        return out
+    d = valides[0]
+    out[d:] = sma(valeurs[d:], periode)
+    return out
+
+
+def ibs(haut: np.ndarray, bas: np.ndarray, cloture: np.ndarray) -> np.ndarray:
+    """Internal Bar Strength : où la barre ferme dans son amplitude (0 = au plus bas)."""
+    amplitude = haut - bas
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.where(amplitude > 0, (cloture - bas) / amplitude, 0.5)

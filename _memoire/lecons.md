@@ -2801,3 +2801,28 @@ L'outil de walk-forward forçait `--sans-weekend` et, sans le drapeau, prenait l
 vendredi : oui » en tête du rapport. Les deux rapports étaient identiques au trade près.
 **Règle** : une variante nommée est IMPOSÉE par l'outil, jamais héritée ; et deux mesures qui
 devraient différer et sortent identiques sont un signal, pas une coïncidence.
+
+## 2026-09-17 · Un « 80 % de réussite » se lit avec son nombre de trades
+
+La vidéo MambaFx, rejouée à la règle près, sort **83 % de réussite** sur NAS100 M1. Sur **6 trades** :
+l'intervalle de confiance va de 44 % à 97 %. Les « 80 % » trouvés en ligne étaient payants,
+invérifiables, ou obtenus avec un objectif plus petit que le stop. Sur 50 tests honnêtes (coûts,
+entrée à l'ouverture suivante, stop avant objectif, objectif ≥ 2 R), **aucun ne survit à la
+correction pour tests multiples**, et plusieurs font moins bien qu'une entrée au hasard.
+**Règle** : un taux de réussite ne s'annonce jamais sans le nombre de trades, l'intervalle de
+confiance et l'espérance en R après coûts ; et toute recherche garde un registre de TOUS les essais.
+
+## 2026-09-17 · Un risque presque nul fabrique un résultat infini
+
+Le banc a affiché **+8 879 358 R** pour une variante d'Hugo FX : un stop posé plus près de l'entrée
+que le spread donnait un risque proche de zéro, et le résultat divisé par ce risque explosait.
+Aucun courtier n'accepte ce stop. **Règle** : toute simulation porte le plancher du courtier
+(« stops level ») et refuse un risque inférieur à quelques allers-retours de coûts ; un chiffre
+aberrant est un défaut de l'instrument avant d'être une découverte.
+
+## 2026-09-17 · MT5 ne rend que ce que ses graphiques peuvent contenir
+
+`MaxBars=100000` dans `common.ini` limite TOUT ce que l'API Python rend : 3 mois de M1, 16 mois de
+M5. Une lecture par année qui dépasse la limite rend **0 barre**, sans erreur ; demander exactement
+la limite rend `None`. **Règle** : mesurer la profondeur réelle de chaque unité de temps avant de
+promettre « plusieurs années », et lire aussi les N dernières barres d'un bloc.

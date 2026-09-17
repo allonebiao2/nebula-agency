@@ -64,7 +64,7 @@ levier_effectif_max = 3.0           # cahier : x2. Mesuré : x2 bloque 58 % des 
 
 [profil_boost]
 risque_par_trade_pct = 3.0          # choisi dans l'interface, 10 % au plus (plafond du code)
-ratio_rr_minimum = 1.5
+ratio_rr_minimum = 2.0              # Mongazi, 2026-09-17 : « forcément du 1:2 pour le boost aussi » (était 1,5)
 perte_max_jour_pct = 5.0            # relevé à 1,5 × le risque si besoin (une perte ne ferme pas la journée)
 trades_max_par_jour = 10
 levier_effectif_max = 30.0          # cahier : x5. Mesuré : à 10 %, AUCUN signal EUR/USD ne tient sous x5.
