@@ -101,7 +101,9 @@ def lire_plage(symbole: str, timeframe: str, debut: datetime | None = None,
     # 47 000 barres chargées. Les N dernières barres se lisent d'un bloc et complètent.
     # Mesuré aussi : demander EXACTEMENT la limite rend None ; 99 000 passe.
     info = mt5.terminal_info()
-    plafond = int(getattr(info, "maxbars", 100_000) or 100_000)
+    # Réglé sur « Unlimited », le terminal annonce 100 000 000 : on ne demande jamais plus
+    # d'un million de barres d'un bloc (60 octets chacune), la lecture par année fait le reste.
+    plafond = min(int(getattr(info, "maxbars", 100_000) or 100_000), 1_000_000)
     for combien in (plafond - 1_000, plafond // 2):
         derniere = mt5.copy_rates_from_pos(symbole, tf, 0, combien)
         if derniere is not None and len(derniere):
@@ -116,7 +118,12 @@ def lire_plage(symbole: str, timeframe: str, debut: datetime | None = None,
     # np.unique rend les indices dans l'ORDRE DES TEMPS : c'est l'ordre chronologique, même
     # quand les morceaux ne se suivent pas (le bloc des dernières barres chevauche les années).
     _, uniques = np.unique(tout["time"], return_index=True)
-    return Barres.depuis_mt5(tout[uniques], symbole=symbole, timeframe=timeframe)
+    tout = tout[uniques]
+    # ⛔ MESURÉ le 2026-09-17 : en « Unlimited », le bloc des dernières barres EUR/USD M15 et H1
+    # remontait à 1971, UNE bougie par jour à 22 h, à 0,54 (historique reconstitué d'avant l'euro) :
+    # 156 000 bougies factices dans un fichier intraday. On ne garde que la plage demandée.
+    garde = (tout["time"] >= int(debut.timestamp())) & (tout["time"] < int(fin.timestamp()) + 86_400)
+    return Barres.depuis_mt5(tout[garde], symbole=symbole, timeframe=timeframe)
 
 
 def dernieres_barres(symbole: str, timeframe: str, combien: int = 600,
@@ -272,8 +279,11 @@ def specs_et_couts(base: str = "EURUSD", *, slippage_points: float = 1.0):
 
 
 def exporter(timeframes=("H4", "D1", "H1"), base: str = "EURUSD",
-             profil: str = "defaut", *, bavard: bool = True) -> dict[str, Path]:
-    """Ouvre une session, lit tout l'historique disponible, l'écrit en cache."""
+             profil: str = "defaut", *, bavard: bool = True, depuis: int | None = None) -> dict[str, Path]:
+    """Ouvre une session, lit tout l'historique disponible (ou depuis l'année `depuis`), l'écrit en cache.
+
+    ⚠️ En M1, 20 ans font ~7 millions de barres : trop pour 8 Go de mémoire vive. `--depuis`
+    borne la profondeur."""
     from .courtier import Courtier
     from .donnees_deriv import controler
 
@@ -291,7 +301,8 @@ def exporter(timeframes=("H4", "D1", "H1"), base: str = "EURUSD",
                   f"(p90 {mesure['spread_p90_points']}) sur {mesure['ticks_mesures']} ticks · "
                   f"swap_mode {mesure['swap_mode']}")
         for tf in timeframes:
-            b = lire_plage(symbole, tf, bavard=bavard)
+            b = lire_plage(symbole, tf, debut=datetime(depuis, 1, 1, tzinfo=timezone.utc) if depuis else None,
+                           bavard=bavard)
             meta = {
                 "source": "mt5", "courtier": profil_c.societe,
                 "serveur": profil_c.serveur, "symbole_courtier": symbole,
@@ -313,4 +324,5 @@ if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     demandes = tuple(a for a in sys.argv[1:] if a in TIMEFRAMES_MT5) or ("H4", "D1", "H1")
     base = sys.argv[sys.argv.index("--base") + 1] if "--base" in sys.argv else "EURUSD"
-    exporter(demandes, base=base)
+    depuis = int(sys.argv[sys.argv.index("--depuis") + 1]) if "--depuis" in sys.argv else None
+    exporter(demandes, base=base, depuis=depuis)

@@ -39,8 +39,9 @@ def fr(x, fmt):
 
 def ligne(e):
     nom = NOMS.get(e["candidate"], e["candidate"])
-    variante = " (auteur)" if e["cle"].endswith("_auteur") else (" (adaptée, hors échantillon)" if e["cle"].endswith("_adaptee") else "")
-    pf = "infini" if e["profit_factor"] == float("inf") else fr(e["profit_factor"], ".2f")
+    variante = (" (auteur)" if e["cle"].endswith("_auteur") else " (auteur + point mort)" if e["cle"].endswith("_auteur_be")
+                else " (adaptée, hors échantillon)" if e["cle"].endswith("_adaptee") else "")
+    pf ="infini" if e["profit_factor"] == float("inf") else fr(e["profit_factor"], ".2f")
     return (f"| {nom}{variante} | {e['base']} {e['tf']} | {e['trades']} | {pct(e['taux_reussite'])} | "
             f"{r(e['esperance_R'])} | {pf} | {fr(e['R_par_mois'], '+.2f')} | "
             f"{fr(e['drawdown_max_pct'], '.1f')} % | {fr(e['p_valeur'], '.3f')} | "
@@ -69,6 +70,47 @@ def main() -> int:
              "entrée à l'ouverture suivante, stop avant objectif dans une même bougie, objectif ≥ 2 R, "
              "stop jamais plus court que le minimum du courtier.*\n")
 
+    # --- L'objectif de Mongazi : R:R d'au moins 1:2 ET plus de 50 % de réussite ------------
+    def motifs_de(e):
+        if e["cle"].startswith("videos_"):
+            base_cle, variante = e["cle"].rsplit("_", 1)
+            if variante == "be":
+                base_cle, variante = e["cle"][:-len("_auteur_be")], "auteur_be"
+            chemin = DOSSIER / f"{base_cle}.json"
+            if not chemin.exists():
+                return {}
+            d = json.loads(chemin.read_text(encoding="utf-8"))
+            bloc = (d.get("adaptee") or {}).get("hors_echantillon") if variante == "adaptee" else d.get(variante)
+            return (bloc or {}).get("motifs", {})
+        chemin = DOSSIER / f"{e['cle']}.json"
+        if not chemin.exists():
+            return {}
+        return (json.loads(chemin.read_text(encoding="utf-8")).get("hors_echantillon") or {}).get("motifs", {})
+
+    for e in comptes:
+        m = motifs_de(e)
+        e["part_objectif"] = m.get("objectif", 0) / e["trades"] if e["trades"] else 0.0
+    L.append("## 0. Ton objectif : R:R d'au moins 1:2 ET plus de 50 % de réussite\n")
+    vises = [e for e in comptes if e["trades"] >= 100 and e["taux_reussite"] > 0.5 and e["esperance_R"] > 0]
+    stricts = [e for e in comptes if e["trades"] >= 100 and e["part_objectif"] > 0.5]
+    L.append(f"- Tests avec **plus de 50 % de trades gagnants, au moins 100 trades et une espérance positive** : "
+             f"**{len(vises)}** sur {len(comptes)}.")
+    L.append(f"- Tests où **plus de la moitié des trades atteignent vraiment leur objectif d'au moins 2 R** : "
+             f"**{len(stricts)}** sur {len(comptes)}.")
+    L.append("- ⚠️ « Gagnant » compte tout trade fini au-dessus de zéro, y compris une petite sortie par le temps ou en "
+             "fin de séance. C'est pour ça que les deux lignes diffèrent : seule la seconde dit « j'ai pris mes 2 R ».")
+    L.append("- **Le calcul qui borne l'ambition** : à 1:2, gagner 2 R une fois sur deux rapporte **+0,5 R par trade** "
+             "avant coûts. La meilleure espérance mesurée ici sur au moins 100 trades est de "
+             f"**{r(max((e['esperance_R'] for e in comptes if e['trades'] >= 100), default=0.0))} R**.\n")
+    meilleurs = sorted((e for e in comptes if e["trades"] >= 100), key=lambda e: -e["taux_reussite"])[:8]
+    L.append("Les plus hauts taux de réussite sur au moins 100 trades :\n")
+    L.append("| Stratégie | Marché | Trades | Gagnants | Objectif ≥ 2 R atteint | Espérance (R) |\n|---|---|---|---|---|---|")
+    for e in meilleurs:
+        variante = " (auteur)" if e["cle"].endswith("_auteur") else (" (auteur + point mort)" if e["cle"].endswith("_auteur_be") else "")
+        L.append(f"| {NOMS.get(e['candidate'], e['candidate'])}{variante} | {e['base']} {e['tf']} | {e['trades']} | "
+                 f"{pct(e['taux_reussite'])} | {pct(e['part_objectif'])} | {r(e['esperance_R'])} |")
+    L.append("")
+
     L.append("## Les données utilisées\n")
     L.append("| Instrument | M1 | M5 | M15 | H1 |\n|---|---|---|---|---|")
     for base in ("EURUSD", "NAS100"):
@@ -80,8 +122,9 @@ def main() -> int:
             except FileNotFoundError:
                 cellules.append("absent")
         L.append(f"| {base} | " + " | ".join(cellules) + " |")
-    L.append("\n⚠️ MT5 ne rend que les 100 000 dernières bougies de chaque unité de temps (réglage « Max. barres "
-             "dans le graphique ») : **3 mois en M1 et 16 mois en M5**. Le NAS100 ne remonte qu'à janvier 2024 chez Deriv.\n")
+    L.append("\nMT5 réglé sur « Max. barres = Unlimited » par Mongazi le 2026-09-17 : **7,7 ans de M1 et 14,7 ans de "
+             "M5 sur EUR/USD**. Le M1 est borné à 2019 (8 Go de mémoire vive). Le NAS100 ne remonte qu'à janvier 2024 "
+             "chez Deriv, quelle que soit l'unité de temps.\n")
 
     entete = ("| Stratégie | Marché | Trades | Réussite | Espérance (R) | PF | R/mois | Drawdown à 1 % | p | Correction |\n"
               "|---|---|---|---|---|---|---|---|---|---|")
@@ -97,12 +140,32 @@ def main() -> int:
     for e in sorted((e for e in registre if e["cle"].startswith("videos_")), key=lambda e: -e["esperance_R"]):
         L.append(ligne(e))
 
+    L.append("\n### Les vidéos, version auteur, année par année\n")
+    for fichier in sorted(DOSSIER.glob("videos_video_*.json")):
+        d = json.loads(fichier.read_text(encoding="utf-8"))
+        a = d.get("auteur") or {}
+        if a.get("trades", 0) < 30 or not a.get("par_annee"):
+            continue
+        L.append(f"**{NOMS.get(d['candidate'])} · {d['base']} {d['tf']}** ({d['periode']}, {a['trades']} trades, "
+                 f"{pct(a['taux_reussite'])}, {r(a['esperance_R'])} R par trade)\n")
+        L.append("| Année | Trades | Réussite | Somme des R |\n|---|---|---|---|")
+        for annee, v in a["par_annee"].items():
+            L.append(f"| {annee} | {v['trades']} | {pct(v['taux_reussite'])} | {fr(v['somme_R'], '+.1f')} |")
+        L.append("")
+
     L.append("\n## 3. Le taux de réussite\n")
     L.append(f"- Le plus haut sur au moins 100 trades : **{pct(meilleur_taux['taux_reussite'])}**, "
              f"{NOMS.get(meilleur_taux['candidate'])} sur {meilleur_taux['base']} {meilleur_taux['tf']} "
              f"({meilleur_taux['trades']} trades, espérance {r(meilleur_taux['esperance_R'])} R).")
-    L.append("- **Aucun 80 %** sur un échantillon qui compte. Les 83 % de la vidéo MambaFx sur NAS100 M1 portent sur "
-             "**6 trades** : l'intervalle de confiance va de 44 % à 97 %.")
+    petits = [e for e in comptes if e["trades"] < 100]
+    if any(e["taux_reussite"] >= 0.8 and e["trades"] >= 100 for e in comptes):
+        L.append("- **Au moins un test dépasse 80 % sur 100 trades ou plus** : voir les tableaux.")
+    elif petits:
+        haut = max(petits, key=lambda e: e["taux_reussite"])
+        bas_ic, haut_ic = banc._wilson(round(haut["taux_reussite"] * haut["trades"]), haut["trades"])
+        L.append(f"- **Aucun 80 % sur 100 trades ou plus.** Le plus haut taux affiché, {pct(haut['taux_reussite'])} "
+                 f"({NOMS.get(haut['candidate'])}, {haut['base']} {haut['tf']}), porte sur **{haut['trades']} trades** : "
+                 f"l'intervalle de confiance va de {pct(bas_ic)} à {pct(haut_ic)}.")
     L.append("- À 1:2, le point mort est à **33,3 %** de réussite. Un taux de réussite élevé sans objectif d'au moins "
              "2 R ne dit rien de la rentabilité.\n")
 
@@ -143,11 +206,9 @@ def main() -> int:
 
     L.append("## 6. Conseils\n")
     L.append("1. **Ne rien passer en réel.** Aucun résultat ne distingue un avantage de la chance.")
-    L.append("2. **Donner plusieurs années de M1 au test des vidéos** : dans MT5, *Outils → Options → Graphiques → "
-             "Max. barres dans le graphique* = « Unlimited », redémarrer MT5, puis relancer "
-             "`python -m trading.noyau.donnees_mt5 M1 M5 --base EURUSD` (et `--base NAS100`) et "
-             "`python -m trading.recherche.videos_lancer`. La vidéo MambaFx est la seule piste positive sur tous ses "
-             "échantillons EUR/USD, mais sur 14 à 28 trades.")
+    L.append("2. **Ne pas croire un résultat court** : un échantillon de quelques mois ou de quelques dizaines de "
+             "trades dit presque toujours n'importe quoi. Pour le vérifier : `python -m trading.recherche.videos_lancer` "
+             "puis `python -m trading.recherche.rapport`.")
     L.append("3. **Garder la règle 1:2 en PRO et en BOOST** (appliquée le 2026-09-17, le videur refuse désormais 1:1,5).")
     L.append("4. **Se méfier des preuves des vidéos** : captures de gains, replays choisis, abonnements et prop firms "
              "vendus dans la même vidéo. Aucune des deux ne publie une série de trades.")

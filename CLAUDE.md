@@ -516,9 +516,10 @@
 - 🔴 **REPRENDRE ICI : `trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT ».** Au
   2026-09-17 : vagues 1 à 4 **livrées**, EUR/USD + NAS100 en observation, QC 190 verts.
   🔬 **Recherche de stratégies faite** (`trading/RECHERCHE-STRATEGIES.md`, banc `trading/recherche/`) :
-  5 stratégies publiées + les 2 vidéos de Mongazi, **50 tests, 0 survit à la correction**, aucun
-  80 % réel, rien intégré. **R:R 1:2 imposé en PRO et BOOST.** ⏳ Mongazi : passer MT5 en
-  « Max. barres = Unlimited » (3 mois de M1 seulement) pour tester les vidéos sur plusieurs années.
+  5 stratégies publiées + 2 vidéos, sur M1 à H4 et jusqu'à 21 ans (MT5 passé en « Unlimited »),
+  **124 tests, 0 survit à la correction**, aucun où plus de 50 % des trades atteignent 2 R, rien
+  intégré. **R:R 1:2 imposé en PRO et BOOST.** ⚠️ Export MT5 « Unlimited » = bougies factices
+  depuis 1971 en M15/H1 : filtrées à la lecture.
 - **Trois objectifs, dans cet ordre** : **être rentable** · **s'améliorer tout seul** ·
   **être vendable** (installable chez n'importe qui, vendu en ligne). ⚠️ **Le 3 découle du
   1** : un robot se vend sur un historique réel vérifié, jamais sur un backtest.

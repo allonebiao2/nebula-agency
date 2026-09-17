@@ -28,9 +28,9 @@ from numba import njit
 
 from ..noyau.donnees_mt5 import lire_cache, specs_et_couts
 
-STOP, OBJECTIF, TEMPS, GAP, SEANCE, FIN = 0, 1, 2, 3, 4, 5
-MOTIFS = ("stop", "objectif", "temporel", "stop (gap)", "fin de séance", "fin de données")
-MINUTES_TF = {"M1": 1, "M5": 5, "M15": 15, "M30": 30, "H1": 60, "H4": 240, "D1": 1440}
+STOP, OBJECTIF, TEMPS, GAP, SEANCE, FIN, POINT_MORT = 0, 1, 2, 3, 4, 5, 6
+MOTIFS = ("stop", "objectif", "temporel", "stop (gap)", "fin de séance", "fin de données", "point mort")
+MINUTES_TF = {"M1": 1, "M5": 5, "M15": 15, "M30": 30, "H1": 60, "H2": 120, "H4": 240, "D1": 1440}
 
 
 @dataclass
@@ -87,11 +87,12 @@ class Signaux:
     rr: float = 2.0                      # objectif = rr × stop (jamais sous 2 : cahier)
     max_barres: int = 36                 # stop temporel, en barres (règle maison : 36)
     fin_seance: np.ndarray | None = None  # True = sortir à la clôture de cette barre
+    be_R: float = 0.0                    # 0 = jamais ; sinon stop ramené à l'entrée (coûts couverts) après be_R de gain
 
 
 @njit(cache=True)
 def _simuler(ouv, haut, bas, clo, sens, stop_dist, rr, max_barres, fin_seance, a_fin_seance,
-             cout_prix, swap_l_prix, swap_c_prix, nuits, i_debut, i_fin, stop_min):
+             cout_prix, swap_l_prix, swap_c_prix, nuits, i_debut, i_fin, stop_min, be_R):
     n = len(clo)
     cap = i_fin - i_debut + 1
     e_i = np.empty(cap, np.int64)
@@ -115,21 +116,27 @@ def _simuler(ouv, haut, bas, clo, sens, stop_dist, rr, max_barres, fin_seance, a
         cible = entree + s * rr * d
         sortie = -1.0
         motif = FIN
+        deplace = False
         j = e
         derniere = min(n - 1, e + max_barres)
         while j <= derniere:
             if j > e:
                 if (s > 0 and ouv[j] <= stop) or (s < 0 and ouv[j] >= stop):
-                    sortie, motif = ouv[j], GAP
+                    sortie, motif = ouv[j], (POINT_MORT if deplace else GAP)
                     break
             touche_stop = bas[j] <= stop if s > 0 else haut[j] >= stop
             if touche_stop:
-                sortie, motif = stop, STOP
+                sortie, motif = stop, (POINT_MORT if deplace else STOP)
                 break
             touche_cible = haut[j] >= cible if s > 0 else bas[j] <= cible
             if touche_cible:
                 sortie, motif = cible, OBJECTIF
                 break
+            # Point mort : actif à partir de la barre SUIVANTE (l'ordre dans la barre est inconnu).
+            if be_R > 0.0 and not deplace and ((s > 0 and haut[j] >= entree + be_R * d)
+                                               or (s < 0 and bas[j] <= entree - be_R * d)):
+                stop = entree + s * cout_prix
+                deplace = True
             if a_fin_seance and fin_seance[j]:
                 sortie, motif = clo[j], SEANCE
                 break
@@ -187,7 +194,7 @@ def simuler(serie: Serie, sig: Signaux, i_debut: int = 0, i_fin: int | None = No
                       int(sig.max_barres), fs.astype(np.bool_), sig.fin_seance is not None,
                       serie.cout_sens_pts * serie.point, serie.swap_long_pts * serie.point,
                       serie.swap_court_pts * serie.point, serie.nuits_cumul, int(i_debut), int(i_fin),
-                      float(serie.stop_min_prix))
+                      float(serie.stop_min_prix), float(sig.be_R))
     return Trades(*sortie)
 
 
@@ -298,8 +305,8 @@ def walk_forward(serie: Serie, cand: Candidate, *, min_trades: int = 20, n_tests
                  ratio: int = 4, part_developpement: float = 0.8) -> Resultat:
     fin_dev, T = bornes(serie, part_developpement, n_tests, ratio)
     combos = cand.combinaisons()
-    signaux = [cand.fabrique(serie, **c) for c in combos]
-    tous = [simuler(serie, s, 0, fin_dev - 1) for s in signaux]
+    # Un signal M1 de 7 ans pèse ~25 Mo : on simule puis on jette, on ne garde que les trades.
+    tous = [simuler(serie, cand.fabrique(serie, **c), 0, fin_dev - 1) for c in combos]
     res = Resultat(cand.nom, serie.base, serie.tf, len(combos))
     hors = []
     for w in range(n_tests):
@@ -373,11 +380,12 @@ class Ordres:
     cible: np.ndarray
     expire: np.ndarray        # int64 : dernière barre où l'ordre peut être rempli
     max_barres: int = 240     # après remplissage
+    be_R: float = 0.0          # point mort après be_R de gain (0 = jamais)
 
 
 @njit(cache=True)
 def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire, max_barres,
-                    cout_prix, swap_l_prix, swap_c_prix, nuits, stop_min):
+                    cout_prix, swap_l_prix, swap_c_prix, nuits, stop_min, be_R):
     n = len(clo)
     m = len(pose)
     e_i = np.empty(m, np.int64)
@@ -414,18 +422,23 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
         entree = prix + s * cout_prix
         sortie = -1.0
         motif = FIN
+        deplace = False
         j = rempli
         derniere = min(n - 1, rempli + max_barres)
         while j <= derniere:
             if j > rempli and ((s > 0 and ouv[j] <= st) or (s < 0 and ouv[j] >= st)):
-                sortie, motif = ouv[j], GAP
+                sortie, motif = ouv[j], (POINT_MORT if deplace else GAP)
                 break
             if (s > 0 and bas[j] <= st) or (s < 0 and haut[j] >= st):
-                sortie, motif = st, STOP
+                sortie, motif = st, (POINT_MORT if deplace else STOP)
                 break
             if j > rempli and ((s > 0 and haut[j] >= ci) or (s < 0 and bas[j] <= ci)):
                 sortie, motif = ci, OBJECTIF
                 break
+            if be_R > 0.0 and not deplace and j > rempli and ((s > 0 and haut[j] >= entree + be_R * d)
+                                                               or (s < 0 and bas[j] <= entree - be_R * d)):
+                st = entree + s * cout_prix
+                deplace = True
             if j - rempli >= max_barres:
                 sortie, motif = clo[j], TEMPS
                 break
@@ -458,7 +471,7 @@ def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None 
                              o.cible[garde][ordre].astype(float), o.expire[garde][ordre].astype(np.int64),
                              int(o.max_barres), serie.cout_sens_pts * serie.point,
                              serie.swap_long_pts * serie.point, serie.swap_court_pts * serie.point,
-                             serie.nuits_cumul, float(serie.stop_min_prix))
+                             serie.nuits_cumul, float(serie.stop_min_prix), float(o.be_R))
     return Trades(*sortie)
 
 

@@ -2826,3 +2826,19 @@ aberrant est un défaut de l'instrument avant d'être une découverte.
 M5. Une lecture par année qui dépasse la limite rend **0 barre**, sans erreur ; demander exactement
 la limite rend `None`. **Règle** : mesurer la profondeur réelle de chaque unité de temps avant de
 promettre « plusieurs années », et lire aussi les N dernières barres d'un bloc.
+
+## 2026-09-17 · « Trades gagnants » n'est pas « objectif atteint »
+
+Mongazi vise un R:R de 1:2 et plus de 50 % de réussite. Un seul test sur 124 dépassait 50 % de
+trades gagnants avec une espérance positive : 300 de ses 320 trades sortaient **par le temps**, avec
++0,4 R en moyenne, et **un seul** atteignait l'objectif de 2 R. Le taux de réussite affiché était vrai
+et ne disait rien de ce qui était demandé.
+**Règle** : quand on annonce un taux de réussite à côté d'un R:R, afficher aussi **la part des trades
+qui atteignent vraiment l'objectif** et la répartition des sorties (stop, objectif, temps).
+
+## 2026-09-17 · Une source de données « illimitée » peut ramener de l'histoire inventée
+
+Réglé sur « Unlimited », MT5 a renvoyé en EUR/USD M15 et H1 **156 000 bougies depuis 1971**, une par
+jour à 22 h, à 0,54 : un historique reconstitué d'avant l'euro, glissé dans des fichiers intraday.
+Rien ne plantait. **Règle** : après tout export, contrôler la date de début, l'écart entre bougies et
+le nombre de bougies par jour, et filtrer la plage demandée à la lecture.

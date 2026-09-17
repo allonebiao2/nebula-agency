@@ -31,12 +31,14 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from numba import njit
 
 from ..strategies.indicateurs import atr
-from .banc import Agregat, Ordres, Serie, Signaux, agreger
+from .banc import MINUTES_TF, Agregat, Ordres, Serie, Signaux, agreger
 
-ZONE_DE = {"M1": "M5", "M5": "M15", "M15": "H1", "H1": "H4"}
-CRT_DE = {"M1": ("H1", "M15"), "M5": ("H1", "M15"), "M15": ("H1", "M15"), "H1": ("D1", "H4")}
+ZONE_DE = {"M1": "M5", "M5": "M15", "M15": "H1", "M30": "H2", "H1": "H4", "H4": "D1"}
+CRT_DE = {"M1": ("H1", "M15"), "M5": ("H1", "M15"), "M15": ("H1", "M15"), "M30": ("H4", "H1"),
+          "H1": ("D1", "H4"), "H4": ("D1", "H4")}
 
 
 def _minutes_locales(temps: np.ndarray, fuseau: str) -> np.ndarray:
@@ -86,8 +88,140 @@ def _zones(z: Agregat, fenetre: int, tol_atr: float):
     return support, resist, t_sup, t_res, a
 
 
+@njit(cache=True)
+def _zones_nb(bas, haut, a, fenetre, tol_atr):
+    """Même calcul que `_zones`, compilé (la version Python mettait ~1 min sur 7 ans de M5)."""
+    n = len(bas)
+    support = np.full(n, np.nan)
+    resist = np.full(n, np.nan)
+    t_sup = np.zeros(n, np.int64)
+    t_res = np.zeros(n, np.int64)
+    creux = np.zeros(n, np.bool_)
+    sommet = np.zeros(n, np.bool_)
+    for k in range(1, n - 1):
+        creux[k] = bas[k] < bas[k - 1] and bas[k] <= bas[k + 1]
+        sommet[k] = haut[k] > haut[k - 1] and haut[k] >= haut[k + 1]
+    for m in range(fenetre + 1, n):
+        if np.isnan(a[m]):
+            continue
+        k0 = m - fenetre
+        s = bas[k0]
+        r = haut[k0]
+        for k in range(k0, m + 1):
+            if bas[k] < s:
+                s = bas[k]
+            if haut[k] > r:
+                r = haut[k]
+        tol = tol_atr * a[m]
+        support[m] = s
+        resist[m] = r
+        ns = 0
+        nr = 0
+        for k in range(k0, m):
+            if creux[k] and bas[k] <= s + tol:
+                ns += 1
+            if sommet[k] and haut[k] >= r - tol:
+                nr += 1
+        t_sup[m] = ns
+        t_res[m] = nr
+    return support, resist, t_sup, t_res
+
+
+@njit(cache=True)
+def _mamba_nb(h, b, c, a, permis, fermee_a, support, resist, t_sup, t_res, a_zone,
+              touches, tol_atr, recence):
+    n = len(c)
+    sens = np.zeros(n, np.int8)
+    dist = np.zeros(n)
+    ph_i = np.empty(n, np.int64)
+    ph_v = np.empty(n)
+    pl_i = np.empty(n, np.int64)
+    pl_v = np.empty(n)
+    nph = 0
+    npl = 0
+    k = 2
+    for i in range(2 * k + 1, n):
+        j = i - k
+        mx = h[j - k]
+        mn = b[j - k]
+        for q in range(j - k, i + 1):
+            if h[q] > mx:
+                mx = h[q]
+            if b[q] < mn:
+                mn = b[q]
+        if h[j] == mx and h[j] > h[j - 1]:
+            ph_i[nph] = j
+            ph_v[nph] = h[j]
+            nph += 1
+        if b[j] == mn and b[j] < b[j - 1]:
+            pl_i[npl] = j
+            pl_v[npl] = b[j]
+            npl += 1
+        if not permis[i] or np.isnan(a[i]) or nph < 2 or npl < 2:
+            continue
+        zi = fermee_a[i]
+        if zi < 0 or np.isnan(support[zi]):
+            continue
+        d0 = max(0, i - recence)
+        lo = b[d0]
+        hi = h[d0]
+        for q in range(d0, i + 1):
+            if b[q] < lo:
+                lo = b[q]
+            if h[q] > hi:
+                hi = h[q]
+        tol = tol_atr * a_zone[zi]
+        # achat : dernier sommet, creux le plus récent APRÈS lui, creux le plus récent AVANT lui
+        t_ph = ph_i[nph - 1]
+        v_ph = ph_v[nph - 1]
+        v_apres = np.nan
+        v_avant = np.nan
+        q = npl - 1
+        if pl_i[q] > t_ph:
+            v_apres = pl_v[q]
+        while q >= 0 and pl_i[q] >= t_ph:
+            q -= 1
+        if q >= 0:
+            v_avant = pl_v[q]
+        if (t_sup[zi] >= touches and c[i] > support[zi] and lo <= support[zi] + tol
+                and not np.isnan(v_apres) and not np.isnan(v_avant) and v_apres > v_avant
+                and c[i] > v_ph and c[i - 1] <= v_ph):
+            sens[i] = 1
+            dist[i] = c[i] - (v_apres - 0.1 * a[i])
+            continue
+        t_pl = pl_i[npl - 1]
+        v_pl = pl_v[npl - 1]
+        v_apres = np.nan
+        v_avant = np.nan
+        q = nph - 1
+        if ph_i[q] > t_pl:
+            v_apres = ph_v[q]
+        while q >= 0 and ph_i[q] >= t_pl:
+            q -= 1
+        if q >= 0:
+            v_avant = ph_v[q]
+        if (t_res[zi] >= touches and c[i] < resist[zi] and hi >= resist[zi] - tol
+                and not np.isnan(v_apres) and not np.isnan(v_avant) and v_apres < v_avant
+                and c[i] < v_pl and c[i - 1] >= v_pl):
+            sens[i] = -1
+            dist[i] = (v_apres + 0.1 * a[i]) - c[i]
+    return sens, dist
+
+
 def mamba_cassure(serie: Serie, *, touches: int = 3, rr: float = 3.0, seance: str = "ouverture",
-                  tol_atr: float = 0.25, fenetre_zone: int = 48, recence: int = 30) -> Signaux:
+                  tol_atr: float = 0.25, fenetre_zone: int = 48, recence: int = 30, be: float = 0.0) -> Signaux:
+    """Version compilée ; `mamba_cassure_reference` (Python) sert de témoin d'égalité au QC."""
+    z = agreger(serie, ZONE_DE[serie.tf])
+    a_zone = atr(z.haut, z.bas, z.cloture, 14)
+    support, resist, t_sup, t_res = _zones_nb(z.bas, z.haut, a_zone, fenetre_zone, tol_atr)
+    a = atr(serie.haut, serie.bas, serie.cloture, 14)
+    sens, dist = _mamba_nb(serie.haut, serie.bas, serie.cloture, a, seance_masque(serie, seance),
+                           z.fermee_a, support, resist, t_sup, t_res, a_zone, touches, tol_atr, recence)
+    return Signaux(sens, dist, rr=rr, max_barres=36, be_R=be)
+
+
+def mamba_cassure_reference(serie: Serie, *, touches: int = 3, rr: float = 3.0, seance: str = "ouverture",
+                            tol_atr: float = 0.25, fenetre_zone: int = 48, recence: int = 30) -> Signaux:
     z = agreger(serie, ZONE_DE[serie.tf])
     support, resist, t_sup, t_res, a_zone = _zones(z, fenetre_zone, tol_atr)
     h, b, c = serie.haut, serie.bas, serie.cloture
@@ -142,12 +276,12 @@ def mamba_cassure(serie: Serie, *, touches: int = 3, rr: float = 3.0, seance: st
 # B · Hugo FX : CRT H1, swing M15, entrée en discount
 # --------------------------------------------------------------------------- #
 def hugo_crt(serie: Serie, *, fib: float = 0.5, stop: str = "swing", expiration: int = 4,
-             seance: str = "londres_ny") -> Ordres:
+             seance: str = "londres_ny", be: float = 0.0) -> Ordres:
     tf_crt, tf_swing = CRT_DE[serie.tf]
     H = agreger(serie, tf_crt)
     Q = agreger(serie, tf_swing)
-    q_min = {"M15": 15, "H1": 60, "H4": 240}[tf_swing]
-    h_min = {"H1": 60, "D1": 1440}[tf_crt]
+    q_min = MINUTES_TF[tf_swing]
+    h_min = MINUTES_TF[tf_crt]
     a_q = atr(Q.haut, Q.bas, Q.cloture, 14)
     fin_q = Q.debut + np.timedelta64(q_min * 60, "s")
     fin_base = serie.temps + np.timedelta64(serie.minutes * 60, "s")
@@ -204,7 +338,9 @@ def hugo_crt(serie: Serie, *, fib: float = 0.5, stop: str = "swing", expiration:
             cible_l.append(cible)
             exp_l.append(expire)
             break                                                  # un seul swing par CRT
-    heures_max = 4 * 60 // serie.minutes
+    # 4 heures en M1-M15 (les trades de la vidéo durent ~1 h) ; jamais moins de 36 barres au-dessus
+    # (règle maison) : 4 heures en H4, c'était UNE barre, et la sortie coupait tout.
+    heures_max = max(36, 4 * 60 // serie.minutes)
     return Ordres(np.array(poses, np.int64), np.array(sens_l, np.int8), np.array(lim_l, float),
                   np.array(stop_l, float), np.array(cible_l, float), np.array(exp_l, np.int64),
-                  max_barres=max(1, heures_max))
+                  max_barres=max(1, heures_max), be_R=be)

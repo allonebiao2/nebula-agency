@@ -13,6 +13,13 @@ Une ligne par brique, avec son pourcentage réel.
 
 ### 🔬 RECHERCHE DE STRATÉGIES du 2026-09-17 : verdict NON (rapport : `trading/RECHERCHE-STRATEGIES.md`)
 
+**Mise à jour du soir** : MT5 en « Unlimited » (fait par Mongazi) → EUR/USD M1 depuis 2019, M5-M30 depuis
+2012, H1-H4 depuis 2005 ; **124 tests sur M1, M5, M15, M30, H1, H4, 0 après correction**. Objectif de
+Mongazi **1:2 ET plus de 50 %** : 1 test à 53,8 % de gagnants mais 300 sorties par le temps sur 320 et
+1 objectif atteint ; **aucun** test où plus de la moitié des trades atteignent 2 R. Piste unique :
+Hugo FX transposé EUR/USD H4, +0,366 R sur 70 trades en 21 ans (25,7 %, années 2023-2026 perdantes).
+Le bloc ci-dessous date de l'après-midi (3 mois de M1) : ses chiffres sont remplacés par le rapport.
+
 Demande de Mongazi : les 5 meilleures stratégies scalping et intraday « à plus de 80 % », plus les
 deux vidéos qu'il a envoyées (MambaFx, scalping M1 sur US30 ; Hugo FX, CRT H1 + swing M15 + entrée
 M1), testées sur EUR/USD et NAS100, R:R d'au moins 1:2, 2 stratégies pour PRO et 2 pour BOOST.

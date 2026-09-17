@@ -31,11 +31,12 @@ def _registre() -> list[dict]:
     return json.loads(REGISTRE.read_text(encoding="utf-8")) if REGISTRE.exists() else []
 
 
-def lancer(tour: int, seulement: set[str] | None, liste=None) -> None:
+def lancer(tour: int, seulement: set[str] | None, liste=None,
+           unites=("M1", "M5", "M15", "M30", "H1", "H4")) -> None:
     DOSSIER.mkdir(parents=True, exist_ok=True)
     liste = liste or (candidates.CANDIDATES + [candidates.TEMOIN])
     registre = _registre()
-    for tf in ("M5", "M15", "H1"):
+    for tf in unites:
         for base in INSTRUMENTS:
             serie = None
             for cand in liste:
@@ -95,9 +96,10 @@ def main() -> int:
     ap.add_argument("--tour", type=int, default=1)
     ap.add_argument("--seulement", nargs="*")
     ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--unites", nargs="*", default=["M1", "M5", "M15", "M30", "H1", "H4"])
     a = ap.parse_args()
     if not a.resume:
-        lancer(a.tour, set(a.seulement) if a.seulement else None)
+        lancer(a.tour, set(a.seulement) if a.seulement else None, unites=tuple(a.unites))
     resume()
     return 0
 

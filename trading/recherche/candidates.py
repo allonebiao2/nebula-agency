@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from numba import njit
 
 from ..strategies.indicateurs import atr, bandes_bollinger, ema, ibs, rsi, sma, stochastique
 from .banc import Candidate, Serie, Signaux
@@ -58,8 +59,77 @@ def rsi2_connors(serie: Serie, *, seuil: float = 5, stop_atr: float = 1.5, rr: f
 # --------------------------------------------------------------------------- #
 # 2. Bollinger + RSI(7) (+ Stochastique), scalping
 # --------------------------------------------------------------------------- #
+@njit(cache=True)
+def _nanmin(x):
+    m = np.inf
+    vu = False
+    for v in x:
+        if not np.isnan(v):
+            vu = True
+            if v < m:
+                m = v
+    return m if vu else np.nan
+
+
+@njit(cache=True)
+def _nanmax(x):
+    m = -np.inf
+    vu = False
+    for v in x:
+        if not np.isnan(v):
+            vu = True
+            if v > m:
+                m = v
+    return m if vu else np.nan
+
+
+@njit(cache=True)
+def _bb_nb(h, b, c, basse, haute, r7, r7_moy, k, a, niveau, marge_atr, exige):
+    n = len(c)
+    sens = np.zeros(n, np.int8)
+    dist = np.zeros(n)
+    fen = 3
+    for i in range(fen + 20, n):
+        if np.isnan(a[i]) or np.isnan(basse[i - fen]) or np.isnan(r7[i - 1]):
+            continue
+        croise_haut = r7[i] > r7_moy[i] and r7[i - 1] <= r7_moy[i - 1]
+        croise_bas = r7[i] < r7_moy[i] and r7[i - 1] >= r7_moy[i - 1]
+        dehors_bas = False
+        dehors_haut = False
+        for q in range(i - fen, i):
+            if c[q] < basse[q]:
+                dehors_bas = True
+            if c[q] > haute[q]:
+                dehors_haut = True
+        rsi_min = _nanmin(r7[i - fen:i + 1])
+        rsi_max = _nanmax(r7[i - fen:i + 1])
+        stoch_bas = (not exige) or _nanmin(k[i - fen:i + 1]) < 20
+        stoch_haut = (not exige) or _nanmax(k[i - fen:i + 1]) > 80
+        if dehors_bas and rsi_min < niveau and croise_haut and stoch_bas:
+            sens[i] = 1
+            dist[i] = c[i] - (b[i - fen:i + 1].min() - marge_atr * a[i])
+        elif dehors_haut and rsi_max > 100 - niveau and croise_bas and stoch_haut:
+            sens[i] = -1
+            dist[i] = (h[i - fen:i + 1].max() + marge_atr * a[i]) - c[i]
+    return sens, dist
+
+
 def bb_rsi_scalp(serie: Serie, *, niveau: float = 25, marge_atr: float = 0.3, rr: float = 2.0,
                  stochastique_exige: bool = False) -> Signaux:
+    """Version compilée ; `bb_rsi_scalp_reference` (Python) sert de témoin d'égalité."""
+    h, b, c = serie.haut, serie.bas, serie.cloture
+    basse, _, haute = bandes_bollinger(c, 20, 2.0)
+    r7 = rsi(c, 7)
+    r7_moy = sma(np.nan_to_num(r7, nan=50.0), 7)
+    k, _ = stochastique(h, b, c, 14, 3, 3)
+    a = atr(h, b, c, 14)
+    sens, dist = _bb_nb(h, b, c, basse, haute, r7, r7_moy, k, a, float(niveau), float(marge_atr),
+                        bool(stochastique_exige))
+    return Signaux(sens, dist, rr=rr)
+
+
+def bb_rsi_scalp_reference(serie: Serie, *, niveau: float = 25, marge_atr: float = 0.3, rr: float = 2.0,
+                           stochastique_exige: bool = False) -> Signaux:
     h, b, c = serie.haut, serie.bas, serie.cloture
     basse, _, haute = bandes_bollinger(c, 20, 2.0)
     r7 = rsi(c, 7)
@@ -191,22 +261,24 @@ def temoin_hasard(serie: Serie, *, graine: int = 1, stop_atr: float = 1.5, rr: f
     return Signaux(sens, np.nan_to_num(stop_atr * a), rr=rr)
 
 
+TOUTES = ("M1", "M5", "M15", "M30", "H1", "H4")
+
 CANDIDATES = [
     Candidate("rsi2_connors", "RSI(2) de Connors", "StockCharts ; MQL5 17636", rsi2_connors,
-              {"seuil": [5, 10], "stop_atr": [1.0, 2.0], "rr": [2.0, 3.0]}, ("M15", "H1")),
+              {"seuil": [5, 10], "stop_atr": [1.0, 2.0], "rr": [2.0, 3.0]}, TOUTES),
     Candidate("bb_rsi_scalp", "Bollinger + RSI(7) (+ Stochastique)", "learn-forextrading ; forextester",
               bb_rsi_scalp, {"niveau": [25, 30], "marge_atr": [0.2, 0.5], "rr": [2.0, 3.0],
-                             "stochastique_exige": [False, True]}, ("M5", "M15")),
+                             "stochastique_exige": [False, True]}, TOUTES),
     Candidate("ibs_baisses", "IBS / 3 barres consécutives", "Alvarez ; WealthLab ; Pagonidis (NAAIM)",
               ibs_baisses, {"mode": ["ibs", "consecutifs"], "stop_atr": [1.5, 2.5], "rr": [2.0, 3.0]},
-              ("M15", "H1")),
+              TOUTES),
     Candidate("ema_stoch_pullback", "EMA 200 + Stochastique", "ForexCracked ; OpoFinance",
               ema_stoch_pullback, {"niveau": [20, 30], "stop_atr": [1.5, 2.0], "rr": [2.0, 3.0]},
-              ("M5", "M15")),
+              TOUTES),
     Candidate("range_seance", "Range de séance (Asie→Londres, ouverture US)",
               "dailyforex ; GitHub adrian-baehler, MHZardary ; tradetaurex (ORB)", range_seance,
-              {"mode": ["cassure", "retour"], "stop": ["oppose", "milieu"], "rr": [2.0, 3.0]}, ("M15", "M5")),
+              {"mode": ["cassure", "retour"], "stop": ["oppose", "milieu"], "rr": [2.0, 3.0]}, TOUTES),
 ]
 
 TEMOIN = Candidate("temoin_hasard", "Témoin : entrée au hasard", "—", temoin_hasard,
-                   {"graine": [1], "stop_atr": [1.5], "rr": [2.0]}, ("M5", "M15", "H1"))
+                   {"graine": [1], "stop_atr": [1.5], "rr": [2.0]}, TOUTES)

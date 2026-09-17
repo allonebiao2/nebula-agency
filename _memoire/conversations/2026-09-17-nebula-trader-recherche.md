@@ -80,3 +80,26 @@ malgré l'autorisation orale : c'est un geste de Mongazi, ou une règle de permi
 `trading/strategies/indicateurs.py` · `trading/backtest/moteur.py` · `trading/noyau/{config,reglages,donnees_mt5}.py` ·
 `trading/config.toml` · `trading/outils/qc.py` (176 → 190) · `trading/JOURNAL.md` · `CLAUDE.md` ·
 `_memoire/lecons.md`
+
+## Suite du 2026-09-17 : plusieurs années, toutes les unités de temps, et l'objectif 1:2 + 50 %
+
+Mongazi a passé MT5 en « Max. barres = Unlimited » et redémarré le terminal, puis a autorisé toute
+action sur son PC et sur MT5. Il demande ensuite : tester **chaque unité de temps**, bien prendre en
+compte les stops, et vise **un R:R d'au moins 1:2 ET plus de 50 % de réussite**.
+
+- **Données** : EUR/USD M1 depuis 2019 (2,86 M bougies), M5 et M15 et M30 depuis 2012, H1 et H4 depuis
+  2005 ; NAS100 depuis 2024-01 partout (limite Deriv).
+- **124 tests** (5 stratégies publiées + 2 vidéos, versions auteur, auteur avec point mort, adaptées),
+  sur M1, M5, M15, M30, H1, H4 : **0 survit à la correction**.
+- **Objectif 1:2 + 50 %** : **1 seul test** dépasse 50 % de gagnants avec une espérance positive
+  (range de séance NAS100 M1 : 53,8 %, +0,032 R), **mais 300 de ses 320 trades sortent par le temps
+  en 36 minutes** et **1 seul** atteint l'objectif : ce n'est pas ce que vise Mongazi.
+  **Aucun test** ne voit plus de la moitié de ses trades atteindre 2 R.
+- **Les vidéos sur la durée** : MambaFx M1 sur 7,7 ans **−0,059 R** (367 trades) ; Hugo FX M1 **−0,139 R**.
+  Seule piste : **Hugo FX transposé en EUR/USD H4** (CRT D1 + swing H4), 70 trades en 21 ans,
+  25,7 % de réussite, gain moyen 4 R, **+0,366 R**, p = 0,10, et **2023 à 2026 perdantes**.
+- **Défauts trouvés en chemin** : le bloc « dernières barres » ramenait **156 000 bougies factices
+  depuis 1971** en EUR/USD M15/H1 (une par jour à 0,54) → filtre de plage ; la sortie temporelle
+  d'Hugo FX valait UNE bougie en H4 → au moins 36 ; `lancer.py` n'avait que 3 unités écrites en dur.
+- **Ajouts** : point mort (`be_R`) dans les deux simulateurs, M30 et H4, numba pour MambaFx et
+  Bollinger + RSI (**égalité signal pour signal** avec les versions Python, contrôlée), QC 190 → 193.

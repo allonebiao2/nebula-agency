@@ -44,6 +44,18 @@ def controles(verifier) -> None:
     except ValueError:
         verifier(True, "banc : un objectif sous 2 R est refusé (cahier)")
 
+    # --- point mort : le stop remonte à l'entrée après 1 R, à partir de la barre suivante --
+    pm_haut, pm_bas = ouv + 0.001, ouv - 0.001
+    pm_haut[12] = 1.011                                   # +1,1 R : le point mort s'arme
+    pm_bas[14] = 0.995                                    # retour sous l'entrée : sortie à 0 R
+    serie_pm = dataclasses.replace(s, haut=pm_haut, bas=pm_bas)
+    avec = banc.simuler(serie_pm, banc.Signaux(sens, dist, rr=2.0, be_R=1.0))
+    sans = banc.simuler(serie_pm, banc.Signaux(sens, dist, rr=2.0))
+    verifier(len(avec) == 1 and avec.motif[0] == banc.POINT_MORT and abs(avec.R[0]) < 1e-9
+             and len(sans) == 1 and sans.motif[0] != banc.POINT_MORT,
+             "banc : point mort à +1 R, un retour à l'entrée sort à 0 R (témoin : sans point mort, il ne sort pas là)",
+             str((avec.motif, avec.R, sans.motif, sans.R)))
+
     # --- stop plus court que le minimum du courtier : aucun trade -----------
     serre = dataclasses.replace(s, stop_min_prix=0.02)
     verifier(len(banc.simuler(serre, banc.Signaux(sens, dist, rr=2.0))) == 0
@@ -100,6 +112,17 @@ def controles(verifier) -> None:
             fautives.append(nom)
     verifier(not fautives, "banc : aucune candidate (vidéos comprises) ne change ses signaux passés quand on change le futur",
              ", ".join(fautives))
+    bb_r = candidates.bb_rsi_scalp(base, niveau=30, stochastique_exige=True)
+    bb_l = candidates.bb_rsi_scalp_reference(base, niveau=30, stochastique_exige=True)
+    verifier(np.array_equal(bb_r.sens, bb_l.sens) and np.allclose(bb_r.stop_dist, bb_l.stop_dist)
+             and (bb_r.sens != 0).any(),
+             "banc : Bollinger + RSI compilé = version Python, signal pour signal (témoin : il y en a)")
+    rapide = videos.mamba_cassure(base, touches=2, seance="toutes")
+    lente = videos.mamba_cassure_reference(base, touches=2, seance="toutes")
+    verifier(np.array_equal(rapide.sens, lente.sens) and np.allclose(rapide.stop_dist, lente.stop_dist)
+             and (rapide.sens != 0).any(),
+             "banc : MambaFx compilé (numba) = MambaFx Python, signal pour signal (témoin : il y en a)",
+             f"{int((rapide.sens != 0).sum())} contre {int((lente.sens != 0).sum())}")
     signaux = sum(int((cand.fabrique(base, **cand.combinaisons()[0]).sens != 0).sum())
                   for cand in candidates.CANDIDATES)
     verifier(signaux > 0, "TÉMOIN : les candidates produisent des signaux sur la série d'essai", str(signaux))
