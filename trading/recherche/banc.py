@@ -53,6 +53,12 @@ class Serie:
     # deux allers-retours de coûts. ⛔ 2026-09-17 : sans ce plancher, un stop posé plus près que
     # le spread donnait un risque quasi nul, et un trade valait +8 879 358 R.
     stop_min_prix: float = 0.0
+    # Coût d'UN sens, en PRIX, barre par barre. En scalping le coût décide de tout : un stop de
+    # 2 pips paie son spread en entier, et le spread de 17:01 New York vaut 30 fois celui de midi.
+    # None = le coût scalaire `cout_sens_pts` pour toutes les barres (ancien comportement).
+    cout_bar_prix: np.ndarray | None = None
+    source: str = "mt5"
+    volume: np.ndarray | None = None       # volume de ticks : un flux d'ordres pauvre, mais un flux
 
     def __len__(self) -> int:
         return len(self.cloture)
@@ -61,23 +67,97 @@ class Serie:
     def minutes(self) -> int:
         return MINUTES_TF[self.tf]
 
+    def couts_prix(self) -> np.ndarray:
+        if self.cout_bar_prix is None:
+            return np.full(len(self.cloture), self.cout_sens_pts * self.point, dtype=np.float64)
+        return self.cout_bar_prix.astype(np.float64, copy=False)
 
-def charger(base: str, tf: str, *, multiplicateur_couts: float = 1.0) -> Serie:
-    b = lire_cache(base, tf)
+    def tranche(self, debut: str | None = None, fin: str | None = None) -> "Serie":
+        """Les barres de [debut, fin[ (dates ISO), tout le reste recalculé. Sert au partage
+        découverte / scellé : une tranche ne doit pas garder les cumuls de la série entière."""
+        m = np.ones(len(self.cloture), dtype=bool)
+        if debut:
+            m &= self.temps >= np.datetime64(debut)
+        if fin:
+            m &= self.temps < np.datetime64(fin)
+        nuits = self.nuits_cumul[m]
+        return Serie(self.base, self.tf, self.temps[m], self.ouverture[m], self.haut[m], self.bas[m],
+                     self.cloture[m], self.point, self.cout_sens_pts, self.swap_long_pts,
+                     self.swap_court_pts, nuits - (nuits[0] if len(nuits) else 0.0), self.stop_min_prix,
+                     None if self.cout_bar_prix is None else self.cout_bar_prix[m], self.source,
+                     None if self.volume is None else self.volume[m])
+
+
+def charger(base: str, tf: str, *, multiplicateur_couts: float = 1.0, source: str = "mt5",
+            cout: str = "deriv") -> Serie:
+    """`source` : 'mt5' (Deriv) ou 'duka' (Dukascopy, l'historique que Deriv n'a pas).
+    `cout` : 'deriv' = le profil du courtier chez qui on tradera, minute par minute (défaut) ·
+    'epoque' = le spread réellement observé à la date de la barre (Dukascopy seulement) ·
+    'max' = le plus cher des deux, pour savoir si un avantage survit au pire des deux mondes."""
+    ecart_epoque = None
+    if source == "duka":
+        from . import dukascopy
+        lu = dukascopy.lire_cache(base, tf)
+        if lu is None:
+            raise FileNotFoundError(f"{base} {tf} Dukascopy absent : "
+                                    f"python -m trading.recherche.dukascopy --base {base}")
+        tab, _meta = lu
+        from ..strategies.base import Barres
+        b = Barres(temps=tab["temps"], ouverture=tab["ouverture"], haut=tab["haut"], bas=tab["bas"],
+                   cloture=tab["cloture"], volume=tab.get("volume"), spread=None,
+                   symbole=base.upper(), timeframe=tf)
+        ecart_epoque = tab.get("spread_points")
+        if ecart_epoque is None and "ecart_prix" in tab:
+            ecart_epoque = tab["ecart_prix"]
+    else:
+        b = lire_cache(base, tf)
     if b is None:
         raise FileNotFoundError(f"{base} {tf} absent : python -m trading.noyau.donnees_mt5 {tf} --base {base}")
     specs, couts = specs_et_couts(base)
-    cout = (couts.spread_points / 2 + couts.slippage_points) * multiplicateur_couts
+    cout_median = (couts.spread_points / 2 + couts.slippage_points) * multiplicateur_couts
+    cout_bar = _couts_par_barre(base, b.temps, specs.point, couts, multiplicateur_couts,
+                                ecart_epoque, cout)
     jours = b.temps.astype("datetime64[D]")
     nouveau = np.concatenate(([False], jours[1:] != jours[:-1]))
     # MT5 facture trois nuits au roulement du mercredi soir : la première barre du jeudi.
     jeudi = (jours.astype("int64") + 3) % 7 == 3          # 1970-01-01 était un jeudi
     poids = np.where(nouveau, np.where(jeudi, 3.0, 1.0), 0.0)
     return Serie(base=base.upper(), tf=tf, temps=b.temps, ouverture=b.ouverture, haut=b.haut,
-                 bas=b.bas, cloture=b.cloture, point=specs.point, cout_sens_pts=cout,
+                 bas=b.bas, cloture=b.cloture, point=specs.point, cout_sens_pts=cout_median,
                  swap_long_pts=couts.swap_long_points, swap_court_pts=couts.swap_short_points,
                  nuits_cumul=np.cumsum(poids),
-                 stop_min_prix=max(float(specs.stops_level_points or 0), 4 * cout) * specs.point)
+                 stop_min_prix=max(float(specs.stops_level_points or 0), 4 * cout_median) * specs.point,
+                 cout_bar_prix=cout_bar, source=source,
+                 volume=None if b.volume is None or not len(b.volume) else np.asarray(b.volume, float))
+
+
+def _couts_par_barre(base: str, temps: np.ndarray, point: float, couts, multiplicateur: float,
+                     ecart_epoque: np.ndarray | None, mode: str) -> np.ndarray | None:
+    """Coût d'un sens, en PRIX, pour chaque barre : demi-spread de la minute + glissement."""
+    gliss = couts.slippage_points * point
+    deriv = None
+    try:
+        from .spread_horaire import spread_par_barre
+        deriv = spread_par_barre(base, temps) * point / 2.0 + gliss
+    except Exception:                                  # profil pas encore mesuré : coût scalaire
+        deriv = None
+    epoque = None
+    if ecart_epoque is not None:
+        e = np.asarray(ecart_epoque, float) / 2.0 + gliss
+        # Une minute sans cotation ask (rare) n'a pas de spread d'époque : on lui donne le coût Deriv,
+        # ou la médiane des minutes voisines, jamais zéro.
+        manque = ~np.isfinite(e)
+        if manque.any():
+            secours = deriv if deriv is not None else np.full(len(e), np.nanmedian(e))
+            e = np.where(manque, secours, e)
+        epoque = e
+    if mode == "epoque" and epoque is not None:
+        choisi = epoque
+    elif mode == "max" and epoque is not None:
+        choisi = epoque if deriv is None else np.maximum(deriv, epoque)
+    else:
+        choisi = deriv
+    return None if choisi is None else (choisi * multiplicateur).astype(np.float64)
 
 
 @dataclass
@@ -93,7 +173,7 @@ class Signaux:
 
 @njit(cache=True)
 def _simuler(ouv, haut, bas, clo, sens, stop_dist, rr, max_barres, fin_seance, a_fin_seance,
-             cout_prix, swap_l_prix, swap_c_prix, nuits, i_debut, i_fin, stop_min, be_R):
+             couts, swap_l_prix, swap_c_prix, nuits, i_debut, i_fin, stop_min, be_R):
     n = len(clo)
     cap = i_fin - i_debut + 1
     e_i = np.empty(cap, np.int64)
@@ -112,6 +192,7 @@ def _simuler(ouv, haut, bas, clo, sens, stop_dist, rr, max_barres, fin_seance, a
             continue
         e = i + 1
         s = 1.0 if sens[i] > 0 else -1.0
+        cout_prix = couts[e]                    # le spread de LA minute d'entrée
         entree = ouv[e] + s * cout_prix
         stop = entree - s * d
         cible = entree + s * rr * d
@@ -136,7 +217,7 @@ def _simuler(ouv, haut, bas, clo, sens, stop_dist, rr, max_barres, fin_seance, a
             # Point mort : actif à partir de la barre SUIVANTE (l'ordre dans la barre est inconnu).
             if be_R > 0.0 and not deplace and ((s > 0 and haut[j] >= entree + be_R * d)
                                                or (s < 0 and bas[j] <= entree - be_R * d)):
-                stop = entree + s * cout_prix
+                stop = entree + s * couts[j]
                 deplace = True
             if a_fin_seance and fin_seance[j]:
                 sortie, motif = clo[j], SEANCE
@@ -148,7 +229,7 @@ def _simuler(ouv, haut, bas, clo, sens, stop_dist, rr, max_barres, fin_seance, a
         if sortie < 0.0:
             j = n - 1
             sortie, motif = clo[j], FIN
-        net = s * ((sortie - s * cout_prix) - entree)
+        net = s * ((sortie - s * couts[j]) - entree)
         portage = (nuits[j] - nuits[e]) * (swap_l_prix if s > 0 else swap_c_prix)
         e_i[k] = e
         s_i[k] = j
@@ -193,7 +274,7 @@ def simuler(serie: Serie, sig: Signaux, i_debut: int = 0, i_fin: int | None = No
     sortie = _simuler(serie.ouverture, serie.haut, serie.bas, serie.cloture,
                       sig.sens.astype(np.int8), sig.stop_dist.astype(np.float64), float(sig.rr),
                       int(sig.max_barres), fs.astype(np.bool_), sig.fin_seance is not None,
-                      serie.cout_sens_pts * serie.point, serie.swap_long_pts * serie.point,
+                      serie.couts_prix(), serie.swap_long_pts * serie.point,
                       serie.swap_court_pts * serie.point, serie.nuits_cumul, int(i_debut), int(i_fin),
                       float(serie.stop_min_prix), float(sig.be_R))
     return Trades(*sortie)
@@ -224,7 +305,38 @@ def p_valeur_unilaterale(R: np.ndarray) -> float:
     return 0.5 * math.erfc(t / math.sqrt(2))
 
 
-def mesurer(serie: Serie, t: Trades, *, risque_pct: float = 1.0) -> dict:
+def point_mort_objectif(R: np.ndarray, objectif: np.ndarray, rr: float = 2.0) -> float:
+    """Le taux d'objectifs atteints qui rend l'espérance nulle, coûts compris.
+
+    Le point mort théorique à 1:2 est 33,3 %. Il ne vaut que si une perte coûte exactement 1 R et un
+    gain rapporte exactement 2 R. En vrai, le stop est franchi par un gap, une sortie par le temps
+    rend −0,4 R, et le coût s'ajoute : le vrai point mort se lit dans les trades, pas dans la théorie.
+    """
+    n = len(R)
+    if n == 0:
+        return rr / (rr + 1.0)
+    gain = float(R[objectif].mean()) if objectif.any() else rr
+    perte = float(R[~objectif].mean()) if (~objectif).any() else -1.0
+    if gain - perte <= 0:
+        return 1.0
+    return float(min(1.0, max(0.0, -perte / (gain - perte))))
+
+
+def p_binomial(k: int, n: int, p0: float) -> float:
+    """P(au moins k succès sur n) sous H0 : la proportion vaut p0. C'est le test du CRITÈRE de
+    Mongazi (« plus de la moitié des trades atteignent 2 R »), pas celui de l'espérance."""
+    if n == 0:
+        return 1.0
+    p0 = min(max(p0, 1e-9), 1 - 1e-9)
+    try:
+        from scipy.stats import binom
+        return float(binom.sf(k - 1, n, p0))
+    except Exception:                                   # pragma: no cover
+        z = (k / n - p0) / math.sqrt(p0 * (1 - p0) / n)
+        return 0.5 * math.erfc(z / math.sqrt(2))
+
+
+def mesurer(serie: Serie, t: Trades, *, risque_pct: float = 1.0, series: bool = True) -> dict:
     n = len(t)
     if n == 0:
         return {"trades": 0}
@@ -235,10 +347,25 @@ def mesurer(serie: Serie, t: Trades, *, risque_pct: float = 1.0) -> dict:
     sommets = np.maximum.accumulate(np.concatenate(([1.0], equite)))[1:]
     duree_jours = max(1.0, (serie.temps[t.sortie[-1]] - serie.temps[t.entree[0]]).astype("timedelta64[s]")
                       .astype(float) / 86400)
+    # LE chiffre de Mongazi : un trade « gagnant » peut être une sortie par le temps à +0,1 R.
+    # Seul l'objectif dit « j'ai pris mes 2 R ».
+    atteint = t.motif == OBJECTIF
+    k_obj = int(atteint.sum())
+    p0 = point_mort_objectif(R, atteint)
+    mesures_series = {}
+    if series:
+        from .compte import series_perdantes
+        mesures_series = series_perdantes(R, fenetre=100) if n <= 20_000 else \
+            series_perdantes(R[-20_000:], fenetre=100)
     return {
         "trades": n,
         "taux_reussite": gagnants / n,
         "taux_reussite_ic95": _wilson(gagnants, n),
+        "taux_objectif": k_obj / n,
+        "taux_objectif_ic95": _wilson(k_obj, n),
+        "point_mort_objectif": round(p0, 4),
+        "p_objectif": p_binomial(k_obj, n, p0),
+        "series_perdantes": mesures_series,
         "esperance_R": float(R.mean()),
         "profit_factor": float(pos / neg) if neg > 0 else float("inf"),
         "gain_moyen_R": float(R[R > 0].mean()) if gagnants else 0.0,
@@ -382,11 +509,22 @@ class Ordres:
     expire: np.ndarray        # int64 : dernière barre où l'ordre peut être rempli
     max_barres: int = 240     # après remplissage
     be_R: float = 0.0          # point mort après be_R de gain (0 = jamais)
+    # Règle du scalping (2026-09-17) : la journée se ferme. Un ordre non servi est annulé, une
+    # position ouverte est soldée à la clôture de la barre. Sans ça, un ordre limite passe la nuit.
+    fin_seance: np.ndarray | None = None
+    # ⛔ LE PIÈGE DES ORDRES LIMITES. Nos bougies sont des prix VENDEUR (bid). Un achat s'exécute au
+    # prix ACHETEUR (ask = bid + spread) : l'ordre n'est donc servi que si le bid descend un spread
+    # PLUS BAS que la limite. « Le bas de la bougie a touché ma limite, donc je suis servi » fait
+    # entrer sur les creux les plus courts — exactement ceux qui rebondissent — et fabrique un
+    # avantage qui n'existe pas. `k_remplissage` exige que le prix traverse de k × coût :
+    # 0 = touche (optimiste), 2 = un spread complet (réaliste), 3 = prudent.
+    k_remplissage: float = 0.0
 
 
 @njit(cache=True)
 def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire, max_barres,
-                    cout_prix, swap_l_prix, swap_c_prix, nuits, stop_min, be_R):
+                    couts, swap_l_prix, swap_c_prix, nuits, stop_min, be_R, fin_seance, a_fin_seance,
+                    k_remplissage):
     n = len(clo)
     m = len(pose)
     e_i = np.empty(m, np.int64)
@@ -413,13 +551,17 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
             # si la barre touche les deux, on suppose qu'on n'a pas été servi).
             if (s > 0 and haut[j] >= ci) or (s < 0 and bas[j] <= ci):
                 break
-            if (s > 0 and bas[j] <= lim) or (s < 0 and haut[j] >= lim):
+            if a_fin_seance and fin_seance[j]:          # la journée se ferme : l'ordre est annulé
+                break
+            seuil = lim - s * k_remplissage * couts[j]   # il faut TRAVERSER, pas effleurer
+            if (s > 0 and bas[j] <= seuil) or (s < 0 and haut[j] >= seuil):
                 rempli = j
                 prix = min(lim, ouv[j]) if s > 0 else max(lim, ouv[j])
                 break
             j += 1
         if rempli < 0:
             continue
+        cout_prix = couts[rempli]
         entree = prix + s * cout_prix
         sortie = -1.0
         motif = FIN
@@ -438,8 +580,11 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
                 break
             if be_R > 0.0 and not deplace and j > rempli and ((s > 0 and haut[j] >= entree + be_R * d)
                                                                or (s < 0 and bas[j] <= entree - be_R * d)):
-                st = entree + s * cout_prix
+                st = entree + s * couts[j]
                 deplace = True
+            if a_fin_seance and fin_seance[j]:
+                sortie, motif = clo[j], SEANCE
+                break
             if j - rempli >= max_barres:
                 sortie, motif = clo[j], TEMPS
                 break
@@ -447,7 +592,7 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
         if sortie < 0.0:
             j = n - 1
             sortie, motif = clo[j], FIN
-        net = s * ((sortie - s * cout_prix) - entree)
+        net = s * ((sortie - s * couts[j]) - entree)
         portage = (nuits[j] - nuits[rempli]) * (swap_l_prix if s > 0 else swap_c_prix)
         e_i[k] = rempli
         s_i[k] = j
@@ -470,9 +615,12 @@ def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None 
                              o.pose[garde][ordre].astype(np.int64), o.sens[garde][ordre].astype(np.int8),
                              o.limite[garde][ordre].astype(float), o.stop[garde][ordre].astype(float),
                              o.cible[garde][ordre].astype(float), o.expire[garde][ordre].astype(np.int64),
-                             int(o.max_barres), serie.cout_sens_pts * serie.point,
+                             int(o.max_barres), serie.couts_prix(),
                              serie.swap_long_pts * serie.point, serie.swap_court_pts * serie.point,
-                             serie.nuits_cumul, float(serie.stop_min_prix), float(o.be_R))
+                             serie.nuits_cumul, float(serie.stop_min_prix), float(o.be_R),
+                             (o.fin_seance if o.fin_seance is not None
+                              else np.zeros(len(serie), dtype=np.bool_)).astype(np.bool_),
+                             o.fin_seance is not None, float(o.k_remplissage))
     return Trades(*sortie)
 
 

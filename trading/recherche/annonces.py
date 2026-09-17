@@ -64,11 +64,67 @@ def extraire(html: str) -> list[dict]:
         for e in jour["events"]:
             sortie.append({"t": int(e["dateline"]), "devise": e.get("currency", ""),
                            "impact": e.get("impactName", ""), "nom": e.get("name", ""),
-                           "heure": e.get("timeLabel", "")})
+                           "heure": e.get("timeLabel", ""),
+                           # La SURPRISE : ce qui bouge un marché n'est pas l'annonce, c'est l'écart
+                           # au consensus. `actualBetterWorse` vaut +1 (meilleur que prévu pour la
+                           # devise), -1 (pire) ou 0 ; `actual`/`forecast` gardent le chiffre brut.
+                           "reel": e.get("actual", ""), "prevu": e.get("forecast", ""),
+                           "precedent": e.get("previous", ""),
+                           "mieux_pire": int(e.get("actualBetterWorse") or 0)})
     return sortie
 
 
-def telecharger(debut: date, fin: date, *, pause_s: float = 2.5) -> int:
+def _nombre(texte: str) -> float:
+    """« 0,4 % », « -12,3K », « 1.05M » → un nombre. NaN si ce n'est pas chiffré (certaines annonces
+    ne publient qu'un texte : on ne devine pas)."""
+    if not texte:
+        return float("nan")
+    t = texte.strip().replace(",", "").replace("%", "").replace("$", "").replace("€", "")
+    facteur = 1.0
+    if t and t[-1] in "KMBT":
+        facteur = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}[t[-1]]
+        t = t[:-1]
+    try:
+        return float(t) * facteur
+    except ValueError:
+        return float("nan")
+
+
+def surprises(base: str, *, impacts=("high",)) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(instants, signe de la surprise pour la DEVISE, ampleur relative) des annonces chiffrées.
+
+    Le signe vient de Forex Factory (`actualBetterWorse`), qui sait si « plus bas » est meilleur
+    (le chômage, par exemple). L'ampleur est |réel - prévu| / |prévu|, bornée : elle sépare la
+    surprise de routine de celle qui déplace un marché. ⚠️ Pour le NAS100 on ne garde que l'USD,
+    et le signe reste « bon pour le dollar », pas « bon pour l'indice » : c'est au modèle d'apprendre
+    le rapport entre les deux, pas à nous de le décréter.
+    """
+    devises = set(DEVISES[base.upper()])
+    t, signe, ampleur = [], [], []
+    for f in sorted(dossier().glob("*.json")):
+        for e in json.loads(f.read_text(encoding="utf-8")):
+            if e["devise"] not in devises or e["impact"] not in impacts:
+                continue
+            if e.get("heure", "").lower() == "all day" or not e.get("reel"):
+                continue
+            reel, prevu = _nombre(e.get("reel", "")), _nombre(e.get("prevu", ""))
+            if not np.isfinite(reel) or not np.isfinite(prevu):
+                continue
+            t.append(int(e["t"]))
+            signe.append(float(e.get("mieux_pire", 0)))
+            denom = max(abs(prevu), 1e-9)
+            ampleur.append(min(abs(reel - prevu) / denom, 10.0))
+    if not t:
+        vide = np.array([], dtype="datetime64[s]")
+        return vide, np.array([]), np.array([])
+    ordre = np.argsort(t, kind="stable")
+    return (np.array(t, dtype="int64")[ordre].astype("datetime64[s]"),
+            np.array(signe)[ordre], np.array(ampleur)[ordre])
+
+
+def telecharger(debut: date, fin: date, *, pause_s: float = 2.5, rafraichir: bool = False) -> int:
+    """`rafraichir` : reprendre les semaines déjà en cache. Sert quand on enrichit ce qu'on extrait
+    (le 2026-09-17 : le réel, le prévu et le signe de la surprise, absents des premières collectes)."""
     d = dossier()
     aujourd_hui = datetime.now(timezone.utc).date()
     dim = _dimanche(debut)
@@ -76,7 +132,13 @@ def telecharger(debut: date, fin: date, *, pause_s: float = 2.5) -> int:
     while dim <= fin:
         cible = d / f"{dim.isoformat()}.json"
         en_cours = dim + timedelta(days=7) > aujourd_hui
-        if not cible.exists() or en_cours:
+        manquant = not cible.exists()
+        if not manquant and rafraichir:
+            try:
+                manquant = "mieux_pire" not in (json.loads(cible.read_text(encoding="utf-8")) or [{}])[0]
+            except (json.JSONDecodeError, IndexError, KeyError):
+                manquant = True
+        if manquant or en_cours:
             req = urllib.request.Request(URL.format(_cle_semaine(dim)), headers={"User-Agent": AGENT})
             with urllib.request.urlopen(req, timeout=30) as r:
                 evenements = extraire(r.read().decode("utf-8", errors="replace"))
@@ -156,10 +218,12 @@ def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     p = argparse.ArgumentParser()
     p.add_argument("--telecharger", nargs=2, metavar=("DEBUT", "FIN"))
+    p.add_argument("--rafraichir", action="store_true", help="reprendre les semaines déjà en cache")
     p.add_argument("--verifier", action="store_true")
     a = p.parse_args()
     if a.telecharger:
-        n = telecharger(date.fromisoformat(a.telecharger[0]), date.fromisoformat(a.telecharger[1]))
+        n = telecharger(date.fromisoformat(a.telecharger[0]), date.fromisoformat(a.telecharger[1]),
+                        rafraichir=a.rafraichir)
         print(f"{n} semaines téléchargées")
     if a.verifier:
         return verifier()

@@ -31,6 +31,18 @@ def _registre() -> list[dict]:
     return json.loads(REGISTRE.read_text(encoding="utf-8")) if REGISTRE.exists() else []
 
 
+def enregistrer_test(cle: str, ligne: dict) -> None:
+    """Inscrire UN test au registre, d'où qu'il vienne (candidates, modèle, règles minées).
+
+    ⚠️ C'est la règle qui rend la recherche honnête : essayer plus de choses doit rendre chaque
+    réussite moins crédible. Un test qui n'entre pas au registre est un test qu'on s'est caché.
+    """
+    DOSSIER.mkdir(parents=True, exist_ok=True)
+    registre = [r for r in _registre() if r["cle"] != cle]
+    registre.append({"cle": cle, **ligne})
+    REGISTRE.write_text(json.dumps(registre, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 def lancer(tour: int, seulement: set[str] | None, liste=None,
            unites=("M1", "M5", "M15", "M30", "H1", "H4")) -> None:
     DOSSIER.mkdir(parents=True, exist_ok=True)
@@ -75,18 +87,32 @@ def lancer(tour: int, seulement: set[str] | None, liste=None,
 def resume() -> list[dict]:
     registre = _registre()
     candidats = [r for r in registre if not r["temoin"] and r.get("trades")]
-    rejets = banc.holm([r["p_valeur"] for r in candidats])
+    # Le critère de Mongazi porte sur le taux de 2 R atteints : quand il est mesuré, c'est lui qu'on
+    # corrige. Les tests plus anciens n'ont que l'espérance : on garde leur p, pour que la
+    # multiplicité reste comptée sur le registre ENTIER.
+    rejets = banc.holm([r.get("p_objectif") if r.get("p_objectif") is not None else r["p_valeur"]
+                        for r in candidats])
     for r, ok in zip(candidats, rejets):
         r["survit_holm"] = ok
     print(f"\n  REGISTRE : {len(candidats)} tests comptés (témoins exclus), correction de Holm à 5 %\n")
-    print(f"  {'test':42s} {'trades':>6s} {'réussite':>9s} {'esp. R':>8s} {'PF':>5s} {'R/mois':>7s} "
-          f"{'DD 1 %':>7s} {'p':>6s}  Holm")
+    print(f"  {'test':46s} {'trades':>6s} {'gagnants':>9s} {'2 R':>7s} {'pt mort':>8s} {'esp. R':>8s} "
+          f"{'PF':>5s} {'p':>6s}  Holm")
+
+    def nombre(x, gabarit="8.3f", defaut="       —"):
+        return format(x, gabarit) if isinstance(x, (int, float)) else defaut
+
     for r in sorted(registre, key=lambda x: -(x.get("esperance_R") or -9)):
         if not r.get("trades"):
             continue
-        print(f"  {r['cle']:42s} {r['trades']:6d} {100 * r['taux_reussite']:8.1f}% {r['esperance_R']:+8.3f} "
-              f"{r['profit_factor']:5.2f} {r['R_par_mois']:+7.2f} {r['drawdown_max_pct']:6.1f}% "
-              f"{r['p_valeur']:6.3f}  {'OUI' if r.get('survit_holm') else ('témoin' if r['temoin'] else 'non')}")
+        obj = r.get("taux_objectif")
+        pm = r.get("point_mort_objectif")
+        print(f"  {r['cle'][:46]:46s} {r['trades']:6d} "
+              f"{nombre(100 * (r.get('taux_reussite') or 0), '8.1f')}% "
+              f"{nombre(100 * obj, '6.1f') if obj is not None else '     —'}% "
+              f"{nombre(100 * pm, '7.1f') if pm is not None else '      —'}% "
+              f"{nombre(r.get('esperance_R'))} {nombre(r.get('profit_factor'), '5.2f', '    —')} "
+              f"{nombre(r.get('p_valeur'), '6.3f', '     —')}  "
+              f"{'OUI' if r.get('survit_holm') else ('témoin' if r['temoin'] else 'non')}")
     return registre
 
 
