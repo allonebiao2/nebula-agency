@@ -892,3 +892,14 @@ MD5, 53 plats balisés, fichier absent → 404).
   Streamlit (notre moteur appelle les mêmes verrous que le live).
 - **Conséquences** : intégration en 4 vagues (profils, Monte Carlo, auto-surveillance et porte
   démo, NAS100), puis la recherche d'avantage (filtre D1, nouvelles stratégies).
+
+## 2026-09-17 · NEBULA Trader : la définition de la rentabilité selon Mongazi
+
+- **Décision** : une stratégie n'est retenue que si son backtest (coûts réels, EUR/USD et NAS100) montre
+  **plus de 50 % de réussite, idéalement 60 à 70 %**, avec un **R:R d'au moins 1:2**, et un risque
+  **extrêmement bas de 5 ou 6 pertes d'affilée**.
+- **Contexte** : 124 tests le 2026-09-17 (5 stratégies publiées, 2 vidéos, M1 à H4, jusqu'à 21 ans) :
+  aucun n'approche ce seuil (meilleure espérance +0,094 R sur au moins 100 trades ; aucun test où plus de
+  la moitié des trades atteignent 2 R). Mongazi les juge « nulles ».
+- **Conséquences** : tout verdict s'ouvre par le taux d'objectifs réellement atteints, le R:R réalisé et
+  la probabilité de 5-6 pertes d'affilée. La prochaine méthode analysée vient d'une nouvelle vidéo.

@@ -29,7 +29,8 @@ from numba import njit
 from ..noyau.donnees_mt5 import lire_cache, specs_et_couts
 
 STOP, OBJECTIF, TEMPS, GAP, SEANCE, FIN, POINT_MORT = 0, 1, 2, 3, 4, 5, 6
-MOTIFS = ("stop", "objectif", "temporel", "stop (gap)", "fin de séance", "fin de données", "point mort")
+MOTIFS = ("stop", "objectif", "temporel", "stop (gap)", "fin de séance", "fin de données", "point mort",
+          "avant annonce")
 MINUTES_TF = {"M1": 1, "M5": 5, "M15": 15, "M30": 30, "H1": 60, "H2": 120, "H4": 240, "D1": 1440}
 
 
@@ -479,7 +480,11 @@ _simuler_signaux = simuler
 
 
 def simuler(serie: Serie, sig, i_debut: int = 0, i_fin: int | None = None) -> Trades:  # noqa: F811
-    """Signaux (entrée au marché) ou Ordres (entrée limite), même sortie, mêmes coûts."""
+    """Signaux (entrée au marché) ou Ordres (entrée limite), même sortie, mêmes coûts.
+    Un objet qui sait se rejouer lui-même (`simuler_banc`, ex. `sniper.Sniper`, bid/ask minute par
+    minute) passe par sa propre simulation : walk-forward, contrôle et registre restent les mêmes."""
+    if hasattr(sig, "simuler_banc"):
+        return sig.simuler_banc(serie, i_debut, len(serie) - 1 if i_fin is None else i_fin)
     if isinstance(sig, Ordres):
         return simuler_ordres(serie, sig, i_debut, i_fin)
     return _simuler_signaux(serie, sig, i_debut, i_fin)

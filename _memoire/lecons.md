@@ -2842,3 +2842,40 @@ Réglé sur « Unlimited », MT5 a renvoyé en EUR/USD M15 et H1 **156 000 bougi
 jour à 22 h, à 0,54 : un historique reconstitué d'avant l'euro, glissé dans des fichiers intraday.
 Rien ne plantait. **Règle** : après tout export, contrôler la date de début, l'écart entre bougies et
 le nombre de bougies par jour, et filtrer la plage demandée à la lecture.
+
+## 2026-09-17 · Un calendrier économique qui écrit son fuseau peut avoir perdu l'heure
+
+Le jeu de données « Forex Factory 2007-2025 » (Hugging Face) écrit chaque heure avec son décalage
+(`+03:30`), ce qui inspire confiance. Mesuré sur les annonces qu'on connaît par cœur : **40 à 50 % des
+annonces fortes USD/EUR y sont à 00:00**, le NFP de 2019 à 2025 compris. Une fenêtre « 30 min avant
+l'annonce » posée dessus bloque la nuit et laisse passer le NFP.
+**Règle** : avant d'utiliser un historique d'annonces, vérifier que le NFP et l'IPC tombent à 08:30
+New York et le FOMC à 14:00 ; préférer une source à horodatage Unix (les pages Forex Factory en portent un).
+
+## 2026-09-17 · Retrouver les exemples d'une vidéo dans ses propres bougies
+
+Avant tout backtest d'une méthode montrée en vidéo, lire sur l'image l'instrument, la date et les prix
+d'un exemple, et les chercher dans nos bougies. La vidéo « Sniper Entry » : prix Tickmill retrouvés au
+dixième de pip chez Deriv, à condition de lire son graphique en **heure de New York** (l'horloge affichait
+« UTC-5 » le jour de l'enregistrement, mais les exemples dataient de l'heure d'été). Cela a prouvé le
+fuseau du serveur, et fixé le seul réglage discrétionnaire (la « structure majeure ») sur ses exemples,
+avant tout résultat.
+**Règle** : un exemple retrouvé est un test de fidélité ; un exemple qu'on ne retrouve pas se dit, on ne
+tord pas la règle pour lui.
+
+## 2026-09-17 · Un contrôle rouge sur le code sain, et une faute qui ne rougit rien
+
+Un contrôle « couper les données à la minute d'entrée, la même entrée doit exister » était **rouge sur
+le code sain** : un trade n'est enregistré qu'à sa sortie, et la position ouverte sur la dernière bougie ne
+sortait jamais. À l'inverse, une faute injectée (pivot confirmé avec la bougie suivante) ne faisait rougir
+aucun contrôle parce qu'elle ne changeait aucun résultat : un sommet confirmé par la bougie suivante ne
+peut pas être balayé par elle. **Règle** : un contrôle rouge se diagnostique avant d'accuser le code, et
+une mutation qui ne rougit rien se démontre équivalente avant d'accuser le contrôle ; ne garder comme
+preuve que des fautes qui changent un résultat.
+
+## 2026-09-17 · Le profil d'un marché se range à l'heure de ce marché
+
+Le spread de l'EUR/USD explose au rollover, à **17:00 New York** toute l'année, soit 21:00 UTC l'été et
+22:00 UTC l'hiver. Un premier profil par minute en UTC plaçait le pic à 21:00 seulement : faux six mois
+sur douze. **Règle** : un profil horaire (spread, volatilité, séances) se calcule dans le fuseau du
+marché qui le cause, avec ses changements d'heure.

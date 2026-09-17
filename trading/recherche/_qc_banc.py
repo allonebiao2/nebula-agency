@@ -135,6 +135,10 @@ def controles(verifier) -> None:
              "banc : l'entrée au hasard ne fabrique pas d'avantage (coûts payés)",
              f"{len(R)} trades, {R.mean():+.3f} R")
 
+    # --- 3. la vidéo « Sniper Entry » : simulation bid/ask M1, annonces, compte de 10 000 $ ---
+    from trading.recherche import _qc_sniper
+    _qc_sniper.controles(verifier)
+
 
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

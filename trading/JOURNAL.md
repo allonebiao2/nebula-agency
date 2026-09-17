@@ -1,6 +1,6 @@
 # NEBULA TRADER — journal d'avancement
 
-Mis à jour le **2026-09-17, fin de journée** (vague 4 finie, recherche de stratégies faite, QC 190 verts).
+Mis à jour le **2026-09-17, soir** (vague 4 finie, recherche de stratégies faite, 3e vidéo « Sniper Entry » testée, QC 209 verts).
 Une ligne par brique, avec son pourcentage réel.
 
 > ⚠️ **Un pourcentage ici mesure ce qui est ÉCRIT ET TESTÉ, pas ce qui est
@@ -10,6 +10,34 @@ Une ligne par brique, avec son pourcentage réel.
 ---
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
+
+### 🎯 3e VIDÉO « SNIPER ENTRY » du 2026-09-17 soir : verdict NON (rapport : `trading/RECHERCHE-SNIPER.md`)
+
+Mongazi : « analyse en profondeur, apprends parfaitement la stratégie, backtest le plus proprement
+possible, news et meilleures heures comprises, capital de 10 000 $ ».
+- **Méthode apprise** (`trading/recherche/METHODE-SNIPER.md`) : EMA 200 M15, sommet M15 balayé par une
+  bougie de couleur opposée qui clôture en deçà, rectangle clôture→mèche, entrée sur clôture M1 hors du
+  rectangle, stop derrière la mèche, 3 R minimum. Vidéo transcrite ET regardée : **EUR/USD Tickmill en
+  heure de New York**, 4 exemples retrouvés **au dixième de pip** dans les bougies Deriv (serveur UTC).
+- **Fidélité** : exemples 1, 2, 3 détectés à la minute et gagnants comme à l'écran ; exemple 4 non
+  (clôture Deriv 0,3 pip au-dessus du sommet). Structure « majeure » (pivots M15 de 12) choisie sur ses
+  exemples AVANT tout résultat.
+- **Résultats (coûts Deriv, bid/ask minute par minute)** : EUR/USD 2019-2026 **2 941 trades, 23,8 %,
+  -0,113 R** ; NAS100 2024-2026 **1 070 trades, 24,7 %, -0,075 R**. **Sans aucun coût : -0,020 R et
+  +0,015 R** (hasard). Chaque année perd sur EUR/USD. P(5 pertes d'affilée sur 100) = 100 %.
+- **10 000 $ à 1 %** : EUR/USD → **273 $** (-97 %) ; NAS100 → 4 015 $ (-60 %) ; en NEBULA PRO → 7 970 $
+  (arrêt total à -20 % le 2022-05-13) et 9 557 $, parce que le levier ×3 ramène le risque réel à ~0,17 %.
+- Annonces, meilleures heures (choisies sur 80 %, contrôle sur 20 %), 64 variantes en walk-forward :
+  **tout négatif**. Registre 124 → **146 tests, 0 survit**. **Rien d'intégré.**
+- **Fait en chemin** : `recherche/annonces.py` (402 semaines Forex Factory, horodatage Unix, NFP/IPC à
+  08:30 NY vérifiés 100 %) ⛔ jeu Hugging Face écarté (40-50 % des annonces à 00:00) · `spread_horaire.py`
+  (⛔ Deriv ne sert AUCUN tick passé ; profil par minute en heure de NEW YORK tiré des bougies 2025-2026,
+  rollover 17:00 NY jusqu'à 100 points) · `sniper.py` (numba, bid/ask, stop élargi au minimum Deriv) ·
+  `compte.py` (10 000 $, `dimensionner`, verrous PRO) · `sniper_lancer.py`, `sniper_rapport.py`,
+  `sniper_planches.py` (planches OpenCV regardées) · `_qc_sniper.py` **20 contrôles, prouvés rouges** sur
+  3 fautes injectées · `banc.simuler` accepte un objet `simuler_banc`.
+- Relancer : `python -m trading.recherche.sniper_lancer tout` puis `python -m trading.recherche.sniper_rapport`
+  et `python -m trading.recherche.rapport`.
 
 ### 🔬 RECHERCHE DE STRATÉGIES du 2026-09-17 : verdict NON (rapport : `trading/RECHERCHE-STRATEGIES.md`)
 

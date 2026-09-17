@@ -22,7 +22,35 @@ NOMS = {
     "ibs_baisses": "IBS / 3 barres en baisse", "ema_stoch_pullback": "EMA 200 + Stochastique",
     "range_seance": "Range de séance (Asie→Londres, ouverture US)", "temoin_hasard": "Témoin : entrée au hasard",
     "video_mamba": "Vidéo MambaFx (zone M5 + cassure M1)", "video_hugo": "Vidéo Hugo FX (CRT H1 + swing M15)",
+    "sniper_auteur": "Vidéo Sniper Entry (balayage M15 + clôture M1), telle quelle",
+    "sniper_auteur_annonces": "Vidéo Sniper Entry + filtre des annonces",
+    "sniper_auteur_annonces_sortie": "Vidéo Sniper Entry + sortie avant annonce",
+    "sniper_auteur_imbalance": "Vidéo Sniper Entry + imbalance exigé",
+    "sniper_auteur_5R": "Vidéo Sniper Entry, objectif 5 R", "sniper_auteur_2R": "Vidéo Sniper Entry, objectif 2 R",
+    "sniper_auteur_niveau_oppose": "Vidéo Sniper Entry, objectif au niveau opposé",
+    "sniper_auteur_dernier_creux_m1": "Vidéo Sniper Entry + cassure du dernier creux M1",
+    "sniper_auteur_stop_saute": "Vidéo Sniper Entry, stop trop court sauté",
+    "sniper_meilleures_heures": "Vidéo Sniper Entry, meilleures heures (contrôle)",
+    "sniper_variantes": "Vidéo Sniper Entry, variantes (walk-forward)",
 }
+SNIPER = DOSSIER / "sniper"
+
+
+def motifs_sniper(cle: str) -> dict:
+    """Motifs de sortie d'un test « Sniper Entry », relus dans ses propres JSON."""
+    base = "NAS100" if "NAS100" in cle else "EURUSD"
+    try:
+        if cle.startswith("sniper_heures_controle_"):
+            d = json.loads((SNIPER / f"heures_{base}.json").read_text(encoding="utf-8"))
+            return (d.get("controle_heures_choisies") or {}).get("motifs", {})
+        if cle.startswith("sniper_variantes_"):
+            d = json.loads((SNIPER / f"variantes_{base}.json").read_text(encoding="utf-8"))
+            return (d.get("hors_echantillon") or {}).get("motifs", {})
+        nom = cle[len("sniper_"):].rsplit("_", 1)[0]
+        d = json.loads((SNIPER / f"auteur_{base}.json").read_text(encoding="utf-8"))
+        return d["versions"][nom]["mesures"].get("motifs", {})
+    except (FileNotFoundError, KeyError):
+        return {}
 
 
 def pct(x):
@@ -72,6 +100,8 @@ def main() -> int:
 
     # --- L'objectif de Mongazi : R:R d'au moins 1:2 ET plus de 50 % de réussite ------------
     def motifs_de(e):
+        if e["cle"].startswith("sniper_"):
+            return motifs_sniper(e["cle"])
         if e["cle"].startswith("videos_"):
             base_cle, variante = e["cle"].rsplit("_", 1)
             if variante == "be":
@@ -133,11 +163,18 @@ def main() -> int:
     for e in sorted((e for e in registre if e["cle"].startswith("t1_")), key=lambda e: -e["esperance_R"]):
         L.append(ligne(e))
 
-    L.append("\n## 2. Les deux vidéos\n")
+    L.append("\n## 2. Les vidéos\n")
     L.append("« auteur » = les règles telles que la vidéo les enseigne, sans rien optimiser. « adaptée » = une petite "
              "grille de réglages jugée hors échantillon.\n")
     L.append(entete)
     for e in sorted((e for e in registre if e["cle"].startswith("videos_")), key=lambda e: -e["esperance_R"]):
+        L.append(ligne(e))
+
+    L.append("\n### La troisième vidéo : « Sniper Entry » (balayage M15, clôture M1)\n")
+    L.append("Testée à part, en M1 avec simulation bid/ask minute par minute, historique des annonces Forex Factory et "
+             "compte de 10 000 $ : **détail complet dans `trading/RECHERCHE-SNIPER.md`**.\n")
+    L.append(entete)
+    for e in sorted((e for e in registre if e["cle"].startswith("sniper_")), key=lambda e: -e["esperance_R"]):
         L.append(ligne(e))
 
     L.append("\n### Les vidéos, version auteur, année par année\n")
@@ -187,7 +224,9 @@ def main() -> int:
         g = croissance_necessaire(c)
         L.append(f"| {c:,} $ | ".replace(",", " ") + " | ".join(f"{g[a]:.1f} %".replace(".", ",") for a in ("3", "5", "10", "20")) + " |")
     L.append("")
-    candidats_projection = [e for e in comptes if e["esperance_R"] > 0 and e["trades"] >= 100]
+    # les tests Sniper ont leur propre projection à 10 000 $ (RECHERCHE-SNIPER.md) et d'autres fichiers
+    candidats_projection = [e for e in comptes if e["esperance_R"] > 0 and e["trades"] >= 100
+                            and not e["cle"].startswith("sniper_")]
     for e in sorted(candidats_projection, key=lambda e: e["p_valeur"])[:2]:
         chemin = DOSSIER / (e["cle"].rsplit("_", 1)[0] + ".json" if e["cle"].startswith("videos_") else e["cle"] + ".json")
         d = json.loads(chemin.read_text(encoding="utf-8"))
@@ -211,7 +250,7 @@ def main() -> int:
              "puis `python -m trading.recherche.rapport`.")
     L.append("3. **Garder la règle 1:2 en PRO et en BOOST** (appliquée le 2026-09-17, le videur refuse désormais 1:1,5).")
     L.append("4. **Se méfier des preuves des vidéos** : captures de gains, replays choisis, abonnements et prop firms "
-             "vendus dans la même vidéo. Aucune des deux ne publie une série de trades.")
+             "vendus dans la même vidéo. Aucune des trois ne publie une série de trades.")
     L.append("5. **Le million** exige un avantage réel ET du temps. Monter le risque ne remplace pas l'avantage : "
              "à espérance nulle, un risque plus grand ruine seulement plus vite.\n")
 
@@ -229,7 +268,9 @@ def main() -> int:
               "ForexCracked, 200 EMA + Stochastic : https://www.forexcracked.com/education/forex-200-ema-and-stochastic-indicator-scalping-strategy/",
               "London breakout, backtests GitHub : https://github.com/adrian-baehler/london-breakout",
               "Vidéo MambaFx « The Only 1-Minute Scalping Strategy You'll EVER NEED » (fichier fourni)",
-              "Vidéo Hugo FX « J'ai trouvé la MEILLEURE Stratégie de Scalping M1 pour 2026 ! » (fichier fourni)"):
+              "Vidéo Hugo FX « J'ai trouvé la MEILLEURE Stratégie de Scalping M1 pour 2026 ! » (fichier fourni)",
+              "Vidéo Mulham Trading « My Secret 1 Minute Scalping Strategy (Sniper Entry) » (fichier fourni)",
+              "Calendrier économique Forex Factory, pages hebdomadaires 2019-2026 : https://www.forexfactory.com/calendar"):
         L.append(f"- {s}")
     SORTIE.write_text("\n".join(L) + "\n", encoding="utf-8")
     print(f"-> {SORTIE}")

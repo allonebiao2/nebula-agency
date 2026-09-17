@@ -1,13 +1,13 @@
 # NEBULA Trader · recherche de stratégies scalping et intraday (EUR/USD, NAS100)
 
-## Verdict : NON, pas avec nos données. Aucun des 124 tests ne montre une rentabilité qu'on puisse distinguer de la chance après correction statistique.
+## Verdict : NON, pas avec nos données. Aucun des 146 tests ne montre une rentabilité qu'on puisse distinguer de la chance après correction statistique.
 
 *Généré par `python -m trading.recherche.rapport` à partir des résultats bruts. Coûts réels Deriv (spread médian mesuré sur ticks, 1 point de glissement par sens, swap), entrée à l'ouverture suivante, stop avant objectif dans une même bougie, objectif ≥ 2 R, stop jamais plus court que le minimum du courtier.*
 
 ## 0. Ton objectif : R:R d'au moins 1:2 ET plus de 50 % de réussite
 
-- Tests avec **plus de 50 % de trades gagnants, au moins 100 trades et une espérance positive** : **1** sur 124.
-- Tests où **plus de la moitié des trades atteignent vraiment leur objectif d'au moins 2 R** : **0** sur 124.
+- Tests avec **plus de 50 % de trades gagnants, au moins 100 trades et une espérance positive** : **1** sur 146.
+- Tests où **plus de la moitié des trades atteignent vraiment leur objectif d'au moins 2 R** : **0** sur 146.
 - ⚠️ « Gagnant » compte tout trade fini au-dessus de zéro, y compris une petite sortie par le temps ou en fin de séance. C'est pour ça que les deux lignes diffèrent : seule la seconde dit « j'ai pris mes 2 R ».
 - **Le calcul qui borne l'ambition** : à 1:2, gagner 2 R une fois sur deux rapporte **+0,5 R par trade** avant coûts. La meilleure espérance mesurée ici sur au moins 100 trades est de **+0,094 R**.
 
@@ -108,7 +108,7 @@ MT5 réglé sur « Max. barres = Unlimited » par Mongazi le 2026-09-17 : **7,7 
 | Témoin : entrée au hasard | EURUSD M1 | 23368 | 31,7 % | -0,160 | 0,78 | -84,37 | 100,0 % | 1,000 | témoin |
 | IBS / 3 barres en baisse | NAS100 H4 | 49 | 28,6 % | -0,197 | 0,74 | -0,68 | 12,9 % | 0,838 | non |
 
-## 2. Les deux vidéos
+## 2. Les vidéos
 
 « auteur » = les règles telles que la vidéo les enseigne, sans rien optimiser. « adaptée » = une petite grille de réglages jugée hors échantillon.
 
@@ -180,6 +180,35 @@ MT5 réglé sur « Max. barres = Unlimited » par Mongazi le 2026-09-17 : **7,7 
 | Vidéo Hugo FX (CRT H1 + swing M15) (auteur) | NAS100 H4 | 8 | 12,5 % | -0,583 | 0,34 | -0,16 | 6,9 % | 0,913 | non |
 | Vidéo Hugo FX (CRT H1 + swing M15) (auteur + point mort) | NAS100 H4 | 8 | 12,5 % | -0,583 | 0,34 | -0,16 | 6,9 % | 0,913 | non |
 | Vidéo MambaFx (zone M5 + cassure M1) (auteur) | NAS100 H1 | 2 | 0,0 % | -0,985 | 0,00 | -0,10 | 2,0 % | 1,000 | non |
+
+### La troisième vidéo : « Sniper Entry » (balayage M15, clôture M1)
+
+Testée à part, en M1 avec simulation bid/ask minute par minute, historique des annonces Forex Factory et compte de 10 000 $ : **détail complet dans `trading/RECHERCHE-SNIPER.md`**.
+
+| Stratégie | Marché | Trades | Réussite | Espérance (R) | PF | R/mois | Drawdown à 1 % | p | Correction |
+|---|---|---|---|---|---|---|---|---|---|
+| Vidéo Sniper Entry + cassure du dernier creux M1 | NAS100 M1 | 935 | 26,6 % | -0,020 | 0,97 | -0,60 | 50,4 % | 0,642 | non |
+| Vidéo Sniper Entry, meilleures heures (contrôle) | EURUSD M1 | 309 | 25,9 % | -0,036 | 0,95 | -0,60 | 32,5 % | 0,645 | non |
+| Vidéo Sniper Entry, objectif 5 R | NAS100 M1 | 1041 | 18,5 % | -0,049 | 0,94 | -1,62 | 64,6 % | 0,772 | non |
+| Vidéo Sniper Entry, objectif 2 R | NAS100 M1 | 1077 | 32,0 % | -0,064 | 0,91 | -2,17 | 63,8 % | 0,934 | non |
+| Vidéo Sniper Entry (balayage M15 + clôture M1), telle quelle | NAS100 M1 | 1087 | 24,7 % | -0,064 | 0,92 | -2,20 | 66,3 % | 0,894 | non |
+| Vidéo Sniper Entry, stop trop court sauté | NAS100 M1 | 1069 | 24,7 % | -0,074 | 0,90 | -2,49 | 69,8 % | 0,924 | non |
+| Vidéo Sniper Entry + filtre des annonces | NAS100 M1 | 1070 | 24,7 % | -0,075 | 0,90 | -2,52 | 70,1 % | 0,927 | non |
+| Vidéo Sniper Entry + sortie avant annonce | NAS100 M1 | 1073 | 25,3 % | -0,075 | 0,90 | -2,54 | 69,7 % | 0,931 | non |
+| Vidéo Sniper Entry, objectif au niveau opposé | NAS100 M1 | 1047 | 19,6 % | -0,085 | 0,90 | -2,82 | 70,5 % | 0,901 | non |
+| Vidéo Sniper Entry, stop trop court sauté | EURUSD M1 | 2620 | 24,0 % | -0,106 | 0,86 | -3,02 | 95,9 % | 1,000 | non |
+| Vidéo Sniper Entry + filtre des annonces | EURUSD M1 | 2941 | 23,8 % | -0,113 | 0,86 | -3,58 | 97,7 % | 1,000 | non |
+| Vidéo Sniper Entry + sortie avant annonce | EURUSD M1 | 2952 | 24,9 % | -0,114 | 0,85 | -3,65 | 97,8 % | 1,000 | non |
+| Vidéo Sniper Entry (balayage M15 + clôture M1), telle quelle | EURUSD M1 | 3018 | 23,6 % | -0,116 | 0,85 | -3,80 | 98,1 % | 1,000 | non |
+| Vidéo Sniper Entry, objectif 2 R | EURUSD M1 | 2981 | 30,4 % | -0,118 | 0,83 | -3,80 | 97,9 % | 1,000 | non |
+| Vidéo Sniper Entry + imbalance exigé | EURUSD M1 | 967 | 23,8 % | -0,121 | 0,84 | -1,27 | 75,8 % | 0,989 | non |
+| Vidéo Sniper Entry, objectif au niveau opposé | EURUSD M1 | 2887 | 19,5 % | -0,121 | 0,85 | -3,78 | 98,3 % | 0,999 | non |
+| Vidéo Sniper Entry + imbalance exigé | NAS100 M1 | 331 | 23,0 % | -0,143 | 0,82 | -1,50 | 48,2 % | 0,946 | non |
+| Vidéo Sniper Entry + cassure du dernier creux M1 | EURUSD M1 | 2555 | 23,4 % | -0,145 | 0,81 | -4,01 | 98,3 % | 1,000 | non |
+| Vidéo Sniper Entry, objectif 5 R | EURUSD M1 | 2874 | 17,1 % | -0,148 | 0,83 | -4,60 | 99,2 % | 1,000 | non |
+| Vidéo Sniper Entry, variantes (walk-forward) (adaptée, hors échantillon) | EURUSD M1 | 576 | 22,4 % | -0,152 | 0,81 | -1,98 | 65,1 % | 0,982 | non |
+| Vidéo Sniper Entry, variantes (walk-forward) (adaptée, hors échantillon) | NAS100 M1 | 298 | 21,1 % | -0,207 | 0,74 | -4,01 | 52,7 % | 0,987 | non |
+| Vidéo Sniper Entry, meilleures heures (contrôle) | NAS100 M1 | 93 | 21,5 % | -0,220 | 0,73 | -3,33 | 20,3 % | 0,898 | non |
 
 ### Les vidéos, version auteur, année par année
 
@@ -456,7 +485,7 @@ Rendement **mensuel** composé à tenir chaque mois, sans une seule mauvaise ann
 1. **Ne rien passer en réel.** Aucun résultat ne distingue un avantage de la chance.
 2. **Ne pas croire un résultat court** : un échantillon de quelques mois ou de quelques dizaines de trades dit presque toujours n'importe quoi. Pour le vérifier : `python -m trading.recherche.videos_lancer` puis `python -m trading.recherche.rapport`.
 3. **Garder la règle 1:2 en PRO et en BOOST** (appliquée le 2026-09-17, le videur refuse désormais 1:1,5).
-4. **Se méfier des preuves des vidéos** : captures de gains, replays choisis, abonnements et prop firms vendus dans la même vidéo. Aucune des deux ne publie une série de trades.
+4. **Se méfier des preuves des vidéos** : captures de gains, replays choisis, abonnements et prop firms vendus dans la même vidéo. Aucune des trois ne publie une série de trades.
 5. **Le million** exige un avantage réel ET du temps. Monter le risque ne remplace pas l'avantage : à espérance nulle, un risque plus grand ruine seulement plus vite.
 
 ## 7. Ce qui n'est pas modélisé, et pourquoi c'est écrit
@@ -476,3 +505,5 @@ Rendement **mensuel** composé à tenir chaque mois, sans une seule mauvaise ann
 - London breakout, backtests GitHub : https://github.com/adrian-baehler/london-breakout
 - Vidéo MambaFx « The Only 1-Minute Scalping Strategy You'll EVER NEED » (fichier fourni)
 - Vidéo Hugo FX « J'ai trouvé la MEILLEURE Stratégie de Scalping M1 pour 2026 ! » (fichier fourni)
+- Vidéo Mulham Trading « My Secret 1 Minute Scalping Strategy (Sniper Entry) » (fichier fourni)
+- Calendrier économique Forex Factory, pages hebdomadaires 2019-2026 : https://www.forexfactory.com/calendar
