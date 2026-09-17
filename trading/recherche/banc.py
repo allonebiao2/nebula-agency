@@ -116,7 +116,7 @@ def charger(base: str, tf: str, *, multiplicateur_couts: float = 1.0, source: st
     specs, couts = specs_et_couts(base)
     cout_median = (couts.spread_points / 2 + couts.slippage_points) * multiplicateur_couts
     cout_bar = _couts_par_barre(base, b.temps, specs.point, couts, multiplicateur_couts,
-                                ecart_epoque, cout)
+                                ecart_epoque, cout, b.cloture)
     jours = b.temps.astype("datetime64[D]")
     nouveau = np.concatenate(([False], jours[1:] != jours[:-1]))
     # MT5 facture trois nuits au roulement du mercredi soir : la première barre du jeudi.
@@ -132,8 +132,16 @@ def charger(base: str, tf: str, *, multiplicateur_couts: float = 1.0, source: st
 
 
 def _couts_par_barre(base: str, temps: np.ndarray, point: float, couts, multiplicateur: float,
-                     ecart_epoque: np.ndarray | None, mode: str) -> np.ndarray | None:
-    """Coût d'un sens, en PRIX, pour chaque barre : demi-spread de la minute + glissement."""
+                     ecart_epoque: np.ndarray | None, mode: str,
+                     prix: np.ndarray | None = None) -> np.ndarray | None:
+    """Coût d'un sens, en PRIX, pour chaque barre : demi-spread de la minute + glissement.
+
+    ⚠️ Mode `relatif` : le spread d'un indice est coté en points, mais **un point ne vaut pas la même
+    chose selon le niveau de l'indice**. Les 70 points de Deriv sur un NAS100 à 24 000 valent quatre
+    fois plus sur le NAS100 de 2015, qui était à 5 000. Appliquer le spread d'aujourd'hui à un passé
+    lointain condamne toute stratégie, et l'inverse la sauve : le mode `relatif` met le coût en
+    proportion du prix, calibré sur le prix de référence du courtier.
+    """
     gliss = couts.slippage_points * point
     deriv = None
     try:
@@ -155,6 +163,10 @@ def _couts_par_barre(base: str, temps: np.ndarray, point: float, couts, multipli
         choisi = epoque
     elif mode == "max" and epoque is not None:
         choisi = epoque if deriv is None else np.maximum(deriv, epoque)
+    elif mode == "relatif" and deriv is not None and prix is not None:
+        from ..noyau.donnees_mt5 import charger_profil
+        reference = float((charger_profil(base) or {}).get("prix_reference") or 0.0)
+        choisi = deriv * (np.asarray(prix, float) / reference) if reference > 0 else deriv
     else:
         choisi = deriv
     return None if choisi is None else (choisi * multiplicateur).astype(np.float64)
@@ -519,12 +531,16 @@ class Ordres:
     # avantage qui n'existe pas. `k_remplissage` exige que le prix traverse de k × coût :
     # 0 = touche (optimiste), 2 = un spread complet (réaliste), 3 = prudent.
     k_remplissage: float = 0.0
+    # Amélioration de prix : quand la barre OUVRE au-delà de la limite, un ordre au repos est servi
+    # à l'ouverture, donc mieux que sa limite. C'est vrai en marché réel, mais ça fait aussi entrer
+    # un backtest sur des ouvertures bruitées : `ameliorer=False` sert à mesurer ce que ça rapporte.
+    ameliorer: bool = True
 
 
 @njit(cache=True)
 def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire, max_barres,
                     couts, swap_l_prix, swap_c_prix, nuits, stop_min, be_R, fin_seance, a_fin_seance,
-                    k_remplissage):
+                    k_remplissage, ameliorer):
     n = len(clo)
     m = len(pose)
     e_i = np.empty(m, np.int64)
@@ -556,7 +572,10 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
             seuil = lim - s * k_remplissage * couts[j]   # il faut TRAVERSER, pas effleurer
             if (s > 0 and bas[j] <= seuil) or (s < 0 and haut[j] >= seuil):
                 rempli = j
-                prix = min(lim, ouv[j]) if s > 0 else max(lim, ouv[j])
+                if ameliorer:
+                    prix = min(lim, ouv[j]) if s > 0 else max(lim, ouv[j])
+                else:
+                    prix = lim
                 break
             j += 1
         if rempli < 0:
@@ -620,7 +639,7 @@ def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None 
                              serie.nuits_cumul, float(serie.stop_min_prix), float(o.be_R),
                              (o.fin_seance if o.fin_seance is not None
                               else np.zeros(len(serie), dtype=np.bool_)).astype(np.bool_),
-                             o.fin_seance is not None, float(o.k_remplissage))
+                             o.fin_seance is not None, float(o.k_remplissage), bool(o.ameliorer))
     return Trades(*sortie)
 
 

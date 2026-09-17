@@ -39,7 +39,11 @@ PERIODES = {
 # base -> [(source, début, fin)] : là où la recherche a le droit de chercher
 DECOUVERTE = {
     "EURUSD": [("mt5", None, None)],
-    "NAS100": [("duka", "2013-01-01", "2020-01-01"), ("mt5", None, None)],
+    # Le NAS100 a trois morceaux de découverte : Dukascopy avant le scellé, Dukascopy APRÈS le
+    # scellé (la même période que Deriv, chez un autre fournisseur : c'est ce qui permet de savoir
+    # si un avantage est celui du marché ou celui d'un flux), et Deriv.
+    "NAS100": [("duka", "2013-01-01", "2020-01-01"), ("duka", "2024-01-01", None),
+               ("mt5", None, None)],
 }
 
 

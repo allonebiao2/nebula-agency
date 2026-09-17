@@ -108,8 +108,30 @@ La vague 5 se déclenche dès qu'un candidat existe, sans attendre la fin des au
 
 *(mis à jour à la fin de chaque vague ; une nouvelle session reprend ici)*
 
-- **2026-09-17** · Vague 0 en cours. Protocole écrit. Dukascopy sondé : EUR/USD M1 depuis 2003-05-04,
-  NAS100 M1 depuis 2013-01. Registre : 312 tests, 0 survivant, meilleur taux de 2 R atteint **26,2 %**
-  (ETE inversé EUR/USD H1) et **7,0 %** sur au moins 1 000 trades.
-- **Prochaine étape** : télécharger le M1 Dukascopy (bid et ask), contrôler l'alignement avec Deriv,
-  puis la carte de la vague 1.
+**2026-09-17, fin de session · vagues 0 à 5 faites. Registre : 389 tests.**
+
+1. **Données** : Dukascopy M1 téléchargé et vérifié. EUR/USD **2003-05 → 2011-12** (3,2 M de minutes,
+   scellé) · NAS100 **2013-01 → 2026-09** (4,1 M de minutes, dont le scellé 2020-2023). Alignement
+   avec Deriv mesuré sur un mois commun : **corrélation 0,985 au décalage nul**, 0,02 à ±1 minute.
+2. **Le plafond** (vague 1) : un devin parfait atteint **63,8 %** de 2 R sur NAS100 M1 et **57,7 %**
+   sur EUR/USD M1. ⛔ **Le palier 70 est donc hors de portée en intraday**, et le palier 50 exige de
+   choisir le bon sens trois fois sur quatre.
+3. **Le modèle** (vague 3) : avec 41 caractéristiques causales (dont volume, annonces et surprise
+   économique), walk-forward purgé, la précision du 1 % le plus sûr dépasse le taux de base de 1 à
+   5 points — **jamais le point mort**. Tous les seuils testés sont négatifs.
+4. **Les règles minées** (vague 4) : 55 000 paires et 6 500 triplets par marché. Meilleure règle
+   validée : 37,6 % de 2 R sur 744 trades, contre 34 % de point mort. **Rien après correction.**
+5. ✅ **UN CANDIDAT, et un seul** : l'entrée limite « au rabais » sur NAS100 M1
+   (`trading/recherche/candidat.py`). **Scellé ouvert le 2026-09-17** pour lui, une seule fois :
+   **29 362 trades, 40,3 % de 2 R, +0,165 R par trade, PF 1,26**, positif chaque année et dans les
+   deux sens. ⛔ Il **ne remplit pas** les critères de Mongazi (40 % au lieu de 50 %, P(5 pertes/100)
+   = 97 %). ⚠️ Il vit et meurt par le spread : il survit à ×3 le coût Deriv, pas ×4.
+
+**Prochaine étape, dans cet ordre** :
+- **décision de Mongazi** : ce profil (40 % de réussite, R:R réalisé 1,79) l'intéresse-t-il, ou
+  tient-il la barre des 50 % — auquel cas l'intraday est clos et il faut changer d'horizon ou de
+  marché (ce qui demande sa décision, les marchés étant limités à deux) ;
+- si oui : **démo en observation** sur `6305888` (c'est le seul juge qui reste), puis l'ingénierie
+  d'un agent à ordres limites M1 — l'agent actuel travaille en H4 au marché ;
+- dans tous les cas : ouvrir le scellé EUR/USD n'a **pas** encore été fait (aucune candidate ne le
+  méritait) ; il reste intact.

@@ -38,9 +38,17 @@ SORTIE = DOSSIER / "meta"
 DECILES = (0.5, 0.2, 0.1, 0.05, 0.02, 0.01)
 
 
-def jeu(serie: banc.Serie, schema: str):
+def jeu(serie: banc.Serie, schema: str, *, avec_annonces: bool = True):
     """Les caractéristiques, les deux étiquettes, et le masque des barres utilisables."""
-    X = caracteristiques.construire(serie)
+    ann = surp = None
+    if avec_annonces:
+        try:
+            from . import annonces as mod_annonces
+            ann = mod_annonces.charger(serie.base)[0]
+            surp = mod_annonces.surprises(serie.base)
+        except (FileNotFoundError, KeyError):
+            ann = surp = None
+    X = caracteristiques.construire(serie, annonces=ann, surprises=surp)
     noms = sorted(X)
     M = np.column_stack([X[n] for n in noms]).astype(np.float32)
     deux = etiquettes.deux_sens(serie, schema)

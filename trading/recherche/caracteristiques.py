@@ -47,7 +47,8 @@ def _ecart_type_roulant(x: np.ndarray, n: int) -> np.ndarray:
     return pd.Series(x).rolling(n, min_periods=n // 2).std().to_numpy()
 
 
-def construire(serie: Serie, *, annonces: np.ndarray | None = None) -> dict[str, np.ndarray]:
+def construire(serie: Serie, *, annonces: np.ndarray | None = None,
+               surprises: tuple[np.ndarray, np.ndarray, np.ndarray] | None = None) -> dict[str, np.ndarray]:
     """Le dictionnaire des caractéristiques. Chaque valeur est un tableau de la longueur de la série."""
     o, h, b, c = serie.ouverture, serie.haut, serie.bas, serie.cloture
     n = len(c)
@@ -142,6 +143,21 @@ def construire(serie: Serie, *, annonces: np.ndarray | None = None) -> dict[str,
         avant = np.where(i_apres < len(ann), (ann[np.minimum(i_apres, len(ann) - 1)] - t) / 60.0, 1e9)
         X["minutes_depuis_annonce"] = np.minimum(depuis, 1e4)
         X["minutes_avant_annonce"] = np.minimum(avant, 1e4)
+
+    # --- la SURPRISE : ce qui bouge un marché n'est pas l'annonce, c'est l'écart au consensus -----
+    if surprises is not None and len(surprises[0]):
+        t = serie.temps.astype("datetime64[s]").astype("int64")
+        ts, signe, ampleur = (np.asarray(x) for x in surprises)
+        ts = ts.astype("datetime64[s]").astype("int64")
+        k = np.searchsorted(ts, t, side="right") - 1
+        valide = k >= 0
+        kk = np.maximum(k, 0)
+        minutes = np.where(valide, (t - ts[kk]) / 60.0, 1e9)
+        # L'effet d'une annonce s'éteint : une surprise d'il y a trois heures n'est plus un signal.
+        poids = np.where(minutes <= 240, np.exp(-minutes / 60.0), 0.0)
+        X["surprise_signe"] = np.where(valide, signe[kk], 0.0) * poids
+        X["surprise_ampleur"] = np.where(valide, ampleur[kk], 0.0) * poids
+        X["minutes_depuis_surprise"] = np.minimum(minutes, 1e4)
 
     return {k: np.asarray(v, dtype=np.float64) for k, v in X.items()}
 

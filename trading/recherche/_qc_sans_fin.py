@@ -201,6 +201,27 @@ def qc_dukascopy() -> None:
                                                 f"(médiane {np.nanmedian(e):.5g} en prix)")
 
 
+def qc_surprises() -> None:
+    """Le signe des surprises doit être équilibré. Forex Factory code « pire » par 2, pas par -1 :
+    lu tel quel, toutes les mauvaises surprises devenaient des bonnes, en double."""
+    from . import annonces
+    try:
+        ts, signe, ampleur = annonces.surprises("EURUSD")
+    except FileNotFoundError:
+        print("  · annonces pas en cache, contrôles sautés")
+        return
+    verifier(len(ts) > 500, f"surprises chiffrées disponibles ({len(ts)})")
+    mieux, pire = int((signe > 0).sum()), int((signe < 0).sum())
+    verifier(mieux > 0 and pire > 0 and 0.5 < mieux / max(pire, 1) < 2.0,
+             f"signe équilibré : {mieux} mieux que prévu, {pire} pire")
+    verifier(set(np.unique(signe)) <= {-1.0, 0.0, 1.0}, "le signe ne vaut que -1, 0 ou +1")
+    verifier(float(np.median(ampleur)) > 0 and float(np.max(ampleur)) <= 10.0,
+             "l'ampleur relative est positive et bornée")
+    verifier(abs(annonces._nombre("143K") - 143000) < 1e-6 and abs(annonces._nombre("0.4%") - 0.4) < 1e-9
+             and np.isnan(annonces._nombre("")),
+             "lecture des chiffres : « 143K » = 143 000, « 0,4 % » = 0,4, vide = inconnu")
+
+
 def qc_masques_seance() -> None:
     """Les fenêtres sont en heure de New York, et la clôture forcée tombe avant le moment cher."""
     s = _serie(n=4000)
@@ -235,7 +256,7 @@ def main() -> int:
     print("\n  QC · recherche sans fin\n")
     for f in (qc_etiquette_egale_simulateur, qc_aucune_nuit, qc_fuite_du_futur,
               qc_etiquette_ne_regarde_pas_apres, qc_point_mort, qc_scelle, qc_masques_seance,
-              qc_sortie_seance_compte_comme_echec, qc_dukascopy):
+              qc_sortie_seance_compte_comme_echec, qc_dukascopy, qc_surprises):
         f()
     print(f"\n  {VERTS} verts · {ROUGES} rouges\n")
     return 0 if ROUGES == 0 else 1

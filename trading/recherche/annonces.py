@@ -70,7 +70,10 @@ def extraire(html: str) -> list[dict]:
                            # devise), -1 (pire) ou 0 ; `actual`/`forecast` gardent le chiffre brut.
                            "reel": e.get("actual", ""), "prevu": e.get("forecast", ""),
                            "precedent": e.get("previous", ""),
-                           "mieux_pire": int(e.get("actualBetterWorse") or 0)})
+                           # ⚠️ MESURÉ le 2026-09-17 : Forex Factory code **1 = mieux que prévu,
+                           # 2 = pire, 0 = conforme**. Ce n'est PAS +1/-1 : lu tel quel, « pire »
+                           # devenait +2, et le signe de toutes les surprises négatives était faux.
+                           "mieux_pire": {1: 1, 2: -1}.get(int(e.get("actualBetterWorse") or 0), 0)})
     return sortie
 
 
@@ -111,7 +114,10 @@ def surprises(base: str, *, impacts=("high",)) -> tuple[np.ndarray, np.ndarray, 
             if not np.isfinite(reel) or not np.isfinite(prevu):
                 continue
             t.append(int(e["t"]))
-            signe.append(float(e.get("mieux_pire", 0)))
+            # Compatibilité : les caches collectés avant la correction du 2026-09-17 portent le code
+            # brut de Forex Factory (2 = pire). On le ramène au signe ici aussi.
+            brut = int(e.get("mieux_pire", 0))
+            signe.append(float({1: 1, 2: -1}.get(brut, 0) if brut in (1, 2) else brut))
             denom = max(abs(prevu), 1e-9)
             ampleur.append(min(abs(reel - prevu) / denom, 10.0))
     if not t:

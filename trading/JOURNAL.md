@@ -1,6 +1,6 @@
 # NEBULA TRADER — journal d'avancement
 
-Mis à jour le **2026-09-17, soir** (vague 4 finie, recherche de stratégies faite, 3e vidéo « Sniper Entry » et figures chartistes testées, QC 219 verts).
+Mis à jour le **2026-09-17, nuit** (recherche de scalping : un candidat confirmé sur données scellées, plafond intraday mesuré, QC 219 + 35 verts).
 Une ligne par brique, avec son pourcentage réel.
 
 > ⚠️ **Un pourcentage ici mesure ce qui est ÉCRIT ET TESTÉ, pas ce qui est
@@ -10,6 +10,49 @@ Une ligne par brique, avec son pourcentage réel.
 ---
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
+
+### ⚡ RECHERCHE DE SCALPING du 2026-09-17 : **un candidat, et une réponse mesurée à la question de Mongazi** (rapports : `trading/RECHERCHE-SCALPING.md`, protocole `trading/RECHERCHE-SANS-FIN.md`)
+
+Mongazi : « recherche une stratégie qui puisse atteindre ces objectifs, tant qu'on ne trouve pas tu ne
+peux pas t'arrêter », puis « je veux plus de scalping, ouvrable et fermable dans la même journée ».
+
+- ⛔ **L'objectif tel qu'il est écrit n'est pas atteignable en intraday, et c'est mesuré** : un devin
+  parfait (qui connaîtrait le sens à l'avance) atteindrait **63,8 %** de 2 R sur NAS100 M1 et **57,7 %**
+  sur EUR/USD M1, tout fermé le jour même. Viser « plus de 50 % » exige donc de deviner juste **3 fois
+  sur 4** ; viser 60-70 % passe au-dessus du plafond. Le point mort n'est pas 33 % mais **34 à 41 %**
+  selon le stop (coûts, gaps, clôture du soir).
+- ✅ **UN CANDIDAT survit à tout** (`trading/recherche/candidat.py`) : **entrée limite « au rabais »**
+  sur **NAS100 M1** — dans le sens de l'EMA 60 min, ordre limite à 0,5 R sous le prix, stop 2 × ATR(14),
+  objectif 2 R, ordre annulé après 60 min, tout fermé le soir.
+  **SCELLÉ OUVERT le 2026-09-17** (2020-2023 Dukascopy, jamais regardé) : **29 362 trades, 40,3 % de
+  2 R (point mort 34,7 %), +0,165 R par trade, PF 1,26**, positif **chaque année** (2020 +0,16 · 2021
+  +0,11 · 2022 +0,21 · 2023 +0,17) et **dans les deux sens** (achat +0,17, vente +0,16).
+  ⛔ **Il ne remplit PAS les critères** : 40,3 % au lieu de 50 %, et P(5 pertes/100) = 96,7 %.
+- ⚠️ **Il vit et meurt par le spread** : il survit à **×3** le coût Deriv (70 points), pas ×4 ; au
+  spread d'époque de Dukascopy (167 points) il perd. Deriv tient **70 points dans 99,8 % des minutes**,
+  ouverture et annonces comprises (mesuré sur 2025-2026).
+- ⛔ **Le piège qui a failli faire publier un faux** : un ordre limite rempli « dès que la bougie touche »
+  donnait **+0,101 R sur EUR/USD** ; en exigeant que le prix TRAVERSE d'un spread (un achat s'exécute au
+  prix acheteur), il tombe à **+0,017 R**, puis **-0,019 R** en prudent. L'EUR/USD était entièrement un
+  artefact ; seul le NAS100 survit. `Ordres.k_remplissage`.
+- ✅ **Ce n'est pas un artefact de Deriv** : sur 2024-2026, **Deriv +0,169 R et Dukascopy +0,175 R**,
+  deux fournisseurs indépendants, corrélation des minutes 0,985, mêmes mèches, même autocorrélation.
+- **Le reste de la recherche, tout négatif** : 7 familles de scalping (ouverture de séance, balayage de
+  niveau, compression, excès, suite de bougies, créneau volatil) · un modèle (41 caractéristiques
+  causales dont volume, annonces et **surprise économique**, walk-forward purgé) qui gagne 1 à 5 points
+  sur le taux de base mais **jamais le point mort** · **55 000 paires et 6 500 triplets** de conditions
+  minés en bitsets, meilleure règle validée 37,6 % sur 744 trades. **Registre 312 → 389 tests.**
+- **Fait en chemin** : `dukascopy.py` (EUR/USD M1 depuis 2003-05, NAS100 depuis 2013-01, bid ET ask,
+  écriture atomique) · `scelle.py` (une ouverture par candidate, journalisée) · `intraday.py` (tout se
+  ferme le jour même, heure de New York) · `etiquettes.py` (triple barrière par barre, marché et limite)
+  · `carte.py` (plafonds) · `caracteristiques.py` · `meta.py` · `regles.py` · `comparer_flux.py` ·
+  `candidat.py` · `_qc_sans_fin.py` **35 contrôles** · coût **minute par minute** dans le banc.
+- ⏳ **Ce qui attend Mongazi** : ce profil (40 % de réussite, R:R réalisé 1,79) l'intéresse-t-il ? Si
+  oui → **démo en observation** puis un agent à ordres limites M1 (l'agent actuel est en H4 au marché).
+  Si non → l'intraday est clos par la mesure, et il faut changer d'horizon ou de marché, ce qui est sa
+  décision. **Le scellé EUR/USD n'a pas été ouvert**, il reste intact.
+- Relancer : `python -m trading.recherche.candidat` · `python -m trading.recherche.rapport_sans_fin` ·
+  `python -m trading.recherche._qc_sans_fin`.
 
 ### 📐 FIGURES CHARTISTES + RSI + EMA 50 du 2026-09-17 nuit : verdict NON (rapport : `trading/RECHERCHE-FIGURES.md`)
 

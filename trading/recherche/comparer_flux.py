@@ -54,6 +54,24 @@ def meches(serie: banc.Serie, i: np.ndarray) -> dict:
             "amplitude_p99": round(float(np.quantile(h - b, 0.99)), 4)}
 
 
+def signature(rendements: np.ndarray) -> dict:
+    """La signature statistique d'un flux de prix, en trois nombres.
+
+    · **autocorrélation à 1 minute** : positive = le prix traîne (quote lissée ou en retard, donc
+      prévisible) ; négative = rebond acheteur-vendeur (bruit de cotation).
+    · **ratio de variance** (variance à 5 min / 5 × variance à 1 min) : 1 = marche au hasard,
+      au-dessus = tendance, en dessous = retour à la moyenne.
+    Un flux qui s'écarte de 1 est exploitable… ou mal construit. C'est la même mesure qui le dit,
+    et c'est pour ça qu'on la compare à un second fournisseur.
+    """
+    r = rendements[np.isfinite(rendements)]
+    out = {f"autocorr_{k}": round(float(np.corrcoef(r[:-k], r[k:])[0, 1]), 4) for k in (1, 2, 5)}
+    n5 = (len(r) // 5) * 5
+    r5 = r[:n5].reshape(-1, 5).sum(axis=1)
+    out["ratio_variance_5min"] = round(float(np.var(r5) / (5 * np.var(r))), 4)
+    return out
+
+
 def strategie(serie: banc.Serie, **reglages) -> dict:
     o = candidates_v2.rabais(serie, **reglages)
     t = banc.simuler(serie, o)
@@ -82,6 +100,7 @@ def comparer(base: str, tf: str = "M1", **reglages) -> dict:
               "correlation_rendements": round(float(np.corrcoef(ra, rb)[0, 1]), 4),
               "volatilite_minute_deriv": round(float(np.std(ra)), 8),
               "volatilite_minute_dukascopy": round(float(np.std(rb)), 8),
+              "signature_deriv": signature(ra), "signature_dukascopy": signature(rb),
               "meches_deriv": meches(d1, ia), "meches_dukascopy": meches(d2, ib),
               "strategie_deriv": strategie(d1, **reglages),
               "strategie_dukascopy": strategie(d2, **reglages)}
@@ -105,6 +124,11 @@ def main() -> int:
     print(f"  corrélation des rendements minute : {d['correlation_rendements']}")
     print(f"  volatilité minute : Deriv {d['volatilite_minute_deriv']:.2e}, "
           f"Dukascopy {d['volatilite_minute_dukascopy']:.2e}")
+    for nom in ("deriv", "dukascopy"):
+        g = d[f"signature_{nom}"]
+        print(f"  signature {nom:10s} : autocorrélation 1 min {g['autocorr_1']:+.4f}, 2 min "
+              f"{g['autocorr_2']:+.4f}, 5 min {g['autocorr_5']:+.4f}, ratio de variance "
+              f"{g['ratio_variance_5min']:.3f}")
     for nom in ("deriv", "dukascopy"):
         m = d[f"meches_{nom}"]
         print(f"  mèches {nom:10s} : amplitude médiane {m['amplitude_mediane']}, mèche basse "
