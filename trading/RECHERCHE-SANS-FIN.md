@@ -137,6 +137,18 @@ La vague 5 se déclenche dès qu'un candidat existe, sans attendre la fin des au
    servi utilise sa clôture, donc une partie du rebond à prédire. On lit la **dernière barre close
    avant le remplissage**.
 
+7. ✅ **ET ÇA MARCHE AUSSI SUR L'EUR/USD** : mêmes réglages, jamais ajustés sur cette paire, filtre
+   appris sur Deriv 2019-2026. **Scellé EUR/USD ouvert le 2026-09-17** (2003-2011, jamais regardé) :
+   en gardant 5 %, **2 618 trades, 61,4 % de 2 R, R:R 1,81, +0,795 R, P(5 pertes/100) 38 %**. Et même
+   **au spread d'époque** (6,5 points par sens, 2,6 fois celui de Deriv) : **60,9 %, +0,727 R**.
+   Sans filtre : 37,2 % et +0,120 R. Détail : `rapports/recherche/meta/scelle_eurusd.json`.
+   **Les deux marchés répondent donc oui, et le NAS100 répond mieux.**
+
+**La leçon centrale de cette recherche** : le taux de réussite n'est pas une propriété du marché,
+c'est une propriété de la **sélectivité**. En prenant toutes les occasions : 37-40 % de 2 R. En n'en
+gardant que 5 % : 61-67 %. Le plafond mesuré (63,8 % sur NAS100) borne celui qui prend TOUT ; il ne
+borne pas celui qui choisit.
+
 **Prochaine étape, dans cet ordre** :
 - **démo en observation** sur `6305888` : c'est le seul juge qui reste. Un ordre limite servi dans
   une simulation n'est pas un ordre limite servi par un courtier ;

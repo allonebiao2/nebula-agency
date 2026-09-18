@@ -59,9 +59,16 @@ peux pas t'arrêter », puis « je veux plus de scalping, ouvrable et fermable d
   partie du rebond à prédire (65 % au lieu de 62,5 %). On lit la dernière barre close avant.
   ⚠️ **Ce que ça exige** : décider à chaque minute de garder ou d'annuler l'ordre. L'agent actuel est
   en H4 au marché : c'est un autre objet à construire.
+- ✅ **ÇA MARCHE SUR LES DEUX MARCHÉS** : mêmes réglages, jamais ajustés sur l'EUR/USD, filtre appris
+  sur Deriv 2019-2026. **Scellé EUR/USD ouvert** (2003-2011) : en gardant 5 %, **2 618 trades, 61,4 %
+  de 2 R, R:R 1,81, +0,795 R, P(5/100) 38 %** ; **au spread d'époque** (2,6× Deriv) **60,9 %, +0,727 R**.
+  Sans filtre : 37,2 %, +0,120 R. (`rapports/recherche/meta/scelle_eurusd.json`)
+- 🎯 **LA LEÇON** : le taux de réussite n'est pas une propriété du marché, c'est une propriété de la
+  **sélectivité**. Tout prendre = 37-40 % de 2 R ; garder 5 % = 61-67 %. Le plafond de 63,8 % borne
+  celui qui prend TOUT, pas celui qui choisit.
 - ⏳ **Ce qui attend Mongazi** : **la démo en observation** (seul juge restant), puis l'ingénierie de
-  l'agent M1 à ordres limites. **Le scellé EUR/USD n'a pas été ouvert**, il reste intact ; celui du
-  NAS100 a servi **deux fois** (une par candidate), donc la prochaine confirmation se fera en avant.
+  l'agent M1 à ordres limites. **Les deux scellés sont désormais ouverts** (NAS100 deux fois, EUR/USD
+  une fois) : la prochaine confirmation ne peut plus être qu'**en avant**, sur la démo.
 - Relancer : `python -m trading.recherche.candidat` · `python -m trading.recherche.meta_candidat` ·
   `python -m trading.recherche.rapport_sans_fin` · `python -m trading.recherche._qc_sans_fin`.
 
