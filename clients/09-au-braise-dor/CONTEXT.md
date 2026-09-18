@@ -23,6 +23,30 @@
 > ⏳ Reste : la fiche Google Business avec cette adresse (voir `GOOGLE-BUSINESS.md`), et l'ancien
 > `au-braise-dor.pages.dev` qui continue de répondre (normal, c'est l'origine).
 
+> ### 🪧 L'AFFICHE CARRÉE DES TABLES (2026-09-18)
+> Demandée par Mongazi dès le domaine posé : « l'affiche carrée qu'ils pourront coller sur les tables
+> et partout dans le restaurant, avec le QR code en grand ». `python _outils/_build_affiche_table.py`
+> → `assets/docs/` :
+> - **`Affiche_Table_Au_Braise_dOr_20cm.pdf` / `.png`** : le carré maître, 20 × 20 cm à 300 DPI, qui
+>   se réduit à 15 ou 10 cm sans rien refaire. **Un seul QR, vers `https://aubraisedor.com`** (43 % de
+>   la largeur), l'adresse écrite dessous pour qui ne scanne pas, puis « Scannez · Choisissez ·
+>   Envoyez sur WhatsApp ». Le site est **déjà réglé sur « Sur place »** : le client à table n'a rien
+>   à changer.
+> - **`Planche_A4_6_carres_Au_Braise_dOr.pdf`** : six carrés de **9 cm** sur une feuille A4, traits de
+>   coupe, pour l'imprimeur qui n'imprime que de l'A4.
+> ⛔ **Aucun numéro imprimé** : le site en porte un (`22956057157`), l'`index.html` un autre, l'enseigne
+> un troisième, et une affiche collée sur trente tables ne se corrige pas. Le QR mène au site, le site
+> mène à WhatsApp : le jour où le numéro est tranché, les tables ont raison sans être réimprimées.
+> ⚠️ **Le QR est décodé à chaque fabrication par DEUX lecteurs** (OpenCV et zbar), à 20 cm, à 9 cm et
+> réduit à 600 px ; le script sort en erreur si l'un échoue. Zone de silence de 4 modules, adresse
+> écrite à 3 modules du QR, jamais collée à lui.
+> ⛔ **Deux défauts vus en REGARDANT, que le décodage ne voyait pas** : la mention NEBULA se posait sur
+> « Sur place · À emporter » (un `assert` la garde désormais), et la planche en **9,5 cm** laissait
+> **2 mm** de marge en haut et en bas : une imprimante de bureau n'imprime pas à moins de 4-5 mm du
+> bord, les carrés extrêmes sortaient rognés (→ 9 cm, 9,5 mm de marge, `assert` ≥ 5 mm).
+> ℹ️ Les fichiers partent en ligne au prochain déploiement (`cp -r ../assets/docs out/`), sous
+> `/docs/`, comme l'affiche A4.
+
 ## ⚠️ LES SEPT PIÈGES DE CE PROJET, tous trouvés à la mesure
 
 1. **Les 48 photos en `background-image` se téléchargeaient d'un coup** :
