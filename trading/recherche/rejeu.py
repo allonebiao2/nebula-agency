@@ -74,7 +74,9 @@ def filtres_trimestriels(marche: str, debut: pd.Timestamp, trimestres: int = 4,
     tiré des probabilités hors échantillon des `historique_seuil` trimestres précédents."""
     duka = banc.charger(marche, "M1", source="duka")
     ordres = candidates_v2.rabais(duka, **REGLAGES)
-    t = banc.simuler(duka, ordres)
+    # Les trades du BANC (non causal) : c'est sur eux que le filtre d'origine apprenait, et ce test
+    # les reproduit pour le juger. Jamais pour conclure : voir `banc.simuler_ordres`.
+    t = banc.simuler(duka, ordres, non_causal_accepte=True)
     del ordres
     i_signal = np.maximum(t.entree - 1, 0)
     X, noms = construire_aux_barres(duka, i_signal)
@@ -337,7 +339,7 @@ def lancer(marche: str, capitaux=(10.0,), plafonds=(30.0, None)) -> list[dict]:
 
     # La recherche, sur les MÊMES prix Deriv et la même année : le trade au plus ancien ordre servi.
     ordres = candidates_v2.rabais(serie, **REGLAGES)
-    tr = banc.simuler(serie, ordres)
+    tr = banc.simuler(serie, ordres, non_causal_accepte=True)       # comparaison seulement
     dans = tr.entree - 1 >= j0
     ps = proba[np.maximum(tr.entree - 1, 0)]
     garde = dans & (ps >= seuils[np.maximum(tr.entree - 1, 0)])

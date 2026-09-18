@@ -2907,3 +2907,7 @@ protégeaient de rien : elles protègent du surapprentissage, pas d'un simulateu
 **Règle** : aucun résultat n'est un résultat tant qu'il n'a pas été rejoué par **le code qui
 tradera**, minute par minute ; et ce moteur se contrôle contre le simulateur dans le cas où ils doivent
 être d'accord (un seul ordre en attente), chaque divergence expliquée.
+Suite du même jour : la leçon est devenue un **verrou**. `banc.simuler_ordres` lève
+`SimulationNonCausale` dès que des ordres limites se chevauchent ; `non_causal_accepte=True` ne sert
+qu'à reproduire l'ancien calcul pour le comparer (`rejeu.py`, `_qc_moteur.py`). Une règle écrite
+s'oublie, un code qui refuse ne s'oublie pas.

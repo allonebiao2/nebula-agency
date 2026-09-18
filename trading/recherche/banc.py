@@ -638,8 +638,42 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
     return e_i[:k], s_i[:k], sens_o[:k], r_o[:k], motif_o[:k], ordre_o[:k]
 
 
-def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None = None) -> Trades:
+class SimulationNonCausale(RuntimeError):
+    """Levée quand des ordres limites se chevauchent : ce simulateur lirait l'avenir."""
+
+
+def chevauchements(o: Ordres, i_debut: int = 0, i_fin: int | None = None) -> int:
+    """Combien d'ordres attendent encore quand le suivant est posé."""
+    m = (o.pose >= i_debut) & ((o.pose <= i_fin) if i_fin is not None else True)
+    pose = np.sort(o.pose[m])
+    expire = o.expire[m][np.argsort(o.pose[m], kind="stable")]
+    if len(pose) < 2:
+        return 0
+    return int(np.sum(expire[:-1] >= pose[1:] + 1))
+
+
+def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None = None, *,
+                   non_causal_accepte: bool = False) -> Trades:
+    """⛔ **CE SIMULATEUR A TRICHÉ** (mesuré le 2026-09-18, `trading/REJEU-1AN.md`). Il parcourt les
+    ordres dans l'ordre de POSE et donne le trade au plus ancien qui finit par être servi : quand
+    plusieurs ordres limites attendent en même temps et que le prix plonge à travers eux, c'est le
+    plus bas, comme s'il savait jusqu'où le prix irait. LE REFLUX y montrait 67 % de 2 R et +0,99 R ;
+    rejoué par le moteur de l'agent (l'ordre touché le PREMIER entre) : 31 % et −0,10 R.
+
+    D'où le verrou : **dès que des ordres se chevauchent, il refuse** et renvoie vers le moteur causal
+    (`live/moteur_scalp.py` + `recherche/rejeu.rejouer`). `non_causal_accepte=True` n'est permis que
+    pour REPRODUIRE l'ancien calcul et le comparer au causal, jamais pour annoncer un résultat.
+    Avec des ordres qui ne se chevauchent pas (un seul en attente à la fois), il reste juste.
+    """
     i_fin = len(serie) - 1 if i_fin is None else i_fin
+    if not non_causal_accepte:
+        n_chev = chevauchements(o, i_debut, i_fin)
+        if n_chev:
+            raise SimulationNonCausale(
+                f"{n_chev} ordres limites attendent en même temps qu'un autre : ce simulateur donne le "
+                f"trade au plus ancien servi, il lirait l'avenir (LE REFLUX : +0,99 R ici, −0,10 R chez "
+                f"un courtier). Rejouer avec le moteur de l'agent : recherche/rejeu.rejouer. "
+                f"`non_causal_accepte=True` seulement pour comparer, jamais pour conclure.")
     # Cahier (Mongazi, 2026-09-17) : l'objectif prévu vaut au moins 2 fois le risque prévu.
     with np.errstate(divide="ignore", invalid="ignore"):
         rr = (o.sens * (o.cible - o.limite)) / (o.sens * (o.limite - o.stop))
@@ -666,14 +700,15 @@ def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None 
 _simuler_signaux = simuler
 
 
-def simuler(serie: Serie, sig, i_debut: int = 0, i_fin: int | None = None) -> Trades:  # noqa: F811
+def simuler(serie: Serie, sig, i_debut: int = 0, i_fin: int | None = None, *,  # noqa: F811
+            non_causal_accepte: bool = False) -> Trades:
     """Signaux (entrée au marché) ou Ordres (entrée limite), même sortie, mêmes coûts.
     Un objet qui sait se rejouer lui-même (`simuler_banc`, ex. `sniper.Sniper`, bid/ask minute par
     minute) passe par sa propre simulation : walk-forward, contrôle et registre restent les mêmes."""
     if hasattr(sig, "simuler_banc"):
         return sig.simuler_banc(serie, i_debut, len(serie) - 1 if i_fin is None else i_fin)
     if isinstance(sig, Ordres):
-        return simuler_ordres(serie, sig, i_debut, i_fin)
+        return simuler_ordres(serie, sig, i_debut, i_fin, non_causal_accepte=non_causal_accepte)
     return _simuler_signaux(serie, sig, i_debut, i_fin)
 
 

@@ -75,9 +75,25 @@ def main() -> int:
           f"moteur {len(M)}, communs {communs} · {episodes} épisodes de divergence, dont {expliques} "
           f"ouverts par une réentrée du banc dans la barre de sortie · pire écart de R {ecart_R:.1e}")
 
+    # ---- 1 bis. le VERROU du banc : des ordres qui se chevauchent sont refusés ----
+    ordres60 = candidates_v2.rabais(serie, **REGLAGES)
+    try:
+        banc.simuler_ordres(serie, ordres60, j0, j0 + 5000)
+        ok_v = False
+    except banc.SimulationNonCausale:
+        ok_v = True
+    try:                                   # TÉMOIN : des ordres d'une minute passent
+        banc.simuler_ordres(serie, candidates_v2.rabais(serie, **r1), j0, j0 + 5000)
+        ok_t = True
+    except banc.SimulationNonCausale:
+        ok_t = False
+    echecs += not (ok_v and ok_t)
+    print(f"  {'OK ' if ok_v and ok_t else 'ÉCHEC'}  verrou du banc : ordres qui se chevauchent "
+          f"{'refusés' if ok_v else 'ACCEPTÉS'}, ordres isolés {'acceptés' if ok_t else 'REFUSÉS'} (témoin)")
+
     # ---- 2. l'écart avec des ordres de 60 minutes, sans filtre, toute l'année ----
     ordres = candidates_v2.rabais(serie, **REGLAGES)
-    tb = banc.simuler_ordres(serie, ordres, j0, n - 1)
+    tb = banc.simuler_ordres(serie, ordres, j0, n - 1, non_causal_accepte=True)   # comparaison
     res = rejouer("NAS100", 1e9, [], levier_max=None, serie=serie, proba=ouvert, seuils=zero, j0=j0)
     Rm = np.array([t["R"] for t in res["notes"]])
     om = np.array([t["motif"] == "objectif" for t in res["notes"]])

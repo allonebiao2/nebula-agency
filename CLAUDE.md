@@ -525,6 +525,9 @@
   causal et registre rejoué. `scalpeur.py` réécrit (il n'appelait pas `execution.autorisation`).
   Contrôles : `_qc_moteur.py`, `_qc_parite.py` (20 000 minutes de contexte, pas 6 000).
   Recherches antérieures (`RECHERCHE-STRATEGIES`, `-FIGURES`, `-SNIPER`) : **aucune stratégie ne survit**.
+  ⛔ **RÈGLE ANTI-TRICHE** : aucun chiffre de trading annoncé sans **rejeu par le moteur de l'agent**
+  sur une période jamais vue ; le banc est une piste, pas un verdict. `banc.simuler_ordres` **refuse**
+  les ordres limites qui se chevauchent (`SimulationNonCausale`) : ne jamais le contourner pour conclure.
 - **Trois objectifs, dans cet ordre** : **être rentable** · **s'améliorer tout seul** ·
   **être vendable** (installable chez n'importe qui, vendu en ligne). ⚠️ **Le 3 découle du
   1** : un robot se vend sur un historique réel vérifié, jamais sur un backtest.
