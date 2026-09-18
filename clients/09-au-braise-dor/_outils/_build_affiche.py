@@ -97,9 +97,9 @@ def qr_img(data,px):
     im=q.make_image(fill_color="black",back_color="white").convert("RGB")
     return im.resize((px,px),Image.NEAREST)
 
-SITE="https://au-braise-dor.pages.dev"
+SITE="https://aubraisedor.com"
 WA  ="https://wa.me/2290156057157?text="+urllib.parse.quote("Bonjour Au Braisé d'Or, je voudrais passer une commande.")
-cards=[(MG, "LE MENU EN LIGNE", SITE, "au-braise-dor.pages.dev"),
+cards=[(MG, "LE MENU EN LIGNE", SITE, "aubraisedor.com"),
        (W-MG-820, "WHATSAPP DIRECT", WA, "01 56 05 71 57")]
 cy0=2440; ch=700; cw2=820; qpx=520
 for cx0,label,data,small in cards:

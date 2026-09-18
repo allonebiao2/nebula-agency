@@ -198,6 +198,72 @@ class Executeur:
                              message=(f"refusé par le courtier : {derniere.retcode} "
                                       f"{derniere.comment}") if derniere else "aucune réponse")
 
+    # ------------------------------------------------------------------ #
+    #  Ordres LIMITES (la stratégie de scalping n'entre jamais au marché)
+    # ------------------------------------------------------------------ #
+    def ordres_en_attente(self) -> list:
+        """Nos ordres limites encore posés chez le courtier (les nôtres seulement)."""
+        os_ = mt5.orders_get(symbol=self.symbole) or ()
+        return [o for o in os_ if o.magic == self.magic]
+
+    def poser_limite(self, *, achat: bool, lots: float, limite: float, stop: float, objectif: float,
+                     specs, expire_le=None, commentaire: str = "nebula") -> ResultatOrdre:
+        """Poser un ordre LIMITE, avec son stop et son objectif attachés dès la pose.
+
+        ⚠️ Un ordre limite s'exécute quand le marché VIENT au prix : le stop doit donc partir avec
+        lui. S'il était ajouté après le remplissage, il existerait une fenêtre — courte, mais réelle —
+        où une position vit sans stop, et c'est exactement ce que la règle maison interdit.
+        ⚠️ `expire_le` (datetime) : la stratégie annule ses ordres au bout d'une heure. On le dit AUSSI
+        au courtier, pour qu'un ordre survive à une coupure de notre côté sans traîner des jours.
+        """
+        mini = (specs.stops_level_points or 0) * specs.point
+        if abs(limite - stop) < mini or abs(objectif - limite) < mini:
+            return ResultatOrdre(False, message=(
+                f"stop ou objectif plus proche que le minimum du courtier "
+                f"({specs.stops_level_points} points)"))
+        tick = mt5.symbol_info_tick(self.symbole)
+        if tick is None:
+            return ResultatOrdre(False, message="aucun prix : marché fermé ?")
+        # Un « limite » doit être du bon côté du marché, sinon le courtier le refuse (10015).
+        if achat and limite >= tick.ask - mini:
+            return ResultatOrdre(False, message="limite d'achat trop près du marché (ou au-dessus)")
+        if not achat and limite <= tick.bid + mini:
+            return ResultatOrdre(False, message="limite de vente trop près du marché (ou en dessous)")
+        requete = {
+            "action": mt5.TRADE_ACTION_PENDING, "symbol": self.symbole, "volume": float(lots),
+            "type": mt5.ORDER_TYPE_BUY_LIMIT if achat else mt5.ORDER_TYPE_SELL_LIMIT,
+            "price": round(limite, specs.digits), "sl": round(stop, specs.digits),
+            "tp": round(objectif, specs.digits), "magic": self.magic,
+            "comment": commentaire[:31], "type_filling": self._remplissage(),
+        }
+        if expire_le is not None:
+            requete["type_time"] = mt5.ORDER_TIME_SPECIFIED
+            requete["expiration"] = int(expire_le.timestamp())
+        else:
+            requete["type_time"] = mt5.ORDER_TIME_GTC
+        r = mt5.order_send(requete)
+        if r is None:
+            code, msg = mt5.last_error()
+            return ResultatOrdre(False, message=f"order_send a échoué ({code}, {msg})")
+        if r.retcode != mt5.TRADE_RETCODE_DONE:
+            return ResultatOrdre(False, retcode=r.retcode,
+                                 message=f"refusé par le courtier : {r.retcode} {r.comment}")
+        return ResultatOrdre(True, ticket=r.order, prix=requete["price"], sl=requete["sl"],
+                             tp=requete["tp"], retcode=r.retcode, message=r.comment,
+                             prix_demande=requete["price"])
+
+    def annuler(self, ticket: int) -> ResultatOrdre:
+        """Retirer un ordre limite. La stratégie le fait à l'expiration et à la clôture du jour."""
+        r = mt5.order_send({"action": mt5.TRADE_ACTION_REMOVE, "order": int(ticket)})
+        if r is None:
+            code, msg = mt5.last_error()
+            return ResultatOrdre(False, message=f"annulation impossible ({code}, {msg})")
+        ok = r.retcode in (mt5.TRADE_RETCODE_DONE, mt5.TRADE_RETCODE_PLACED)
+        return ResultatOrdre(ok, ticket=ticket, retcode=r.retcode, message=r.comment)
+
+    def annuler_tout(self) -> list[ResultatOrdre]:
+        return [self.annuler(o.ticket) for o in self.ordres_en_attente()]
+
     def _ticket_position(self, r) -> int | None:
         for p in self.positions():
             if p.ticket == r.order or p.identifier == r.order:

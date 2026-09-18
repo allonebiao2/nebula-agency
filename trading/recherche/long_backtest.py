@@ -52,7 +52,7 @@ def _modele():
                                           random_state=5)
 
 
-def walk_forward(marche: str, parts=(0.05, 0.10, 0.20)) -> dict:
+def walk_forward(marche: str, parts=(0.05, 0.10, 0.20), bloc_mois: int = BLOC_MOIS) -> dict:
     from . import meta_candidat as mc
     serie = serie_complete(marche)
     d = mc.trades_et_caracteristiques(serie)
@@ -70,7 +70,7 @@ def walk_forward(marche: str, parts=(0.05, 0.10, 0.20)) -> dict:
     blocs = []
     curseur = debut + pd.DateOffset(years=2)              # deux ans avant la première décision
     while curseur < fin:
-        suivant = curseur + pd.DateOffset(months=BLOC_MOIS)
+        suivant = curseur + pd.DateOffset(months=bloc_mois)
         # Apprentissage : uniquement les trades DÉJÀ CLOS avant le bloc (purge incluse).
         app = ok & np.asarray(temps_sortie < curseur)
         test = ok & np.asarray(temps_entree >= curseur) & np.asarray(temps_entree < suivant)
@@ -84,7 +84,8 @@ def walk_forward(marche: str, parts=(0.05, 0.10, 0.20)) -> dict:
     juge = np.isfinite(proba)
     sortie = {"marche": marche, "serie": [str(serie.temps[0])[:10], str(serie.temps[-1])[:10]],
               "trades_total": int(ok.sum()), "trades_juges": int(juge.sum()),
-              "blocs": len(blocs), "premier_bloc": blocs[0]["debut"] if blocs else None,
+              "blocs": len(blocs), "bloc_mois": bloc_mois,
+              "premier_bloc": blocs[0]["debut"] if blocs else None,
               "paliers": []}
     if not juge.any():
         return sortie
@@ -156,9 +157,10 @@ def main() -> int:
     ap.add_argument("--marche", default="NAS100")
     ap.add_argument("--parts", nargs="*", type=float, default=[0.05, 0.10, 0.20])
     ap.add_argument("--capital", type=float, default=500.0)
+    ap.add_argument("--bloc", type=int, default=BLOC_MOIS, help="mois entre deux réapprentissages")
     a = ap.parse_args()
     SORTIE.mkdir(parents=True, exist_ok=True)
-    res = walk_forward(a.marche, tuple(a.parts))
+    res = walk_forward(a.marche, tuple(a.parts), a.bloc)
     print(f"\n  {a.marche} · {res['serie'][0]} → {res['serie'][1]} · {res['trades_total']} trades "
           f"possibles · {res['trades_juges']} jugés hors échantillon · {res['blocs']} blocs de "
           f"{BLOC_MOIS} mois (premier : {res['premier_bloc']})\n")
@@ -167,7 +169,7 @@ def main() -> int:
     for p in res["paliers"]:
         print(f"  {100 * p['part']:11.0f} % {p['trades']:8d} {100 * p['taux_objectif']:12.1f} % "
               f"{p['esperance_R']:+10.3f} R {p['R_par_mois']:8.1f} {p['trades_par_mois']:12.1f}")
-        enregistrer_test(f"long_{a.marche}_{int(100 * p['part'])}pct", {
+        enregistrer_test(f"long_{a.marche}_{a.bloc}m_{int(100 * p['part'])}pct", {
             "tour": 11, "candidate": "long_walkforward", "base": a.marche, "tf": "M1",
             "temoin": False, "combinaisons": len(a.parts), "vague": "6 · backtest long",
             "trades": p["trades"], "taux_objectif": p["taux_objectif"],
@@ -175,7 +177,7 @@ def main() -> int:
             "p_valeur": None, "point_mort_objectif": None, "p_objectif": None})
     sans_indices = {**res, "paliers": [{k: v for k, v in p.items() if k != "indices"}
                                        for p in res["paliers"]]}
-    (SORTIE / f"long_{a.marche}.json").write_text(json.dumps(sans_indices, ensure_ascii=False, default=str),
+    (SORTIE / f"long_{a.marche}_{a.bloc}m.json").write_text(json.dumps(sans_indices, ensure_ascii=False, default=str),
                                                   encoding="utf-8")
     for p in res["paliers"]:
         print(f"\n  Année par année, sélectivité {100 * p['part']:.0f} % :")

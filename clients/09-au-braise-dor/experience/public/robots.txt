@@ -10,4 +10,4 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-Sitemap: https://au-braise-dor.pages.dev/sitemap.xml
+Sitemap: https://aubraisedor.com/sitemap.xml

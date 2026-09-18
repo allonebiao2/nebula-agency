@@ -22,7 +22,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const SITE = "https://au-braise-dor.pages.dev";
+const SITE = "https://aubraisedor.com";
 const TITRE = "Au Braisé d'Or · Grillades au feu de bois · Cotonou";
 const RESUME =
   "Au Braisé d'Or, la maison de la braise à Cotonou : grillades au feu de bois, sauces du pays, pizzas, chawarma, salades et cocktails. Commande en un geste sur WhatsApp.";

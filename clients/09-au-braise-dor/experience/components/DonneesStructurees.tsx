@@ -20,7 +20,7 @@ import { WHATSAPP } from "@/data/dishes";
  *      sur la page, il doit l'être ici aussi.
  */
 export default function DonneesStructurees() {
-  const site = "https://au-braise-dor.pages.dev";
+  const site = "https://aubraisedor.com";
 
   /**
    * ⚠️ TROIS FAÇONS D'AVOIR UN PRIX, et les confondre ment au client :
