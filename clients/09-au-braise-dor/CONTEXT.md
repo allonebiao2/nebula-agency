@@ -3,6 +3,28 @@
 > 📌 **Le résumé qui vivait dans `CLAUDE.md` jusqu'au 2026-09-16 est recopié en fin de fichier**, section « Résumé transféré de `CLAUDE.md` ».
 
 > ## 🔥 EN LIGNE : **https://au-braise-dor.pages.dev**
+
+> ### 🌐 DOMAINE ACHETÉ : **aubraisedor.com** (2026-09-18, par Mongazi)
+> **Fait de mon côté** : `aubraisedor.com` et `www.aubraisedor.com` sont **déclarés dans le projet
+> Cloudflare Pages `au-braise-dor`** (API, statut « initializing »).
+> ⛔ **Il manque la moitié DNS, et mon jeton ne peut pas la faire** (il ne voit aucune zone : ni
+> `Zone · DNS`, ni les réglages de zone — voir `reference_brancher-un-domaine-sur-pages`).
+> **Mesuré le 2026-09-18** : le domaine est encore chez **Hostinger** (`solar.dns-parking.com`,
+> `lunar.dns-parking.com`) et sert une **page de parking** (2.57.91.91).
+> **Ce que Mongazi doit faire, dans cet ordre** :
+> 1. Cloudflare → *Add a site* → `aubraisedor.com` → plan **Free** ;
+> 2. Cloudflare donne **deux serveurs de noms** → les poser chez **Hostinger** à la place de
+>    `solar/lunar.dns-parking.com` (Domaines → aubraisedor.com → DNS / Nameservers) ;
+> 3. attendre l'activation de la zone (quelques minutes à quelques heures) : Pages crée alors
+>    **tout seul** l'enregistrement, parce que le nom est déjà déclaré dans le projet ;
+> 4. me le dire : je vérifie le **CORPS** servi (un 200 ne prouve rien) et je bascule l'adresse.
+> ⚠️ **Trois pièges de zone** à traiter juste après (ils n'existaient pas sur `*.pages.dev`) :
+> le **robots.txt géré par Cloudflare** qui interdit les robots d'IA qu'on accueille (AI Crawl
+> Control → onglet robots.txt → désactiver), le **cache de zone** qui sert l'ancien HTML, et
+> l'**obfuscation d'e-mail** qui rend un `mailto:` illisible sans JavaScript.
+> ⏳ **Quand le domaine servira vraiment** : l'adresse vit à **sept endroits** (canonical, og:url,
+> og:image, JSON-LD, sitemap, ligne `Sitemap:` de robots.txt, et **le QR de l'affiche A4**) — rien
+> ne se change avant, un `canonical` mort déréférence la page qui marche.
 > **⚠️ LE SITE N'EST PLUS `index.html`.** Depuis le 2026-08-12 l'adresse du
 > client sert le projet **Next.js de `experience/`** : **le héros des 14 sauces**
 > (2026-08-26, voir plus bas), puis les 52 plats commandables en dessous.
