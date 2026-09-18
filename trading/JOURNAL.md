@@ -23,6 +23,8 @@ Mongazi : « trouve-moi sur la toile une méthode… ne t'arrête jamais tant qu
 - ⛔ Avec 10 $, aucune n'est tradable à son risque : il faut ~1 200 $ (zone de bruit) ou ~400 $ (ORB).
 - ⏳ **Suite** : moteur d'agent pour la zone de bruit (règle anti-triche), la même sur l'EUR/USD,
   et le critère à trancher par Mongazi (50 % à 1:2, ou espérance et recul).
+- **EUR/USD** (`eurusd_seances.py`, 30 mesures déclarées d'avance) : **rien ne tient depuis 2016**.
+  **Crochet 1:2 partout** (26 mesures, NAS100 et EUR/USD) : **40 % de gagnants au mieux**, résultat nul.
 
 
 ### ⛔ LE TEST D'UN AN DU 2026-09-18 (après-midi) : LE REFLUX PERD CHEZ UN COURTIER (rapport : `trading/REJEU-1AN.md`)

@@ -43,11 +43,13 @@ CONTROLES = list(range(30, 390, 30))   # 10 h 00, 10 h 30, … 15 h 30 (minutes 
 RECUL = 14
 
 
-def matrices(serie):
-    """Une ligne par jour de New York complet : ouverture, haut, bas, clôture, volume par minute."""
+def matrices(serie, ouv: int = OUV, n_min: int = N_MIN):
+    """Une ligne par jour de New York complet : ouverture, haut, bas, clôture, volume par minute,
+    de la minute `ouv` (heure de New York) sur `n_min` minutes."""
+    N_MIN = n_min
     minute, jsem = minutes_et_jours(serie.temps)
     jour = jour_ny(serie.temps)
-    k = minute - OUV
+    k = minute - ouv
     garde = (k >= 0) & (k < N_MIN) & (jsem < 5)
     jours, inv = np.unique(jour[garde], return_inverse=True)
     nj = len(jours)
@@ -70,8 +72,15 @@ def matrices(serie):
     return jours[complet], O[complet], H[complet], L[complet], C[complet], V[complet], Kc[complet]
 
 
-def simuler(jours, O, H, L, C, V, K, *, stop_courtier: bool, debut=None, fin=None) -> list[dict]:
+def simuler(jours, O, H, L, C, V, K, *, stop_courtier: bool, debut=None, fin=None,
+            controles=None, cible_R: float | None = None, stop_min_prix: float = 0.0) -> list[dict]:
+    """`cible_R` : version « crochet » (critère de Mongazi) : stop FIXE au niveau initial, objectif à
+    `cible_R` fois le risque, rien d'autre ne bouge ; sortie à la fin de la séance sinon."""
     nj = len(jours)
+    N_MIN = C.shape[1]
+    CONTROLES = controles or [k for k in range(30, N_MIN, 30)]
+    if cible_R:
+        stop_courtier = True
     ouverture = O[:, 0]
     veille = np.concatenate(([np.nan], C[:-1, -1]))
     mouvement = np.abs(C / ouverture[:, None] - 1)            # |prix à la minute / ouverture - 1|
@@ -97,7 +106,9 @@ def simuler(jours, O, H, L, C, V, K, *, stop_courtier: bool, debut=None, fin=Non
             if pos is not None:
                 s = pos["s"]
                 niveau = max(haut_z[j], vwap[d, j]) if s > 0 else min(bas_z[j], vwap[d, j])
-                if stop_courtier:
+                if cible_R:
+                    pass                                     # crochet : le stop ne bouge pas
+                elif stop_courtier:
                     pos["stop"] = max(pos["stop"], niveau) if s > 0 else min(pos["stop"], niveau)
                 elif (s > 0 and px < niveau) or (s < 0 and px > niveau):
                     fermer(pos, O[d, kc], K[d, kc], kc, "stop suiveur (demi-heure)", trades, js)
@@ -110,9 +121,10 @@ def simuler(jours, O, H, L, C, V, K, *, stop_courtier: bool, debut=None, fin=Non
                     stop = max(haut_z[j], vwap[d, j]) if s > 0 else min(bas_z[j], vwap[d, j])
                     if s * (entree - stop) <= 0:
                         stop = haut_z[j] if s > 0 else bas_z[j]
-                    if s * (entree - stop) > 0:
+                    if s * (entree - stop) > max(0.0, stop_min_prix):
                         pos = {"s": s, "entree": entree, "stop": stop, "d": s * (entree - stop),
-                               "k": kc, "cout": K[d, kc], "mfe": 0.0, "mae": 0.0, "levier": levier}
+                               "k": kc, "cout": K[d, kc], "mfe": 0.0, "mae": 0.0, "levier": levier,
+                               "cible": (entree + s * cible_R * s * (entree - stop)) if cible_R else None}
             # 3. entre deux demi-heures : le stop chez le courtier
             if pos is not None:
                 fin_k = CONTROLES[ci + 1] if ci + 1 < len(CONTROLES) else N_MIN
@@ -124,6 +136,11 @@ def simuler(jours, O, H, L, C, V, K, *, stop_courtier: bool, debut=None, fin=Non
                         prix = O[d, m] if m > pos["k"] and ((s > 0 and O[d, m] < pos["stop"]) or
                                                             (s < 0 and O[d, m] > pos["stop"])) else pos["stop"]
                         fermer(pos, prix, K[d, m], m, "stop courtier", trades, js)
+                        pos = None
+                        break
+                    if pos.get("cible") is not None and m > pos["k"] and (
+                            (s > 0 and H[d, m] >= pos["cible"]) or (s < 0 and L[d, m] <= pos["cible"])):
+                        fermer(pos, pos["cible"], K[d, m], m, "objectif", trades, js)
                         pos = None
                         break
         if pos is not None:

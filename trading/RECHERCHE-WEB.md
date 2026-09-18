@@ -110,3 +110,33 @@ Une page qui affiche « 80 % à 1:2 » vend quelque chose, ou triche comme notre
 - ⛔ **Avec 10 $, aucune n'est tradable à son niveau de risque** : 0,1 lot de NAS100 représente
   ~2 400 $ d'exposition, soit x240 sur 10 $, quand l'article travaille à x2 en moyenne. Il faudrait
   **~1 200 $** pour la zone de bruit et **~400 $** pour l'ORB à 1 % de risque.
+
+## EUR/USD, ET LE CRITÈRE « PLUS DE 50 % À 1:2 » PARTOUT (2026-09-18, nuit)
+
+Versions **déclarées avant tout résultat** (`eurusd_seances.py`) : 2 séances (Londres 3 h 00 → 11 h 59
+New York, New York 8 h 00 → 16 h 59) × zone de bruit (article, stop courtier, crochet 1:2) et ORB
+5 min (objectif 10 R, crochet 1:2) × 3 périodes. Stop jamais sous le minimum du courtier.
+
+| EUR/USD | 2003-2015 | 2016-2026 | prix Deriv 2019-2026 |
+|---|---|---|---|
+| zone de bruit (article), Londres | **+8,4 %/an**, 35 % | −9,7 %/an, 31 % | −7,9 %/an, 31 % |
+| zone de bruit (article), New York | +1,3 %/an, 35 % | −8,2 %/an, 34 % | −5,9 %/an, 34 % |
+| ORB 10 R, Londres | +0,043 R (n.s.), 14 % | −0,041 R, 14 % | −0,061 R, 14 % |
+| ORB 10 R, New York | −0,140 R, 12 % | −0,147 R, 12 % | −0,100 R, 13 % |
+| **crochet 1:2, meilleur des 4** | 36 %, −0,014 R | 35 %, −0,067 R | 36 %, −0,044 R |
+
+**Sur l'EUR/USD, rien ne tient depuis 2016**, ni sur Dukascopy ni sur Deriv. La seule ligne positive
+(Londres 2003-2015) s'est retournée ensuite.
+
+**Le crochet 1:2 (stop fixe, objectif 2 R), le critère de Mongazi, partout** :
+
+| | gagnants | résultat |
+|---|---|---|
+| NAS100 zone de bruit, 2013-2026 | 39,7 % | +0,006 R (nul) |
+| NAS100 zone de bruit, 2023-03 → 2026 (jamais vu) | 39,6 % | +0,039 R (t = 1,0) |
+| NAS100 zone de bruit, Deriv 2024-2026 | 39,6 % | +0,018 R |
+| NAS100 ORB, toutes périodes | 35 à 36 % | ≈ 0 |
+| EUR/USD, 20 mesures | 33 à 36 % | toutes négatives |
+
+**Aucune des 26 mesures « à 1:2 » ne dépasse 40 % de gagnants.** Le point mort à 1:2, coûts
+compris, est vers 34-35 % : les meilleures versions sont à l'équilibre, pas au-dessus de 50 %.

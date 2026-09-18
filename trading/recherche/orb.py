@@ -40,7 +40,9 @@ OBJECTIF_R = 10.0
 
 
 def trades_orb(serie, objectif_R: float = OBJECTIF_R, debut: str | None = None,
-               fin: str | None = None) -> list[dict]:
+               fin: str | None = None, *, ouverture: int = OUVERTURE, duree: int = 5,
+               cloture: int = CLOTURE, stop_min_prix: float = 0.0) -> list[dict]:
+    OUVERTURE, ENTREE, CLOTURE = ouverture, ouverture + duree, cloture
     minute, jsem = minutes_et_jours(serie.temps)
     jour = jour_ny(serie.temps)
     o, h, b, c = serie.ouverture, serie.haut, serie.bas, serie.cloture
@@ -58,7 +60,7 @@ def trades_orb(serie, objectif_R: float = OBJECTIF_R, debut: str | None = None,
         if not len(i_open) or not len(i_entree):
             continue
         k0, ke = a + i_open[0], a + i_entree[0]
-        if ke - k0 != 5:                       # une minute manque dans l'ouverture : on ne devine pas
+        if ke - k0 != duree:                       # une minute manque dans l'ouverture : on ne devine pas
             continue
         jour_str = str(t[k0])[:10]
         if (debut and jour_str < debut) or (fin and jour_str >= fin):
@@ -71,7 +73,7 @@ def trades_orb(serie, objectif_R: float = OBJECTIF_R, debut: str | None = None,
         prix = o[ke]
         stop = bas5 if s > 0 else haut5
         d = s * (prix - stop)
-        if d <= 0:                             # l'ouverture de 9 h 35 est déjà au-delà du stop
+        if d <= 0 or d < stop_min_prix:        # déjà au-delà du stop, ou stop sous le minimum du courtier
             continue
         cible = prix + s * objectif_R * d
         entree_nette = prix + s * couts[ke]
