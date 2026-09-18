@@ -11,6 +11,39 @@ Une ligne par brique, avec son pourcentage réel.
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
 
+### 💰 PLAN DE RISQUE DE MONGAZI appliqué le 2026-09-18 (document : `trading/PLAN-DE-RISQUE.md`)
+
+Mongazi envoie ses planches : **échelle 6-4-3 pilotée par le drawdown + intérêts composés**, et
+demande que la stratégie et le backtest la suivent **à n'importe quel capital**, avec un carnet de
+trades analysé au fil de l'eau.
+
+- **L'échelle est écrite au SEUL endroit où le risque est décidé** (`noyau/profils.risque_courant`),
+  donc l'agent en direct et les backtests décident avec le même code. Réglage : `config.toml`,
+  `[profil_boost] paliers_drawdown = [[0, 6], [0.0001, 4], [0.20, 3]]`. Le profil actif reste `pro` :
+  **rien n'a changé pour l'agent tant que Mongazi ne bascule pas**.
+- ⚠️ **L'échelle est ANCRÉE sur le risque choisi** (à 10 % elle donne 10-6,7-5) : écrite en dur, elle
+  aurait plafonné à 6 % quelqu'un qui a choisi 10, sans le lui dire. ⛔ **Le videur refuse toute
+  échelle dont le risque remonte quand le drawdown s'aggrave** (martingale).
+- **Ce qu'elle apporte, mesuré sur 1 467 vrais trades** : pire recul **28,8 % → 23,7 %**, et si
+  l'avantage disparaît, **P(ruine) 46,6 % → 5,8 %**. Elle ne fait pas gagner plus, elle fait survivre.
+- ⛔ **LE PLAFOND DE LOTS CHANGE TOUT** (`recherche/compte_plan.py`, vrais lots) : les 100 lots
+  maximum de Deriv plafonnent le risque à ~1 700 $ par trade sur le NAS100, donc **la croissance
+  cesse d'être exponentielle** et **tous les capitaux de départ convergent** (50 $ comme 1 M$
+  finissent vers 2,5 M$ en 4 ans). La planche « 5 000 $ → 41 millions » ne peut pas se produire sur
+  un seul compte : c'est ce que répond sa propre planche « LES POSSIBILITÉS » (plusieurs comptes).
+- **Mois par mois à 500 $** : croissance médiane **6,2 %/mois**, 100 % de mois positifs — ⚠️ une
+  conséquence arithmétique de +0,96 R sur 30 trades/mois, **pas une promesse** : tout repose sur la
+  tenue de l'avantage en direct.
+- **Carnet** : `python -m trading.recherche.suivi` → `trading/SUIVI.md` (une ligne par trade, palier
+  appliqué, série en cours, écart au backtest avec intervalle de confiance). Il lit le journal
+  SQLite de l'agent. **Premier chiffre à surveiller : le taux de remplissage des ordres limites.**
+- ⛔ **Deux régressions attrapées** : un champ ajouté à `banc.Trades` **décalait les champs de
+  `TradesSniper`** (prix d'entrée faux, 2 contrôles rouges) — ne jamais ajouter de champ à une classe
+  dont une fille passe ses valeurs par position ; et un **tableau de coûts survivait à une découpe de
+  série** (`dataclasses.replace`), corrigé par un `__post_init__` qui le jette s'il ne fait plus la
+  bonne longueur.
+- QC **219 + 45 + 43 + 20 verts**. ⏳ **Prochaine étape : la démo en observation** sur `6305888`.
+
 ### ⚡ RECHERCHE DE SCALPING du 2026-09-17 : **un candidat, et une réponse mesurée à la question de Mongazi** (rapports : `trading/RECHERCHE-SCALPING.md`, protocole `trading/RECHERCHE-SANS-FIN.md`)
 
 Mongazi : « recherche une stratégie qui puisse atteindre ces objectifs, tant qu'on ne trouve pas tu ne
