@@ -76,6 +76,13 @@ paliers = [10.0, 5.0, 3.0, 2.0, 1.5, 1.0]
 # capital de travail et n'est plus jamais risqué (MT5 n'a pas d'API de retrait).
 poche_declencheur_pct = 50.0
 poche_part_pct = 25.0
+# ÉCHELLE PAR LE DRAWDOWN (plan de Mongazi, 2026-09-18). (seuil de drawdown, risque %).
+# Plein tarif tant que le capital est à son SOMMET ; un cran en dessous dès qu'on passe sous le
+# sommet ; un cran de plus sous -20 % ; retour au plein tarif dès qu'un nouveau sommet est touché.
+# ⚠️ Le videur REFUSE toute échelle dont le risque remonte quand le drawdown s'aggrave (martingale).
+# ⚠️ Mesuré sur 1 467 vrais trades : pire recul 28,8 % → 23,7 %, et si l'avantage disparaît,
+# P(ruine) 46,6 % → 5,8 %. Elle ne fait pas gagner plus, elle fait survivre.
+paliers_drawdown = [[0.0, 6.0], [0.0001, 4.0], [0.20, 3.0]]
 
 
 [marche]

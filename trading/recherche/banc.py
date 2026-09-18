@@ -67,6 +67,15 @@ class Serie:
     def minutes(self) -> int:
         return MINUTES_TF[self.tf]
 
+    def __post_init__(self) -> None:
+        # ⚠️ Le coût par barre appartient À CES barres-là. Une série reconstruite (par exemple avec
+        # `dataclasses.replace` pour couper l'historique à une minute donnée, comme le fait le QC du
+        # sniper) garderait sinon le tableau de l'ancienne série : des coûts décalés, sans un mot.
+        if self.cout_bar_prix is not None and len(self.cout_bar_prix) != len(self.cloture):
+            self.cout_bar_prix = None
+        if self.volume is not None and len(self.volume) != len(self.cloture):
+            self.volume = None
+
     def couts_prix(self) -> np.ndarray:
         if self.cout_bar_prix is None:
             return np.full(len(self.cloture), self.cout_sens_pts * self.point, dtype=np.float64)
@@ -260,6 +269,10 @@ class Trades:
     sens: np.ndarray
     R: np.ndarray
     motif: np.ndarray
+    # ⛔ NE PAS ajouter de champ ici. `TradesSniper` hérite de cette classe et passe ses valeurs par
+    # POSITION (`TradesSniper(*out[:5], *out[5:])`) : un champ de plus décale silencieusement tous
+    # les siens, et son prix d'entrée devient autre chose. Mesuré le 2026-09-18.
+    # Les entrées LIMITE posent `t.ordre` en attribut simple (voir `simuler_ordres`).
 
     def __len__(self) -> int:
         return len(self.R)
@@ -548,6 +561,7 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
     sens_o = np.empty(m, np.int8)
     r_o = np.empty(m, np.float64)
     motif_o = np.empty(m, np.int8)
+    ordre_o = np.empty(m, np.int64)
     k = 0
     libre_des = 0
     for o in range(m):
@@ -618,9 +632,10 @@ def _simuler_ordres(ouv, haut, bas, clo, pose, sens, limite, stop, cible, expire
         sens_o[k] = 1 if s > 0 else -1
         r_o[k] = (net + portage) / d
         motif_o[k] = motif
+        ordre_o[k] = o
         k += 1
         libre_des = j
-    return e_i[:k], s_i[:k], sens_o[:k], r_o[:k], motif_o[:k]
+    return e_i[:k], s_i[:k], sens_o[:k], r_o[:k], motif_o[:k], ordre_o[:k]
 
 
 def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None = None) -> Trades:
@@ -640,7 +655,12 @@ def simuler_ordres(serie: Serie, o: Ordres, i_debut: int = 0, i_fin: int | None 
                              (o.fin_seance if o.fin_seance is not None
                               else np.zeros(len(serie), dtype=np.bool_)).astype(np.bool_),
                              o.fin_seance is not None, float(o.k_remplissage), bool(o.ameliorer))
-    return Trades(*sortie)
+    t = Trades(*sortie[:5])
+    # L'indice de l'ordre servi, posé en attribut simple (pas en champ : voir le commentaire de
+    # `Trades`). Il rend la distance de stop de chaque trade, donc son dimensionnement en vrais lots.
+    # `sortie[5]` indexe les ordres GARDÉS ET TRIÉS : on le ramène aux ordres d'origine.
+    t.ordre = np.flatnonzero(garde)[ordre][sortie[5]]
+    return t
 
 
 _simuler_signaux = simuler

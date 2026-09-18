@@ -184,6 +184,10 @@ class Profil:
     levier_effectif_max: float = 3.0
     paliers_actifs: bool = False
     paliers: tuple[float, ...] = ()
+    # Échelle par le DRAWDOWN (plan de Mongazi) : ((seuil de drawdown, risque %), …), seuils
+    # croissants. ((0, 6), (0.0001, 4), (0.20, 3)) = 6 % au sommet, 4 % dès qu'on passe dessous,
+    # 3 % sous -20 %, et retour à 6 % au prochain sommet.
+    paliers_drawdown: tuple[tuple[float, float], ...] = ()
     poche_declencheur_pct: float = 0.0     # 0 = poche épargne désactivée
     poche_part_pct: float = 0.0
 
@@ -342,6 +346,7 @@ def _appliquer_profil(d: dict) -> Profil:
         cc["perte_max_jour_pct"] = float(p.get("perte_max_jour_pct", cc["perte_max_jour_pct"]))
         plafond = PLAFOND_RISQUE_PAR_TRADE
         paliers, poche_decl, poche_part, paliers_actifs = (), 0.0, 0.0, False
+        paliers_dd = _paliers_drawdown(p)
     else:
         plafond = PLAFOND_RISQUE_BOOST
         rp["risque_par_trade_pct_max"] = PLAFOND_RISQUE_BOOST
@@ -359,13 +364,44 @@ def _appliquer_profil(d: dict) -> Profil:
         paliers = tuple(float(x) for x in p.get("paliers", ()))
         poche_decl = float(p.get("poche_declencheur_pct", 0.0))
         poche_part = float(p.get("poche_part_pct", 0.0))
+        paliers_dd = _paliers_drawdown(p)
 
     return Profil(
         actif=actif, plafond_risque_pct=plafond,
         levier_effectif_max=float(p.get("levier_effectif_max", 3.0)),
         paliers_actifs=paliers_actifs, paliers=paliers,
         poche_declencheur_pct=poche_decl, poche_part_pct=poche_part,
+        paliers_drawdown=paliers_dd,
     )
+
+
+def _paliers_drawdown(p: dict) -> tuple[tuple[float, float], ...]:
+    """Lire et VALIDER l'échelle par drawdown : seuils croissants, risques décroissants.
+
+    ⛔ Une échelle qui REMONTE le risque quand le capital baisse est une martingale : elle double la
+    mise après une perte, et elle finit toujours de la même façon. Le refus est ici, pas dans un
+    commentaire.
+    """
+    brut = p.get("paliers_drawdown", ())
+    if not brut:
+        return ()
+    paliers = []
+    for ligne in brut:
+        if len(ligne) != 2:
+            raise ConfigDangereuse(f"[profil] paliers_drawdown : {ligne!r} n'est pas (seuil, risque).")
+        seuil, risque = float(ligne[0]), float(ligne[1])
+        if not (0.0 <= seuil < 1.0):
+            raise ConfigDangereuse(f"[profil] paliers_drawdown : seuil {seuil} hors de [0 ; 1[.")
+        if risque <= 0:
+            raise ConfigDangereuse(f"[profil] paliers_drawdown : risque {risque} doit être positif.")
+        paliers.append((seuil, risque))
+    paliers.sort(key=lambda x: x[0])
+    for (s1, r1), (s2, r2) in zip(paliers, paliers[1:]):
+        if r2 > r1 + 1e-9:
+            raise ConfigDangereuse(
+                f"[profil] paliers_drawdown : le risque REMONTE de {r1:g} % à {r2:g} % quand le "
+                f"drawdown passe de {100 * s1:g} % à {100 * s2:g} %. C'est une martingale : refusé.")
+    return tuple(paliers)
 
 
 # =============================================================================

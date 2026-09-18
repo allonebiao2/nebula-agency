@@ -41,6 +41,8 @@ class TradeCompte:
     capital_avant: float = 0.0
     capital_apres: float = 0.0
     refuse: str = ""
+    risque_pct_applique: float = 0.0    # le palier de l'échelle au moment de l'entrée
+    drawdown_avant: float = 0.0         # à quelle distance du sommet on était
 
 
 @dataclass
@@ -123,13 +125,38 @@ def _dans(t: time, debut: time, fin: time) -> bool:
     return debut <= t <= fin if debut <= fin else (t >= debut or t <= fin)
 
 
+def _config_echelle(cfg, risque_pct: float, echelle: tuple[tuple[float, float], ...]):
+    """Une configuration minimale pour `profils.risque_courant` : le risque plein et l'échelle.
+
+    On ne fabrique pas une deuxième logique de décision : on donne au code de l'agent ce dont il a
+    besoin, et c'est lui qui décide. C'est la seule façon que la mesure et le compte disent pareil.
+    """
+    from dataclasses import replace
+    from ..noyau.config import Profil, charger
+    base = cfg or charger()
+    profil = replace(base.profil, paliers_drawdown=tuple((float(s), float(r)) for s, r in echelle),
+                     paliers_actifs=False, paliers=()) if isinstance(base.profil, Profil) else base.profil
+    risque = replace(base.risque, risque_par_trade_pct=risque_pct)
+    return replace(base, profil=profil, risque=risque)
+
+
 def simuler_compte(trades: list[TradeCompte], specs: dict[str, SpecsSymbole], *, capital: float = 10_000.0,
-                   risque_pct: float = 1.0, regles: str = "video", cfg=None) -> ResultatCompte:
-    """`trades` : tous instruments mélangés, dans n'importe quel ordre (triés ici par entrée)."""
+                   risque_pct: float = 1.0, regles: str = "video", cfg=None,
+                   echelle_drawdown: tuple[tuple[float, float], ...] | None = None) -> ResultatCompte:
+    """`trades` : tous instruments mélangés, dans n'importe quel ordre (triés ici par entrée).
+
+    `echelle_drawdown` : l'échelle du plan de Mongazi ((seuil, risque %), …). Le risque du trade est
+    alors décidé par `noyau/profils.risque_courant`, **le même code que l'agent en direct**, à partir
+    du capital réalisé et de son sommet. Sans échelle, le risque reste fixe : rien ne change pour les
+    appelants existants.
+    """
+    from ..noyau import profils
     pro = regles == "pro"
     if pro and cfg is None:
         from ..noyau.config import charger
         cfg = charger()
+    etat = profils.initialiser("plan", capital) if echelle_drawdown else None
+    cfg_echelle = _config_echelle(cfg, risque_pct, echelle_drawdown) if echelle_drawdown else None
     res = ResultatCompte("NEBULA PRO" if pro else "vidéo", risque_pct, capital)
     realise = capital
     sommet = capital
@@ -153,6 +180,7 @@ def simuler_compte(trades: list[TradeCompte], specs: dict[str, SpecsSymbole], *,
             pnl_sem += t.pnl_usd
             pnl_mois += t.pnl_usd
             sommet = max(sommet, realise)
+            profils.maj_sommet(etat, realise)       # le « TOP » de l'échelle par drawdown
             if t.pnl_usd < 0:
                 derniere_perte = t.sortie
                 pertes_affilee += 1
@@ -209,7 +237,12 @@ def simuler_compte(trades: list[TradeCompte], specs: dict[str, SpecsSymbole], *,
             if motif:
                 t.refuse = motif
                 continue
-        d = dimensionner(capital=realise, risque_pct=risque_pct, points_de_risque=t.points_risque,
+        risque_trade = risque_pct
+        if echelle_drawdown:
+            risque_trade, _motif = profils.risque_courant(cfg_echelle, etat, realise)
+            t.drawdown_avant = profils.drawdown_courant(etat, realise)
+        t.risque_pct_applique = risque_trade
+        d = dimensionner(capital=realise, risque_pct=risque_trade, points_de_risque=t.points_risque,
                          specs=specs[t.base],
                          lots_total_max=(cfg.exposition.lots_total_max if pro else specs[t.base].volume_max * 10),
                          lots_deja_ouverts=sum(o.lots for o in ouverts) if pro else 0.0,   # « tous ordres confondus »

@@ -198,8 +198,12 @@ def qc_profils():
     verifier(r2 == 5.0 and note, "capital ×2 : le risque descend d'un palier (10 → 5 %) et le dit", str((r2, note)))
     verifier(profils.risque_courant(b10, e, 16500)[0] == 1.5,
              "capital ×16 : quatre paliers plus bas (10 → 5 → 3 → 2 → 1,5 %)")
-    verifier(profils.risque_courant(b10, e, 600)[0] == 10.0,
-             "capital sous le départ : le risque ne REMONTE jamais au-dessus du choix")
+    # ⚠️ Depuis le plan de Mongazi (2026-09-18), l'échelle par DRAWDOWN agit aussi : sous le sommet
+    # le risque DESCEND. Ce qui reste interdit, c'est qu'il remonte au-dessus du choix.
+    sous_le_depart = profils.risque_courant(b10, e, 600)[0]
+    verifier(sous_le_depart <= 10.0 and sous_le_depart == 5.0,
+             "capital sous le départ : le risque ne remonte jamais au-dessus du choix, et l'échelle "
+             "du drawdown le fait descendre (10 → 5 % à -40 % du sommet)", str(sous_le_depart))
     verifier(profils.echelle(3.0, b3.profil.paliers) == [3.0, 2.0, 1.5, 1.0],
              "à 3 %, l'échelle ne contient que des paliers inférieurs")
     ep = profils.initialiser("pro", 1000)

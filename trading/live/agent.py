@@ -194,7 +194,17 @@ class Agent:
             texte = f"{part:,.2f} mis à l'abri (total {self.etat_profil.verrouille:,.2f})"
             self.journal.evenement("poche", texte.replace(",", " ")
                                    + " : ces gains ne seront plus jamais risqués")
+        # LE SOMMET (« TOP ») de l'échelle par drawdown. Sans cette ligne, l'échelle croirait le
+        # capital toujours au plus haut et ne descendrait jamais d'un cran : panne silencieuse.
+        ancien_sommet = self.etat_profil.sommet_equite
+        if profils.maj_sommet(self.etat_profil, compte.equity) > ancien_sommet:
+            self._ecrire_etat_profil()
+        ancien_risque = (self.risque_du_palier or (0.0, ""))[0]
         self.risque_du_palier = profils.risque_courant(cfg, self.etat_profil, compte.equity)
+        if ancien_risque and abs((self.risque_du_palier[0] or 0) - ancien_risque) > 1e-9:
+            self.journal.evenement(
+                "risque", f"risque par trade {ancien_risque:g} % → {self.risque_du_palier[0]:g} % "
+                          f"({self.risque_du_palier[1] or 'retour au sommet du capital'})")
 
     # ------------------------------------------------------------------ #
     #  Santé, portes, chien de garde, rapport hebdomadaire

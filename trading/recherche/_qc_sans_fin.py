@@ -201,6 +201,69 @@ def qc_dukascopy() -> None:
                                                 f"(médiane {np.nanmedian(e):.5g} en prix)")
 
 
+def qc_echelle_drawdown() -> None:
+    """L'échelle 6-4-3 du plan de Mongazi : plein tarif au sommet, moins en dessous, et retour."""
+    from ..noyau import profils
+    from ..noyau.config import ConfigDangereuse, charger
+    cfg = charger(surcharges={"profils.actif": "boost", "profil_boost.risque_par_trade_pct": 6.0})
+    verifier(cfg.profil.paliers_drawdown == ((0.0, 6.0), (0.0001, 4.0), (0.2, 3.0)),
+             f"l'échelle est lue depuis la configuration : {cfg.profil.paliers_drawdown}")
+    etat = profils.initialiser("boost", 500.0)
+    lu = []
+    for equite in (500, 600, 590, 480, 420, 700):
+        profils.maj_sommet(etat, equite)
+        lu.append(round(profils.risque_courant(cfg, etat, equite)[0], 2))
+    verifier(lu == [6.0, 6.0, 4.0, 3.0, 3.0, 6.0],
+             f"6 % au sommet · 4 % sous le sommet · 3 % à -20 % · 6 % au nouveau sommet ({lu})")
+    # TÉMOIN : sans mise à jour du sommet, l'échelle mesure le drawdown depuis le CAPITAL DE DÉPART
+    # et pas depuis le sommet atteint. Après 500 → 600 → 480, elle lit -4 % au lieu de -20 % : elle
+    # laisse donc 4 % de risque là où le plan en veut 3. C'est la panne silencieuse à attraper.
+    fige = profils.initialiser("boost", 500.0)
+    sans_maj = [round(profils.risque_courant(cfg, fige, e)[0], 2) for e in (600, 480)]
+    verifier(sans_maj == [6.0, 4.0] and lu[3] == 3.0,
+             f"TÉMOIN : sommet jamais mis à jour → 4 % là où le plan veut 3 % ({sans_maj} contre {lu[3]})")
+    try:
+        charger(surcharges={"profils.actif": "boost",
+                            "profil_boost.paliers_drawdown": [[0.0, 3.0], [0.2, 6.0]]})
+        verifier(False, "une échelle qui REMONTE le risque (martingale) doit être refusée")
+    except ConfigDangereuse:
+        verifier(True, "une échelle qui remonte le risque quand ça va mal est refusée (martingale)")
+    verifier(profils.risque_courant(charger(), profils.initialiser("pro", 100.0), 50.0)[0]
+             == charger().risque.risque_par_trade_pct,
+             "TÉMOIN : sans échelle configurée, le risque reste celui du profil")
+
+
+def qc_compte_suit_echelle() -> None:
+    """Le simulateur de compte applique bien l'échelle, et ne change rien quand elle est absente."""
+    from datetime import datetime, timedelta
+    from ..noyau.risque import SpecsSymbole
+    from .compte import TradeCompte, simuler_compte
+    specs = SpecsSymbole(nom="NAS100", point=0.01, digits=2, volume_min=0.1, volume_max=100,
+                         volume_step=0.1, valeur_tick=0.01, taille_tick=0.01, taille_contrat=1.0,
+                         stops_level_points=150)
+    t0 = datetime(2024, 1, 2, 10, 0)
+    suite = [2.0, -1.0, -1.0, -1.0, -1.0, 2.0, 2.0]      # un sommet, une descente, une remontée
+    def trades():
+        return [TradeCompte(base="NAS100", entree=t0 + timedelta(hours=2 * k),
+                            sortie=t0 + timedelta(hours=2 * k + 1), sens=1, R=r,
+                            points_risque=1500, prix=20000.0) for k, r in enumerate(suite)]
+    # ⚠️ Capital volontairement PETIT : à 50 000 $ le lot maximum du courtier plafonne les deux
+    # plans au même endroit et ils rendent le même capital final — le témoin ne montrerait rien.
+    echelle = ((0.0, 6.0), (0.0001, 4.0), (0.20, 3.0))
+    avec = simuler_compte(trades(), {"NAS100": specs}, capital=5_000.0, risque_pct=6.0,
+                          echelle_drawdown=echelle)
+    risques = [round(t.risque_pct_applique, 2) for t in avec.pris]
+    verifier(risques[0] == 6.0 and 4.0 in risques and min(risques) <= 4.0,
+             f"le compte applique l'échelle trade par trade ({risques})")
+    verifier(max(risques) <= 6.0, "le risque ne dépasse jamais le plein tarif")
+    verifier(risques[-1] >= risques[-2], "le risque remonte quand le capital remonte")
+    sans = simuler_compte(trades(), {"NAS100": specs}, capital=5_000.0, risque_pct=6.0)
+    verifier(all(abs(t.risque_pct_applique - 6.0) < 1e-9 for t in sans.pris),
+             "TÉMOIN : sans échelle, le risque reste fixe (aucune régression pour les autres appels)")
+    verifier(sans.resume()["capital_final"] != avec.resume()["capital_final"],
+             "TÉMOIN : les deux plans ne donnent pas le même capital final")
+
+
 def qc_surprises() -> None:
     """Le signe des surprises doit être équilibré. Forex Factory code « pire » par 2, pas par -1 :
     lu tel quel, toutes les mauvaises surprises devenaient des bonnes, en double."""
@@ -256,7 +319,8 @@ def main() -> int:
     print("\n  QC · recherche sans fin\n")
     for f in (qc_etiquette_egale_simulateur, qc_aucune_nuit, qc_fuite_du_futur,
               qc_etiquette_ne_regarde_pas_apres, qc_point_mort, qc_scelle, qc_masques_seance,
-              qc_sortie_seance_compte_comme_echec, qc_dukascopy, qc_surprises):
+              qc_sortie_seance_compte_comme_echec, qc_dukascopy, qc_surprises,
+              qc_echelle_drawdown, qc_compte_suit_echelle):
         f()
     print(f"\n  {VERTS} verts · {ROUGES} rouges\n")
     return 0 if ROUGES == 0 else 1
