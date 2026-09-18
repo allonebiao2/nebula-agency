@@ -82,3 +82,31 @@ Une page qui affiche « 80 % à 1:2 » vend quelque chose, ou triche comme notre
 2. Juger ensuite **uniquement** sur la période que les auteurs n'ont jamais vue (ORB : mars 2023 →
    septembre 2026), au spread Deriv, avec les vrais lots, **par le moteur de l'agent**.
 3. Ouvrir le verdict par les critères de Mongazi, puis par l'espérance et le pire recul.
+
+## RÉSULTATS DES TESTS (2026-09-18 soir, NAS100, règles des articles, rien d'optimisé)
+
+⚠️ Simulateurs simples, **causaux par construction** (entrée au marché, une position à la fois), mais
+**pas encore rejoués par un moteur d'agent** : ce sont des pistes au sens de la règle anti-triche.
+
+| stratégie | période JAMAIS VUE par les auteurs | gagnants | gain / perte | résultat |
+|---|---|---|---|---|
+| **ORB 5 min** (`orb.py`) | mars 2023 → sept. 2026, Dukascopy | 24,8 % | 3,4 R / −1,0 R | **+0,078 R/trade**, 896 trades, non significatif (t ≈ 1) |
+| ORB 5 min | 2024 → 2026, prix Deriv | 25,0 % | 3,3 / −1,0 | +0,059 R/trade, 683 trades |
+| **Zone de bruit, version article** (`zone_bruit.py`) | mars 2024 → sept. 2026, Dukascopy | **39,5 %** | 1,76 | **+8,2 %/an**, Sharpe 0,59, recul 18,5 % |
+| Zone de bruit, version article | idem, prix Deriv | **40,1 %** | 1,80 | **+10,6 %/an**, Sharpe 0,74, recul 17,7 % |
+| Zone de bruit, stop courtier permanent | idem, prix Deriv | 25,6 % | 3,42 | +10,0 %/an, Sharpe 0,78, recul 14,5 % |
+| Dernière demi-heure (`derniere_demi_heure.py`) | 2013 → 2026 | 48,3 % | 0,93 | **négatif** (−0,014 %/trade) |
+
+- **Reproduction de l'ORB** sur la période de l'article (2016 → 2023-02) : 23,5 % de gagnants et
+  +0,10 R, contre 24 % et +0,13 R publiés : **notre code retrouve l'article**. Avant l'article
+  (2013-2015) : −0,13 R, parce qu'avec l'indice plus bas les stops étaient petits et le spread Deriv
+  de 70 points coûtait 0,20 R.
+- **Zone de bruit, 2013 → 2024 (période de l'article, sur un autre indice)** : 38 % de gagnants,
+  +8,7 %/an, Sharpe 0,67, recul 32 %.
+- ⚠️ Le « R » ne convient pas à la zone de bruit : son stop initial colle parfois au prix d'entrée
+  et fait exploser les multiples (+24 637 R une année). Elle se mesure comme l'article : rendement
+  du compte avec taille ajustée à la volatilité (2 % par jour, levier plafonné à 4).
+- **Aucune ne remplit « plus de 50 % à 1:2 »**. La plus proche : zone de bruit, 40 % et 1:1,8.
+- ⛔ **Avec 10 $, aucune n'est tradable à son niveau de risque** : 0,1 lot de NAS100 représente
+  ~2 400 $ d'exposition, soit x240 sur 10 $, quand l'article travaille à x2 en moyenne. Il faudrait
+  **~1 200 $** pour la zone de bruit et **~400 $** pour l'ORB à 1 % de risque.
