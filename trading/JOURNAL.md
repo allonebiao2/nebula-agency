@@ -11,6 +11,20 @@ Une ligne par brique, avec son pourcentage réel.
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
 
+### 🌐 STRATÉGIES PUBLIÉES, TESTÉES LE 2026-09-18 AU SOIR (rapport : `trading/RECHERCHE-WEB.md`)
+
+Mongazi : « trouve-moi sur la toile une méthode… ne t'arrête jamais tant que tu ne trouves pas ».
+- **Aucune source crédible ne montre plus de 50 % de gagnants à 1:2.** Momentum : 25-48 % avec de gros
+  gains ; retour à la moyenne : 70-75 % avec de petits gains et souvent sans stop.
+- Testées sur le NAS100, règles des articles, **juge = la période que les auteurs n'ont jamais vue** :
+  ORB 5 min (article reproduit, puis 25 % de gagnants, +0,06 à +0,08 R, non significatif) · **zone de
+  bruit** (40 % de gagnants, gain/perte 1,8, **+8 à +10,6 %/an**, Sharpe 0,6-0,7, recul 18 %) ·
+  dernière demi-heure (négative).
+- ⛔ Avec 10 $, aucune n'est tradable à son risque : il faut ~1 200 $ (zone de bruit) ou ~400 $ (ORB).
+- ⏳ **Suite** : moteur d'agent pour la zone de bruit (règle anti-triche), la même sur l'EUR/USD,
+  et le critère à trancher par Mongazi (50 % à 1:2, ou espérance et recul).
+
+
 ### ⛔ LE TEST D'UN AN DU 2026-09-18 (après-midi) : LE REFLUX PERD CHEZ UN COURTIER (rapport : `trading/REJEU-1AN.md`)
 
 Mongazi : « fais le test sur 1 an avec un capital de 10 dollars sur chacun, et prends les notes ».
