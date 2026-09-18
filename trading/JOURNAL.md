@@ -1,6 +1,6 @@
 # NEBULA TRADER — journal d'avancement
 
-Mis à jour le **2026-09-17, nuit** (recherche de scalping : un candidat confirmé sur données scellées, plafond intraday mesuré, QC 219 + 35 verts).
+Mis à jour le **2026-09-18, après-midi** (test d'un an : la méthode perd chez un courtier). Avant : le **2026-09-17, nuit** (recherche de scalping : un candidat confirmé sur données scellées, plafond intraday mesuré, QC 219 + 35 verts).
 Une ligne par brique, avec son pourcentage réel.
 
 > ⚠️ **Un pourcentage ici mesure ce qui est ÉCRIT ET TESTÉ, pas ce qui est
@@ -10,6 +10,45 @@ Une ligne par brique, avec son pourcentage réel.
 ---
 
 ## 🔴 POINT D'ARRÊT EXACT (à lire en premier en reprenant)
+
+### ⛔ LE TEST D'UN AN DU 2026-09-18 (après-midi) : LE REFLUX PERD CHEZ UN COURTIER (rapport : `trading/REJEU-1AN.md`)
+
+Mongazi : « fais le test sur 1 an avec un capital de 10 dollars sur chacun, et prends les notes ».
+- **Fait avec le moteur de l'agent** (`live/moteur_scalp.py`, neuf, partagé par `recherche/rejeu.py`
+  et `live/scalpeur.py`) : l'ordre touché le PREMIER entre, comme chez un courtier. Filtres
+  trimestriels qui n'ont jamais vu l'année, prix et coûts Deriv, vrais lots, échelle 6-4-3.
+- **Résultat** : NAS100 **30,8 % de 2 R, −0,103 R** (1 457 trades) · EUR/USD **25,4 %, −0,370 R**
+  (1 045) · 10 $ : **0 trade** sous le plafond x30 (il faut ~80 $ NAS100, ~39 $ EUR/USD), et sans
+  plafond 10 $ → 8,98 $ (NAS100) et 6,62 $ (EUR/USD). Même année, mêmes prix, la recherche disait
+  67,3 % et +0,987 R (NAS100).
+- ⛔ **LA CAUSE : `banc._simuler_ordres` n'est pas causal.** Il traite les ordres limites dans l'ordre
+  de POSE et donne le trade au plus ancien qui finit par être servi, donc au plus bas quand le prix
+  plonge à travers plusieurs ordres : il « sait » que le prix ira jusque-là. Sans filtre : banc
+  +0,186 R, moteur causal −0,090 R. Le filtre a appris sur ces trades-là. Second défaut, même sens :
+  réentrée dans la barre même où le trade précédent sort.
+- ✅ **Le moteur est contrôlé contre le banc** (`_qc_moteur.py`) : ordres d'une minute → mêmes trades
+  au 1e-4 R près, 208 épisodes de divergence sur 208 ouverts par la réentrée du banc.
+- **Variantes causales** (`rejeu_variantes.py`) : ordre le plus profond, repli 1,0 R, repli 1,5 R,
+  avec et sans filtre : **toutes entre −0,08 et −0,34 R**. Registre : ce sont des essais, pas des preuves.
+- **Fait en chemin** : `construire_aux_barres` (caractéristiques par morceaux, tient dans 1,7 Go) et
+  `_qc_parite.py` (**20 000 minutes = parité à 2e-6 ; les 6 000 de l'agent s'écartaient de 3,7 %** ;
+  témoin à 500 rouge) · `scalpeur.py` réécrit : ⛔ **il n'appelait pas `execution.autorisation`**
+  (avec son drapeau il aurait tradé un compte RÉEL), il n'écrivait aucun trade dans le journal
+  (le carnet serait resté vide), il jugeait le filtre à la pose et non à la minute du remplissage,
+  et son coût était constant alors que deux caractéristiques dépendent du coût minute par minute ·
+  `Executeur.ouvrir_niveaux` · fiches par trade `rapports/recherche/rejeu/*.jsonl` et `direct/`.
+- ⚠️ **Le plafond de levier x30 de BOOST interdit le scalping M1 à 6 %** : levier médian x29 (NAS100)
+  et x73 (EUR/USD). Les calculs « 50 $ → 8 M$ » n'avaient aucun plafond.
+- ⏳ **Suite** : (1) réapprendre le filtre sur les trades du moteur causal et le rejuger ; (2) rendre
+  le banc causal et **rejouer tout le registre** ; (3) aucune démo ni argent réel avant une version
+  causale positive sur une période neuve. Donnée : EUR/USD Dukascopy du **2024-10-10** corrompu
+  (617 bougies), `_qc_sans_fin` rouge, à retélécharger.
+  ⚠️ Rappel déplacé de `CLAUDE.md` : l'export MT5 « Unlimited » renvoie des **bougies factices depuis
+  1971** en M15/H1 (une par jour à 22 h, historique reconstitué d'avant l'euro) : filtrées à la
+  lecture (`noyau/donnees_mt5.py`).
+- QC : `trading.outils.qc` **219 verts** · `_qc_moteur` vert · `_qc_parite` vert (témoin rouge) ·
+  `_qc_sans_fin` 44 verts, 1 rouge (la journée corrompue).
+
 
 ### 💰 PLAN DE RISQUE DE MONGAZI appliqué le 2026-09-18 (document : `trading/PLAN-DE-RISQUE.md`)
 

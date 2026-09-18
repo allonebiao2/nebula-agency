@@ -6,6 +6,36 @@
 
 ---
 
+> ## ⛔ AVERTISSEMENT DU 2026-09-18 (après-midi) : les chiffres de ce document ne tiennent pas
+>
+> Le test d'un an demandé par Mongazi a été fait avec **le moteur de l'agent**, minute par
+> minute, et il **contredit les sections 3 et 7**.
+>
+> **Le défaut** : le simulateur de recherche (`banc._simuler_ordres`) traite les ordres limites
+> dans l'ordre où ils ont été **posés**. Quand le prix plonge à travers plusieurs ordres d'achat,
+> il donne le trade au plus **ancien** qui finit par être servi, c'est-à-dire au plus bas. Il
+> « sait » donc que le prix ira jusque-là, et il évite l'ordre du haut, servi le premier, qui
+> perd. Aucun courtier ne fait ça : chez lui, c'est l'ordre touché le premier qui entre.
+>
+> **Mesuré sur la même année et les mêmes prix Deriv (NAS100, 2025-09 → 2026-09)** :
+>
+> | | trades | 2 R atteints | par trade |
+> |---|---|---|---|
+> | recherche, sans filtre | 7 174 | 40,0 % | **+0,186 R** |
+> | **moteur de l'agent, sans filtre** | 8 011 | 31,0 % | **−0,090 R** |
+> | recherche, filtre à 5 % | 340 | 67,3 % | +0,987 R |
+> | **moteur de l'agent, filtre à 5 %** | 1 457 | 30,8 % | **−0,103 R** |
+>
+> Le moteur est **validé contre le banc** (`recherche/_qc_moteur.py`) : quand un seul ordre attend
+> à la fois, il donne les mêmes trades au dix-millième de R, et les 208 écarts observés viennent
+> tous d'un second défaut, du même côté : le banc laisse un nouvel ordre être servi dans la minute
+> même où le trade précédent s'arrête.
+>
+> **Conséquence** : la méthode telle qu'elle est décrite ici **perd de l'argent**. Ne pas la
+> trader, ni en réel ni pour la vendre. Détail et suite : `trading/REJEU-1AN.md`.
+
+---
+
 ## 1. Le nom, et pourquoi lui
 
 **Le reflux, c'est la mer qui se retire avant de revenir.**

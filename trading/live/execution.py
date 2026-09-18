@@ -198,6 +198,42 @@ class Executeur:
                              message=(f"refusé par le courtier : {derniere.retcode} "
                                       f"{derniere.comment}") if derniere else "aucune réponse")
 
+    def ouvrir_niveaux(self, *, achat: bool, lots: float, stop: float, objectif: float, specs,
+                       commentaire: str = "nebula") -> ResultatOrdre:
+        """Entrer au marché avec un stop et un objectif à des NIVEAUX fixés d'avance.
+
+        Sert quand un ordre limite serait servi à l'instant (le prix est déjà au-delà de la limite) :
+        le rejeu le sert à l'ouverture de la minute, mieux que sa limite, avec le stop de l'ordre.
+        ⚠️ Le stop reste au niveau prévu : jamais recalculé depuis le prix obtenu, donc jamais élargi.
+        """
+        tick = mt5.symbol_info_tick(self.symbole)
+        if tick is None:
+            return ResultatOrdre(False, message="aucun prix : marché fermé ?")
+        prix = tick.ask if achat else tick.bid
+        mini = (specs.stops_level_points or 0) * specs.point
+        if (achat and (prix - stop < mini or objectif - prix < mini)) or \
+           (not achat and (stop - prix < mini or prix - objectif < mini)):
+            return ResultatOrdre(False, message="stop ou objectif du mauvais côté du prix, ou trop près")
+        r = mt5.order_send({
+            "action": mt5.TRADE_ACTION_DEAL, "symbol": self.symbole, "volume": float(lots),
+            "type": mt5.ORDER_TYPE_BUY if achat else mt5.ORDER_TYPE_SELL, "price": prix,
+            "sl": round(stop, specs.digits), "tp": round(objectif, specs.digits),
+            "deviation": self.deviation, "magic": self.magic, "comment": commentaire[:31],
+            "type_time": mt5.ORDER_TIME_GTC, "type_filling": self._remplissage()})
+        if r is None:
+            code, msg = mt5.last_error()
+            return ResultatOrdre(False, message=f"order_send a échoué ({code}, {msg})")
+        if r.retcode != mt5.TRADE_RETCODE_DONE:
+            return ResultatOrdre(False, retcode=r.retcode, message=f"refusé par le courtier : {r.retcode} {r.comment}")
+        ticket = self._ticket_position(r)
+        verif = self._verifier_stop(ticket)
+        if not verif.ok:
+            return verif
+        obtenu = r.price or prix
+        return ResultatOrdre(True, ticket=ticket, prix=obtenu, sl=stop, tp=objectif, retcode=r.retcode,
+                             message=r.comment, prix_demande=prix,
+                             glissement_points=round((obtenu - prix) / specs.point * (1 if achat else -1), 1))
+
     # ------------------------------------------------------------------ #
     #  Ordres LIMITES (la stratégie de scalping n'entre jamais au marché)
     # ------------------------------------------------------------------ #

@@ -162,6 +162,65 @@ def construire(serie: Serie, *, annonces: np.ndarray | None = None,
     return {k: np.asarray(v, dtype=np.float64) for k, v in X.items()}
 
 
+ECHAUFFEMENT = 20_000          # barres lues AVANT la première barre voulue (voir `construire_aux_barres`)
+
+
+def construire_aux_barres(serie: Serie, indices: np.ndarray, *, echauffement: int = ECHAUFFEMENT,
+                          bloc: int = 400_000) -> tuple[np.ndarray, list[str]]:
+    """Les caractéristiques des SEULES barres `indices`, calculées par morceaux.
+
+    Pourquoi : `construire` sur 23 ans d'EUR/USD en M1 (8,7 millions de barres) tient 38 tableaux
+    en float64, soit 2,6 Go, sur un PC qui en a 1,7 de libres. Or l'apprentissage n'a besoin que des
+    barres qui précèdent un trade, et l'agent en direct que de la dernière.
+
+    Chaque morceau est relu avec `echauffement` barres AVANT lui : l'ATR d'une journée (1 440
+    barres, moyenne de Wilder), l'EMA 200 et les extrêmes de la veille ont alors oublié leur point de
+    départ. ⚠️ **Ce n'est pas une approximation qu'on suppose bonne : elle est MESURÉE**
+    (`_qc_parite.py` compare, barre par barre, ce calcul à `construire` sur toute la série). C'est
+    aussi la fenêtre que l'agent en direct doit lire : s'il en lisait moins, ses 38 chiffres ne
+    seraient plus ceux sur lesquels le modèle a appris, sans erreur ni alerte.
+
+    Renvoie (matrice float32 [len(indices) x 38], noms triés) : le même ordre que l'apprentissage.
+    """
+    indices = np.asarray(indices, dtype=np.int64)
+    ordre = np.argsort(indices, kind="stable")
+    tries = indices[ordre]
+    sortie = None
+    noms: list[str] = []
+    n = len(serie)
+    a = 0
+    while a < len(tries):
+        debut_bloc = int(tries[a])
+        fin_bloc = min(n, debut_bloc + bloc)
+        b = int(np.searchsorted(tries, fin_bloc, side="left"))
+        lecture = max(0, debut_bloc - echauffement)
+        morceau = _sous_serie(serie, lecture, fin_bloc)
+        X = construire(morceau)
+        if not noms:
+            noms = sorted(X)
+            sortie = np.full((len(indices), len(noms)), np.nan, dtype=np.float32)
+        local = tries[a:b] - lecture
+        sortie[ordre[a:b]] = np.column_stack([X[k][local] for k in noms]).astype(np.float32)
+        del X, morceau
+        a = b
+    if sortie is None:
+        noms = sorted(construire(_sous_serie(serie, 0, min(n, 3000))))
+        sortie = np.empty((0, len(noms)), dtype=np.float32)
+    return sortie, noms
+
+
+def _sous_serie(serie: Serie, a: int, b: int) -> Serie:
+    """Les barres [a, b[ d'une série, SANS rien recalculer : le coût minute par minute reste celui
+    de la série complète (à la différence de `Serie.tranche`, qui sert au partage des périodes)."""
+    from dataclasses import replace
+    champs = {}
+    for nom in ("temps", "ouverture", "haut", "bas", "cloture", "nuits_cumul", "cout_bar_prix", "volume"):
+        v = getattr(serie, nom, None)
+        if v is not None and hasattr(v, "__len__") and len(v) == len(serie):
+            champs[nom] = v[a:b]
+    return replace(serie, **champs)
+
+
 # Les découpages utilisés par la carte et par la recherche de règles. Fixés ici, une fois, pour que
 # deux vagues ne découpent pas la même caractéristique de deux façons.
 DECOUPAGES = {

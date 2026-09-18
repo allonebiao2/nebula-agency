@@ -1,5 +1,14 @@
 # NEBULA Trader · recherche d'une stratégie de SCALPING (EUR/USD, NAS100)
 
+> ## ⛔ AVERTISSEMENT DU 2026-09-18 (après-midi) : chiffres invalidés
+>
+> Ces résultats viennent du simulateur de recherche `banc._simuler_ordres`, qui **n'est pas
+> causal** pour les ordres limites : quand plusieurs ordres attendent, il donne le trade au plus
+> ancien qui finit par être servi (donc au plus bas), comme s'il savait jusqu'où le prix irait.
+> Rejouée avec le moteur de l'agent (l'ordre touché le premier entre), la même stratégie **perd** :
+> NAS100 30,8 % de 2 R et −0,103 R par trade, EUR/USD 25,4 % et −0,370 R, sur l'année
+> 2025-09 → 2026-09. Détail : `trading/REJEU-1AN.md`. **Ne rien trader sur la foi de ce document.**
+
 ## Verdict : **oui, sur NAS100, en étant très sélectif — et voici les trois chiffres, mesurés sur des années scellées.**
 
 | | mesuré | ce que demande Mongazi | |

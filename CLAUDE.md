@@ -513,19 +513,18 @@
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
 ### NEBULA TRADER · agent de trading EUR/USD + NAS100  *(produit interne, 2026-09-16)*
-- 🔴 **REPRENDRE ICI : `trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT ».** Au
-  2026-09-17 : vagues 1 à 4 **livrées**, EUR/USD + NAS100 en observation, QC 219 verts.
-  🔬 **Recherche de stratégies faite** (`trading/RECHERCHE-STRATEGIES.md`, banc `trading/recherche/`) :
-  5 stratégies publiées + 3 vidéos + 4 figures chartistes (ETE, biseaux, avec RSI/EMA 50 :
-  `trading/RECHERCHE-FIGURES.md`), de M1 à D1 et jusqu'à 21 ans (MT5 passé en « Unlimited »),
-  **312 tests, 0 survit à la correction**, aucun où plus de 50 % des trades atteignent 2 R, rien
-  intégré. **R:R 1:2 imposé en PRO et BOOST.** ⚠️ Export MT5 « Unlimited » = bougies factices
-  depuis 1971 en M15/H1 : filtrées à la lecture.
-  🎯 **3e vidéo « Sniper Entry » (2026-09-17 soir, `trading/RECHERCHE-SNIPER.md`)** : méthode apprise
-  et ses exemples retrouvés au dixième de pip, backtest M1 bid/ask + annonces Forex Factory + 10 000 $ :
-  EUR/USD **-0,113 R** (2 941 trades, 23,8 %), NAS100 **-0,075 R**, **nulle même sans coûts** ;
-  10 000 $ à 1 % → **273 $**. ⛔ **Deriv ne sert aucun tick passé** · ⛔ le jeu Hugging Face
-  « Forex Factory » perd l'heure de 40-50 % des annonces (`recherche/annonces.py` lit les pages).
+- 🔴 **REPRENDRE ICI : `trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT ».**
+  ⛔ **2026-09-18 : LE REFLUX PERD CHEZ UN COURTIER** (`trading/REJEU-1AN.md`). Rejouée un an minute
+  par minute avec **le moteur de l'agent** (`live/moteur_scalp.py` : l'ordre touché le PREMIER entre),
+  filtres trimestriels sans regard vers l'avenir, prix Deriv, vrais lots, échelle 6-4-3 : **NAS100
+  30,8 % de 2 R, −0,103 R · EUR/USD 25,4 %, −0,370 R**. Le « 66,7 % / +0,96 R » et les « 50 $ → 8 M$ »
+  venaient de `banc._simuler_ordres`, **non causal** (il donne le trade au plus ancien ordre servi,
+  donc au plus bas) : avertissement en tête de `METHODE-LE-REFLUX`, `BACKTEST-LONG`, `PLAN-DE-RISQUE`.
+  À 10 $ : **0 trade** sous le plafond de levier x30. **Ni démo ni réel** avant une version causale
+  positive sur une période neuve. Suite : filtre réappris sur les trades du moteur causal, banc rendu
+  causal et registre rejoué. `scalpeur.py` réécrit (il n'appelait pas `execution.autorisation`).
+  Contrôles : `_qc_moteur.py`, `_qc_parite.py` (20 000 minutes de contexte, pas 6 000).
+  Recherches antérieures (`RECHERCHE-STRATEGIES`, `-FIGURES`, `-SNIPER`) : **aucune stratégie ne survit**.
 - **Trois objectifs, dans cet ordre** : **être rentable** · **s'améliorer tout seul** ·
   **être vendable** (installable chez n'importe qui, vendu en ligne). ⚠️ **Le 3 découle du
   1** : un robot se vend sur un historique réel vérifié, jamais sur un backtest.

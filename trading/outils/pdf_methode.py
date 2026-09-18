@@ -22,6 +22,7 @@ SOURCES = {
     "METHODE-LE-REFLUX.md": "NEBULA · LE REFLUX — la méthode",
     "PLAN-DE-RISQUE.md": "NEBULA · LE REFLUX — le plan de risque",
     "BACKTEST-LONG.md": "NEBULA · LE REFLUX — les tests sur 36 ans",
+    "REJEU-1AN.md": "NEBULA · LE REFLUX — le test d'un an avec le moteur de l'agent",
 }
 SORTIE = RACINE / "documents"
 

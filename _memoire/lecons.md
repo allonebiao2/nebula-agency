@@ -2895,3 +2895,15 @@ bougies parmi celles où l'état des pivots change. Une fuite injectée (une bou
 ne CRÉE pas de changement : elle en SUPPRIME un, quand le futur dément le pivot. Rien à tirer, contrôle
 vert. **Règle** : un contrôle de causalité échantillonne toutes les positions, pas seulement celles où
 quelque chose arrive ; et une fuite injectée qui ne rougit rien se démontre avant de déclarer le code sain.
+
+## 2026-09-18 · Un simulateur d'ordres limites qui suit l'ordre de POSE lit l'avenir
+
+`banc._simuler_ordres` parcourait les ordres dans l'ordre où ils avaient été posés et donnait le trade
+au plus ancien qui finissait par être servi. Quand le prix plonge à travers plusieurs ordres d'achat,
+c'est le plus bas : le simulateur savait jusqu'où le prix irait, et évitait l'ordre du haut, servi le
+premier, qui perd. Le filtre a ensuite appris sur ces trades-là. Résultat : 67 % de 2 R et +0,99 R au
+banc, **31 % et −0,10 R** avec le moteur de l'agent sur la même année. Les données scellées ne
+protégeaient de rien : elles protègent du surapprentissage, pas d'un simulateur qui triche.
+**Règle** : aucun résultat n'est un résultat tant qu'il n'a pas été rejoué par **le code qui
+tradera**, minute par minute ; et ce moteur se contrôle contre le simulateur dans le cas où ils doivent
+être d'accord (un seul ordre en attente), chaque divergence expliquée.
