@@ -1,9 +1,41 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-16
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-23
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 quaterdecies. LE 2026-09-23 — NEBULA TRADER A DÉMÉNAGÉ, ET IL A UN CERVEAU
+
+🔴 **Le trading ne se travaille plus ici.** Il vit dans
+**`C:\Users\USER\nebula-trader`** (dépôt `allonebiao2/nebula-trader`, **privé**).
+Ce dépôt-ci est public, et le trader porte les identifiants MT5 et la clé privée
+qui signe les licences.
+
+**Par quoi commencer là-bas** : `_cerveau/CERVEAU.md`, puis
+`_cerveau/VUE-DENSEMBLE.md`, puis `trading/JOURNAL.md`.
+
+**Ce qui a été fait le 2026-09-23** : un cerveau à part entière pour l'agent,
+soit six pièces définies par ce qu'elles refusent (verdict, scellé, registre,
+banc, cimetière, méthodes), 11 leçons rattachées au code qui les impose, un tour
+de nuit et une vue d'ensemble. 62 contrôles verts pour le cerveau, 219 pour
+l'agent. Détail : `_memoire/conversations/2026-09-23-cerveau-trading.md`.
+
+⏳ **Trois décisions attendent Mongazi** (`nebula-trader/_cerveau/DECISIONS.md`) :
+- **D-002** : ses trois critères ne sont pas compatibles entre eux. À 51 %
+  d'objectifs atteints, cinq pertes d'affilée sur cent trades arrivent 81 % du
+  temps. Exiger des séries rares revient à exiger **66,2 %**. Garder les séries,
+  ou garder les 50 % ?
+- **D-003** : la date et le chiffre d'arrêt du projet, écrits d'avance.
+- **D-004** : le plafond mensuel de dépense du cerveau, en dollars.
+
+⏳ **Et la méthode que Mongazi doit envoyer.** Le chemin est prêt et testé de
+bout en bout.
+
+⛔ **Rien n'est rentable, rien ne tourne en réel**, et 15 méthodes sont au
+cimetière, dont toutes celles qui avaient un jour paru marcher.
 
 ---
 

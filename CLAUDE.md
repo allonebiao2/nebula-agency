@@ -512,90 +512,32 @@
 - Détail : `whatsapp-agent/README.md` et
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
-### NEBULA TRADER · agent de trading EUR/USD + NAS100  *(produit interne, 2026-09-16)*
-- 🔴 **REPRENDRE ICI : `trading/JOURNAL.md`, section « POINT D'ARRÊT EXACT ».**
-  ⛔ **2026-09-18 : LE REFLUX PERD CHEZ UN COURTIER** (`trading/REJEU-1AN.md`). Rejouée un an minute
-  par minute avec **le moteur de l'agent** (`live/moteur_scalp.py` : l'ordre touché le PREMIER entre),
-  filtres trimestriels sans regard vers l'avenir, prix Deriv, vrais lots, échelle 6-4-3 : **NAS100
-  30,8 % de 2 R, −0,103 R · EUR/USD 25,4 %, −0,370 R**. Le « 66,7 % / +0,96 R » et les « 50 $ → 8 M$ »
-  venaient de `banc._simuler_ordres`, **non causal** (il donne le trade au plus ancien ordre servi,
-  donc au plus bas) : avertissement en tête de `METHODE-LE-REFLUX`, `BACKTEST-LONG`, `PLAN-DE-RISQUE`.
-  À 10 $ : **0 trade** sous le plafond de levier x30. **Ni démo ni réel** avant une version causale
-  positive sur une période neuve. Suite : filtre réappris sur les trades du moteur causal, banc rendu
-  causal et registre rejoué. `scalpeur.py` réécrit (il n'appelait pas `execution.autorisation`).
-  Contrôles : `_qc_moteur.py`, `_qc_parite.py` (20 000 minutes de contexte, pas 6 000).
-  Recherches antérieures (`RECHERCHE-STRATEGIES`, `-FIGURES`, `-SNIPER`) : **aucune stratégie ne survit**.
-  ⛔ **RÈGLE ANTI-TRICHE** : aucun chiffre de trading annoncé sans **rejeu par le moteur de l'agent**
-  sur une période jamais vue ; le banc est une piste, pas un verdict. `banc.simuler_ordres` **refuse**
-  les ordres limites qui se chevauchent (`SimulationNonCausale`) : ne jamais le contourner pour conclure.
-- **Trois objectifs, dans cet ordre** : **être rentable** · **s'améliorer tout seul** ·
-  **être vendable** (installable chez n'importe qui, vendu en ligne). ⚠️ **Le 3 découle du
-  1** : un robot se vend sur un historique réel vérifié, jamais sur un backtest.
-- **Où** : `trading/` · **`trading/CAHIER-DES-CHARGES.md`** (v2, la référence) ·
-  `trading/JOURNAL.md` (avancement) · `trading/DOCTRINE.md` · `trading/README.md`.
-  **Lancer** : `python -m trading.app` (agent + interface sur http://127.0.0.1:8765/) ·
-  **QC** : `python -m trading.outils.qc` (**219 verts**) · **produit** :
-  `python -m trading.empaquetage.construire` (zip 44 Mo, `NEBULA Trader.exe`, sans Python).
-- ✅ **FAIT le 2026-09-16** : pont MT5 ouvert (compte démo Deriv `6305888`, identifiants
-  explicites) · historique MT5 **par année** (34 876 H4 depuis 2005) · profil de coûts
-  mesuré (spread médian **3 points** sur 147 161 ticks) · **walk-forward** 4 ans → 1 an ·
-  **agent live** (`live/agent.py`, seul fil qui parle à MT5) en **observation** · journal
-  SQLite des décisions ET des refus · calendrier économique (indisponible = abstention) ·
-  **interface 8 pages** (FastAPI local, jeton de session, HTML sans bibliothèque) ·
-  conversation (Claude `claude-sonnet-5` avec outils, ou répondeur local) · réglages validés
-  par le videur · coffre **DPAPI** · **licences Ed25519** hors ligne (clé privée dans
-  `secrets/nebula-trader-licence.pem`, jamais publiée ; `python -m trading.outils.licence`).
-- ⛔ **LES SIX VARIANTES PERDENT** (walk-forward, coûts réels, **règles réellement appliquées**,
-  recalculé le 2026-09-17) : EUR/USD cassure week-end gardé **372 trades, −0,045 R, 10 000 →
-  8 074** · fermeture du vendredi **−0,021 R** · retour à la moyenne −0,059 / −0,077 R · NAS100
-  cassure **−0,095 R** (49 trades) · retour −0,218 R. ⛔ **Le « +0,040 R sur 436 trades » cité
-  jusqu'au 16/09 était FAUX** : mesuré avant la règle R:R 1:2 (prouvé : seul ce réglage le
-  ramène). **Ne pas passer en réel, ne pas vendre de performance.**
-- **Capital pour tous, jamais au-delà du risque** : **compte cent** détecté (10 $ prennent les
-  mêmes 71 trades que 10 000 $) · **lot minimum toléré** jusqu'à 2 % · **attente** d'un stop plus
-  court. Sur compte standard, rien ne passe sous 250 $ (stop médian 527 points).
-- 📐 **CAHIER DES CHARGES DE MONGAZI passé au Monte Carlo** (le 16/09, sur les 436 trades faux) :
-  arrêt −10 % à 1 % touché **99 %** du temps · 5 pertes d'affilée sur 100 trades **97 %** ·
-  3 %/mois exige **1,30 R/trade** · 30 jours de paper = **2 trades** en H4 · levier x5 et 10 %
-  de risque incompatibles (**x21,7** médian). **Décisions de Mongazi** : **BOOST jusqu'à 10 %
-  par trade** (recalculé le 17/09 : **55 %** de chances de perdre la moitié en un an,
-  affiché au moment du choix, BOOST réel verrouillé derrière la porte PRO de 60 jours de son
-  propre cahier) · **seuils de drawdown calibrés au Monte Carlo** · **marchés : EUR/USD et
-  NAS100 uniquement**. Détail et intégration par vagues : `trading/CAHIER-DES-CHARGES.md`.
-- ✅ **Livré la nuit du 2026-09-16** : profils **PRO** (1 %, plafond 2 %) et **BOOST** (≤ 10 %,
-  disjoncteurs en escalier, paliers `[10, 5, 3, 2, 1,5, 1]` à chaque ×2, poche épargne à +50 %) ·
-  levier effectif plafonné **en réduisant la taille** · arrêt total **calibré au Monte Carlo**
-  (PRO 1 % → 26 % au 17/09) · santé **CUSUM** (remplace « 5 pertes d'affilée », qui sonne 97 % du
-  temps) · **porte démo** (30 jours ET 30 trades, soit ~1 an en H4) · porte BOOST réel
-  (60 jours de PRO réel) · chien de garde · page Évolution.
-- ⚠️ **NAS100 chez Deriv** : symbole **« US Tech 100 »**, historique **depuis 2024-01-22
-  seulement**, spread **fixe de 70 points**, lot minimum 0,1 → **3 372 $ minimum à 1 %**
-  (EUR/USD : 440 $). ⛔ **Un plafond en points n'appartient qu'à un instrument** : les 20 points
-  de l'EUR/USD refusaient 92,8 % des bougies du NAS100 (plafonds par instrument, en prix,
-  `[execution.par_instrument]`). ⛔ **Chaque rapport porte l'empreinte des règles**
-  (`empreinte_regles`) : l'interface et l'agent disent quand il ne décrit plus l'agent.
-- **Décidé** : H4, risque PRO **1 %** (plafond **2 %** écrit dans le code), **positions gardées
-  le week-end** (la fermeture du vendredi tue la tendance : 197 sorties forcées, coûts = 344 %
-  du brut ; 2 gaps en 15 ans), code agnostique du courtier, **tout ordre part avec son stop
-  chez le courtier et la position est RELUE** (sans stop, elle est fermée).
-- ⚠️ **LE COÛT EN R décide de l'unité de temps** : 0,02 R en H4 contre 0,19 R en M5.
-- ⛔ **PIÈGES MT5 MESURÉS** : `[Experts] Api=1` **coupe** l'API Python (case « désactiver ») ·
-  MT5 **éteint le Trading Algo à chaque changement de compte** · `SYMBOL_FILLING_FOK/IOC`
-  n'existent pas dans le paquet Python (drapeaux 1 et 2) · une plage de 20 ans d'un coup =
-  `Call failed`, **lire par année** · le terminal télécharge l'historique de TOUS les symboles de
-  l'Observation du marché (bases 1,2 Go, disque à 4,4 Go) · le champ `spread` d'une bougie n'est
-  pas le spread payé.
-- ⛔ **DÉFAUTS DU MOTEUR TROUVÉS ET CORRIGÉS** : disjoncteur de série noire verrouillé pour
-  toujours (le matin) · **verrous datés à l'ouverture de la barre du signal** (entrée à 00 h
-  acceptée pendant « Asie ») · **fermeture du vendredi jamais déclenchée en H4** (la dernière
-  barre ouvre à 20 h 00, avant le seuil de 20 h 30 : on compare la FIN de la barre).
-- 🔐 **Dépôt PUBLIC** : identifiants dans `secrets/` ou dans le coffre DPAPI de l'application ·
-  `.gitignore` refuse `*.env` et `secrets*` (un `notepad secrets\mt5.env` sous Git Bash avait créé
-  `secretsmt5.env` à la racine avec le mot de passe) · la construction du paquet **refuse** un
-  secret, cherché par nom ET par contenu · ⛔ un jeton collé en clair le 2026-09-16 est à révoquer.
-- ⛔ **Interdits par conception** : martingale, grille, moyenne à la baisse, stop élargi,
-  apprentissage en direct. Aucun rendement promis nulle part.
-- Détail : `_memoire/conversations/2026-09-16-nebula-trader.md`
+### NEBULA TRADER · agent de trading EUR/USD  *(produit interne)*
+- 🔴 **CE PRODUIT A DÉMÉNAGÉ LE 2026-09-23.** Il vit désormais dans un dépôt
+  **séparé et privé** : **`allonebiao2/nebula-trader`**, sur le disque
+  **`C:\Users\USER\nebula-trader`**. Plus rien de trading n'atterrit ici.
+- **Pourquoi** : ce dépôt-ci est **public**, et le trader porte les identifiants
+  MT5, la clé privée qui signe les licences, et l'avantage qu'on cherche à
+  construire. `secrets/mt5.env`, `secrets/deriv.env` et
+  `secrets/nebula-trader-licence.pem` ont suivi.
+- **Ce qu'il contient** : l'agent (`trading/`, **219 contrôles**) **et son
+  cerveau** (`cerveau/` + `_cerveau/`, **62 contrôles**) : registre des essais,
+  scellé des données, cimetière des méthodes mortes, leçons rattachées au code
+  qui les impose, tour de nuit, vue d'ensemble.
+- **En arrivant là-bas** : `_cerveau/CERVEAU.md`, puis `_cerveau/VUE-DENSEMBLE.md`.
+- ⛔ **Rien n'est rentable, rien ne tourne en réel.** Le test d'un an du
+  2026-09-18 a montré que LE REFLUX perd chez un vrai courtier ; les chiffres
+  flatteurs venaient d'un simulateur non causal. **15 méthodes au cimetière**,
+  dont toutes celles qui avaient un jour paru marcher.
+- ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
+  Cette règle vaut partout, y compris dans une conversation tenue ici.
+- **EUR/USD seul** au périmètre depuis le 2026-09-23 (décision de Mongazi), les
+  autres paires majeures ensuite. Le NAS100 est sorti.
+- ⏳ **Trois décisions attendent Mongazi** (`_cerveau/DECISIONS.md`) : le seuil
+  des séries perdantes, qui fait passer le critère réel de 50 % à **66,2 %** ·
+  la date et le chiffre d'arrêt du projet · le plafond mensuel de dépense.
+- Historique jusqu'au 2026-09-18 : `_memoire/conversations/2026-09-1*-nebula-trader*.md`.
+  Le déménagement : `_memoire/conversations/2026-09-23-cerveau-trading.md`.
 
 ## Infrastructure — où tourne quoi (2026-08-02)
 
