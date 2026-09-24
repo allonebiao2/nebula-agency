@@ -15,9 +15,8 @@
 - **Trading** (dépôt privé `nebula-trader`, rien de la méthode ici) : la méthode 0005 est
   **validée sur planches** par Mongazi (séances, jambes, entrée M1) et la **règle du TP est
   corrigée**. 🔴 **Par quoi commencer là-bas** : `_cerveau/methodes/0005-liquidite-de-seance.md`,
-  section « Validé par Mongazi sur planches ». Prochaine étape : d'autres setups jugés sur
-  planches, puis **redéclarer E10 avec la règle du TP** et choisir quel scellé ouvrir
-  (la zone de découverte est brûlée, 20 regards).
+  encadré **« POINT DE REPRISE »** en tête de la fiche : règles validées, 7 essais du jour
+  (E10 à E15), meilleure version et pistes suivantes.
 
 ---
 
