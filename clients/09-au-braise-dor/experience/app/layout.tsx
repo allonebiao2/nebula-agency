@@ -23,9 +23,12 @@ const inter = Inter({
 });
 
 const SITE = "https://aubraisedor.com";
-const TITRE = "Au Braisé d'Or · Grillades au feu de bois · Cotonou";
+/* ⚠️ « Restaurant », « Cotonou » et « Bénin » dans le titre et la description
+   (passe SEO du 2026-09-18) : l'ancien titre ne disait jamais « restaurant »,
+   le mot que tape celui qui cherche où manger. */
+const TITRE = "Au Braisé d'Or · Restaurant de grillades au feu de bois à Cotonou";
 const RESUME =
-  "Au Braisé d'Or, la maison de la braise à Cotonou : grillades au feu de bois, sauces du pays, pizzas, chawarma, salades et cocktails. Commande en un geste sur WhatsApp.";
+  "Restaurant de braise à Cotonou (Bénin) : grillades au feu de bois, sauces du pays, pizzas, chawarma, burgers, cocktails. Sur place, à emporter, livraison, traiteur.";
 
 /**
  * ⚠️ `openGraph` N'EST PAS UN ORNEMENT. Au Bénin tout circule par WhatsApp :
@@ -35,10 +38,12 @@ const RESUME =
  * regarde. L'image est en JPEG : l'aperçu WhatsApp ne lit pas toujours le WebP.
  */
 export const metadata: Metadata = {
+  /* ⚠️ Ni `alternates.canonical` ni `robots` ici : le gabarit les donnait à
+     TOUTES les pages, 404 comprise, qui se déclarait « copie de l'accueil » et
+     portait à la fois « noindex » et « index, follow ». Chaque page a le sien. */
   metadataBase: new URL(SITE),
   title: TITRE,
   description: RESUME,
-  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -61,7 +66,6 @@ export const metadata: Metadata = {
     description: RESUME,
     images: ["/og.jpg"],
   },
-  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

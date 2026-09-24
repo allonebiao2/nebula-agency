@@ -112,3 +112,8 @@ whatsapp-agent.db
 # embarquées en base64) et se régénére en une commande. Le dépôt garde les
 # scripts et les livrables, pas l'échafaudage.
 clients/01-grain-esthetique/affiche_institut.html
+
+# Methode de trading de Mongazi (captures, PDF, planches) : jamais dans le depot public
+_partage/capture de la methode/
+_partage/la methode.pdf
+_partage/capturemethod*.png

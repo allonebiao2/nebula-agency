@@ -1,5 +1,7 @@
 import { CARTE } from "@/data/carte";
 import { WHATSAPP } from "@/data/dishes";
+import { MAISON, RESUME_MAISON, faq } from "@/data/maison";
+import Ld from "./Ld";
 
 /**
  * LES DONNÉES STRUCTURÉES.
@@ -82,24 +84,35 @@ export default function DonneesStructurees() {
     return { offers: liste.length === 1 ? liste[0] : liste };
   };
 
-  const donnees = {
-    "@context": "https://schema.org",
+  /* ⚠️ UN SEUL GRAPHE (2026-09-18) : le restaurant, le site et la FAQ se
+     désignent par leur `@id`. Le `FAQPage` est bâti sur `faq()`, le MÊME
+     tableau que les questions affichées : la question balisée est la question
+     visible, au caractère près. */
+  const restaurant = {
     "@type": "Restaurant",
     "@id": `${site}/#restaurant`,
-    name: "Au Braisé d'Or",
-    slogan: "De Paris à Cotonou",
-    description:
-      "Grillades au feu de bois, sauces du pays, pizzas, chawarma, salades et cocktails. Sur place, à emporter, traiteur et réceptions.",
-    url: site,
+    name: MAISON.nom,
+    /* Les noms sous lesquels on le trouve déjà : l'enseigne, et la fiche Google
+       (« AU BRAISÉ D'OR »). Ils aident Google à reconnaître UN établissement. */
+    alternateName: ["Restaurant Au Braisé d'Or", "AU BRAISÉ D'OR", "Au Braisé d'Or Cotonou"],
+    slogan: MAISON.devise,
+    description: RESUME_MAISON,
+    url: `${site}/`,
     image: `${site}/og.jpg`,
-    telephone: "+2290156057157",
-    email: "aubraisedor@gmail.com",
+    logo: `${site}/og.jpg`,
+    telephone: MAISON.telephoneInternational,
+    email: MAISON.email,
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Cotonou",
+      addressLocality: MAISON.ville,
+      addressRegion: "Littoral",
       addressCountry: "BJ",
     },
-    servesCuisine: ["Africaine", "Européenne", "Américaine", "Grillades"],
+    areaServed: { "@type": "City", name: MAISON.ville },
+    servesCuisine: [
+      "Grillades", "Cuisine béninoise", "Cuisine africaine", "Cuisine européenne",
+      "Cuisine américaine", "Pizza", "Chawarma", "Burgers",
+    ],
     priceRange: `${bas.toLocaleString("fr-FR")} - ${haut.toLocaleString("fr-FR")} XOF`,
     currenciesAccepted: "XOF",
     amenityFeature: [
@@ -107,6 +120,12 @@ export default function DonneesStructurees() {
       { "@type": "LocationFeatureSpecification", name: "Place des fêtes", value: true },
       { "@type": "LocationFeatureSpecification", name: "Traiteur", value: true },
     ],
+    makesOffer: [
+      { name: "Traiteur", url: `${site}/traiteur-et-place-des-fetes/` },
+      { name: "Place des fêtes", url: `${site}/traiteur-et-place-des-fetes/` },
+      { name: "Livraison à Cotonou", url: `${site}/commander/` },
+      { name: "Vente à emporter", url: `${site}/commander/` },
+    ].map((o) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: o.name, url: o.url } })),
     potentialAction: {
       "@type": "OrderAction",
       target: `https://wa.me/${WHATSAPP}`,
@@ -114,7 +133,8 @@ export default function DonneesStructurees() {
     },
     hasMenu: {
       "@type": "Menu",
-      name: "La carte d'Au Braisé d'Or",
+      name: `La carte d'${MAISON.nom}`,
+      url: `${site}/carte/`,
       inLanguage: "fr",
       hasMenuSection: CARTE.map((c) => ({
         "@type": "MenuSection",
@@ -131,10 +151,29 @@ export default function DonneesStructurees() {
     },
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(donnees) }}
-    />
-  );
+  const donnees = {
+    "@context": "https://schema.org",
+    "@graph": [
+      restaurant,
+      {
+        "@type": "WebSite",
+        "@id": `${site}/#site`,
+        url: `${site}/`,
+        name: MAISON.nom,
+        inLanguage: "fr",
+        publisher: { "@id": `${site}/#restaurant` },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${site}/#questions`,
+        mainEntity: faq().map(({ q, r }) => ({
+          "@type": "Question",
+          name: q,
+          acceptedAnswer: { "@type": "Answer", text: r },
+        })),
+      },
+    ],
+  };
+
+  return <Ld donnees={donnees} />;
 }

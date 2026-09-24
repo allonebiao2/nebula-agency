@@ -1062,3 +1062,9 @@ et quelle viande · la rubrique (Grillades, faute d'une meilleure).
 - la description (écrite par moi)
 - quel poisson, quelle viande
 - la rubrique
+
+## 🔍 Passe SEO publiée (2026-09-24)
+14 pages indexables (carte + 9 rubriques + traiteur, commander, contact), vraie 404, sitemap généré,
+`llms.txt` + `carte.md`, IndexNow (202). Contrôles : `_qc_seo.py` 126 · `_qc_pages.py` 88 · `_qc_partage.py` 38 · `_qc.py` 117.
+Publier reste : `npm run build` + `cp -r ../assets/docs out/` + deploy, puis **lancer les 4 QC**.
+Détail : `_memoire/conversations/2026-09-24-au-braise-dor-passe-seo.md`.

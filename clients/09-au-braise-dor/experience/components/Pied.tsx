@@ -1,4 +1,5 @@
 import { WHATSAPP } from "@/data/dishes";
+import { LiensRubriques, LiensServices } from "./LiensSite";
 
 /**
  * LE PIED DE PAGE.
@@ -77,7 +78,19 @@ export default function Pied() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 max-w-5xl border-t border-black/[0.08] pt-6 text-[0.76rem] text-[color:var(--encre-2)] opacity-75">
+      {/* Le plan du site : chaque page reliée depuis toutes les autres (SEO, 2026-09-18). */}
+      <nav aria-label="Plan du site" className="mx-auto mt-12 grid max-w-5xl gap-8 border-t border-black/[0.08] pt-8 md:grid-cols-[2fr_1fr]">
+        <div>
+          <p className="police-titre mb-3 text-[0.95rem] font-extrabold text-[color:var(--encre)]">La carte</p>
+          <LiensRubriques />
+        </div>
+        <div>
+          <p className="police-titre mb-3 text-[0.95rem] font-extrabold text-[color:var(--encre)]">Infos pratiques</p>
+          <LiensServices />
+        </div>
+      </nav>
+
+      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.08] pt-6 text-[0.76rem] text-[color:var(--encre-2)] opacity-75">
         <p>RC RB/COT/24 A 102350 · IFU 0202501441177</p>
         <p className="mt-1">Vitrine créée par NEBULA Agency · Cotonou</p>
       </div>

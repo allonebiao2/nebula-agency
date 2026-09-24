@@ -1,13 +1,27 @@
-# Au Braisé d'Or — Cotonou
+# Au Braisé d'Or · Cotonou
 User-agent: *
 Allow: /
 
-# Les robots des IA sont les bienvenus : ils citent la maison.
+# Les robots des moteurs de recherche et des IA sont les bienvenus : ils citent la maison.
+User-agent: Googlebot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Bingbot
+Allow: /
 User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
 Allow: /
 User-agent: ClaudeBot
 Allow: /
+User-agent: Claude-SearchBot
+Allow: /
 User-agent: PerplexityBot
+Allow: /
+User-agent: Applebot
 Allow: /
 
 Sitemap: https://aubraisedor.com/sitemap.xml

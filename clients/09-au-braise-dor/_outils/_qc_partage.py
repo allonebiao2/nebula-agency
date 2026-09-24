@@ -33,7 +33,7 @@ def main():
 
     # 1 · l'aperçu WhatsApp
     for prop, attendu in [("og:image", "og.jpg"), ("og:title", "Braisé"),
-                          ("og:description", "braise"), ("og:url", "au-braise-dor"),
+                          ("og:description", "braise"), ("og:url", "aubraisedor.com"),   # domaine depuis le 2026-09-18
                           ("og:type", "website"), ("og:locale", "fr_FR"),
                           ("twitter:card", "summary_large_image")]:
         m = re.search(r'(?:property|name)="%s"\s+content="([^"]*)"' % re.escape(prop), html)
@@ -60,6 +60,15 @@ def main():
     if not m:
         return 1
     d = json.loads(m.group(1))
+    # Depuis la passe SEO du 2026-09-18, le balisage est un GRAPHE (restaurant,
+    # site, FAQ). On y cherche le restaurant ; l'ancienne forme reste acceptée.
+    if "@graph" in d:
+        restos = [n for n in d["@graph"] if n.get("@type") == "Restaurant"]
+        dire(len(restos) == 1, "le graphe porte exactement un Restaurant")
+        faqs = [n for n in d["@graph"] if n.get("@type") == "FAQPage"]
+        dire(len(faqs) == 1 and len(faqs[0]["mainEntity"]) >= 5,
+             "le graphe porte une FAQPage (%d questions)" % (len(faqs[0]["mainEntity"]) if faqs else 0))
+        d = restos[0] if restos else {}
     dire(d.get("@type") == "Restaurant", "type déclaré : %s" % d.get("@type"))
     dire(bool(d.get("telephone")), "téléphone : %s" % d.get("telephone"))
     dire("streetAddress" not in json.dumps(d),
