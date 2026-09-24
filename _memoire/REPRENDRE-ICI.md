@@ -1,9 +1,23 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-23
+## Point de reprise pour une session terminal · dernière mise à jour 2026-09-24
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 quindecies. LE 2026-09-24 — AU BRAISÉ D'OR EN SEO, ET LA MÉTHODE DE MONGAZI VALIDÉE SUR PLANCHES
+
+- **Au Braisé d'Or** : la passe SEO du 18/09 est **en ligne** (14 pages, sitemap, `llms.txt`, IndexNow 202).
+  ⛔ Reste le **numéro** à trancher (171 liens `wa.me/22956057157` sans `01`). Détail :
+  `_memoire/conversations/2026-09-24-au-braise-dor-passe-seo.md`.
+- **Trading** (dépôt privé `nebula-trader`, rien de la méthode ici) : la méthode 0005 est
+  **validée sur planches** par Mongazi (séances, jambes, entrée M1) et la **règle du TP est
+  corrigée**. 🔴 **Par quoi commencer là-bas** : `_cerveau/methodes/0005-liquidite-de-seance.md`,
+  section « Validé par Mongazi sur planches ». Prochaine étape : d'autres setups jugés sur
+  planches, puis **redéclarer E10 avec la règle du TP** et choisir quel scellé ouvrir
+  (la zone de découverte est brûlée, 20 regards).
 
 ---
 
