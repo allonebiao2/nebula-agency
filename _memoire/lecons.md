@@ -2911,3 +2911,14 @@ Suite du même jour : la leçon est devenue un **verrou**. `banc.simuler_ordres`
 `SimulationNonCausale` dès que des ordres limites se chevauchent ; `non_causal_accepte=True` ne sert
 qu'à reproduire l'ancien calcul pour le comparer (`rejeu.py`, `_qc_moteur.py`). Une règle écrite
 s'oublie, un code qui refuse ne s'oublie pas.
+
+## 2026-09-29 · Un worktree « propre » peut porter des originaux qui n'existent nulle part ailleurs
+
+Le worktree `.claude/worktrees/angy-photos` avait un `git status` vide et aucun commit hors de
+`main` : il avait l'air jetable. Il contenait pourtant **130 fichiers ignorés par git** (`_sources/`
+de Hillary, photos candidates et ambiances de Mon Bénin) absents du dossier principal. Un
+`git worktree remove --force` les aurait effacés sans un mot, et comme le dépôt est public, ces
+originaux ne sont sauvegardés **nulle part**.
+**Règle** : avant de supprimer un worktree, lister `git status --short --ignored`, comparer chaque
+fichier ignoré au dossier principal, recopier ce qui manque et vérifier octet par octet (`cmp`).
+Seulement ensuite, supprimer.

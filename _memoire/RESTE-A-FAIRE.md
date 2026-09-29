@@ -7,6 +7,16 @@
 
 ---
 
+## Ménage du 2026-09-29 · une archive à mettre à l'abri
+
+- ⏳ **`_archives/partage-2026-09-29/capture de la methode/` et `la methode.pdf`** :
+  la méthode de trading de Mongazi, sortie de `_partage/`, n'est **ni sur GitHub ni
+  dans `nebula-trader`** (vérifié au vidage). Elle ne vit que sur ce disque. La
+  déplacer dans le dépôt privé `nebula-trader` (sa place depuis le 2026-09-23),
+  avec l'accord de Mongazi. Détail : `conversations/2026-09-29-menage-disque.md`.
+
+---
+
 ## Rapatriement du 2026-09-11 · ce qui n'est pas parti
 
 - ⏳ **`claude/video-project-analysis-monetization-18oh7b`** n'est pas dans
