@@ -521,18 +521,24 @@
   construire. `secrets/mt5.env`, `secrets/deriv.env` et
   `secrets/nebula-trader-licence.pem` ont suivi.
 - **Ce qu'il contient** : l'agent (`trading/`, **219 contrôles**) **et son
-  cerveau** (`cerveau/` + `_cerveau/`, **62 contrôles**) : registre des essais,
+  cerveau** (`cerveau/` + `_cerveau/`, **71 contrôles**) : registre des essais,
   scellé des données, cimetière des méthodes mortes, leçons rattachées au code
   qui les impose, tour de nuit, vue d'ensemble.
 - **En arrivant là-bas** : `_cerveau/CERVEAU.md`, puis `_cerveau/VUE-DENSEMBLE.md`.
 - ⛔ **Rien n'est rentable, rien ne tourne en réel.** Le test d'un an du
   2026-09-18 a montré que LE REFLUX perd chez un vrai courtier ; les chiffres
   flatteurs venaient d'un simulateur non causal. **15 méthodes au cimetière**,
-  dont toutes celles qui avaient un jour paru marcher.
+  dont toutes celles qui avaient un jour paru marcher. Les 30 septembre et
+  1er octobre, les méthodes 0010 et 0011 et deux exhumations ont été jugées :
+  **aucune ne tient** (renvoi : `_memoire/conversations/2026-10-01-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
-- **EUR/USD seul** au périmètre depuis le 2026-09-23 (décision de Mongazi), les
-  autres paires majeures ensuite. Le NAS100 est sorti.
+- **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
+  Mongazi : 28 paires, le S&P 500 et le NAS100. **Aucun ordre réel.**
+- ⚠️ **Une démo tourne sur ce PC, sur compte DÉMO seulement** : la tâche Windows
+  « NEBULA ORB demo », du lundi au vendredi à 14 h 00 (Bénin), **ouvre MT5**
+  (environ 1,7 Go de mémoire) et tourne jusqu'à environ 21 h 00. Pour l'arrêter :
+  `schtasks /Delete /TN "NEBULA ORB demo" /F`.
 - ⏳ **Trois décisions attendent Mongazi** (`_cerveau/DECISIONS.md`) : le seuil
   des séries perdantes, qui fait passer le critère réel de 50 % à **66,2 %** ·
   la date et le chiffre d'arrêt du projet · le plafond mensuel de dépense.
