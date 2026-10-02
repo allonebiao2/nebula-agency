@@ -531,6 +531,8 @@
   dont toutes celles qui avaient un jour paru marcher. Les 30 septembre et
   1er octobre, les méthodes 0010 et 0011 et deux exhumations ont été jugées :
   **aucune ne tient** (renvoi : `_memoire/conversations/2026-10-01-recherche-trading.md`).
+  Les 1er et 2 octobre, la méthode 0012 a été jugée : elle **ne tient pas** non plus. Une page privée
+  d'entraînement, « Trainer of Trader », a été créée (renvoi : `_memoire/conversations/2026-10-02-trainer-of-trader.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
@@ -538,7 +540,9 @@
 - ⚠️ **Une démo tourne sur ce PC, sur compte DÉMO seulement** : la tâche Windows
   « NEBULA ORB demo », du lundi au vendredi à 14 h 00 (Bénin), **ouvre MT5**
   (environ 1,7 Go de mémoire) et tourne jusqu'à environ 21 h 00. Pour l'arrêter :
-  `schtasks /Delete /TN "NEBULA ORB demo" /F`.
+  `schtasks /Delete /TN "NEBULA ORB demo" /F`. Le 1er octobre, elle n'a pas tradé parce que le bouton
+  **Algo Trading** de MT5 était éteint. La configuration a été corrigée ; **Mongazi doit vérifier que
+  le bouton est vert**.
 - ⏳ **Trois décisions attendent Mongazi** (`_cerveau/DECISIONS.md`) : le seuil
   des séries perdantes, qui fait passer le critère réel de 50 % à **66,2 %** ·
   la date et le chiffre d'arrêt du projet · le plafond mensuel de dépense.
