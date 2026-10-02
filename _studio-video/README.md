@@ -37,6 +37,49 @@ Les cartes ne sont pas redessinées ici : ce sont les PNG écrits par
 question change → on regénère la carte avec `python _cartes.py`, jamais à la
 main.
 
+Et une vidéo filmée, reprise en motion design (2026-09-27) :
+
+| Composition | Contenu | Durée |
+|---|---|---|
+| `dimanche-plan` | **Le plan du dimanche** : le face caméra d'un proche (trading, 3 min 29) habillé scène par scène | 3 min 33 |
+
+La méthode, réutilisable sur n'importe quel face caméra :
+
+1. **La source reste hors dépôt** (`public/dimanche/`, ignoré) : c'est la vidéo
+   d'un particulier.
+2. `python _outils/dimanche_image.py` **efface les sous-titres incrustés**
+   (blanc pur, en traits fins, remplissage Telea), étalonne et agrandit en
+   1080x1920. `--essai 56` rend un avant/après d'une seule image.
+3. `python _outils/dimanche_son.py` nettoie la voix (passe-haut, débruitage
+   spectral, compression) et la pose à **−14 LUFS**, mesurés (BS.1770).
+4. La parole est transcrite **en local** (faster-whisper large-v3-turbo, au mot),
+   puis `python _outils/dimanche_mots.py <transcription.json>` applique les
+   corrections et écrit `src/dimanche/mots.ts`. **Chaque animation se cale sur un
+   mot par son indice** (`d(62)` = le début de « jamais »), jamais sur une
+   seconde recopiée.
+5. `python _outils/dimanche_bruitages.py` synthétise les bruitages (aucun
+   fichier tiers).
+6. `node _outils/planches.mjs dimanche-plan 1.2 7.2 …` rend des images fixes en
+   une seule ouverture de Chrome, `python _outils/assembler_planches.py` les
+   met en planche : **on regarde avant de rendre les 3 min**.
+7. `node _outils/rendu_morceaux.mjs dimanche-plan` rend **par morceaux** de
+   640 images, puis le son, puis recolle sans réencoder (~1 h 30 sur ce PC).
+   ⛔ **Jamais d'un seul tenant** : le 2026-09-27, Chrome est tombé à l'image
+   2 562 sur 6 391 faute de mémoire (8 Go, Chrome ouvert à côté) et tout était
+   perdu. Un morceau fini est gardé, relancer reprend où ça s'est arrêté. À
+   lancer détaché, avec un garde-éveil (le PC s'endort après 30 min).
+
+⚠️ Le ffmpeg livré avec Remotion est réduit : ni `rawvideo`, ni `s16le`, ni
+`drawtext`, ni `ebur128`. On lui passe des JPEG (`image2pipe`) et des WAV.
+
+Et la vidéo de marque de l'agence (2026-10-02) :
+
+| Composition | Contenu | Durée |
+|---|---|---|
+| `nebula-30s` | **NEBULA · le tour de magie** : vitrine, catalogue, outil, et la vidéo elle-même | 30 s |
+
+Voir la section « NEBULA · la vidéo de marque » plus bas.
+
 ## Ce qui manque encore
 
 - **Les plans filmés.** Le visage qui fait oui ou non n'est pas tourné. En
@@ -55,6 +98,8 @@ cd _studio-video
 npm run studio          # l'aperçu dans le navigateur, on scrube à la souris
 npm run rendu           # les trois vidéos dans out/
 npm run rendu:prix      # une seule
+npm run rendu:dimanche  # le plan du dimanche, par morceaux (~1 h 30, garde-éveil)
+npm run rendu:nebula30  # la vidéo de marque NEBULA, par morceaux, puis le mastering du son
 npm run verifier        # contrôle TypeScript, sans rien rendre
 ```
 
@@ -175,3 +220,95 @@ vendre Remotion habillé en produit NEBULA, non.
 « Automators »). Ne pas faire `npm update` sans relire la licence de la version
 visée : c'est exactement pour ça que l'installation a été faite avec
 `--save-exact`.
+
+---
+
+## NEBULA · la vidéo de marque (`nebula-30s`, 2026-10-02)
+
+> Une nébuleuse, c'est **de la poussière qui devient des étoiles**. L'objet du
+> film : la poussière d'étoiles. Elle explose, tourne en galaxie, dessine un
+> téléphone, tourne en orbite autour d'un catalogue, puis revient s'effondrer
+> dans l'étoile du logo.
+
+Le film est un **tour de magie en trois temps** :
+
+1. **la promesse** : « Regardez bien. Tout ce que vous allez voir… NEBULA le
+   crée pour votre business. » ;
+2. **les trois tours** : la vitrine (le vrai site d'Angy Art, puis un éventail
+   de vitrines livrées), le catalogue (Au Braisé d'Or, les vrais champagnes de
+   Weinkeller et les vraies robes d'Hillary en orbite, les commandes qui arrivent
+   sur WhatsApp), l'outil (un tableau de bord qui change de peau selon le métier) ;
+3. **la révélation** : l'image se fige, « Et même… cette vidéo. » La caméra
+   recule : on était dans un logiciel de montage (les vrais sites en rushes, les
+   vraies ondes de la voix et de la musique sur la timeline). La tête de lecture
+   rembobine, puis file vers un clip vide : « La vôtre est la prochaine. »
+   L'appel WhatsApp, puis la signature : le logo naît de l'étoile.
+
+### La chaîne, dans l'ordre
+
+```bash
+python _outils/nebula30_logo.py        # le logo en couches + src/nebula30/couches.ts
+python _outils/nebula30_captures.py    # les 9 sites, photographiés en ligne
+python _outils/nebula30_bruitages.py   # 25 bruitages synthétisés (aucun fichier tiers)
+python _outils/nebula30_son.py         # voix placée, musique montée, src/nebula30/minutage.ts
+npm run rendu:nebula30                 # l'image par morceaux, le son, puis le mastering
+python _outils/nebula30_verifier.py    # durée, sonie, synchro de la voix, planche tirée du MP4
+```
+
+La vidéo à publier : **`out/NEBULA-Agency-30s.mp4`**. ⚠️ Pas `NEBULA-30s.mp4` : sous Windows,
+les noms ignorent la casse, et ce serait le même fichier que `nebula-30s.mp4`, le
+provisoire que le mastering lit (il a été écrasé ainsi le 2026-10-02).
+
+Entrées hors dépôt, dans `public/nebula30/` : `voix-vous-brute.mp3` (ElevenLabs,
+voix « Alimata », Eleven v4), `musique-brute.mp3` (« afro house » d'artissizm,
+**Pixabay**, licence Pixabay : garder le lien de la page, c'est la preuve) et
+`transcription-vous.json` (Whisper large-v3-turbo en local, au mot).
+
+### Ce qui n'est pas inventé
+
+Les sites sont les vrais, photographiés en ligne. Les produits et leurs prix
+sont ceux des catalogues livrés. Le tableau de bord de l'outil porte la pastille
+**DÉMO** : ses chiffres sont un exemple, jamais un résultat promis. **La voix ne
+dit aucun chiffre** : prix, délai et numéros vivent à l'écran (`FAITS` dans
+`donnees.ts`), on refait l'image sans refaire la voix.
+
+### Le son
+
+- La voix sortait d'ElevenLabs à **−26,6 LUFS** : remontée à −16, compressée,
+  découpée **dans ses silences mesurés** et posée réplique par réplique.
+  « Et même » et « cette vidéo » sont séparés dans leur vrai silence (−60 dB,
+  14,64 à 14,76 s de la prise) pour tenir le suspense du gel.
+- La musique est à **120 BPM pile**. L'explosion tombe sur un premier temps,
+  **l'image se fige là où la chute devait tomber** (la musique s'arrête comme une
+  bande qu'on freine), la chute éclate après « …la prochaine. », le logo
+  s'allume deux mesures plus tard, et la fin reprend **la vraie fin du morceau**.
+- Sous chaque phrase, la musique est baissée automatiquement (≈ 13 LU sous la
+  voix, mesuré). `_outils/nebula30_master.py` pose ensuite −14 LUFS et un
+  limiteur à −1 dBTP sur le son rendu, et **vérifie réplique par réplique** que
+  la voix passe devant.
+- Toute nouvelle prise de voix : relancer la transcription, puis
+  `nebula30_son.py`, qui **refuse** une prise dont le nombre de phrases ne
+  correspond pas au plan (au lieu de mal placer la voix sans un mot).
+
+### Les pièges rencontrés
+
+- ⚠️ **Syne 800 est très large** : environ 1,1 em par capitale. « CATALOGUE » à
+  116 px sortait du cadre, « REGARDEZ » se coupait en « REGARDE / Z ». Les titres
+  restent à 96 px, en `nowrap`, et les lignes sont coupées **à la main**.
+- ⚠️ Dans une ligne centrée, les mots encore invisibles **gardent leur place** :
+  le premier mot apparaît à gauche du centre. Voulu ici (effet machine à écrire),
+  mais à savoir.
+- ⚠️ Des grains qui traversent tout l'écran font une **toile d'araignée** de
+  traînées : l'orbite du catalogue s'ouvre depuis le téléphone, et la traînée est
+  plafonnée à 70 px.
+- ⚠️ Le téléphone n'apparaît qu'**après** que la poussière a dessiné son contour,
+  sinon le tour est éventé.
+- ⚠️ Le moniteur du logiciel de montage montre le film **pour de vrai** :
+  `Montage` reçoit `Film` et le rend à un autre instant (figé, rembobiné). Toutes
+  les scènes ne lisent que `t` : c'est ce qui rend ce tour possible.
+
+### ⏳ Ce qui attend
+
+- **La version TikTok** (tutoiement, règle de la marque) : les textes sont prêts
+  (`TEXTES.tu`), il manque sa voix. Elle n'est pas déclarée tant qu'elle manque.
+- Une version 16:9 (YouTube, site) si on la veut.

@@ -47,6 +47,10 @@
   des valeurs sans unité) : toute rotation s'écrit avec son `deg`.
   Le studio porte aussi **la démonstration vidéo de LE PLI** (`lepli-demo`,
   30 s, six plans). Détail : `_studio-video/README.md`.
+  Et **la vidéo de marque NEBULA** (`nebula-30s`, 30 s, « le tour de magie » : vitrine,
+  catalogue, outil, puis la vidéo elle-même), livrée le 2026-10-02 : `out/NEBULA-Agency-30s.mp4`.
+  ⚠️ **Sur ce PC, rendre à UN onglet** (`npm run rendu:nebula30`) : à deux, Claude Code a
+  coupé le rendu faute de mémoire. ⚠️ Les noms de fichiers ignorent la casse sous Windows.
 - WhatsApp : Twilio
 - Base de données : Supabase
 - Hébergement vitrines : Netlify

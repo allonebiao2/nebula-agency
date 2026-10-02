@@ -10,10 +10,13 @@
     "rendu:prix": "remotion render src/index.ts oui-non-1-prix out/oui-non-1-prix.mp4",
     "rendu:besoin": "remotion render src/index.ts oui-non-2-besoin out/oui-non-2-besoin.mp4",
     "rendu:logiciel": "remotion render src/index.ts oui-non-3-logiciel out/oui-non-3-logiciel.mp4",
-    "rendu:lepli": "remotion render src/index.ts lepli-demo out/lepli-demo.mp4"
+    "rendu:lepli": "remotion render src/index.ts lepli-demo out/lepli-demo.mp4",
+    "rendu:dimanche": "node _outils/rendu_morceaux.mjs dimanche-plan",
+    "rendu:nebula30": "node _outils/rendu_morceaux.mjs nebula-30s 300 1 && python _outils/nebula30_master.py && python _outils/nebula30_verifier.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",
+    "@remotion/google-fonts": "4.0.512",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "remotion": "4.0.512"
