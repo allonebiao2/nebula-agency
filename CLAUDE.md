@@ -537,10 +537,15 @@
   **aucune ne tient** (renvoi : `_memoire/conversations/2026-10-01-recherche-trading.md`).
   Les 1er et 2 octobre, la méthode 0012 a été jugée : elle **ne tient pas** non plus. Une page privée
   d'entraînement, « Trainer of Trader », a été créée (renvoi : `_memoire/conversations/2026-10-02-trainer-of-trader.md`).
+  Les 5 et 6 octobre, la méthode 0014, tirée d'une vidéo YouTube, a été jugée : **une seule piste sur l'or**, qui
+  passe juste sous le seuil, est mise en démo ; FTMO a été étudié (renvoi : `_memoire/conversations/2026-10-05-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
   Mongazi : 28 paires, le S&P 500 et le NAS100. **Aucun ordre réel.**
+- ⚠️ **Une 2e démo tourne depuis le 2026-10-05**, compte DÉMO : la tâche « NEBULA VWAP demo », **chaque heure à
+  la minute 1**, lit l'or et ne trade que sur signal ; elle referme MT5 si elle l'a ouvert. Pour l'arrêter :
+  `schtasks /Delete /TN "NEBULA VWAP demo" /F`.
 - ⚠️ **Une démo tourne sur ce PC, sur compte DÉMO seulement** : la tâche Windows
   « NEBULA ORB demo », du lundi au vendredi à 14 h 00 (Bénin), **ouvre MT5**
   (environ 1,7 Go de mémoire) et tourne jusqu'à environ 21 h 00. Pour l'arrêter :
