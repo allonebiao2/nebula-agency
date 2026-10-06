@@ -30,11 +30,22 @@ méthode : ce dépôt-ci est public.
   frais elle est à zéro : ses bons résultats venaient de sa période.
 - Page des résultats (privée) : https://claude.ai/artifact/SdztAoPndbmapUxvxmS6Tu
 
+## L'idée de Mongazi : ajouter le profil de volume (méthode 0017)
+
+- Mongazi demande d'ajouter le profil de volume à la méthode EMA 50/200. Prévenu avant : deux méthodes
+  à zéro ne font pas une méthode positive en s'additionnant.
+- **Méthode 0017** (D-066, figée avant calcul) : les setups de la 0016, filtrés par le profil de la
+  journée précédente, trois filtres jugés chacun à part, en 5 et 15 minutes.
+- **Verdict : aucun filtre ne passe.** Un seul trie un peu dans le bon sens et reste négatif. Les années
+  scellées de l'EUR/USD n'ont pas été ouvertes, comme prévu dans ce cas.
+- La page de la 0016 porte maintenant aussi la 0017 (même adresse).
+
 ## Où lire la suite
 
 Dans le dépôt privé : `CLAUDE.md` (l'état), `_cerveau/DECISIONS.md` (D-064 et son résultat),
 `_cerveau/methodes/0015-vacuum-volume-profile.md`, `_cerveau/methodes/volume-profile-sources/ANALYSE.md`,
-D-065, `_cerveau/methodes/0016-scalping-ema-50-200.md`, `_cerveau/methodes/ema-50-200-scalping-sources/ANALYSE.md`.
+D-065, `_cerveau/methodes/0016-scalping-ema-50-200.md`, `_cerveau/methodes/ema-50-200-scalping-sources/ANALYSE.md`,
+D-066, `_cerveau/methodes/0017-ema-50-200-profil-volume.md`.
 
 ## Laissé sur le disque
 
