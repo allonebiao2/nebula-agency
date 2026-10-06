@@ -19,12 +19,24 @@ méthode : ce dépôt-ci est public.
   période récente vient de la période, pas du volume du courtier.
 - Page des résultats (privée) : https://claude.ai/artifact/FnvsiF66wvGG1p9SC7oSGS
 
+## Seconde vidéo du jour : méthode 0016
+
+- Mongazi envoie une seconde vidéo, de la chaîne Trade Pro : « 1 Minute Scalping Strategy Just Using
+  50 EMA And 200 EMA ». Ses règles sont entièrement mécaniques.
+- Notre moteur **retrouve ses 14 trades** de février 2021, dans le même ordre.
+- **Méthode 0016** (décision D-065, figée avant calcul). Choix de Mongazi : six autres paires majeures,
+  puis une ouverture unique des années scellées de l'EUR/USD ; unités 1, 5 et 15 minutes ; sa règle seule.
+- **Verdict : elle ne tient dans aucune unité**, ni sur les six paires ni sur les années scellées. Sans
+  frais elle est à zéro : ses bons résultats venaient de sa période.
+- Page des résultats (privée) : https://claude.ai/artifact/SdztAoPndbmapUxvxmS6Tu
+
 ## Où lire la suite
 
 Dans le dépôt privé : `CLAUDE.md` (l'état), `_cerveau/DECISIONS.md` (D-064 et son résultat),
-`_cerveau/methodes/0015-vacuum-volume-profile.md`, `_cerveau/methodes/volume-profile-sources/ANALYSE.md`.
+`_cerveau/methodes/0015-vacuum-volume-profile.md`, `_cerveau/methodes/volume-profile-sources/ANALYSE.md`,
+D-065, `_cerveau/methodes/0016-scalping-ema-50-200.md`, `_cerveau/methodes/ema-50-200-scalping-sources/ANALYSE.md`.
 
 ## Laissé sur le disque
 
-- La vidéo (35 Mo) reste dans `_partage/` **sans être committée**.
-- Une planche en PNG a été copiée dans `_partage/capture de la methode/` pour Mongazi.
+- Les deux vidéos (35 et 54 Mo) restent dans `_partage/` **sans être committées**.
+- Deux planches en PNG ont été copiées dans `_partage/capture de la methode/` pour Mongazi.

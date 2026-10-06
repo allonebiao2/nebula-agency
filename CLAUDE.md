@@ -539,8 +539,9 @@
   d'entraînement, « Trainer of Trader », a été créée (renvoi : `_memoire/conversations/2026-10-02-trainer-of-trader.md`).
   Les 5 et 6 octobre, la méthode 0014, tirée d'une vidéo YouTube, a été jugée : **une seule piste sur l'or**, qui
   passe juste sous le seuil, est mise en démo ; FTMO a été étudié (renvoi : `_memoire/conversations/2026-10-05-recherche-trading.md`).
-  Le 6 octobre, la méthode 0015 (profil de volume, vidéo de Casper SMC) a été jugée : **elle ne tient pas**
-  (renvoi : `_memoire/conversations/2026-10-06-recherche-trading.md`).
+  Le 6 octobre, la méthode 0015 (profil de volume, vidéo de Casper SMC) et la méthode 0016 (scalping
+  EMA 50/200, vidéo de Trade Pro) ont été jugées : **aucune ne tient** ; le scellé EUR/USD 2003-2011 a été
+  ouvert pour la 0016 (renvoi : `_memoire/conversations/2026-10-06-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
