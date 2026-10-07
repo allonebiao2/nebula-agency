@@ -112,3 +112,19 @@ démo, pas moi ». Nom : **LE PIÈGE DE L'OUVERTURE**. Programme `trading/live/p
 (lun-ven 14 h 15 Bénin, attend 9 h 29 New York), 0,5 % du solde démo, journal avec le R théorique du backtest. Critères
 écrits avant : à 10 trades, arrêt si l'exécution coûte plus de 0,3 R ; arrêt à 12 pertes d'affilée ou −10 % ; bilan à
 40 trades (≈ un an). Rangée dans `_cerveau/PISTES.md` (les méthodes vivantes). Puis Mongazi : « tester une autre approche ».
+
+## Le carnet des démos (2026-10-07, soir)
+
+Mongazi : « un carnet que je pourrais ouvrir sur la toile pour suivre les gains, les pertes et les stats » ; choix : **tout**.
+- **Web** : https://nebula-carnet.pages.dev (Cloudflare Pages `nebula-carnet`), une page ; connexion e-mail + mot de passe
+  (« Créer mon accès » la première fois) ; lecture verrouillée par RLS sur `allonebiao2@gmail.com`
+  (table `public.trader_journal`, projet Supabase partagé). Vérifié : un visiteur anonyme reçoit « permission denied ».
+  ⚠️ Le jeton d'administration Supabase (`SUPABASE_ACCESS_TOKEN`) est refusé (401) : d'où le mot de passe plutôt que le lien
+  magique (qui renverrait vers Boussole). ⚠️ Nos jetons Cloudflare ne font pas le DNS : un sous-domaine
+  `trader.nebula-agency.online` se branche depuis le tableau de bord, par Mongazi.
+- **Synchro** : `trading/live/carnet.py --sync` à la fin de chaque démo (PIÈGE, ORB, VWAP), **Telegram** pour chaque trade,
+  sortie, refus ou erreur ; **battement** chaque soir à 23 h (« NEBULA CARNET battement ») : alerte sur la page après 30 h sans signe.
+- **Page Claude** (instantané, mise à jour quand Claude la republie) : https://claude.ai/artifact/JufCBcJLorJ4R2x32bexAV
+- ⚠️ **Trouvé en route** : une position ORB est ouverte depuis le 2026-10-05 (0,4 lot, stop et objectif chez le courtier) :
+  le programme n'a pas pu la solder à 15 h 59 ni l'écrire au journal ; elle bloque l'ORB depuis. Le VWAP a eu une erreur
+  de connexion MT5 (code −6) le 2026-10-07 à 9 h UTC.

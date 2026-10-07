@@ -555,6 +555,8 @@
   **Nommée « LE PIÈGE DE L'OUVERTURE »** et mise **en démo, conduite par Claude** (D-072) : tâche « NEBULA PIEGE demo »,
   lun-ven 14 h 15 (Bénin), 0,5 % du solde démo ; arrêt : `schtasks /Delete /TN "NEBULA PIEGE demo" /F`.
   Les méthodes vivantes sont listées dans `_cerveau/PISTES.md` (dépôt privé).
+  **Le carnet des démos** (2026-10-07) : https://nebula-carnet.pages.dev, lecture réservée à l'e-mail de Mongazi (RLS,
+  table `public.trader_journal` du projet Supabase partagé), Telegram à chaque trade, battement du soir à 23 h.
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
