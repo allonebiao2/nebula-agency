@@ -543,6 +543,9 @@
   EMA 50/200, vidéo de Trade Pro) ont été jugées, puis la 0017 (la 0016 + le profil de volume, idée de
   Mongazi) : **aucune ne tient** ; le scellé EUR/USD 2003-2011 a été ouvert pour la 0016. **Les trois sont
   enterrées le 7 octobre** (Mongazi : « d'accord ») (renvoi : `_memoire/conversations/2026-10-06-recherche-trading.md`).
+  Le 7 octobre, la méthode 0018 (breaker block, vidéo de BananaFX) et la méthode 0019 (le breaker + l'EMA 50 + le
+  POC, idée de Mongazi) ont été jugées : **aucune ne tient** ; le scellé EUR/USD a été ouvert pour la 0018. Leur
+  sort attend Mongazi (renvoi : `_memoire/conversations/2026-10-07-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
