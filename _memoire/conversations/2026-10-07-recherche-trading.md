@@ -26,21 +26,28 @@ méthode : ce dépôt-ci est public.
 - **Méthode 0019** (D-068), son idée : les setups du breaker gardés seulement si la bougie de cassure traverse
   aussi l'EMA 50 avec force, et si le schéma se joue au POC du profil de volume d'hier. 15 filtres × 12
   variantes. **Verdict : ne tient pas.** Le scellé n'a pas été ouvert.
+- **Méthode 0020** (D-069), sa demande : « tester les combinaisons possibles ». Prévenu avant du piège (une
+  recherche sur des milliers de combinaisons trouve toujours quelque chose par hasard). Recherche en deux
+  temps : la grille sur les années déjà utilisées, puis 5 finalistes confirmés sur des années jamais utilisées
+  pour le breaker. **Verdict : rien.** Prendre le trade à l'envers trouvait plus de combinaisons gagnantes que le
+  breaker lui-même, et aucun finaliste n'a tenu sur les années neuves. Le scellé n'a pas été ouvert.
 - Il a demandé que tout lui soit expliqué en français : une partie des messages était partie en anglais.
 
 ## En attente de Mongazi
 
-- Enterrer ou mettre de côté les méthodes 0018 et 0019.
+- Enterrer ou mettre de côté la famille du breaker block (méthodes 0018, 0019 et 0020).
 
 ## Pages des résultats (privées)
 
 - 0018 : https://claude.ai/artifact/2Xq6qL9WuGMXP6U7UrrYgG
 - 0019 : https://claude.ai/artifact/GhfHr7WMgi9W2SJ3aCHM6s
+- 0020 : https://claude.ai/artifact/7yff2XPjpFBW7qMs7sJGTh
 
 ## Où lire la suite
 
-Dans le dépôt privé : `_cerveau/DECISIONS.md` (D-067, D-068 et leurs résultats),
+Dans le dépôt privé : `_cerveau/DECISIONS.md` (D-067, D-068, D-069 et leurs résultats),
 `_cerveau/methodes/0018-breaker-block.md`, `_cerveau/methodes/0019-breaker-ema-poc.md`,
+`_cerveau/methodes/0020-recherche-breaker.md`,
 `_cerveau/methodes/breaker-block-sources/ANALYSE.md`.
 
 ## Laissé sur le disque
