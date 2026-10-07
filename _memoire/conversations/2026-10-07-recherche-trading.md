@@ -104,3 +104,11 @@ sur le 15 secondes. Mongazi : « tester les trois » partout, recherche 2013-202
   sortait au prix du stop (gain fictif). Présent dans la 0021 aussi ; tout rejoué, verdicts inchangés.
 
 Page : https://claude.ai/artifact/SphYSJP5rCpDA8tfv17L3s · dépôt privé : D-071, `_cerveau/methodes/0022-scalping-15s.md`.
+
+## La 0022 devient « LE PIÈGE DE L'OUVERTURE », en démo (D-072)
+
+Mongazi : « donne un nom à cette méthode spéciale Nasdaq, on la garde quelque part, et c'est toi qui feras le test en
+démo, pas moi ». Nom : **LE PIÈGE DE L'OUVERTURE**. Programme `trading/live/piege_demo.py`, tâche « NEBULA PIEGE demo »
+(lun-ven 14 h 15 Bénin, attend 9 h 29 New York), 0,5 % du solde démo, journal avec le R théorique du backtest. Critères
+écrits avant : à 10 trades, arrêt si l'exécution coûte plus de 0,3 R ; arrêt à 12 pertes d'affilée ou −10 % ; bilan à
+40 trades (≈ un an). Rangée dans `_cerveau/PISTES.md` (les méthodes vivantes). Puis Mongazi : « tester une autre approche ».

@@ -552,6 +552,9 @@
   Puis la méthode 0022 (scalping 15 s, IBLV Trading, Nasdaq à l'ouverture de New York), 4 374 combinaisons : **ne confirme
   pas** selon la règle (S&P 500 négatif), mais un **effet propre au Nasdaq** est visible hors verdict (64 % des combinaisons
   positives en 2022-2026). Un défaut du simulateur (stop sur le prix prévu) a été corrigé, 0021 rejouée sans changement.
+  **Nommée « LE PIÈGE DE L'OUVERTURE »** et mise **en démo, conduite par Claude** (D-072) : tâche « NEBULA PIEGE demo »,
+  lun-ven 14 h 15 (Bénin), 0,5 % du solde démo ; arrêt : `schtasks /Delete /TN "NEBULA PIEGE demo" /F`.
+  Les méthodes vivantes sont listées dans `_cerveau/PISTES.md` (dépôt privé).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
