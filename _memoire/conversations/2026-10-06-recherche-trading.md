@@ -40,6 +40,15 @@ méthode : ce dépôt-ci est public.
   scellées de l'EUR/USD n'ont pas été ouvertes, comme prévu dans ce cas.
 - La page de la 0016 porte maintenant aussi la 0017 (même adresse).
 
+## Le 7 octobre : les trois méthodes enterrées
+
+- Mongazi : « d'accord ». Les méthodes 0015, 0016 et 0017 vont au cimetière du cerveau, qui compte
+  désormais 18 méthodes. Le cerveau refusera de les retester sans dire ce qui a changé.
+- Le contrôle qui vérifie qu'« une idée neuve ne déclenche rien » a dû changer de phrase témoin : l'ancienne
+  parlait de volume, elle est devenue une cousine légitime des profils de volume enterrés. Un contrôle
+  ajouté exige désormais qu'elle déclenche l'alerte de famille.
+- Seule piste vivante : le VWAP de l'or en 1 heure, en démo. L'arrêt du 31 décembre 2026 tient.
+
 ## Où lire la suite
 
 Dans le dépôt privé : `CLAUDE.md` (l'état), `_cerveau/DECISIONS.md` (D-064 et son résultat),
