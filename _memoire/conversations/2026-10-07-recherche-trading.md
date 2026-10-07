@@ -55,3 +55,20 @@ Dans le dépôt privé : `_cerveau/DECISIONS.md` (D-067, D-068, D-069 et leurs r
 
 - La vidéo du breaker reste dans `_partage/` **sans être committée**.
 - Les planches en PNG sont copiées dans `_partage/capture de la methode/` pour Mongazi.
+
+## Après-midi : la vidéo « Testing a 91% Win Rate Trading Strategy » (analyse seule)
+
+Reçue de Mongazi : un vidéaste reteste la stratégie de Trading Nerds sur **GBP/JPY** :
+**HalfTrend** (everget, amplitude 5) + **Laguerre RSI** (Kivanc, alpha 0,2) en **1 h**, entrée en
+**5 min** au premier rejet dans la **golden zone** d'un Fibonacci, stop sous le dernier plus bas,
+objectif sur l'extension −0,25. Il annonce 44 % de réussite, ratio moyen 2,88, +102 % sur 100 trades
+(2022-2023). **Rien n'est testé** ; aucun chiffre de trading n'est le nôtre.
+
+Ce que la relecture image par image a montré :
+- les **61 lignes visibles** de son registre font **56 %** ; les **39 lignes jamais montrées**
+  (novembre 2022 à avril 2023) doivent donc faire environ **26 %** ;
+- **12 de ses 62 dates (19 %) tombent un week-end, marché fermé** : ses trades ne se retrouvent pas
+  un par un.
+
+Analyse : dépôt privé, `_cerveau/methodes/halftrend-laguerre-sources/ANALYSE.md` (commit `30dd51f`).
+La vidéo reste dans `_partage/` sans être committée.
