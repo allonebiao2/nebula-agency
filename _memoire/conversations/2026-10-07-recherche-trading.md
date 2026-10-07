@@ -72,3 +72,18 @@ Ce que la relecture image par image a montré :
 
 Analyse : dépôt privé, `_cerveau/methodes/halftrend-laguerre-sources/ANALYSE.md` (commit `30dd51f`).
 La vidéo reste dans `_partage/` sans être committée.
+
+## Soir : la méthode 0021 jugée (D-070)
+
+Mongazi a répondu « tester les trois » à chaque flou, puis : « pas forcément les planches, assure-toi que ça
+corresponde à ce qu'il montre, commence les simulations ».
+- **Fidélité** : nos indicateurs retrouvent ses signaux 1 h à l'heure près ; il achète avec une ligne HalfTrend
+  rouge (« clôture au-dessus » est sa vraie règle). Ses entrées sont en partie à l'œil : la meilleure lecture
+  mécanique retrouve 3 de ses 6 trades datés.
+- **Reproduction** (sa période) : 173 trades, 12,7 %, ratio prévu 1:9,2, −0,39 R. Lui : 100 trades, 44 %, 2,88.
+- **Recherche** (GBP/JPY 2019-2023, 26 244 combinaisons) : 703 positives, 573 à l'envers ; aucun réglage à
+  espérance moyenne positive. Aucune combinaison ne remplit le critère de Mongazi.
+- **Confirmation** (GBP/JPY 2023-2026, EUR/JPY) : les cinq finalistes perdent sur les années neuves de GBP/JPY.
+- **Verdict : ne tient pas.** Enterrement : à décider par Mongazi.
+
+Page : https://claude.ai/artifact/Fz6MHtFemkNgqEERh6tqJF · dépôt privé : D-070, `_cerveau/methodes/0021-halftrend-laguerre.md`.
