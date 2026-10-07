@@ -548,7 +548,7 @@
   tient**, le hasard fait mieux ; le scellé EUR/USD a été ouvert pour la 0018. **Les trois sont enterrées le
   7 octobre** (Mongazi : « oui enterre les trois ») (renvoi : `_memoire/conversations/2026-10-07-recherche-trading.md`).
   Le 7 octobre aussi, la méthode 0021 (HalfTrend + Laguerre RSI + Fibonacci, GBP/JPY, vidéo « 91 % ») a été jugée sur
-  26 244 combinaisons : **elle ne tient pas** (aucun finaliste ne confirme ; enterrement : décision de Mongazi).
+  26 244 combinaisons : **elle ne tient pas** (aucun finaliste ne confirme), gardée en attente par Mongazi, pas enterrée.
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de

@@ -84,6 +84,6 @@ corresponde à ce qu'il montre, commence les simulations ».
 - **Recherche** (GBP/JPY 2019-2023, 26 244 combinaisons) : 703 positives, 573 à l'envers ; aucun réglage à
   espérance moyenne positive. Aucune combinaison ne remplit le critère de Mongazi.
 - **Confirmation** (GBP/JPY 2023-2026, EUR/JPY) : les cinq finalistes perdent sur les années neuves de GBP/JPY.
-- **Verdict : ne tient pas.** Enterrement : à décider par Mongazi.
+- **Verdict : ne tient pas.** Mongazi : gardée en attente, pas enterrée.
 
 Page : https://claude.ai/artifact/Fz6MHtFemkNgqEERh6tqJF · dépôt privé : D-070, `_cerveau/methodes/0021-halftrend-laguerre.md`.
