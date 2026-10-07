@@ -87,3 +87,20 @@ corresponde à ce qu'il montre, commence les simulations ».
 - **Verdict : ne tient pas.** Mongazi : gardée en attente, pas enterrée.
 
 Page : https://claude.ai/artifact/Fz6MHtFemkNgqEERh6tqJF · dépôt privé : D-070, `_cerveau/methodes/0021-halftrend-laguerre.md`.
+
+## Fin de journée : la méthode 0022 « scalping 15 secondes » (D-071)
+
+Vidéo d'IBLV Trading (Nasdaq, ouverture de New York) : prise de liquidité au-delà d'un niveau du jour, reclôture de
+l'autre côté, entrée dans le sens du retour, stop juste au-delà, sortie sur la chasse ; zone 1 h en confluence ; ajout
+sur le 15 secondes. Mongazi : « tester les trois » partout, recherche 2013-2021, confirmation 2022-2026.
+- **Fidélité** : son trade du 20 juin 2025 retrouvé à sa minute (9 h 46, +3,5 R). Ses niveaux de carnet d'ordres
+  tombent sur le haut et le bas de la pré-ouverture. Le 15 s et le niveau 2 n'existent pas dans nos données.
+- **Résultat** : recherche 79 % de combinaisons positives ; confirmation : aucun finaliste ne gagne significativement
+  sur le Nasdaq ET le S&P 500 → **ne confirme pas**. La fidèle : Nasdaq +0,46 R (t 2,5), S&P 500 −0,13 R.
+  Critère de Mongazi non rempli (38 % de réussite, 11 pertes d'affilée).
+- **Hors verdict** : 64 % des combinaisons positives sur le Nasdaq 2022-2026, 23 % sur le S&P 500 : un effet propre au
+  Nasdaq, porté par la zone 1 h. Plus d'années Nasdaq vierges : la suite serait un essai en démo.
+- **Défaut corrigé** : stop calculé sur le prix prévu, entrée à l'ouverture suivante ; une ouverture déjà au-delà du stop
+  sortait au prix du stop (gain fictif). Présent dans la 0021 aussi ; tout rejoué, verdicts inchangés.
+
+Page : https://claude.ai/artifact/SphYSJP5rCpDA8tfv17L3s · dépôt privé : D-071, `_cerveau/methodes/0022-scalping-15s.md`.

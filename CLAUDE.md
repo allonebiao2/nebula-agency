@@ -549,6 +549,9 @@
   7 octobre** (Mongazi : « oui enterre les trois ») (renvoi : `_memoire/conversations/2026-10-07-recherche-trading.md`).
   Le 7 octobre aussi, la méthode 0021 (HalfTrend + Laguerre RSI + Fibonacci, GBP/JPY, vidéo « 91 % ») a été jugée sur
   26 244 combinaisons : **elle ne tient pas** (aucun finaliste ne confirme), gardée en attente par Mongazi, pas enterrée.
+  Puis la méthode 0022 (scalping 15 s, IBLV Trading, Nasdaq à l'ouverture de New York), 4 374 combinaisons : **ne confirme
+  pas** selon la règle (S&P 500 négatif), mais un **effet propre au Nasdaq** est visible hors verdict (64 % des combinaisons
+  positives en 2022-2026). Un défaut du simulateur (stop sur le prix prévu) a été corrigé, 0021 rejouée sans changement.
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
