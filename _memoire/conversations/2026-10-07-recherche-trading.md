@@ -33,9 +33,10 @@ méthode : ce dépôt-ci est public.
   breaker lui-même, et aucun finaliste n'a tenu sur les années neuves. Le scellé n'a pas été ouvert.
 - Il a demandé que tout lui soit expliqué en français : une partie des messages était partie en anglais.
 
-## En attente de Mongazi
+## La décision
 
-- Enterrer ou mettre de côté la famille du breaker block (méthodes 0018, 0019 et 0020).
+- Mongazi : « oui enterre les trois ». Les méthodes 0018, 0019 et 0020 vont au cimetière du cerveau, qui compte
+  désormais 21 méthodes (nouvelle famille « structure »). Seule piste vivante : le VWAP de l'or en 1 heure, en démo.
 
 ## Pages des résultats (privées)
 

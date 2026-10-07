@@ -531,7 +531,7 @@
 - **En arrivant là-bas** : `_cerveau/CERVEAU.md`, puis `_cerveau/VUE-DENSEMBLE.md`.
 - ⛔ **Rien n'est rentable, rien ne tourne en réel.** Le test d'un an du
   2026-09-18 a montré que LE REFLUX perd chez un vrai courtier ; les chiffres
-  flatteurs venaient d'un simulateur non causal. **18 méthodes au cimetière**,
+  flatteurs venaient d'un simulateur non causal. **21 méthodes au cimetière**,
   dont toutes celles qui avaient un jour paru marcher. Les 30 septembre et
   1er octobre, les méthodes 0010 et 0011 et deux exhumations ont été jugées :
   **aucune ne tient** (renvoi : `_memoire/conversations/2026-10-01-recherche-trading.md`).
@@ -545,7 +545,8 @@
   enterrées le 7 octobre** (Mongazi : « d'accord ») (renvoi : `_memoire/conversations/2026-10-06-recherche-trading.md`).
   Le 7 octobre, la méthode 0018 (breaker block, vidéo de BananaFX) et la méthode 0019 (le breaker + l'EMA 50 + le
   POC, idée de Mongazi) ont été jugées, puis une recherche sur 10 368 combinaisons du breaker (0020) : **rien ne
-  tient**, le hasard fait mieux ; le scellé EUR/USD a été ouvert pour la 0018. Leur sort attend Mongazi (renvoi : `_memoire/conversations/2026-10-07-recherche-trading.md`).
+  tient**, le hasard fait mieux ; le scellé EUR/USD a été ouvert pour la 0018. **Les trois sont enterrées le
+  7 octobre** (Mongazi : « oui enterre les trois ») (renvoi : `_memoire/conversations/2026-10-07-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
