@@ -128,3 +128,12 @@ Mongazi : « un carnet que je pourrais ouvrir sur la toile pour suivre les gains
 - ⚠️ **Trouvé en route** : une position ORB est ouverte depuis le 2026-10-05 (0,4 lot, stop et objectif chez le courtier) :
   le programme n'a pas pu la solder à 15 h 59 ni l'écrire au journal ; elle bloque l'ORB depuis. Le VWAP a eu une erreur
   de connexion MT5 (code −6) le 2026-10-07 à 9 h UTC.
+
+## Fin de soirée : l'ORB en pause, LE PIÈGE en direct sur Telegram, ses chiffres Nasdaq
+
+- ORB **désactivée** (Mongazi : priorité au PIÈGE). LE PIÈGE annonce tout en direct (préparation, liquidité, signal avec
+  entrée/SL/TP/lots/risque, ajout, sortie, jours sans trade, erreurs, connexion), avec émojis, heures New York et Bénin ;
+  il résiste aux coupures de MT5. Répétition générale sur 3 jours (aucun ordre). Deux messages d'exemple envoyés.
+- **Chiffres du PIÈGE sur le Nasdaq seul** : 2013-2026, 521 trades, 38 % de réussite, +0,23 R/trade, +74 % à 0,5 % de
+  risque, baisse max 9,6 %, pire série 11 ; Deriv 2024-2026 : 102 trades, 45 %, +0,35 R. ⚠️ Les 5 plus gros trades font
+  72 R sur 118 ; 2022 seul fait +58,7 R ; 2023-2026 : +0,19 R/trade.
