@@ -557,6 +557,9 @@
   Les méthodes vivantes sont listées dans `_cerveau/PISTES.md` (dépôt privé).
   **Le carnet des démos** (2026-10-07) : https://nebula-carnet.pages.dev, lecture réservée à l'e-mail de Mongazi (RLS,
   table `public.trader_journal` du projet Supabase partagé), Telegram à chaque trade, battement du soir à 23 h.
+  Le 8 octobre, après un arrêt brutal du PC, la méthode 0023 (« la boîte de la bougie d'ouverture américaine », Nasdaq et
+  or) a été jugée sur 1 296 combinaisons : **elle ne tient pas**, aucun effet hors verdict, enterrement à la décision de
+  Mongazi (renvoi : `_memoire/conversations/2026-10-08-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
