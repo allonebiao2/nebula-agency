@@ -26,13 +26,12 @@ lectures », Nasdaq et or, recherche 2013-2021, confirmation 2022-2026 (S&P 500 
 - **Aucune ne confirme.** Sa lecture de la cassure est la seule positive sur les trois marchés en 2022-2026 (t 2,24,
   il fallait 2,6) mais perdait avant. **Hors verdict, le hasard fait mieux que la méthode sur les trois marchés.**
 - Critère de Mongazi : rempli nulle part (à 1:2, au mieux 36,6 % d'objectifs atteints).
-- **Enterrement : à la décision de Mongazi.**
+- **Enterrée** (Mongazi : « oui, enterre-la ») : cimetière à 22, fiche `22-boite-ouverture.md`.
 
 Page : https://claude.ai/artifact/3oxChWZ3NwDkbR5W7mvP1p · dépôt privé : D-073, `_cerveau/methodes/0023-boite-ouverture.md`.
 
 ## En attente
 
-- Enterrer la 0023 (Mongazi).
 - Ses deux dossiers de méthode personnelle, **`_partage/ULTIME METHOD/`** (AUDUSD, schéma, 2026-10-06) et
   **`_partage/liquidity in the water/`** (EUR/USD, EMA 50/200, jambes, CDS, imbalance, 2026-10-07), n'ont pas encore
-  été traités.
+  été traités. Mongazi choisit de commencer par **« liquidity in the water »**.
