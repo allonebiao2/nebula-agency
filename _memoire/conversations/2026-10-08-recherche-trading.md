@@ -63,3 +63,16 @@ Mongazi a choisi de traiter sa propre méthode (`_partage/liquidity in the water
 - Page : https://claude.ai/artifact/T7HnKERq85K4kLS7qVPZZv · le point de chaque combinaison (dépôt privé) :
   `python -m cerveau.methodes_code._0024_point` → http://localhost:8724/.
 - Enterrement : à la décision de Mongazi (c'est sa méthode). « ULTIME METHOD » reste à traiter.
+
+## La 0024 ajustée (D-075), à la demande de Mongazi
+
+Mongazi : « on va enlever certains filtres » : l'imbalance n'a plus besoin d'être l'extrême (n'importe laquelle au-dessus de
+la jambe 1 en vente, en dessous en achat ; stop toujours au-dessus de la bougie de l'imbalance), vierge ou non (testé), la
+couleur de la bougie de prise et la taille de l'imbalance ne sont plus imposées. 30 M de combinaisons par marché et par unité.
+Juge supplémentaire jamais utilisé : EUR/USD 2003-2012, or 2008-2012 (calendrier Forex Factory 2003-2012 téléchargé).
+- **Ne confirme pas** sur 2022-2026 (5 min : +0,80 à +1,07 R mais 43-46 trades, t ≤ 1,4).
+- Juge ancien : 13 finalistes sur 15 « tiennent »… mais **86 à 124 % de leur gain vient de 5 trades** (stop à 0,5 pip de la
+  mèche puis stop suiveur : +50 R les jours de grande tendance) ; sans les 10 plus gros, ils perdent ; 30 % de réussite,
+  séries de 13 à 16. Pas un avantage utilisable.
+- Sa lecture de référence, jugeable cette fois (69-112 trades en 3 min) : +0,07 à +0,14 R, ne tient pas au juge ancien.
+- Page : https://claude.ai/artifact/JJSYvKNpy2is7AyxAThS6v · outils : http://localhost:8724/ (0024) et http://localhost:8725/ (0024 ajustée), `python -m cerveau.methodes_code._0024_point [--b]`.

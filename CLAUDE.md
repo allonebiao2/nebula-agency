@@ -560,7 +560,8 @@
   Le 8 octobre, après un arrêt brutal du PC, la méthode 0023 (« la boîte de la bougie d'ouverture américaine », Nasdaq et
   or) a été jugée sur 1 296 combinaisons : **elle ne tient pas**, aucun effet hors verdict, **enterrée** le jour même
   (Mongazi : « oui, enterre-la »). Puis sa propre méthode « liquidity in the water » (0024) : 11 planches validées, 102 millions
-  de combinaisons, **ne confirme pas**, sa lecture complète est trop rare pour être jugée ; enterrement à sa décision (renvoi :
+  de combinaisons, **ne confirme pas**, sa lecture complète est trop rare pour être jugée ; ajustée à sa demande (D-075, imbalance
+  non extrême, vierge ou non, couleur libre) : **ne confirme pas non plus**, ses meilleurs gains tiennent dans 5 trades (renvoi :
   `_memoire/conversations/2026-10-08-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
