@@ -78,3 +78,30 @@ Juge supplémentaire jamais utilisé : EUR/USD 2003-2012, or 2008-2012 (calendri
 - Page : https://claude.ai/artifact/JJSYvKNpy2is7AyxAThS6v · outils : http://localhost:8724/ (0024) et http://localhost:8725/ (0024 ajustée), `python -m cerveau.methodes_code._0024_point [--b]`.
 
 **Mongazi : « on s'arrête là »** → la 0024 (et sa version ajustée) est **gardée en attente**, ni enterrée ni confirmée.
+
+## Le soir : la méthode 0025, « le PO3 de la bougie 4 h » (D-076)
+
+Mongazi envoie `_partage/I traded this strategy every day for 3 months and didn't lose once... (full strategy breakdown).mp4`
+(chaîne Locked In Profits, « Jack », 18 min 19 s) : « regarde-la entièrement, comprends-la psychologiquement, teste-la, dis-moi
+si elle est rentable et si elle peut me faire réussir FTMO très rapidement ».
+
+- **Lue en entier** : pas de sous-titres incrustés, donc Whisper (la 1re passe tournait à 9 s de parole par minute, un onglet
+  Chrome prenait deux cœurs : relancée à 4 min 18 en décodage simple) ; 207 images clés toutes regardées.
+- **La méthode** : le PO3 (accumulation, manipulation, distribution) de la bougie 4 h de 10 h New York, lu en 1 min sur le
+  contrat Nasdaq ; biais = 4 h précédente ; la manipulation plonge dans le trou de 15 min le plus proche et fait le plus bas de
+  la 4 h ; confirmation 1 min (un trou baissier traversé, un trou haussier neuf respecté) ; stop au plus bas de la 4 h ;
+  objectif 1:1 à 1:2.
+- **La psychologie** : « jamais perdu » = pas une journée ; son tableau dit 35 trades perdus sur 96. Il le dit lui-même : pour
+  les « jours gagnants » de 150 $ qu'exige Lucid, il descend l'objectif à 1:0,5, parfois 1:0,3, et s'arrête dès que c'est
+  gagné. « 40 000 $ de retraits » = beaucoup de petits comptes. La vidéo vend un mentorat.
+- **Son trade du 14 septembre 2026 est retrouvé** (même stop à 0,76 point, même trou de 15 min, +1,51 R).
+- **Verdict** : 3 456 combinaisons ; recherche 2013-2021 : 27 positives, aucune sur Nasdaq et S&P 500 à la fois ;
+  confirmation 2022 → juin 2026 (Nasdaq, S&P 500, Dow) : **aucune ne confirme**. Objectif 1:0,3 : jusqu'à 78 % de
+  réussite, espérance toujours négative. Sans frais, sa pratique (toutes les bougies 4 h) ferait +0,02 à +0,05 R : un
+  avantage réel mais trop fin pour un CFD.
+- **FTMO** : le hasard (les mêmes entrées à l'envers) réussit le challenge dans 8 à 50 % des départs ; sa pratique au mieux
+  42 % des départs à 0,5 % de risque, en un an (médiane) ; à 2 %, 21 jours mais 80 % d'échecs. Réussir vite = loterie.
+- ⚠️ **Défaut de simulateur trouvé et corrigé** : des sorties « au temps » traversaient un trou de données (−16 à −26 R trois
+  jours plus tard). Un trade ne traverse plus une coupure de plus de 70 minutes ; toute la chaîne refaite ; déclaré dans D-076.
+- ⚠️ Ma boucle d'attente a été coupée par Claude Code (mémoire basse) ; le calcul, détaché, a continué.
+- Page : https://claude.ai/artifact/3A55PqNkiJqMnuzS8zt6EH · dépôt privé : `bc804d4`. Enterrement : à la décision de Mongazi.

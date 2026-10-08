@@ -562,7 +562,9 @@
   (Mongazi : « oui, enterre-la »). Puis sa propre méthode « liquidity in the water » (0024) : 11 planches validées, 102 millions
   de combinaisons, **ne confirme pas**, sa lecture complète est trop rare pour être jugée ; ajustée à sa demande (D-075, imbalance
   non extrême, vierge ou non, couleur libre) : **ne confirme pas non plus**, ses meilleurs gains tiennent dans 5 trades (renvoi :
-  `_memoire/conversations/2026-10-08-recherche-trading.md`).
+  `_memoire/conversations/2026-10-08-recherche-trading.md`). Le soir, la méthode 0025 (« le PO3 de la bougie 4 h », vidéo
+  Locked In Profits « je n'ai pas perdu un seul jour en 3 mois ») : 3 456 combinaisons, **ne tient pas** ; son calendrier sans
+  jour rouge vient de sa gestion (objectifs à 1:0,3, arrêt au premier gain), pas de la méthode ; FTMO simulé (D-076).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
