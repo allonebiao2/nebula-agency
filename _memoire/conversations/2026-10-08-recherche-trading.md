@@ -76,3 +76,5 @@ Juge supplémentaire jamais utilisé : EUR/USD 2003-2012, or 2008-2012 (calendri
   séries de 13 à 16. Pas un avantage utilisable.
 - Sa lecture de référence, jugeable cette fois (69-112 trades en 3 min) : +0,07 à +0,14 R, ne tient pas au juge ancien.
 - Page : https://claude.ai/artifact/JJSYvKNpy2is7AyxAThS6v · outils : http://localhost:8724/ (0024) et http://localhost:8725/ (0024 ajustée), `python -m cerveau.methodes_code._0024_point [--b]`.
+
+**Mongazi : « on s'arrête là »** → la 0024 (et sa version ajustée) est **gardée en attente**, ni enterrée ni confirmée.
