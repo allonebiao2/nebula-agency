@@ -61,3 +61,28 @@ rejeu qui oubliait le portage. Un jour férié américain se traverse comme un w
 ## Ce qui reste
 
 Le sort de la méthode (enterrer ou garder) : à la décision de Mongazi ; l'envers est jugé (ne confirme pas). L'audit du banc commun (bid/ask) et les correctifs 0025 non commités restent en attente.
+
+## Méthode 0027 · les macros ICT de BananaFX (D-080)
+
+Mongazi : « je t'ai envoyé une nouvelle vidéo, regarde-la, comprends-la, lis-la minutieusement ; l'objectif est de comprendre
+la méthode à 100 % et de la reproduire en test et faire des simulations ». Vidéo « ICT : Le Marché Fait TOUJOURS pareil à ces
+4 Horaires » (BananaFX, la chaîne du breaker block 0018), 10 min 42 s.
+
+- **Lue en entier** : sous-titres YouTube (pas de Whisper, arrêt brutal du PC le 2026-10-08) et 269 images regardées.
+- **La méthode** : 8 « macros » (fenêtres de 20-30 min, heure de New York) ; il en trade 3 (9 h 50, 10 h 50, 11 h 50) + Londres
+  2 h 33 en option. Méthode 1 « dans la macro » (retour dans un FVG, objectif la liquidité) ; méthode 2 « après la macro », la
+  sienne (la macro prend la liquidité, on trade le retournement après 10 h 10).
+- **Son jour retrouvé** : il dit « Euro USD », mais l'échelle est celle du **Nasdaq (NQ)** ; vendredi **2023-12-01**, 1,1 point
+  d'écart moyen sur 191 minutes (lecture des pixels de l'image contre toutes les journées 2019-2025). Sa liquidité = le plus
+  haut / plus bas depuis 8 h ; ses FVG = le plus récent dont les 50 % n'ont pas été touchés : le code les retrouve seul.
+  Ses entrées sont au point exact de la mèche (à 50 %, 1 achat servi sur 3 en vrai prix ; sa méthode 2 manque de 0,1 point).
+- **Ses choix (questions à cliquer)** : le sens, tester les trois lectures (aucun, veille, premium/discount) ; l'entrée, 50 %
+  et bord ; les 8 macros une par une ; marchés **EUR/USD, Nasdaq, USD/JPY**.
+- **Résultat : ne tient pas.** 144 réglages × 3 marchés, recherche 2013-2021, confirmation 2022 → fin. Méthode 1 négative
+  dans ses 48 réglages ; les 5 finalistes de la méthode 2 (toutes à Londres 4 h 03) perdent toutes depuis 2022. Ses critères :
+  5,6 à 20,5 % d'objectifs, et même 1:2 hors d'atteinte (+2 R touché dans 23 à 31 % des trades). Sur son marché et sa macro,
+  +0,02 R ; le miroir perd −0,45 R (le prix rebondit sur le FVG mais va rarement jusqu'à la liquidité). Les frais ne sont pas
+  la cause. Page : https://claude.ai/artifact/MuDuwnagvhveYCvjXq9r1Q
+- **Contrôle** : causalité par un futur empoisonné ; le premier essai était aveugle (son témoin tricheur passait), attrapé
+  et refait avant tout chiffre. Commit `c25e3fc` (dépôt privé).
+- **En attente** : enterrer ou garder la 0027 (décision de Mongazi) ; le scellé EUR/USD 2003-2011 n'a pas été ouvert.
