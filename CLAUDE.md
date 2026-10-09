@@ -565,6 +565,10 @@
   `_memoire/conversations/2026-10-08-recherche-trading.md`). Le soir, la méthode 0025 (« le PO3 de la bougie 4 h », vidéo
   Locked In Profits « je n'ai pas perdu un seul jour en 3 mois ») : 3 456 combinaisons, **ne tient pas** ; son calendrier sans
   jour rouge vient de sa gestion (objectifs à 1:0,3, arrêt au premier gain), pas de la méthode ; FTMO simulé (D-076).
+  Les 8 et 9 octobre, la méthode de **Tori Trades** (six vidéos, lignes de tendance) : 0026 (M3/M5/M15) puis 0026b, sa version
+  complète (4 h à M3, pétrole et platine Deriv) : **aucune ne tient**, le miroir fait mieux en recherche. Un **carnet vivant
+  de sa méthode** est à enrichir à chaque nouvelle vidéo : `_cerveau/methodes/tori-trades-sources/CARNET-METHODE.md` (dépôt
+  privé) (renvoi : `_memoire/conversations/2026-10-09-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
