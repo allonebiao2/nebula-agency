@@ -101,3 +101,36 @@ la méthode à 100 % et de la reproduire en test et faire des simulations ». Vi
   séance + heure de volume, imbalance M15/H1, preuve du piège, sortie en deux temps, moins de géométrie), à juger sur des
   marchés neufs (S&P 500, Dow, GBP/USD, USD/JPY). ⏳ **Mongazi : « tu me reposeras les questions, on y reviendra »** :
   `nebula-trader/_cerveau/methodes/liquidity-water-sources/PSYCHOLOGIE-0024c.md`.
+
+## ULTIME METHOD (0028, sa méthode) : en pause
+
+- Zone H1 = mèche du sommet ou du creux cassé, puis en M3 une imbalance et une liquidité confirmée par une CDS, entrée à la
+  clôture de la prise. Ses deux exemples sont de l'**EUR/USD** (pas de l'AUD/USD) et le code les retrouve au point près
+  (minutes Deriv de septembre-octobre 2026). Planche 1 faite, pas encore validée.
+- Mongazi : « zappons ultime method actuellement » ; priorité à BBLOCK. Reprise : faire valider la planche 1, puis les flous
+  (`nebula-trader/_cerveau/methodes/ultime-method-sources/ANALYSE.md`). Commit `b5e5ef7` (dépôt privé).
+
+## BBLOCK (0029, sa méthode) : prête à simuler, rien n'est calculé
+
+- **La figure, en exactement 4 bougies** : CDS 1 forte qui casse la structure (la première clôture au-delà) ; une bougie ;
+  CDS 2 forte qui casse la structure ET l'EMA 50 dans la même bougie (ouvre d'un côté, clôture de l'autre) ; la bougie
+  d'après, qui laisse une **imbalance** (obligatoire). Entrée au retour dans l'imbalance (bord ou 50 %), stops A/B/C,
+  objectifs 1:2, 1:3, 1:5, ancien plus haut, sinon sortie à 18 h New York. Or et Nasdaq ; M3, M5, M15, H1.
+- **Ses planches** : NAS100 M5 22/01/2024 (« oui, avec réserves »), XAUUSD M15 13/11/2024 (7/10 : l'EMA touchée avant
+  devient un axe de qualité, pas une règle) ; **son trade EUR/USD H1 du 21/09/2026 retrouvé** (« oui c'est mon trade »).
+- **Sa ligne de sortie** (« ajuste pour que ça corresponde, c'est juste les placements de trend comme j'ai fait ») : la 1re
+  ligne part du plus haut ou du plus bas de la figure ; un repli confirmé par une mini-CDS et d'au moins **2 ATR** donne une
+  nouvelle ligne plus raide ; on sort à la clôture d'une bougie au-delà de la ligne en vigueur. Elle redonne **ses trois
+  lignes au point près** et sa sortie : **+5,44 R** contre ses +5,59 R (0,6 pip d'écart entre Deriv et ses prix FXCM).
+  ⚠️ Le seuil de 2 ATR est calé sur un seul trade.
+- **Défaut attrapé avant tout chiffre** : la première version réajustait la ligne sur la bougie testée, elle ne cassait donc
+  jamais (+8,76 R sur son trade, faux). Un **contrôle de causalité des suivis** est ajouté (34 sorties inchangées quand
+  l'avenir est empoisonné, témoin tricheur pris 17 fois sur 24).
+- **La grille (D-081)** : 10 368 cellules par marché, recherche jusqu'à 2022, confirmation 2022 → fin. Essai à blanc de la
+  chaîne passé (≈ 45-60 min pour le vrai calcul). ⚠️ Faute déclarée dans D-081 : l'essai à blanc a tourné sur janvier-mars
+  2023, donc en période de confirmation ; il a affiché les 8 réglages « fidèles » sur ces trois mois (aucun ne remplit les
+  conditions). Un essai à blanc se fait désormais sur la période de recherche.
+- ⏳ **Mongazi nettoie la discussion, puis dit quand lancer les simulations** :
+  `python -m cerveau.methodes_code._0029_grille calculer` (en arrière-plan, garde-éveil intégré), puis `… juger`, puis la
+  page de résultats (modèle `_0027_page.py`). Commits `af028f5` et `db7ddba` (dépôt privé).
+

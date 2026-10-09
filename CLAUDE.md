@@ -572,6 +572,9 @@
   Le 9 octobre aussi, la méthode 0027 « les macros ICT » (BananaFX, 9 h 50 / 10 h 50 / 11 h 50 New York) : son jour retrouvé
   (Nasdaq, pas l'EUR/USD qu'il annonce), 144 réglages sur Nasdaq, EUR/USD, USD/JPY : **ne tient pas**, 5 à 21 % d'objectifs
   (même renvoi).
+  Le soir, **sa méthode BBLOCK (0029)** est prête : son trade
+  EUR/USD retrouvé, **sa ligne de sortie calée sur sa capture**, grille déclarée (D-081), **rien n'est calculé**, les
+  simulations attendent son feu vert ; ULTIME METHOD (0028) est en pause.
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
