@@ -150,6 +150,16 @@ la méthode à 100 % et de la reproduire en test et faire des simulations ». Vi
   avant toute issue (graine 20261009, 4 strates), il pose ses niveaux d'avance sur un compte prop firm simulé (2 phases).
   Page : https://claude.ai/artifact/3eXAHcLfEpS2rQmBw2UHx1. Verdict écrit avant ; à faire quand il dit « verdict du test à
   l'aveugle BBLOCK ».
-- ⏳ **D-084, le temps réel** (son choix : alertes + prop firm simulée) : à concevoir et écrire avant de brancher.
-- Commits privés `69866ca`, `2e03c42`.
+- **Le test passe dans Trainer of Trader** (Mongazi : « le test n'est pas comme le premier avec l'animation […] directement
+  sur Trainer où il y avait tout ») : troisième type de compte « BBLOCK à l'aveugle », avec le déroulé animé, les comptes et
+  la prop firm, à l'adresse habituelle https://claude.ai/artifact/HXgswASVQqYgD8AXoiiZ3q (version 7). Le compte « yan
+  propfirm » est intact. La page séparée du même soir n'a plus d'usage (suppression à demander à Mongazi).
+- **D-084, le scanner en direct** (Mongazi : « dès que tu repères un BBLOCK sur n'importe quel marché […] tu m'envoies le
+  signal sur Telegram ») : 78 instruments du MT5 Deriv démo (forex, métaux, indices, VIX, DXY, V75, V100), M3 à H1, toutes
+  les figures, la fidèle marquée ⭐, 24 h/24, aucun ordre. Chaque signal est journalisé pour un test en avant (juge écrit
+  avant le premier signal). ⚠️ Première version trop lourde pour MT5 (78 instruments d'un coup, le terminal a cessé de
+  répondre) ; ⚠️ des reconnexions répétées ont fait refuser l'autorisation (code -6) : le scanner s'attache désormais au
+  terminal déjà connecté, charge l'historique un instrument à la fois, et lit M5/M15/H1 sur les bougies M5 (identiques,
+  vérifié). L'API websocket de Deriv répondait 520 depuis le PC.
+- Commits privés `69866ca`, `2e03c42`, `b83c9d4`.
 

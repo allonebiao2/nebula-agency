@@ -573,8 +573,10 @@
   (Nasdaq, pas l'EUR/USD qu'il annonce), 144 réglages sur Nasdaq, EUR/USD, USD/JPY : **ne tient pas**, 5 à 21 % d'objectifs
   (même renvoi).
   Le soir, **sa méthode BBLOCK (0029)** a été jugée (D-081, D-082) : **elle ne tient pas**, ni unité par unité ni en unités
-  combinées ; ULTIME METHOD (0028) est en pause. **Test à l'aveugle D-083 en cours** : 60 figures, il trade lui-même sur un
-  compte prop firm simulé ; le temps réel (D-084) reste à écrire (même renvoi).
+  combinées ; ULTIME METHOD (0028) est en pause. **Test à l'aveugle D-083 en cours dans Trainer of Trader** (60 figures, il
+  trade lui-même, compte prop firm simulé). **Scanner BBLOCK en direct (D-084)** : signal Telegram à chaque figure sur 78
+  instruments du MT5 démo, tâche « NEBULA BBLOCK alertes » ; arrêt : `schtasks /Delete /TN "NEBULA BBLOCK alertes" /F` puis
+  fermer le processus `pythonw` (même renvoi).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
