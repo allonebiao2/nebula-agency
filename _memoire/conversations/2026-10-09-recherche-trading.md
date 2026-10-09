@@ -161,5 +161,12 @@ la méthode à 100 % et de la reproduire en test et faire des simulations ». Vi
   répondre) ; ⚠️ des reconnexions répétées ont fait refuser l'autorisation (code -6) : le scanner s'attache désormais au
   terminal déjà connecté, charge l'historique un instrument à la fois, et lit M5/M15/H1 sur les bougies M5 (identiques,
   vérifié). L'API websocket de Deriv répondait 520 depuis le PC.
-- Commits privés `69866ca`, `2e03c42`, `b83c9d4`.
+- **Scanner lancé à 20 h 10** (tâche « NEBULA BBLOCK alertes », 47 instruments ; exotiques et indices sans historique chez
+  Deriv démo écartés par la mise en route, qui s'en souvient).
+- **D-085** (Mongazi : « vu que tu as corrigé les trendlines de Tori, ça mériterait un nouveau test ? ») : la correction de
+  la 0029 ne touchait pas le code de Tori (son suiveur était déjà causal), mais les deux suivis diffèrent ; les entrées de
+  la 0026b (rejouées à l'identique, contrôle vert) avec SA ligne de sortie : **ne tient pas**. Sa façon (H1) passe de
+  −0,15 R à +0,03/+0,05 R et bat son miroir sur les deux périodes, mais t ≤ 2,0, 3 marchés sur 6, première moitié négative.
+  Page : https://claude.ai/artifact/EdAFTJfAucsSPfHtHKt4RM
+- Commits privés `69866ca`, `2e03c42`, `b83c9d4`, `97cacac`, `b8ee2ee`.
 
