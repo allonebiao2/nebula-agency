@@ -47,6 +47,12 @@ elle trade **le pétrole seul, en 1 h** (avant : 4 h ; or, platine, Dow).
   2026 seulement à peu près (le CFD Deriv n'est pas son contrat).
 - Le portage de Deriv sur le pétrole (0,19 à 0,20 $ par baril et par nuit) tue le swing.
 
+## L'envers de ses cassures (D-079)
+
+Mongazi : « tester l'envers de ses cassures ». Les 5 meilleurs miroirs de la recherche, figés avant de regarder, jugés sur la
+confirmation : **aucun ne confirme** (−0,26 à +0,24 R, 20 à 30 % de gagnants, t ≤ 0,77). Le scellé EUR/USD 2003-2011 n'a pas
+été ouvert (la règle exigeait les deux juges, le verdict était acquis). Ajouté à la page 0026b.
+
 ## Ce que le code a appris (dans `nebula-trader`)
 
 Contrôles qui ont arrêté la chaîne et fait corriger avant tout chiffre : un contact compté sur un sommet non confirmé, un
@@ -54,5 +60,4 @@ rejeu qui oubliait le portage. Un jour férié américain se traverse comme un w
 
 ## Ce qui reste
 
-Le sort de la méthode (enterrer ou garder) : à la décision de Mongazi. Piste hors verdict : l'envers de ses cassures,
-à tester sur des années neuves. L'audit du banc commun (bid/ask) et les correctifs 0025 non commités restent en attente.
+Le sort de la méthode (enterrer ou garder) : à la décision de Mongazi ; l'envers est jugé (ne confirme pas). L'audit du banc commun (bid/ask) et les correctifs 0025 non commités restent en attente.
