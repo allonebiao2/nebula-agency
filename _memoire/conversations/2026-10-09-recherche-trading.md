@@ -130,7 +130,26 @@ la méthode à 100 % et de la reproduire en test et faire des simulations ». Vi
   chaîne passé (≈ 45-60 min pour le vrai calcul). ⚠️ Faute déclarée dans D-081 : l'essai à blanc a tourné sur janvier-mars
   2023, donc en période de confirmation ; il a affiché les 8 réglages « fidèles » sur ces trois mois (aucun ne remplit les
   conditions). Un essai à blanc se fait désormais sur la période de recherche.
-- ⏳ **Mongazi nettoie la discussion, puis dit quand lancer les simulations** :
-  `python -m cerveau.methodes_code._0029_grille calculer` (en arrière-plan, garde-éveil intégré), puis `… juger`, puis la
-  page de résultats (modèle `_0027_page.py`). Commits `af028f5` et `db7ddba` (dépôt privé).
+- Commits `af028f5` et `db7ddba` (dépôt privé).
+
+## BBLOCK jugée, puis le test à l'aveugle (fin d'après-midi et soir du 2026-10-09)
+
+- **Simulations lancées** à la demande de Mongazi (« je veux qu'on commence les simulations test Bblock »).
+- **Défaut de vitesse attrapé** : la recherche des sommets et creux (`_figures.pivots`, commune à plusieurs méthodes)
+  réécrivait le reste du tableau à chaque sommet, d'où un temps au carré de la durée (≈ 4 h pour l'or en M3, 6 à 8 h la
+  chaîne). Réécrite en un passage, **mêmes tableaux à l'octet près** (300 séries synthétiques + or et Nasdaq, 4 unités),
+  300 à 400 fois plus rapide ; le calcul repart et tient en 10 min. ⚠️ L'essai à blanc sur 3 mois ne pouvait pas le voir.
+- **D-081, unité par unité : ne tient pas.** 434 réglages positifs en recherche contre 1 138 pour le miroir ; les 10
+  finalistes s'effondrent en confirmation ; H1 et figures « idéales » trop rares pour être jugés.
+- **D-082, unités combinées** (idée de Mongazi : « combiner les unités pour avoir plus de setups »), 11 groupes, deux règles
+  de chevauchement jugées à part (toutes les positions / une à la fois) : **ne tient pas non plus**. Hors verdict, une seule
+  ligne ressort : sa version fidèle sur les 4 unités avec SA ligne dès 2 R, positive sur 2022 → fin (321-327 trades, deux
+  moitiés positives, or et Nasdaq) mais négative sur 2008-2021 et t 1,4 : une époque ou le hasard. Seul le temps réel peut
+  trancher. Page : https://claude.ai/artifact/WA4kHebPjpC7pXt4116XVq
+- **D-083, 60 figures à l'aveugle** (Mongazi : « 60 trades à l'aveugle comme l'autre et je gère moi-même ») : tirage figé
+  avant toute issue (graine 20261009, 4 strates), il pose ses niveaux d'avance sur un compte prop firm simulé (2 phases).
+  Page : https://claude.ai/artifact/3eXAHcLfEpS2rQmBw2UHx1. Verdict écrit avant ; à faire quand il dit « verdict du test à
+  l'aveugle BBLOCK ».
+- ⏳ **D-084, le temps réel** (son choix : alertes + prop firm simulée) : à concevoir et écrire avant de brancher.
+- Commits privés `69866ca`, `2e03c42`.
 
