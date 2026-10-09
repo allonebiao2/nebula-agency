@@ -86,3 +86,18 @@ la méthode à 100 % et de la reproduire en test et faire des simulations ». Vi
 - **Contrôle** : causalité par un futur empoisonné ; le premier essai était aveugle (son témoin tricheur passait), attrapé
   et refait avant tout chiffre. Commit `c25e3fc` (dépôt privé).
 - **En attente** : enterrer ou garder la 0027 (décision de Mongazi) ; le scellé EUR/USD 2003-2011 n'a pas été ouvert.
+
+## Classements et psychologie de « liquidity in the water » (fin du 2026-10-09)
+
+- **Classement par taux de réussite** (demandé par Mongazi), relu dans les verdicts, rien de recalculé :
+  https://claude.ai/artifact/KV2vqCBzn1usojGy5aTE3a. Aucune méthode à plus de 50 % à 1:2 ; la seule au-dessus de 50 %
+  est le RSI(2) de Connors (64-67 %, sortie à la moyenne) ; la meilleure à 1:2 est le VWAP de l'or (41,4 %). La réussite
+  dépend surtout de la distance de l'objectif.
+- **Classement des 10 rentables** (gain par trade, période jugée) : 0024b +0,80 à +1,07 R (très fragile, 5 trades font
+  86 %), LE PIÈGE +0,46 R, CDS 5 min +0,40 R, VWAP or +0,19 R, RSI(2) +0,15 R, ORB +0,13 R, Tori M5 +0,12 R, 0019 +0,11 R,
+  macros ICT M2 +0,04 R, boîte de l'ouverture or +0,03 R. Par solidité : VWAP or, LE PIÈGE, ORB.
+- **Psychologie de « liquidity in the water »** (sa méthode, 0024) : un piège tendu aux acheteurs dans un marché vendeur ;
+  le code reproduit la FORME du piège, pas sa MATIÈRE. Version **0024c** proposée (règles de contexte : vraie liquidité de
+  séance + heure de volume, imbalance M15/H1, preuve du piège, sortie en deux temps, moins de géométrie), à juger sur des
+  marchés neufs (S&P 500, Dow, GBP/USD, USD/JPY). ⏳ **Mongazi : « tu me reposeras les questions, on y reviendra »** :
+  `nebula-trader/_cerveau/methodes/liquidity-water-sources/PSYCHOLOGIE-0024c.md`.
