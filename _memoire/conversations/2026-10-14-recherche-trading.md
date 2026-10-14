@@ -30,7 +30,10 @@ quatre seuils de stop), plus ses deux stops et une ou plusieurs positions : 256 
 **Verdict D-086 : NE TIENT PAS.** 0 cellule positive sur 256 en 2013-2021 après frais ; sans frais, médiane −0,027 R ; sa
 version exacte ne fait pas mieux que des entrées au hasard dans la même tendance ; 26-32 % de gagnants, pire série 16-34,
 objectif 1:2 touché 26-31 % au mieux. Page : https://claude.ai/artifact/M75FtcCWnwhCWGZEbKbFE1. Deux ajustements proposés,
-non testés : entrer au repli sur l'EMA 13 après deux CDS, ou ouverture de New York seulement. **Enterrement : à sa décision.**
+non testés : entrer au repli sur l'EMA 13 après deux CDS, ou ouverture de New York seulement.
+
+**Enterrée le jour même.** Mongazi : « hasard donc on l'enterre ». Fiche 23 au cimetière du dépôt privé (commit `248e4ee`),
+23 méthodes enterrées. Les deux ajustements ne seront pas testés.
 
 ## Ce qui a coûté du temps
 

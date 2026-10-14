@@ -531,7 +531,7 @@
 - **En arrivant là-bas** : `_cerveau/CERVEAU.md`, puis `_cerveau/VUE-DENSEMBLE.md`.
 - ⛔ **Rien n'est rentable, rien ne tourne en réel.** Le test d'un an du
   2026-09-18 a montré que LE REFLUX perd chez un vrai courtier ; les chiffres
-  flatteurs venaient d'un simulateur non causal. **22 méthodes au cimetière**,
+  flatteurs venaient d'un simulateur non causal. **23 méthodes au cimetière**,
   dont toutes celles qui avaient un jour paru marcher. Les 30 septembre et
   1er octobre, les méthodes 0010 et 0011 et deux exhumations ont été jugées :
   **aucune ne tient** (renvoi : `_memoire/conversations/2026-10-01-recherche-trading.md`).
@@ -579,7 +579,7 @@
   signaux est resté vide (un bug d'écriture), donc aucun test en avant. **D-085** (les entrées de Tori avec sa ligne de
   sortie) : ne tient pas (même renvoi). Le 14 octobre, **sa méthode « CDS + EMA 13/50 » (0030, D-086)**, Nasdaq et S&P 500
   en M5 : sa vente du 7/10 retrouvée à la bougie près, 256 versions jugées, **ne tient pas** (aucune positive après frais,
-  pas mieux que le hasard dans la tendance) ; enterrement à sa décision (renvoi : `_memoire/conversations/2026-10-14-recherche-trading.md`).
+  pas mieux que le hasard dans la tendance) ; **enterrée** le jour même (Mongazi : « hasard donc on l'enterre ») (renvoi : `_memoire/conversations/2026-10-14-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
