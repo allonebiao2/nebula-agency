@@ -577,7 +577,9 @@
   trade lui-même, compte prop firm simulé). **Scanner BBLOCK en direct (D-084) : ARRÊTÉ le 2026-10-14**
   par Mongazi (« on avait déjà conclu que ça ne servait à rien »), tâche « NEBULA BBLOCK alertes » supprimée ; son journal de
   signaux est resté vide (un bug d'écriture), donc aucun test en avant. **D-085** (les entrées de Tori avec sa ligne de
-  sortie) : ne tient pas (même renvoi).
+  sortie) : ne tient pas (même renvoi). Le 14 octobre, **sa méthode « CDS + EMA 13/50 » (0030, D-086)**, Nasdaq et S&P 500
+  en M5 : sa vente du 7/10 retrouvée à la bougie près, 256 versions jugées, **ne tient pas** (aucune positive après frais,
+  pas mieux que le hasard dans la tendance) ; enterrement à sa décision (renvoi : `_memoire/conversations/2026-10-14-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
