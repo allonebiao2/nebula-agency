@@ -89,3 +89,31 @@ une grosse part vient de la règle du jeu de FTMO. Page : https://claude.ai/arti
 
 `nebula-trader` (commit `e307081`) : `_cerveau/methodes/cds-ema-13-50-sources/ANALYSE.md`, D-086 dans `_cerveau/DECISIONS.md`,
 `cerveau/methodes_code/0030_cds_ema.py`, `_0030_grille.py`, `_0030_planche.py`, `_0030_page.py`. Contrôles 72 + 224 verts.
+
+## Le soir : D-089 (les trois ensemble en démo), le carnet « Les trois ensemble », NOVA sur Telegram
+
+Mongazi : « du coup quelle méthode sera la meilleure à utiliser ? et c'est quoi l'amélioration que tu as apportée ? ».
+Réponse : les trois ensemble, pas une seule (12 années positives sur 13 ensemble, contre 8 à 11 seules). Aucune règle de
+méthode n'a été touchée : l'apport est la combinaison, le dosage (0,75 %), le jeu de la règle FTMO et les tests durs. Ses
+critères ne sont remplis par aucune : 27 % de gagnants ensemble à 1:3,3 (seuil de rentabilité 23,5 %, marge de 3,4 points),
+jusqu'à 20 pertes d'affilée.
+
+FTMO : un programme automatique sur SON compte est permis (les EA le sont, limite 2 000 requêtes au serveur par jour) ;
+laisser un tiers utiliser son compte, ou trader celui d'un autre, est interdit : **le compte de son proche, non**. Le mot de
+passe ne passe jamais dans la conversation. Étapes : démo Deriv, essai gratuit FTMO (14 jours, objectif divisé par deux)
+pour brancher les programmes et rejouer le VWAP or avec leur volume, puis challenge à son nom avec son feu vert explicite.
+
+**D-089** (« oui oui relances ») : les trois à 0,75 % sur la démo Deriv à partir du 15/10, ORB relancée. **La panne du PIÈGE
+du 13/10 est expliquée** : les tâches s'arrêtaient dès que le PC passait sur batterie (14 h 15 min 41 s, une coupure de
+courant) ; réglage retiré sur les trois. **Le carnet** (https://nebula-carnet.pages.dev) a un onglet « Les trois ensemble » :
+KPI contre le passé, cumul sur la fourchette du passé (après 20 trades, de −9 R à +16 R dans 80 % des cas), jauges FTMO,
+trades pris contre attendus, constats (`carnet --constat`).
+
+**NOVA** (« je veux pouvoir discuter avec Nova, lui demander comment ça avance, les gains de la journée ») : le robot
+@Nova_de_nebula_bot, qui annonçait déjà les trades, est AUSSI celui des alertes partenaires, et son webhook appartient au
+Bureau des partenaires. Le Bureau fait désormais suivre la seule conversation de Mongazi à NOVA (fonction Cloudflare du
+carnet, dépôt privé), qui lit le journal par des fonctions à jeton (aucune clé de service) et répond avec Claude. Essais :
+réponse juste en 10 s. ⚠️ Le jeton d'administration Supabase (`secrets/supabase.env`) est refusé (401) : aucune fonction
+Supabase ne peut être déployée tant qu'il n'est pas renouvelé.
+
+Commits : `nebula-trader` `5c81581` (D-089, carnet), `6e2d8d4` (NOVA) ; `nebula-agency` `638417a` (le Bureau fait suivre).
