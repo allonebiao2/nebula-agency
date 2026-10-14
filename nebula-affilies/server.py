@@ -2225,6 +2225,14 @@ def admin_tg_unlink(naff_session: Optional[str] = Cookie(default=None)):
     setting_set("admin_tg_chat", "")
     return {"ok": True}
 
+def _vers_nova(url: str, upd: dict) -> None:
+    """Fait suivre un message de Mongazi à NOVA. En arrière-plan : Telegram n'attend pas la réponse de Claude."""
+    try:
+        httpx.post(url, json=upd, timeout=120,
+                   headers={"x-nova-secret": os.getenv("NOVA_SECRET", ""), "User-Agent": "NEBULA-Bureau/1.0 (NOVA)"})
+    except Exception as e:                                   # NOVA muette ne doit jamais casser le Bureau
+        print(f"[nova] transmission impossible : {e}", flush=True)
+
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(req: Request):
     if req.headers.get("x-telegram-bot-api-secret-token", "") != os.getenv("NAFF_TG_SECRET", "__none__"):
@@ -2237,6 +2245,12 @@ async def telegram_webhook(req: Request):
     chat = (msg.get("chat") or {}).get("id")
     text = (msg.get("text") or "").strip()
     if not chat:
+        return {"ok": True}
+    # NOVA (trading) : le robot sert aussi à Mongazi pour parler de ses démos de trading. Seule SA conversation
+    # (NOVA_CHAT_ID) est transmise, hors liens /start ; les partenaires ne sont pas concernés. NOVA répond elle-même.
+    nova_url, nova_chat = os.getenv("NOVA_URL", ""), os.getenv("NOVA_CHAT_ID", "")
+    if nova_url and nova_chat and str(chat) == nova_chat and not text.startswith("/start"):
+        threading.Thread(target=_vers_nova, args=(nova_url, upd), daemon=True).start()
         return {"ok": True}
     if text.startswith("/start"):
         parts = text.split(maxsplit=1)
