@@ -579,7 +579,7 @@
   signaux est resté vide (un bug d'écriture), donc aucun test en avant. **D-085** (les entrées de Tori avec sa ligne de
   sortie) : ne tient pas (même renvoi). Le 14 octobre, **sa méthode « CDS + EMA 13/50 » (0030, D-086)**, Nasdaq et S&P 500
   en M5 : sa vente du 7/10 retrouvée à la bougie près, 256 versions jugées, **ne tient pas** (aucune positive après frais,
-  pas mieux que le hasard dans la tendance) ; **enterrée** le jour même (Mongazi : « hasard donc on l'enterre ») (renvoi : `_memoire/conversations/2026-10-14-recherche-trading.md`).
+  pas mieux que le hasard dans la tendance) ; **enterrée** le jour même (Mongazi : « hasard donc on l'enterre ») (renvoi : `_memoire/conversations/2026-10-14-recherche-trading.md`). Le même jour, la méthode 0031 « la double structure » (Benjamin Deleuze, vidéo de 54 min, forex, 28 paires, M30 à H4) : ses trois trades retrouvés, sa méthode telle quelle et 189 réglages jugés (D-087) : **ne tient pas** (20 % de gagnants, un peu mieux que le hasard mais négative après frais) ; enterrement à sa décision (même renvoi).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de

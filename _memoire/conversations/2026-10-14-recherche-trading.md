@@ -35,12 +35,37 @@ non testés : entrer au repli sur l'EMA 13 après deux CDS, ou ouverture de New 
 **Enterrée le jour même.** Mongazi : « hasard donc on l'enterre ». Fiche 23 au cimetière du dépôt privé (commit `248e4ee`),
 23 méthodes enterrées. Les deux ajustements ne seront pas testés.
 
+## La méthode 0031 « la double structure » (Benjamin Deleuze)
+
+**Demande** : une vidéo de 54 min (`_partage/La Seule Stratégie de Trading Rentable pour les Débutants…mp4`) : « analyse-la en
+profondeur […] comprendre parfaitement et sans erreur la stratégie et la passer en test », puis « test aussi et surtout sa
+méthode telle quelle, sans ajout ». Forex, majeures et mineures, M30 à H4 : une tendance de Dow (structure 1), une
+consolidation sous une zone psychologique (structure 2), entrée à la clôture franche au-delà de la zone, du bon côté de l'EMA
+100, stop sous le dernier creux, objectif au départ de la tendance, ratio 1:2,5 au moins, 8 h-21 h Paris, jamais en mars.
+
+**Lecture** : parole par les sous-titres automatiques YouTube (Whisper arrêté, le PC tombait à 0,3 Go libre), 200 écrans
+immobiles en planches, ses trois trades lus sur ses écrans puis retrouvés dans les minutes Deriv : GBP/CAD et NZD/CAD sur la
+même bougie, EUR/GBP pris en pullback le même jour ; rejoués avec sa gestion du stop, les trois à l'objectif comme lui.
+
+**Ses réponses aux questions à cliquer** : « tester les trois » partout (unité, gestion, entrée, distance) : 189 réglages,
+plus sa méthode telle quelle et sa gestion du risque sur un compte (D-087, déclarée avant).
+
+**Verdict D-087 : NE TIENT PAS.** Sa méthode telle quelle ne tient sur aucune unité ; en M30, −0,119 R par trade en 2022-2025,
+20 % de gagnants, pire série 21. Sur un compte (1 %, 2/4/12 %), 33 années négatives sur 48. Aucun des 10 meilleurs réglages ne
+tient en confirmation. Elle fait un peu mieux qu'entrer au hasard, pas assez pour payer l'écart et les swaps. Page :
+https://claude.ai/artifact/TgUD1cCxxNVnAfWiheADjT. Commit privé `1cff14d`. **Enterrement : à sa décision.**
+
 ## Ce qui a coûté du temps
 
 - La lecture recopiait tout l'historique inversé à chaque bougie de baisse (`-l` recalculé dans la boucle) : un temps au
   carré, le calcul ne finissait pas. Corrigé, une année lue en 0,7 s.
 - Le premier fichier MT5 du S&P n'avait que le 14 octobre : la première demande déclenche le téléchargement, la seconde rend
   tout. Vérifier le nombre de minutes par jour avant de conclure.
+
+- 0031 : une occasion en attente bloquait la détection des suivantes ; une cassure refusée fermait l'occasion au lieu
+  d'attendre la bougie suivante ; dix zones de gestion serrées au lieu de ses deux ou trois (corrigé : la plus fournie
+  d'abord, 3 ATR d'écart, 4 impacts). Les swaps d'aujourd'hui surestiment 2019-2021 : une lecture « sans swaps » est donnée à
+  côté.
 
 ## Où c'est
 
