@@ -53,7 +53,25 @@ plus sa méthode telle quelle et sa gestion du risque sur un compte (D-087, déc
 **Verdict D-087 : NE TIENT PAS.** Sa méthode telle quelle ne tient sur aucune unité ; en M30, −0,119 R par trade en 2022-2025,
 20 % de gagnants, pire série 21. Sur un compte (1 %, 2/4/12 %), 33 années négatives sur 48. Aucun des 10 meilleurs réglages ne
 tient en confirmation. Elle fait un peu mieux qu'entrer au hasard, pas assez pour payer l'écart et les swaps. Page :
-https://claude.ai/artifact/TgUD1cCxxNVnAfWiheADjT. Commit privé `1cff14d`. **Enterrement : à sa décision.**
+https://claude.ai/artifact/TgUD1cCxxNVnAfWiheADjT. Commit privé `1cff14d`. **Enterrée** à sa décision (« oui enterre la 0031 »).
+
+## « Qu'est-ce qu'il faut pour que ça devienne rentable ? » et le portefeuille FTMO (D-088)
+
+Mongazi demande ce qui rendrait une méthode « hyper rentable » et capable de réussir FTMO. Réponse donnée : la double structure
+ne le deviendra pas (lui ajouter des filtres = surajustement) ; sur 31 méthodes, les règles de lecture de graphique font comme
+le hasard, seules trois pistes liées à un marché et une heure ont gardé un avantage (VWAP or, LE PIÈGE, ORB) ; combiner des
+méthodes nulles donne zéro ; ses critères (> 50 % à 1:2 et séries rares) sont incompatibles (calculé : 81 % de chances de 5
+pertes de suite sur 100 trades à 50 %). Il dit « lance le portefeuille FTMO », puis « simule le max de comptes FTMO pour voir
+ce qui pourrait permettre d'avoir des revenus sur le long terme ; j'ai un compte FTMO d'un proche, je ne prends aucune
+position en attendant une bonne méthode ». Dit avant : on ne force aucun résultat ; et **un compte FTMO doit être tradé par
+son titulaire** (risque de retraits refusés et de compte fermé).
+
+**D-088** (déclarée avant) : les trois pistes rejouées ensemble 2013 → sept. 2025, 10 000 parcours FTMO de 24 mois par
+réglage (challenge 2-Step, compte financé, retraits mensuels à 80 %, compte perdu, challenge racheté), comparés aux mêmes
+trades sans avantage. **Conseillé : les trois à 0,75 % par trade** : +1 970 $ par mois en moyenne sur 100 000 $, +1 222 $ si
+l'avantage est divisé par deux, 2,8 % de parcours à perte. ⚠️ Avec un avantage nul, les mêmes trades rapportent encore +653 $ :
+une grosse part vient de la règle du jeu de FTMO. Page : https://claude.ai/artifact/CHhSH2uS86ftnqwRqpj7Gm. Commit privé
+`990fc00`. **Prochaine preuve : les trois en démo ensemble avant tout challenge** (l'ORB est en pause depuis le 7 octobre).
 
 ## Ce qui a coûté du temps
 
