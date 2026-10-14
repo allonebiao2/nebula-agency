@@ -574,9 +574,9 @@
   (même renvoi).
   Le soir, **sa méthode BBLOCK (0029)** a été jugée (D-081, D-082) : **elle ne tient pas**, ni unité par unité ni en unités
   combinées ; ULTIME METHOD (0028) est en pause. **Test à l'aveugle D-083 en cours dans Trainer of Trader** (60 figures, il
-  trade lui-même, compte prop firm simulé). **Scanner BBLOCK en direct (D-084), lancé le 2026-10-09 à 20 h 10** : signal
-  Telegram à chaque figure sur 47 instruments du MT5 démo, tâche « NEBULA BBLOCK alertes » (`pythonw`, sans fenêtre) ; arrêt :
-  `schtasks /Delete /TN "NEBULA BBLOCK alertes" /F` puis fermer le `pythonw`. **D-085** (les entrées de Tori avec sa ligne de
+  trade lui-même, compte prop firm simulé). **Scanner BBLOCK en direct (D-084) : ARRÊTÉ le 2026-10-14**
+  par Mongazi (« on avait déjà conclu que ça ne servait à rien »), tâche « NEBULA BBLOCK alertes » supprimée ; son journal de
+  signaux est resté vide (un bug d'écriture), donc aucun test en avant. **D-085** (les entrées de Tori avec sa ligne de
   sortie) : ne tient pas (même renvoi).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
