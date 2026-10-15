@@ -596,8 +596,9 @@
   en M5 : sa vente du 7/10 retrouvée à la bougie près, 256 versions jugées, **ne tient pas** (aucune positive après frais,
   pas mieux que le hasard dans la tendance) ; **enterrée** le jour même (Mongazi : « hasard donc on l'enterre ») (renvoi : `_memoire/conversations/2026-10-14-recherche-trading.md`). Le même jour, la méthode 0031 « la double structure » (Benjamin Deleuze, vidéo de 54 min, forex, 28 paires, M30 à H4) : ses trois trades retrouvés, sa méthode telle quelle et 189 réglages jugés (D-087) : **ne tient pas** (20 % de gagnants, un peu mieux que le hasard mais négative après frais) ; **enterrée** le jour même (24 méthodes au cimetière). Puis **le portefeuille FTMO (D-088)** : VWAP or + LE PIÈGE + ORB rejoués ensemble, 10 000 parcours FTMO de 24 mois par réglage ; conseillé les trois à 0,75 % par trade (+1 970 $ par mois en moyenne sur 100 000 $, +1 222 $ si l'avantage est divisé par deux), mais une grosse part vient de la règle du jeu de FTMO, pas des pistes ; **D-089** : les trois en démo ensemble à 0,75 % depuis le 15/10 (ORB relancée), suivies dans le carnet (onglet « Les trois ensemble ») et par **NOVA** sur Telegram : le robot @Nova_de_nebula_bot sert aussi aux partenaires, son webhook est au Bureau, qui fait suivre la seule conversation de Mongazi (`NOVA_URL`/`NOVA_SECRET`/`NOVA_CHAT_ID` sur Render) (même renvoi).
   Le 15 octobre, la méthode 0032 « l'OPR de 15 h 30 » (OlinVest, boîte de la bougie 15 min de 9 h 30 New York, entrée au
-  retour) : **ne tient pas**, **enterrée** (25 méthodes au cimetière) ; sa **cousine « au marché »** confirme sur 2022-2025
-  mais c'est une époque, **gardée sans démo** ; face à FTMO (D-091) : 0,5-0,75 % par trade, jamais 1 % (renvoi :
+  retour) : **ne tient pas**, **enterrée** (25 méthodes au cimetière) ; sa **cousine « au marché », L'ÉLAN DE 15 H 30**,
+  confirme sur 2022-2025 mais c'est une époque, **gardée à côté sans démo** ; face à FTMO (D-091) : 0,5-0,75 % par trade,
+  jamais 1 % (renvoi :
   `_memoire/conversations/2026-10-15-recherche-trading.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
