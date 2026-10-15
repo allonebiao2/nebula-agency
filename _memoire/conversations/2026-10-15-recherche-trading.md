@@ -43,3 +43,20 @@ sur la cousine, laisse-moi mes objectifs […] est-ce que ça peut réussir FTMO
 
 - Un ordre limite qui attend le retour sur un niveau cassé est servi quand la cassure échoue.
 - Un juge écrit d'avance peut confirmer une époque : relire l'historique entier, année par année, avant d'y croire.
+
+## L'après-midi : « la méthode ADR » (0033, SA méthode, le daily cycle)
+
+- **Ses captures** (`_partage/ADR method/` : 4 exemples, un schéma, 2 captures TDI) : l'Asie (18 h-2 h New York) cassée, la
+  bande ADR traversée, le haut (bas) de la veille pris, **le sommet forme deux jambes** (le M / W de Steve Mauro, BTMM),
+  imbalance du retournement, entrée au retour, stop au-dessus de l'imbalance, objectif le bas de l'Asie. Avec le **TDI** :
+  divergence entre les deux jambes, la ligne verte sort de la bande et rentre en croisant la rouge à la 1re jambe, le
+  croisement vert-jaune au moment de l'imbalance.
+- **Son indicateur ADR retrouvé** : ouverture de 17 h New York ± ½ ADR(7) et ± ½ ADR(14) (au centième près sur sa capture).
+- **Ses exemples retrouvés par le code** (minutes Deriv d'octobre extraites du MT5 démo, en lecture seule, compte démo
+  vérifié), dont son trade TDI du GBP/USD 14/10 (ordre 1,31657 contre ses 1,31664). **Planches 1 à 9 validées** (« c'est le
+  setup ça »).
+- **D-092** (18 144 puis 36 288 réglages par paire, 7 majeures, recherche 2019 → mi-2022, confirmation → sept. 2025, autre
+  époque 2012-2018) et **D-093** (le TDI, 3 888 réglages par paire), déclarées avant tout calcul. Contrôles verts après un vrai
+  défaut corrigé (le filtre des journées lisait la fin du jour).
+- ⏳ **Calcul en cours** (lancé à 17 h 44, fin estimée vers 1 h), détaché, garde-éveil, reprise possible. Le détail et la
+  commande de reprise : mémoire `project_nebula-trader`, dépôt privé `nebula-trader` (commit `28c1f33`).
