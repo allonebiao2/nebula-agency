@@ -527,6 +527,9 @@
   le sortir de là.
 - ⛔ **Mèmes : la phrase, jamais le visage ni la voix**, aucun chef d'État africain, aucune parole de chanson, aucune
   mise d'argent réel sans juriste. Recherche par pays : `reports/Mèmes francophones viraux par pays.md` (dans le coffre).
+- ⏸️ **La v1 ne plaît pas à Mongazi** (2026-10-15 : « je veux un jeu de stratégie »). Nouvelle direction **ROYAUMES**
+  (temps réel + conquête de la carte de l'Afrique depuis sa vraie ville), **en attente, rien de construit** : lire
+  `01 Concept/ROYAUMES · la nouvelle direction.md` dans le coffre avant d'y toucher.
 
 ### NEBULA TRADER · agent de trading EUR/USD  *(produit interne)*
 - 🔴 **CE PRODUIT A DÉMÉNAGÉ LE 2026-09-23.** Il vit désormais dans un dépôt

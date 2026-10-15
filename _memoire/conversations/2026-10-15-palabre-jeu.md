@@ -28,4 +28,15 @@
 - Le mème « 8 morts, 6 blessés… ma libellule » : trouvé (particulier filmé à Meaux, 2020), laissé hors du jeu.
 - Le coffre n'a pas pu être enregistré dans Obsidian depuis la ligne de commande : à ajouter une fois à la main.
 
+## Le soir : la version 1 rejetée, ROYAUMES en attente
+- Mongazi : « honnêtement j'aime pas, je veux un jeu de stratégie » (le triangle est un pierre-feuille-ciseaux habillé).
+- Sa vision : temps réel façon Clash Royale (détruire les défenses adverses avant lui), conquérir des royaumes sur la carte
+  de l'Afrique (l'Europe plus tard), départ depuis sa vraie origine (« Afrique, Bénin, Savè »), mieux connaître l'Afrique,
+  petites dépenses (500 F).
+- Proposé : carte collective par saisons (on défend les couleurs de sa ville), royaumes historiques et jamais les frontières
+  actuelles ni les ethnies, simulation déterministe pour la 3G, prototype de la bataille contre l'ordinateur d'abord ;
+  argent au prix affiché, jamais de victoire achetée ni de coffre payant au hasard, aucun retrait d'argent.
+- **En attente** (« mets ça en mémoire, on y reviendra »). Tout le détail :
+  `NEBULA AGENCY GAME/01 Concept/ROYAUMES · la nouvelle direction.md`.
+
 Détail : `NEBULA AGENCY GAME/00 Accueil/REPRENDRE-ICI.md` et `04 Journal/2026-10-15.md`.
