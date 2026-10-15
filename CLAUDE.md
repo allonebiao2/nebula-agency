@@ -516,6 +516,18 @@
 - Détail : `whatsapp-agent/README.md` et
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
+### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
+- 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé
+  « à part » par Mongazi). **Lire son `CLAUDE.md` et `00 Accueil/REPRENDRE-ICI.md` en arrivant.**
+- **En ligne** : https://palabre-4cn.pages.dev (Cloudflare Pages `palabre`). « Le Costaud fait taire le Tchatcheur, le
+  Tchatcheur embrouille le Malin, le Malin roule le Costaud » : un duel d'une minute, contre l'ordinateur, contre un ami
+  en temps réel (revanche à quitte ou double), en soirée à 3 à 8 téléphones (le Tribunal des mèmes), ou sur le Tour de
+  la francophonie. 24 cartes dessinées en vectoriel.
+- ⚠️ **Son temps réel passe par le projet Supabase partagé** (canaux broadcast, aucune table) : s'il prend de l'ampleur,
+  le sortir de là.
+- ⛔ **Mèmes : la phrase, jamais le visage ni la voix**, aucun chef d'État africain, aucune parole de chanson, aucune
+  mise d'argent réel sans juriste. Recherche par pays : `reports/Mèmes francophones viraux par pays.md` (dans le coffre).
+
 ### NEBULA TRADER · agent de trading EUR/USD  *(produit interne)*
 - 🔴 **CE PRODUIT A DÉMÉNAGÉ LE 2026-09-23.** Il vit désormais dans un dépôt
   **séparé et privé** : **`allonebiao2/nebula-trader`**, sur le disque
