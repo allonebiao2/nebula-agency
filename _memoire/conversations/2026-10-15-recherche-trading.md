@@ -58,5 +58,23 @@ sur la cousine, laisse-moi mes objectifs […] est-ce que ça peut réussir FTMO
 - **D-092** (18 144 puis 36 288 réglages par paire, 7 majeures, recherche 2019 → mi-2022, confirmation → sept. 2025, autre
   époque 2012-2018) et **D-093** (le TDI, 3 888 réglages par paire), déclarées avant tout calcul. Contrôles verts après un vrai
   défaut corrigé (le filtre des journées lisait la fin du jour).
-- ⏳ **Calcul en cours** (lancé à 17 h 44, fin estimée vers 1 h), détaché, garde-éveil, reprise possible. Le détail et la
-  commande de reprise : mémoire `project_nebula-trader`, dépôt privé `nebula-trader` (commit `28c1f33`).
+- **Calcul** lancé à 17 h 44, détaché, garde-éveil, reprise possible ; D-092 finie à 21 h 51, puis la vague TDI.
+- **Ses deux questions du soir**, mesurées sur la recherche et déclarées comme regard : les trades coupés à 16 h 59 New York
+  (30 à 43 %) sont en gain à la coupe, mais **gardés la nuit ils rapportent moins** pour chaque objectif (jusqu'au
+  lendemain, au jeudi soir, ou sans limite) ; **les deux sens** : ventes −0,065 R, achats −0,273 R. D'où le conseil de ne
+  pas lancer la version « nuit » aux règles FTMO (D-094).
+- **Verdict de D-092 : rien ne confirme.** Aucun des 36 288 réglages n'est positif en moyenne sur les 7 paires en
+  recherche ; 4 cellules (2 réglages distincts) passent le filtre, et retombent à −0,03 et −0,015 R en confirmation. Sa
+  méthode telle quelle : −0,064 R sur 2 114 trades (2022-2025), −0,104 R sur 4 907 trades (2012-2018). Le sens opposé gagne
+  en recherche (24 523 réglages positifs) mais pas en confirmation.
+- **Verdict de D-093 (le TDI) : rien ne confirme.** 36 réglages passent le filtre de la recherche, les 5 finalistes perdent
+  en confirmation (−0,065 à −0,031 R) et sur 2012-2018 ; sa méthode TDI : −0,167 R sur 251 trades. La moins mauvaise lecture
+  du TDI est la divergence avec le croisement vert-jaune, sans sortir du rouge.
+- Page : https://claude.ai/artifact/SRoQci5F8HcCXB9t2BwBj3 (commit privé `1097a1f`). Le calcul ventes/achats sur 2022-2025 a
+  été coupé par Claude Code faute de mémoire (Chrome ouvert) : non relancé.
+- ⏳ **À sa décision** : le sort de la méthode, la version nuit (D-094), l'envers.
+
+## Ce qu'on en garde (soir)
+
+- Une coupe de fin de journée qui « laisse des trades en gain » ne dit pas qu'il faut les garder : mesurer ce qu'ils
+  deviennent. Ici, gardés, ils finissent surtout au stop.

@@ -599,7 +599,9 @@
   retour) : **ne tient pas**, **enterrée** (25 méthodes au cimetière) ; sa **cousine « au marché », L'ÉLAN DE 15 H 30**,
   confirme sur 2022-2025 mais c'est une époque, **gardée à côté sans démo** ; face à FTMO (D-091) : 0,5-0,75 % par trade,
   jamais 1 % (renvoi :
-  `_memoire/conversations/2026-10-15-recherche-trading.md`).
+  `_memoire/conversations/2026-10-15-recherche-trading.md`). Le soir, **sa méthode ADR (0033, daily cycle + TDI)** :
+  ses exemples retrouvés, 36 288 puis 3 888 réglages sur 7 majeures (D-092, D-093) : **ne tient pas**, ni seule ni avec
+  le TDI ; garder la nuit rapporte moins ; son sort à sa décision (même renvoi).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
