@@ -72,7 +72,13 @@ sur la cousine, laisse-moi mes objectifs […] est-ce que ça peut réussir FTMO
   du TDI est la divergence avec le croisement vert-jaune, sans sortir du rouge.
 - Page : https://claude.ai/artifact/SRoQci5F8HcCXB9t2BwBj3 (commit privé `1097a1f`). Le calcul ventes/achats sur 2022-2025 a
   été coupé par Claude Code faute de mémoire (Chrome ouvert) : non relancé.
-- ⏳ **À sa décision** : le sort de la méthode, la version nuit (D-094), l'envers.
+- **Ses décisions** (22 h 50) : la méthode **gardée en attente** ; la version nuit (D-094) **non lancée** ; **l'envers testé**.
+- **L'envers (0033c, D-095), dans la nuit du 16** : planche de son USD/JPY du 14/10 retourné, validée (« ok je vois du coup
+  on y va on teste ») ; ordre STOP au niveau ou achat au marché, sept objectifs, 9 072 réglages par paire, plafond des
+  regards relevé de 9. ⚠️ L'ancien « sens opposé » flattait l'envers (il ne comptait que les jours où le prix dépassait le
+  niveau de 2 coûts) : l'envers est simulé comme un vrai ordre. **Verdict : rien ne confirme.** 511 réglages positifs en
+  recherche, des billets de loterie (16 % de gagnants à 1:17) qui perdent en confirmation et sur 2012-2018 ; sa méthode
+  retournée −0,152 R. Page v2 (même lien), commit privé `8277045`. **La méthode ADR ne tient dans aucun sens.**
 
 ## Ce qu'on en garde (soir)
 
