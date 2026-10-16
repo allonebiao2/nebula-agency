@@ -1,6 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { ouvrirSession, reglages } from '../_shared/saspay.ts'
-import { expireLe, jeton, lireCommande } from '../_shared/lettre.ts'
+import { expireLe, jeton, lireCommande, nomOffre } from '../_shared/lettre.ts'
 
 /*
   MA LETTRE À… · déposer une lettre, et ouvrir son paiement.
@@ -52,7 +52,7 @@ Deno.serve(async (req: Request) => {
   const { lettre, palier, prix, plume } = lu
   /* Le nom de l'offre tel que l'acheteur le lira sur la page de paiement et
      sur son reçu. */
-  const offre = plume ? `${palier.nom} + la plume` : palier.nom
+  const offre = nomOffre(palier, plume, lettre.langue)
 
   /* Le WhatsApp de l'ACHETEUR : c'est là qu'on lui rend SON lien. On ne
      demande jamais celui de la destinataire, on ne lui écrit pas. */
@@ -105,7 +105,8 @@ Deno.serve(async (req: Request) => {
      ⚠️ Le nom par defaut aussi : « Client PISTE » finirait sur un recu MA LETTRE À…. */
   const s = await ouvrirSession({
     ...r,
-    retour: `${SITE}/merci.html?j=${j}`,
+    /* La page de retour parle la langue de la lettre. */
+    retour: `${SITE}${lettre.langue === 'en' ? '/en' : ''}/merci.html?j=${j}`,
     nomDefaut: 'Client Ma lettre',
   }, {
     reference: j,

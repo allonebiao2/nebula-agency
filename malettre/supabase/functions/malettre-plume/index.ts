@@ -84,7 +84,7 @@ Deno.serve(async (req: Request) => {
     return repondre({ ok: false, erreur: 'occupee' }, 502)
   }
 
-  const r = lireReponse(m)
+  const r = lireReponse(m, fiche.langue)
   if (!r.ok) return repondre({ ok: false, refus: r.refus, version }, 200)
 
   return repondre({

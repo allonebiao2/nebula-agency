@@ -379,7 +379,9 @@ dit(M.lireCommande({ ...BON, formule: 'Prends soin de toi,' }).lettre?.formule =
 dit(M.lireCommande({ ...BON, formule: 'x'.repeat(500) }).lettre?.formule.length === 60,
     'la formule de fin est bornée à 60 signes')
 dit(M.lireCommande(BON).lettre?.formule === '', 'sans formule, le gabarit garde la sienne')
-dit(G.GABARIT.includes('D.formule || "Avec tout mon cœur,"'),
+/* Depuis les deux langues (2026-10-16), la formule par défaut passe par le
+   dictionnaire du gabarit : en français, elle doit rester la même. */
+dit(G.GABARIT.includes('D.formule || L.formule') && G.GABARIT.includes('formule: "Avec tout mon cœur,"'),
     'une lettre sans formule se signe comme avant')
 
 /* ═══ 12 · la plume : les occasions ════════════════════════════════════ */
@@ -531,7 +533,7 @@ dit(pl.indexOf('lireFiche(d)') > 0 && pl.indexOf('lireFiche(d)') < pl.indexOf('m
 dit(pl.indexOf("rpc('malettre_plume_permis'") > 0 && pl.indexOf("rpc('malettre_plume_permis'") < pl.indexOf('messages.create('),
     'le compteur passe AVANT le modèle')
 dit(/if \(eC\)[^\n]*return repondre/.test(pl), 'un compteur en panne ferme la plume')
-dit(/requete\(fiche\)/.test(pl) && /lireReponse\(m\)/.test(pl), 'la requête et la relecture sont celles de plume.ts')
+dit(/requete\(fiche\)/.test(pl) && /lireReponse\(m, fiche\.langue\)/.test(pl), 'la requête et la relecture sont celles de plume.ts, dans la langue de la fiche')
 dit(!/\.from\(/.test(pl) && !/insert/i.test(pl), 'la fonction n’écrit la fiche nulle part')
 dit(/ANTHROPIC_API_KEY/.test(pl) && /pas-branchee/.test(pl), 'sans clé, elle dit qu’elle n’est pas branchée')
 dit(/empreinte\(ip\)/.test(pl), 'l’adresse est comptée par son empreinte, pas en clair')
@@ -570,6 +572,59 @@ dit(/Ma lettre à <b id="s-pour">/.test(G.GABARIT), 'le seuil dit « Ma lettre �
 dit(/CREATE SCHEMA IF NOT EXISTS malettre;/.test(sql), 'le schéma s’appelle malettre')
 dit(/malettre\.nebula-agency\.online/.test(lire('supabase/functions/_shared/lettre.ts')),
     'l’adresse est celle de MA LETTRE À…')
+
+/* ═══ 18 · les deux langues (2026-10-16) ═══════════════════════════════════
+   Une liste fermée côté serveur, le même prix dans les deux langues, des noms
+   d'offre identiques à ceux de la page anglaise, et une plume qui écrit
+   l'anglais sans lui appliquer l'élision française. */
+console.log('\n== Les deux langues')
+const BON_EN = { ...BON, langue: 'en' }
+const enL = M.lireCommande(BON_EN)
+dit(enL.ok && enL.lettre.langue === 'en', 'une commande anglaise donne une lettre anglaise')
+dit(M.lireCommande(BON).lettre?.langue === 'fr', 'sans langue, la lettre est française')
+dit(M.lireCommande({ ...BON, langue: 'de' }).lettre?.langue === 'fr', 'une langue inconnue retombe sur le français')
+dit(M.lireCommande({ ...BON, langue: { en: 1 } }).lettre?.langue === 'fr', 'une langue qui n’est pas une chaîne retombe sur le français')
+dit(enL.lettre?.lien === 'https://malettre.nebula-agency.online/en/', 'le pied d’une lettre anglaise mène à la page anglaise')
+dit(M.lireCommande(BON).lettre?.lien === 'https://malettre.nebula-agency.online', 'le pied d’une lettre française ne change pas')
+dit(M.lireCommande({ ...BON_EN, pour: '' }).lettre?.pour === 'you', 'sans prénom, une lettre anglaise est pour « you »')
+dit(enL.prix === M.lireCommande(BON).prix && enL.lettre.pied === M.lireCommande(BON).lettre.pied,
+    'la langue ne change ni le prix ni la signature')
+const enCreer = lire('en/creer.html')
+const blocEn = /var PALIERS = \[([\s\S]*?)\n\];/.exec(enCreer)
+const nomsEn = Object.fromEntries([...(blocEn ? blocEn[1] : '').matchAll(/\{id:"([a-z]+)",\s*nom:"([^"]+)"/g)].map((m) => [m[1], m[2]]))
+for (const p of M.PALIERS) {
+  dit(nomsEn[p.id] === p.en, `« ${p.nom} » porte le même nom anglais des deux côtés`, `${nomsEn[p.id]} contre ${p.en}`)
+}
+dit(M.nomOffre(M.palier('lettre'), true, 'en') === 'The Letter + the Quill', 'le reçu anglais dit « + the Quill »')
+dit(M.nomOffre(M.palier('lettre'), true, 'fr') === 'La Lettre + la plume', 'le reçu français ne change pas')
+const cmdTs = lire('supabase/functions/malettre-commande/index.ts')
+dit(/lettre\.langue === 'en' \? '\/en' : ''\}\/merci\.html/.test(cmdTs), 'un acheteur anglais revient sur la page anglaise')
+dit(/nomOffre\(palier, plume, lettre\.langue\)/.test(cmdTs), 'le nom de l’offre est donné dans la langue de la lettre')
+const lettreTs = lire('supabase/functions/malettre-lettre/index.ts')
+dit(/langueDe\(l\.donnees\.langue\)/.test(lettreTs) && !/page\('[A-ZÀ-Ü]/.test(lettreTs),
+    'les pages d’une lettre (expirée, retirée…) passent par la table des deux langues')
+
+const ficheEn = P.lireFiche({ occasion: 'anniv', pour: 'Ama', langue: 'en' })
+const ficheFr = P.lireFiche({ occasion: 'anniv', pour: 'Ama' })
+dit(ficheEn.ok && ficheEn.fiche.langue === 'en', 'la fiche anglaise garde sa langue')
+dit(ficheFr.ok && ficheFr.fiche.langue === 'fr', 'une fiche sans langue est française')
+dit(P.lireFiche({ occasion: 'anniv', pour: 'Ama', langue: 'xx' }).fiche.langue === 'fr', 'une fiche en langue inconnue est française')
+dit(P.requete(ficheEn.fiche).system[0].text === P.SYSTEME_EN, 'la plume anglaise reçoit le système anglais')
+dit(P.requete(ficheFr.fiche).system[0].text === P.SYSTEME, 'la plume française reçoit toujours le système français')
+dit(/Write the letter in English\.$/.test(P.message(ficheEn.fiche)), 'le message anglais demande une lettre en anglais')
+dit(/Écris la lettre\.$/.test(P.message(ficheFr.fiche)), 'le message français ne change pas')
+dit(P.propre('Tell me about it', 'en') === 'Tell me about it', 'en anglais, rien ne s’élide (« tell me about »)')
+dit(P.propre('je te écris', 'fr') === "je t'écris" && P.propre('je te écris') === "je t'écris", 'en français, l’élision tient toujours')
+const repModele = (o) => ({ stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify(o) }] })
+const lu = P.lireReponse(repModele({ titre: 'For you', lettre: ['Tell me about your day.', 'Me and you, always.'], formule: 'With love', refus: '' }), 'en')
+dit(lu.ok && lu.lettre[0] === 'Tell me about your day.' && lu.lettre[1] === 'Me and you, always.',
+    'la relecture d’une lettre anglaise ne touche pas « me and you »')
+dit(lu.ok && lu.formule === 'With love,', 'la formule anglaise reçoit sa virgule')
+dit(P.SYSTEME_EN.includes('Always write the letter in English') && !/[\u2014\u2013]/.test(P.SYSTEME_EN),
+    'le système anglais demande l’anglais, sans un tiret long')
+for (const k of ['deuil', 'nuisible', 'hors-sujet']) {
+  dit(P.SYSTEME_EN.includes(`« ${k} »`) && P.SYSTEME.includes(`« ${k} »`), `les deux plumes refusent avec « ${k} »`)
+}
 
 /* ═══ le compte ═══════════════════════════════════════════════════════════ */
 for (const [q, d] of verts) console.log('  [ok]', q, d ? `· ${d}` : '')

@@ -1,0 +1,475 @@
+# MA LETTRE À… · le dictionnaire anglais des pages (2026-10-16).
+#
+# Format SANS ÉCHAPPEMENT, exprès (les échappements ont trahi ce produit six
+# fois) : une ligne « FR: », une ligne « EN: », le texte brut après l'espace.
+# « == fichier » ouvre la section d'un fichier. Les lignes « # » sont des notes.
+#
+# ⛔ `_traduire.py` REFUSE D'ÉCRIRE si une phrase française est introuvable :
+# une phrase changée dans la page française doit l'être ici aussi. Les
+# remplacements se font dans l'ordre : les lignes entières d'abord, les mots
+# courts ensuite.
+# ⛔ Les prix et les droits ne se traduisent pas : seuls les mots changent.
+
+== creer.html
+FR: <html lang="fr">
+EN: <html lang="en">
+FR: <title>Ma lettre à… · écris-la</title>
+EN: <title>Ma lettre à… · write it</title>
+FR: aria-label="Avancement"
+EN: aria-label="Progress"
+FR: <a class="langue" href="en/creer.html" hreflang="en" lang="en" title="Write your letter in English">EN</a>
+EN: <a class="langue" href="../creer.html" hreflang="fr" lang="fr" title="Écrire ta lettre en français">FR</a>
+FR: <h1 class="serif">Pour quelle occasion ?</h1>
+EN: <h1 class="serif">What's the occasion?</h1>
+FR: <p class="sous">L'occasion décide du ton de la lettre.</p>
+EN: <p class="sous">The occasion sets the tone of the letter.</p>
+FR: <p class="autre-mot">Tu ne trouves pas ton grand jour ? Choisis « Autre occasion ».</p>
+EN: <p class="autre-mot">Can't find your big day? Choose “Another occasion”.</p>
+FR: <h1 class="serif">Écris-la.</h1>
+EN: <h1 class="serif">Write it.</h1>
+FR: Tout ce qui s'écrit ici apparaît dans l'aperçu, tel qu'on le verra en l'ouvrant.
+EN: Everything you write here appears in the preview, exactly as it will look when opened.
+FR: <span>On a retrouvé ta lettre en cours.</span>
+EN: <span>We found the letter you were writing.</span>
+FR: >Recommencer à zéro<
+EN: >Start over<
+FR: <label for="f-pour">Son prénom</label>
+EN: <label for="f-pour">Their first name</label>
+FR: <label for="f-de">Ton prénom</label>
+EN: <label for="f-de">Your first name</label>
+FR: aria-label="Qui écrit la lettre"
+EN: aria-label="Who writes the letter"
+FR: <b>La plume l'écrit pour moi</b>
+EN: <b>The Quill writes it for me</b>
+FR: <span>Quelques questions, tu relis, tu corriges · 500 F de plus</span>
+EN: <span>A few questions, you reread, you edit · 500 F extra</span>
+FR: <b>Je l'écris moi-même</b>
+EN: <b>I'll write it myself</b>
+FR: <span>Tes mots, rien d'autre</span>
+EN: <span>Your words, nothing else</span>
+FR: Réponds à ce que tu veux, la plume fait le reste. Tu pourras tout retoucher.
+EN: Answer whatever you like, the Quill does the rest. You can change everything afterwards.
+FR: <label for="f-autre">Quelle occasion ?</label>
+EN: <label for="f-autre">What occasion?</label>
+FR: placeholder="Son installation à Parakou, ta soutenance…"
+EN: placeholder="Their new home in Lomé, your graduation…"
+FR: Un souvenir ou un détail que vous seuls connaissez <span
+EN: A memory or a detail only you two know <span
+FR: (facultatif)</span>
+EN: (optional)</span>
+FR: placeholder="Le jour où tu m'as attendu deux heures devant la fac, sous la pluie."
+EN: placeholder="The day you waited two hours for me outside the university, in the rain."
+FR: <label for="f-consignes">Comment tu la veux ? <span
+EN: <label for="f-consignes">How do you want it? <span
+FR: placeholder="Appelle-la « ma reine ». Parle de notre voyage à Ouidah. Ne parle pas de son travail."
+EN: placeholder="Call her “my queen”. Mention our trip to Ouidah. Don't mention her work."
+FR: Ce qu'il faut absolument dire, ou éviter. La plume n'invente rien à ta place.
+EN: What must be said, or avoided. The Quill never makes anything up for you.
+FR: <button type="button" class="pri" id="btn-plume">Écrire ma lettre</button>
+EN: <button type="button" class="pri" id="btn-plume">Write my letter</button>
+FR: >Repartir d'une page blanche<
+EN: >Start from a blank page<
+FR: >Remettre la lettre de la plume<
+EN: >Bring back the Quill's letter<
+FR: <label for="f-titre">Le grand titre</label>
+EN: <label for="f-titre">The big title</label>
+FR: placeholder="Joyeux anniversaire"
+EN: placeholder="Happy birthday"
+FR: <label for="f-lettre">Ton mot</label>
+EN: <label for="f-lettre">Your message</label>
+FR: placeholder="Écris comme tu parles.&#10;&#10;Une ligne vide sépare deux paragraphes."
+EN: placeholder="Write the way you talk.&#10;&#10;An empty line separates two paragraphs."
+FR: / 1200 caractères</p>
+EN: / 1200 characters</p>
+FR: <label for="f-formule">La formule de fin</label>
+EN: <label for="f-formule">The closing words</label>
+FR: placeholder="Avec tout mon cœur,"
+EN: placeholder="With all my heart,"
+FR: <p class="indice">Juste avant ta signature.</p>
+EN: <p class="indice">Just before your signature.</p>
+FR: <label>Vos photos <span
+EN: <label>Your photos <span
+FR: Ajouter une photo
+EN: Add a photo
+FR: Elles sont réduites et rangées dans la lettre elle-même. Rien n'est envoyé tant que tu n'as pas commandé.
+EN: They are resized and kept inside the letter itself. Nothing is sent until you order.
+FR: <label for="f-depuis">Ensemble depuis <span
+EN: <label for="f-depuis">Together since <span
+FR: <p class="indice">Affiche le nombre de jours.</p>
+EN: <p class="indice">Shows the number of days.</p>
+FR: <label for="f-code">Code secret <span
+EN: <label for="f-code">Secret code <span
+FR: placeholder="4 chiffres"
+EN: placeholder="4 digits"
+FR: <p class="indice">Elle ne l'ouvre qu'avec ce code.</p>
+EN: <p class="indice">It only opens with this code.</p>
+FR: <label for="f-quand">Elle s'ouvre le</label>
+EN: <label for="f-quand">It opens on</label>
+FR: La lettre ne s'ouvrira pas avant cette heure, à l'heure du téléphone de <b>celui ou celle qui la lit</b>. Laisse vide pour qu'elle s'ouvre tout de suite.
+EN: The letter won't open before this time, by the clock on <b>the reader's phone</b>. Leave it empty for it to open right away.
+FR: >Retour<
+EN: >Back<
+FR: >Choisir mon offre<
+EN: >Choose my offer<
+FR: <h1 class="serif">Choisis ton offre.</h1>
+EN: <h1 class="serif">Choose your offer.</h1>
+FR: La lettre est déjà écrite. Elle ne change pas selon le prix.
+EN: The letter is already written. It is the same whatever the price.
+FR: La plume a écrit ta lettre : <b>500 F</b> s'ajoutent à l'offre que tu choisis, déjà comptés ci-dessus.
+EN: The Quill wrote your letter: <b>500 F</b> is added to the offer you choose, already counted above.
+FR: >Continuer<
+EN: >Continue<
+FR: Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>
+EN: Mobile Money. You leave this page, then come back: <b>your letter is waiting, it's saved.</b>
+FR: Mobile Money ou carte, sur la page de notre encaisseur.
+EN: Mobile Money or card, on our payment provider's page.
+FR: Tu choisis ton réseau là-bas : MTN, Moov ou Celtiis. Rien à recopier, rien à nous envoyer par SMS.
+EN: You choose your network there: MTN, Moov or Celtiis. Nothing to copy, nothing to text us.
+FR: <label for="f-wa">Ton WhatsApp</label>
+EN: <label for="f-wa">Your WhatsApp</label>
+FR: C'est là qu'on t'écrit si quelque chose cloche. On n'écrit jamais à la personne qui reçoit la lettre.
+EN: That's where we write to you if something goes wrong. We never write to the person who receives the letter.
+FR: >J'ai payé, envoyer<
+EN: >I've paid, send<
+FR: <h1 class="serif">Commande reçue.</h1>
+EN: <h1 class="serif">Order received.</h1>
+FR: On vérifie ton règlement, puis tu reçois ton lien sur WhatsApp. En attendant, voici ton aperçu : tu peux déjà le regarder.
+EN: We check your payment, then you get your link on WhatsApp. In the meantime, here is your preview: you can already look at it.
+FR: L'adresse de ta lettre. Envoie-la à qui tu veux, elle n'est joignable que par ce lien.
+EN: Your letter's address. Send it to whoever you like: it can only be reached through this link.
+FR: download="ma-lettre.html">Télécharger mon aperçu<
+EN: download="my-letter.html">Download my preview<
+FR: <span>Ce qu'on verra</span>
+EN: <span>What they'll see</span>
+FR: >Rejouer l'ouverture<
+EN: >Replay the opening<
+FR: title="Aperçu de la lettre"
+EN: title="Letter preview"
+# ── le script : la langue, le brouillon, le gabarit ──
+FR: var LANGUE = "fr";
+EN: var LANGUE = "en";
+FR: var CLE = "malettre:brouillon";
+EN: var CLE = "malettre:brouillon:en";
+FR:     lien: "https://malettre.nebula-agency.online",
+EN:     lien: "https://malettre.nebula-agency.online/en/",
+FR: fetch("lettre.html")
+EN: fetch("../lettre.html")
+# ── le catalogue : familles ──
+FR: {id:"amour",   nom:"L'amour"},
+EN: {id:"amour",   nom:"Love"},
+FR: {id:"proches", nom:"La famille et les amis"},
+EN: {id:"proches", nom:"Family and friends"},
+FR: {id:"fetes",   nom:"Les fêtes"},
+EN: {id:"fetes",   nom:"Holidays"},
+FR: {id:"vie",     nom:"Les grands jours"}
+EN: {id:"vie",     nom:"Big days"}
+# ── les occasions (lignes entières : l'identifiant ne change jamais) ──
+FR:   {id:"couple",   fam:"amour", nom:"Demande de couple", note:"Le grand saut", titre:"Tu veux sortir avec moi ?", formule:"En espérant ton oui,",
+EN:   {id:"couple",   fam:"amour", nom:"Asking them out", note:"The big leap", titre:"Will you go out with me?", formule:"Hoping for your yes,",
+FR:   {id:"mois",     fam:"amour", nom:"Mois de rencontre", note:"« Happy 1 month »", titre:"Un mois avec toi", formule:"Avec tout mon cœur,",
+EN:   {id:"mois",     fam:"amour", nom:"Monthiversary", note:"“Happy 1 month”", titre:"One month with you", formule:"With all my heart,",
+FR:   {id:"valentin", fam:"amour", nom:"Saint-Valentin", note:"Le 14 février", titre:"Joyeuse Saint-Valentin", formule:"À toi, pour toujours,", jour:"02-14",
+EN:   {id:"valentin", fam:"amour", nom:"Valentine's Day", note:"February 14", titre:"Happy Valentine's Day", formule:"Yours, forever,", jour:"02-14",
+FR:   {id:"nous",     fam:"amour", nom:"Anniversaire de couple", note:"Un an, cinq ans, vingt ans", titre:"Joyeux anniversaire, mon amour", formule:"Avec tout mon amour,",
+EN:   {id:"nous",     fam:"amour", nom:"Our anniversary", note:"One, five, twenty years", titre:"Happy anniversary, my love", formule:"With all my love,",
+FR:   {id:"demande",  fam:"amour", nom:"Demande en mariage", note:"Sobriété maximale", titre:"Veux-tu m'épouser ?", formule:"À toi, pour la vie,",
+EN:   {id:"demande",  fam:"amour", nom:"Marriage proposal", note:"Utmost simplicity", titre:"Will you marry me?", formule:"Yours, for life,",
+FR:   {id:"pardon",   fam:"amour", nom:"Excuse", note:"Réconciliation", titre:"Je m'excuse", formule:"Pardonne-moi,",
+EN:   {id:"pardon",   fam:"amour", nom:"Apology", note:"Making up", titre:"I'm sorry", formule:"Forgive me,",
+FR:   {id:"rupture",  fam:"amour", nom:"Rupture", note:"Avec classe, ou avec humour", titre:"Il faut que je te dise", formule:"Prends soin de toi,",
+EN:   {id:"rupture",  fam:"amour", nom:"Breakup", note:"With class, or with humour", titre:"There's something I need to tell you", formule:"Take care of yourself,",
+FR:   {id:"anniv",    fam:"proches", nom:"Anniversaire", note:"Le plus demandé", titre:"Joyeux anniversaire", formule:"Avec toute mon affection,",
+EN:   {id:"anniv",    fam:"proches", nom:"Birthday", note:"The most requested", titre:"Happy birthday", formule:"With all my affection,",
+FR:   {id:"maman",    fam:"proches", nom:"Fête des mères", note:"Toute la fratrie", titre:"Merci maman", formule:"Ton enfant qui t'aime,",
+EN:   {id:"maman",    fam:"proches", nom:"Mother's Day", note:"From all the children", titre:"Thank you, Mum", formule:"Your loving child,",
+FR:   {id:"papa",     fam:"proches", nom:"Fête des pères", note:"Pour le pilier", titre:"Merci papa", formule:"Ton enfant qui t'aime,",
+EN:   {id:"papa",     fam:"proches", nom:"Father's Day", note:"For the pillar", titre:"Thank you, Dad", formule:"Your loving child,",
+FR:   {id:"naissance",fam:"proches", nom:"Naissance", note:"Ou un baptême", titre:"Bienvenue au monde", formule:"Avec toute notre joie,",
+EN:   {id:"naissance",fam:"proches", nom:"New baby", note:"Or a christening", titre:"Welcome to the world", formule:"With all our joy,",
+FR:   {id:"mariage",  fam:"proches", nom:"Mariage", note:"Pour les mariés", titre:"Tous mes vœux de bonheur", formule:"Avec toute mon affection,",
+EN:   {id:"mariage",  fam:"proches", nom:"Wedding", note:"For the newlyweds", titre:"Wishing you every happiness", formule:"With all my affection,",
+FR:   {id:"amitie",   fam:"proches", nom:"Amitié", note:"Merci d'être là", titre:"Merci d'être là", formule:"Merci d'exister,",
+EN:   {id:"amitie",   fam:"proches", nom:"Friendship", note:"Thank you for being there", titre:"Thank you for being there", formule:"Thank you for being you,",
+FR:   {id:"brouille", fam:"proches", nom:"Rupture d'amitié", note:"Dire les choses une fois", titre:"Je préfère te l'écrire", formule:"Sans rancune,",
+EN:   {id:"brouille", fam:"proches", nom:"Ending a friendship", note:"Saying it once", titre:"I'd rather write it to you", formule:"No hard feelings,",
+FR:   {id:"noel",     fam:"fetes", nom:"Noël", note:"Le 25 décembre", titre:"Joyeux Noël", formule:"Joyeux Noël,", jour:"12-25",
+EN:   {id:"noel",     fam:"fetes", nom:"Christmas", note:"December 25", titre:"Merry Christmas", formule:"Merry Christmas,", jour:"12-25",
+FR:   {id:"nouvelan", fam:"fetes", nom:"Nouvel an", note:"Le 1er janvier", titre:"Bonne année", formule:"Bonne et heureuse année,", jour:"01-01",
+EN:   {id:"nouvelan", fam:"fetes", nom:"New Year", note:"January 1", titre:"Happy New Year", formule:"Wishing you a happy New Year,", jour:"01-01",
+FR:   {id:"tabaski",  fam:"fetes", nom:"Tabaski", note:"Aïd el-Kébir", titre:"Bonne fête de Tabaski", formule:"Bonne fête,", defauts:{foi:"Musulmane"},
+EN:   {id:"tabaski",  fam:"fetes", nom:"Tabaski", note:"Eid al-Adha", titre:"Happy Tabaski", formule:"Eid Mubarak,", defauts:{foi:"Muslim"},
+FR:   {id:"ramadan",  fam:"fetes", nom:"Fin du Ramadan", note:"Aïd el-Fitr", titre:"Bonne fête de Ramadan", formule:"Aïd Moubarak,", defauts:{foi:"Musulmane"},
+EN:   {id:"ramadan",  fam:"fetes", nom:"End of Ramadan", note:"Eid al-Fitr", titre:"Happy Eid al-Fitr", formule:"Eid Mubarak,", defauts:{foi:"Muslim"},
+FR:   {id:"paques",   fam:"fetes", nom:"Pâques", note:"Le dimanche de Pâques", titre:"Joyeuses Pâques", formule:"Joyeuses Pâques,", defauts:{foi:"Chrétienne"},
+EN:   {id:"paques",   fam:"fetes", nom:"Easter", note:"Easter Sunday", titre:"Happy Easter", formule:"Happy Easter,", defauts:{foi:"Christian"},
+FR:   {id:"reussite", fam:"vie", nom:"Réussite", note:"Examen, diplôme, concours", titre:"Félicitations !", formule:"Bravo encore,",
+EN:   {id:"reussite", fam:"vie", nom:"Success", note:"Exam, degree, competition", titre:"Congratulations!", formule:"Well done again,",
+FR:   {id:"courage",  fam:"vie", nom:"Encouragement", note:"Avant une épreuve", titre:"Tu vas y arriver", formule:"Je crois en toi,",
+EN:   {id:"courage",  fam:"vie", nom:"Encouragement", note:"Before a challenge", titre:"You've got this", formule:"I believe in you,",
+FR:   {id:"guerison", fam:"vie", nom:"Bon rétablissement", note:"Pour qui se soigne", titre:"Prompt rétablissement", formule:"Je pense fort à toi,",
+EN:   {id:"guerison", fam:"vie", nom:"Get well soon", note:"For someone recovering", titre:"Get well soon", formule:"Thinking of you,",
+FR:   {id:"travail",  fam:"vie", nom:"Nouveau travail", note:"Ou une promotion", titre:"Félicitations pour ce nouveau départ", formule:"Bravo encore,",
+EN:   {id:"travail",  fam:"vie", nom:"New job", note:"Or a promotion", titre:"Congratulations on this new start", formule:"Well done again,",
+FR:   {id:"retraite", fam:"vie", nom:"Départ à la retraite", note:"Une vie de travail", titre:"Bonne retraite", formule:"Avec toute ma reconnaissance,",
+EN:   {id:"retraite", fam:"vie", nom:"Retirement", note:"A lifetime of work", titre:"Happy retirement", formule:"With all my gratitude,",
+FR:   {id:"merci",    fam:"vie", nom:"Merci", note:"Pour dire merci", titre:"Merci", formule:"Avec toute ma gratitude,",
+EN:   {id:"merci",    fam:"vie", nom:"Thank you", note:"To say thank you", titre:"Thank you", formule:"With heartfelt thanks,",
+FR:   {id:"rdv",      fam:"vie", nom:"Une invitation", note:"Un rendez-vous", titre:"Ça te dit ?", formule:"J'espère que tu diras oui,",
+EN:   {id:"rdv",      fam:"vie", nom:"An invitation", note:"A date", titre:"How about it?", formule:"I hope you'll say yes,",
+FR:   {id:"autre",    fam:"vie", nom:"Autre occasion", note:"Tout autre grand jour", titre:"Une lettre pour toi", formule:"Avec tout mon cœur,",
+EN:   {id:"autre",    fam:"vie", nom:"Another occasion", note:"Any other big day", titre:"A letter for you", formule:"With all my heart,",
+# ── les questions de la plume (lignes entières) ──
+FR:   "lien-amour":   {q:"Qui est-ce pour toi ?", un:true, choix:["Mon amour","Ma femme","Mon mari","Ma copine","Mon copain","Mon crush"]},
+EN:   "lien-amour":   {q:"Who are they to you?", un:true, choix:["My love","My wife","My husband","My girlfriend","My boyfriend","My crush"]},
+FR:   "lien-crush":   {q:"Qui est-ce pour toi ?", un:true, choix:["Mon crush","Une amie","Un ami","Une collègue","Un collègue"]},
+EN:   "lien-crush":   {q:"Who are they to you?", un:true, choix:["My crush","A friend (she)","A friend (he)","A colleague (she)","A colleague (he)"]},
+FR:   "lien-ex":      {q:"Qui est-ce pour toi ?", un:true, choix:["Ma copine","Mon copain","Ma femme","Mon mari","Ma fiancée","Mon fiancé"]},
+EN:   "lien-ex":      {q:"Who are they to you?", un:true, choix:["My girlfriend","My boyfriend","My wife","My husband","My fiancée","My fiancé"]},
+FR:   "lien-proches": {q:"Qui est-ce pour toi ?", un:true, choix:["Mon amour","Ma mère","Mon père","Ma sœur","Mon frère","Ma fille","Mon fils","Mon amie","Mon ami","Ma collègue","Mon collègue"]},
+EN:   "lien-proches": {q:"Who are they to you?", un:true, choix:["My love","My mother","My father","My sister","My brother","My daughter","My son","My friend (she)","My friend (he)","My colleague (she)","My colleague (he)"]},
+FR:   "lien-mere":    {q:"Qui est-ce pour toi ?", un:true, choix:["Ma mère","Ma grand-mère","Ma belle-mère","Ma tante","La mère de mes enfants"]},
+EN:   "lien-mere":    {q:"Who are they to you?", un:true, choix:["My mother","My grandmother","My mother-in-law","My aunt","The mother of my children"]},
+FR:   "lien-pere":    {q:"Qui est-ce pour toi ?", un:true, choix:["Mon père","Mon grand-père","Mon beau-père","Mon oncle","Le père de mes enfants"]},
+EN:   "lien-pere":    {q:"Who are they to you?", un:true, choix:["My father","My grandfather","My father-in-law","My uncle","The father of my children"]},
+FR:   "lien-amis":    {q:"Qui est-ce pour toi ?", un:true, choix:["Ma meilleure amie","Mon meilleur ami","Mon amie","Mon ami","Mon groupe d'amis"]},
+EN:   "lien-amis":    {q:"Who are they to you?", un:true, choix:["My best friend (she)","My best friend (he)","My friend (she)","My friend (he)","My group of friends"]},
+FR:   "lien-bebe":    {q:"La lettre est pour", un:true, choix:["Les parents","La maman","Le papa","Le bébé, pour plus tard"]},
+EN:   "lien-bebe":    {q:"The letter is for", un:true, choix:["The parents","The mum","The dad","The baby, for later"]},
+FR:   "lien-maries":  {q:"La lettre est pour", un:true, choix:["Les mariés","La mariée","Le marié"]},
+EN:   "lien-maries":  {q:"The letter is for", un:true, choix:["The newlyweds","The bride","The groom"]},
+FR:   "lien-travail": {q:"Qui est-ce pour toi ?", un:true, choix:["Ma patronne","Mon patron","Ma collègue","Mon collègue","Mon équipe"]},
+EN:   "lien-travail": {q:"Who are they to you?", un:true, choix:["My boss (she)","My boss (he)","My colleague (she)","My colleague (he)","My team"]},
+FR:   "ton-doux":     {q:"Le ton", max:2, choix:["Tendre","Drôle","Poétique","Passionné","Simple et direct","Nostalgique"]},
+EN:   "ton-doux":     {q:"The tone", max:2, choix:["Tender","Funny","Poetic","Passionate","Simple and direct","Nostalgic"]},
+FR:   "ton-fete":     {q:"Le ton", max:2, choix:["Chaleureux","Drôle","Émouvant","Poétique","Simple et direct","Solennel"]},
+EN:   "ton-fete":     {q:"The tone", max:2, choix:["Warm","Funny","Moving","Poetic","Simple and direct","Solemn"]},
+FR:   "ton-rupture":  {q:"Le ton", max:2, choix:["Respectueux","Drôle","Cash","Reconnaissant","Sans rancune","Ferme"]},
+EN:   "ton-rupture":  {q:"The tone", max:2, choix:["Respectful","Funny","Blunt","Grateful","No hard feelings","Firm"]},
+FR:   "ton-sobre":    {q:"Le ton", max:2, choix:["Tendre","Solennel","Simple et direct","Poétique","Émouvant"]},
+EN:   "ton-sobre":    {q:"The tone", max:2, choix:["Tender","Solemn","Simple and direct","Poetic","Moving"]},
+FR:   "qualites":     {q:"Ce que cette personne a de rare", max:3, choix:["Sa gentillesse","Son humour","Son courage","Sa patience","Sa douceur","Sa force","Sa foi","Sa loyauté","Son intelligence","Son élégance","Sa générosité","Son sourire"]},
+EN:   "qualites":     {q:"What is rare about them", max:3, choix:["Their kindness","Their humour","Their courage","Their patience","Their gentleness","Their strength","Their faith","Their loyalty","Their intelligence","Their elegance","Their generosity","Their smile"]},
+FR:   "craquer":      {q:"Ce qui t'a fait craquer", max:3, choix:["Son sourire","Son regard","Sa voix","Son humour","Sa gentillesse","Sa façon de parler","Son style","Son intelligence"]},
+EN:   "craquer":      {q:"What made you fall for them", max:3, choix:["Their smile","Their eyes","Their voice","Their humour","Their kindness","The way they talk","Their style","Their intelligence"]},
+FR:   "rencontre":    {q:"Vous vous êtes connus", un:true, choix:["À l'école ou à la fac","Au travail","À l'église","À la mosquée","Par des amis","Sur les réseaux","Dans le quartier","En voyage"]},
+EN:   "rencontre":    {q:"Where you met", un:true, choix:["At school or university","At work","At church","At the mosque","Through friends","Online","In the neighbourhood","While travelling"]},
+FR:   "duree":        {q:"Depuis combien de temps", un:true, choix:["Quelques semaines","Quelques mois","Un an ou deux","Plus de cinq ans","Depuis toujours"]},
+EN:   "duree":        {q:"For how long", un:true, choix:["A few weeks","A few months","A year or two","More than five years","Forever"]},
+FR:   "souhaits":     {q:"Ce que tu lui souhaites", max:3, choix:["La santé","La réussite","L'amour","La paix","La joie","La prospérité","Des enfants","Une longue vie","La sagesse","De beaux voyages"]},
+EN:   "souhaits":     {q:"What you wish them", max:3, choix:["Health","Success","Love","Peace","Joy","Prosperity","Children","A long life","Wisdom","Beautiful journeys"]},
+FR:   "faute":        {q:"Ce que tu regrettes", max:2, choix:["Une parole de trop","Un oubli","Un mensonge","Une absence","Une colère","De la jalousie"]},
+EN:   "faute":        {q:"What you regret", max:2, choix:["A word too many","Forgetting","A lie","Not being there","Losing my temper","Jealousy"]},
+FR:   "appris":       {q:"Ce que cette personne t'a appris", max:3, choix:["Le travail","La foi","Le respect","Le courage","Le partage","La patience","L'honnêteté","Se relever"]},
+EN:   "appris":       {q:"What they taught you", max:3, choix:["Hard work","Faith","Respect","Courage","Sharing","Patience","Honesty","Getting back up"]},
+FR:   "pourquoi-rupture": {q:"Pourquoi", un:true, choix:["On s'est éloignés","Trop de disputes","La distance","Je ne ressens plus la même chose","On ne veut pas la même vie","Je préfère ne pas le dire"]},
+EN:   "pourquoi-rupture": {q:"Why", un:true, choix:["We've drifted apart","Too many arguments","The distance","I don't feel the same any more","We don't want the same life","I'd rather not say"]},
+FR:   "pourquoi-amitie":  {q:"Pourquoi", un:true, choix:["On n'a plus rien en commun","Une trahison","Tu n'es jamais là","Trop de disputes","Je préfère ne pas le dire"]},
+EN:   "pourquoi-amitie":  {q:"Why", un:true, choix:["We have nothing in common any more","A betrayal","You're never there","Too many arguments","I'd rather not say"]},
+FR:   "porte":        {q:"La porte", un:true, choix:["Fermée pour de bon","On peut rester en bons termes","Peut-être un jour","J'aimerais qu'on en parle"]},
+EN:   "porte":        {q:"The door", un:true, choix:["Closed for good","We can stay on good terms","Maybe one day","I'd like us to talk about it"]},
+FR:   "quoi-reussite":{q:"Quelle réussite", un:true, choix:["Un examen","Un diplôme","Un concours","Le permis","Un projet"]},
+EN:   "quoi-reussite":{q:"What success", un:true, choix:["An exam","A degree","A competitive exam","A driving test","A project"]},
+FR:   "epreuve":      {q:"Quelle épreuve", un:true, choix:["Un examen","Un entretien","Un concours","Une période difficile","Un nouveau départ"]},
+EN:   "epreuve":      {q:"What challenge", un:true, choix:["An exam","A job interview","A competitive exam","A hard time","A new start"]},
+FR:   "sortie":       {q:"Tu proposes", un:true, choix:["Un dîner","Un verre","Une balade","Un week-end","Une surprise"]},
+EN:   "sortie":       {q:"You suggest", un:true, choix:["Dinner","A drink","A walk","A weekend away","A surprise"]},
+FR:   "bebe":         {q:"C'est", un:true, choix:["Une fille","Un garçon","Des jumeaux","Un baptême"]},
+EN:   "bebe":         {q:"It's", un:true, choix:["A girl","A boy","Twins","A christening"]},
+FR:   "longueur":     {q:"La longueur", un:true, choix:["Courte","Moyenne","Longue"]},
+EN:   "longueur":     {q:"Length", un:true, choix:["Short","Medium","Long"]},
+FR:   "langue":       {q:"Le français", un:true, choix:["Soigné","De tous les jours","Avec nos expressions d'ici"]},
+EN:   "langue":       {q:"Your English", un:true, choix:["Polished","Everyday","With our own expressions"]},
+FR:   "foi":          {q:"Une bénédiction à la fin", un:true, choix:["Non","Chrétienne","Musulmane"]}
+EN:   "foi":          {q:"A blessing at the end", un:true, choix:["No","Christian","Muslim"]}
+FR: var DEFAUTS = {longueur:"Moyenne", langue:"De tous les jours"};
+EN: var DEFAUTS = {longueur:"Medium", langue:"Everyday"};
+# ── les offres : les mots seulement, jamais le prix ni les droits ──
+FR:   {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, notre signature en pied", prix:0,
+EN:   {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,
+FR:   {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, trois photos, sans notre signature",   prix:2000,
+EN:   {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,
+FR:   {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",                 prix:5000,
+EN:   {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,
+FR:   {id:"coffret", nom:"Le Coffret",  desc:"Un an, jusqu'à vingt photos, ton code secret",         prix:10000,
+EN:   {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000,
+# ── les phrases du script ──
+FR: return n === 0 ? "Offert" :
+EN: return n === 0 ? "Free" :
+FR: Aperçu en cours de chargement…
+EN: Loading the preview…
+FR:     pour: E.pour || "toi",
+EN:     pour: E.pour || "you",
+FR: lettre: lignes.length ? lignes : ["Ta lettre s'écrit ici, au fur et à mesure."],
+EN: lettre: lignes.length ? lignes : ["Your letter writes itself here, as you go."],
+FR:     formule: E.formule || occ.formule || "Avec tout mon cœur,",
+EN:     formule: E.formule || occ.formule || "With all my heart,",
+FR: sp.textContent = Q.max + " au plus";
+EN: sp.textContent = "up to " + Q.max;
+FR: $("#btn-plume").textContent = E.plume ? "Une autre version" : "Écrire ma lettre";
+EN: $("#btn-plume").textContent = E.plume ? "Another version" : "Write my letter";
+FR: ? "La plume écrira ici. Tu pourras tout retoucher."
+EN: ? "The Quill will write here. You can change everything."
+FR: : "Écris comme tu parles.\n\nUne ligne vide sépare deux paragraphes.";
+EN: : "Write the way you talk.\n\nAn empty line separates two paragraphs.";
+FR: ? "La plume a écrit cette lettre : elle compte " + fmt(PLUME.prix) + ", même retouchée."
+EN: ? "The Quill wrote this letter: it counts " + fmt(PLUME.prix) + ", even once you edit it."
+FR: : "Page blanche : la plume n'est plus comptée.";
+EN: : "Blank page: the Quill is no longer counted.";
+FR: var PAS_LA = "La plume n'a pas répondu. Réessaie dans un moment, ou écris ta lettre toi-même : ta fiche est gardée.";
+EN: var PAS_LA = "The Quill didn't answer. Try again in a moment, or write your letter yourself: your answers are saved.";
+FR:   "deuil": "Nous n'écrivons pas encore les lettres de deuil. Nous préférons le faire bien plutôt que vite.",
+EN:   "deuil": "We don't write letters of grief yet. We would rather do it well than fast.",
+FR:   "nuisible": "La plume ne peut pas écrire cette lettre-là. Change tes consignes et réessaie.",
+EN:   "nuisible": "The Quill can't write that letter. Change your instructions and try again.",
+FR:   "hors-sujet": "La plume n'a pas compris quelle lettre écrire. Précise l'occasion ou tes consignes.",
+EN:   "hors-sujet": "The Quill didn't understand which letter to write. Say more about the occasion or your instructions.",
+FR:   "limite": "Tu as eu tes trois versions. Retouche celle-ci à la main : c'est comme ça qu'elle devient la tienne.",
+EN:   "limite": "You've had your three versions. Edit this one by hand: that's how it becomes yours.",
+FR:   "occupee": "La plume est très demandée en ce moment. Réessaie dans une minute.",
+EN:   "occupee": "The Quill is in high demand right now. Try again in a minute.",
+FR:   "prénom": "Donne d'abord son prénom, tout en haut.",
+EN:   "prénom": "First give their first name, at the very top.",
+FR:   "occasion": "Dis d'abord quelle occasion.",
+EN:   "occasion": "First say which occasion.",
+FR:   "pas-branchee": "La plume n'est pas encore ouverte. Écris ta lettre toi-même, ou reviens bientôt : ta fiche est gardée."
+EN:   "pas-branchee": "The Quill isn't open yet. Write your letter yourself, or come back soon: your answers are saved."
+FR: return MOTS[j.refus] || "La plume a buté sur cette version. Réessaie.";
+EN: return MOTS[j.refus] || "The Quill stumbled on this version. Try again.";
+FR: b.textContent = "La plume écrit…";
+EN: b.textContent = "The Quill is writing…";
+FR: dire("Voilà ta lettre. Relis-la et change ce que tu veux : ce sont tes mots maintenant."
+EN: dire("Here is your letter. Reread it and change what you like: these are your words now."
+FR: + (reste === 0 ? " C'était la dernière version, à toi de la finir."
+EN: + (reste === 0 ? " That was the last version, it's yours to finish."
+FR: : reste ? " Encore " + reste + (reste > 1 ? " versions possibles." : " version possible.") : ""));
+EN: : reste ? " " + reste + (reste > 1 ? " more versions possible." : " more version possible.") : ""));
+FR: $("#photos-note").textContent = "Tu as mis " + E.photos.length + " photos : "
+EN: $("#photos-note").textContent = "You added " + E.photos.length + " photos: "
+FR: + pal.nom + " garde " + (pal.photos === 1 ? "la première." : "les " + pal.photos + " premières.");
+EN: + pal.nom + " keeps " + (pal.photos === 1 ? "the first one." : "the first " + pal.photos + ".");
+FR: b.setAttribute("aria-label", "Retirer la photo " + (i + 1));
+EN: b.setAttribute("aria-label", "Remove photo " + (i + 1));
+FR: $("#pay-titre").textContent = offert ? "Où t'envoyer ta lettre." : "Le règlement.";
+EN: $("#pay-titre").textContent = offert ? "Where to send your letter." : "Payment.";
+FR: <h1 class="serif" id="pay-titre">Le règlement.</h1>
+EN: <h1 class="serif" id="pay-titre">Payment.</h1>
+FR: ? "Elle est offerte. Dis-nous seulement où t'envoyer le lien."
+EN: ? "It's free. Just tell us where to send the link."
+FR: : "Tu vas payer sur une page sécurisée, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>";
+EN: : "You'll pay on a secure page, then come back: <b>your letter is waiting, it's saved.</b>";
+FR: $("#btn-commander").textContent = offert ? "Recevoir ma lettre" : ("Payer " + fmt(t));
+EN: $("#btn-commander").textContent = offert ? "Get my letter" : ("Pay " + fmt(t));
+FR: ? ("Envoie-lui le lien quand tu veux : le cachet ne se brisera pas avant le "
+EN: ? ("Send them the link whenever you like: the seal won't break before "
+FR: + E.quand + " à " + (E.quandH || "00:00") + ".")
+EN: + E.quand + " at " + (E.quandH || "00:00") + ".")
+FR: : "Envoie-lui le lien quand tu veux : elle pourra l'ouvrir tout de suite.";
+EN: : "Send them the link whenever you like: they can open it right away.";
+FR: rendre("La boutique n'est pas encore ouverte. Garde cette page : ta lettre est gardée ici.");
+EN: rendre("The shop isn't open yet. Keep this page: your letter is saved here.");
+FR: b.disabled = true; b.textContent = "Un instant…";
+EN: b.disabled = true; b.textContent = "One moment…";
+FR: rendre(j.erreur ? ("Ça n'est pas passé : " + j.erreur) : "Ça n'est pas passé. Réessaie dans un moment.");
+EN: rendre(j.erreur ? ("That didn't go through: " + j.erreur) : "That didn't go through. Try again in a moment.");
+FR: rendre("Pas de réseau. Ta lettre est gardée, réessaie dans un moment.");
+EN: rendre("No connection. Your letter is saved, try again in a moment.");
+FR: return p.photos + " avec " + (p.id === "gratuit" ? "l'offre gratuite" : p.nom);
+EN: return p.photos + " with " + (p.id === "gratuit" ? "the free offer" : p.nom);
+FR: "L'aperçu a besoin d'un serveur. Lance <code>python -m http.server</code> " +
+EN: "The preview needs a server. Run <code>python -m http.server</code> " +
+FR: "dans le dossier malettre/.</p>";
+EN: "in the malettre/ folder.</p>";
+
+== paiement.html
+FR: <html lang="fr">
+EN: <html lang="en">
+FR: <title>Payer ma lettre · Ma lettre à…</title>
+EN: <title>Pay for my letter · Ma lettre à…</title>
+FR: <h1 class="serif">Ta lettre est prête.</h1>
+EN: <h1 class="serif">Your letter is ready.</h1>
+FR: Il ne reste qu'à la régler. Elle s'ouvrira toute seule, dès que le paiement est confirmé.
+EN: All that's left is to pay for it. It goes live on its own as soon as the payment is confirmed.
+FR: <span>Pour</span>
+EN: <span>For</span>
+FR: <span>L'offre</span>
+EN: <span>Offer</span>
+FR: <span>Elle s'ouvre</span>
+EN: <span>It opens</span>
+FR: <div class="l">Mobile Money ou carte bancaire</div>
+EN: <div class="l">Mobile Money or bank card</div>
+FR: <span id="btn-mot">Payer</span>
+EN: <span id="btn-mot">Pay</span>
+FR: <span class="moyen">Carte</span>
+EN: <span class="moyen">Card</span>
+FR: Tu paies depuis un autre téléphone ? Copie le lien, il marche partout.
+EN: Paying from another phone? Copy the link, it works anywhere.
+FR: title="Le lien de paiement"
+EN: title="The payment link"
+FR: >Copier<
+EN: >Copy<
+FR: Tu paies sur la page de notre encaisseur, <b>jamais ici</b> : aucun code ne
+EN: You pay on our payment provider's page, <b>never here</b>: no code ever
+FR: passe par cette page. Dès que le paiement est confirmé, <b>ta lettre
+EN: goes through this page. As soon as the payment is confirmed, <b>your letter
+FR: s'ouvre toute seule</b>, même à trois heures du matin.
+EN: goes live on its own</b>, even at three in the morning.
+FR: L'adresse de ta lettre, celle que tu enverras :
+EN: Your letter's address, the one you will send:
+FR: >Revenir à ma lettre<
+EN: >Back to my letter<
+FR: <h1 class="serif">Aucune lettre à régler.</h1>
+EN: <h1 class="serif">No letter to pay for.</h1>
+FR: <p>Cette page s'ouvre à la fin d'une commande. La tienne t'attend peut-être encore.</p>
+EN: <p>This page opens at the end of an order. Yours may still be waiting for you.</p>
+FR: <span>Écrire ma lettre</span>
+EN: <span>Write my letter</span>
+FR: $("#r-pour").textContent = C.pour || "elle";
+EN: $("#r-pour").textContent = C.pour || "them";
+FR: $("#btn-mot").textContent = "Payer " + (C.somme || "");
+EN: $("#btn-mot").textContent = "Pay " + (C.somme || "");
+FR:     var MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août",
+EN:     var MOIS = ["January","February","March","April","May","June","July","August",
+FR:                 "septembre","octobre","novembre","décembre"];
+EN:                 "September","October","November","December"];
+FR: + (h === "00:00" ? " à minuit" : " à " + h);
+EN: + (h === "00:00" ? " at midnight" : " at " + h);
+FR: b.textContent = "Copié";
+EN: b.textContent = "Copied";
+FR: setTimeout(function(){ b.textContent = "Copier"; }, 1800);
+EN: setTimeout(function(){ b.textContent = "Copy"; }, 1800);
+
+== merci.html
+FR: <html lang="fr">
+EN: <html lang="en">
+FR: <title>Merci · Ma lettre à…</title>
+EN: <title>Thank you · Ma lettre à…</title>
+FR: <h1 class="serif" id="titre">Merci.</h1>
+EN: <h1 class="serif" id="titre">Thank you.</h1>
+FR: On attend la confirmation de ton paiement. Ça prend en général quelques secondes.
+EN: We're waiting for your payment to be confirmed. It usually takes a few seconds.
+FR: <span id="etat">Vérification…</span>
+EN: <span id="etat">Checking…</span>
+FR: L'adresse de ta lettre. Envoie-la à qui tu veux.
+EN: Your letter's address. Send it to whoever you like.
+FR: >Copier<
+EN: >Copy<
+FR: >Ouvrir ma lettre<
+EN: >Open my letter<
+FR: Si rien ne bouge après quelques minutes, écris-nous : <a id="wa" href="#">WhatsApp</a>.
+EN: If nothing happens after a few minutes, message us: <a id="wa" href="#">WhatsApp</a>.
+FR: encodeURIComponent("Bonjour, je viens de payer une lettre sur « Ma lettre à… »" +
+EN: encodeURIComponent("Hello, I've just paid for a letter on « Ma lettre à… »" +
+FR: (jeton ? " (" + jeton + ")" : "") + " et j'attends encore.");
+EN: (jeton ? " (" + jeton + ")" : "") + " and I'm still waiting.");
+FR: var fini = function(){ b.textContent = "Copié"; setTimeout(function(){ b.textContent = "Copier"; }, 1800); };
+EN: var fini = function(){ b.textContent = "Copied"; setTimeout(function(){ b.textContent = "Copy"; }, 1800); };
+FR: $("#titre").textContent = "Ta lettre est ouverte.";
+EN: $("#titre").textContent = "Your letter is live.";
+FR: $("#sous").textContent = "Envoie-lui le lien quand tu veux. Le cachet, lui, tiendra l'heure que tu as choisie.";
+EN: $("#sous").textContent = "Send them the link whenever you like. The seal will keep the time you chose.";
+FR: $("#etat").textContent = "Paiement confirmé";
+EN: $("#etat").textContent = "Payment confirmed";
+FR: if (!jeton) { $("#etat").textContent = "En attente"; return; }
+EN: if (!jeton) { $("#etat").textContent = "Waiting"; return; }
+FR: $("#etat").textContent = "Toujours en attente";
+EN: $("#etat").textContent = "Still waiting";

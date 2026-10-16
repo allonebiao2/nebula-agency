@@ -33,14 +33,32 @@ export type Palier = {
   /* Combien de jours la lettre reste joignable. */
   jours: number
   photos: number
+  /* Le nom de l'offre en anglais : la page de paiement et le reçu le lisent
+     ICI, comme le nom français (« le nom de l'offre vient de la caisse »). */
+  en: string
 }
 
 export const PALIERS: Palier[] = [
-  { id: 'gratuit', nom: 'Gratuit',    prix: 0,     pied: true,  jours: 7,   photos: 1 },
-  { id: 'mot',     nom: 'Le Mot',     prix: 2000,  pied: false, jours: 365, photos: 3 },
-  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 3 },
-  { id: 'coffret', nom: 'Le Coffret', prix: 10000, pied: false, jours: 365, photos: 20 },
+  { id: 'gratuit', nom: 'Gratuit',    prix: 0,     pied: true,  jours: 7,   photos: 1,  en: 'Free' },
+  { id: 'mot',     nom: 'Le Mot',     prix: 2000,  pied: false, jours: 365, photos: 3,  en: 'The Note' },
+  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 3,  en: 'The Letter' },
+  { id: 'coffret', nom: 'Le Coffret', prix: 10000, pied: false, jours: 365, photos: 20, en: 'The Keepsake' },
 ]
+
+/* ── Les deux langues (2026-10-16) ─────────────────────────────────────────
+   Une liste FERMÉE : tout ce qui n'est pas « en » est du français, la langue
+   de toutes les lettres d'avant ce champ. Elle décide des mots du gabarit,
+   de la plume, de la page de retour ; jamais d'un prix. */
+export const LANGUES = ['fr', 'en'] as const
+export type Langue = typeof LANGUES[number]
+export const langueDe = (v: unknown): Langue => (v === 'en' ? 'en' : 'fr')
+export const SITE_LETTRES = 'https://malettre.nebula-agency.online'
+export const accueilDe = (l: Langue) => SITE_LETTRES + (l === 'en' ? '/en/' : '')
+/* Le nom d'une commande tel que l'acheteur le lira (paiement, reçu). */
+export function nomOffre(p: Palier, plume: boolean, l: Langue): string {
+  const n = l === 'en' ? p.en : p.nom
+  return plume ? (l === 'en' ? `${n} + the Quill` : `${n} + la plume`) : n
+}
 
 export function palier(id: unknown): Palier | null {
   const s = String(id ?? '')
@@ -223,6 +241,7 @@ export type Lettre = {
   formule: string
   pied: boolean
   lien: string
+  langue: Langue
 }
 
 /* Un mot d'acheteur n'a pas de raison de faire dix mille signes, et une lettre
@@ -273,10 +292,11 @@ export function lireCommande(d: any): Accord | Refus {
   }
 
   const code = String(d?.code ?? '').replace(/\D/g, '').slice(0, 4)
+  const langue = langueDe(d?.langue)
 
   const lettre: Lettre = {
     occasion: texte(d?.occasion),
-    pour: texte(d?.pour) || 'toi',
+    pour: texte(d?.pour) || (langue === 'en' ? 'you' : 'toi'),
     de: texte(d?.de),
     titre: texte(d?.titre),
     /* Le palier offert n'a pas de code secret : c'est ce qui le distingue. */
@@ -289,7 +309,8 @@ export function lireCommande(d: any): Accord | Refus {
     /* ⛔ Le pied vient du PALIER, jamais du navigateur : sinon la boucle de
        croissance se retire d'un clic dans la console, gratuitement. */
     pied: p.pied,
-    lien: 'https://malettre.nebula-agency.online',
+    lien: accueilDe(langue),
+    langue,
   }
 
   /* ⛔ Et JAMAIS le drapeau d'aperçu : le seuil EST le produit, une lettre

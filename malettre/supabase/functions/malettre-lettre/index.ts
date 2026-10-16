@@ -1,6 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { GABARIT } from '../_shared/gabarit.ts'
-import { JETON_FORME, entetes, poser, verdict } from '../_shared/lettre.ts'
+import { JETON_FORME, entetes, langueDe, poser, verdict, type Langue } from '../_shared/lettre.ts'
 
 /*
   MA LETTRE À… · servir une lettre, et la retirer.
@@ -31,8 +31,55 @@ const db = () => createClient(
 
 /* Une page nue, sans rien qui ressemble à un formulaire : celle qui arrive ici
    n'a rien à faire, elle a juste besoin de comprendre. */
-function page(titre: string, mot: string, code: number): Response {
-  const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+/* ── Les deux langues (2026-10-16) ────────────────────────────────────────
+   Une lettre connue dit sa langue (`donnees.langue`). Une adresse inconnue,
+   non : la page parle alors les deux, le français d'abord. */
+type Cle = 'inconnue' | 'incomplet' | 'instant' | 'retirer' | 'retrait-raté' | 'retiré' | 'retiree' | 'expiree' | 'attente'
+const MOTS: Record<Cle, Record<Langue, [string, string]>> = {
+  inconnue: {
+    fr: ['Cette lettre n’existe pas.', 'Le lien est peut-être incomplet. Redemande-le à qui te l’a envoyé.'],
+    en: ['This letter does not exist.', 'The link may be incomplete. Ask the person who sent it to you again.'],
+  },
+  incomplet: {
+    fr: ['Cette lettre n’existe pas.', 'Le lien est peut-être incomplet.'],
+    en: ['This letter does not exist.', 'The link may be incomplete.'],
+  },
+  instant: {
+    fr: ['Un instant.', 'Cette lettre ne peut pas s’ouvrir pour le moment. Réessaie dans un moment.'],
+    en: ['Just a moment.', 'This letter cannot open right now. Try again in a little while.'],
+  },
+  retirer: {
+    fr: ['Retirer cette lettre', 'Écris-nous sur WhatsApp avec ce lien, et elle est retirée sous 24 heures.'],
+    en: ['Remove this letter', 'Message us on WhatsApp with this link, and it is removed within 24 hours.'],
+  },
+  'retrait-raté': {
+    fr: ['Un instant.', 'Le retrait n’a pas pu se faire. Écris-nous sur WhatsApp, on le fait à la main.'],
+    en: ['Just a moment.', 'The removal did not go through. Message us on WhatsApp and we will do it by hand.'],
+  },
+  'retiré': {
+    fr: ['C’est retiré.', 'Cette lettre n’existe plus. Personne n’a été prévenu.'],
+    en: ['It is removed.', 'This letter no longer exists. Nobody has been told.'],
+  },
+  retiree: {
+    fr: ['Cette lettre n’existe plus.', 'Elle a été retirée.'],
+    en: ['This letter no longer exists.', 'It has been removed.'],
+  },
+  expiree: {
+    fr: ['Cette lettre a expiré.', 'Une lettre ne reste pas en ligne pour toujours. Celle-ci est partie.'],
+    en: ['This letter has expired.', 'A letter does not stay online forever. This one is gone.'],
+  },
+  attente: {
+    fr: ['Cette lettre n’est pas encore prête.', 'Réessaie dans un moment.'],
+    en: ['This letter is not ready yet.', 'Try again in a little while.'],
+  },
+}
+
+function page(cle: Cle, code: number, langue?: Langue): Response {
+  const fr = MOTS[cle].fr, en = MOTS[cle].en
+  const [titre, mot] = langue === 'en' ? en : fr
+  /* Sans langue connue : les deux, l'anglais en dessous et plus discret. */
+  const second = langue ? '' : `<p class="en" lang="en"><b>${en[0]}</b> ${en[1]}</p>`
+  const html = `<!DOCTYPE html><html lang="${langue ?? 'fr'}"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>${titre}</title><style>
@@ -43,7 +90,9 @@ body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
 h1{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
   font-weight:600;font-size:clamp(22px,6vw,30px);margin:0 0 10px}
 p{margin:0;color:#8f86a0;font-size:15px;line-height:1.6;max-width:34ch}
-</style></head><body><div><h1>${titre}</h1><p>${mot}</p></div></body></html>`
+.en{margin-top:22px;padding-top:16px;border-top:1px solid rgba(244,237,224,.14);font-size:14px}
+.en b{color:#f4ede0;font-weight:600}
+</style></head><body><div><h1>${titre}</h1><p>${mot}</p>${second}</div></body></html>`
   return new Response(html, { status: code, headers: entetes() })
 }
 
@@ -61,12 +110,14 @@ Deno.serve(async (req: Request) => {
     /* ⚠️ Le même message qu'une lettre inconnue : une adresse mal formée ne
        doit pas se distinguer d'une adresse qui n'existe pas, sinon on apprend
        à celui qui cherche comment chercher. */
-    return page('Cette lettre n’existe pas.', 'Le lien est peut-être incomplet. Redemande-le à qui te l’a envoyé.', 404)
+    return page('inconnue', 404)
   }
 
   const { data, error } = await db().rpc('malettre_lire', { p_jeton: jeton })
-  if (error) { console.error('malettre lire', error.message); return page('Un instant.', 'Cette lettre ne peut pas s’ouvrir pour le moment. Réessaie dans un moment.', 503) }
+  if (error) { console.error('malettre lire', error.message); return page('instant', 503) }
   const l = Array.isArray(data) ? data[0] : data
+  /* La langue de CETTE lettre, quand on la connaît. */
+  const langue: Langue | undefined = l?.donnees ? langueDe(l.donnees.langue) : undefined
 
   /* ── l'etat, pour la page de retour ──────────────────────────────────── */
   /*
@@ -93,34 +144,34 @@ Deno.serve(async (req: Request) => {
 
   /* ── le retrait ──────────────────────────────────────────────────────── */
   if (geste === 'retrait') {
-    if (req.method !== 'POST') return page('Retirer cette lettre', 'Écris-nous sur WhatsApp avec ce lien, et elle est retirée sous 24 heures.', 405)
+    if (req.method !== 'POST') return page('retirer', 405, langue)
     /* ⛔ Aucune preuve demandée, aucune question posée. On retire même une
        lettre déjà retirée : c'est sans effet, et c'est ce qui permet de
        répondre la même chose à tout le monde. */
     const { error: eR } = await db().rpc('malettre_retirer', { p_jeton: jeton })
-    if (eR) { console.error('malettre retrait', eR.message); return page('Un instant.', 'Le retrait n’a pas pu se faire. Écris-nous sur WhatsApp, on le fait à la main.', 503) }
+    if (eR) { console.error('malettre retrait', eR.message); return page('retrait-raté', 503, langue) }
     console.log('malettre · retirée', jeton)
-    return page('C’est retiré.', 'Cette lettre n’existe plus. Personne n’a été prévenu.', 200)
+    return page('retiré', 200, langue)
   }
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    return page('Cette lettre n’existe pas.', 'Le lien est peut-être incomplet.', 405)
+    return page('incomplet', 405, langue)
   }
 
   /* ── servir ──────────────────────────────────────────────────────────── */
   switch (verdict(l ?? null)) {
     case 'inconnue':
-      return page('Cette lettre n’existe pas.', 'Le lien est peut-être incomplet. Redemande-le à qui te l’a envoyé.', 404)
+      return page('inconnue', 404)
     case 'retiree':
       /* ⚠️ On ne dit pas « retirée à la demande de quelqu'un » : ce serait
          désigner la personne qui a demandé, à l'acheteur qui la connaît. */
-      return page('Cette lettre n’existe plus.', 'Elle a été retirée.', 410)
+      return page('retiree', 410, langue)
     case 'expiree':
-      return page('Cette lettre a expiré.', 'Une lettre ne reste pas en ligne pour toujours. Celle-ci est partie.', 410)
+      return page('expiree', 410, langue)
     case 'attente':
       /* Payée, pas encore confirmée. ⚠️ On ne dit pas « en attente de
          paiement » : celle qui reçoit n'a pas à savoir ce que ça a coûté. */
-      return page('Cette lettre n’est pas encore prête.', 'Réessaie dans un moment.', 425)
+      return page('attente', 425, langue)
   }
 
   /* ⛔ La lettre est REBÂTIE ici, à partir du gabarit et des données. Rien de

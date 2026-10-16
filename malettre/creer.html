@@ -54,6 +54,11 @@ header{
 .sceau{width:22px;height:22px;border-radius:50%;flex:none;
   background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%)}
 .etapes{display:flex;gap:6px}
+/* Le sélecteur de langue : une seule autre langue, nommée dans SA langue. */
+.langue{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;
+  margin:-8px -6px -8px 0;border-radius:999px;font-size:12.5px;font-weight:800;letter-spacing:.12em;
+  color:var(--gris-clair);text-decoration:none}
+.langue:hover{color:var(--papier)}
 .etapes i{width:26px;height:4px;border-radius:2px;background:var(--ligne);transition:background .3s}
 .etapes i.on{background:var(--or)}
 
@@ -211,6 +216,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
   <div class="etapes" role="progressbar" aria-label="Avancement" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="jauge">
     <i class="on"></i><i></i><i></i><i></i>
   </div>
+  <a class="langue" href="en/creer.html" hreflang="en" lang="en" title="Write your letter in English">EN</a>
 </header>
 
 <div class="plan">
@@ -581,6 +587,12 @@ var PLUME = {prix:500};
    ══════════════════════════════════════════════════════════════════════ */
 var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-commande";
 var POINT_PLUME = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-plume";
+/* La langue de CETTE page, donc des lettres qu'elle écrit (2026-10-16).
+   ⛔ Ne se change jamais à la main : `_traduire.py` fabrique la page anglaise
+   (`en/creer.html`), et c'est lui qui la passe à « en ». */
+var LANGUE = "fr";
+/* Un brouillon par langue : repris en anglais, un brouillon français
+   garderait des réponses de fiche qu'aucune puce anglaise ne coche. */
 var CLE = "malettre:brouillon";
 
 /* ⛔ LA CLE PUBLIQUE DU PROJET, et elle l'est par conception : c'est celle que
@@ -704,6 +716,7 @@ function donnees(){
     ouvre: E.quand ? (E.quand + "T" + (E.quandH || "00:00")) : "",
     pied: pal.pied,
     lien: "https://malettre.nebula-agency.online",
+    langue: LANGUE,
     /* Ouvert d'office pendant l'ecriture, ferme quand on demande a revoir
        le seuil. Ce drapeau ne part JAMAIS dans la lettre commandee : voir
        htmlCommande(). */
@@ -747,7 +760,8 @@ function commande(){
     depuis: d.depuis, ouvre: d.ouvre, formule: d.formule,
     /* Un oui ou un non, jamais un prix : la caisse sait ce que vaut la plume. */
     plume: !!E.plume,
-    whatsapp: E.wa
+    whatsapp: E.wa,
+    langue: LANGUE
   };
 }
 
@@ -897,7 +911,8 @@ function ficheEnvoyee(){
       .filter(function(q){ return QUESTIONS[q] && (E.fiche.reponses[q] || []).length; })
       .map(function(q){ return { q: QUESTIONS[q].q, r: E.fiche.reponses[q] }; }),
     souvenir: E.fiche.souvenir, consignes: E.fiche.consignes,
-    brouillon: E.id
+    brouillon: E.id,
+    langue: LANGUE
   };
 }
 

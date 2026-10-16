@@ -389,16 +389,54 @@ var D = /*MALETTRE_DONNEES*/{
   ouvre:"",
   formule:"Avec tout mon cœur,",
   pied:true,
-  lien:"https://malettre.nebula-agency.online"
+  lien:"https://malettre.nebula-agency.online",
+  langue:"fr"
 }/*FIN_MALETTRE_DONNEES*/;
 
 var $ = function(s){ return document.querySelector(s); };
 var doux = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/* ── LES DEUX LANGUES (2026-10-16). La lettre parle la langue de celui qui
+   l'a écrite : seuls les mots DU GABARIT changent, jamais ceux de l'acheteur.
+   ⚠️ Le français est aussi écrit dans le HTML (lisible sans script, et lu
+   par les contrôles) : ses valeurs ici doivent rester identiques au
+   caractère près. Une lettre d'avant ce champ n'a pas de `langue` : elle
+   reste en français. ── */
+var EN = D.langue === "en";
+var L = EN ? {
+  pour: "My letter to ", toi: "you", attend: "A letter is waiting for you.", heure: "It's time.",
+  ouvre: "It opens ", briser: "Break the seal", demande: "Enter the code you were given.",
+  aide: "This letter is locked with a code. The person who sent it gave it to you.",
+  faux: "That's not the right code. Ask for it again.", chiffre: "Digit ",
+  photo: "Keepsake photo", jour: "day together", jours: "days together",
+  formule: "With all my heart,", pied: "Write yours: Ma lettre à…",
+  note: "A letter, an envelope, a seal. In five minutes."
+} : {
+  pour: "Ma lettre à ", toi: "toi", attend: "Une lettre t'attend.", heure: "C'est l'heure.",
+  ouvre: "Elle s'ouvre ", briser: "Briser le cachet", demande: "Entre le code qu'on t'a donné.",
+  aide: "Cette lettre est fermée par un code. Celui qui te l'envoie te l'a donné.",
+  faux: "Ce n'est pas le bon code. Redemande-le.", chiffre: "Chiffre ",
+  photo: "Photo souvenir", jour: "jour ensemble", jours: "jours ensemble",
+  formule: "Avec tout mon cœur,", pied: "Écris la tienne : Ma lettre à…",
+  note: "Une lettre, une enveloppe, un cachet. En cinq minutes."
+};
+if (EN) {
+  document.documentElement.lang = "en";
+  $(".pour").firstChild.nodeValue = L.pour;
+  $("#btn-ouvrir").textContent = L.briser;
+  document.querySelectorAll("#code .aide")[0].textContent = L.aide;
+  Array.prototype.forEach.call(document.querySelectorAll("#cases input"), function(c, i){
+    c.setAttribute("aria-label", L.chiffre + (i + 1));
+  });
+  var lienPied = $("#pied-lien");
+  lienPied.lastChild.nodeValue = " " + L.pied + " ";
+  $("#l-pied .note").textContent = L.note;
+}
+
 /* ── Poser le contenu. On echappe tout : le texte vient d'un acheteur. ── */
 function txt(el, v){ el.textContent = v == null ? "" : String(v); }
 
-txt($("#s-pour"), D.pour || "toi");
+txt($("#s-pour"), D.pour || L.toi);
 txt($("#s-init"), (D.de || "M").trim().charAt(0).toUpperCase() || "M");
 txt($("#l-occasion"), D.occasion || "");
 txt($("#l-titre"), D.titre || "");
@@ -406,8 +444,9 @@ txt($("#l-de-nom"), D.de || "");
 /* La formule suit l'occasion : une lettre de rupture ne se signe pas « avec
    tout mon cœur ». Une lettre d'avant la plume n'en porte pas : on garde
    alors celle de toujours. */
-txt($("#l-formule"), D.formule || "Avec tout mon cœur,");
+txt($("#l-formule"), D.formule || L.formule);
 document.title = "Ma lettre à " + (D.pour || "toi");
+if (EN) { document.title = L.pour + (D.pour || L.toi); }
 
 var corps = $("#l-corps");
 (D.lettre || []).forEach(function(ligne, i){
@@ -431,7 +470,7 @@ var bacPhotos = $("#l-photos");
   cadre.className = "cadre";
   var im = document.createElement("img");
   im.src = src;
-  im.alt = ph.legende ? String(ph.legende) : "Photo souvenir";
+  im.alt = ph.legende ? String(ph.legende) : L.photo;
   im.loading = "lazy";
   im.decoding = "async";
   cadre.appendChild(im);
@@ -455,11 +494,11 @@ if (D.depuis) {
 }
 if (jours > 0) {
   $("#l-compte").hidden = false;
-  $("#l-jours-lib").textContent = jours > 1 ? "jours ensemble" : "jour ensemble";
+  $("#l-jours-lib").textContent = jours > 1 ? L.jours : L.jour;
 }
 
 if (!D.pied) { $("#l-pied").hidden = true; }
-else { $("#pied-lien").href = D.lien || "https://malettre.nebula-agency.online"; }
+else { $("#pied-lien").href = D.lien || ("https://malettre.nebula-agency.online" + (EN ? "/en/" : "")); }
 
 /* ── Les chiffres qui roulent, une fois la lettre ouverte. ── */
 function rouler(){
@@ -486,9 +525,14 @@ function rouler(){
    On lit la date a la main plutot que de laisser new Date() decider : les
    navigateurs n'ont pas toujours traite « ...T00:00 » comme une heure locale.
    ─────────────────────────────────────────────────────────────────────── */
-var MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août",
-            "septembre","octobre","novembre","décembre"];
-var JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+var MOIS = EN
+  ? ["January","February","March","April","May","June","July","August",
+     "September","October","November","December"]
+  : ["janvier","février","mars","avril","mai","juin","juillet","août",
+     "septembre","octobre","novembre","décembre"];
+var JOURS = EN
+  ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+  : ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
 
 function instantOuverture(s){
   var m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(String(s || ""));
@@ -505,6 +549,13 @@ function libQuand(t){
   var d = new Date(t);
   var h = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
   var jour = JOURS[d.getDay()] + " " + d.getDate() + " " + MOIS[d.getMonth()];
+  if (EN) {
+    /* En anglais, l'heure se dit sur douze : « at 6:30 pm », « at noon ». */
+    if (h === "00:00") { return jour + " at midnight"; }
+    if (h === "12:00") { return jour + " at noon"; }
+    var hh = d.getHours() % 12 || 12;
+    return jour + " at " + hh + ":" + ("0" + d.getMinutes()).slice(-2) + (d.getHours() < 12 ? " am" : " pm");
+  }
   /* Minuit se dit, il ne se lit pas en chiffres. */
   return jour + (h === "00:00" ? " à minuit" : " à " + h);
 }
@@ -515,10 +566,11 @@ function libReste(ms){
   var mn = Math.floor(s % 3600 / 60);
   /* On nomme l'unite jusqu'au bout : « dans 5 h 11 » se lit comme une heure
      de la journee, pas comme une duree. */
-  if (j > 0) { return "dans " + j + (j > 1 ? " jours " : " jour ") + h + " h"; }
-  if (h > 0) { return "dans " + h + " h " + ("0" + mn).slice(-2) + " min"; }
-  if (mn > 0) { return "dans " + mn + " min " + ("0" + (s % 60)).slice(-2) + " s"; }
-  return "dans " + s + " s";
+  var dans = EN ? "in " : "dans ";
+  if (j > 0) { return dans + j + (EN ? (j > 1 ? " days " : " day ") : (j > 1 ? " jours " : " jour ")) + h + " h"; }
+  if (h > 0) { return dans + h + " h " + ("0" + mn).slice(-2) + " min"; }
+  if (mn > 0) { return dans + mn + " min " + ("0" + (s % 60)).slice(-2) + " s"; }
+  return dans + s + " s";
 }
 
 var minuteur = 0;
@@ -529,7 +581,7 @@ function ouvrable(){
   document.documentElement.classList.remove("verrouille");
   $("#attente").classList.remove("on");
   $("#btn-ouvrir").hidden = false;
-  txt($("#s-touche"), "C'est l'heure.");
+  txt($("#s-touche"), L.heure);
 }
 
 function tic(){
@@ -542,9 +594,9 @@ if (verrouille()) {
   document.documentElement.classList.add("verrouille");
   $("#btn-ouvrir").hidden = true;
   $("#attente").classList.add("on");
-  txt($("#s-touche"), "Une lettre t'attend.");
+  txt($("#s-touche"), L.attend);
   $("#att-quand").innerHTML = "";
-  $("#att-quand").appendChild(document.createTextNode("Elle s'ouvre "));
+  $("#att-quand").appendChild(document.createTextNode(L.ouvre));
   var bq = document.createElement("b");
   txt(bq, libQuand(OUVRE));
   $("#att-quand").appendChild(bq);
@@ -592,7 +644,7 @@ function verifier(){
     $("#cases").classList.remove("faux");
     void $("#cases").offsetWidth;   /* redemarrer l'animation */
     $("#cases").classList.add("faux");
-    $("#code-msg").textContent = "Ce n'est pas le bon code. Redemande-le.";
+    $("#code-msg").textContent = L.faux;
     cases.forEach(function(c){ c.value = ""; });
     cases[0].focus();
   }
@@ -612,7 +664,7 @@ $("#btn-ouvrir").addEventListener("click", function(){
   if (D.code) {
     $("#code").classList.add("on");
     $("#btn-ouvrir").hidden = true;
-    $("#s-touche").textContent = "Entre le code qu'on t'a donné.";
+    $("#s-touche").textContent = L.demande;
     cases[0].focus();
   } else {
     ouvrir();

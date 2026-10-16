@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ma lettre à… · write it</title>
+<!--
+  MA LETTRE À… · le constructeur.
+
+  Les six ecrans du manuel : il arrive, il choisit l'occasion, il remplit ET IL
+  VOIT, il paie, il colle la reference, il attend sans etre dans le vide.
+
+  ⛔ LE TROU DE L'ECRAN 4, et la raison d'etre de la moitie de ce fichier.
+  Pour payer, l'acheteur QUITTE la page : il bascule sur son application Mobile
+  Money ou compose un code USSD. S'il revient et que le navigateur a vide
+  l'onglet, il a perdu son mot, ses photos, son quart d'heure. Il ne
+  recommencera pas, et on ne saura meme pas que la vente a existe.
+  D'ou : on sauvegarde a CHAQUE frappe, et on restaure au retour.
+
+  ⚠️ L'apercu n'est pas une approximation : c'est le VRAI gabarit, charge et
+  rempli. Ce que l'acheteur voit est exactement ce que recevra la destinataire.
+-->
+<style>
+:root{
+  --nuit:#141019;--nuit-2:#1d1826;--papier:#f4ede0;--papier-2:#ebe0cd;
+  --encre:#241d2b;--cire:#8c2f39;--cire-clair:#b2434e;--or:#c9a227;
+  --gris:#6d6478;--gris-clair:#a79eb4;--ligne:rgba(244,237,224,.14);
+  --t:cubic-bezier(.25,1,.5,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--nuit);color:var(--papier);min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+.serif{font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",Times,serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--or);outline-offset:3px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* ⛔ `hidden` doit GAGNER. `.repris{display:flex}` l'emportait sur l'attribut :
+   le bandeau « On a retrouvé ta lettre en cours » s'affichait a TOUT LE MONDE,
+   des la premiere visite, et le « + » des photos (`display:grid`) ne partait
+   jamais a trois photos. Le controle lisait l'attribut, pas ce qui est peint. */
+[hidden]{display:none!important}
+
+/* ── La barre ── */
+header{
+  position:sticky;top:0;z-index:30;background:rgba(20,16,25,.97);
+  border-bottom:1px solid var(--ligne);padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+}
+.marque{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em;font-size:15px}
+.sceau{width:22px;height:22px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%)}
+.etapes{display:flex;gap:6px}
+/* Le sélecteur de langue : une seule autre langue, nommée dans SA langue. */
+.langue{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;
+  margin:-8px -6px -8px 0;border-radius:999px;font-size:12.5px;font-weight:800;letter-spacing:.12em;
+  color:var(--gris-clair);text-decoration:none}
+.langue:hover{color:var(--papier)}
+.etapes i{width:26px;height:4px;border-radius:2px;background:var(--ligne);transition:background .3s}
+.etapes i.on{background:var(--or)}
+
+/* ── La mise en page ── */
+.plan{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);
+  gap:0;align-items:start}
+@media(max-width:900px){.plan{grid-template-columns:1fr}}
+.col{padding:clamp(20px,4vw,38px)}
+.apercu-col{position:sticky;top:59px;border-left:1px solid var(--ligne);
+  background:var(--nuit-2);min-height:calc(100vh - 59px)}
+@media(max-width:900px){.apercu-col{position:static;border-left:0;border-top:1px solid var(--ligne);min-height:0}}
+
+h1{font-size:clamp(24px,5vw,32px);line-height:1.15;font-weight:600;margin-bottom:6px}
+.sous{color:var(--gris-clair);font-size:14.5px;margin-bottom:24px}
+.groupe{margin-bottom:20px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;letter-spacing:.02em}
+.indice{font-size:12.5px;color:var(--gris);font-weight:400;margin-top:5px}
+input[type=text],input[type=tel],input[type=date],input[type=time],textarea,select{
+  width:100%;background:rgba(244,237,224,.05);color:var(--papier);
+  border:1.5px solid var(--ligne);border-radius:11px;padding:12px 14px;
+  font-size:15px;font-family:inherit;min-height:48px;transition:border-color .15s;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--or);background:rgba(244,237,224,.09)}
+textarea{resize:vertical;min-height:132px;line-height:1.7}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:420px){.deux{grid-template-columns:1fr}}
+
+/* ── Les occasions ── */
+.occasions{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+.occ{border:1.5px solid var(--ligne);border-radius:14px;padding:15px 14px;text-align:left;
+  transition:.18s var(--t);min-height:78px;display:flex;flex-direction:column;gap:3px}
+.occ:hover{border-color:rgba(201,162,39,.5);transform:translateY(-2px)}
+.occ.on{border-color:var(--or);background:rgba(201,162,39,.10)}
+.occ b{font-size:15px}
+.occ span{font-size:12.5px;color:var(--gris-clair)}
+.occ em{font-style:normal;font-size:12.5px;color:var(--or);font-weight:700}
+/* Vingt-sept occasions : sans familles, c'est une liste qu'on ne lit pas. */
+.fam{margin:26px 0 11px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gris-clair);font-weight:700}
+.fam:first-child{margin-top:0}
+.autre-mot{margin-top:22px;font-size:13.5px;color:var(--gris-clair)}
+
+/* ── Qui ecrit : la plume ou l'acheteur ── */
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+@media(max-width:420px){.mode{grid-template-columns:1fr}}
+.m{border:1.5px solid var(--ligne);border-radius:14px;padding:13px 14px;text-align:left;
+  min-height:66px;display:flex;flex-direction:column;gap:2px;transition:.18s var(--t)}
+.m.on{border-color:var(--or);background:rgba(201,162,39,.10)}
+.m b{font-size:14.5px}
+.m span{font-size:12.5px;color:var(--gris-clair)}
+
+/* ── La fiche de la plume ── */
+.fiche{border:1.5px solid rgba(201,162,39,.32);border-radius:16px;padding:18px 16px 16px;
+  margin-bottom:24px;background:rgba(201,162,39,.04)}
+.fiche-t{font-size:13.5px;color:var(--gris-clair);margin-bottom:16px}
+.q{margin-bottom:17px}
+.q-t{font-size:13px;font-weight:700;margin-bottom:8px;letter-spacing:.02em}
+.q-t span{font-weight:400;color:var(--gris-clair);font-size:12px;margin-left:6px}
+.puces{display:flex;flex-wrap:wrap;gap:8px}
+.puce{border:1.5px solid var(--ligne);border-radius:999px;padding:9px 15px;font-size:13.5px;
+  min-height:44px;transition:border-color .15s,background .15s}
+.puce:hover{border-color:rgba(201,162,39,.5)}
+.puce[aria-pressed="true"]{border-color:var(--or);background:rgba(201,162,39,.18)}
+.q.plein .puce[aria-pressed="false"]{opacity:.55}
+.plume-act{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.mot-plume{font-size:13.5px;color:var(--gris-clair);margin-top:12px}
+.mot-plume b{color:var(--papier)}
+.lienbtn{font-size:13px;color:var(--or);font-weight:700;text-decoration:underline;
+  min-height:44px;padding:0 4px}
+.compte-plume{background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.4);
+  border-radius:12px;padding:12px 14px;font-size:13.5px;margin-top:14px}
+
+/* ── Les paliers ── */
+.paliers{display:grid;gap:10px}
+.pal{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--ligne);
+  border-radius:14px;padding:14px;cursor:pointer;transition:.18s var(--t);text-align:left;width:100%}
+.pal.on{border-color:var(--or);background:rgba(201,162,39,.10)}
+.pal .pt{flex:1}
+.pal b{display:block;font-size:15px}
+.pal span{font-size:12.5px;color:var(--gris-clair)}
+.pal .px{font-weight:800;font-size:16px;color:var(--or);white-space:nowrap}
+
+/* ── Les photos ── */
+.photos{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.vign{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;
+  border:1.5px solid var(--ligne)}
+.vign img{width:100%;height:100%;object-fit:cover;display:block}
+.vign button{position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;
+  background:rgba(20,16,25,.86);font-size:14px;line-height:1;display:grid;place-items:center}
+.ajout{width:76px;height:76px;border-radius:10px;border:1.5px dashed var(--ligne);
+  display:grid;place-items:center;font-size:26px;color:var(--gris-clair)}
+
+/* ── L'apercu ── */
+.apercu-t{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gris);
+  margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.telephone{width:100%;max-width:340px;margin:0 auto;aspect-ratio:9/17.5;
+  border-radius:26px;overflow:hidden;border:1px solid var(--ligne);
+  box-shadow:0 30px 70px rgba(0,0,0,.5);background:var(--nuit)}
+.telephone iframe{width:100%;height:100%;border:0;display:block}
+.rejouer{font-size:13px;color:var(--or);font-weight:700;padding:8px 4px;min-height:44px}
+
+/* ── Les boutons ── */
+.actions{display:flex;gap:11px;margin-top:26px;flex-wrap:wrap}
+.pri{background:var(--papier);color:var(--encre);border-radius:999px;padding:14px 28px;
+  font-weight:800;font-size:15px;min-height:48px;transition:transform .18s var(--t)}
+.pri:hover{transform:translateY(-2px)}
+.pri[disabled]{opacity:.4;pointer-events:none}
+.sec{border:1.5px solid var(--ligne);border-radius:999px;padding:14px 24px;
+  font-weight:700;font-size:15px;min-height:48px}
+
+/* ── Le paiement ── */
+.somme{background:rgba(201,162,39,.12);border:1.5px solid rgba(201,162,39,.4);
+  border-radius:16px;padding:20px;text-align:center;margin-bottom:18px}
+.somme .n{font-size:clamp(30px,8vw,40px);font-weight:800;color:var(--or);line-height:1.1}
+.somme .l{font-size:13px;color:var(--gris-clair);margin-top:4px}
+.numero{background:rgba(244,237,224,.05);border:1.5px solid var(--ligne);border-radius:14px;
+  padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.numero b{font-size:19px;letter-spacing:.04em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.numero span{font-size:12.5px;color:var(--gris-clair);display:block}
+.copier{border:1.5px solid var(--ligne);border-radius:999px;padding:9px 16px;font-size:13px;
+  font-weight:700;min-height:44px;white-space:nowrap}
+/* Pas de barre d'accent a gauche : on prend le langage du produit, un
+   point de cire, et une bordure complete qui ne crie pas. */
+.avert{background:rgba(140,47,57,.13);border:1px solid rgba(178,67,78,.34);
+  border-radius:12px;padding:13px 15px 13px 40px;font-size:13.5px;
+  margin-bottom:18px;position:relative}
+.avert::before{content:"";position:absolute;left:15px;top:16px;width:12px;height:12px;
+  border-radius:50%;background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%)}
+
+/* ── L'attente ── */
+.fini{text-align:center;padding:clamp(30px,8vw,60px) 0}
+.fini .rond{width:74px;height:74px;border-radius:50%;margin:0 auto 20px;
+  background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%);
+  display:grid;place-items:center;font-size:32px}
+.lien{display:block;background:rgba(244,237,224,.05);border:1.5px solid var(--ligne);
+  border-radius:12px;padding:13px;font-size:13px;word-break:break-all;margin:16px 0;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--or)}
+
+.ecran{display:none}
+.ecran.on{display:block}
+.repris{background:rgba(201,162,39,.13);border:1px solid rgba(201,162,39,.4);
+  border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:18px;
+  display:flex;gap:10px;align-items:center;justify-content:space-between}
+.repris button{font-size:13px;font-weight:700;color:var(--or);text-decoration:underline;min-height:44px;padding:0 6px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="marque"><span class="sceau" aria-hidden="true"></span>Ma lettre à…</div>
+  <div class="etapes" role="progressbar" aria-label="Progress" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="jauge">
+    <i class="on"></i><i></i><i></i><i></i>
+  </div>
+  <a class="langue" href="../creer.html" hreflang="fr" lang="fr" title="Écrire ta lettre en français">FR</a>
+</header>
+
+<div class="plan">
+  <div class="col">
+
+    <!-- ÉCRAN 2 · l'occasion -->
+    <section class="ecran on" id="e-occasion">
+      <h1 class="serif">What's the occasion?</h1>
+      <!-- ⚠️ « et du prix » a vecu ici jusqu'au 2026-10-16, faux depuis le
+           2026-09-06 : l'occasion decide du TON, le palier decide du PRIX. -->
+      <p class="sous">The occasion sets the tone of the letter.</p>
+      <div id="liste-occasions"></div>
+      <p class="autre-mot">Can't find your big day? Choose “Another occasion”.</p>
+    </section>
+
+    <!-- ÉCRAN 3 · il remplit ET il voit -->
+    <section class="ecran" id="e-lettre">
+      <h1 class="serif">Write it.</h1>
+      <p class="sous">Everything you write here appears in the preview, exactly as it will look when opened.</p>
+
+      <div class="repris" id="repris" hidden>
+        <span>We found the letter you were writing.</span>
+        <button type="button" id="btn-oublier">Start over</button>
+      </div>
+
+      <div class="deux">
+        <div class="groupe">
+          <label for="f-pour">Their first name</label>
+          <input type="text" id="f-pour" maxlength="30" placeholder="Zara" autocomplete="off">
+        </div>
+        <div class="groupe">
+          <label for="f-de">Your first name</label>
+          <input type="text" id="f-de" maxlength="30" placeholder="Robert" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- QUI ECRIT. ⚠️ Le vrai frein d'une lettre n'est pas le prix, c'est
+           la page blanche : beaucoup regardent la case vide et repartent. -->
+      <div class="mode" role="radiogroup" aria-label="Who writes the letter">
+        <button type="button" class="m" data-mode="plume" role="radio">
+          <b>The Quill writes it for me</b>
+          <span>A few questions, you reread, you edit · 500 F extra</span>
+        </button>
+        <button type="button" class="m" data-mode="moi" role="radio">
+          <b>I'll write it myself</b>
+          <span>Your words, nothing else</span>
+        </button>
+      </div>
+
+      <!-- LA FICHE. Des choix pour aller vite, deux zones libres pour ce
+           qu'aucun choix ne dira. ⛔ Elle n'est gardee nulle part chez nous :
+           elle part a la plume, la lettre revient, la fonction oublie. -->
+      <div class="fiche" id="fiche">
+        <p class="fiche-t">Answer whatever you like, the Quill does the rest. You can change everything afterwards.</p>
+        <div class="groupe" id="g-autre" hidden>
+          <label for="f-autre">What occasion?</label>
+          <input type="text" id="f-autre" maxlength="60" placeholder="Their new home in Lomé, your graduation…">
+        </div>
+        <div id="questions"></div>
+        <div class="groupe">
+          <label for="f-souvenir">A memory or a detail only you two know <span style="font-weight:400;color:var(--gris-clair)">(optional)</span></label>
+          <textarea id="f-souvenir" maxlength="300" style="min-height:92px"
+            placeholder="The day you waited two hours for me outside the university, in the rain."></textarea>
+        </div>
+        <div class="groupe">
+          <label for="f-consignes">How do you want it? <span style="font-weight:400;color:var(--gris-clair)">(optional)</span></label>
+          <textarea id="f-consignes" maxlength="400" style="min-height:92px"
+            placeholder="Call her “my queen”. Mention our trip to Ouidah. Don't mention her work."></textarea>
+          <p class="indice">What must be said, or avoided. The Quill never makes anything up for you.</p>
+        </div>
+        <div class="plume-act">
+          <button type="button" class="pri" id="btn-plume">Write my letter</button>
+        </div>
+        <p class="mot-plume" id="plume-mot" role="status" aria-live="polite" hidden></p>
+      </div>
+
+      <!-- ⚠️ Visible dans les DEUX modes : passer a « je l'ecris moi-meme »
+           ne fait pas disparaitre le texte de la plume, ni ce qu'il coute. -->
+      <div class="compte-plume" id="plume-compte" hidden>
+        <span id="plume-compte-t"></span>
+        <button type="button" class="lienbtn" id="btn-blanche">Start from a blank page</button>
+        <button type="button" class="lienbtn" id="btn-remettre">Bring back the Quill's letter</button>
+      </div>
+
+      <div class="groupe">
+        <label for="f-titre">The big title</label>
+        <input type="text" id="f-titre" maxlength="60" placeholder="Happy birthday">
+      </div>
+
+      <div class="groupe">
+        <label for="f-lettre">Your message</label>
+        <textarea id="f-lettre" maxlength="1200"
+          placeholder="Write the way you talk.&#10;&#10;An empty line separates two paragraphs."></textarea>
+        <p class="indice"><span id="c-lettre">0</span> / 1200 characters</p>
+      </div>
+
+      <div class="groupe">
+        <label for="f-formule">The closing words</label>
+        <input type="text" id="f-formule" maxlength="60" placeholder="With all my heart,">
+        <p class="indice">Just before your signature.</p>
+      </div>
+
+      <div class="groupe">
+        <label>Your photos <span style="font-weight:400;color:var(--gris-clair)" id="photos-regle"></span></label>
+        <div class="photos" id="bac-photos">
+          <label class="ajout" for="f-photo" title="Add a photo">+
+            <span class="sr">Add a photo</span></label>
+          <input type="file" id="f-photo" accept="image/*" multiple class="sr">
+        </div>
+        <p class="indice">They are resized and kept inside the letter itself. Nothing is sent until you order.</p>
+      </div>
+
+      <div class="deux">
+        <div class="groupe">
+          <label for="f-depuis">Together since <span style="font-weight:400;color:var(--gris)">(optional)</span></label>
+          <input type="date" id="f-depuis">
+          <p class="indice">Shows the number of days.</p>
+        </div>
+        <div class="groupe">
+          <label for="f-code">Secret code <span style="font-weight:400;color:var(--gris)">(optional)</span></label>
+          <input type="text" id="f-code" inputmode="numeric" placeholder="4 digits">
+          <!-- Pas de maxlength : il coupe AVANT le filtre. Coller
+               "abc1234" laissait "abc1", le filtre retirait les lettres,
+               et le code tombait a "1" (mesure en navigateur). C'est le
+               filtre ci-dessous qui plafonne a quatre chiffres. -->
+          <p class="indice">It only opens with this code.</p>
+        </div>
+      </div>
+
+      <div class="groupe">
+        <label for="f-quand">It opens on</label>
+        <div class="deux">
+          <input type="date" id="f-quand">
+          <input type="time" id="f-quand-h" value="00:00">
+        </div>
+        <p class="indice">The letter won't open before this time, by the clock on <b>the reader's phone</b>. Leave it empty for it to open right away.</p>
+      </div>
+
+      <div class="actions">
+        <button class="sec" data-vers="e-occasion">Back</button>
+        <button class="pri" id="vers-palier">Choose my offer</button>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 3 bis · le palier -->
+    <section class="ecran" id="e-palier">
+      <h1 class="serif">Choose your offer.</h1>
+      <p class="sous">The letter is already written. It is the same whatever the price.</p>
+      <div class="paliers" id="liste-paliers"></div>
+      <p class="compte-plume" id="photos-note" hidden></p>
+      <p class="compte-plume" id="plume-note" hidden>The Quill wrote your letter: <b>500 F</b> is added to the offer you choose, already counted above.</p>
+      <div class="actions">
+        <button class="sec" data-vers="e-lettre">Back</button>
+        <button class="pri" id="vers-paiement">Continue</button>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 4 et 5 · il paie, il colle la référence -->
+    <section class="ecran" id="e-paiement">
+      <h1 class="serif" id="pay-titre">Payment.</h1>
+      <p class="sous" id="pay-sous">Mobile Money. You leave this page, then come back: <b>your letter is waiting, it's saved.</b></p>
+
+      <div id="bloc-reglement">
+        <div class="somme">
+          <div class="n" id="p-somme">2 000 F</div>
+          <div class="l">Mobile Money or card, on our payment provider's page.</div>
+        </div>
+
+        <div class="avert">
+          You choose your network there: MTN, Moov or Celtiis. Nothing to copy, nothing to text us.
+        </div>
+      </div>
+
+      <div class="groupe">
+        <label for="f-wa">Your WhatsApp</label>
+        <input type="tel" id="f-wa" placeholder="01 97 08 55 76" autocomplete="tel">
+        <p class="indice">That's where we write to you if something goes wrong. We never write to the person who receives the letter.</p>
+      </div>
+
+      <div class="actions">
+        <button class="sec" data-vers="e-palier">Back</button>
+        <button class="pri" id="btn-commander">I've paid, send</button>
+      </div>
+      <p class="indice" id="envoi-mot" role="status" hidden></p>
+    </section>
+
+    <!-- ÉCRAN 6 · il attend, mais pas dans le vide -->
+    <section class="ecran" id="e-fini">
+      <div class="fini">
+        <div class="rond" aria-hidden="true">✓</div>
+        <h1 class="serif">Order received.</h1>
+        <p class="sous">We check your payment, then you get your link on WhatsApp. In the meantime, here is your preview: you can already look at it.</p>
+        <div id="bloc-adresse" hidden>
+          <p class="indice">Your letter's address. Send it to whoever you like: it can only be reached through this link.</p>
+          <a class="lien" id="lien-lettre" href="#" rel="noreferrer"></a>
+        </div>
+        <a class="lien" id="lien-apercu" href="#" download="my-letter.html">Download my preview</a>
+        <p class="indice" id="fini-quand"></p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- L'aperçu : le VRAI gabarit, pas une imitation -->
+  <aside class="col apercu-col">
+    <div class="apercu-t">
+      <span>What they'll see</span>
+      <button class="rejouer" id="btn-rejouer">Replay the opening</button>
+    </div>
+    <div class="telephone">
+      <iframe id="apercu" title="Letter preview"
+              sandbox="allow-scripts"></iframe>
+    </div>
+  </aside>
+</div>
+
+<script>
+"use strict";
+
+/* ══════════════════════════════════════════════════════════════════════
+   Le catalogue. Les prix viennent du manuel du 2026-08-28 et de nulle part
+   ailleurs : on ne recopie jamais un prix a la main dans deux fichiers.
+   ══════════════════════════════════════════════════════════════════════ */
+/* ⛔ UNE SEULE ECHELLE DE PRIX, et elle est plus bas : les PALIERS.
+   Les occasions portaient chacune un prix, affiche « des 10 000 F », que rien
+   n'appliquait ensuite : on choisissait « Demande en mariage · des 10 000 F »
+   puis le palier gratuit, et on payait 0 F. Deux echelles dans un fichier
+   sont deux verites. L'occasion decide du TON, le palier decide du PRIX,
+   et l'ecran des paliers le dit deja : « elle ne change pas selon le prix ». */
+/* ⚠️ LES IDENTIFIANTS SONT AUSSI CEUX DE LA PLUME (`_shared/plume.ts`,
+   `REGISTRES`) : un controle lit les deux listes. Une occasion ajoutee ici
+   seulement serait ecrite sans consigne.
+   `titre` et `formule` se posent tant que l'acheteur ne les a pas touches.
+   `jour` (mois-jour) pose la date d'ouverture d'une fete a date fixe.
+   `fiche` : les questions de la plume, dans l'ordre (voir QUESTIONS).
+   ⛔ PAS DE DEUIL : `CONDITIONS.md` §7, il ne s'ouvre qu'apres relecture par
+   quelqu'un qui vient d'enterrer un proche. */
+var FAMILLES = [
+  {id:"amour",   nom:"Love"},
+  {id:"proches", nom:"Family and friends"},
+  {id:"fetes",   nom:"Holidays"},
+  {id:"vie",     nom:"Big days"}
+];
+var OCCASIONS = [
+  {id:"couple",   fam:"amour", nom:"Asking them out", note:"The big leap", titre:"Will you go out with me?", formule:"Hoping for your yes,",
+   fiche:["lien-crush","ton-doux","craquer","rencontre","duree","longueur","langue"]},
+  {id:"mois",     fam:"amour", nom:"Monthiversary", note:"“Happy 1 month”", titre:"One month with you", formule:"With all my heart,",
+   fiche:["lien-amour","ton-doux","craquer","rencontre","longueur","langue"]},
+  {id:"valentin", fam:"amour", nom:"Valentine's Day", note:"February 14", titre:"Happy Valentine's Day", formule:"Yours, forever,", jour:"02-14",
+   fiche:["lien-amour","ton-doux","craquer","qualites","longueur","langue"]},
+  {id:"nous",     fam:"amour", nom:"Our anniversary", note:"One, five, twenty years", titre:"Happy anniversary, my love", formule:"With all my love,",
+   fiche:["lien-amour","ton-doux","duree","rencontre","qualites","longueur","langue"]},
+  {id:"demande",  fam:"amour", nom:"Marriage proposal", note:"Utmost simplicity", titre:"Will you marry me?", formule:"Yours, for life,",
+   fiche:["lien-amour","ton-sobre","duree","rencontre","qualites","longueur","foi"]},
+  {id:"pardon",   fam:"amour", nom:"Apology", note:"Making up", titre:"I'm sorry", formule:"Forgive me,",
+   fiche:["lien-proches","ton-sobre","faute","longueur","langue"]},
+  {id:"rupture",  fam:"amour", nom:"Breakup", note:"With class, or with humour", titre:"There's something I need to tell you", formule:"Take care of yourself,",
+   fiche:["lien-ex","ton-rupture","pourquoi-rupture","porte","duree","longueur","langue"]},
+
+  {id:"anniv",    fam:"proches", nom:"Birthday", note:"The most requested", titre:"Happy birthday", formule:"With all my affection,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue","foi"]},
+  {id:"maman",    fam:"proches", nom:"Mother's Day", note:"From all the children", titre:"Thank you, Mum", formule:"Your loving child,",
+   fiche:["lien-mere","ton-fete","qualites","appris","longueur","langue","foi"]},
+  {id:"papa",     fam:"proches", nom:"Father's Day", note:"For the pillar", titre:"Thank you, Dad", formule:"Your loving child,",
+   fiche:["lien-pere","ton-fete","qualites","appris","longueur","langue","foi"]},
+  {id:"naissance",fam:"proches", nom:"New baby", note:"Or a christening", titre:"Welcome to the world", formule:"With all our joy,",
+   fiche:["lien-bebe","bebe","ton-fete","souhaits","longueur","foi"]},
+  {id:"mariage",  fam:"proches", nom:"Wedding", note:"For the newlyweds", titre:"Wishing you every happiness", formule:"With all my affection,",
+   fiche:["lien-maries","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"amitie",   fam:"proches", nom:"Friendship", note:"Thank you for being there", titre:"Thank you for being there", formule:"Thank you for being you,",
+   fiche:["lien-amis","ton-fete","qualites","duree","longueur","langue"]},
+  {id:"brouille", fam:"proches", nom:"Ending a friendship", note:"Saying it once", titre:"I'd rather write it to you", formule:"No hard feelings,",
+   fiche:["lien-amis","ton-rupture","pourquoi-amitie","porte","duree","longueur","langue"]},
+
+  {id:"noel",     fam:"fetes", nom:"Christmas", note:"December 25", titre:"Merry Christmas", formule:"Merry Christmas,", jour:"12-25",
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"nouvelan", fam:"fetes", nom:"New Year", note:"January 1", titre:"Happy New Year", formule:"Wishing you a happy New Year,", jour:"01-01",
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"tabaski",  fam:"fetes", nom:"Tabaski", note:"Eid al-Adha", titre:"Happy Tabaski", formule:"Eid Mubarak,", defauts:{foi:"Muslim"},
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"ramadan",  fam:"fetes", nom:"End of Ramadan", note:"Eid al-Fitr", titre:"Happy Eid al-Fitr", formule:"Eid Mubarak,", defauts:{foi:"Muslim"},
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"paques",   fam:"fetes", nom:"Easter", note:"Easter Sunday", titre:"Happy Easter", formule:"Happy Easter,", defauts:{foi:"Christian"},
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+
+  {id:"reussite", fam:"vie", nom:"Success", note:"Exam, degree, competition", titre:"Congratulations!", formule:"Well done again,",
+   fiche:["lien-proches","quoi-reussite","ton-fete","qualites","longueur","langue","foi"]},
+  {id:"courage",  fam:"vie", nom:"Encouragement", note:"Before a challenge", titre:"You've got this", formule:"I believe in you,",
+   fiche:["lien-proches","epreuve","ton-fete","qualites","longueur","langue","foi"]},
+  {id:"guerison", fam:"vie", nom:"Get well soon", note:"For someone recovering", titre:"Get well soon", formule:"Thinking of you,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue","foi"]},
+  {id:"travail",  fam:"vie", nom:"New job", note:"Or a promotion", titre:"Congratulations on this new start", formule:"Well done again,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue"]},
+  {id:"retraite", fam:"vie", nom:"Retirement", note:"A lifetime of work", titre:"Happy retirement", formule:"With all my gratitude,",
+   fiche:["lien-travail","ton-fete","qualites","souhaits","longueur","langue"]},
+  {id:"merci",    fam:"vie", nom:"Thank you", note:"To say thank you", titre:"Thank you", formule:"With heartfelt thanks,",
+   fiche:["lien-proches","ton-fete","qualites","longueur","langue"]},
+  {id:"rdv",      fam:"vie", nom:"An invitation", note:"A date", titre:"How about it?", formule:"I hope you'll say yes,",
+   fiche:["lien-crush","sortie","ton-doux","craquer","longueur","langue"]},
+  {id:"autre",    fam:"vie", nom:"Another occasion", note:"Any other big day", titre:"A letter for you", formule:"With all my heart,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue","foi"]}
+];
+
+/* Les questions de la plume. `un` : un seul choix ; `max` : plusieurs, au
+   plus tant. Le libelle `q` part tel quel a la plume avec les reponses : la
+   fiche se lit comme une conversation, pas comme un formulaire. */
+var QUESTIONS = {
+  "lien-amour":   {q:"Who are they to you?", un:true, choix:["My love","My wife","My husband","My girlfriend","My boyfriend","My crush"]},
+  "lien-crush":   {q:"Who are they to you?", un:true, choix:["My crush","A friend (she)","A friend (he)","A colleague (she)","A colleague (he)"]},
+  "lien-ex":      {q:"Who are they to you?", un:true, choix:["My girlfriend","My boyfriend","My wife","My husband","My fiancée","My fiancé"]},
+  "lien-proches": {q:"Who are they to you?", un:true, choix:["My love","My mother","My father","My sister","My brother","My daughter","My son","My friend (she)","My friend (he)","My colleague (she)","My colleague (he)"]},
+  "lien-mere":    {q:"Who are they to you?", un:true, choix:["My mother","My grandmother","My mother-in-law","My aunt","The mother of my children"]},
+  "lien-pere":    {q:"Who are they to you?", un:true, choix:["My father","My grandfather","My father-in-law","My uncle","The father of my children"]},
+  "lien-amis":    {q:"Who are they to you?", un:true, choix:["My best friend (she)","My best friend (he)","My friend (she)","My friend (he)","My group of friends"]},
+  "lien-bebe":    {q:"The letter is for", un:true, choix:["The parents","The mum","The dad","The baby, for later"]},
+  "lien-maries":  {q:"The letter is for", un:true, choix:["The newlyweds","The bride","The groom"]},
+  "lien-travail": {q:"Who are they to you?", un:true, choix:["My boss (she)","My boss (he)","My colleague (she)","My colleague (he)","My team"]},
+  "ton-doux":     {q:"The tone", max:2, choix:["Tender","Funny","Poetic","Passionate","Simple and direct","Nostalgic"]},
+  "ton-fete":     {q:"The tone", max:2, choix:["Warm","Funny","Moving","Poetic","Simple and direct","Solemn"]},
+  "ton-rupture":  {q:"The tone", max:2, choix:["Respectful","Funny","Blunt","Grateful","No hard feelings","Firm"]},
+  "ton-sobre":    {q:"The tone", max:2, choix:["Tender","Solemn","Simple and direct","Poetic","Moving"]},
+  "qualites":     {q:"What is rare about them", max:3, choix:["Their kindness","Their humour","Their courage","Their patience","Their gentleness","Their strength","Their faith","Their loyalty","Their intelligence","Their elegance","Their generosity","Their smile"]},
+  "craquer":      {q:"What made you fall for them", max:3, choix:["Their smile","Their eyes","Their voice","Their humour","Their kindness","The way they talk","Their style","Their intelligence"]},
+  "rencontre":    {q:"Where you met", un:true, choix:["At school or university","At work","At church","At the mosque","Through friends","Online","In the neighbourhood","While travelling"]},
+  "duree":        {q:"For how long", un:true, choix:["A few weeks","A few months","A year or two","More than five years","Forever"]},
+  "souhaits":     {q:"What you wish them", max:3, choix:["Health","Success","Love","Peace","Joy","Prosperity","Children","A long life","Wisdom","Beautiful journeys"]},
+  "faute":        {q:"What you regret", max:2, choix:["A word too many","Forgetting","A lie","Not being there","Losing my temper","Jealousy"]},
+  "appris":       {q:"What they taught you", max:3, choix:["Hard work","Faith","Respect","Courage","Sharing","Patience","Honesty","Getting back up"]},
+  "pourquoi-rupture": {q:"Why", un:true, choix:["We've drifted apart","Too many arguments","The distance","I don't feel the same any more","We don't want the same life","I'd rather not say"]},
+  "pourquoi-amitie":  {q:"Why", un:true, choix:["We have nothing in common any more","A betrayal","You're never there","Too many arguments","I'd rather not say"]},
+  "porte":        {q:"The door", un:true, choix:["Closed for good","We can stay on good terms","Maybe one day","I'd like us to talk about it"]},
+  "quoi-reussite":{q:"What success", un:true, choix:["An exam","A degree","A competitive exam","A driving test","A project"]},
+  "epreuve":      {q:"What challenge", un:true, choix:["An exam","A job interview","A competitive exam","A hard time","A new start"]},
+  "sortie":       {q:"You suggest", un:true, choix:["Dinner","A drink","A walk","A weekend away","A surprise"]},
+  "bebe":         {q:"It's", un:true, choix:["A girl","A boy","Twins","A christening"]},
+  "longueur":     {q:"Length", un:true, choix:["Short","Medium","Long"]},
+  "langue":       {q:"Your English", un:true, choix:["Polished","Everyday","With our own expressions"]},
+  "foi":          {q:"A blessing at the end", un:true, choix:["No","Christian","Muslim"]}
+};
+/* Ce qui est coche d'office tant que l'acheteur n'a rien touche. */
+var DEFAUTS = {longueur:"Medium", langue:"Everyday"};
+var PALIERS = [
+  {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,     pied:true,  photos:1},
+  {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,  pied:false, photos:3},
+  {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,  pied:false, photos:3},
+  {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000, pied:false, photos:20}
+];
+/* ⛔ LE COFFRET PROMETTAIT « la livraison WhatsApp à l'heure choisie » : rien
+   ne la faisait, et c'est contraire a la regle « on n'ecrit jamais a la
+   personne qui recoit » (CONDITIONS.md). Il dit desormais ce qu'il contient.
+   ⚠️ Et il le CONTIENT : le serveur gardait vingt photos pour le Coffret,
+   mais ce formulaire plafonnait a trois pour tout le monde. Le nombre de
+   photos vit dans les DEUX bareme, et un controle les compare. */
+var MAX_PHOTOS = Math.max.apply(null, PALIERS.map(function(p){ return p.photos; }));
+/* La plume est une OPTION, pas un palier : elle s'ajoute a l'offre choisie.
+   ⛔ Le meme prix vit dans `_shared/lettre.ts` (`PLUME`), et un controle
+   compare les deux. Ici, il ne fait que s'AFFICHER : la caisse recalcule. */
+var PLUME = {prix:500};
+/* ══════════════════════════════════════════════════════════════════════
+   LA CAISSE. C'est la fonction de bord qui depose la lettre, en fixe le
+   prix (⛔ jamais ce fichier : il s'edite dans la console en trois
+   secondes) et ouvre le paiement. Elle vit dans
+   `malettre/supabase/functions/malettre-commande/`.
+
+   ⚠️ Tant que `POINT` est vide, la commande ne part nulle part et on le
+   DIT a l'acheteur : mieux vaut « ce n'est pas encore ouvert » qu'un ecran
+   « Commande recue » pour une commande que personne n'a recue.
+   ══════════════════════════════════════════════════════════════════════ */
+var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-commande";
+var POINT_PLUME = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-plume";
+/* La langue de CETTE page, donc des lettres qu'elle écrit (2026-10-16).
+   ⛔ Ne se change jamais à la main : `_traduire.py` fabrique la page anglaise
+   (`en/creer.html`), et c'est lui qui la passe à « en ». */
+var LANGUE = "en";
+/* Un brouillon par langue : repris en anglais, un brouillon français
+   garderait des réponses de fiche qu'aucune puce anglaise ne coche. */
+var CLE = "malettre:brouillon:en";
+
+/* ⛔ LA CLE PUBLIQUE DU PROJET, et elle l'est par conception : c'est celle que
+   PISTE envoie deja. Sans elle, une fonction deployee avec la verification du
+   jeton (c'est le cas de `malettre-commande`, voir PAIEMENT.md) repond 401 a
+   tout le monde, et la caisse n'aurait jamais encaisse un franc. Le defaut
+   dormait ici depuis le 2026-09-06, invisible tant que rien n'etait en ligne. */
+var CLE_PUBLIQUE = "sb_publishable_pOEeVKbTixrVx3BPIaohMg_FigTtoBH";
+function entetes(){
+  return { "Content-Type": "application/json",
+           apikey: CLE_PUBLIQUE, Authorization: "Bearer " + CLE_PUBLIQUE };
+}
+
+var $ = function(s){ return document.querySelector(s); };
+var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+var fmt = function(n){ return n === 0 ? "Free" : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " F"; };
+
+/* L'etat. C'est LUI qu'on sauvegarde, jamais le DOM. */
+var E = {
+  occasion:"anniv", palier:"lettre",
+  pour:"", de:"", titre:"", lettre:"", formule:"", photos:[],
+  depuis:"", code:"", quand:"", quandH:"00:00",
+  wa:"",
+  /* La plume. `mode` : qui ecrit. `plume` : le texte vient-il d'elle (c'est
+     ce qui se paie, pas le mode). `plumeAvant` : sa derniere lettre, gardee
+     quand on repart d'une page blanche, pour pouvoir revenir en arriere.
+     `id` : le brouillon, pour que la plume compte ses versions. */
+  mode:"plume", plume:false, plumeAvant:null, plumeFin:false, id:"",
+  fiche:{ reponses:{}, autre:"", souvenir:"", consignes:"" }
+};
+
+/* ══════════════════════════════════════════════════════════════════════
+   ⛔ LA SAUVEGARDE. Le trou de l'ecran 4.
+   L'acheteur QUITTE la page pour payer. S'il revient sur un formulaire
+   vide, il a perdu son quart d'heure et il ne recommencera pas.
+   On ecrit a chaque frappe. Le navigateur peut refuser (mode prive,
+   quota plein) : ca ne doit JAMAIS casser la page.
+   ══════════════════════════════════════════════════════════════════════ */
+function garder(){
+  try { localStorage.setItem(CLE, JSON.stringify(E)); }
+  catch (e) { /* mode prive ou quota : on continue sans filet, mais on continue */ }
+}
+function reprendre(){
+  var brut = null;
+  try { brut = localStorage.getItem(CLE); } catch (e) { return false; }
+  if (!brut) { return false; }
+  try {
+    var v = JSON.parse(brut);
+    Object.keys(E).forEach(function(k){ if (k in v) { E[k] = v[k]; } });
+    /* Un brouillon d'avant la plume n'a pas de fiche : on lui en donne une. */
+    if (!E.fiche || typeof E.fiche !== "object") { E.fiche = {}; }
+    if (!E.fiche.reponses || typeof E.fiche.reponses !== "object") { E.fiche.reponses = {}; }
+    ["autre", "souvenir", "consignes"].forEach(function(k){
+      if (typeof E.fiche[k] !== "string") { E.fiche[k] = ""; }
+    });
+    return !!(E.lettre || E.pour || E.photos.length);
+  } catch (e) { return false; }
+}
+function oublier(){
+  try { localStorage.removeItem(CLE); } catch (e) {}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   L'apercu : on charge le VRAI gabarit et on y pose les donnees.
+   Meme regle d'injection que le serveur : la balise fermante de script,
+   ecrite par un acheteur dans son mot, fermerait le bloc et tuerait la page.
+   Voir _injecter.py.
+
+   ⚠️ On ne l'ecrit PAS en clair ici : ce commentaire-ci avait d'abord ete
+   redige avec la balise litterale, et il fermait donc lui-meme le bloc. Le
+   commentaire qui explique le piege peut contenir le piege.
+   ══════════════════════════════════════════════════════════════════════ */
+var GABARIT = null;
+var rejouerSeuil = false;
+
+function serialiser(o){
+  return JSON.stringify(o)
+    .replace(/<\//g, "<\\/")
+    .replace(/<!--/g, "<\\!--")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
+function occasion(id){
+  return OCCASIONS.filter(function(o){ return o.id === id; })[0]
+      || OCCASIONS.filter(function(o){ return o.id === "anniv"; })[0];
+}
+function palierDe(id){
+  return PALIERS.filter(function(p){ return p.id === id; })[0] || PALIERS[2];
+}
+/* Ce que la commande coute, tel qu'on l'AFFICHE. La caisse le recalcule. */
+function total(p){ return p.prix + (E.plume ? PLUME.prix : 0); }
+
+function donnees(){
+  /* ⚠️ On cherchait l'occasion par sa POSITION (OCCASIONS[1], qui etait
+     l'anniversaire) : ajouter une occasion en tete aurait change la lettre
+     par defaut sans un mot. On la cherche par son nom. */
+  var occ = occasion(E.occasion);
+  var pal = PALIERS.filter(function(p){ return p.id === E.palier; })[0] || PALIERS[2];
+  var lignes = (E.lettre || "").split(/\n{2,}/)
+    .map(function(s){ return s.replace(/\n/g, " ").trim(); })
+    .filter(Boolean);
+  var maxPhotos = pal.photos;
+  return {
+    occasion: occ.nom,
+    pour: E.pour || "you",
+    de: E.de || "",
+    titre: E.titre || occ.titre,
+    code: pal.id === "gratuit" ? "" : (E.code || ""),
+    lettre: lignes.length ? lignes : ["Your letter writes itself here, as you go."],
+    photos: E.photos.slice(0, maxPhotos).map(function(p){
+      return { src: p.src, legende: p.legende || "" };
+    }),
+    depuis: E.depuis || "",
+    formule: E.formule || occ.formule || "With all my heart,",
+    /* L'HEURE. Elle etait demandee a l'acheteur, promise sur l'ecran final,
+       et n'entrait dans aucune lettre. C'est elle qui donne son nom au
+       produit : sans elle, MA LETTRE À… s'appelle « une jolie page ».
+       Format de calendrier, sans fuseau : minuit, c'est minuit sur le
+       telephone de celle qui lit. */
+    ouvre: E.quand ? (E.quand + "T" + (E.quandH || "00:00")) : "",
+    pied: pal.pied,
+    lien: "https://malettre.nebula-agency.online/en/",
+    langue: LANGUE,
+    /* Ouvert d'office pendant l'ecriture, ferme quand on demande a revoir
+       le seuil. Ce drapeau ne part JAMAIS dans la lettre commandee : voir
+       htmlCommande(). */
+    apercu: !rejouerSeuil
+  };
+}
+
+function batir(d){
+  if (!GABARIT) { return "<p style='color:#f4ede0;font-family:sans-serif;padding:24px'>Loading the preview…</p>"; }
+  var a = GABARIT.indexOf("/*MALETTRE_DONNEES*/");
+  var b = GABARIT.indexOf("/*FIN_MALETTRE_DONNEES*/") + "/*FIN_MALETTRE_DONNEES*/".length;
+  return GABARIT.slice(0, a) + serialiser(d) + GABARIT.slice(b);
+}
+
+/* Ce qu'on montre a l'acheteur : ouvert, pour qu'il voie ses mots. */
+function htmlLettre(){ return batir(donnees()); }
+
+/* ⛔ Ce qu'on LIVRE : jamais le drapeau d'apercu, sinon la destinataire
+   recevrait une lettre deja ouverte, sans son cachet a briser. Le seuil EST
+   le produit. */
+function htmlCommande(){
+  var d = donnees();
+  delete d.apercu;
+  return batir(d);
+}
+
+/* ⛔ CE QU'ON ENVOIE A LA CAISSE : LES DONNEES, PAS LE HTML.
+   Une porte publique qui accepte du HTML et le sert sur notre domaine est un
+   hebergeur de pages arbitraires : gratuit, anonyme, et parfait pour une page
+   qui imite une banque. Le serveur rebatit la lettre a partir du gabarit.
+
+   ⛔ Ni `pied`, ni `lien`, ni `apercu`, ni le moindre prix : ce sont des
+   decisions du serveur. Ce fichier ne fait qu'apporter les mots de
+   l'acheteur. */
+function commande(){
+  var d = donnees();
+  return {
+    palier: E.palier,
+    occasion: d.occasion, pour: d.pour, de: d.de, titre: d.titre,
+    code: d.code, lettre: d.lettre, photos: d.photos,
+    depuis: d.depuis, ouvre: d.ouvre, formule: d.formule,
+    /* Un oui ou un non, jamais un prix : la caisse sait ce que vaut la plume. */
+    plume: !!E.plume,
+    whatsapp: E.wa,
+    langue: LANGUE
+  };
+}
+
+var minuteur = null;
+function peindre(){
+  /* On ne reconstruit pas l'iframe a chaque touche : ca rejouerait
+     l'ouverture en boucle et rendrait la frappe hachee. */
+  clearTimeout(minuteur);
+  minuteur = setTimeout(function(){
+    $("#apercu").srcdoc = htmlLettre();
+  }, 260);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Les ecrans
+   ══════════════════════════════════════════════════════════════════════ */
+var ORDRE = ["e-occasion", "e-lettre", "e-palier", "e-paiement", "e-fini"];
+function aller(id){
+  $$(".ecran").forEach(function(s){ s.classList.toggle("on", s.id === id); });
+  var i = ORDRE.indexOf(id);
+  $$("#jauge i").forEach(function(b, k){ b.classList.toggle("on", k <= Math.min(i, 3)); });
+  $("#jauge").setAttribute("aria-valuenow", String(Math.min(i + 1, 4)));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ── Les occasions, par familles ── */
+FAMILLES.forEach(function(f){
+  var h = document.createElement("h2"); h.className = "fam"; h.textContent = f.nom;
+  var g = document.createElement("div"); g.className = "occasions";
+  OCCASIONS.filter(function(o){ return o.fam === f.id; }).forEach(function(o){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "occ" + (o.id === E.occasion ? " on" : "");
+    b.dataset.id = o.id;
+    var n = document.createElement("b"); n.textContent = o.nom;
+    var s = document.createElement("span"); s.textContent = o.note;
+    b.appendChild(n); b.appendChild(s);
+    b.addEventListener("click", function(){ choisirOccasion(o); });
+    g.appendChild(b);
+  });
+  $("#liste-occasions").appendChild(h);
+  $("#liste-occasions").appendChild(g);
+});
+
+/* Un titre ou une formule PAR DEFAUT suit l'occasion ; un titre ecrit par
+   l'acheteur, jamais. Changer d'avis entre « Anniversaire » et « Noel » ne
+   doit pas laisser « Joyeux anniversaire » en tete d'une lettre de Noel. */
+function parDefaut(cle, v){ return OCCASIONS.some(function(o){ return o[cle] === v; }); }
+
+/* La prochaine fois que tombe un jour fixe (le 25 decembre, le 14 fevrier). */
+function prochain(mmjj){
+  var t = new Date(); t.setHours(0, 0, 0, 0);
+  var m = +mmjj.slice(0, 2), j = +mmjj.slice(3, 5);
+  var d = new Date(t.getFullYear(), m - 1, j);
+  if (d < t) { d = new Date(t.getFullYear() + 1, m - 1, j); }
+  return d.getFullYear() + "-" + ("0" + m).slice(-2) + "-" + ("0" + j).slice(-2);
+}
+
+function choisirOccasion(o){
+  E.occasion = o.id;
+  if (!E.titre || parDefaut("titre", E.titre)) { E.titre = o.titre; $("#f-titre").value = o.titre; }
+  if (!E.formule || parDefaut("formule", E.formule)) { E.formule = o.formule; $("#f-formule").value = o.formule; }
+  /* Noel s'ouvre le 25 a minuit : on le propose, sans jamais ecraser une date
+     que l'acheteur a deja choisie. */
+  if (o.jour && !E.quand) {
+    E.quand = prochain(o.jour); E.quandH = "00:00";
+    $("#f-quand").value = E.quand; $("#f-quand-h").value = "00:00";
+  }
+  $$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === o.id); });
+  dessinerFiche();
+  garder(); peindre(); aller("e-lettre");
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   LA FICHE DE LA PLUME
+   ══════════════════════════════════════════════════════════════════════ */
+function dessinerFiche(){
+  var o = occasion(E.occasion);
+  var R = E.fiche.reponses;
+  var bac = $("#questions");
+  bac.textContent = "";
+  $("#g-autre").hidden = o.id !== "autre";
+  o.fiche.forEach(function(qid){
+    var Q = QUESTIONS[qid];
+    if (!Q) { return; }
+    /* Les choix d'office ne s'appliquent qu'a une question jamais touchee :
+       une question videe expres reste vide. */
+    if (!(qid in R)) {
+      var d = (o.defauts && o.defauts[qid]) || DEFAUTS[qid];
+      if (d) { R[qid] = [d]; }
+    }
+    var box = document.createElement("div");
+    box.className = "q"; box.dataset.q = qid;
+    box.setAttribute("role", "group");
+    var t = document.createElement("p");
+    t.className = "q-t"; t.id = "q-" + qid; t.textContent = Q.q;
+    if (Q.max) {
+      var sp = document.createElement("span"); sp.textContent = "up to " + Q.max;
+      t.appendChild(sp);
+    }
+    box.setAttribute("aria-labelledby", t.id);
+    var pu = document.createElement("div"); pu.className = "puces";
+    Q.choix.forEach(function(c){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "puce"; b.textContent = c; b.dataset.q = qid;
+      b.setAttribute("aria-pressed", (R[qid] || []).indexOf(c) >= 0 ? "true" : "false");
+      b.addEventListener("click", function(){ basculer(qid, c); });
+      pu.appendChild(b);
+    });
+    box.appendChild(t); box.appendChild(pu);
+    bac.appendChild(box);
+  });
+  marquerPleines();
+}
+
+function basculer(qid, c){
+  var Q = QUESTIONS[qid];
+  var r = (E.fiche.reponses[qid] || []).slice();
+  var i = r.indexOf(c);
+  if (i >= 0) { r.splice(i, 1); }
+  else if (Q.un) { r = [c]; }
+  else if (r.length < (Q.max || 99)) { r.push(c); }
+  else { return; }   /* pleine : on ne remplace pas en silence un choix deja fait */
+  E.fiche.reponses[qid] = r;
+  $$('.puce[data-q="' + qid + '"]').forEach(function(b){
+    b.setAttribute("aria-pressed", r.indexOf(b.textContent) >= 0 ? "true" : "false");
+  });
+  marquerPleines();
+  garder();
+}
+
+function marquerPleines(){
+  $$("#questions .q").forEach(function(box){
+    var Q = QUESTIONS[box.dataset.q];
+    var n = (E.fiche.reponses[box.dataset.q] || []).length;
+    box.classList.toggle("plein", !!Q.max && n >= Q.max);
+  });
+}
+
+/* Ce qui part a la plume : la fiche, lisible comme une conversation. */
+function ficheEnvoyee(){
+  var o = occasion(E.occasion);
+  return {
+    occasion: o.id, autre: E.fiche.autre,
+    pour: E.pour, de: E.de,
+    reponses: o.fiche
+      .filter(function(q){ return QUESTIONS[q] && (E.fiche.reponses[q] || []).length; })
+      .map(function(q){ return { q: QUESTIONS[q].q, r: E.fiche.reponses[q] }; }),
+    souvenir: E.fiche.souvenir, consignes: E.fiche.consignes,
+    brouillon: E.id,
+    langue: LANGUE
+  };
+}
+
+function peindreMode(){
+  $$(".m").forEach(function(b){
+    var on = b.dataset.mode === E.mode;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-checked", on ? "true" : "false");
+  });
+  $("#fiche").hidden = E.mode !== "plume";
+  $("#btn-plume").textContent = E.plume ? "Another version" : "Write my letter";
+  $("#btn-plume").disabled = !!E.plumeFin;
+  $("#f-lettre").placeholder = E.mode === "plume"
+    ? "The Quill will write here. You can change everything."
+    : "Write the way you talk.\n\nAn empty line separates two paragraphs.";
+  var garde = !E.plume && !!E.plumeAvant;
+  $("#plume-compte").hidden = !E.plume && !garde;
+  $("#plume-compte-t").textContent = E.plume
+    ? "The Quill wrote this letter: it counts " + fmt(PLUME.prix) + ", even once you edit it."
+    : "Blank page: the Quill is no longer counted.";
+  $("#btn-blanche").hidden = !E.plume;
+  $("#btn-remettre").hidden = !garde;
+}
+
+function dire(t){
+  $("#plume-mot").textContent = t;
+  $("#plume-mot").hidden = !t;
+}
+
+var PAS_LA = "The Quill didn't answer. Try again in a moment, or write your letter yourself: your answers are saved.";
+var MOTS = {
+  "deuil": "We don't write letters of grief yet. We would rather do it well than fast.",
+  "nuisible": "The Quill can't write that letter. Change your instructions and try again.",
+  "hors-sujet": "The Quill didn't understand which letter to write. Say more about the occasion or your instructions.",
+  "limite": "You've had your three versions. Edit this one by hand: that's how it becomes yours.",
+  "occupee": "The Quill is in high demand right now. Try again in a minute.",
+  "prénom": "First give their first name, at the very top.",
+  "occasion": "First say which occasion.",
+  "pas-branchee": "The Quill isn't open yet. Write your letter yourself, or come back soon: your answers are saved."
+};
+function motErreur(code, j){
+  if (j.refus) { return MOTS[j.refus] || "The Quill stumbled on this version. Try again."; }
+  if (j.erreur && MOTS[j.erreur]) { return MOTS[j.erreur]; }
+  if (code === 404) { return MOTS["pas-branchee"]; }
+  return PAS_LA;
+}
+
+function ecrireAvecPlume(){
+  var f = ficheEnvoyee();
+  if (!String(f.pour).trim()) { dire(MOTS["prénom"]); $("#f-pour").focus(); return; }
+  if (f.occasion === "autre" && !String(f.autre).trim()) { dire(MOTS.occasion); $("#f-autre").focus(); return; }
+  if (!POINT_PLUME) { dire(MOTS["pas-branchee"]); return; }
+  var b = $("#btn-plume");
+  b.disabled = true; b.textContent = "The Quill is writing…";
+  dire("");
+  fetch(POINT_PLUME, { method: "POST", headers: entetes(), body: JSON.stringify(f) })
+    .then(function(r){
+      return r.json().catch(function(){ return {}; })
+        .then(function(j){ return { code: r.status, j: j || {} }; });
+    })
+    .then(function(rep){
+      if (rep.j.ok) { poserPlume(rep.j); return; }
+      if (rep.j.erreur === "limite") { E.plumeFin = true; }
+      peindreMode();
+      dire(motErreur(rep.code, rep.j));
+    })
+    .catch(function(){ peindreMode(); dire(PAS_LA); });
+}
+
+/* ⛔ La reponse est du TEXTE et le reste : elle va dans des champs, jamais
+   dans du HTML. Elle a ete relue par le serveur, mais un navigateur se
+   relit aussi. */
+function poserPlume(j){
+  var corps = (Array.isArray(j.lettre) ? j.lettre : []).map(String).filter(Boolean);
+  if (!corps.length) { peindreMode(); dire(PAS_LA); return; }
+  E.titre = String(j.titre || E.titre);
+  E.lettre = corps.join("\n\n");
+  if (j.formule) { E.formule = String(j.formule); }
+  E.plume = true; E.plumeAvant = null;
+  E.plumeFin = j.restantes === 0;
+  $("#f-titre").value = E.titre;
+  $("#f-lettre").value = E.lettre;
+  $("#f-formule").value = E.formule;
+  $("#c-lettre").textContent = String(E.lettre.length);
+  var reste = typeof j.restantes === "number" ? j.restantes : null;
+  dire("Here is your letter. Reread it and change what you like: these are your words now."
+    + (reste === 0 ? " That was the last version, it's yours to finish."
+       : reste ? " " + reste + (reste > 1 ? " more versions possible." : " more version possible.") : ""));
+  peindreMode(); garder(); peindre();
+  $("#f-titre").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+$$(".m").forEach(function(b){
+  b.addEventListener("click", function(){
+    E.mode = b.dataset.mode;
+    peindreMode(); garder();
+  });
+});
+$("#btn-plume").addEventListener("click", ecrireAvecPlume);
+
+/* Repartir d'une page blanche : la plume n'est plus comptee, et sa lettre
+   reste a portee d'un clic. Toute suppression se rattrape. */
+$("#btn-blanche").addEventListener("click", function(){
+  E.plumeAvant = { titre: E.titre, lettre: E.lettre, formule: E.formule };
+  E.plume = false; E.lettre = "";
+  $("#f-lettre").value = ""; $("#c-lettre").textContent = "0";
+  dire("");
+  peindreMode(); garder(); peindre();
+});
+$("#btn-remettre").addEventListener("click", function(){
+  var a = E.plumeAvant;
+  if (!a) { return; }
+  E.titre = a.titre; E.lettre = a.lettre; E.formule = a.formule;
+  E.plume = true; E.plumeAvant = null;
+  $("#f-titre").value = E.titre; $("#f-lettre").value = E.lettre; $("#f-formule").value = E.formule;
+  $("#c-lettre").textContent = String(E.lettre.length);
+  peindreMode(); garder(); peindre();
+});
+
+/* Les zones libres de la fiche. */
+[["f-autre", "autre"], ["f-souvenir", "souvenir"], ["f-consignes", "consignes"]].forEach(function(x){
+  $("#" + x[0]).addEventListener("input", function(){
+    E.fiche[x[1]] = this.value;
+    garder();
+  });
+});
+
+/* ── Les paliers ── */
+PALIERS.forEach(function(p){
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "pal" + (p.id === E.palier ? " on" : "");
+  b.dataset.id = p.id;
+  var t = document.createElement("div"); t.className = "pt";
+  var n = document.createElement("b"); n.textContent = p.nom;
+  var d = document.createElement("span"); d.textContent = p.desc;
+  t.appendChild(n); t.appendChild(d);
+  var x = document.createElement("div"); x.className = "px"; x.textContent = fmt(total(p));
+  b.appendChild(t); b.appendChild(x);
+  b.addEventListener("click", function(){
+    E.palier = p.id;
+    $$(".pal").forEach(function(y){ y.classList.toggle("on", y.dataset.id === p.id); });
+    peindrePaliers();
+    peindreReglement();
+    garder(); peindre();
+  });
+  $("#liste-paliers").appendChild(b);
+});
+
+/* Les prix de chaque offre, plume comprise. ⚠️ Avec la plume, l'offre
+   « Gratuit » coute 500 F : on l'ecrit sur la carte, pas en petit dessous. */
+function peindrePaliers(){
+  $$(".pal").forEach(function(b){
+    b.querySelector(".px").textContent = fmt(total(palierDe(b.dataset.id)));
+  });
+  $("#plume-note").hidden = !E.plume;
+  /* Il a mis plus de photos que l'offre n'en garde : on le DIT, au lieu de
+     les retirer en silence de la lettre. */
+  var pal = palierDe(E.palier);
+  var trop = E.photos.length > pal.photos;
+  $("#photos-note").hidden = !trop;
+  if (trop) {
+    $("#photos-note").textContent = "You added " + E.photos.length + " photos: "
+      + pal.nom + " keeps " + (pal.photos === 1 ? "the first one." : "the first " + pal.photos + ".");
+  }
+}
+
+/* ── Les champs. Un seul chemin : champ -> etat -> sauvegarde -> apercu. ── */
+var CHAMPS = { "f-pour":"pour", "f-de":"de", "f-titre":"titre", "f-lettre":"lettre", "f-formule":"formule",
+               "f-depuis":"depuis", "f-code":"code", "f-quand":"quand",
+               "f-quand-h":"quandH", "f-wa":"wa" };
+Object.keys(CHAMPS).forEach(function(id){
+  var el = document.getElementById(id);
+  if (!el) { return; }
+  el.addEventListener("input", function(){
+    if (id === "f-code") { el.value = el.value.replace(/\D/g, "").slice(0, 4); }
+    E[CHAMPS[id]] = el.value;
+    if (id === "f-lettre") {
+      $("#c-lettre").textContent = String(el.value.length);
+      /* Tout effacer a la main, c'est repartir d'une page blanche : la
+         plume n'est plus comptee. Retoucher sa lettre, si. */
+      if (E.plume && !el.value.trim()) { E.plume = false; E.plumeAvant = null; peindreMode(); }
+    }
+    garder();
+    peindre();
+  });
+});
+
+/* ── Les photos. Reduites AVANT d'entrer dans l'etat : une photo de
+     téléphone fait 4 Mo, et tout ceci part dans un seul HTML. ── */
+function reduire(fichier, cb){
+  var fr = new FileReader();
+  fr.onload = function(){
+    var im = new Image();
+    im.onload = function(){
+      var max = 900;
+      var k = Math.min(1, max / Math.max(im.width, im.height));
+      var c = document.createElement("canvas");
+      c.width = Math.round(im.width * k);
+      c.height = Math.round(im.height * k);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      cb(c.toDataURL("image/jpeg", 0.82));
+    };
+    im.onerror = function(){ cb(null); };
+    im.src = fr.result;
+  };
+  fr.onerror = function(){ cb(null); };
+  fr.readAsDataURL(fichier);
+}
+
+function dessinerPhotos(){
+  var bac = $("#bac-photos");
+  $$(".vign").forEach(function(v){ v.remove(); });
+  E.photos.forEach(function(p, i){
+    var d = document.createElement("div");
+    d.className = "vign";
+    var im = document.createElement("img");
+    im.src = p.src; im.alt = "Photo " + (i + 1);
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = "×";
+    b.setAttribute("aria-label", "Remove photo " + (i + 1));
+    b.addEventListener("click", function(){
+      E.photos.splice(i, 1); dessinerPhotos(); garder(); peindre();
+    });
+    d.appendChild(im); d.appendChild(b);
+    bac.insertBefore(d, bac.firstChild);
+  });
+  $(".ajout").hidden = E.photos.length >= MAX_PHOTOS;
+}
+
+$("#f-photo").addEventListener("change", function(ev){
+  var fs = Array.prototype.slice.call(ev.target.files).slice(0, MAX_PHOTOS - E.photos.length);
+  fs.forEach(function(f){
+    reduire(f, function(src){
+      if (!src) { return; }
+      E.photos.push({ src: src, legende: "" });
+      dessinerPhotos(); garder(); peindre();
+    });
+  });
+  ev.target.value = "";
+});
+
+/* ── La navigation ── */
+$$("[data-vers]").forEach(function(b){
+  b.addEventListener("click", function(){ aller(b.dataset.vers); });
+});
+$("#vers-palier").addEventListener("click", function(){ peindrePaliers(); aller("e-palier"); });
+/* ⛔ Une lettre OFFERTE n'a pas de caisse. La ligne d'avant disait
+   « aller(p.prix === 0 ? "e-paiement" : "e-paiement") » : les deux branches
+   etaient identiques, donc l'intention avait ete ecrite puis perdue, et le
+   palier gratuit, celui qui porte TOUTE la boucle virale, affichait « Envoie
+   exactement cette somme, au franc pres » au-dessus d'un numero Mobile Money,
+   pour zero franc. On garde UN seul ecran (le WhatsApp se demande dans les
+   deux cas) et c'est l'ecran qui change de nature. */
+function peindreReglement(){
+  var p = palierDe(E.palier);
+  /* ⚠️ Offerte veut dire ZERO FRANC, pas « palier gratuit » : avec la plume,
+     l'offre gratuite coute 500 F et passe par la caisse. */
+  var t = total(p);
+  var offert = t === 0;
+  $("#p-somme").textContent = fmt(t);
+  $("#bloc-reglement").hidden = offert;
+  $("#pay-titre").textContent = offert ? "Where to send your letter." : "Payment.";
+  $("#pay-sous").innerHTML = offert
+    ? "It's free. Just tell us where to send the link."
+    : "You'll pay on a secure page, then come back: <b>your letter is waiting, it's saved.</b>";
+  $("#btn-commander").textContent = offert ? "Get my letter" : ("Pay " + fmt(t));
+}
+
+$("#vers-paiement").addEventListener("click", function(){
+  peindreReglement();
+  aller("e-paiement");
+});
+$("#btn-rejouer").addEventListener("click", function(){
+  /* On rejoue le seuil : enveloppe fermee, cachet a briser. */
+  rejouerSeuil = true;
+  $("#apercu").srcdoc = htmlLettre();
+  rejouerSeuil = false;
+});
+$("#btn-oublier").addEventListener("click", function(){
+  oublier();
+  location.reload();
+});
+
+/* ── La commande. Le formulaire refuse de partir sans la reference : sans
+     elle, il faut arbitrer a la main, et la lettre attend. ── */
+$("#btn-commander").addEventListener("click", function(){
+  var p = PALIERS.filter(function(x){ return x.id === E.palier; })[0];
+  if (!E.wa.trim()) {
+    $("#f-wa").focus();
+    $("#f-wa").style.borderColor = "var(--cire-clair)";
+    return;
+  }
+  var blob = new Blob([htmlCommande()], { type: "text/html" });
+  $("#lien-apercu").href = URL.createObjectURL(blob);
+  /* On ne promet que ce que la lettre tient toute seule : le cachet ne se
+     brise pas avant l'heure. On ne promet PAS un envoi a l'heure dite, que
+     personne n'ecrit. Envoyer le lien, c'est lui. */
+  var q = E.quand
+    ? ("Send them the link whenever you like: the seal won't break before "
+       + E.quand + " at " + (E.quandH || "00:00") + ".")
+    : "Send them the link whenever you like: they can open it right away.";
+  $("#fini-quand").textContent = q;
+
+  var c = commande();
+  window.MALETTRE_COMMANDE = c;   /* lisible par le controle */
+  envoyer(c, p);
+});
+
+/* ── L'envoi. ────────────────────────────────────────────────────────────
+   ⛔ LE BROUILLON N'EST EFFACE QU'APRES UNE REPONSE HEUREUSE. C'est la lecon
+   de l'ecran 4, poussee jusqu'au bout : un acheteur qui perd son quart
+   d'heure ne recommence pas, et on ne saura meme pas que la vente a existe.
+   Un reseau qui tombe ne doit rien coute r de plus qu'un bouton a retoucher. */
+function envoyer(c, p){
+  var b = $("#btn-commander");
+  var libelle = b.textContent;
+  var rendre = function(mot){
+    b.disabled = false; b.textContent = libelle;
+    $("#envoi-mot").textContent = mot;
+    $("#envoi-mot").hidden = !mot;
+  };
+
+  if (!POINT) {
+    /* Dire pourquoi, plutot que d'afficher « Commande recue » pour une
+       commande que personne n'a recue. */
+    rendre("The shop isn't open yet. Keep this page: your letter is saved here.");
+    return;
+  }
+
+  b.disabled = true; b.textContent = "One moment…";
+  $("#envoi-mot").hidden = true;
+
+  fetch(POINT, {
+    method: "POST",
+    headers: entetes(),
+    body: JSON.stringify(c)
+  }).then(function(r){
+    return r.json().then(function(j){ return { code: r.status, j: j }; });
+  }).then(function(rep){
+    var j = rep.j || {};
+    if (!j.ok) {
+      rendre(j.erreur ? ("That didn't go through: " + j.erreur) : "That didn't go through. Try again in a moment.");
+      return;
+    }
+    /* ⚠️ UNE LETTRE PAYEE NE PART PAS DIRECTEMENT CHEZ L'ENCAISSEUR. Elle
+       passe par NOTRE page de paiement, qui montre ce qu'on achete, la somme,
+       et surtout LE LIEN EN CLAIR : a Cotonou on paie souvent depuis un autre
+       telephone, ou depuis celui qui porte le compte Mobile Money. Un bouton
+       qu'on ne peut pas copier oblige a recommencer la commande ailleurs.
+       ⛔ La somme et le nom de l'offre viennent de la CAISSE, pas d'ici. */
+    if (j.paiement) {
+      try {
+        localStorage.setItem("malettre:paiement", JSON.stringify({
+          jeton: j.jeton, paiement: j.paiement, adresse: j.adresse,
+          palier: j.palier || "", somme: fmt(j.prix), pour: c.pour, ouvre: c.ouvre
+        }));
+      } catch (e) {}
+      /* On ne l'oublie pas encore : tant qu'il n'a pas paye, son brouillon
+         doit l'attendre au retour. */
+      location.href = "paiement.html";
+      return;
+    }
+    /* Une lettre offerte est deja vivante : on rend son adresse. */
+    $("#lien-lettre").href = j.adresse;
+    $("#lien-lettre").textContent = j.adresse;
+    $("#bloc-adresse").hidden = false;
+    aller("e-fini");
+    oublier();
+  }).catch(function(){
+    rendre("No connection. Your letter is saved, try again in a moment.");
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Le demarrage
+   ══════════════════════════════════════════════════════════════════════ */
+peindreReglement();
+
+var repris = reprendre();
+
+/* La regle des photos, ecrite a partir du bareme (jamais recopiee). */
+$("#photos-regle").textContent = "(" + PALIERS.map(function(p){
+  return p.photos + " with " + (p.id === "gratuit" ? "the free offer" : p.nom);
+}).join(", ") + ")";
+
+/* ── L'adresse preremplit : la page d'accueil envoie ici le prenom tape par
+     le visiteur (« Ma lettre a… Afi »), et parfois l'occasion. Un brouillon
+     en cours n'est jamais ecrase : on ne prend le prenom que s'il est vide. ── */
+(function(){
+  var q = {};
+  try {
+    location.search.slice(1).split("&").forEach(function(x){
+      var i = x.indexOf("=");
+      if (i > 0) { q[decodeURIComponent(x.slice(0, i))] = decodeURIComponent(x.slice(i + 1).replace(/\+/g, " ")); }
+    });
+  } catch (e) { return; }
+  var pour = String(q.pour || "").replace(/[<>]/g, "").trim().slice(0, 30);
+  if (pour && !E.pour) { E.pour = pour; }
+  var occ = String(q.occasion || "");
+  if (occ && OCCASIONS.some(function(o){ return o.id === occ; }) && !repris) {
+    E.occasion = occ;
+    E.__aller = true;
+  }
+})();
+/* L'identifiant du brouillon : la plume compte ses versions par lui. */
+if (!/^[a-z0-9]{8,32}$/.test(E.id || "")) {
+  var A = "abcdefghijkmnpqrstuvwxyz23456789", t8 = new Uint8Array(16);
+  try { crypto.getRandomValues(t8); } catch (e) { for (var k = 0; k < 16; k++) { t8[k] = Math.floor(Math.random() * 256); } }
+  E.id = Array.prototype.map.call(t8, function(o){ return A[o % A.length]; }).join("");
+}
+Object.keys(CHAMPS).forEach(function(id){
+  var el = document.getElementById(id);
+  if (el && E[CHAMPS[id]]) { el.value = E[CHAMPS[id]]; }
+});
+$("#c-lettre").textContent = String((E.lettre || "").length);
+dessinerPhotos();
+$$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === E.occasion); });
+$$(".pal").forEach(function(x){ x.classList.toggle("on", x.dataset.id === E.palier); });
+$("#f-autre").value = E.fiche.autre;
+$("#f-souvenir").value = E.fiche.souvenir;
+$("#f-consignes").value = E.fiche.consignes;
+dessinerFiche();
+peindreMode();
+peindrePaliers();
+
+if (repris) {
+  $("#repris").hidden = false;
+  aller("e-lettre");
+} else if (E.__aller) {
+  /* Venu de la page d'accueil avec une occasion : on la pose comme un clic. */
+  delete E.__aller;
+  choisirOccasion(occasion(E.occasion));
+}
+
+/* Le gabarit est charge une fois, puis rempli a chaque frappe. */
+fetch("../lettre.html")
+  .then(function(r){ return r.text(); })
+  .then(function(t){ GABARIT = t; $("#apercu").srcdoc = htmlLettre(); })
+  .catch(function(){
+    $("#apercu").srcdoc =
+      "<p style='color:#f4ede0;font-family:sans-serif;padding:24px;line-height:1.6'>" +
+      "The preview needs a server. Run <code>python -m http.server</code> " +
+      "in the malettre/ folder.</p>";
+  });
+</script>
+</body>
+</html>
