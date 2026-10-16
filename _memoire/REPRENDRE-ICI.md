@@ -21,6 +21,27 @@
   vendre SANS la caisse (par WhatsApp) : il lui faut le feu vert pour publier le site, le compte qui
   encaisse les 25 000 F, et une sauvegarde de `faire-part/_couples/`. Puis la vague 5 (la pub) dès les MP3.
   Détail : `_memoire/conversations/2026-10-16-malettre-accueil.md`.
+- **REPRENDRE ICI, dans cet ordre** (arrêté le 2026-10-17 à la demande de Mongazi, qui teste une stratégie) :
+  1. **Le code secret de « Le Mot »** : le constructeur (`code: pal.id === "gratuit" ? "" : …`) et le serveur le
+     donnent à Le Mot, dont la description ne le promet pas. Le réserver à La Lettre et au Coffret : un droit
+     `code` dans les DEUX barèmes (`PALIERS` de `creer.html` et de `_shared/lettre.ts`), comparé par un contrôle,
+     comme `photos` et `habillage`. (Sinon La Lettre = Le Mot plus cher.)
+  2. **Le bouton « Retirer cette lettre »** dans le pied de `lettre.html` : la porte existe déjà
+     (`POST /l/<jeton>/retrait`, `malettre-lettre`), le bouton non. Avec confirmation ; repli WhatsApp
+     `22996740732`. Seulement sur une lettre servie à `/l/<jeton>` (pas sur les exemples ni l'aperçu).
+  3. **Le relais `/l/*` dans `_dist`** : un `_worker.js` (modèle `_proxy/_worker.js`) qui passe `/l/*` à
+     `https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-lettre` et sert le reste par
+     `env.ASSETS`. ⚠️ Vérifier que `_headers` s'applique encore en mode avancé, sinon reporter les en-têtes.
+  4. **Le ménage des lettres expirées** : `malettre_menage()` (`supabase/lettres.sql`) n'est appelé par rien.
+     Une tâche quotidienne GitHub Actions, comme PISTE.
+  5. `PAIEMENT.md` : les nombres de contrôles sont périmés (203 / 213 → 269 / 301, + accueil 239, faire-part 83).
+  6. Vérifier que les **critères d'arrêt au 1er décembre 2026** sont écrits (sinon les écrire).
+  7. Puis **la vague 5, les vidéos** (« demain », dit Mongazi) : les 6 MP3 ElevenLabs dans
+     `_partage/ma lettre/voix/`, les prises d'écran du vrai produit par Playwright, la composition Remotion
+     `malettre-pub` (30 s + 2 × 15 s, FR et EN), rendu à UN onglet.
+- **La mémoire du PC** (2026-10-17) : 0,6 Go libre sur 7,9. Ce ne sont pas mes restes : **27 processus de
+  ton Chrome (3,2 Go)** et MT5. Aucun Python, Node ni navigateur de contrôle ne traînait. Fermer des onglets
+  avant de lancer les rendus vidéo.
 
 ---
 
