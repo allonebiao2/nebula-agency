@@ -1205,6 +1205,111 @@ def main():
         finally:
             srv.shutdown()
 
+        # ───────────────────────────── 12 · le rendu pour tous (2026-10-16)
+        print("\n== Le rendu : l'enveloppe, le son, la vibration, le compte")
+        # L'ESPION : on compte les vibrations et les sons créés, sans les jouer.
+        ESPION = ("window.__vibre = []; window.__audio = 0;"
+                  "navigator.vibrate = function(p){ window.__vibre.push(p); return true; };"
+                  "(function(){ var AC = window.AudioContext; if (!AC) return;"
+                  " window.AudioContext = function(){ window.__audio++; return new AC(); };"
+                  " window.AudioContext.prototype = AC.prototype; })();")
+        poids = LETTRE.stat().st_size
+        dit("la lettre pese moins de 60 Ko (gabarit seul)", poids < 60 * 1024, "%d Ko" % (poids // 1024))
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.add_init_script(ESPION)
+        bugs = []
+        pg.on("pageerror", lambda e: bugs.append(str(e)))
+        pg.goto(page_avec(dict(BASE), "_qc_rendu.html").as_uri())
+        pg.wait_for_timeout(400)
+        dit("rendu : aucun son cree au chargement (une lettre ne parle pas toute seule)",
+            pg.evaluate("window.__audio") == 0)
+        dit("rendu : la carte dans l'enveloppe porte l'adresse",
+            pg.text_content("#c-pour-a").strip() == "Ma lettre à" and pg.text_content("#c-pour").strip() == "Zara")
+        dit("rendu : l'enveloppe est en 3D (preserve-3d), sans rien qui l'aplatisse",
+            pg.evaluate("""() => { const c = getComputedStyle(document.querySelector('.env3d'));
+                return c.transformStyle === 'preserve-3d' && c.opacity === '1' && c.filter === 'none' && c.overflow === 'visible'; }"""))
+        dit("rendu : le son est allume par defaut", pg.get_attribute("#son", "aria-pressed") == "true")
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(950)
+        dit("rendu : le toucher fait vibrer une fois", pg.evaluate("window.__vibre.length") == 1,
+            pg.evaluate("JSON.stringify(window.__vibre)"))
+        dit("rendu : le son nait DANS le geste", pg.evaluate("window.__audio") == 1)
+        dit("rendu : le rabat se leve (animation « leve »)",
+            pg.eval_on_selector(".rabat", "e => getComputedStyle(e).animationName") == "leve")
+        monte = pg.eval_on_selector(".env3d .carte", "e => new DOMMatrix(getComputedStyle(e).transform).m42")
+        dit("rendu : la carte sort de l'enveloppe", monte < -10, round(monte, 1))
+        pg.wait_for_timeout(700)
+        dit("rendu : puis la lettre s'ouvre", pg.eval_on_selector("#lettre", "e=>e.classList.contains('ouverte')"))
+        dit("rendu : aucune erreur JavaScript", not bugs, " | ".join(bugs[:2]))
+        pg.close()
+
+        # Le bouton du son : il coupe, et il s'en souvient.
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.add_init_script(ESPION)
+        f = page_avec(dict(BASE), "_qc_son.html")
+        pg.goto(f.as_uri())
+        pg.click("#son")
+        dit("son : le bouton coupe", pg.get_attribute("#son", "aria-pressed") == "false"
+            and pg.evaluate("localStorage.getItem('malettre:son')") == "0")
+        dit("son : son nom dit ce qu'il fera", pg.get_attribute("#son", "aria-label") == "Remettre le son")
+        dit("son : toucher le bouton n'ouvre pas la lettre",
+            not pg.eval_on_selector("#env", "e=>e.classList.contains('brise')"))
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(300)
+        dit("son coupe : aucun son, mais la vibration reste", pg.evaluate("window.__audio") == 0
+            and pg.evaluate("window.__vibre.length") == 1)
+        pg.goto(f.as_uri())
+        dit("son : le choix est garde sur cet appareil", pg.get_attribute("#son", "aria-pressed") == "false")
+        pg.close()
+
+        # Mouvement réduit : la lettre s'ouvre, rien ne vibre.
+        pg = nav.new_page(viewport={"width": 390, "height": 844}, reduced_motion="reduce")
+        pg.add_init_script(ESPION)
+        pg.goto(page_avec(dict(BASE), "_qc_son_doux.html").as_uri())
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(500)
+        dit("mouvement reduit : aucune vibration", pg.evaluate("window.__vibre.length") == 0)
+        dit("mouvement reduit : la lettre s'ouvre tout de suite",
+            pg.eval_on_selector("#lettre", "e=>e.classList.contains('ouverte')"))
+        pg.close()
+
+        # Le grand compte à rebours.
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        d, tard = dans(2 * 86400 + 3 * 3600 + 120)
+        pg.goto(page_avec(dict(BASE, ouvre=tard), "_qc_compte.html").as_uri())
+        pg.wait_for_timeout(400)
+        dit("compte : il montre les jours", pg.text_content("#d-j b").strip() == "2"
+            and pg.text_content("#d-j i").strip() == "jours" and pg.is_visible("#d-j"))
+        dit("compte : heures et minutes sur deux chiffres", pg.text_content("#d-h").strip() == "03"
+            and len(pg.text_content("#d-m").strip()) == 2, (pg.text_content("#d-h"), pg.text_content("#d-m")))
+        s1 = pg.text_content("#d-s")
+        pg.wait_for_timeout(1300)
+        dit("compte : les secondes descendent", pg.text_content("#d-s") != s1)
+        # Le bouton du son ne couvre aucun texte du seuil, même en 320.
+        for larg in (390, 320):
+            pg.set_viewport_size({"width": larg, "height": 640})
+            pg.wait_for_timeout(150)
+            chevauche = pg.evaluate("""() => { const b = document.getElementById('son').getBoundingClientRect();
+                return ['.pour', '#s-touche', '#att-quand', '#decompte', '#env'].filter(sel => {
+                  const r = document.querySelector(sel).getBoundingClientRect();
+                  return r.width && !(r.right <= b.left || r.left >= b.right || r.bottom <= b.top || r.top >= b.bottom); }); }""")
+            dit("son : le bouton ne couvre aucun texte du seuil (%d px)" % larg, not chevauche, chevauche)
+        pg.close()
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        d, tard = dans(95)
+        pg.goto(page_avec(dict(BASE, ouvre=tard, langue="en"), "_qc_compte_en.html").as_uri())
+        pg.wait_for_timeout(400)
+        dit("compte : sous un jour, les jours s'effacent", not pg.is_visible("#d-j"))
+        dit("compte en anglais : le bouton du son parle anglais", pg.get_attribute("#son", "aria-label") == "Mute the sound")
+        pg.close()
+        d, tard = dans(3 * 86400)
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(page_avec(dict(BASE, ouvre=tard, langue="en"), "_qc_compte_en2.html").as_uri())
+        pg.wait_for_timeout(400)
+        dit("compte en anglais : « days »", pg.text_content("#d-j i").strip() == "days")
+        pg.close()
+
         nav.close()
 
     print("\n%d controles verts, %d en echec" % (len(verts), len(rouges)))

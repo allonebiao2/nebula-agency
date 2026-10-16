@@ -280,7 +280,9 @@ def navigateur(base):
         print("\n· les lettres d'exemple anglaises, rendues")
         ctx = nav.new_context(viewport={"width": 390, "height": 844}, is_mobile=True)
         pg = ctx.new_page()
-        for ex, ouvrir in (("afi", False), ("papa", True)):
+        # ⚠️ « papa » est lu AVANT puis APRÈS l'ouverture : lu seulement après,
+        # le seuil (déjà effacé) cachait « Une lettre t'attend. » resté en français.
+        for ex, ouvrir in (("afi", False), ("papa", False), ("papa", True)):
             pg.goto(base + "en/exemples/%s.html" % ex)
             if ouvrir:
                 pg.click("#btn-ouvrir")

@@ -84,15 +84,71 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .pour b{color:var(--or-doux);font-weight:600}
 
 .enveloppe{
-  position:relative;width:min(78vw,340px);aspect-ratio:1.62;
-  background:linear-gradient(168deg,var(--papier) 0%,var(--papier-2) 100%);
-  border-radius:6px;box-shadow:0 30px 70px rgba(0,0,0,.55),0 2px 0 rgba(255,255,255,.35) inset;
+  position:relative;width:min(78vw,340px);aspect-ratio:1.62;perspective:1000px;cursor:pointer;
 }
-/* Le rabat est DESSINE, pas bricole en pseudo-element : un triangle tourne a
-   45 deg rendait deux coins sombres en bas au lieu d'un V depuis le haut. */
-.rabat{position:absolute;inset:0;width:100%;height:100%;border-radius:6px}
+/* L'ombre vit sur l'enveloppe, pas sur la poche : un clip-path coupe l'ombre
+   de l'élément qu'il découpe. */
+.enveloppe::before{content:"";position:absolute;inset:4% 3% 0;border-radius:6px;
+  box-shadow:0 30px 70px rgba(0,0,0,.55);transition:opacity .5s .7s}
+/* L'ENVELOPPE EN VRAIE 3D (2026-10-16) : un dos, la carte, la poche devant, le
+   rabat en haut. On touche le cachet : il casse, le rabat se lève, la carte
+   sort. ⚠️ preserve-3d : ni opacity, ni overflow, ni filter sur .env3d (ils
+   l'aplatissent) ; on les pose sur les faces. */
+.env3d{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(6deg);
+  transition:transform .9s var(--t)}
+.env3d .dos{position:absolute;inset:0;border-radius:6px;transform:translateZ(0);
+  background:linear-gradient(170deg,#e9dcc4,#d9c7a6)}
+.env3d .carte{position:absolute;left:7%;right:7%;top:9%;height:84%;border-radius:3px;transform:translateZ(1px);
+  background:linear-gradient(180deg,#fbf7ef,var(--papier) 70%,var(--papier-2));color:var(--encre);
+  box-shadow:0 1px 4px rgba(36,29,43,.18);display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-start;padding-top:9%;transition:transform .62s cubic-bezier(.3,.9,.3,1)}
+.env3d .carte .c1{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-size:clamp(13px,3.6vw,16px)}
+.env3d .carte .c2{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-style:italic;
+  font-size:clamp(22px,6.4vw,30px);color:var(--cire);line-height:1.1}
+.env3d .poche{position:absolute;inset:0;border-radius:6px;transform:translateZ(3px);
+  background:linear-gradient(168deg,var(--papier) 0%,var(--papier-2) 100%);
+  clip-path:polygon(0 0,50% 54%,100% 0,100% 100%,0 100%)}
+.env3d .couture{position:absolute;inset:0;transform:translateZ(3.5px);pointer-events:none;
+  background:
+    linear-gradient(to top right,transparent calc(50% - .6px),rgba(36,29,43,.13) 50%,transparent calc(50% + .6px)) left bottom/50% 46% no-repeat,
+    linear-gradient(to top left,transparent calc(50% - .6px),rgba(36,29,43,.13) 50%,transparent calc(50% + .6px)) right bottom/50% 46% no-repeat}
+/* Le rabat est DESSINE (deux faces), pas bricolé en pseudo-élément : un
+   triangle tourné à 45 deg rendait deux coins sombres au lieu d'un V. */
+.rabat{position:absolute;left:0;right:0;top:0;height:56%;transform-origin:50% 0;transform-style:preserve-3d;
+  transform:translateZ(4px) rotateX(0deg)}
+.rabat i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  clip-path:polygon(0 0,100% 0,50% 100%)}
+.rabat .dehors{background:linear-gradient(180deg,#f1e7d5,#e4d5bb)}
+.rabat .dedans{background:linear-gradient(0deg,#dccbad,#cbb895);transform:rotateX(180deg)}
+/* ⚠️ Passé 90 deg, le rabat doit glisser DERRIÈRE la carte : sinon la carte qui
+   sort passe sous le rabat ouvert. Il recule donc à mi-course. */
+@keyframes leve{
+  0%{transform:translateZ(4px) rotateX(0deg)}
+  49%{transform:translateZ(4px) rotateX(88deg)}
+  51%{transform:translateZ(-2px) rotateX(92deg)}
+  100%{transform:translateZ(-2px) rotateX(178deg)}
+}
+.brise .rabat{animation:leve .62s cubic-bezier(.6,0,.3,1) .12s both}
+.brise .env3d .carte{transform:translateZ(1px) translateY(-58%);transition-delay:.5s}
+.brise .env3d{transform:rotateX(0deg) translateY(14%)}
+.brise::before{opacity:.35}
+/* Le cachet casse le long de sa fêlure : deux moitiés, qui tombent. */
+.fendu{position:absolute;left:50%;top:56%;width:clamp(64px,17vw,84px);aspect-ratio:1;
+  transform:translate(-50%,-50%) translateZ(6px);pointer-events:none;opacity:0;z-index:4}
+.fendu i{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,#6d1f27 100%);
+  box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.fendu .g{clip-path:polygon(0 0,52% 0,46% 22%,55% 40%,44% 58%,54% 76%,47% 100%,0 100%)}
+.fendu .d{clip-path:polygon(52% 0,100% 0,100% 100%,47% 100%,54% 76%,44% 58%,55% 40%,46% 22%)}
+.brise .fendu{opacity:1;transition:opacity .01s}
+/* Le cachet est brisé : la phrase et le bouton n'ont plus rien à dire. */
+.enveloppe.brise ~ .touche,.enveloppe.brise ~ .ouvrir{opacity:0;transition:opacity .25s;pointer-events:none}
+.brise .fendu .g{transform:translate(-62%,38%) rotate(-34deg);opacity:0;
+  transition:transform .55s cubic-bezier(.3,.6,.4,1),opacity .3s .3s}
+.brise .fendu .d{transform:translate(62%,44%) rotate(30deg);opacity:0;
+  transition:transform .55s cubic-bezier(.3,.6,.4,1),opacity .3s .3s}
 .cachet{
-  position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
+  position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);
   width:clamp(64px,17vw,84px);aspect-ratio:1;border-radius:50%;
   display:grid;place-items:center;z-index:3;
   background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,#6d1f27 100%);
@@ -105,11 +161,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   border:1px dashed rgba(244,237,224,.42);
 }
 @keyframes respire{
-  0%,100%{transform:translate(-50%,-50%) scale(1)}
-  50%{transform:translate(-50%,-50%) scale(1.045)}
+  0%,100%{transform:translate(-50%,-50%) translateZ(6px) scale(1)}
+  50%{transform:translate(-50%,-50%) translateZ(6px) scale(1.045)}
 }
+.cachet{transform:translate(-50%,-50%) translateZ(6px)}
 /* Les trois eclats de cire, au brisement. */
-.eclat{position:absolute;left:50%;top:52%;width:clamp(30px,8vw,40px);aspect-ratio:1;
+.eclat{position:absolute;left:50%;top:56%;width:clamp(30px,8vw,40px);aspect-ratio:1;
   background:radial-gradient(circle at 40% 34%,var(--cire-clair),var(--cire) 70%);
   border-radius:46% 54% 38% 62%;opacity:0;pointer-events:none;z-index:4}
 .brise .cachet{animation:none;opacity:0;transition:opacity .18s}
@@ -145,6 +202,26 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .att-quand b{color:var(--or-doux);font-weight:600;white-space:nowrap}
 .att-reste{font-size:clamp(12px,3.2vw,13px);color:var(--gris-nuit);letter-spacing:.08em;
   font-variant-numeric:tabular-nums}
+/* LE GRAND COMPTE À REBOURS (2026-10-16) : le seuil d'une lettre programmée
+   ne montre que lui pendant des heures, il mérite d'être beau. Il double la
+   phrase, qui reste pour les lecteurs d'écran et pour les petits restes. */
+.decompte{display:flex;gap:clamp(10px,3.4vw,18px);justify-content:center;margin-top:4px}
+.decompte span{display:flex;flex-direction:column;align-items:center;min-width:clamp(46px,13vw,62px)}
+.decompte b{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:400;
+  font-size:clamp(30px,9vw,44px);line-height:1;color:var(--papier);font-variant-numeric:tabular-nums}
+.decompte i{font-style:normal;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris-nuit);margin-top:6px}
+.decompte span.zero{display:none}
+/* Le grand compte dit déjà tout : la petite phrase reste dans la page (elle
+   est lue par les contrôles), hors de la vue. */
+.decompte + .att-reste{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Le son : un seul bouton, au coin du seuil, jamais sur du texte. */
+.son{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;color:var(--gris-nuit);border:1px solid rgba(244,237,224,.16)}
+.son:hover{color:var(--papier)}
+.son svg{width:20px;height:20px}
+.son .barre-son{display:none}
+.son[aria-pressed="false"] .barre-son{display:inline}
+.son[aria-pressed="false"] .onde{display:none}
 .cachet{transition:filter 1.1s var(--t)}
 .verrouille .cachet{animation:none;filter:saturate(.5) brightness(.62)}
 .verrouille .enveloppe{box-shadow:0 22px 52px rgba(0,0,0,.5)}
@@ -294,16 +371,22 @@ main.ouverte{opacity:1}
 <div id="seuil">
   <p class="pour">Ma lettre à <b id="s-pour">toi</b></p>
 
-  <div class="enveloppe" id="env">
-    <svg class="rabat" viewBox="0 0 324 200" preserveAspectRatio="none" aria-hidden="true">
-      <!-- les deux coutures laterales, qui donnent l'epaisseur -->
-      <path d="M0,14 L162,132 L0,200 Z" fill="#e6dac4" opacity=".55"/>
-      <path d="M324,14 L162,132 L324,200 Z" fill="#e6dac4" opacity=".55"/>
-      <!-- le rabat, en V depuis le haut -->
-      <path d="M0,6 L324,6 L162,140 Z" fill="#efe5d2"/>
-      <path d="M0,6 L324,6 L162,140 Z" fill="none" stroke="#241d2b" stroke-opacity=".13"/>
+  <button class="son" id="son" type="button" aria-pressed="true" aria-label="Couper le son">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9h3l5-4v14l-5-4H4z"/><path class="onde" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/><path class="barre-son" d="M16 9l5 6M21 9l-5 6"/>
     </svg>
+  </button>
+
+  <div class="enveloppe" id="env">
+    <div class="env3d" aria-hidden="true">
+      <div class="dos"></div>
+      <div class="carte"><span class="c1" id="c-pour-a">Ma lettre à</span><span class="c2" id="c-pour">toi</span></div>
+      <div class="poche"></div>
+      <div class="couture"></div>
+      <div class="rabat"><i class="dehors"></i><i class="dedans"></i></div>
+    </div>
     <span class="eclat e1"></span><span class="eclat e2"></span><span class="eclat e3"></span>
+    <div class="fendu" aria-hidden="true"><i class="g"></i><i class="d"></i></div>
     <div class="cachet serif" aria-hidden="true"><span id="s-init">M</span></div>
   </div>
 
@@ -313,6 +396,10 @@ main.ouverte{opacity:1}
        compte a rebours, non : une annonce par seconde serait une torture. -->
   <div id="attente">
     <p class="att-quand" id="att-quand"></p>
+    <div class="decompte" id="decompte" aria-hidden="true">
+      <span id="d-j"><b>00</b><i>jours</i></span><span><b id="d-h">00</b><i>h</i></span>
+      <span><b id="d-m">00</b><i>min</i></span><span><b id="d-s">00</b><i>s</i></span>
+    </div>
     <p class="att-reste" id="att-reste" aria-hidden="true"></p>
   </div>
 
@@ -410,7 +497,8 @@ var L = EN ? {
   faux: "That's not the right code. Ask for it again.", chiffre: "Digit ",
   photo: "Keepsake photo", jour: "day together", jours: "days together",
   formule: "With all my heart,", pied: "Write yours: Ma lettre à…",
-  note: "A letter, an envelope, a seal. In five minutes."
+  note: "A letter, an envelope, a seal. In five minutes.",
+  jours_c: "days", jour_c: "day", couper: "Mute the sound", remettre: "Turn the sound on"
 } : {
   pour: "Ma lettre à ", toi: "toi", attend: "Une lettre t'attend.", heure: "C'est l'heure.",
   ouvre: "Elle s'ouvre ", briser: "Briser le cachet", demande: "Entre le code qu'on t'a donné.",
@@ -418,12 +506,16 @@ var L = EN ? {
   faux: "Ce n'est pas le bon code. Redemande-le.", chiffre: "Chiffre ",
   photo: "Photo souvenir", jour: "jour ensemble", jours: "jours ensemble",
   formule: "Avec tout mon cœur,", pied: "Écris la tienne : Ma lettre à…",
-  note: "Une lettre, une enveloppe, un cachet. En cinq minutes."
+  note: "Une lettre, une enveloppe, un cachet. En cinq minutes.",
+  jours_c: "jours", jour_c: "jour", couper: "Couper le son", remettre: "Remettre le son"
 };
 if (EN) {
   document.documentElement.lang = "en";
   $(".pour").firstChild.nodeValue = L.pour;
   $("#btn-ouvrir").textContent = L.briser;
+  /* ⚠️ Le seuil d'une lettre PRÊTE à s'ouvrir gardait « Une lettre t'attend. »
+     en français : seul le seuil d'une lettre programmée était traduit. */
+  $("#s-touche").textContent = L.attend;
   document.querySelectorAll("#code .aide")[0].textContent = L.aide;
   Array.prototype.forEach.call(document.querySelectorAll("#cases input"), function(c, i){
     c.setAttribute("aria-label", L.chiffre + (i + 1));
@@ -437,6 +529,9 @@ if (EN) {
 function txt(el, v){ el.textContent = v == null ? "" : String(v); }
 
 txt($("#s-pour"), D.pour || L.toi);
+/* La carte dans l'enveloppe porte la même adresse que le seuil. */
+txt($("#c-pour-a"), L.pour.trim());
+txt($("#c-pour"), D.pour || L.toi);
 txt($("#s-init"), (D.de || "M").trim().charAt(0).toUpperCase() || "M");
 txt($("#l-occasion"), D.occasion || "");
 txt($("#l-titre"), D.titre || "");
@@ -584,10 +679,19 @@ function ouvrable(){
   txt($("#s-touche"), L.heure);
 }
 
+var deux = function(n){ return ("0" + n).slice(-2); };
 function tic(){
   var reste = OUVRE - Date.now();
   if (reste <= 0) { ouvrable(); return; }
   txt($("#att-reste"), libReste(reste));
+  /* Le grand compte : les jours s'effacent quand il n'y en a plus. */
+  var sec = Math.max(0, Math.ceil(reste / 1000)), j = Math.floor(sec / 86400);
+  $("#d-j").classList.toggle("zero", j === 0);
+  $("#d-j b").textContent = String(j);
+  $("#d-j i").textContent = j > 1 ? L.jours_c : L.jour_c;
+  $("#d-h").textContent = deux(Math.floor(sec % 86400 / 3600));
+  $("#d-m").textContent = deux(Math.floor(sec % 3600 / 60));
+  $("#d-s").textContent = deux(sec % 60);
 }
 
 if (verrouille()) {
@@ -610,6 +714,71 @@ if (verrouille()) {
   });
 }
 
+/* ── LE SON (2026-10-16) : synthétisé, aucun fichier, aucun réseau.
+   ⛔ Il ne naît QUE dans le geste qui brise le cachet (un navigateur refuse le
+   son sans geste, et une lettre ne parle pas toute seule dans un taxi).
+   Base maison : un tampon silencieux pour iOS, un compresseur, un gain plus
+   fort au téléphone. Discret par défaut, un bouton le coupe, et le choix est
+   gardé sur cet appareil. ── */
+var SON = { on: true, ctx: null, sortie: null };
+try { SON.on = localStorage.getItem("malettre:son") !== "0"; } catch (e) {}
+function peindreSon(){
+  $("#son").setAttribute("aria-pressed", SON.on ? "true" : "false");
+  $("#son").setAttribute("aria-label", SON.on ? L.couper : L.remettre);
+}
+peindreSon();
+$("#son").addEventListener("click", function(ev){
+  ev.stopPropagation();
+  SON.on = !SON.on;
+  try { localStorage.setItem("malettre:son", SON.on ? "1" : "0"); } catch (e) {}
+  peindreSon();
+});
+function audio(){
+  if (!SON.on) { return null; }
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) { return null; }
+  try {
+    if (!SON.ctx) {
+      SON.ctx = new AC();
+      var vide = SON.ctx.createBufferSource();
+      vide.buffer = SON.ctx.createBuffer(1, 1, 22050);
+      vide.connect(SON.ctx.destination); vide.start(0);
+      var comp = SON.ctx.createDynamicsCompressor(), gain = SON.ctx.createGain();
+      gain.gain.value = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? .55 : .35;
+      comp.connect(gain); gain.connect(SON.ctx.destination);
+      SON.sortie = comp;
+    }
+    if (SON.ctx.state === "suspended") { SON.ctx.resume(); }
+    return SON.ctx;
+  } catch (e) { return null; }
+}
+function bruit(ctx, duree){
+  var n = Math.floor(ctx.sampleRate * duree), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
+  for (var i = 0; i < n; i++) { d[i] = Math.random() * 2 - 1; }
+  var src = ctx.createBufferSource(); src.buffer = b; return src;
+}
+/* La cire qui casse : un claquement bref, et un sourd qui tombe. Puis le
+   papier qui glisse hors de l'enveloppe, une demi-seconde plus tard. */
+function sonOuverture(){
+  var ctx = audio();
+  if (!ctx) { return; }
+  var t = ctx.currentTime;
+  var c = bruit(ctx, .08), f = ctx.createBiquadFilter(), g = ctx.createGain();
+  f.type = "bandpass"; f.frequency.value = 2300; f.Q.value = .8;
+  g.gain.setValueAtTime(.8, t); g.gain.exponentialRampToValueAtTime(.001, t + .08);
+  c.connect(f); f.connect(g); g.connect(SON.sortie); c.start(t);
+  var o = ctx.createOscillator(), g2 = ctx.createGain();
+  o.type = "sine"; o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(52, t + .16);
+  g2.gain.setValueAtTime(.45, t); g2.gain.exponentialRampToValueAtTime(.001, t + .18);
+  o.connect(g2); g2.connect(SON.sortie); o.start(t); o.stop(t + .2);
+  var p = bruit(ctx, .75), f2 = ctx.createBiquadFilter(), g3 = ctx.createGain(), t2 = t + .5;
+  f2.type = "bandpass"; f2.Q.value = 1.4;
+  f2.frequency.setValueAtTime(700, t2); f2.frequency.exponentialRampToValueAtTime(2600, t2 + .7);
+  g3.gain.setValueAtTime(.001, t2); g3.gain.exponentialRampToValueAtTime(.22, t2 + .12);
+  g3.gain.exponentialRampToValueAtTime(.001, t2 + .72);
+  p.connect(f2); f2.connect(g3); g3.connect(SON.sortie); p.start(t2);
+}
+
 /* ── L'ouverture. ── */
 var ouvert = false;
 function ouvrir(){
@@ -617,7 +786,13 @@ function ouvrir(){
   ouvert = true;
   var env = $("#env");
   env.classList.add("brise");
-  var attendre = doux ? 0 : 620;
+  /* La main sent la cire céder (Android ; ailleurs, l'appel ne fait rien).
+     Jamais en mouvement réduit : c'est aussi un mouvement. */
+  if (!doux && navigator.vibrate) { try { navigator.vibrate([16, 40, 24]); } catch (e) {} }
+  sonOuverture();
+  /* ⚠️ 1 150 ms : le cachet casse, le rabat se lève, la carte sort, puis la
+     lettre se déplie. Les contrôles attendent 1 400 ms : ne pas allonger. */
+  var attendre = doux ? 0 : 1150;
   setTimeout(function(){
     $("#seuil").classList.add("parti");
     var m = $("#lettre");
