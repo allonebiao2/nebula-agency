@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="referrer" content="no-referrer">
-<title>Une lettre pour toi</title>
+<title>Ma lettre à toi</title>
 <!--
-  LE PLI · le gabarit de la lettre.
+  MA LETTRE À… · le gabarit de la lettre.
 
   La phrase qui tient tout : une lettre digitale, c'est une ENVELOPPE CACHETEE
   qu'on ouvre a l'heure dite. Le sceau, le pli, l'encre qui seche. Chaque
@@ -25,7 +25,7 @@
   - prefers-reduced-motion honore partout ;
   - noindex : une lettre est privee, elle n'a rien a faire dans un moteur.
 
-  Les donnees sont injectees a la place de LEPLI_DONNEES par le constructeur
+  Les donnees sont injectees a la place de MALETTRE_DONNEES par le constructeur
   (creer.html) ou par le serveur. Le gabarit ne va JAMAIS chercher un fichier :
   photos et sons sont des donnees, ou ne sont pas.
 -->
@@ -165,7 +165,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .aide{font-size:13px;color:var(--gris-nuit);max-width:30ch}
 
 /* ══════════════════════════════════════════════════════════════════
-   2 · LE PLI · la lettre sort et se deplie
+   2 · le pli de la feuille · la lettre sort et se deplie
    Signature : LE DEPLIAGE, en trois volets.
    ══════════════════════════════════════════════════════════════════ */
 main{opacity:0;transition:opacity .5s .25s}
@@ -292,7 +292,7 @@ main.ouverte{opacity:1}
 
 <!-- 1 · LE SEUIL -->
 <div id="seuil">
-  <p class="pour">Pour <b id="s-pour">toi</b></p>
+  <p class="pour">Ma lettre à <b id="s-pour">toi</b></p>
 
   <div class="enveloppe" id="env">
     <svg class="rabat" viewBox="0 0 324 200" preserveAspectRatio="none" aria-hidden="true">
@@ -363,7 +363,7 @@ main.ouverte{opacity:1}
   <footer class="pied" id="l-pied">
     <a id="pied-lien" href="#" rel="noopener">
       <span class="sceau" aria-hidden="true"></span>
-      Fais la tienne sur LE PLI
+      Écris la tienne : Ma lettre à…
     </a>
     <p class="note">Une lettre, une enveloppe, un cachet. En cinq minutes.</p>
   </footer>
@@ -373,7 +373,7 @@ main.ouverte{opacity:1}
 "use strict";
 /* Les donnees de CETTE lettre. Le constructeur remplace la ligne entiere.
    Rien n'est charge depuis le reseau : une lettre doit s'ouvrir dans un taxi. */
-var D = /*LEPLI_DONNEES*/{
+var D = /*MALETTRE_DONNEES*/{
   occasion:"Anniversaire",
   pour:"Zara",
   de:"Robert",
@@ -389,8 +389,8 @@ var D = /*LEPLI_DONNEES*/{
   ouvre:"",
   formule:"Avec tout mon cœur,",
   pied:true,
-  lien:"https://lepli.nebula-agency.online"
-}/*FIN_LEPLI_DONNEES*/;
+  lien:"https://malettre.nebula-agency.online"
+}/*FIN_MALETTRE_DONNEES*/;
 
 var $ = function(s){ return document.querySelector(s); };
 var doux = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -407,7 +407,7 @@ txt($("#l-de-nom"), D.de || "");
    tout mon cœur ». Une lettre d'avant la plume n'en porte pas : on garde
    alors celle de toujours. */
 txt($("#l-formule"), D.formule || "Avec tout mon cœur,");
-document.title = "Une lettre pour " + (D.pour || "toi");
+document.title = "Ma lettre à " + (D.pour || "toi");
 
 var corps = $("#l-corps");
 (D.lettre || []).forEach(function(ligne, i){
@@ -459,7 +459,7 @@ if (jours > 0) {
 }
 
 if (!D.pied) { $("#l-pied").hidden = true; }
-else { $("#pied-lien").href = D.lien || "https://lepli.nebula-agency.online"; }
+else { $("#pied-lien").href = D.lien || "https://malettre.nebula-agency.online"; }
 
 /* ── Les chiffres qui roulent, une fois la lettre ouverte. ── */
 function rouler(){

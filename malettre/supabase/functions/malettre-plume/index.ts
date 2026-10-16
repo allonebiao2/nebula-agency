@@ -3,11 +3,11 @@ import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { LIMITES, empreinte, lireFiche, lireReponse, requete } from '../_shared/plume.ts'
 
 /*
-  LE PLI · la plume. Elle reçoit une fiche, elle rend une lettre.
+  MA LETTRE À… · la plume. Elle reçoit une fiche, elle rend une lettre.
 
   ⚠️ CE FICHIER EST LA SOURCE. Il tourne sur Supabase, mais il vit ICI.
       supabase secrets set ANTHROPIC_API_KEY=…
-      supabase functions deploy lepli-plume
+      supabase functions deploy malettre-plume
 
   ⛔ TOUT CE QUI DÉCIDE VIT DANS `_shared/plume.ts` (ce qu'on accepte, ce qu'on
     demande, ce qu'on refuse de rendre), essayé sous Node sans clé ni réseau.
@@ -56,7 +56,7 @@ Deno.serve(async (req: Request) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   )
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'inconnue'
-  const { data: version, error: eC } = await db.rpc('lepli_plume_permis', {
+  const { data: version, error: eC } = await db.rpc('malettre_plume_permis', {
     p_ip: await empreinte(ip),
     p_brouillon: fiche.brouillon,
     p_max_ip: LIMITES.ip,

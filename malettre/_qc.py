@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""LE PLI · les controles du gabarit de la lettre.
+"""MA LETTRE À… · les controles du gabarit de la lettre.
 
 Ce qu'une suite verte doit prouver ici, et que l'oeil ne voit pas :
 le seuil tient vraiment, le texte d'un acheteur ne peut pas injecter de HTML,
 la page ne va chercher AUCUN fichier sur le reseau, et une lettre reste
 lisible pour qui a coupe les animations.
 
-    python lepli/_qc.py
+    python malettre/_qc.py
 """
 import datetime
 import json
@@ -28,7 +28,7 @@ BASE = {
     "titre": "Joyeux anniversaire", "code": "",
     "lettre": ["Premiere ligne.", "Deuxieme ligne.", "Troisieme ligne."],
     "photos": [], "depuis": "", "pied": True,
-    "lien": "https://lepli.nebula-agency.online",
+    "lien": "https://malettre.nebula-agency.online",
 }
 
 verts, rouges = [], []
@@ -78,7 +78,7 @@ def attendre(fn, limite=6000, pas=100):
 
 
 def servir(dossier):
-    """Un petit serveur MULTITACHE sur le dossier lepli/.
+    """Un petit serveur MULTITACHE sur le dossier malettre/.
 
     ⚠️ ThreadingHTTPServer, jamais HTTPServer : mono-tache, il se bloque des
     que la page demande un second fichier, et le controle echoue sur un
@@ -122,7 +122,7 @@ def main():
         src_f = (ICI / f).read_text(encoding="utf-8")
         dit("%s : aucun tiret cadratin" % f, "\u2014" not in src_f)
     dit("le marqueur de donnees est unique",
-        src.count("/*LEPLI_DONNEES*/") == 1 and src.count("/*FIN_LEPLI_DONNEES*/") == 1)
+        src.count("/*MALETTRE_DONNEES*/") == 1 and src.count("/*FIN_MALETTRE_DONNEES*/") == 1)
     # ⛔ UNE SEULE ECHELLE DE PRIX. Les occasions en portaient une deuxieme,
     # affichee « des 10 000 F » et appliquee nulle part : on choisissait
     # « Demande en mariage · des 10 000 F », puis le palier gratuit, et on
@@ -606,7 +606,7 @@ def main():
             pg.fill("#f-code", "")
 
             # ⛔ LE TROU DE L'ECRAN 4 : il quitte la page pour payer.
-            garde = pg.evaluate("localStorage.getItem('lepli:brouillon')")
+            garde = pg.evaluate("localStorage.getItem('malettre:brouillon')")
             dit("le brouillon est ecrit a la frappe", bool(garde) and "Zara" in garde)
 
             pg.goto("about:blank")
@@ -660,28 +660,29 @@ def main():
                                                "paiement": "https://paiement.invalid/session/42",
                                                "palier": "La Lettre", "prix": 5000}))
 
-            pg.route("**/lepli-commande", caisse)
+            pg.route("**/malettre-commande", caisse)
 
             # ⛔ Le brouillon ne doit PAS partir tant que la reponse n'est pas
             # heureuse : un acheteur qui perd son quart d'heure ne recommence
             # pas. On coupe d'abord la caisse pour le prouver.
-            pg.route("**/lepli-commande", lambda r, q: r.abort())
+            pg.route("**/malettre-commande", lambda r, q: r.abort())
             pg.fill("#f-wa", "0197085576")
             pg.click("#btn-commander")
             attendre(lambda: not pg.eval_on_selector("#envoi-mot", "e=>e.hidden"))
             dit("reseau coupe : on le DIT a l'acheteur",
                 "réseau" in pg.inner_text("#envoi-mot").lower())
             dit("reseau coupe : le brouillon est GARDE",
-                pg.evaluate("localStorage.getItem('lepli:brouillon')") is not None)
+                pg.evaluate("localStorage.getItem('malettre:brouillon')") is not None)
             dit("reseau coupe : on ne montre pas « commande recue »",
                 not pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')"))
             dit("reseau coupe : le bouton redevient cliquable",
                 pg.eval_on_selector("#btn-commander", "e=>!e.disabled"))
 
-            pg.unroute("**/lepli-commande")
-            pg.route("**/lepli-commande", caisse)
+            pg.unroute("**/malettre-commande")
+            pg.route("**/malettre-commande", caisse)
             pg.click("#btn-commander")
-            attendre(lambda: len(envois) > 0)
+            # ⚠️ 15 s : le PC de Cotonou, a court de memoire, a deja mis plus de 6 s.
+            attendre(lambda: len(envois) > 0, 15000)
             dit("la commande part vers la caisse", len(envois) == 1)
 
             cmd = envois[0] if envois else {}
@@ -744,14 +745,14 @@ def main():
             # ⚠️ TEMOIN : le brouillon reste tant qu'il n'a pas paye, et la page
             # de paiement est sur NOTRE origine, donc on le lit d'ici.
             dit("il part payer, et son brouillon l'attend",
-                pg.evaluate("localStorage.getItem('lepli:brouillon')") is not None)
+                pg.evaluate("localStorage.getItem('malettre:brouillon')") is not None)
 
             deb = pg.evaluate(
                 "document.documentElement.scrollWidth - document.documentElement.clientWidth")
             dit("page de paiement 1280 px : aucun debordement", deb <= 0, "%d px" % deb)
 
             # Ouverte a la main, sans commande : elle le dit, elle ne ment pas.
-            pg.evaluate("localStorage.removeItem('lepli:paiement')")
+            pg.evaluate("localStorage.removeItem('malettre:paiement')")
             pg.goto(base.replace("creer.html", "paiement.html"))
             pg.wait_for_timeout(300)
             dit("sans commande, la page de paiement le DIT",
@@ -766,11 +767,11 @@ def main():
             pg.click('.occ[data-id="anniv"]')
             pg.click("#vers-palier")
             pg.click('.pal[data-id="gratuit"]')
-            dit("palier gratuit : le pied LE PLI reste",
+            dit("palier gratuit : la signature en pied reste",
                 attendre(lambda: not pg.frame_locator("#apercu")
                          .locator("#l-pied").evaluate("e=>e.hidden")))
             pg.click('.pal[data-id="coffret"]')
-            dit("palier paye : le pied LE PLI disparait",
+            dit("palier paye : la signature en pied disparait",
                 attendre(lambda: pg.frame_locator("#apercu")
                          .locator("#l-pied").evaluate("e=>e.hidden")))
 
@@ -789,7 +790,7 @@ def main():
                 "payé" not in pg.inner_text("#btn-commander"))
             dit("offert : on demande quand meme ou envoyer le lien",
                 pg.is_visible("#f-wa"))
-            pg.route("**/lepli-commande", lambda r, q: r.fulfill(
+            pg.route("**/malettre-commande", lambda r, q: r.fulfill(
                 status=200, content_type="application/json",
                 body=json.dumps({"ok": True, "offert": True,
                                  "adresse": "https://exemple.invalid/l/" + "e" * 22})))
@@ -827,7 +828,7 @@ def main():
             pg.click("#vers-paiement")
             pg.fill("#f-wa", "0197085576")
             envois2 = []
-            pg.route("**/lepli-commande", lambda r, q: (
+            pg.route("**/malettre-commande", lambda r, q: (
                 envois2.append(json.loads(q.post_data or "{}")),
                 r.fulfill(status=200, content_type="application/json",
                           body=json.dumps({"ok": True, "offert": True,
@@ -845,7 +846,7 @@ def main():
             dit("une lettre offerte montre son adresse",
                 "exemple.invalid/l/" in pg.inner_text("#lien-lettre"))
             dit("et son brouillon est alors oublie",
-                pg.evaluate("localStorage.getItem('lepli:brouillon')") is None)
+                pg.evaluate("localStorage.getItem('malettre:brouillon')") is None)
             # On ne promet que ce que la lettre tient toute seule.
             promesse = pg.inner_text("#fini-quand")
             dit("l'ecran final ne promet aucun envoi automatique",
@@ -962,7 +963,7 @@ def main():
                                "Second <img src=x onerror=window.__pwn=1> paragraphe."],
                     "formule": "Sans rancune,", "version": 1, "restantes": 2}))
 
-            pg.route("**/lepli-plume", plume_ok)
+            pg.route("**/malettre-plume", plume_ok)
             pg.fill("#f-pour", "")
             pg.click("#btn-plume")
             pg.wait_for_timeout(250)
@@ -1032,7 +1033,7 @@ def main():
                     "paiement": "https://paiement.invalid/session/7",
                     "palier": "Gratuit + la plume", "prix": 500}))
 
-            pg.route("**/lepli-commande", caisse_plume)
+            pg.route("**/malettre-commande", caisse_plume)
             pg.fill("#f-wa", "0197085576")
             pg.click("#btn-commander")
             attendre(lambda: len(cmds) > 0)
@@ -1073,8 +1074,8 @@ def main():
 
             # ── ce qui peut mal tourner ──
             def repondre_plume(code, corps):
-                pg.unroute("**/lepli-plume")
-                pg.route("**/lepli-plume", lambda r, q: r.fulfill(
+                pg.unroute("**/malettre-plume")
+                pg.route("**/malettre-plume", lambda r, q: r.fulfill(
                     status=code, content_type="application/json", body=json.dumps(corps)))
 
             repondre_plume(200, {"ok": False, "refus": "deuil", "version": 2})
@@ -1087,8 +1088,8 @@ def main():
             pg.click("#btn-plume")
             dit("plume pas deployee : on le dit",
                 attendre(lambda: "pas encore ouverte" in pg.inner_text("#plume-mot")), pg.inner_text("#plume-mot"))
-            pg.unroute("**/lepli-plume")
-            pg.route("**/lepli-plume", lambda r, q: r.abort())
+            pg.unroute("**/malettre-plume")
+            pg.route("**/malettre-plume", lambda r, q: r.abort())
             pg.click("#btn-plume")
             dit("reseau coupe : on le dit, et la fiche reste",
                 attendre(lambda: "pas répondu" in pg.inner_text("#plume-mot"))
@@ -1099,19 +1100,64 @@ def main():
                 attendre(lambda: "trois versions" in pg.inner_text("#plume-mot")), pg.inner_text("#plume-mot"))
             dit("et le bouton ne propose plus de version",
                 pg.eval_on_selector("#btn-plume", "e=>e.disabled"))
-            # ⛔ Le « + » des photos restait peint a trois photos : `.ajout` est
-            # en `display:grid`, qui l'emportait sur `hidden`.
+            # ⛔ Le « + » des photos restait peint au maximum : `.ajout` est en
+            # `display:grid`, qui l'emportait sur `hidden`.
+            # ⚠️ Et le maximum etait TROIS pour tout le monde, alors que le
+            # Coffret en garde vingt cote serveur (2026-10-16).
             import base64
             png = base64.b64decode(
                 "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==")
-            for i in range(3):
-                pg.set_input_files("#f-photo", files=[{"name": "p%d.png" % i, "mimeType": "image/png", "buffer": png}])
-                attendre(lambda: pg.eval_on_selector_all(".vign", "n=>n.length") == i + 1)
-            dit("trois photos : le « + » disparait vraiment",
-                pg.eval_on_selector_all(".vign", "n=>n.length") == 3 and not pg.is_visible(".ajout"))
-            pg.click(".vign button")
-            dit("une photo retiree : le « + » revient", pg.is_visible(".ajout"))
+            pg.set_input_files("#f-photo", files=[{"name": "p%d.png" % i, "mimeType": "image/png", "buffer": png}
+                                                  for i in range(3)])
+            attendre(lambda: pg.eval_on_selector_all(".vign", "n=>n.length") == 3)
+            dit("trois photos : on peut encore en ajouter (le Coffret en garde vingt)",
+                pg.eval_on_selector_all(".vign", "n=>n.length") == 3 and pg.is_visible(".ajout"))
+            pg.set_input_files("#f-photo", files=[{"name": "q%d.png" % i, "mimeType": "image/png", "buffer": png}
+                                                  for i in range(30)])
+            attendre(lambda: pg.eval_on_selector_all(".vign", "n=>n.length") == 20, 15000)
+            dit("vingt photos au plus, et le « + » disparait vraiment",
+                pg.eval_on_selector_all(".vign", "n=>n.length") == 20 and not pg.is_visible(".ajout"),
+                str(pg.eval_on_selector_all(".vign", "n=>n.length")))
+            dit("la regle des photos est ecrite a partir du bareme",
+                "20 avec Le Coffret" in pg.inner_text("#photos-regle")
+                and "1 avec l'offre gratuite" in pg.inner_text("#photos-regle"), pg.inner_text("#photos-regle"))
+            pg.click("#vers-palier")
+            pg.click('.pal[data-id="lettre"]')
+            dit("trop de photos pour l'offre : on le DIT",
+                pg.is_visible("#photos-note") and "3 premières" in pg.inner_text("#photos-note"),
+                pg.inner_text("#photos-note") if pg.is_visible("#photos-note") else "cache")
+            pg.click('.pal[data-id="coffret"]')
+            dit("le Coffret garde les vingt : rien a dire", not pg.is_visible("#photos-note"))
+            dit("⛔ le Coffret ne promet plus d'envoi WhatsApp",
+                "WhatsApp" not in pg.inner_text('.pal[data-id="coffret"]'))
+            pg.click('#e-palier [data-vers="e-lettre"]')
+            for _ in range(20):
+                if not pg.eval_on_selector_all(".vign", "n=>n.length"):
+                    break
+                pg.click(".vign button")
+            dit("toutes retirees : le « + » revient", pg.is_visible(".ajout"))
             dit("la plume n'a leve aucune erreur JavaScript", not bugs, " | ".join(bugs[:2]))
+            pg.close()
+
+            # ── La page d'accueil envoie le prenom tape : « Ma lettre a… Afi » ──
+            pg = nav.new_page(viewport={"width": 1280, "height": 900})
+            pg.goto(base)
+            pg.evaluate("localStorage.clear()")
+            pg.goto(base + "?pour=Afi&occasion=valentin")
+            pg.wait_for_timeout(900)
+            dit("l'adresse preremplit le prenom", pg.input_value("#f-pour") == "Afi", pg.input_value("#f-pour"))
+            dit("l'adresse pose l'occasion et ouvre l'ecriture",
+                pg.eval_on_selector("#e-lettre", "e=>e.classList.contains('on')")
+                and pg.input_value("#f-titre") == "Joyeuse Saint-Valentin")
+            pg.goto(base + "?pour=%3Cimg%20src%3Dx%3EBob")
+            pg.wait_for_timeout(600)
+            dit("un prenom piege dans l'adresse perd ses chevrons",
+                "<" not in pg.input_value("#f-pour"), pg.input_value("#f-pour"))
+            # ⚠️ TEMOIN : un brouillon en cours n'est jamais ecrase par l'adresse.
+            pg.fill("#f-pour", "Zara")
+            pg.goto(base + "?pour=Afi")
+            pg.wait_for_timeout(600)
+            dit("un brouillon en cours garde son prenom", pg.input_value("#f-pour") == "Zara", pg.input_value("#f-pour"))
             pg.close()
 
             # La fiche, sur telephone : rien ne deborde, tout se touche.

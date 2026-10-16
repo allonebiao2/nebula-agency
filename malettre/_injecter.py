@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""LE PLI · poser les donnees d'une lettre dans le gabarit.
+"""MA LETTRE À… · poser les donnees d'une lettre dans le gabarit.
 
 ⛔ LA REGLE QUI JUSTIFIE CE FICHIER
 
@@ -22,8 +22,8 @@ import pathlib
 ICI = pathlib.Path(__file__).resolve().parent
 GABARIT = ICI / "lettre.html"
 
-DEBUT = "/*LEPLI_DONNEES*/"
-FIN = "/*FIN_LEPLI_DONNEES*/"
+DEBUT = "/*MALETTRE_DONNEES*/"
+FIN = "/*FIN_MALETTRE_DONNEES*/"
 
 
 def serialiser(donnees):
@@ -36,7 +36,7 @@ def serialiser(donnees):
     """
     # ⚠️ SEPARATEURS COMPACTS, et ce n'est pas une coquetterie de poids : par
     # defaut json.dumps ecrit « "a": 1, "b": 2 » quand JSON.stringify ecrit
-    # « "a":1,"b":2 ». Trois serialiseurs ecrivent des lettres LE PLI (ici, le
+    # « "a":1,"b":2 ». Trois serialiseurs ecrivent des lettres MA LETTRE À… (ici, le
     # constructeur dans le navigateur, la fonction de bord qui rebatit la
     # lettre) : s'ils ne rendent pas le meme octet, on ne peut plus comparer
     # leurs sorties, donc plus prouver qu'ils protegent pareil.

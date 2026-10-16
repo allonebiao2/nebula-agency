@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""LE PLI · recopier le gabarit de la lettre dans un module TypeScript.
+"""MA LETTRE À… · recopier le gabarit de la lettre dans un module TypeScript.
 
 ⚠️ FICHIER GENERE, jamais edite a la main :
 
-    python lepli/_gabarit_ts.py
+    python malettre/_gabarit_ts.py
 
 POURQUOI IL EXISTE
     Une fonction de bord ne lit pas un fichier a cote d'elle : ce qui n'est pas
@@ -25,10 +25,10 @@ LETTRE = ICI / "lettre.html"
 CIBLE = ICI / "supabase" / "functions" / "_shared" / "gabarit.ts"
 
 ENTETE = """/*
-  LE PLI · le gabarit de la lettre, tel quel.
+  MA LETTRE À… · le gabarit de la lettre, tel quel.
 
-  ⛔ FICHIER GENERE. Ne pas l'editer : `python lepli/_gabarit_ts.py` le
-  reecrit depuis `lepli/lettre.html`, qui est la source. Un controle compare
+  ⛔ FICHIER GENERE. Ne pas l'editer : `python malettre/_gabarit_ts.py` le
+  reecrit depuis `malettre/lettre.html`, qui est la source. Un controle compare
   les deux et refuse la moindre difference.
 */
 

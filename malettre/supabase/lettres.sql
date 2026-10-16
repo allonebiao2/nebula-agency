@@ -1,5 +1,5 @@
 -- ════════════════════════════════════════════════════════════════════════════
--- LE PLI · LES LETTRES ET LEUR CAISSE
+-- MA LETTRE À… · LES LETTRES ET LEUR CAISSE
 --
 -- À exécuter une fois dans l'éditeur SQL de Supabase.
 -- Il est REJOUABLE : deux exécutions ne font pas plus qu'une.
@@ -9,12 +9,12 @@
 -- n'est relu par personne et disparaît avec le projet.
 --
 -- ⚠️ CE PROJET SUPABASE PORTE DÉJÀ TROIS PRODUITS (schéma `piste`, schéma
--- `naff`, et `public.boussole_proto_etat`). LE PLI est le quatrième. Il prend
+-- `naff`, et `public.boussole_proto_etat`). MA LETTRE À… est le quatrième. Il prend
 -- son propre schéma, ne touche à rien d'autre, et ⛔ s'il est mis en pause,
 -- les quatre tombent ensemble : c'est écrit dans l'arrêté du 2026-09-06.
 -- ════════════════════════════════════════════════════════════════════════════
 
-CREATE SCHEMA IF NOT EXISTS lepli;
+CREATE SCHEMA IF NOT EXISTS malettre;
 
 -- ── 1. les lettres ──────────────────────────────────────────────────────────
 --
@@ -25,7 +25,7 @@ CREATE SCHEMA IF NOT EXISTS lepli;
 --
 -- `donnees` porte donc exactement ce que le gabarit attend : occasion, pour,
 -- de, titre, code, lettre[], photos[], depuis, ouvre, pied, lien.
-CREATE TABLE IF NOT EXISTS lepli.lettres (
+CREATE TABLE IF NOT EXISTS malettre.lettres (
   jeton      text        PRIMARY KEY,
   palier     text        NOT NULL,
   prix       numeric     NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS lepli.lettres (
   paye_le    timestamptz
 );
 
-CREATE INDEX IF NOT EXISTS lettres_etat ON lepli.lettres (etat, cree_le DESC);
+CREATE INDEX IF NOT EXISTS lettres_etat ON malettre.lettres (etat, cree_le DESC);
 
 -- ── 2. la caisse ────────────────────────────────────────────────────────────
 --
@@ -54,7 +54,7 @@ CREATE INDEX IF NOT EXISTS lettres_etat ON lepli.lettres (etat, cree_le DESC);
 --
 -- Le montant y est recopié À LA CRÉATION, depuis la base, jamais depuis le
 -- navigateur.
-CREATE TABLE IF NOT EXISTS lepli.paiement_session (
+CREATE TABLE IF NOT EXISTS malettre.paiement_session (
   session     text PRIMARY KEY,
   fournisseur text        NOT NULL DEFAULT 'saspay',
   jeton       text        NOT NULL,
@@ -64,11 +64,11 @@ CREATE TABLE IF NOT EXISTS lepli.paiement_session (
   cree_le     timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS paiement_session_jeton
-  ON lepli.paiement_session (jeton);
+  ON malettre.paiement_session (jeton);
 
 -- ⚠️ IL REÇOIT TOUT, MÊME CE QU'ON N'A PAS COMPRIS. Une notification qu'on
 -- jette est un paiement qui n'a jamais existé.
-CREATE TABLE IF NOT EXISTS lepli.paiement_evenement (
+CREATE TABLE IF NOT EXISTS malettre.paiement_evenement (
   id           bigserial   PRIMARY KEY,
   fournisseur  text        NOT NULL DEFAULT 'saspay',
   evenement_id text,
@@ -85,20 +85,20 @@ CREATE TABLE IF NOT EXISTS lepli.paiement_evenement (
 -- L'IDEMPOTENCE. Un fournisseur qui ne reçoit pas notre 200 renvoie la même
 -- notification, parfois des heures durant. Sans cette contrainte, une lettre
 -- serait « payée » dix fois.
-CREATE UNIQUE INDEX IF NOT EXISTS lepli_evenement_unique
-  ON lepli.paiement_evenement (fournisseur, evenement_id)
+CREATE UNIQUE INDEX IF NOT EXISTS malettre_evenement_unique
+  ON malettre.paiement_evenement (fournisseur, evenement_id)
   WHERE evenement_id IS NOT NULL;
 
 -- ── 3. ce que le serveur a le droit de demander ─────────────────────────────
 
 -- Déposer une lettre. Le prix vient du serveur, jamais du navigateur.
-CREATE OR REPLACE FUNCTION public.lepli_deposer(
+CREATE OR REPLACE FUNCTION public.malettre_deposer(
   p_jeton text, p_palier text, p_prix numeric, p_donnees jsonb,
   p_whatsapp text, p_etat text, p_expire timestamptz)
 RETURNS boolean
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = malettre, public AS $$
 BEGIN
-  INSERT INTO lepli.lettres (jeton, palier, prix, donnees, whatsapp, etat, expire_le, paye_le)
+  INSERT INTO malettre.lettres (jeton, palier, prix, donnees, whatsapp, etat, expire_le, paye_le)
        VALUES (p_jeton, p_palier, p_prix, p_donnees, p_whatsapp, p_etat, p_expire,
                CASE WHEN p_etat = 'vivante' AND p_prix = 0 THEN now() ELSE NULL END);
   RETURN true;
@@ -107,11 +107,11 @@ END $$;
 -- Lire une lettre pour la servir. ⛔ Elle ne rend NI le WhatsApp de l'acheteur,
 -- NI le prix, NI la date de paiement : servir une lettre ne demande que la
 -- lettre.
-CREATE OR REPLACE FUNCTION public.lepli_lire(p_jeton text)
+CREATE OR REPLACE FUNCTION public.malettre_lire(p_jeton text)
 RETURNS TABLE (donnees jsonb, etat text, expire_le timestamptz, retire_le timestamptz)
-LANGUAGE sql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE sql SECURITY DEFINER SET search_path = malettre, public AS $$
   SELECT l.donnees, l.etat::text, l.expire_le, l.retire_le
-    FROM lepli.lettres l
+    FROM malettre.lettres l
    WHERE l.jeton = p_jeton
    LIMIT 1;
 $$;
@@ -119,45 +119,45 @@ $$;
 -- Ce qu'on attend d'un paiement. Le montant est relu ICI, sur la lettre.
 -- ⚠️ Elle rend AUSSI le palier : la duree de vie d'une lettre en depend, et
 -- une valeur devinee cote fonction serait fausse le jour ou un palier change.
-CREATE OR REPLACE FUNCTION public.lepli_paiement_attendu(p_jeton text)
+CREATE OR REPLACE FUNCTION public.malettre_paiement_attendu(p_jeton text)
 RETURNS TABLE (existe boolean, etat text, total numeric, palier text)
-LANGUAGE sql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE sql SECURITY DEFINER SET search_path = malettre, public AS $$
   SELECT true, l.etat::text, l.prix, l.palier::text
-    FROM lepli.lettres l
+    FROM malettre.lettres l
    WHERE l.jeton = p_jeton
    LIMIT 1;
 $$;
 
-CREATE OR REPLACE FUNCTION public.lepli_paiement_session(
+CREATE OR REPLACE FUNCTION public.malettre_paiement_session(
   p_session text, p_jeton text, p_montant numeric, p_devise text, p_url text)
 RETURNS boolean
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = malettre, public AS $$
 BEGIN
-  INSERT INTO lepli.paiement_session (session, jeton, montant, devise, url)
+  INSERT INTO malettre.paiement_session (session, jeton, montant, devise, url)
        VALUES (p_session, p_jeton, p_montant, p_devise, p_url)
   ON CONFLICT (session) DO UPDATE SET url = EXCLUDED.url;
   RETURN true;
 END $$;
 
-CREATE OR REPLACE FUNCTION public.lepli_paiement_par_session(p_session text)
+CREATE OR REPLACE FUNCTION public.malettre_paiement_par_session(p_session text)
 RETURNS TABLE (jeton text, montant numeric, devise text)
-LANGUAGE sql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE sql SECURITY DEFINER SET search_path = malettre, public AS $$
   SELECT s.jeton, s.montant, s.devise
-    FROM lepli.paiement_session s
+    FROM malettre.paiement_session s
    WHERE s.session = p_session
    LIMIT 1;
 $$;
 
 -- Journaliser. Rend `false` si l'événement était déjà connu : c'est le signal
 -- d'un renvoi, et l'appelant s'arrête là.
-CREATE OR REPLACE FUNCTION public.lepli_paiement_journal(
+CREATE OR REPLACE FUNCTION public.malettre_paiement_journal(
   p_evenement_id text, p_jeton text, p_session text, p_montant numeric,
   p_devise text, p_etat_lu text, p_agi text, p_brut jsonb)
 RETURNS boolean
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = malettre, public AS $$
 DECLARE v_pose boolean;
 BEGIN
-  INSERT INTO lepli.paiement_evenement
+  INSERT INTO malettre.paiement_evenement
          (evenement_id, jeton, session, montant, devise, etat_lu, agi, brut)
   VALUES (NULLIF(p_evenement_id,''), p_jeton, p_session, p_montant, p_devise,
           p_etat_lu, p_agi, p_brut)
@@ -169,12 +169,12 @@ END $$;
 -- La lettre devient joignable. ⚠️ `expire_le` part de l'ENCAISSEMENT, pas du
 -- dépôt : une lettre écrite le lundi et payée le vendredi vit un an à partir
 -- du vendredi.
-CREATE OR REPLACE FUNCTION public.lepli_ouvrir(p_jeton text, p_jours integer)
+CREATE OR REPLACE FUNCTION public.malettre_ouvrir(p_jeton text, p_jours integer)
 RETURNS boolean
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = malettre, public AS $$
 DECLARE v_fait integer;
 BEGIN
-  UPDATE lepli.lettres
+  UPDATE malettre.lettres
      SET etat = 'vivante',
          paye_le = COALESCE(paye_le, now()),
          expire_le = now() + (p_jours || ' days')::interval
@@ -186,12 +186,12 @@ END $$;
 -- ⛔ LE RETRAIT. Sans discuter, sans prévenir l'acheteur, sans rembourser.
 -- Il n'efface pas la ligne tout de suite : il retire le contenu (donc les
 -- photos) et garde la trace comptable du paiement. La lettre ne se sert plus.
-CREATE OR REPLACE FUNCTION public.lepli_retirer(p_jeton text)
+CREATE OR REPLACE FUNCTION public.malettre_retirer(p_jeton text)
 RETURNS boolean
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = malettre, public AS $$
 DECLARE v_fait integer;
 BEGIN
-  UPDATE lepli.lettres
+  UPDATE malettre.lettres
      SET retire_le = COALESCE(retire_le, now()),
          donnees = '{}'::jsonb
    WHERE jeton = p_jeton;
@@ -202,12 +202,12 @@ END $$;
 -- Le ménage : une lettre expirée ne garde pas ses photos. À appeler par une
 -- tâche planifiée, ou à la main. ⚠️ La ligne reste, vidée : c'est elle qui
 -- permet de répondre « expirée » plutôt que « inconnue ».
-CREATE OR REPLACE FUNCTION public.lepli_menage()
+CREATE OR REPLACE FUNCTION public.malettre_menage()
 RETURNS integer
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = malettre, public AS $$
 DECLARE v_fait integer;
 BEGIN
-  UPDATE lepli.lettres
+  UPDATE malettre.lettres
      SET donnees = '{}'::jsonb
    WHERE expire_le IS NOT NULL AND expire_le < now() AND donnees <> '{}'::jsonb;
   GET DIAGNOSTICS v_fait = ROW_COUNT;
@@ -224,33 +224,33 @@ END $$;
 --
 -- ⛔ ON NE GARDE NI LA FICHE, NI LA LETTRE, NI L'ADRESSE EN CLAIR : une
 -- empreinte, l'identifiant du brouillon, l'heure. Et deux jours au plus.
-CREATE TABLE IF NOT EXISTS lepli.plume_journal (
+CREATE TABLE IF NOT EXISTS malettre.plume_journal (
   id        bigserial   PRIMARY KEY,
   ip        text        NOT NULL,
   brouillon text        NOT NULL DEFAULT '',
   cree_le   timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS plume_journal_ip        ON lepli.plume_journal (ip, cree_le DESC);
-CREATE INDEX IF NOT EXISTS plume_journal_brouillon ON lepli.plume_journal (brouillon, cree_le DESC);
+CREATE INDEX IF NOT EXISTS plume_journal_ip        ON malettre.plume_journal (ip, cree_le DESC);
+CREATE INDEX IF NOT EXISTS plume_journal_brouillon ON malettre.plume_journal (brouillon, cree_le DESC);
 
 -- Rend le numéro de la version accordée (1, 2, 3…), ou -1 si la limite est
 -- atteinte. Le ménage se fait au passage : rien ne reste plus de deux jours.
-CREATE OR REPLACE FUNCTION public.lepli_plume_permis(
+CREATE OR REPLACE FUNCTION public.malettre_plume_permis(
   p_ip text, p_brouillon text, p_max_ip integer, p_max_brouillon integer)
 RETURNS integer
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = malettre, public AS $$
 DECLARE v_ip integer; v_br integer := 0;
 BEGIN
-  DELETE FROM lepli.plume_journal WHERE cree_le < now() - interval '2 days';
-  SELECT count(*) INTO v_ip FROM lepli.plume_journal
+  DELETE FROM malettre.plume_journal WHERE cree_le < now() - interval '2 days';
+  SELECT count(*) INTO v_ip FROM malettre.plume_journal
    WHERE ip = p_ip AND cree_le > now() - interval '1 day';
   IF v_ip >= p_max_ip THEN RETURN -1; END IF;
   IF p_brouillon <> '' THEN
-    SELECT count(*) INTO v_br FROM lepli.plume_journal
+    SELECT count(*) INTO v_br FROM malettre.plume_journal
      WHERE brouillon = p_brouillon AND cree_le > now() - interval '1 day';
     IF v_br >= p_max_brouillon THEN RETURN -1; END IF;
   END IF;
-  INSERT INTO lepli.plume_journal (ip, brouillon) VALUES (p_ip, p_brouillon);
+  INSERT INTO malettre.plume_journal (ip, brouillon) VALUES (p_ip, p_brouillon);
   RETURN v_br + 1;
 END $$;
 
@@ -265,16 +265,16 @@ BEGIN
   FOR f IN
     SELECT format('%I.%I(%s)', n.nspname, p.proname, pg_get_function_identity_arguments(p.oid))
       FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-     WHERE n.nspname = 'public' AND p.proname LIKE 'lepli\_%'
+     WHERE n.nspname = 'public' AND p.proname LIKE 'malettre\_%'
   LOOP
     EXECUTE format('REVOKE ALL ON FUNCTION %s FROM public, anon, authenticated', f);
     EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO service_role', f);
   END LOOP;
 END $$;
 
-ALTER TABLE lepli.lettres            ENABLE ROW LEVEL SECURITY;
-ALTER TABLE lepli.paiement_session   ENABLE ROW LEVEL SECURITY;
-ALTER TABLE lepli.paiement_evenement ENABLE ROW LEVEL SECURITY;
-ALTER TABLE lepli.plume_journal      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE malettre.lettres            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE malettre.paiement_session   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE malettre.paiement_evenement ENABLE ROW LEVEL SECURITY;
+ALTER TABLE malettre.plume_journal      ENABLE ROW LEVEL SECURITY;
 -- Aucune politique : sans politique, personne ne lit rien, sauf le
 -- `service_role` qui les contourne par construction. C'est voulu.

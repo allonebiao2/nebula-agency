@@ -1,7 +1,7 @@
 /*
-  LE PLI · le contrôle de la caisse et de l'adresse.
+  MA LETTRE À… · le contrôle de la caisse et de l'adresse.
 
-      node --experimental-strip-types lepli/_qc_caisse.mjs
+      node --experimental-strip-types malettre/_qc_caisse.mjs
 
   ⚠️ Le drapeau n'est pas un caprice : ce fichier importe des `.ts`, que Deno
   lit nativement et que Node 22 refuse sans lui.
@@ -58,8 +58,8 @@ const creer = lire('creer.html')
 const bloc = /var PALIERS = \[(.*?)\];/s.exec(creer)
 dit(!!bloc, 'le barème du constructeur se lit dans creer.html')
 if (bloc) {
-  const cote = [...bloc[1].matchAll(/id:"([a-z]+)".*?prix:(\d+).*?pied:(true|false)/gs)]
-    .map((m) => ({ id: m[1], prix: Number(m[2]), pied: m[3] === 'true' }))
+  const cote = [...bloc[1].matchAll(/id:"([a-z]+)".*?prix:(\d+).*?pied:(true|false),\s*photos:(\d+)/gs)]
+    .map((m) => ({ id: m[1], prix: Number(m[2]), pied: m[3] === 'true', photos: Number(m[4]) }))
   dit(cote.length === M.PALIERS.length,
       'les deux barèmes ont le même nombre de paliers',
       `${cote.length} contre ${M.PALIERS.length}`)
@@ -68,6 +68,10 @@ if (bloc) {
     dit(!!c && c.prix === p.prix && c.pied === p.pied,
         `« ${p.nom} » dit le même prix des deux côtés`,
         c ? `${c.prix} contre ${p.prix}` : 'absent du constructeur')
+    /* ⚠️ Le Coffret gardait vingt photos ici et trois dans le formulaire. */
+    dit(!!c && c.photos === p.photos,
+        `« ${p.nom} » garde le même nombre de photos des deux côtés`,
+        c ? `${c.photos} contre ${p.photos}` : 'absent du constructeur')
   }
 }
 
@@ -266,7 +270,7 @@ dit(!/[\u2028\u2029]/.test(lire('supabase/functions/_shared/lettre.ts')),
 console.log('\n== La lettre rebâtie')
 
 const pose = M.poser(G.GABARIT, M.lireCommande(BON).lettre)
-dit(!pose.includes('/*LEPLI_DONNEES*/'), 'le marqueur a disparu')
+dit(!pose.includes('/*MALETTRE_DONNEES*/'), 'le marqueur a disparu')
 dit(pose.includes('"ouvre":"2027-02-14T00:00"'), 'l’heure est dans la page servie')
 dit(pose.includes('"pour":"Zara"'), 'le prénom est dans la page servie')
 dit(!/<script[^>]+src=/.test(pose), 'aucun script externe')
@@ -294,25 +298,25 @@ dit(a === b, 'la caisse est exactement celle de PISTE', `${a.length} contre ${b.
 console.log('\n== Le schéma')
 
 const sql = lire('supabase/lettres.sql')
-dit(/CREATE SCHEMA IF NOT EXISTS lepli/.test(sql), 'LE PLI a son propre schéma')
+dit(/CREATE SCHEMA IF NOT EXISTS malettre/.test(sql), 'MA LETTRE À… a son propre schéma')
 dit(!/DROP /i.test(sql), 'le fichier ne détruit rien : il est rejouable')
-for (const f of ['lepli_deposer', 'lepli_lire', 'lepli_paiement_attendu',
-                 'lepli_paiement_session', 'lepli_paiement_par_session',
-                 'lepli_paiement_journal', 'lepli_ouvrir', 'lepli_retirer'])
+for (const f of ['malettre_deposer', 'malettre_lire', 'malettre_paiement_attendu',
+                 'malettre_paiement_session', 'malettre_paiement_par_session',
+                 'malettre_paiement_journal', 'malettre_ouvrir', 'malettre_retirer'])
   dit(sql.includes(`FUNCTION public.${f}(`), `la porte ${f} existe`)
 dit(/REVOKE ALL ON FUNCTION/.test(sql) && /GRANT EXECUTE ON FUNCTION %s TO service_role/.test(sql),
     'aucune porte n’est ouverte au navigateur')
 dit(/ENABLE ROW LEVEL SECURITY/.test(sql), 'les tables sont fermées')
-dit(/lepli_evenement_unique/.test(sql), 'un renvoi de notification ne paie pas deux fois')
+dit(/malettre_evenement_unique/.test(sql), 'un renvoi de notification ne paie pas deux fois')
 /* ⛔ Le HTML du navigateur n'est stocké nulle part. */
 dit(!/\bhtml\b\s+text/.test(sql), 'la base ne garde aucun HTML d’acheteur')
 
 /* ═══ 10 · ce que les fonctions promettent ════════════════════════════════ */
 console.log('\n== Les fonctions de bord')
 
-const cmd = lire('supabase/functions/lepli-commande/index.ts')
-const recu = lire('supabase/functions/lepli-paiement-recu/index.ts')
-const serv = lire('supabase/functions/lepli-lettre/index.ts')
+const cmd = lire('supabase/functions/malettre-commande/index.ts')
+const recu = lire('supabase/functions/malettre-paiement-recu/index.ts')
+const serv = lire('supabase/functions/malettre-lettre/index.ts')
 
 /* ⚠️ CONTRÔLE RETOURNÉ (2026-10-16). Il exigeait « p_prix: palier.prix » :
    c'était vrai tant que le palier faisait tout le prix. Avec la plume, le prix
@@ -335,7 +339,7 @@ dit(/verifierSignature/.test(recu) && /horodatageFrais/.test(recu),
     'la notification est signée ET fraîche, deux contrôles')
 dit(/await req.text\(\)/.test(recu) && !/JSON.stringify\(await req/.test(recu),
     'le corps brut n’est jamais reparsé avant la signature')
-dit(/lepli_retirer/.test(serv), 'le retrait est une porte, pas une intention')
+dit(/malettre_retirer/.test(serv), 'le retrait est une porte, pas une intention')
 dit(/verdict\(/.test(serv), 'servir une lettre passe par la décision commune')
 
 /* ⚠️ Le service_role ne doit jamais fuiter vers le navigateur. */
@@ -512,10 +516,10 @@ dit(!/[\u2014\u2013\u2028\u2029]/.test(lire('supabase/functions/_shared/plume.ts
 /* ═══ 16 · la plume : la plomberie ════════════════════════════════════ */
 console.log('\n== La plume, la fonction')
 
-const pl = lire('supabase/functions/lepli-plume/index.ts')
+const pl = lire('supabase/functions/malettre-plume/index.ts')
 dit(pl.indexOf('lireFiche(d)') > 0 && pl.indexOf('lireFiche(d)') < pl.indexOf('messages.create('),
     'la fiche est lue avant tout appel au modèle')
-dit(pl.indexOf("rpc('lepli_plume_permis'") > 0 && pl.indexOf("rpc('lepli_plume_permis'") < pl.indexOf('messages.create('),
+dit(pl.indexOf("rpc('malettre_plume_permis'") > 0 && pl.indexOf("rpc('malettre_plume_permis'") < pl.indexOf('messages.create('),
     'le compteur passe AVANT le modèle')
 dit(/if \(eC\)[^\n]*return repondre/.test(pl), 'un compteur en panne ferme la plume')
 dit(/requete\(fiche\)/.test(pl) && /lireReponse\(m\)/.test(pl), 'la requête et la relecture sont celles de plume.ts')
@@ -523,10 +527,39 @@ dit(!/\.from\(/.test(pl) && !/insert/i.test(pl), 'la fonction n’écrit la fich
 dit(/ANTHROPIC_API_KEY/.test(pl) && /pas-branchee/.test(pl), 'sans clé, elle dit qu’elle n’est pas branchée')
 dit(/empreinte\(ip\)/.test(pl), 'l’adresse est comptée par son empreinte, pas en clair')
 dit(/npm:@anthropic-ai\/sdk@\d+\.\d+\.\d+/.test(pl), 'le SDK est épinglé à une version exacte')
-dit(/plume_journal/.test(sql) && /FUNCTION public\.lepli_plume_permis\(/.test(sql), 'le compteur a sa table et sa porte')
+dit(/plume_journal/.test(sql) && /FUNCTION public\.malettre_plume_permis\(/.test(sql), 'le compteur a sa table et sa porte')
 dit(/plume_journal\s+ENABLE ROW LEVEL SECURITY/.test(sql), 'la table du compteur est fermée')
-dit(sql.indexOf('lepli_plume_permis(') < sql.indexOf('-- ── 4. les droits'),
+dit(sql.indexOf('malettre_plume_permis(') < sql.indexOf('-- ── 4. les droits'),
     'la porte du compteur passe sous la boucle des droits')
+
+/* ═══ 17 · le nom : MA LETTRE À… ═════════════════════════════════════ */
+console.log('\n== Le nom')
+
+/* ⛔ PLUS AUCUNE TRACE DE L'ANCIEN NOM dans le produit, sauf là où il est
+   l'objet d'une phrase d'histoire (le README le raconte) et dans les chemins
+   qui gardent exprès leur nom daté (`_plans/…`, la vidéo `lepli-demo`). */
+const TOLERE = /_plans\/[^\s`)\]]*|lepli-demo|rendu:lepli|src\/lepli/g
+const traces = []
+const fouiller = (d) => {
+  for (const n of fs.readdirSync(path.join(ICI, d), { withFileTypes: true })) {
+    const rel = d ? `${d}/${n.name}` : n.name
+    if (n.isDirectory()) { if (!['_vues', '__pycache__', 'exemples'].includes(n.name)) fouiller(rel); continue }
+    if (!/\.(html|ts|py|mjs|sql|md|json)$/.test(n.name)) continue
+    /* Ce fichier nomme ce qu'il cherche : il se dénoncerait lui-même. */
+    if (rel === '_qc_caisse.mjs') continue
+    let t = lire(rel).replace(TOLERE, '')
+    if (rel === 'README.md') t = t.replace(/<!-- HISTOIRE DU NOM -->[\s\S]*?<!-- FIN HISTOIRE -->/g, '')
+    if (/LE PLI|lepli|LEPLI/.test(t)) traces.push(rel)
+  }
+}
+fouiller('')
+dit(!traces.length, 'plus aucune trace de « LE PLI » dans le produit', traces.join(', '))
+dit(/<title>Ma lettre à toi<\/title>/.test(G.GABARIT) && /document\.title = "Ma lettre à "/.test(G.GABARIT),
+    'l’onglet d’une lettre dit « Ma lettre à <prénom> »')
+dit(/Ma lettre à <b id="s-pour">/.test(G.GABARIT), 'le seuil dit « Ma lettre à <prénom> »')
+dit(/CREATE SCHEMA IF NOT EXISTS malettre;/.test(sql), 'le schéma s’appelle malettre')
+dit(/malettre\.nebula-agency\.online/.test(lire('supabase/functions/_shared/lettre.ts')),
+    'l’adresse est celle de MA LETTRE À…')
 
 /* ═══ le compte ═══════════════════════════════════════════════════════════ */
 for (const [q, d] of verts) console.log('  [ok]', q, d ? `· ${d}` : '')

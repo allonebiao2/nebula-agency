@@ -1,10 +1,10 @@
-# LE PLI · la caisse et l'adresse
+# MA LETTRE À… · la caisse et l'adresse
 
 > Écrit le 2026-09-06, en appliquant les décisions 05, 06 et 09 de l'arrêté
 > (`_plans/2026-09-06-lepli-arrete.html`).
 >
 > **Rien de tout ça n'est encore en ligne.** Le code est écrit, contrôlé
-> (`node --experimental-strip-types lepli/_qc_caisse.mjs`, 118 contrôles),
+> (`node --experimental-strip-types malettre/_qc_caisse.mjs`, 118 contrôles),
 > et il attend six réponses de Mongazi, listées en bas.
 
 ---
@@ -28,15 +28,15 @@ Mobile Money et le choix du réseau. Il n'y a plus qu'un seul moyen de payer.
 
 | Morceau | Où | Ce qu'il fait |
 |---|---|---|
-| `supabase/lettres.sql` | Supabase, schéma `lepli` | Les lettres, les sessions, le journal des notifications, et les huit portes que seul le `service_role` peut pousser |
+| `supabase/lettres.sql` | Supabase, schéma `malettre` | Les lettres, les sessions, le journal des notifications, et les huit portes que seul le `service_role` peut pousser |
 | `functions/_shared/lettre.ts` | Deno | **Tout ce qui décide** : le barème, le jeton, l'heure, l'expiration, le retrait, les en-têtes, ce qu'un acheteur a le droit d'envoyer |
 | `functions/_shared/saspay.ts` | Deno | **La copie exacte de celle de PISTE**. Un contrôle compare les deux octet par octet |
-| `functions/_shared/gabarit.ts` | Deno | `lettre.html`, recopié par `python lepli/_gabarit_ts.py`. **Fichier généré** |
-| `functions/lepli-commande/` | Deno | Dépose la lettre, et ouvre son paiement s'il y en a un |
-| `functions/lepli-paiement-recu/` | Deno | Le webhook. Vérifie la signature, marque payé, **ouvre la lettre** |
+| `functions/_shared/gabarit.ts` | Deno | `lettre.html`, recopié par `python malettre/_gabarit_ts.py`. **Fichier généré** |
+| `functions/malettre-commande/` | Deno | Dépose la lettre, et ouvre son paiement s'il y en a un |
+| `functions/malettre-paiement-recu/` | Deno | Le webhook. Vérifie la signature, marque payé, **ouvre la lettre** |
 | `functions/_shared/plume.ts` | Deno | **La plume** : ce qu'elle accepte, ce qu'elle demande au modèle, ce qu'elle refuse de rendre |
-| `functions/lepli-plume/` | Deno | Reçoit une fiche, compte la version, appelle le modèle, rend une lettre. ⛔ N'écrit la fiche nulle part |
-| `functions/lepli-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, dit son état à `/l/<jeton>/etat`, et la retire à `/l/<jeton>/retrait` |
+| `functions/malettre-plume/` | Deno | Reçoit une fiche, compte la version, appelle le modèle, rend une lettre. ⛔ N'écrit la fiche nulle part |
+| `functions/malettre-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, dit son état à `/l/<jeton>/etat`, et la retire à `/l/<jeton>/retrait` |
 | `paiement.html` | Cloudflare Pages | **La page de paiement** : ce qu'on achète, la somme, et **le lien** |
 | `merci.html` | Cloudflare Pages | **La page de retour**, celle que SasPay rappelle |
 | `_qc_caisse.mjs` | Node, sans clé ni réseau | 213 contrôles sur tout ce qui décide, plume comprise |
@@ -71,7 +71,7 @@ page le dit toute seule et donne l'adresse à envoyer.
 et **doit être posée à l'appel** : le réglage par défaut de `_shared/saspay.ts`
 ramène chez **PISTE**, puisque ce fichier en est la copie exacte. Sans cette
 ligne, un acheteur de lettre tomberait sur la page d'un autre produit. Le nom
-client par défaut aussi (« Client PISTE » sur un reçu LE PLI).
+client par défaut aussi (« Client PISTE » sur un reçu MA LETTRE À…).
 
 ---
 
@@ -111,39 +111,39 @@ client par défaut aussi (« Client PISTE » sur un reçu LE PLI).
 
 ```bash
 # 0. la base, une seule fois, dans l'éditeur SQL de Supabase
-#    → le contenu de lepli/supabase/lettres.sql
+#    → le contenu de malettre/supabase/lettres.sql
 
 # 1. les secrets. ⛔ JAMAIS dans le dépôt, il est PUBLIC.
 supabase secrets set SASPAY_CLE_SECRETE=…        # déjà posé pour PISTE
 supabase secrets set SASPAY_SECRET_WEBHOOK=…     # déjà posé pour PISTE
-supabase secrets set LEPLI_SITE=https://lepli.nebula-agency.online
+supabase secrets set MALETTRE_SITE=https://malettre.nebula-agency.online
 supabase secrets set ANTHROPIC_API_KEY=…         # la plume. Sans elle, « pas encore ouverte »
 
 # 2. le gabarit, à refaire À CHAQUE modification de lettre.html
-python lepli/_gabarit_ts.py
+python malettre/_gabarit_ts.py
 
 # 3. les fonctions
-cd lepli
-supabase functions deploy lepli-commande
-supabase functions deploy lepli-paiement-recu --no-verify-jwt
-supabase functions deploy lepli-lettre        --no-verify-jwt
-supabase functions deploy lepli-plume
+cd malettre
+supabase functions deploy malettre-commande
+supabase functions deploy malettre-paiement-recu --no-verify-jwt
+supabase functions deploy malettre-lettre        --no-verify-jwt
+supabase functions deploy malettre-plume
 
 # 4. dans le tableau de bord SasPay, onglet « Webhooks », déclarer :
-#    https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-paiement-recu
+#    https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-paiement-recu
 
 # 5. les contrôles, avant tout
-python lepli/_qc.py                                   # 203
-node --experimental-strip-types lepli/_qc_caisse.mjs  # 213
+python malettre/_qc.py                                   # 203
+node --experimental-strip-types malettre/_qc_caisse.mjs  # 213
 ```
 
 ⛔ **Le constructeur présente la clé publique du projet** (`apikey` et
 `Authorization`), comme PISTE. Avant le 2026-10-16 il ne l'envoyait pas :
-`lepli-commande`, déployée avec la vérification du jeton, aurait répondu 401 à
+`malettre-commande`, déployée avec la vérification du jeton, aurait répondu 401 à
 tous les acheteurs, et la caisse n'aurait jamais encaissé un franc. Le défaut
 était invisible tant que rien n'était en ligne. ⚠️ Au premier essai réel,
 vérifier que la clé `sb_publishable_…` passe bien cette vérification, comme
-chez PISTE ; sinon, déployer `lepli-commande` et `lepli-plume` en
+chez PISTE ; sinon, déployer `malettre-commande` et `malettre-plume` en
 `--no-verify-jwt` (ce qui les protège est le barème côté serveur et le
 compteur de la plume, pas le jeton).
 
@@ -154,9 +154,9 @@ c'est **une adresse de 110 bits tirés au sort**.
 
 ### L'adresse publique
 
-`lepli-lettre` répond sur son adresse Supabase. Pour que le lien soit court et
+`malettre-lettre` répond sur son adresse Supabase. Pour que le lien soit court et
 lisible dans un message WhatsApp, un relais Cloudflare fait passer
-`lepli.nebula-agency.online/l/*` vers la fonction, exactement comme le domaine
+`malettre.nebula-agency.online/l/*` vers la fonction, exactement comme le domaine
 des partenaires passe par `nebula-partenaires`.
 
 ⚠️ **Une seule adresse.** La leçon de Mon Bénin : le site a longtemps répondu à
@@ -175,7 +175,7 @@ deux adresses sans en nommer aucune.
 
 Et deux choses qui ne dépendent de personne, mais qui ne sont pas faites :
 
-- ⏳ **Le ménage des lettres expirées.** `lepli_menage()` existe et vide les
+- ⏳ **Le ménage des lettres expirées.** `malettre_menage()` existe et vide les
   photos d'une lettre expirée ; rien ne l'appelle encore. Une tâche planifiée
   quotidienne suffit (GitHub Actions le fait déjà gratuitement pour PISTE).
 - ⏳ **Le lien « retirer cette lettre »** n'est pas dans le pied de la lettre :

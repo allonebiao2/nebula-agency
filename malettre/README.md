@@ -1,13 +1,41 @@
-# LE PLI · la lettre digitale
+# MA LETTRE À… · la lettre digitale
 
 > Une lettre digitale, c'est **une enveloppe cachetée qu'on ouvre à l'heure dite.**
 > Le sceau, le pli, l'encre qui sèche. Toutes les animations de ce produit sortent
 > de cet objet, et d'aucun autre.
 
+<!-- HISTOIRE DU NOM -->
+## Le nom : MA LETTRE À… (2026-10-16)
+
+Le produit est né **MINUIT** (2026-09-02), puis s'est appelé **LE PLI**
+(2026-09-09), puis **MA LETTRE À…** (2026-10-16), décidé par Mongazi.
+
+- **MINUIT** nommait une heure : il allait à la lettre d'amour, et ne passait
+  pas sur une annonce de décès.
+- **LE PLI** nommait l'objet et passait les trois registres, mais il fallait
+  l'expliquer. Mongazi : « on doit pouvoir comprendre dès qu'on le lit ou
+  qu'on le dit ».
+- **MA LETTRE À…** se comprend tout de suite, et **se termine par le prénom de
+  la personne** : « Ma lettre à Afi », « Ma lettre à papa ». Le seuil et
+  l'onglet de chaque lettre le disent. Il tient sur les trois registres
+  (l'amour, les fêtes, et plus tard le deuil : « Ma lettre à la famille
+  Dossou »).
+
+À l'écran : « Ma lettre à… ». Dans le code : `malettre` (dossier, schéma,
+fonctions `malettre-*`, clés `malettre:*`, marqueur `MALETTRE_DONNEES`).
+⛔ Les documents datés gardent l'ancien nom (`_plans/2026-08-27-lepli-*`,
+journaux, conversations, leçons) : à cette date, le produit s'appelait ainsi.
+
+⚠️ `malettre.com` est déjà pris. `malettre.app`, `.online`, `.bj` et `.ci` ne
+répondaient pas le 2026-10-16. Avec `malettre.app`, le lien d'une lettre peut
+se lire « ma lettre à Afi » (`malettre.app/a/afi`). En attendant :
+`malettre.nebula-agency.online`.
+<!-- FIN HISTOIRE -->
+
 Dossier de décision : `_plans/2026-08-27-lepli-dossier.html`
 Manuel d'exploitation : `_plans/2026-08-28-lepli-manuel.html`
 **L'arrêté (les 12 décisions) : `_plans/2026-09-06-lepli-arrete.html`**
-Conditions et retrait : `lepli/CONDITIONS.md`
+Conditions et retrait : `malettre/CONDITIONS.md`
 
 ---
 
@@ -40,9 +68,11 @@ lettre et le prix y sont lus depuis **ce dossier**, recopiés une seule fois
 dans `_studio-video/src/lepli/donnees.ts`.
 
 ⚠️ Elle promet « Elle l'ouvre à minuit pile. Pas avant. » **Cette phrase est
-vraie depuis le 2026-09-06** : la lettre tient l'heure. Il ne reste que
-l'adresse qu'elle affiche (`lepli.nebula-agency.online`), qui doit exister
-avant publication.
+vraie depuis le 2026-09-06** : la lettre tient l'heure.
+<!-- HISTOIRE DU NOM -->
+⛔ **Elle porte encore l'ancien nom** (LE PLI, `lepli.nebula-agency.online`) :
+elle est à refaire avec la vidéo publicitaire, sous le nom MA LETTRE À….
+<!-- FIN HISTOIRE -->
 
 ---
 
@@ -64,11 +94,11 @@ avant publication.
 | `_voir.py` | Fabrique les captures à REGARDER (390 et 1440) |
 
 ```bash
-python lepli/_qc.py                                   # les 203 contrôles
-node --experimental-strip-types lepli/_qc_caisse.mjs  # les 213 de la caisse et de la plume
-python lepli/_gabarit_ts.py                           # après toute retouche de lettre.html
-python lepli/_voir.py                                 # les captures
-cd lepli && python -m http.server                     # pour ouvrir creer.html
+python malettre/_qc.py                                   # les 203 contrôles
+node --experimental-strip-types malettre/_qc_caisse.mjs  # les 213 de la caisse et de la plume
+python malettre/_gabarit_ts.py                           # après toute retouche de lettre.html
+python malettre/_voir.py                                 # les captures
+cd malettre && python -m http.server                     # pour ouvrir creer.html
 ```
 
 ---
@@ -162,10 +192,10 @@ listes. Même règle pour le prix de la plume (`PLUME`, des deux côtés).
 
 ## 🏦 La caisse, en une phrase
 
-Le constructeur envoie **les données** de la lettre à `lepli-commande`, qui en
+Le constructeur envoie **les données** de la lettre à `malettre-commande`, qui en
 fixe le prix (⛔ jamais le navigateur), la dépose, et ouvre un paiement SasPay.
 La notification signée rend la lettre joignable, seule, à n'importe quelle
-heure. `lepli-lettre` la sert à une adresse de **110 bits tirés au sort**, et
+heure. `malettre-lettre` la sert à une adresse de **110 bits tirés au sort**, et
 la retire à la demande. Tout est dans **`PAIEMENT.md`**.
 
 ⛔ **On ne stocke jamais le HTML du navigateur** : une porte publique qui
@@ -261,9 +291,9 @@ Des sondes ont accusé un produit sain, ou blanchi un produit cassé. À relire 
   en `text-transform: uppercase` : la sonde lisait « ZARA » et « JOURS ENSEMBLE »
   et concluait à une erreur. On lit `text_content` quand c'est le contenu qui
   compte.
-- **Chercher un mot au lieu du marqueur.** « LEPLI_DONNEES » figure aussi dans
+- **Chercher un mot au lieu du marqueur.** « MALETTRE_DONNEES » figure aussi dans
   le commentaire d'en-tête du gabarit, qui doit rester. Le bon test porte sur
-  `/*LEPLI_DONNEES*/`.
+  `/*MALETTRE_DONNEES*/`.
 - **Une attente fixe est un pari.** La chaîne de l'aperçu fait 260 ms
   d'anti-rebond, plus le chargement de l'iframe, plus 620 ms d'ouverture :
   800 ms donnait **1 passage vert sur 3**. `attendre()` attend l'ÉTAT.
@@ -324,7 +354,7 @@ Les douze décisions sont prises : `_plans/2026-09-06-lepli-arrete.html`.
    Render avec le SQLite de `vitrina/` : son disque s'efface à chaque
    déploiement, c'est ce qui avait fait disparaître les deux PDF des
    partenaires. Un déploiement, et les lettres payées n'existent plus.
-2. **Le ménage des lettres expirées** : `lepli_menage()` existe, rien ne
+2. **Le ménage des lettres expirées** : `malettre_menage()` existe, rien ne
    l'appelle encore. Une tâche quotidienne suffit.
 3. **Le lien « retirer cette lettre »** dans le pied de la lettre : la porte
    existe, le bouton non. Le retrait passe par WhatsApp en attendant.
@@ -338,5 +368,6 @@ Les douze décisions sont prises : `_plans/2026-09-06-lepli-arrete.html`.
 Le compte qui encaisse · un n8n ailleurs, oui ou non · la commission SasPay ·
 qui relit le deuil · le premier franc encaissé pour de vrai.
 
-✅ Le sous-domaine est tranché depuis le 2026-09-09 : `lepli.nebula-agency.online`
-(`_memoire/decisions.md`).
+L'adresse : `malettre.nebula-agency.online` depuis le renommage du 2026-10-16
+(`_memoire/decisions.md`), en attendant que Mongazi achète, ou non,
+`malettre.app`.

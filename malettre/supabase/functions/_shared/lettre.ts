@@ -1,8 +1,8 @@
 /*
-  LE PLI · tout ce qui décide, du côté serveur.
+  MA LETTRE À… · tout ce qui décide, du côté serveur.
 
   ⚠️ CE FICHIER EST LA SOURCE. Il tourne chez Deno, mais il vit ICI, et il
-  s'essaie sous Node : `node lepli/_qc_caisse.mjs`. Un garde-fou qu'aucun
+  s'essaie sous Node : `node malettre/_qc_caisse.mjs`. Un garde-fou qu'aucun
   contrôle ne peut atteindre n'est pas un garde-fou, c'est une intention.
 
   Rien ici n'appelle le réseau, ne lit un secret, ni ne touche une base : ce
@@ -27,7 +27,7 @@ export type Palier = {
   id: string
   nom: string
   prix: number
-  /* Le pied « Créer la mienne sur LE PLI » : la boucle de croissance. Elle
+  /* Le pied « Écris la tienne : Ma lettre à… » : la boucle de croissance. Elle
      n'existe qu'au palier offert, et c'est le serveur qui en décide. */
   pied: boolean
   /* Combien de jours la lettre reste joignable. */
@@ -177,11 +177,11 @@ export function entetes(extra: Record<string, string> = {}): Record<string, stri
 
 /* ── Poser les données dans le gabarit ──────────────────────────────────── */
 
-const DEBUT = '/*LEPLI_DONNEES*/'
-const FIN = '/*FIN_LEPLI_DONNEES*/'
+const DEBUT = '/*MALETTRE_DONNEES*/'
+const FIN = '/*FIN_MALETTRE_DONNEES*/'
 
 /*
-  ⛔ LE JUMEAU DE `lepli/_injecter.py`, ET IL DOIT RENDRE LE MÊME OCTET.
+  ⛔ LE JUMEAU DE `malettre/_injecter.py`, ET IL DOIT RENDRE LE MÊME OCTET.
   Les données d'une lettre sont écrites par un acheteur et atterrissent DANS un
   bloc <script>. `JSON.stringify` ne protège pas de « </script> » : c'est une
   chaîne JSON parfaitement valide, et le navigateur cherche la balise fermante
@@ -201,7 +201,7 @@ export function serialiser(donnees: unknown): string {
 export function poser(gabarit: string, donnees: unknown): string {
   const a = gabarit.indexOf(DEBUT)
   const b = gabarit.indexOf(FIN)
-  if (a < 0 || b < 0) throw new Error('gabarit sans marqueur LEPLI_DONNEES')
+  if (a < 0 || b < 0) throw new Error('gabarit sans marqueur MALETTRE_DONNEES')
   return gabarit.slice(0, a) + serialiser(donnees) + gabarit.slice(b + FIN.length)
 }
 
@@ -289,7 +289,7 @@ export function lireCommande(d: any): Accord | Refus {
     /* ⛔ Le pied vient du PALIER, jamais du navigateur : sinon la boucle de
        croissance se retire d'un clic dans la console, gratuitement. */
     pied: p.pied,
-    lien: 'https://lepli.nebula-agency.online',
+    lien: 'https://malettre.nebula-agency.online',
   }
 
   /* ⛔ Et JAMAIS le drapeau d'aperçu : le seuil EST le produit, une lettre

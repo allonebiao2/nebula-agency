@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>LE PLI · écris ta lettre</title>
+<title>Ma lettre à… · écris-la</title>
 <!--
-  LE PLI · le constructeur.
+  MA LETTRE À… · le constructeur.
 
   Les six ecrans du manuel : il arrive, il choisit l'occasion, il remplit ET IL
   VOIT, il paie, il colle la reference, il attend sans etre dans le vide.
@@ -207,7 +207,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 <body>
 
 <header>
-  <div class="marque"><span class="sceau" aria-hidden="true"></span>LE PLI</div>
+  <div class="marque"><span class="sceau" aria-hidden="true"></span>Ma lettre à…</div>
   <div class="etapes" role="progressbar" aria-label="Avancement" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="jauge">
     <i class="on"></i><i></i><i></i><i></i>
   </div>
@@ -314,7 +314,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       </div>
 
       <div class="groupe">
-        <label>Vos photos <span style="font-weight:400;color:var(--gris)">(3 au maximum)</span></label>
+        <label>Vos photos <span style="font-weight:400;color:var(--gris-clair)" id="photos-regle"></span></label>
         <div class="photos" id="bac-photos">
           <label class="ajout" for="f-photo" title="Ajouter une photo">+
             <span class="sr">Ajouter une photo</span></label>
@@ -360,6 +360,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       <h1 class="serif">Choisis ton offre.</h1>
       <p class="sous">La lettre est déjà écrite. Elle ne change pas selon le prix.</p>
       <div class="paliers" id="liste-paliers"></div>
+      <p class="compte-plume" id="photos-note" hidden></p>
       <p class="compte-plume" id="plume-note" hidden>La plume a écrit ta lettre : <b>500 F</b> s'ajoutent à l'offre que tu choisis, déjà comptés ci-dessus.</p>
       <div class="actions">
         <button class="sec" data-vers="e-lettre">Retour</button>
@@ -552,11 +553,18 @@ var QUESTIONS = {
 /* Ce qui est coche d'office tant que l'acheteur n'a rien touche. */
 var DEFAUTS = {longueur:"Moyenne", langue:"De tous les jours"};
 var PALIERS = [
-  {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, le pied LE PLI reste", prix:0,     pied:true},
-  {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, sans le pied LE PLI",               prix:2000,  pied:false},
-  {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",              prix:5000,  pied:false},
-  {id:"coffret", nom:"Le Coffret",  desc:"Tout, plus la livraison WhatsApp à l'heure choisie",prix:10000, pied:false}
+  {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, notre signature en pied", prix:0,     pied:true,  photos:1},
+  {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, trois photos, sans notre signature",   prix:2000,  pied:false, photos:3},
+  {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",                 prix:5000,  pied:false, photos:3},
+  {id:"coffret", nom:"Le Coffret",  desc:"Un an, jusqu'à vingt photos, ton code secret",         prix:10000, pied:false, photos:20}
 ];
+/* ⛔ LE COFFRET PROMETTAIT « la livraison WhatsApp à l'heure choisie » : rien
+   ne la faisait, et c'est contraire a la regle « on n'ecrit jamais a la
+   personne qui recoit » (CONDITIONS.md). Il dit desormais ce qu'il contient.
+   ⚠️ Et il le CONTIENT : le serveur gardait vingt photos pour le Coffret,
+   mais ce formulaire plafonnait a trois pour tout le monde. Le nombre de
+   photos vit dans les DEUX bareme, et un controle les compare. */
+var MAX_PHOTOS = Math.max.apply(null, PALIERS.map(function(p){ return p.photos; }));
 /* La plume est une OPTION, pas un palier : elle s'ajoute a l'offre choisie.
    ⛔ Le meme prix vit dans `_shared/lettre.ts` (`PLUME`), et un controle
    compare les deux. Ici, il ne fait que s'AFFICHER : la caisse recalcule. */
@@ -565,19 +573,19 @@ var PLUME = {prix:500};
    LA CAISSE. C'est la fonction de bord qui depose la lettre, en fixe le
    prix (⛔ jamais ce fichier : il s'edite dans la console en trois
    secondes) et ouvre le paiement. Elle vit dans
-   `lepli/supabase/functions/lepli-commande/`.
+   `malettre/supabase/functions/malettre-commande/`.
 
    ⚠️ Tant que `POINT` est vide, la commande ne part nulle part et on le
    DIT a l'acheteur : mieux vaut « ce n'est pas encore ouvert » qu'un ecran
    « Commande recue » pour une commande que personne n'a recue.
    ══════════════════════════════════════════════════════════════════════ */
-var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-commande";
-var POINT_PLUME = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-plume";
-var CLE = "lepli:brouillon";
+var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-commande";
+var POINT_PLUME = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-plume";
+var CLE = "malettre:brouillon";
 
 /* ⛔ LA CLE PUBLIQUE DU PROJET, et elle l'est par conception : c'est celle que
    PISTE envoie deja. Sans elle, une fonction deployee avec la verification du
-   jeton (c'est le cas de `lepli-commande`, voir PAIEMENT.md) repond 401 a
+   jeton (c'est le cas de `malettre-commande`, voir PAIEMENT.md) repond 401 a
    tout le monde, et la caisse n'aurait jamais encaisse un franc. Le defaut
    dormait ici depuis le 2026-09-06, invisible tant que rien n'etait en ligne. */
 var CLE_PUBLIQUE = "sb_publishable_pOEeVKbTixrVx3BPIaohMg_FigTtoBH";
@@ -675,7 +683,7 @@ function donnees(){
   var lignes = (E.lettre || "").split(/\n{2,}/)
     .map(function(s){ return s.replace(/\n/g, " ").trim(); })
     .filter(Boolean);
-  var maxPhotos = pal.id === "gratuit" ? 1 : 3;
+  var maxPhotos = pal.photos;
   return {
     occasion: occ.nom,
     pour: E.pour || "toi",
@@ -690,12 +698,12 @@ function donnees(){
     formule: E.formule || occ.formule || "Avec tout mon cœur,",
     /* L'HEURE. Elle etait demandee a l'acheteur, promise sur l'ecran final,
        et n'entrait dans aucune lettre. C'est elle qui donne son nom au
-       produit : sans elle, LE PLI s'appelle « une jolie page ».
+       produit : sans elle, MA LETTRE À… s'appelle « une jolie page ».
        Format de calendrier, sans fuseau : minuit, c'est minuit sur le
        telephone de celle qui lit. */
     ouvre: E.quand ? (E.quand + "T" + (E.quandH || "00:00")) : "",
     pied: pal.pied,
-    lien: "https://lepli.nebula-agency.online",
+    lien: "https://malettre.nebula-agency.online",
     /* Ouvert d'office pendant l'ecriture, ferme quand on demande a revoir
        le seuil. Ce drapeau ne part JAMAIS dans la lettre commandee : voir
        htmlCommande(). */
@@ -705,8 +713,8 @@ function donnees(){
 
 function batir(d){
   if (!GABARIT) { return "<p style='color:#f4ede0;font-family:sans-serif;padding:24px'>Aperçu en cours de chargement…</p>"; }
-  var a = GABARIT.indexOf("/*LEPLI_DONNEES*/");
-  var b = GABARIT.indexOf("/*FIN_LEPLI_DONNEES*/") + "/*FIN_LEPLI_DONNEES*/".length;
+  var a = GABARIT.indexOf("/*MALETTRE_DONNEES*/");
+  var b = GABARIT.indexOf("/*FIN_MALETTRE_DONNEES*/") + "/*FIN_MALETTRE_DONNEES*/".length;
   return GABARIT.slice(0, a) + serialiser(d) + GABARIT.slice(b);
 }
 
@@ -921,7 +929,7 @@ function dire(t){
 
 var PAS_LA = "La plume n'a pas répondu. Réessaie dans un moment, ou écris ta lettre toi-même : ta fiche est gardée.";
 var MOTS = {
-  "deuil": "LE PLI n'écrit pas encore les lettres de deuil. Nous préférons le faire bien plutôt que vite.",
+  "deuil": "Nous n'écrivons pas encore les lettres de deuil. Nous préférons le faire bien plutôt que vite.",
   "nuisible": "La plume ne peut pas écrire cette lettre-là. Change tes consignes et réessaie.",
   "hors-sujet": "La plume n'a pas compris quelle lettre écrire. Précise l'occasion ou tes consignes.",
   "limite": "Tu as eu tes trois versions. Retouche celle-ci à la main : c'est comme ça qu'elle devient la tienne.",
@@ -1046,6 +1054,15 @@ function peindrePaliers(){
     b.querySelector(".px").textContent = fmt(total(palierDe(b.dataset.id)));
   });
   $("#plume-note").hidden = !E.plume;
+  /* Il a mis plus de photos que l'offre n'en garde : on le DIT, au lieu de
+     les retirer en silence de la lettre. */
+  var pal = palierDe(E.palier);
+  var trop = E.photos.length > pal.photos;
+  $("#photos-note").hidden = !trop;
+  if (trop) {
+    $("#photos-note").textContent = "Tu as mis " + E.photos.length + " photos : "
+      + pal.nom + " garde " + (pal.photos === 1 ? "la première." : "les " + pal.photos + " premières.");
+  }
 }
 
 /* ── Les champs. Un seul chemin : champ -> etat -> sauvegarde -> apercu. ── */
@@ -1108,11 +1125,11 @@ function dessinerPhotos(){
     d.appendChild(im); d.appendChild(b);
     bac.insertBefore(d, bac.firstChild);
   });
-  $(".ajout").hidden = E.photos.length >= 3;
+  $(".ajout").hidden = E.photos.length >= MAX_PHOTOS;
 }
 
 $("#f-photo").addEventListener("change", function(ev){
-  var fs = Array.prototype.slice.call(ev.target.files).slice(0, 3 - E.photos.length);
+  var fs = Array.prototype.slice.call(ev.target.files).slice(0, MAX_PHOTOS - E.photos.length);
   fs.forEach(function(f){
     reduire(f, function(src){
       if (!src) { return; }
@@ -1186,7 +1203,7 @@ $("#btn-commander").addEventListener("click", function(){
   $("#fini-quand").textContent = q;
 
   var c = commande();
-  window.LEPLI_COMMANDE = c;   /* lisible par le controle */
+  window.MALETTRE_COMMANDE = c;   /* lisible par le controle */
   envoyer(c, p);
 });
 
@@ -1234,7 +1251,7 @@ function envoyer(c, p){
        ⛔ La somme et le nom de l'offre viennent de la CAISSE, pas d'ici. */
     if (j.paiement) {
       try {
-        localStorage.setItem("lepli:paiement", JSON.stringify({
+        localStorage.setItem("malettre:paiement", JSON.stringify({
           jeton: j.jeton, paiement: j.paiement, adresse: j.adresse,
           palier: j.palier || "", somme: fmt(j.prix), pour: c.pour, ouvre: c.ouvre
         }));
@@ -1261,6 +1278,31 @@ function envoyer(c, p){
 peindreReglement();
 
 var repris = reprendre();
+
+/* La regle des photos, ecrite a partir du bareme (jamais recopiee). */
+$("#photos-regle").textContent = "(" + PALIERS.map(function(p){
+  return p.photos + " avec " + (p.id === "gratuit" ? "l'offre gratuite" : p.nom);
+}).join(", ") + ")";
+
+/* ── L'adresse preremplit : la page d'accueil envoie ici le prenom tape par
+     le visiteur (« Ma lettre a… Afi »), et parfois l'occasion. Un brouillon
+     en cours n'est jamais ecrase : on ne prend le prenom que s'il est vide. ── */
+(function(){
+  var q = {};
+  try {
+    location.search.slice(1).split("&").forEach(function(x){
+      var i = x.indexOf("=");
+      if (i > 0) { q[decodeURIComponent(x.slice(0, i))] = decodeURIComponent(x.slice(i + 1).replace(/\+/g, " ")); }
+    });
+  } catch (e) { return; }
+  var pour = String(q.pour || "").replace(/[<>]/g, "").trim().slice(0, 30);
+  if (pour && !E.pour) { E.pour = pour; }
+  var occ = String(q.occasion || "");
+  if (occ && OCCASIONS.some(function(o){ return o.id === occ; }) && !repris) {
+    E.occasion = occ;
+    E.__aller = true;
+  }
+})();
 /* L'identifiant du brouillon : la plume compte ses versions par lui. */
 if (!/^[a-z0-9]{8,32}$/.test(E.id || "")) {
   var A = "abcdefghijkmnpqrstuvwxyz23456789", t8 = new Uint8Array(16);
@@ -1285,6 +1327,10 @@ peindrePaliers();
 if (repris) {
   $("#repris").hidden = false;
   aller("e-lettre");
+} else if (E.__aller) {
+  /* Venu de la page d'accueil avec une occasion : on la pose comme un clic. */
+  delete E.__aller;
+  choisirOccasion(occasion(E.occasion));
 }
 
 /* Le gabarit est charge une fois, puis rempli a chaque frappe. */
@@ -1295,7 +1341,7 @@ fetch("lettre.html")
     $("#apercu").srcdoc =
       "<p style='color:#f4ede0;font-family:sans-serif;padding:24px;line-height:1.6'>" +
       "L'aperçu a besoin d'un serveur. Lance <code>python -m http.server</code> " +
-      "dans le dossier lepli/.</p>";
+      "dans le dossier malettre/.</p>";
   });
 </script>
 </body>
