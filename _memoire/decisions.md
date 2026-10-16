@@ -930,3 +930,13 @@ MD5, 53 plats balisés, fichier absent → 404).
   WaveSpeed à 0,04 $ et Higgsfield à 0 crédit, donc rien n'est généré.
 - **Conséquences** : six vagues (0 les deux langues, faite le soir même · 1 le rendu · 2 l'habillage ·
   3 la vitrine · 4 le faire-part · 5 la pub). Détail : `malettre/CONTEXT.md`.
+
+## 2026-10-16 · MA LETTRE À… : la vitrine de la vague 3 (choix de Claude, à valider par Mongazi)
+- **Pas de barre d'action en bas au téléphone** : la barre du haut porte déjà « Écrire ma lettre »
+  en permanence ; un second fixe aurait pris 60 px de l'écran pour un bouton déjà visible.
+- **Le prix du faire-part vit dans `malettre/faire-part/offre.json`** et nulle part ailleurs (bloc,
+  FAQ, `llms.txt` le lisent ; le générateur de la vague 4 le lira aussi).
+- **Les pastilles de la vitrine : cire, papier, pluie** (le sceau reste au constructeur : une 4e
+  rangée ne tenait plus sous le téléphone en 390).
+- **Exemple de faire-part** : Kossi & Afiwa, couple inventé et dit tel, samedi 12 décembre 2026 à
+  Cotonou (date à changer après ce jour).

@@ -1,5 +1,5 @@
 {
- "_lire": "Les six lettres d'exemple EN ANGLAIS (2026-10-16), écrites par la vraie plume anglaise (SYSTEME_EN de plume.ts) à partir des mêmes fiches que le français, traduites. Personnes inventées. Relues avant usage. Le build (_build_accueil.py en) en fait de vraies lettres avec langue « en ».",
+ "_lire": "Les six lettres d'exemple EN ANGLAIS (2026-10-16), écrites par la vraie plume anglaise (SYSTEME_EN de plume.ts) à partir des mêmes fiches que le français, traduites. Personnes inventées. Relues avant usage. Le build (_build_accueil.py en) en fait de vraies lettres avec langue « en ». Depuis le 2026-10-16, chaque exemple porte un habillage different (cire, sceau, papier, pluie), et deux une phrase a gratter : la vitrine montre ce que les offres payantes ajoutent.",
  "exemples": [
   {
    "id": "afi",
@@ -60,7 +60,14 @@
     ],
     "souvenir": "Our first date by the sea in Lomé: the storm came out of nowhere, and we ran to hide under a coconut seller's straw hut.",
     "consignes": "Call her “my sweet”. Tell her I'm counting the days until she's back from Accra."
-   }
+   },
+   "habillage": {
+    "cire": "rose",
+    "sceau": "coeur",
+    "papier": "coton",
+    "pluie": "petales"
+   },
+   "gratter": "Your ticket home is already paid for."
   },
   {
    "id": "papa",
@@ -119,6 +126,12 @@
     ],
     "souvenir": "Every morning he took me to school on his motorbike, even in the rain, in his old blue raincoat.",
     "consignes": ""
+   },
+   "habillage": {
+    "cire": "or",
+    "sceau": "couronne",
+    "papier": "kraft",
+    "pluie": "aucune"
    }
   },
   {
@@ -184,6 +197,12 @@
     ],
     "souvenir": "Our first garba in Fidjrossè: she put in far too much chilli and pretended everything was fine.",
     "consignes": "Stay kind, no blame."
+   },
+   "habillage": {
+    "cire": "nuit",
+    "sceau": "initiale",
+    "papier": "nuit",
+    "pluie": "aucune"
    }
   },
   {
@@ -251,6 +270,12 @@
     ],
     "souvenir": "At Adjamé market she sold attiéké and always kept the best portion for me, wrapped in a leaf.",
     "consignes": "Thank her for my studies. Don't mention money."
+   },
+   "habillage": {
+    "cire": "bordeaux",
+    "sceau": "coeur",
+    "papier": "coton",
+    "pluie": "etoiles"
    }
   },
   {
@@ -311,7 +336,14 @@
     ],
     "souvenir": "In a statistics tutorial at uni, she lent me her calculator and said: “give it back when you can count”.",
     "consignes": ""
-   }
+   },
+   "habillage": {
+    "cire": "bordeaux",
+    "sceau": "initiale",
+    "papier": "creme",
+    "pluie": "confettis"
+   },
+   "gratter": "Your calculator is still at my place."
   },
   {
    "id": "fatou",
@@ -371,6 +403,12 @@
     ],
     "souvenir": "Every Tabaski when I was small, she trusted me with the big tray to carry to the neighbours, and I never dropped one.",
     "consignes": "I can't come this year, I'm in London."
+   },
+   "habillage": {
+    "cire": "sapin",
+    "sceau": "colombe",
+    "papier": "creme",
+    "pluie": "etoiles"
    }
   }
  ]

@@ -24,7 +24,7 @@ OUT = ICI / "_vues" / ("accueil-en" if LANGUE == "en" else "accueil")
 OUT.mkdir(parents=True, exist_ok=True)
 SEULE = next((a for a in ARGS if a != "en"), "")
 
-SECTIONS = ["haut", "exemples", "plume", "occasions", "seuil", "prix", "promesses", "fin"]
+SECTIONS = ["haut", "exemples", "plume", "occasions", "faire-part", "seuil", "prix", "promesses", "questions", "fin"]
 MOMENTS = [0.06, 0.2, 0.36, 0.5, 0.6, 0.72, 0.84, 0.97]
 
 
@@ -65,6 +65,26 @@ def main():
                     pg.evaluate("() => scrollBy(0, innerHeight * .8)")
                     pg.wait_for_timeout(900)
                     pg.screenshot(path=str(OUT / ("%d-%s-b.png" % (larg, sid))))
+                # « Ouvre-la toi-même » : rhabillée (cire or, papier coton, étoiles), puis ouverte.
+                pg.evaluate("() => { const s = document.getElementById('seuil'); scrollTo(0, s.querySelector('.essai').getBoundingClientRect().top + scrollY - 80); }")
+                pg.wait_for_timeout(600)
+                for nom, val in (("cire", "or"), ("papier", "coton"), ("pluie", "etoiles")):
+                    pg.click('input[name="hb-%s"][value="%s"]' % (nom, val))
+                    pg.wait_for_timeout(500)
+                pg.wait_for_timeout(1500)
+                pg.screenshot(path=str(OUT / ("%d-seuil-habillee.png" % larg)))
+                fr = pg.query_selector("#seuil-cadre").content_frame()
+                fr.evaluate("document.getElementById('btn-ouvrir').click()")
+                pg.wait_for_timeout(2600)
+                pg.screenshot(path=str(OUT / ("%d-seuil-ouverte.png" % larg)))
+                fr.evaluate("document.getElementById('l-gratter').scrollIntoView({block: 'center'})")
+                pg.wait_for_timeout(500)
+                pg.screenshot(path=str(OUT / ("%d-seuil-gratter.png" % larg)))
+                # Les questions, deux réponses ouvertes.
+                pg.evaluate("() => { const q = [...document.querySelectorAll('.faq details.q')]; q[0].open = q[3].open = true;"
+                            " scrollTo(0, document.getElementById('questions').getBoundingClientRect().top + scrollY - 62); }")
+                pg.wait_for_timeout(1200)
+                pg.screenshot(path=str(OUT / ("%d-questions-ouvertes.png" % larg)))
             ctx.close()
         nav.close()
     srv.shutdown()

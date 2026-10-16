@@ -66,8 +66,8 @@ puis qui redevient une feuille entre les mains de quelqu'un. Le récit et la lis
 des sections : `CONTEXT.md`.
 
 ```bash
-python malettre/_build_accueil.py     # index.html + exemples/*.html (GÉNÉRÉS)
-python malettre/_qc_accueil.py        # 78 contrôles, tous verts avant publication
+python malettre/_build_accueil.py     # index.html + exemples/*.html + llms.txt (GÉNÉRÉS)
+python malettre/_qc_accueil.py        # 235 contrôles (FR + EN), tous verts avant publication
 python malettre/_voir_accueil.py      # captures 390 et 1440 dans _vues/accueil, à REGARDER
 python malettre/_og.py                # og.jpg (1200 × 630, réseau requis pour les polices)
 python malettre/_dist.py              # _dist/ : seulement ce qui doit être en ligne
@@ -91,6 +91,27 @@ python malettre/_dist.py              # _dist/ : seulement ce qui doit être en 
 - ⚠️ **Pour voir le chargement, figer ses transitions** (`getAnimations()`,
   `pause()`, `currentTime`), pas `clock.install()` qui laisse couler le temps.
 
+**Ce que la vitrine vend depuis la vague 3** (détail : `CONTEXT.md`) :
+
+- **« Ouvre-la toi-même »** : la vraie lettre (le vrai gabarit, en `srcdoc`) s'ouvre
+  dans 10 s, puis des **pastilles** cire / papier / pluie la rhabillent ; rhabillée,
+  elle s'ouvre tout de suite, avec une phrase à gratter. Les pastilles sont LUES dans
+  `HABILLAGE` (`creer.html`), écrites en HTML par le build (aucun CLS).
+- **Les exemples sont habillés** : `habillage` (et parfois `gratter`) dans
+  `exemples.json` / `exemples.en.json` ; le build refuse une valeur absente des listes.
+- **La prochaine grande date** : calculée dans la page sur les occasions qui ont un
+  `jour` (Saint-Valentin, Noël, Nouvel an). ⚠️ Ses clés (`a`, `j0`, `j1`, `jn`, `go`)
+  sont neutres exprès : `avant` et `dans` passaient pour du français dans le script
+  anglais.
+- **Le faire-part sur demande** : prix et numéro dans **`faire-part/offre.json`**, et
+  nulle part ailleurs (bloc, FAQ, `llms.txt` le lisent).
+- **La FAQ** : 8 `<details class="q">`. Le `FAQPage` est LU dans ces questions par le
+  build, et le contrôle compare les deux côtés dans le navigateur. La réponse du prix
+  est écrite par `faq_prix()` depuis le catalogue, qui **refuse d'écrire** si une
+  offre payante ne dure plus un an, garde la signature ou perd l'habillage.
+- **`llms.txt`** : fabriqué par le build depuis la page et le catalogue, publié par
+  `_dist`. ⚠️ À relancer après tout changement de prix ou de FAQ (le build le fait).
+
 ### Les deux langues (2026-10-16)
 
 Décision de Mongazi : le français ET l'anglais sur tout le parcours (vitrine,
@@ -98,7 +119,7 @@ constructeur, lettre, plume, exemples, pub). **Le français est la source.**
 
 ```bash
 python malettre/_build_accueil.py     # lance _traduire.py, puis l'accueil FR et EN
-python malettre/_qc_langues.py        # 51 contrôles : aucun mot français dans l'anglais
+python malettre/_qc_langues.py        # 52 contrôles : aucun mot français dans l'anglais
 python malettre/_voir_accueil.py en   # captures de la page anglaise (_vues/accueil-en)
 python malettre/_og.py                # og.jpg et og-en.jpg
 ```

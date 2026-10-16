@@ -2955,3 +2955,14 @@ coupé à droite) que personne n'avait regardée de près.
 la sonde de contraste, elle, mesurait le fond une section à côté (la capture d'élément refait défiler),
 et `clock.install()` laissait couler le temps sous une capture « avant ». Détail :
 `_memoire/apprentissages/2026-10-16-qc-telephone-dezoom.md`.
+
+
+## 2026-10-16 · Un bloc sombre dans une section claire hérite des couleurs claires
+
+Vitrine de MA LETTRE À… : le bloc du faire-part (fond nuit) vit dans la section des occasions (fond
+papier). Son surtitre a pris la couleur des surtitres des sections CLAIRES (`.papier-2 .sur`,
+bordeaux) : 2,3:1 sur la nuit. Le CSS se lisait juste, seule la sonde sur les pixels l'a vu.
+**Règle** : un bloc qui inverse le fond de sa section redéclare ses couleurs de texte ET de bouton
+(`.fp .sur`, `.fp .pri`) ; le contrôle de contraste doit lister ses textes.
+Même jour, même famille : en `display:grid`, « K<span>&</span>A » fait **trois cases empilées** (chaque
+morceau de texte devient un élément de grille) : une rangée se pose en `flex`.

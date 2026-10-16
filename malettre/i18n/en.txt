@@ -561,6 +561,8 @@ FR: <a href="#plume">La plume</a>
 EN: <a href="#plume">The Quill</a>
 FR: <a href="#prix">Le prix</a>
 EN: <a href="#prix">Pricing</a>
+FR: <a href="#faire-part">Faire-part</a>
+EN: <a href="#faire-part">Weddings</a>
 FR: <a class="langue" href="en/" hreflang="en" lang="en" title="Read this page in English">EN</a>
 EN: <a class="langue" href="../" hreflang="fr" lang="fr" title="Lire cette page en français">FR</a>
 FR: </span>Écrire ma lettre<
@@ -634,13 +636,36 @@ FR: <h2 class="h2" data-rv>Un casier pour<br><em>chaque grand jour.</em></h2>
 EN: <h2 class="h2" data-rv>A pigeonhole for<br><em>every big day.</em></h2>
 FR: L'amour, la famille, les fêtes, les réussites. Et même la rupture, avec classe.
 EN: Love, family, holidays, achievements. And even a breakup, with class.
+# ── le faire-part (vague 3, 2026-10-16) ──
+FR: <p class="fp-o">Faire-part · exemple</p>
+EN: <p class="fp-o">Invitation · example</p>
+FR: <p class="fp-dit">se disent oui</p>
+EN: <p class="fp-dit">are getting married</p>
+FR: <p class="fp-date">Samedi 12 décembre 2026</p>
+EN: <p class="fp-date">Saturday 12 December 2026</p>
+FR: <span>Je serai là</span><span>Je ne pourrai pas venir</span>
+EN: <span>I'll be there</span><span>I can't make it</span>
+FR: <p class="sur" data-rv>Le faire-part de mariage</p>
+EN: <p class="sur" data-rv>The wedding invitation</p>
+FR: Vous vous mariez ?<br><em>On l'écrit pour vous.</em>
+EN: Getting married?<br><em>We'll write it for you.</em>
+FR: Un faire-part qui s'ouvre comme une lettre : le cachet à vos initiales, le compte à rebours jusqu'au grand jour, le programme, le lieu sur la carte, la tenue, vos photos. Vos invités répondent d'un geste, directement sur votre WhatsApp.
+EN: An invitation that opens like a letter: the seal with your initials, the countdown to the big day, the schedule, the venue on the map, the dress code, your photos. Your guests reply with a tap, straight to your WhatsApp.
+FR: fait sur mesure par notre équipe, d'après ce que vous nous racontez. Kossi et Afiwa sont un couple inventé.
+EN: made to measure by our team, from what you tell us. Kossi and Afiwa are an invented couple.
+FR: </span>Demander notre faire-part<
+EN: </span>Ask for our invitation<
 # ── le seuil ──
 FR: <p class="sur" data-rv>Ce qu'elle vit</p>
 EN: <p class="sur" data-rv>What they experience</p>
-FR: <h2 class="h2" data-rv>L'heure dite,<br><em>en vrai.</em></h2>
-EN: <h2 class="h2" data-rv>The chosen hour,<br><em>for real.</em></h2>
-FR: Voici une vraie lettre. Elle s'ouvrira dans quelques secondes : reste là et regarde le cachet. Avant l'heure, il dort. À l'heure, la cire s'allume, et le bouton paraît.
-EN: Here is a real letter. It will open in a few seconds: stay here and watch the seal. Before the time, it sleeps. At the time, the wax lights up and the button appears.
+FR: <h2 class="h2" data-rv>Ouvre-la<br><em>toi-même.</em></h2>
+EN: <h2 class="h2" data-rv>Open it<br><em>yourself.</em></h2>
+FR: Voici une vraie lettre. Elle s'ouvre dans dix secondes : regarde le cachet dormir, puis la cire s'allumer. Ensuite, habille-la : touche une pastille, puis le cachet.
+EN: Here is a real letter. It opens in ten seconds: watch the seal sleep, then the wax light up. Then dress it up: tap a swatch, then the seal.
+FR: <p class="hb-t">Habille-la <span>
+EN: <p class="hb-t">Dress it up <span>
+FR: </span>Écrire la mienne<
+EN: </span>Write mine<
 FR: >La refermer et recommencer<
 EN: >Close it and start again<
 FR: title="Une vraie lettre qui attend son heure"
@@ -650,8 +675,8 @@ FR: <p class="sur" data-rv>Le prix</p>
 EN: <p class="sur" data-rv>Pricing</p>
 FR: <h2 class="h2" data-rv>Ce que<br><em>ça coûte.</em></h2>
 EN: <h2 class="h2" data-rv>What it<br><em>costs.</em></h2>
-FR: La lettre est la même à chaque offre. Ce qui change : combien de temps elle reste en ligne, combien de photos elle garde, et si notre signature figure en bas.
-EN: The letter is the same with every offer. What changes: how long it stays online, how many photos it keeps, and whether our signature appears at the bottom.
+FR: L'ouverture est la même à chaque offre : l'enveloppe, le cachet, le son. Ce qui change : combien de temps elle reste en ligne, ses photos, son habillage, et notre signature en bas.
+EN: The opening is the same with every offer: the envelope, the seal, the sound. What changes: how long it stays online, its photos, its finish, and our signature at the bottom.
 FR: On paie par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur. Rien à recopier, aucun code à nous donner.
 EN: You pay by Mobile Money or card, on our payment provider's secure page. Nothing to copy, no code to give us.
 # ── la confiance ──
@@ -669,6 +694,44 @@ FR: <b>Retirée sous 24 heures.</b><p>Si la personne qui la reçoit le demande, 
 EN: <b>Removed within 24 hours.</b><p>If the person who receives it asks, the letter is removed, no questions asked.</p>
 FR: Une lettre est un cadeau emballé, pas un coffre-fort. On ne te promet pas le secret : on te promet l'heure.
 EN: A letter is a wrapped gift, not a safe. We don't promise you secrecy: we promise you the hour.
+# ── les questions (vague 3, 2026-10-16). Les réponses tiennent debout seules :
+# le FAQPage du <head> est relu dans la page anglaise par le build. ──
+FR: <p class="sur" data-rv>Les questions</p>
+EN: <p class="sur" data-rv>Questions</p>
+FR: <h2 class="h2" data-rv>Ce qu'on nous<br><em>demande.</em></h2>
+EN: <h2 class="h2" data-rv>What people<br><em>ask us.</em></h2>
+FR: <summary>Comment la personne reçoit-elle la lettre ?</summary>
+EN: <summary>How does the person receive the letter?</summary>
+FR: Par un lien que tu lui envoies toi-même, sur WhatsApp ou ailleurs, quand tu veux : trois jours avant ou la veille. Nous n'écrivons jamais à la personne. Elle ouvre le lien sur son téléphone, sans rien installer, et trouve une enveloppe scellée qui attend son heure.
+EN: Through a link you send them yourself, on WhatsApp or anywhere else, whenever you like: three days before, or the night before. We never write to the person. They open the link on their phone, with nothing to install, and find a sealed envelope waiting for its hour.
+FR: <summary>Que voit-elle si elle ouvre le lien avant l'heure ?</summary>
+EN: <summary>What do they see if they open the link before the time?</summary>
+FR: Une enveloppe fermée et un compte à rebours, rien d'autre : le cachet dort, aucun bouton ne l'ouvre. À l'heure choisie, la cire s'allume et le bouton paraît, sans recharger la page. C'est l'heure de son téléphone qui compte : minuit à Abidjan n'est pas minuit à Cotonou.
+EN: A closed envelope and a countdown, nothing else: the seal sleeps and no button opens it. At the chosen time, the wax lights up and the button appears, without reloading the page. Their phone's clock is what counts: midnight in Abidjan is not midnight in Cotonou.
+FR: <summary>Faut-il installer une application ?</summary>
+EN: <summary>Do I need to install an app?</summary>
+FR: Non. La lettre est une page qui s'ouvre dans le navigateur du téléphone, même avec une petite connexion. Il n'y a ni application à télécharger ni compte à créer, ni pour toi, ni pour la personne qui la reçoit.
+EN: No. The letter is a page that opens in the phone's browser, even on a weak connection. There is no app to download and no account to create, neither for you nor for the person who receives it.
+FR: <summary>Combien coûte une lettre ?</summary>
+EN: <summary>How much does a letter cost?</summary>
+FR: <summary>Comment paie-t-on ?</summary>
+EN: <summary>How do I pay?</summary>
+FR: Par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur, où tu choisis ton réseau. Rien à recopier, aucun code à nous donner. Une lettre gratuite ne passe pas du tout par la caisse : tu l'écris, tu reçois ton lien.
+EN: By Mobile Money or card, on our payment provider's secure page, where you choose your network. Nothing to copy, no code to give us. A free letter never goes through checkout at all: you write it, you get your link.
+FR: <summary>Qu'est-ce que la plume ?</summary>
+EN: <summary>What is the Quill?</summary>
+FR: Une aide pour écrire. Tu réponds à quelques questions, tu racontes un souvenir, tu dis comment tu veux ta lettre, et la plume en écrit une première version. Tu relis, tu changes ce que tu veux, tu signes. L'essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.
+EN: A writing aid. You answer a few questions, share a memory, say how you want your letter, and the Quill writes a first version. You reread it, change what you like, and sign. Trying it costs nothing, and it never makes up a memory for you.
+FR: <summary>Ma lettre est-elle privée ?</summary>
+EN: <summary>Is my letter private?</summary>
+FR: Son adresse est tirée au hasard, jamais indexée par les moteurs de recherche, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée. Mais qui a le lien peut la lire : c'est un cadeau emballé, pas un coffre-fort. Et si la personne qui la reçoit demande son retrait, elle est retirée sous 24 heures.
+EN: Its address is drawn at random, never indexed by search engines, and it expires: seven days for a free letter, a year for a paid one. But anyone with the link can read it: it is a wrapped gift, not a safe. And if the person who receives it asks for it to be removed, it is removed within 24 hours.
+FR: <summary>Pouvez-vous faire notre faire-part de mariage ?</summary>
+EN: <summary>Can you make our wedding invitation?</summary>
+FR: Oui, sur demande, pour <!--__FP_PRIX__-->, fait sur mesure par notre équipe. Il s'ouvre comme une lettre, avec le cachet à vos initiales, le compte à rebours jusqu'au grand jour, le programme, le lieu, la tenue et vos photos. Vos invités vous répondent directement sur votre WhatsApp.
+EN: Yes, on request, for <!--__FP_PRIX__-->, made to measure by our team. It opens like a letter, with the seal bearing your initials, the countdown to the big day, the schedule, the venue, the dress code and your photos. Your guests reply straight to your WhatsApp.
+FR: Une autre question ? <a id="question" href="https://wa.me/22996740732?text=Bonjour%2C%20j%27ai%20une%20question%20sur%20Ma%20lettre%20%C3%A0%E2%80%A6%20%3A%20">Écris-nous sur WhatsApp</a>.
+EN: Another question? <a id="question" href="https://wa.me/22996740732?text=Hello%2C%20I%20have%20a%20question%20about%20Ma%20lettre%20%C3%A0%E2%80%A6%3A%20">Message us on WhatsApp</a>.
 # ── la fin ──
 FR: <p class="sur" data-rv>À toi</p>
 EN: <p class="sur" data-rv>Your turn</p>
@@ -703,5 +766,7 @@ FR: lettre: ["Voilà ce que vivra la personne qui reçoit ta lettre : un cachet 
 EN: lettre: ["This is what the person who receives your letter will see: a seal that waits for its hour, then lights up.",
 FR: "Le reste, c'est toi qui l'écris."],
 EN: "The rest is yours to write."],
+FR: d.gratter = "Tu peux cacher une phrase ici.";
+EN: d.gratter = "You can hide a line here.";
 FR: fetch("lettre.html")
 EN: fetch("../lettre.html")

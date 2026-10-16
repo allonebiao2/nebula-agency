@@ -26,9 +26,11 @@ DIST = ICI / "_dist"
 
 PAGES = ["index.html", "creer.html", "lettre.html", "paiement.html", "merci.html", "favicon.svg", "og.jpg",
          # l'anglais (2026-10-16) : fabriqué par _build_accueil.py, qui lance _traduire.py
-         "og-en.jpg", "en/index.html", "en/creer.html", "en/paiement.html", "en/merci.html"]
+         "og-en.jpg", "en/index.html", "en/creer.html", "en/paiement.html", "en/merci.html",
+         # ce qu'un agent lit sans rendre la page (vague 3) : fabriqué par _build_accueil.py
+         "llms.txt"]
 SOURCES_ACCUEIL = ["_accueil_src.html", "exemples.json", "exemples.en.json", "creer.html", "lettre.html",
-                   "_build_accueil.py", "i18n/en.txt"]
+                   "_build_accueil.py", "i18n/en.txt", "faire-part/offre.json"]
 
 ERREUR = """<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">

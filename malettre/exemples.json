@@ -1,5 +1,5 @@
 {
-  "_lire": "Six lettres d'EXEMPLE. Les personnes sont inventees, et la page le dit (CONDITIONS.md §5). Elles ont ete ecrites par la vraie plume le 2026-10-16 a partir de ces fiches, puis relues. Jamais de photo de visage.",
+  "_lire": "Six lettres d'EXEMPLE. Les personnes sont inventees, et la page le dit (CONDITIONS.md §5). Elles ont ete ecrites par la vraie plume le 2026-10-16 a partir de ces fiches, puis relues. Jamais de photo de visage. Depuis le 2026-10-16, chaque exemple porte un habillage different (cire, sceau, papier, pluie), et deux une phrase a gratter : la vitrine montre ce que les offres payantes ajoutent.",
   "exemples": [
     {
       "id": "afi",
@@ -60,7 +60,14 @@
         ],
         "souvenir": "Notre premier rendez-vous au bord de la mer à Lomé : l'orage est arrivé, on a couru se cacher sous la paillote d'un vendeur de coco.",
         "consignes": "Appelle-la « ma douce ». Dis-lui que je compte les jours jusqu'à son retour d'Accra."
-      }
+      },
+      "habillage": {
+        "cire": "rose",
+        "sceau": "coeur",
+        "papier": "coton",
+        "pluie": "petales"
+      },
+      "gratter": "Ton billet de retour est déjà payé."
     },
     {
       "id": "papa",
@@ -119,6 +126,12 @@
         ],
         "souvenir": "Il me déposait à l'école à moto chaque matin, même sous la pluie, avec son vieux ciré bleu.",
         "consignes": ""
+      },
+      "habillage": {
+        "cire": "or",
+        "sceau": "couronne",
+        "papier": "kraft",
+        "pluie": "aucune"
       }
     },
     {
@@ -184,6 +197,12 @@
         ],
         "souvenir": "Notre premier garba à Fidjrossè : elle avait mis trop de piment et elle a fait semblant que tout allait bien.",
         "consignes": "Reste gentil, aucun reproche."
+      },
+      "habillage": {
+        "cire": "nuit",
+        "sceau": "initiale",
+        "papier": "nuit",
+        "pluie": "aucune"
       }
     },
     {
@@ -251,6 +270,12 @@
         ],
         "souvenir": "Au marché d'Adjamé, elle vendait l'attiéké et gardait toujours la plus belle part pour moi, enveloppée dans une feuille.",
         "consignes": "Remercie-la pour mes études. Ne parle pas d'argent."
+      },
+      "habillage": {
+        "cire": "bordeaux",
+        "sceau": "coeur",
+        "papier": "coton",
+        "pluie": "etoiles"
       }
     },
     {
@@ -311,7 +336,14 @@
         ],
         "souvenir": "En TD de statistiques à la fac, elle m'a prêté sa calculatrice et m'a dit : « tu me la rends quand tu sauras compter ».",
         "consignes": ""
-      }
+      },
+      "habillage": {
+        "cire": "bordeaux",
+        "sceau": "initiale",
+        "papier": "creme",
+        "pluie": "confettis"
+      },
+      "gratter": "Ta calculatrice est toujours chez moi."
     },
     {
       "id": "fatou",
@@ -370,6 +402,12 @@
         ],
         "souvenir": "Chaque Tabaski, quand j'étais petit, elle me confiait le grand plateau à porter chez les voisins, et je n'en ai jamais fait tomber un.",
         "consignes": "Je ne pourrai pas venir cette année, je suis à Paris."
+      },
+      "habillage": {
+        "cire": "sapin",
+        "sceau": "colombe",
+        "papier": "creme",
+        "pluie": "etoiles"
       }
     }
   ]

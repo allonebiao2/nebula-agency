@@ -120,6 +120,72 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
 - Contrôles : caisse 269, lettre 212, anglais 51, accueil (FR + EN).
 - Image de partage anglaise `og-en.jpg`, 404 bilingue, `_dist` à 27 fichiers.
 
+## Vague 1 · le rendu pour tous (2026-10-16, commit `c8cf9f4`)
+
+- L'enveloppe du seuil en **vraie 3D** (dos, carte, poche, rabat à deux faces) : on
+  touche le cachet, il casse en deux le long de sa fêlure, le rabat se lève, la carte
+  sort, la lettre se déplie (1 150 ms).
+- **Vibration** au toucher (jamais en mouvement réduit) et **son** de la cire et du
+  papier synthétisés en Web Audio (aucun fichier), discrets, coupables d'un bouton,
+  le choix gardé sur l'appareil.
+- **Grand compte à rebours** (jours, heures, minutes, secondes) sur le seuil.
+- Trouvé : en anglais, le seuil d'une lettre prête disait « Une lettre t'attend. ».
+
+## Vague 2 · l'habillage payant et « Répondre » (2026-10-16, commit `efa8381`)
+
+- **L'habillage, réservé aux offres payantes, sans changer les prix** : 5 cires, 4
+  sceaux (initiale, cœur, colombe, couronne), 4 papiers (crème, coton ivoire en relief
+  SVG, kraft, nuit), une pluie à l'ouverture (pétales, confettis, étoiles d'or), et
+  une **phrase à gratter** sous une pellicule d'or (au doigt, ou « Révéler sans
+  gratter »).
+- Le serveur retire l'habillage d'une lettre gratuite comme il fixe le prix ; trois
+  copies des listes (serveur, constructeur, gabarit), comparées par un contrôle.
+- **« Répondre à Kofi sur WhatsApp »** si l'acheteur coche la case (décochée par
+  défaut) ; l'indicatif part à part, le serveur compose le numéro (le `01` gardé).
+
+## Vague 3 · la vitrine (2026-10-16)
+
+- **« Ouvre-la toi-même »** (le seuil) : la vraie lettre s'ouvre dans **10 s** (au
+  lieu de 40), puis **trois rangées de pastilles** (cire, papier, pluie) la rhabillent
+  en direct ; rhabillée, elle s'ouvre tout de suite et cache « Tu peux cacher une
+  phrase ici. » sous l'or à gratter. Le téléphone et ses pastilles forment **un bloc**
+  qui tient dans l'écran (390 × 844 et 1440 × 900) : on touche, la lettre change juste
+  au-dessus du doigt. Le sceau reste au constructeur (une 4e rangée ne tenait plus).
+  Pastilles LUES dans `HABILLAGE` de `creer.html` (noms anglais dans `en/creer.html`).
+- **Les six exemples habillés**, chacun autrement (`habillage` dans `exemples.json` et
+  `exemples.en.json`), deux avec une phrase à gratter (Afi : « Ton billet de retour
+  est déjà payé. », Grâce : « Ta calculatrice est toujours chez moi. »). Le cachet de
+  chaque carte prend la cire de sa lettre (tons LUS dans `lettre.html`).
+- **La prochaine grande date**, calculée au chargement sur les occasions datées
+  (`jour`) : « Prochaine grande date : Noël, dans 70 jours. Écris-la maintenant, elle
+  attendra. » Jamais une fausse rareté.
+- **Le faire-part de mariage, sur demande** : un bloc nuit dans les occasions (lien
+  « Faire-part » dans la barre), un carton d'exemple (Kossi & Afiwa, couple inventé et
+  dit tel), **25 000 F lus dans `faire-part/offre.json`** (seule source du prix et du
+  numéro), bouton vers le WhatsApp de NEBULA avec un message prêt.
+- **Une FAQ de 8 questions** (section « Les questions », entre les promesses et la
+  fin) : chaque réponse tient debout seule, ne dit que ce que la page dit ; la réponse
+  du prix est **écrite depuis le catalogue** et le build **vérifie** avant de l'écrire
+  que chaque offre payante dure un an, sans signature, avec l'habillage. Le `FAQPage`
+  du `<head>` est **lu dans les questions visibles**. « Une autre question ? Écris-nous
+  sur WhatsApp ».
+- **`llms.txt`** (FR + EN), fabriqué par le build : offres et prix du catalogue, plume,
+  faire-part, les 8 questions et leurs réponses, les pages. Dans `_dist` (28 fichiers).
+- **Les timbres disent ce que chaque offre débloque** (« + l'habillage au choix »), et
+  le texte du prix dit que l'ouverture est la même pour tous.
+- ⛔ **La barre d'action en bas au téléphone n'est PAS faite, exprès** : la barre du
+  haut porte déjà « Écrire ma lettre » en permanence, et le plan la voulait « masquée
+  quand un autre bouton d'écriture est visible » : elle ne se serait jamais montrée.
+  Un deuxième fixe aurait mangé 60 px d'un écran de 844 pour rien.
+- Trouvé en route : le surtitre du faire-part héritait du **bordeaux des sections
+  claires sur le fond nuit du bloc** (2,3:1, attrapé par la sonde sur les pixels) ·
+  le cachet « K & A » en **grille** empilait K, & et A (trois cases) · l'esperluette du
+  script se lisait comme un trait (→ italique Caslon) · le bouton du faire-part était
+  sombre sur sombre · le contrôle des langues prenait les clés `avant` et `dans` du
+  script anglais pour du français (→ clés neutres) · le contrôle de caisse virait au
+  rouge sans `PYTHONIOENCODING` (console cp1252) : il le pose lui-même désormais.
+- Contrôles : accueil **235** (FR + EN), lettre 269, caisse 301, anglais 52.
+
 ## Ce qui attend Mongazi
 
 - Le **feu vert** pour la mise en ligne, et d'abord **brancher la caisse**
@@ -130,7 +196,12 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
 - **Filmer 10 secondes de vraie matière** (une main qui ferme une enveloppe,
   un cachet qu'on brise) : sert la page ET la vidéo publicitaire.
 - Les 5 réponses déjà en attente (bloc archivé ci-dessous).
-- **La vidéo publicitaire** : prochain chantier, questions posées le 2026-10-16.
+- **La vidéo publicitaire** (vague 5) : les textes de la voix sont prêts
+  (`_studio-video/src/malettre/VOIX.md`), **les six MP3 ElevenLabs sont à déposer**
+  dans `_partage/ma lettre/voix/`.
+- **Le faire-part sur demande peut se vendre AVANT la caisse** (il passe par WhatsApp) :
+  le gabarit et le générateur viennent en vague 4. ⚠️ La date du carton d'exemple
+  (samedi 12 décembre 2026) sera à changer après cette date.
 
 ---
 

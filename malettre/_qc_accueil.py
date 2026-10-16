@@ -21,12 +21,15 @@ Ce qu'une suite verte doit prouver ici, et que l'œil ne voit pas :
 MESURE, imprimée : Chromium sans écran rend sans carte graphique, le chiffre
 ne vaut que comparé à lui-même d'une version à l'autre.
 """
+import datetime
 import functools
+import html
 import json
 import pathlib
 import re
 import sys
 import threading
+import urllib.parse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 from playwright.sync_api import sync_playwright
@@ -37,17 +40,19 @@ NEBULA_WA = "22996740732"  # le numéro de NEBULA, le même que `merci.html`
 
 # Les deux langues (2026-10-16) : les MÊMES contrôles, sur l'accueil français
 # puis sur l'accueil anglais. Ce qui change, c'est ce qu'on s'attend à lire.
-SOURCES = [SOURCE, ICI / "creer.html", ICI / "lettre.html", ICI / "_build_accueil.py"]
+OFFRE_FP = ICI / "faire-part" / "offre.json"
+LLMS = ICI / "llms.txt"
+SOURCES = [SOURCE, ICI / "creer.html", ICI / "lettre.html", ICI / "_build_accueil.py", OFFRE_FP]
 LANGS = {
     "fr": {"tag": "fr", "index": ICI / "index.html", "prefixe": "", "exemples": ICI / "exemples.json",
            "dossier": "exemples", "inventes": "personnes inventées", "marque": '"occasion":"Exemple · ',
            "og": "og.jpg", "offert": "Offert", "plume": "La plume", "des": "la plume dès ",
-           "seuil": '"titre":"C\'est l\'heure"', "occ": "Exemple",
+           "seuil": '"titre":"C\'est l\'heure"', "occ": "Exemple", "fp_mot": "faire-part", "sep": " : ",
            "sources": SOURCES + [ICI / "exemples.json"]},
     "en": {"tag": "en", "index": ICI / "en" / "index.html", "prefixe": "en/", "exemples": ICI / "exemples.en.json",
            "dossier": "en/exemples", "inventes": "invented people", "marque": '"occasion":"Example · ',
            "og": "og-en.jpg", "offert": "Free", "plume": "The Quill", "des": "the Quill from ",
-           "seuil": '"titre":"It\'s time"', "occ": "Example",
+           "seuil": '"titre":"It\'s time"', "occ": "Example", "fp_mot": "wedding", "sep": ": ",
            "sources": SOURCES + [ICI / "exemples.en.json", ICI / "i18n" / "en.txt", ICI / "en" / "creer.html"]},
 }
 L = LANGS["fr"]   # la langue en cours, posée par main()
@@ -126,6 +131,28 @@ def statiques():
             "—" not in json.dumps(x, ensure_ascii=False))
     dit("une carte par exemple, ni plus ni moins",
         sorted(re.findall(r'class="carte" type="button" data-id="([a-z]+)"', s)) == sorted(ids))
+
+    # Vague 3 : les exemples sont HABILLÉS, chacun autrement, et leur lettre le porte.
+    mal = []
+    for x in doc["exemples"]:
+        t = (ICI / L["dossier"] / ("%s.html" % x["id"])).read_text(encoding="utf-8")
+        h = x.get("habillage") or {}
+        if not h or any('"%s":"%s"' % (k, v) not in t for k, v in h.items()):
+            mal.append(x["id"])
+        if x.get("gratter") and json.dumps(x["gratter"], ensure_ascii=False) not in t:
+            mal.append(x["id"] + " (phrase à gratter)")
+    dit("chaque exemple porte son habillage dans sa lettre", not mal, mal)
+    combis = {json.dumps(x.get("habillage"), sort_keys=True) for x in doc["exemples"]}
+    dit("six exemples, six habillages différents", len(combis) == len(ids), len(combis))
+    dit("deux exemples au moins cachent une phrase à gratter", sum(1 for x in doc["exemples"] if x.get("gratter")) >= 2)
+
+    # llms.txt : à jour, sans tiret cadratin, et il porte chaque question de la page.
+    llms = LLMS.read_text(encoding="utf-8") if LLMS.exists() else ""
+    dit("llms.txt existe et est à jour de la page", bool(llms) and LLMS.stat().st_mtime + 1 >= INDEX.stat().st_mtime)
+    qs = [plat(html.unescape(re.sub(r"<[^>]+>", "", q))) for q in re.findall(r"<summary>(.*?)</summary>", s)]
+    dit("llms.txt porte les %d questions de la page" % len(qs), qs and all(q in plat(llms) for q in qs),
+        [q for q in qs if q not in plat(llms)][:2])
+    dit("llms.txt : aucun tiret cadratin", "—" not in llms)
     return s
 
 
@@ -133,7 +160,9 @@ def statiques():
 PROBE = ".sur, .h2, .chapo, .petit, .champ span, .qui label, .etape h3, .etape p, .carte .occ, .carte .a1, .carte .de, " \
         ".carte .verrou, .mention, .fiche-d .t, .fiche-d .q, .fiche-d .libre, .puce, .lettre-d .o, .lettre-d h3, " \
         ".lettre-d p, .pl-prix span, .fam-t, .case .ev b, .case .ev span, .case .bord, .timbre .nm, .timbre .vl, " \
-        ".timbre .ds, .payer, .billet b, .billet p, .aveu, .pied p, .marque, .barre nav a, .pri, .sec-btn"
+        ".timbre .ds, .payer, .billet b, .billet p, .aveu, .pied p, .marque, .barre nav a, .pri, .sec-btn, " \
+        ".bientot, .fp-o, .fp-noms, .fp-dit, .fp-date, .fp-lieu, .fp-rep span, .fp-h, .fp-p, .fp-prix span, " \
+        ".hb-t, .hb-l, .faq summary, .faq .r p, .ecris, .timbre .hb"
 
 
 
@@ -236,6 +265,99 @@ def defiler_tout(pg, larg):
     }""", larg)
 
 
+def vague3(pg, larg, cat, offre):
+    """La vitrine de la vague 3 : ce qu'elle promet, prouvé dans le navigateur."""
+    norm = lambda t: re.sub(r"\s+", " ", (t or "").replace(NB, " ")).strip()
+
+    # La FAQ visible et son FAQPage : la même chose, mot pour mot.
+    r = pg.evaluate("""() => {
+        const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].map(s => JSON.parse(s.textContent))
+            .find(x => x['@type'] === 'FAQPage');
+        return {ld: ld ? ld.mainEntity.map(q => [q.name, q.acceptedAnswer.text]) : null, lang: ld && ld.inLanguage,
+                vis: [...document.querySelectorAll('.faq details.q')].map(d => [d.querySelector('summary').textContent,
+                      d.querySelector('.r').textContent])}; }""")
+    vis = [[norm(a), norm(b)] for a, b in r["vis"]]
+    ld = [[norm(a), norm(b)] for a, b in (r["ld"] or [])]
+    dit("%d : la FAQ visible et son FAQPage disent la même chose (%d questions)" % (larg, len(vis)),
+        len(vis) >= 6 and vis == ld and r["lang"] == L["tag"], (len(vis), len(ld), r["lang"]))
+    mots = [len(b.split()) for a, b in vis]
+    dit("%d : chaque réponse tient debout seule (30 à 75 mots)" % larg, all(30 <= m <= 75 for m in mots), mots)
+    pg.click(".faq details.q summary")
+    pg.wait_for_timeout(700)
+    dit("%d : une question s'ouvre au toucher, sa réponse se lit" % larg,
+        pg.evaluate("() => { const d = document.querySelector('.faq details.q'); return d.open"
+                    " && d.querySelector('.r').getBoundingClientRect().height > 20; }"))
+    pg.click(".faq details.q summary")
+
+    # Le faire-part : SON prix, celui de offre.json, partout où il est écrit.
+    prix = fmt(offre["prix"])
+    dit("%d : le faire-part dit le prix de offre.json (%s), au bloc et dans la FAQ" % (larg, prix),
+        plat(pg.inner_text(".fp-prix .px")) == prix and prix in vis[-1][1], plat(pg.inner_text(".fp-prix .px")))
+    href = pg.get_attribute("#fp-demander", "href") or ""
+    m = re.match(r"https://wa\.me/(\d+)\?text=(.+)$", href)
+    dit("%d : « Demander notre faire-part » écrit au WhatsApp de NEBULA, message prêt" % larg,
+        bool(m) and m.group(1) == offre["whatsapp"] and L["fp_mot"] in urllib.parse.unquote(m.group(2)).lower(), href[:90])
+    dit("%d : la barre mène au faire-part" % larg,
+        pg.evaluate("() => !!document.querySelector('.barre nav a[href=\"#faire-part\"]') && !!document.getElementById('faire-part')"))
+    q = pg.get_attribute("#question", "href") or ""
+    dit("%d : « Une autre question ? » écrit au WhatsApp de NEBULA" % larg, q.startswith("https://wa.me/%s?text=" % NEBULA_WA), q[:60])
+
+    # Les timbres disent ce que chaque offre débloque : l'habillage, là où il est.
+    hb = pg.evaluate("() => [...document.querySelectorAll('.timbre:not(.plume-t)')].map(t => !!t.querySelector('.hb'))")
+    dit("%d : « + l'habillage » sur chaque offre qui le porte, et seulement elles" % larg,
+        hb == [p["habillage"] for p in cat["paliers"]], hb)
+
+    # La prochaine grande date : recalculée ici, à part, sur les dates du constructeur.
+    auj = datetime.date.today()
+
+    def prochaine(j):
+        x = datetime.date(auj.year, int(j[:2]), int(j[3:5]))
+        return x if x >= auj else datetime.date(auj.year + 1, int(j[:2]), int(j[3:5]))
+    o = min(cat["dates"], key=lambda d: prochaine(d["jour"]))
+    n = (prochaine(o["jour"]) - auj).days
+    t = plat(pg.inner_text("#bientot"))
+    lien = pg.get_attribute("#bientot a", "href") or ""
+    dit("%d : la prochaine grande date est juste (%s, %d jours)" % (larg, o["nom"], n),
+        o["nom"] in t and (n < 2 or str(n) in t) and lien.endswith("creer.html?occasion=" + o["id"]), (t, lien))
+
+    # « Ouvre-la toi-même » : la lettre nue attend 10 s, la pastille la rhabille.
+    groupes = pg.evaluate("""() => ['cire', 'papier', 'pluie'].map(k => [...document.querySelectorAll('input[name="hb-' + k + '"]')]
+        .map(i => [i.value, i.checked]))""")
+    dit("%d : une pastille par cire, papier et pluie du constructeur, la première cochée" % larg,
+        [[v for v, c in g] for g in groupes] == [cat["hab"][k] for k in ("cire", "papier", "pluie")]
+        and all(g[0][1] and not any(c for v, c in g[1:]) for g in groupes), groupes)
+    doc0 = pg.get_attribute("#seuil-cadre", "srcdoc") or ""
+    ouvre = re.search(r'"ouvre":"([^"]+)"', doc0)
+    reste = pg.evaluate("(s) => (new Date(s) - Date.now()) / 1000", ouvre.group(1)) if ouvre else 99
+    dit("%d : témoin, la lettre de départ est nue et s'ouvre dans 10 s au plus" % larg,
+        '"habillage"' not in doc0 and reste <= 10.5, round(reste, 1))
+    pg.click('input[name="hb-cire"][value="or"]')
+    try:
+        pg.wait_for_function("""() => (document.getElementById('seuil-cadre').srcdoc || '').includes('"cire":"or"')""", timeout=3000)
+        fr = pg.query_selector("#seuil-cadre").content_frame()
+        fr.wait_for_function("document.documentElement.classList.contains('cire-or')", timeout=4000)
+        pg.click('input[name="hb-papier"][value="nuit"]')
+        pg.wait_for_function("""() => (document.getElementById('seuil-cadre').srcdoc || '').includes('"papier":"nuit"')""", timeout=3000)
+        fr = pg.query_selector("#seuil-cadre").content_frame()
+        fr.wait_for_function("document.documentElement.classList.contains('papier-nuit')"
+                             " && document.documentElement.classList.contains('cire-or')", timeout=4000)
+        doc1 = pg.get_attribute("#seuil-cadre", "srcdoc")
+        ok("%d : une pastille rhabille la vraie lettre (cire or, puis papier nuit)" % larg)
+        dit("%d : rhabillée, elle s'ouvre tout de suite et cache une phrase à gratter" % larg,
+            '"ouvre":""' in doc1 and '"gratter":"' in doc1)
+        fr.wait_for_selector("#btn-ouvrir", state="visible", timeout=4000)
+        fr.evaluate("document.getElementById('btn-ouvrir').click()")
+        fr.wait_for_selector("#l-gratter", state="visible", timeout=5000)
+        ok("%d : on brise le cachet, la phrase à gratter paraît" % larg)
+    except Exception as x:
+        ko("%d : une pastille rhabille la vraie lettre, qui s'ouvre" % larg, str(x)[:120])
+    pg.click("#seuil-refaire")
+    pg.wait_for_timeout(300)
+    doc2 = pg.get_attribute("#seuil-cadre", "srcdoc") or ""
+    dit("%d : « recommencer » la referme avec son habillage, l'heure à attendre" % larg,
+        '"papier":"nuit"' in doc2 and re.search(r'"ouvre":"\d{4}-', doc2) is not None)
+
+
 def navigateur(base, s):
     with sync_playwright() as pw:
         nav = pw.chromium.launch()
@@ -245,9 +367,21 @@ def navigateur(base, s):
         pg = ctx.new_page()
         page = base + L["prefixe"]
         pg.goto(page + "creer.html")
-        cat = pg.evaluate("() => ({paliers: PALIERS.map(p => ({nom: p.nom, prix: p.prix})), plume: PLUME.prix,"
-                          " occasions: OCCASIONS.map(o => o.id)})")
+        cat = pg.evaluate("() => ({paliers: PALIERS.map(p => ({nom: p.nom, prix: p.prix, habillage: !!p.habillage})),"
+                          " plume: PLUME.prix, occasions: OCCASIONS.map(o => o.id),"
+                          " dates: OCCASIONS.filter(o => o.jour).map(o => ({id: o.id, nom: o.nom, jour: o.jour})),"
+                          " hab: {cire: HABILLAGE.cire.map(o => o.id), papier: HABILLAGE.papier.map(o => o.id),"
+                          " pluie: HABILLAGE.pluie.map(o => o.id)}})")
         ctx.close()
+        offre = json.loads(OFFRE_FP.read_text(encoding="utf-8"))
+
+        # llms.txt dit les prix du constructeur, lus par le navigateur.
+        llms = plat(LLMS.read_text(encoding="utf-8"))
+        manque = [p["nom"] for p in cat["paliers"]
+                  if plat("%s%s%s" % (p["nom"], L["sep"], fmt(p["prix"]) if p["prix"] else "0 F")) not in llms]
+        dit("llms.txt dit le nom et le prix de chaque offre du constructeur", not manque, manque)
+        dit("llms.txt dit le prix de la plume et du faire-part",
+            ("+" + fmt(cat["plume"])) in llms and fmt(offre["prix"]) in llms)
 
         for larg, haut, mob in ((390, 844, True), (1440, 900, False)):
             print("\n· en %d" % larg)
@@ -373,6 +507,11 @@ def navigateur(base, s):
             except Exception:
                 ko("%d : le seuil joue une vraie lettre (gabarit rempli)" % larg, "srcdoc jamais posé")
 
+            vague3(pg, larg, cat, offre)
+
+            # Les réponses ouvertes, le temps que le pli finisse : leur contraste se mesure aussi.
+            pg.evaluate("() => document.querySelectorAll('.faq details.q').forEach(d => d.open = true)")
+            pg.wait_for_timeout(900)
             contraste(pg, larg)
 
             # Enfin : le prénom part au constructeur.

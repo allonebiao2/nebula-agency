@@ -300,13 +300,15 @@
   le cachet dort jusqu'à l'heure du téléphone de qui la reçoit, puis s'allume. Le nom se finit par un
   prénom : « Ma lettre à Afi ». Code : **`malettre/`** (ex-`lepli/`, renommé le 2026-10-16, commit `5af692d`).
 - **Rien n'est en ligne.** Adresse prévue `malettre.nebula-agency.online` (une constante).
-- **La page d'accueil existe** (2026-10-16) : chargement « lettre nouée » by NEBULA Agency, scène 3D au
-  défilement (la feuille se plie, le cachet tombe, dort, se brise), 6 exemples écrits par la plume (personnes
-  inventées, dites telles, aucun visage, aucun avis), 27 occasions, prix LUS dans `creer.html`.
-  Source `_accueil_src.html` → `python malettre/_build_accueil.py` → `index.html` + `exemples/` (jamais
-  édités). Captures `_voir_accueil.py`, image de partage `_og.py`.
-- **Contrôles, tous verts avant toute publication** : `python malettre/_qc.py` (212) ·
-  `node --experimental-strip-types malettre/_qc_caisse.mjs` (231) · `python malettre/_qc_accueil.py` (78).
+- **Six vagues** (plan dans `malettre/CONTEXT.md`), **FR et EN partout** (`i18n/en.txt`, `_traduire.py`) :
+  0 les deux langues ✅ · 1 la lettre en 3D, son, vibration ✅ · 2 l'habillage payant (cire, sceau, papier,
+  pluie, phrase à gratter) et « Répondre sur WhatsApp » ✅ · 3 la vitrine ✅ (« Ouvre-la toi-même » : une
+  vraie lettre qu'on rhabille par pastilles, exemples habillés, prochaine grande date calculée, FAQ +
+  `FAQPage` lu dans la page, `llms.txt`, **faire-part sur demande à 25 000 F**, prix dans
+  `malettre/faire-part/offre.json` et nulle part ailleurs) · 4 le faire-part ⏳ · 5 la pub ⏳.
+  Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
+- **Contrôles, tous verts avant toute publication** : `_qc.py` (269) · `node --experimental-strip-types
+  malettre/_qc_caisse.mjs` (301) · `_qc_accueil.py` (235, FR + EN) · `_qc_langues.py` (52).
 - **Publier** (feu vert de Mongazi ET caisse branchée) : `python malettre/_dist.py` puis
   `wrangler pages deploy malettre/_dist --project-name malettre --branch main`. ⛔ Jamais le dossier entier.
   ⚠️ La route `/l/<jeton>` arrive avec la caisse : `_dist` devra la porter.
@@ -318,8 +320,8 @@
   et `innerWidth` grandit avec lui : comparer à la largeur demandée.
 - ⏳ **Ce qui attend Mongazi** : brancher la caisse (`PAIEMENT.md`) et la plume (`ANTHROPIC_API_KEY` +
   `malettre-plume`) · le compte qui encaisse, la commission SasPay, qui relit le deuil, un n8n ailleurs ou
-  non, le premier franc · acheter `malettre.app` ou non · faire lire les exemples · **la vidéo publicitaire**
-  (prochain chantier) · faire-part pour novembre, critères d'arrêt au 1er décembre 2026.
+  non, le premier franc · acheter `malettre.app` ou non · faire lire les exemples · **les six MP3
+  ElevenLabs de la pub** (`_studio-video/src/malettre/VOIX.md`) · faire-part pour novembre, arrêt au 1er décembre 2026.
 - **Tout le détail** (le récit LE PLI recopié intégralement) : `malettre/CONTEXT.md`.
 
 ### LE STANDARD — l'agent WhatsApp des clients  *(produit interne, 2026-08-28)*

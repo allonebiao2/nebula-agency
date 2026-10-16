@@ -252,7 +252,11 @@ for (const [i, p] of PIEGES.entries()) {
   const py = execFileSync(PYTHON, ['-c',
     'import sys,json;sys.path.insert(0,sys.argv[1]);from _injecter import serialiser;' +
     'print(serialiser(json.loads(sys.argv[2])),end="")',
-    ICI, JSON.stringify(p)], { encoding: 'utf8' })
+    ICI, JSON.stringify(p)],
+    /* ⚠️ Sans PYTHONIOENCODING, la console Windows (cp1252) changeait les
+       accents en « � » à la sortie de Python : faux rouge, la sérialisation
+       était juste (vu le 2026-10-16). */
+    { encoding: 'utf8', env: { ...process.env, PYTHONIOENCODING: 'utf-8' } })
   dit(ts === py, `piège ${i + 1} : Python et TypeScript rendent le même octet`,
       ts === py ? '' : `\n      ts: ${ts}\n      py: ${py}`)
   dit(!ts.includes('</'), `piège ${i + 1} : plus aucune balise fermante`)

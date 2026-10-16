@@ -127,3 +127,30 @@ Trouvé en route :
 - `_memoire/decisions.md`, `_memoire/lecons.md`, `_memoire/REPRENDRE-ICI.md`,
   `_memoire/journal/2026-10-16-journal.md`,
   `_memoire/apprentissages/2026-10-16-qc-telephone-dezoom.md`
+
+## Le soir : vagues 1, 2 et 3
+
+**Vague 1 (`c8cf9f4`)** : la lettre s'ouvre en vraie 3D (le cachet casse le long de sa fêlure, le
+rabat se lève, la carte sort), vibre, sonne (Web Audio, aucun fichier, coupable), et compte à rebours
+en grand. **Vague 2 (`efa8381`)** : l'habillage payant (5 cires, 4 sceaux, 4 papiers, 3 pluies, une
+phrase à gratter) et le bouton « Répondre sur WhatsApp ».
+
+**Vague 3, la vitrine** (skills `page-cro`, `copywriting`, `ai-seo`, `schema-markup`) :
+- « Ouvre-la toi-même » : la vraie lettre s'ouvre en 10 s ; des pastilles la rhabillent ; rhabillée,
+  elle s'ouvre tout de suite avec une phrase à gratter. Le téléphone et ses pastilles tiennent
+  ensemble dans l'écran, au téléphone comme sur ordinateur.
+- Les six exemples habillés, la prochaine grande date (Noël dans 70 jours, calculée), le bloc
+  faire-part à 25 000 F (prix dans `faire-part/offre.json`), une FAQ de 8 questions avec son
+  `FAQPage` lu dans la page, `llms.txt`, les timbres qui disent « + l'habillage au choix ».
+- **Pas fait, exprès** : la barre d'action en bas au téléphone (celle du haut porte déjà « Écrire
+  ma lettre » ; masquée quand un autre bouton d'écriture est visible, elle ne se serait jamais
+  montrée).
+
+Trouvé en route : le surtitre du faire-part en bordeaux sur nuit (2,3:1, la sonde sur les pixels) ;
+le cachet « K & A » disloqué (une grille fait une case de chaque morceau de texte) ; l'esperluette du
+script illisible ; le bouton du faire-part sombre sur sombre ; `avant` et `dans`, clés du script,
+pris pour du français oublié dans la page anglaise ; le contrôle de caisse rouge à tort sans
+`PYTHONIOENCODING` (console cp1252), corrigé dans le contrôle lui-même.
+
+Contrôles : accueil 235 (FR + EN), lettre 269, caisse 301, anglais 52. **Rien de déployé.**
+Prochaines vagues : 4 (le gabarit et le générateur du faire-part), 5 (la pub, en attente des MP3).

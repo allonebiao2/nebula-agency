@@ -18,6 +18,7 @@
 <meta property="og:image" content="https://malettre.nebula-agency.online/og-en.jpg">
 <meta property="og:url" content="https://malettre.nebula-agency.online/en/">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"How does the person receive the letter?","acceptedAnswer":{"@type":"Answer","text":"Through a link you send them yourself, on WhatsApp or anywhere else, whenever you like: three days before, or the night before. We never write to the person. They open the link on their phone, with nothing to install, and find a sealed envelope waiting for its hour."}},{"@type":"Question","name":"What do they see if they open the link before the time?","acceptedAnswer":{"@type":"Answer","text":"A closed envelope and a countdown, nothing else: the seal sleeps and no button opens it. At the chosen time, the wax lights up and the button appears, without reloading the page. Their phone's clock is what counts: midnight in Abidjan is not midnight in Cotonou."}},{"@type":"Question","name":"Do I need to install an app?","acceptedAnswer":{"@type":"Answer","text":"No. The letter is a page that opens in the phone's browser, even on a weak connection. There is no app to download and no account to create, neither for you nor for the person who receives it."}},{"@type":"Question","name":"How much does a letter cost?","acceptedAnswer":{"@type":"Answer","text":"It is free to start: online for 7 days, one photo, our signature at the bottom. Paid offers keep it for a year, without our signature, with your choice of finish: The Note (2 000 F), The Letter (5 000 F) and The Keepsake (10 000 F). The Quill adds 500 F, only if you send the version it wrote."}},{"@type":"Question","name":"How do I pay?","acceptedAnswer":{"@type":"Answer","text":"By Mobile Money or card, on our payment provider's secure page, where you choose your network. Nothing to copy, no code to give us. A free letter never goes through checkout at all: you write it, you get your link."}},{"@type":"Question","name":"What is the Quill?","acceptedAnswer":{"@type":"Answer","text":"A writing aid. You answer a few questions, share a memory, say how you want your letter, and the Quill writes a first version. You reread it, change what you like, and sign. Trying it costs nothing, and it never makes up a memory for you."}},{"@type":"Question","name":"Is my letter private?","acceptedAnswer":{"@type":"Answer","text":"Its address is drawn at random, never indexed by search engines, and it expires: seven days for a free letter, a year for a paid one. But anyone with the link can read it: it is a wrapped gift, not a safe. And if the person who receives it asks for it to be removed, it is removed within 24 hours."}},{"@type":"Question","name":"Can you make our wedding invitation?","acceptedAnswer":{"@type":"Answer","text":"Yes, on request, for 25 000 F, made to measure by our team. It opens like a letter, with the seal bearing your initials, the countdown to the big day, the schedule, the venue, the dress code and your photos. Your guests reply straight to your WhatsApp."}}]}</script>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,9 +40,11 @@
     exemples    la distribution du courrier
     la plume    les cases qui se cochent, puis l'encre qui coule
     occasions   la lettre qui sort du casier du facteur
-    le seuil    le vrai compte à rebours d'une vraie lettre
+    faire-part  le carton du mariage, posé de biais (dans les occasions)
+    le seuil    le vrai compte à rebours d'une vraie lettre, qu'on rhabille
     le prix     le timbre et le tampon de la poste
     confiance   le billet qui se déplie
+    questions   la réponse qui se déplie comme un pli ; le « + » est un cachet
     fin         la page blanche qui attend un prénom
 
   ⛔ Aucune bibliothèque : CSS 3D (perspective, preserve-3d) et UNE boucle
@@ -357,7 +360,9 @@ button{background:none;border:0;cursor:pointer}
 .carte .de{font-size:13.5px;color:var(--gris-papier);margin-top:6px}
 .carte .cachet-c{position:absolute;right:8%;top:12%;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
   font-family:var(--serif);color:#f0d6cf;font-size:22px;
-  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce));box-shadow:0 4px 10px rgba(0,0,0,.25)}
+  /* la cire de CHAQUE exemple (son habillage), posée par le build en --cc */
+  background:radial-gradient(circle at 34% 30%,var(--cc-c,var(--cire-clair)),var(--cc,var(--cire)) 62%,var(--cc-f,var(--cire-fonce)));
+  box-shadow:0 4px 10px rgba(0,0,0,.25)}
 .carte .verrou{position:absolute;right:8%;top:calc(12% + 56px);font-size:11.5px;font-weight:700;color:var(--cire);text-align:right}
 .mention{margin-top:28px;font-size:14.5px;color:var(--gris-papier)}
 .mention b{color:var(--encre)}
@@ -409,13 +414,72 @@ button{background:none;border:0;cursor:pointer}
   font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#4a3f2c}
 .case:focus-visible{outline-offset:2px}
 
-/* ══ 6 · LE SEUIL : le vrai compte à rebours ══ */
-.seuil-g{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(28px,5vw,80px);align-items:center}
-@media(max-width:900px){.seuil-g{grid-template-columns:1fr}}
-.tel-d{width:min(360px,100%);height:min(700px,82svh);border-radius:30px;overflow:hidden;border:1px solid var(--ligne-nuit);
-  box-shadow:0 40px 90px rgba(0,0,0,.6);background:var(--nuit);margin:0 auto}
+/* ══ 5 bis · LE FAIRE-PART : le carton qui sort de la boîte ══ */
+.bientot{margin-top:20px;min-height:1.7em;font-size:16.5px;color:var(--encre)}
+.bientot b{font-family:var(--serif);font-weight:400;font-size:1.3em;color:var(--cire)}
+.bientot a{color:var(--cire);font-weight:700}
+.fp{margin-top:84px;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(30px,5vw,70px);align-items:center;
+  background:var(--nuit);color:var(--papier);border-radius:16px;padding:clamp(26px,5vw,64px);scroll-margin-top:calc(var(--barre) + 16px)}
+@media(max-width:820px){.fp{grid-template-columns:minmax(0,1fr)}}
+.fp-carton{background:linear-gradient(170deg,#fdf9f1,#f3ead8);color:var(--encre);border-radius:4px;padding:12px;
+  box-shadow:0 30px 60px rgba(0,0,0,.5);transform:rotate(-2deg);max-width:340px;width:100%;margin:0 auto}
+.fp-cadre{border:1px solid #c9a227;outline:1px solid rgba(201,162,39,.45);outline-offset:-6px;padding:30px 20px 24px;text-align:center}
+.fp-o{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:var(--or-texte)}
+/* ⚠️ En grille, « K », « & » et « A » devenaient trois cases EMPILÉES (vu en 390) : une rangée flex. */
+.fp-cachet{width:62px;height:62px;margin:18px auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;white-space:nowrap;font-family:var(--serif);
+  font-size:21px;color:#4a3608;background:radial-gradient(circle at 34% 30%,#e8c56c,#c9a227 60%,#8a6a16);box-shadow:0 5px 12px rgba(0,0,0,.25)}
+/* L'esperluette de l'italique Caslon : celle du script (Pinyon) se lisait comme un trait. */
+.fp-cachet span{font-family:var(--italique);font-style:italic;font-size:.85em;margin:0 2px}
+.fp-noms{font-family:var(--serif);font-size:clamp(30px,3.6vw,38px);line-height:1.05}
+.fp-noms i{display:block;font-family:var(--italique);font-size:.8em;color:var(--or-texte);margin:2px 0 4px}
+.fp-dit{font-family:var(--italique);font-style:italic;font-size:17px;margin-top:10px;color:var(--gris-papier)}
+.fp-date{margin-top:16px;font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+.fp-lieu{font-size:14px;color:var(--gris-papier)}
+.fp-rep{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.fp-rep span{font-size:12.5px;font-weight:700;border-radius:999px;padding:7px 12px;border:1px solid var(--ligne-papier)}
+.fp-rep span:first-child{background:var(--encre);color:var(--papier);border-color:var(--encre)}
+/* ⚠️ Le bloc est NUIT dans une section PAPIER : sans cette règle, son surtitre
+   héritait du bordeaux des sections claires (2,3:1, attrapé par la sonde). */
+.fp .sur{color:var(--or)}
+.fp-h{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,4.4vw,3.4rem);line-height:1.02;margin-top:14px}
+.fp-h em{font-family:var(--italique);font-size:.9em;color:var(--or)}
+.fp-p{margin-top:18px;color:var(--gris-nuit);max-width:52ch}
+.fp-prix{margin-top:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--gris-nuit);font-size:15px}
+.fp-prix .px{font-family:var(--serif);font-size:40px;color:var(--or);line-height:1;white-space:nowrap}
+.fp-prix span:last-child{flex:1 1 220px}
+.fp .pri{margin-top:24px;background:var(--papier);color:var(--encre)}
+
+/* ══ 6 · LE SEUIL : la vraie lettre, qu'on ouvre et qu'on rhabille soi-même ══ */
+/* Le téléphone et ses pastilles forment UN bloc : au téléphone, on touche une
+   pastille et la lettre change juste au-dessus du doigt (en 390 × 844, les
+   deux tiennent dans l'écran). */
+.seuil-g{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t e" "a e";column-gap:clamp(28px,5vw,80px);align-items:center}
+.seuil-t{grid-area:t;align-self:end}
+.essai{grid-area:e;width:min(360px,100%);margin:0 auto}
+.seuil-actions{grid-area:a;align-self:start;display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:30px}
+@media(max-width:900px){.seuil-g{grid-template-columns:minmax(0,1fr);grid-template-areas:"t" "e" "a";row-gap:30px}
+  .seuil-actions{margin-top:0}}
+/* téléphone ET pastilles tiennent ensemble dans l'écran, en 1440 × 900 comme en 390 × 844 */
+.tel-d{width:100%;height:min(560px,62vh);border-radius:30px;overflow:hidden;border:1px solid var(--ligne-nuit);
+  box-shadow:0 40px 90px rgba(0,0,0,.6);background:var(--nuit)}
+@media(max-width:900px){.tel-d{height:min(560px,64svh)}}
 .tel-d iframe{width:100%;height:100%;border:0;display:block}
-.sec-btn{margin-top:26px;min-height:48px;padding:12px 22px;border-radius:999px;border:1.5px solid var(--ligne-nuit);font-weight:700}
+.sec-btn{min-height:48px;padding:12px 22px;border-radius:999px;border:1.5px solid var(--ligne-nuit);font-weight:700}
+.habille{margin-top:14px;padding:12px 14px 10px;border:1px solid var(--ligne-nuit);border-radius:20px;background:var(--nuit-2)}
+.hb-t{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-size:12px;letter-spacing:.2em;
+  text-transform:uppercase;font-weight:700;color:var(--or);margin:0 2px 2px}
+.hb-t span{letter-spacing:0;text-transform:none;font-weight:400;font-size:13.5px;color:var(--gris-nuit)}
+.hb-g{display:flex;align-items:center}
+.hb-l{flex:none;width:96px;font-size:13.5px;color:var(--gris-nuit);padding-left:2px}
+.pt{position:relative;display:inline-grid;place-items:center;width:44px;height:44px;flex:none;cursor:pointer;color:var(--gris-nuit)}
+.pt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.pt .rond{width:26px;height:26px;border-radius:50%;background:var(--c,transparent);display:grid;place-items:center;
+  box-shadow:0 0 0 1px rgba(244,237,224,.28) inset,0 2px 6px rgba(0,0,0,.35);transition:box-shadow .2s}
+.pt.pap .rond{border-radius:7px}
+.pt.icone .rond{box-shadow:0 0 0 1px rgba(244,237,224,.28) inset}
+.pt svg{width:18px;height:18px}
+.pt input:checked + .rond{box-shadow:0 0 0 2px var(--nuit-2),0 0 0 4px var(--or)}
+.pt input:focus-visible + .rond{outline:2px solid var(--or);outline-offset:5px}
 
 /* ══ 7 · LE PRIX : le timbre et le tampon ══ */
 /* ⚠️ Avant de frapper, le timbre est agrandi (scale 1.25) : celui de droite
@@ -442,6 +506,8 @@ button{background:none;border:0;cursor:pointer}
 .timbre .tampon{position:absolute;right:-6px;top:-10px;width:78px;height:78px;pointer-events:none;opacity:.55;transform:rotate(-16deg)}
 .timbre .tampon circle,.timbre .tampon path{fill:none;stroke:var(--cire);stroke-width:1.6;stroke-dasharray:260;stroke-dashoffset:260}
 .timbre.plume-t .tampon circle,.timbre.plume-t .tampon path{stroke:var(--or)}
+.timbre .hb{font-size:13px;font-weight:700;color:var(--cire);margin-top:8px}
+.timbre.plume-t .hb{color:var(--or)}
 .payer{margin-top:30px;color:var(--gris-papier);font-size:15px}
 
 /* ══ 8 · LA CONFIANCE : le billet qui se déplie ══ */
@@ -453,7 +519,24 @@ button{background:none;border:0;cursor:pointer}
 .billet p{color:var(--gris-papier);font-size:15.5px}
 .aveu{margin-top:40px;font-family:var(--italique);font-style:italic;font-size:clamp(1.5rem,2.6vw,2.2rem);max-width:30ch;color:var(--papier)}
 
-/* ══ 9 · LA FIN : la page blanche qui attend ══ */
+/* ══ 9 · LES QUESTIONS : chaque réponse se déplie comme un pli ══ */
+.faq{margin-top:48px;border-top:1px solid var(--ligne-papier);max-width:860px}
+.faq .q{border-bottom:1px solid var(--ligne-papier)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:64px;
+  padding:16px 0;font-family:var(--serif);font-size:clamp(1.3rem,2.3vw,1.65rem);line-height:1.2}
+.faq summary::-webkit-details-marker{display:none}
+/* Le « + » est un petit cachet de cire : il tourne d'un quart quand le pli s'ouvre. */
+.faq summary::after{content:"";flex:none;width:30px;height:30px;border-radius:50%;transition:transform .45s var(--t);
+  background:linear-gradient(#f0d6cf,#f0d6cf) center/12px 2px no-repeat,linear-gradient(#f0d6cf,#f0d6cf) center/2px 12px no-repeat,
+    radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce))}
+.faq .q[open] summary::after{transform:rotate(135deg)}
+.faq .r{padding:0 0 24px;max-width:62ch;color:var(--gris-papier);transform-origin:50% 0}
+.faq .q[open] .r{animation:pli .6s var(--t)}
+@keyframes pli{from{opacity:0;transform:perspective(800px) rotateX(-75deg)}to{opacity:1;transform:none}}
+.ecris{margin-top:34px;font-size:16.5px;color:var(--gris-papier)}
+.ecris a{color:var(--cire);font-weight:700}
+
+/* ══ 10 · LA FIN : la page blanche qui attend ══ */
 .fin{text-align:center}
 .page-b{width:min(560px,100%);margin:46px auto 0;background:linear-gradient(180deg,#f8f2e7,var(--papier));color:var(--encre);
   border-radius:6px;padding:40px 28px;box-shadow:0 40px 90px rgba(0,0,0,.5);text-align:left}
@@ -537,6 +620,7 @@ button{background:none;border:0;cursor:pointer}
     <a href="#exemples">Examples</a>
     <a href="#plume">The Quill</a>
     <a href="#prix">Pricing</a>
+    <a href="#faire-part">Weddings</a>
   </nav>
   <div class="droite">
     <a class="langue" href="../" hreflang="fr" lang="fr" title="Lire cette page en français">FR</a>
@@ -622,7 +706,7 @@ button{background:none;border:0;cursor:pointer}
     <p class="sur" data-rv>Examples · invented people</p>
     <h2 class="h2" data-rv>Six letters,<br><em>six lives.</em></h2>
     <p class="chapo" data-rv>Written by the Quill, from a short form. The people are invented; the situations are everyday ones.</p>
-    <div class="ex-grille" id="ex-grille"><button class="carte" type="button" data-id="afi" data-titre="Kofi to Afi" aria-label="Open the example: My letter to Afi, from Kofi (Valentine&#x27;s Day)"><span class="occ">Valentine&#x27;s Day</span><span class="cachet-c" aria-hidden="true">K</span><span class="verrou">Opens on 14 February<br>at midnight</span><span class="a1">My letter to</span><span class="a2">Afi</span><span class="de">from Kofi · Lomé</span></button><button class="carte" type="button" data-id="papa" data-titre="Afi to Dad" aria-label="Open the example: My letter to Dad, from Afi (Father&#x27;s Day)"><span class="occ">Father&#x27;s Day</span><span class="cachet-c" aria-hidden="true">A</span><span class="a1">My letter to</span><span class="a2">Dad</span><span class="de">from Afi · Cotonou</span></button><button class="carte" type="button" data-id="zara" data-titre="Robert to Zara" aria-label="Open the example: My letter to Zara, from Robert (Breakup)"><span class="occ">Breakup</span><span class="cachet-c" aria-hidden="true">R</span><span class="a1">My letter to</span><span class="a2">Zara</span><span class="de">from Robert · Cotonou</span></button><button class="carte" type="button" data-id="maman" data-titre="Aminata to Mum" aria-label="Open the example: My letter to Mum, from Aminata (Mother&#x27;s Day)"><span class="occ">Mother&#x27;s Day</span><span class="cachet-c" aria-hidden="true">A</span><span class="a1">My letter to</span><span class="a2">Mum</span><span class="de">from Aminata · Abidjan</span></button><button class="carte" type="button" data-id="grace" data-titre="Sèna to Grâce" aria-label="Open the example: My letter to Grâce, from Sèna (Asking them out)"><span class="occ">Asking them out</span><span class="cachet-c" aria-hidden="true">S</span><span class="a1">My letter to</span><span class="a2">Grâce</span><span class="de">from Sèna · Abomey-Calavi</span></button><button class="carte" type="button" data-id="fatou" data-titre="Ismaël to Auntie Fatou" aria-label="Open the example: My letter to Auntie Fatou, from Ismaël (Tabaski)"><span class="occ">Tabaski</span><span class="cachet-c" aria-hidden="true">I</span><span class="a1">My letter to</span><span class="a2">Auntie Fatou</span><span class="de">from Ismaël · Parakou</span></button></div>
+    <div class="ex-grille" id="ex-grille"><button class="carte" type="button" data-id="afi" data-titre="Kofi to Afi" aria-label="Open the example: My letter to Afi, from Kofi (Valentine&#x27;s Day)" style="--cc:#b25a72;--cc-c:#d88aa0;--cc-f:#7e3a4e"><span class="occ">Valentine&#x27;s Day</span><span class="cachet-c" aria-hidden="true">K</span><span class="verrou">Opens on 14 February<br>at midnight</span><span class="a1">My letter to</span><span class="a2">Afi</span><span class="de">from Kofi · Lomé</span></button><button class="carte" type="button" data-id="papa" data-titre="Afi to Dad" aria-label="Open the example: My letter to Dad, from Afi (Father&#x27;s Day)" style="--cc:#b8892b;--cc-c:#e0b85a;--cc-f:#7a5a14"><span class="occ">Father&#x27;s Day</span><span class="cachet-c" aria-hidden="true">A</span><span class="a1">My letter to</span><span class="a2">Dad</span><span class="de">from Afi · Cotonou</span></button><button class="carte" type="button" data-id="zara" data-titre="Robert to Zara" aria-label="Open the example: My letter to Zara, from Robert (Breakup)" style="--cc:#2b2433;--cc-c:#4a3f56;--cc-f:#141019"><span class="occ">Breakup</span><span class="cachet-c" aria-hidden="true">R</span><span class="a1">My letter to</span><span class="a2">Zara</span><span class="de">from Robert · Cotonou</span></button><button class="carte" type="button" data-id="maman" data-titre="Aminata to Mum" aria-label="Open the example: My letter to Mum, from Aminata (Mother&#x27;s Day)"><span class="occ">Mother&#x27;s Day</span><span class="cachet-c" aria-hidden="true">A</span><span class="a1">My letter to</span><span class="a2">Mum</span><span class="de">from Aminata · Abidjan</span></button><button class="carte" type="button" data-id="grace" data-titre="Sèna to Grâce" aria-label="Open the example: My letter to Grâce, from Sèna (Asking them out)"><span class="occ">Asking them out</span><span class="cachet-c" aria-hidden="true">S</span><span class="a1">My letter to</span><span class="a2">Grâce</span><span class="de">from Sèna · Abomey-Calavi</span></button><button class="carte" type="button" data-id="fatou" data-titre="Ismaël to Auntie Fatou" aria-label="Open the example: My letter to Auntie Fatou, from Ismaël (Tabaski)" style="--cc:#2f5d4a;--cc-c:#4f8a6f;--cc-f:#1b3a2d"><span class="occ">Tabaski</span><span class="cachet-c" aria-hidden="true">I</span><span class="a1">My letter to</span><span class="a2">Auntie Fatou</span><span class="de">from Ismaël · Parakou</span></button></div>
     <p class="mention" data-rv>Tap an envelope to open it. <b>Afi's opens on 14 February at midnight</b>: try it, it will wait.</p>
   </div>
 </section>
@@ -647,20 +731,56 @@ button{background:none;border:0;cursor:pointer}
     <p class="sur" data-rv>The occasions</p>
     <h2 class="h2" data-rv>A pigeonhole for<br><em>every big day.</em></h2>
     <p class="chapo" data-rv>Love, family, holidays, achievements. And even a breakup, with class.</p>
+    <!-- La prochaine grande date : CALCULÉE au chargement sur les dates des
+         occasions, jamais une fausse rareté. Vide sans JavaScript. -->
+    <p class="bientot" id="bientot" data-rv></p>
     <h3 class="fam-t" data-rv>Love</h3><div class="casier"><a class="case" href="creer.html?occasion=couple"><span class="ev"><b>Asking them out</b><span>The big leap</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=mois"><span class="ev"><b>Monthiversary</b><span>“Happy 1 month”</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=valentin"><span class="ev"><b>Valentine&#x27;s Day</b><span>February 14</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=nous"><span class="ev"><b>Our anniversary</b><span>One, five, twenty years</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=demande"><span class="ev"><b>Marriage proposal</b><span>Utmost simplicity</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=pardon"><span class="ev"><b>Apology</b><span>Making up</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=rupture"><span class="ev"><b>Breakup</b><span>With class, or with humour</span></span><span class="bord">Write</span></a></div><h3 class="fam-t" data-rv>Family and friends</h3><div class="casier"><a class="case" href="creer.html?occasion=anniv"><span class="ev"><b>Birthday</b><span>The most requested</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=maman"><span class="ev"><b>Mother&#x27;s Day</b><span>From all the children</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=papa"><span class="ev"><b>Father&#x27;s Day</b><span>For the pillar</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=naissance"><span class="ev"><b>New baby</b><span>Or a christening</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=mariage"><span class="ev"><b>Wedding</b><span>For the newlyweds</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=amitie"><span class="ev"><b>Friendship</b><span>Thank you for being there</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=brouille"><span class="ev"><b>Ending a friendship</b><span>Saying it once</span></span><span class="bord">Write</span></a></div><h3 class="fam-t" data-rv>Holidays</h3><div class="casier"><a class="case" href="creer.html?occasion=noel"><span class="ev"><b>Christmas</b><span>December 25</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=nouvelan"><span class="ev"><b>New Year</b><span>January 1</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=tabaski"><span class="ev"><b>Tabaski</b><span>Eid al-Adha</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=ramadan"><span class="ev"><b>End of Ramadan</b><span>Eid al-Fitr</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=paques"><span class="ev"><b>Easter</b><span>Easter Sunday</span></span><span class="bord">Write</span></a></div><h3 class="fam-t" data-rv>Big days</h3><div class="casier"><a class="case" href="creer.html?occasion=reussite"><span class="ev"><b>Success</b><span>Exam, degree, competition</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=courage"><span class="ev"><b>Encouragement</b><span>Before a challenge</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=guerison"><span class="ev"><b>Get well soon</b><span>For someone recovering</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=travail"><span class="ev"><b>New job</b><span>Or a promotion</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=retraite"><span class="ev"><b>Retirement</b><span>A lifetime of work</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=merci"><span class="ev"><b>Thank you</b><span>To say thank you</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=rdv"><span class="ev"><b>An invitation</b><span>A date</span></span><span class="bord">Write</span></a><a class="case" href="creer.html?occasion=autre"><span class="ev"><b>Another occasion</b><span>Any other big day</span></span><span class="bord">Write</span></a></div>
+
+    <!-- Le faire-part de mariage, SUR DEMANDE (décision de Mongazi, 2026-10-16) :
+         fait par NEBULA, hors de la caisse. Son prix et le numéro viennent de
+         `faire-part/offre.json`, et de nulle part ailleurs. -->
+    <div class="fp" id="faire-part">
+      <div class="fp-carton" data-rv aria-hidden="true">
+        <div class="fp-cadre">
+          <p class="fp-o">Invitation · example</p>
+          <div class="fp-cachet">K<span>&amp;</span>A</div>
+          <p class="fp-noms">Kossi<i>&amp;</i>Afiwa</p>
+          <p class="fp-dit">are getting married</p>
+          <p class="fp-date">Saturday 12 December 2026</p>
+          <p class="fp-lieu">Cotonou</p>
+          <div class="fp-rep"><span>I'll be there</span><span>I can't make it</span></div>
+        </div>
+      </div>
+      <div>
+        <p class="sur" data-rv>The wedding invitation</p>
+        <h3 class="fp-h" data-rv>Getting married?<br><em>We'll write it for you.</em></h3>
+        <p class="fp-p" data-rv>An invitation that opens like a letter: the seal with your initials, the countdown to the big day, the schedule, the venue on the map, the dress code, your photos. Your guests reply with a tap, straight to your WhatsApp.</p>
+        <p class="fp-prix" data-rv><span class="px">25 000 F</span><span>made to measure by our team, from what you tell us. Kossi and Afiwa are an invented couple.</span></p>
+        <a class="pri" id="fp-demander" data-rv href="https://wa.me/22996740732?text=Hello%2C%20we%20are%20getting%20married%20and%20we%20would%20like%20a%20Ma%20lettre%20%C3%A0%E2%80%A6%20wedding%20invitation." rel="noopener"><span class="sceau" aria-hidden="true"></span>Ask for our invitation</a>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- 6 · LE SEUIL -->
 <section class="nuit grain sec" id="seuil">
   <div class="etroit seuil-g">
-    <div>
+    <div class="seuil-t">
       <p class="sur" data-rv>What they experience</p>
-      <h2 class="h2" data-rv>The chosen hour,<br><em>for real.</em></h2>
-      <p class="chapo" data-rv>Here is a real letter. It will open in a few seconds: stay here and watch the seal. Before the time, it sleeps. At the time, the wax lights up and the button appears.</p>
-      <button class="sec-btn" type="button" id="seuil-refaire" data-rv>Close it and start again</button>
+      <h2 class="h2" data-rv>Open it<br><em>yourself.</em></h2>
+      <p class="chapo" data-rv>Here is a real letter. It opens in ten seconds: watch the seal sleep, then the wax light up. Then dress it up: tap a swatch, then the seal.</p>
     </div>
-    <div class="tel-d" data-rv><iframe id="seuil-cadre" title="A real letter waiting for its hour" sandbox="allow-scripts" loading="lazy"></iframe></div>
+    <div class="essai" data-rv>
+      <div class="tel-d"><iframe id="seuil-cadre" title="A real letter waiting for its hour" sandbox="allow-scripts" loading="lazy"></iframe></div>
+      <div class="habille">
+        <p class="hb-t">Dress it up <span>from The Note (2 000 F)</span></p>
+        <div class="hb-g" role="radiogroup" aria-labelledby="hb-l-cire"><span class="hb-l" id="hb-l-cire">The wax</span><label class="pt" title="Burgundy"><input type="radio" name="hb-cire" value="bordeaux" aria-label="Burgundy" checked><span class="rond" style="--c:#8c2f39"></span></label><label class="pt" title="Gold"><input type="radio" name="hb-cire" value="or" aria-label="Gold"><span class="rond" style="--c:#b8892b"></span></label><label class="pt" title="Night"><input type="radio" name="hb-cire" value="nuit" aria-label="Night"><span class="rond" style="--c:#2b2433"></span></label><label class="pt" title="Forest green"><input type="radio" name="hb-cire" value="sapin" aria-label="Forest green"><span class="rond" style="--c:#2f5d4a"></span></label><label class="pt" title="Rose"><input type="radio" name="hb-cire" value="rose" aria-label="Rose"><span class="rond" style="--c:#b25a72"></span></label></div><div class="hb-g" role="radiogroup" aria-labelledby="hb-l-papier"><span class="hb-l" id="hb-l-papier">The paper</span><label class="pt pap" title="Cream"><input type="radio" name="hb-papier" value="creme" aria-label="Cream" checked><span class="rond" style="--c:#f4ede0"></span></label><label class="pt pap" title="Ivory cotton"><input type="radio" name="hb-papier" value="coton" aria-label="Ivory cotton"><span class="rond" style="--c:#efe6d4"></span></label><label class="pt pap" title="Kraft"><input type="radio" name="hb-papier" value="kraft" aria-label="Kraft"><span class="rond" style="--c:#d6bf98"></span></label><label class="pt pap" title="Night"><input type="radio" name="hb-papier" value="nuit" aria-label="Night"><span class="rond" style="--c:#241e2e"></span></label></div><div class="hb-g" role="radiogroup" aria-labelledby="hb-l-pluie"><span class="hb-l" id="hb-l-pluie">When it opens</span><label class="pt icone" title="Nothing"><input type="radio" name="hb-pluie" value="aucune" aria-label="Nothing" checked><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 17 17 7" stroke="currentColor" stroke-width="1.6"/></svg></span></label><label class="pt icone" title="Petals"><input type="radio" name="hb-pluie" value="petales" aria-label="Petals"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.2 3.2 3.2 7.4 0 10.6-3.2-3.2-3.2-7.4 0-10.6z" fill="#e9a3b6"/><path d="M4 13.5c4.3-1.2 7.6.8 8.8 5.1-4.3 1.2-7.6-.8-8.8-5.1z" fill="#c76a85"/></svg></span></label><label class="pt icone" title="Confetti"><input type="radio" name="hb-pluie" value="confettis" aria-label="Confetti"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="4" height="7" rx="1" fill="#c9a227" transform="rotate(-20 6 7.5)"/><rect x="12" y="3" width="4" height="7" rx="1" fill="#e06a76" transform="rotate(25 14 6.5)"/><rect x="14" y="13" width="4" height="7" rx="1" fill="#6fb592" transform="rotate(-35 16 16.5)"/><rect x="5" y="13" width="4" height="7" rx="1" fill="#e8c56c" transform="rotate(15 7 16.5)"/></svg></span></label><label class="pt icone" title="Gold stars"><input type="radio" name="hb-pluie" value="etoiles" aria-label="Gold stars"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4l-5.3 3 1.2-6-4.5-4.1 6-.7z" fill="#d9b24a"/></svg></span></label></div>
+      </div>
+    </div>
+    <div class="seuil-actions" data-rv>
+      <a class="pri" href="creer.html"><span class="sceau" aria-hidden="true"></span>Write mine</a>
+      <button class="sec-btn" type="button" id="seuil-refaire">Close it and start again</button>
+    </div>
   </div>
 </section>
 
@@ -669,8 +789,8 @@ button{background:none;border:0;cursor:pointer}
   <div class="etroit">
     <p class="sur" data-rv>Pricing</p>
     <h2 class="h2" data-rv>What it<br><em>costs.</em></h2>
-    <p class="chapo" data-rv>The letter is the same with every offer. What changes: how long it stays online, how many photos it keeps, and whether our signature appears at the bottom.</p>
-    <div class="timbres"><div class="timbre" data-rv style="--d:0.00s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">Free</span><span class="vl">Free</span><span class="ds">Online for 7 days, one photo, our signature at the bottom</span></div><div class="timbre" data-rv style="--d:0.10s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Note</span><span class="vl">2 000 F</span><span class="ds">Online for a year, three photos, no signature of ours</span></div><div class="timbre" data-rv style="--d:0.20s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Letter</span><span class="vl">5 000 F</span><span class="ds">One year, three photos, your secret code</span></div><div class="timbre" data-rv style="--d:0.30s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Keepsake</span><span class="vl">10 000 F</span><span class="ds">One year, up to twenty photos, your secret code</span></div><div class="timbre plume-t" data-rv style="--d:0.40s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Quill</span><span class="vl">+500 F</span><span class="ds">It writes with you. Free to try, counted only if you send it.</span></div></div>
+    <p class="chapo" data-rv>The opening is the same with every offer: the envelope, the seal, the sound. What changes: how long it stays online, its photos, its finish, and our signature at the bottom.</p>
+    <div class="timbres"><div class="timbre" data-rv style="--d:0.00s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">Free</span><span class="vl">Free</span><span class="ds">Online for 7 days, one photo, our signature at the bottom</span></div><div class="timbre" data-rv style="--d:0.10s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Note</span><span class="vl">2 000 F</span><span class="ds">Online for a year, three photos, no signature of ours</span><span class="hb">+ your choice of finish</span></div><div class="timbre" data-rv style="--d:0.20s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Letter</span><span class="vl">5 000 F</span><span class="ds">One year, three photos, your secret code</span><span class="hb">+ your choice of finish</span></div><div class="timbre" data-rv style="--d:0.30s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Keepsake</span><span class="vl">10 000 F</span><span class="ds">One year, up to twenty photos, your secret code</span><span class="hb">+ your choice of finish</span></div><div class="timbre plume-t" data-rv style="--d:0.40s"><svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/><circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg><span class="nm">The Quill</span><span class="vl">+500 F</span><span class="ds">It writes with you. Free to try, counted only if you send it.</span></div></div>
     <p class="payer" data-rv>You pay by Mobile Money or card, on our payment provider's secure page. Nothing to copy, no code to give us.</p>
   </div>
 </section>
@@ -690,7 +810,28 @@ button{background:none;border:0;cursor:pointer}
   </div>
 </section>
 
-<!-- 9 · LA FIN -->
+<!-- 9 · LES QUESTIONS. ⛔ Le `FAQPage` du <head> est LU ici par le build :
+     jamais écrit à la main. Chaque réponse tient debout seule (40 à 60 mots),
+     et ne dit que ce que la page dit déjà. Les prix viennent du catalogue. -->
+<section class="papier grain sec" id="questions">
+  <div class="etroit">
+    <p class="sur" data-rv>Questions</p>
+    <h2 class="h2" data-rv>What people<br><em>ask us.</em></h2>
+    <div class="faq">
+      <details class="q" data-rv><summary>How does the person receive the letter?</summary><div class="r"><p>Through a link you send them yourself, on WhatsApp or anywhere else, whenever you like: three days before, or the night before. We never write to the person. They open the link on their phone, with nothing to install, and find a sealed envelope waiting for its hour.</p></div></details>
+      <details class="q" data-rv><summary>What do they see if they open the link before the time?</summary><div class="r"><p>A closed envelope and a countdown, nothing else: the seal sleeps and no button opens it. At the chosen time, the wax lights up and the button appears, without reloading the page. Their phone's clock is what counts: midnight in Abidjan is not midnight in Cotonou.</p></div></details>
+      <details class="q" data-rv><summary>Do I need to install an app?</summary><div class="r"><p>No. The letter is a page that opens in the phone's browser, even on a weak connection. There is no app to download and no account to create, neither for you nor for the person who receives it.</p></div></details>
+      <details class="q" data-rv><summary>How much does a letter cost?</summary><div class="r"><p>It is free to start: online for 7 days, one photo, our signature at the bottom. Paid offers keep it for a year, without our signature, with your choice of finish: The Note (2 000 F), The Letter (5 000 F) and The Keepsake (10 000 F). The Quill adds 500 F, only if you send the version it wrote.</p></div></details>
+      <details class="q" data-rv><summary>How do I pay?</summary><div class="r"><p>By Mobile Money or card, on our payment provider's secure page, where you choose your network. Nothing to copy, no code to give us. A free letter never goes through checkout at all: you write it, you get your link.</p></div></details>
+      <details class="q" data-rv><summary>What is the Quill?</summary><div class="r"><p>A writing aid. You answer a few questions, share a memory, say how you want your letter, and the Quill writes a first version. You reread it, change what you like, and sign. Trying it costs nothing, and it never makes up a memory for you.</p></div></details>
+      <details class="q" data-rv><summary>Is my letter private?</summary><div class="r"><p>Its address is drawn at random, never indexed by search engines, and it expires: seven days for a free letter, a year for a paid one. But anyone with the link can read it: it is a wrapped gift, not a safe. And if the person who receives it asks for it to be removed, it is removed within 24 hours.</p></div></details>
+      <details class="q" data-rv><summary>Can you make our wedding invitation?</summary><div class="r"><p>Yes, on request, for 25 000 F, made to measure by our team. It opens like a letter, with the seal bearing your initials, the countdown to the big day, the schedule, the venue, the dress code and your photos. Your guests reply straight to your WhatsApp.</p></div></details>
+    </div>
+    <p class="ecris" data-rv>Another question? <a id="question" href="https://wa.me/22996740732?text=Hello%2C%20I%20have%20a%20question%20about%20Ma%20lettre%20%C3%A0%E2%80%A6%3A%20">Message us on WhatsApp</a>.</p>
+  </div>
+</section>
+
+<!-- 10 · LA FIN -->
 <section class="nuit grain sec fin" id="fin">
   <p class="sur" data-rv>Your turn</p>
   <h2 class="h2" data-rv>All it needs<br><em>is a name.</em></h2>
@@ -725,7 +866,7 @@ button{background:none;border:0;cursor:pointer}
 <script>
 "use strict";
 /* Les données, posées par le build (`_build_accueil.py`) : jamais écrites ici. */
-var DONNEES = {"plume":500,"paliers":["gratuit","mot","lettre","coffret"],"exemples":["afi","papa","zara","maman","grace","fatou"]};
+var DONNEES = {"plume":500,"paliers":["gratuit","mot","lettre","coffret"],"exemples":["afi","papa","zara","maman","grace","fatou"],"bientot":{"a":"Next big date: ","j0":"it's today","j1":"it's tomorrow","jn":"in %d days","go":"Write it now, it will wait.","dates":[{"id":"valentin","nom":"Valentine's Day","jour":"02-14"},{"id":"noel","nom":"Christmas","jour":"12-25"},{"id":"nouvelan","nom":"New Year","jour":"01-01"}]}};
 
 var $ = function(s, r){ return (r || document).querySelector(s); };
 var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -939,15 +1080,22 @@ $("#modale-fermer").addEventListener("click", fermer);
 modale.addEventListener("click", function(e){ if (e.target === modale) { fermer(); } });
 document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !modale.hidden) { fermer(); } });
 
-/* ══ Le seuil, en vrai : une lettre qui s'ouvrira dans 40 secondes ══ */
-var GABARIT = null, seuilFait = false;
+/* ══ Le seuil, en vrai : une lettre qui s'ouvre dans 10 secondes, et qu'on
+   rhabille d'une pastille. Rhabillée, elle s'ouvre tout de suite : on veut
+   voir la cire, la pluie et la phrase à gratter, pas attendre encore. ══ */
+var GABARIT = null, seuilFait = false, habillee = false;
 function serialiser(o){
   return JSON.stringify(o).replace(/<\//g, "<\\/").replace(/<!--/g, "<\\!--")
     .replace(/[\u2028]/g, "\\u2028").replace(/[\u2029]/g, "\\u2029");
 }
-function seuilDemo(){
+function habit(){
+  var h = {};
+  $$(".habille input:checked").forEach(function(x){ h[x.name.slice(3)] = x.value; });
+  return h;
+}
+function seuilDemo(attendre){
   var cadre = $("#seuil-cadre");
-  var t = new Date(Date.now() + 40000);
+  var t = new Date(Date.now() + 10000);
   var z = function(n){ return ("0" + n).slice(-2); };
   var ouvre = t.getFullYear() + "-" + z(t.getMonth() + 1) + "-" + z(t.getDate()) + "T" + z(t.getHours()) + ":" + z(t.getMinutes()) + ":" + z(t.getSeconds());
   var d = {
@@ -956,8 +1104,12 @@ function seuilDemo(){
     lien: "https://malettre.nebula-agency.online/en/", langue: "en",
     lettre: ["This is what the person who receives your letter will see: a seal that waits for its hour, then lights up.",
              "The rest is yours to write."],
-    ouvre: ouvre
+    ouvre: attendre ? ouvre : ""
   };
+  if (habillee) {
+    d.habillage = habit();
+    d.gratter = "You can hide a line here.";
+  }
   var a = GABARIT.indexOf("/*MALETTRE_DONNEES*/"), b = GABARIT.indexOf("/*FIN_MALETTRE_DONNEES*/");
   if (a < 0 || b < 0) { return; }
   cadre.srcdoc = GABARIT.slice(0, a) + serialiser(d) + GABARIT.slice(b + "/*FIN_MALETTRE_DONNEES*/".length);
@@ -965,10 +1117,39 @@ function seuilDemo(){
 function chargerSeuil(){
   if (seuilFait) { return; }
   seuilFait = true;
-  fetch("../lettre.html").then(function(r){ return r.text(); }).then(function(t){ GABARIT = t; seuilDemo(); })
+  fetch("../lettre.html").then(function(r){ return r.text(); }).then(function(t){ GABARIT = t; seuilDemo(true); })
     .catch(function(){ seuilFait = false; });
 }
-$("#seuil-refaire").addEventListener("click", function(){ if (GABARIT) { seuilDemo(); } else { chargerSeuil(); } });
+$("#seuil-refaire").addEventListener("click", function(){ if (GABARIT) { seuilDemo(true); } else { chargerSeuil(); } });
+$$(".habille input").forEach(function(x){
+  x.addEventListener("change", function(){
+    habillee = true;
+    if (GABARIT) { seuilDemo(false); } else { chargerSeuil(); }
+  });
+});
+
+/* ══ La prochaine grande date : calculée sur les dates des occasions ══ */
+(function(){
+  var el = $("#bientot"), B = DONNEES.bientot;
+  if (!el || !B || !B.dates || !B.dates.length) { return; }
+  var a = new Date(), j0 = new Date(a.getFullYear(), a.getMonth(), a.getDate()), mieux = null;
+  B.dates.forEach(function(o){
+    var m = +o.jour.slice(0, 2) - 1, j = +o.jour.slice(3, 5);
+    var d = new Date(j0.getFullYear(), m, j);
+    if (d < j0) { d = new Date(j0.getFullYear() + 1, m, j); }
+    var n = Math.round((d - j0) / 864e5);   /* arrondi : un jour d'heure d'été fait 23 h */
+    if (!mieux || n < mieux.n) { mieux = {o: o, n: n}; }
+  });
+  var b = document.createElement("b"), lien = document.createElement("a");
+  b.textContent = mieux.o.nom;
+  lien.href = "creer.html?occasion=" + encodeURIComponent(mieux.o.id);
+  lien.textContent = B.go;
+  el.textContent = "";
+  el.appendChild(document.createTextNode(B.a));
+  el.appendChild(b);
+  el.appendChild(document.createTextNode(", " + (mieux.n === 0 ? B.j0 : mieux.n === 1 ? B.j1 : B.jn.replace("%d", mieux.n)) + ". "));
+  el.appendChild(lien);
+})();
 
 /* ══ LA BOUCLE : une seule, scrollY lu une fois par image ══ */
 var barre = $(".progres"), revele = $$("[data-rv]"), puces = $$(".fiche-d .puce[data-choisie]"), lignesP = $$("#lettre-d p");
@@ -1013,7 +1194,8 @@ function image(){
     evs[i].style.transform = "translateY(" + lerp(70, -4, k).toFixed(1) + "%)";
   });
   rr.forEach(function(t, i){ if (t < vh * .9) { revele[i].classList.add("vu"); } });
-  if (rsu < vh * 1.2) { chargerSeuil(); }
+  /* le compte de dix secondes part quand le téléphone est en vue, pas avant */
+  if (rsu < vh * .6) { chargerSeuil(); }
 }
 function demander(){ if (!attente) { attente = true; requestAnimationFrame(image); } }
 addEventListener("scroll", demander, { passive: true });

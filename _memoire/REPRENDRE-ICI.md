@@ -7,14 +7,17 @@
 
 ---
 
-## 0 sexdecies. LE 2026-10-16 · MA LETTRE À… (ex-LE PLI) A SA PAGE D'ACCUEIL
+## 0 sexdecies. LE 2026-10-16 · MA LETTRE À… (ex-LE PLI) : VAGUES 0 À 3 FAITES
 
-- **Le nom** : LE PLI devient **MA LETTRE À…** (Mongazi). Code `malettre/`. Rien n'est en ligne.
-- **La page d'accueil est construite et contrôlée** (78 verts, `python malettre/_qc_accueil.py`), la
-  publication est prête (`python malettre/_dist.py`), **pas déployée** : la caisse n'est pas branchée.
-- 🔴 **Par quoi commencer** : `malettre/CONTEXT.md` (état, ce qui attend Mongazi), puis la **vidéo
-  publicitaire** de MA LETTRE À…, dont les questions ont été posées à Mongazi le 2026-10-16.
-- ⚠️ **Le PC s'est éteint en pleine session** le 2026-10-16 : la reprise a vérifié que rien n'était cassé.
+- **Le nom** : LE PLI devient **MA LETTRE À…** (Mongazi). Code `malettre/`. **Rien n'est en ligne.**
+- **Le plan en six vagues** (`malettre/CONTEXT.md`) : 0 les deux langues ✅ · 1 le rendu pour tous (3D,
+  son, vibration) ✅ · 2 l'habillage payant et « Répondre » ✅ · 3 la vitrine (« Ouvre-la toi-même »,
+  exemples habillés, faire-part sur demande à 25 000 F, FAQ, `llms.txt`) ✅ · **4 le faire-part
+  (gabarit + générateur) ⏳ · 5 la pub ⏳ (attend les six MP3 ElevenLabs de Mongazi)**.
+- **Contrôles verts** : `_qc_accueil.py` 235 · `_qc.py` 269 · `_qc_caisse.mjs` 301 · `_qc_langues.py` 52.
+  La publication est prête (`python malettre/_dist.py`), **pas déployée** : la caisse n'est pas branchée.
+- 🔴 **Par quoi commencer** : `malettre/CONTEXT.md` § « Vague 3 » et « Ce qui attend Mongazi », puis la
+  vague 4 (le faire-part se vend sans la caisse, par WhatsApp).
   Détail : `_memoire/conversations/2026-10-16-malettre-accueil.md`.
 
 ---
