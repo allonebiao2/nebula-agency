@@ -2944,3 +2944,14 @@ cassait. `node --check` l'a vu à chaque fois.
 pas ; après toute écriture qui en contient, compter les caractères réels dans le fichier, et
 `node --check` sur tout script. ⚠️ La leçon du 2026-09 sur ce même piège porte elle-même le caractère réel entre ses accents graves (là où il fallait lire l’échappement) : elle est laissée telle quelle, la preuve est dedans.
 
+
+## 2026-10-16 · Au téléphone, un débordement DÉZOOME, et le contrôle le croit
+
+Page d'accueil de MA LETTRE À… : l'`input` du prénom poussait la page à 597 px au téléphone, le
+navigateur la dézoomait, et le contrôle « rien ne déborde » passait au vert parce qu'il comparait
+`scrollWidth` à `innerWidth`, qui grandit avec le défaut. Le défaut se voyait sur une capture (le champ
+coupé à droite) que personne n'avait regardée de près.
+**Règle** : comparer à la largeur DEMANDÉE (390), jamais à `innerWidth`. Et toute sonde a un témoin :
+la sonde de contraste, elle, mesurait le fond une section à côté (la capture d'élément refait défiler),
+et `clock.install()` laissait couler le temps sous une capture « avant ». Détail :
+`_memoire/apprentissages/2026-10-16-qc-telephone-dezoom.md`.

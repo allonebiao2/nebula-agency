@@ -1,9 +1,21 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-09-24
+## Point de reprise pour une session terminal · dernière mise à jour 2026-10-16
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 sexdecies. LE 2026-10-16 · MA LETTRE À… (ex-LE PLI) A SA PAGE D'ACCUEIL
+
+- **Le nom** : LE PLI devient **MA LETTRE À…** (Mongazi). Code `malettre/`. Rien n'est en ligne.
+- **La page d'accueil est construite et contrôlée** (78 verts, `python malettre/_qc_accueil.py`), la
+  publication est prête (`python malettre/_dist.py`), **pas déployée** : la caisse n'est pas branchée.
+- 🔴 **Par quoi commencer** : `malettre/CONTEXT.md` (état, ce qui attend Mongazi), puis la **vidéo
+  publicitaire** de MA LETTRE À…, dont les questions ont été posées à Mongazi le 2026-10-16.
+- ⚠️ **Le PC s'est éteint en pleine session** le 2026-10-16 : la reprise a vérifié que rien n'était cassé.
+  Détail : `_memoire/conversations/2026-10-16-malettre-accueil.md`.
 
 ---
 

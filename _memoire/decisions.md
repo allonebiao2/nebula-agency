@@ -903,3 +903,14 @@ MD5, 53 plats balisés, fichier absent → 404).
   la moitié des trades atteignent 2 R). Mongazi les juge « nulles ».
 - **Conséquences** : tout verdict s'ouvre par le taux d'objectifs réellement atteints, le R:R réalisé et
   la probabilité de 5-6 pertes d'affilée. La prochaine méthode analysée vient d'une nouvelle vidéo.
+
+## 2026-10-16 · LE PLI devient MA LETTRE À…
+
+- **Décision** (Mongazi) : le produit s'appelle **MA LETTRE À…**, un nom qui se termine par le prénom
+  de la personne (« Ma lettre à Afi »). Code `malettre/`, schéma `malettre`, fonctions `malettre-*`.
+- **Contexte** : « LE PLI c'est un peu bizarre, on doit pouvoir comprendre dès qu'on le lit ou qu'on le
+  dit ». Le nom tient sur les trois registres (amour, fêtes, deuil plus tard).
+- **Conséquences** : adresse prévue `malettre.nebula-agency.online` ; `malettre.app` à acheter ou non par
+  Mongazi. Le retrait d'une lettre se demande au WhatsApp de NEBULA (`wa.me/22996740732`, le numéro de
+  `merci.html`), lien posé au pied de la page d'accueil. Le Coffret ne promet plus de livraison WhatsApp.
+  Rien n'est mis en ligne avant le branchement de la caisse et le feu vert de Mongazi.
