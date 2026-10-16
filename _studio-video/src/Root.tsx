@@ -14,6 +14,8 @@ import {Seuil} from './lepli/Seuil';
 import {Signature} from './lepli/Signature';
 import {DUREE as NEBULA30_DUREE, FPS as NEBULA30_FPS, HAUTEUR as NEBULA30_H, LARGEUR as NEBULA30_L} from './nebula30/donnees';
 import {Nebula30} from './nebula30/Nebula30';
+import {DUREE as GRAIN35_DUREE, FPS as GRAIN35_FPS, HAUTEUR as GRAIN35_H, LARGEUR as GRAIN35_L} from './grain35/donnees';
+import {Grain35} from './grain35/Grain35';
 
 /** TikTok : vertical plein cadre, 1080x1920. */
 const LARGEUR = 1080;
@@ -54,6 +56,16 @@ export const Racine: React.FC = () => (
 			width={NEBULA30_L}
 			height={NEBULA30_H}
 			defaultProps={{registre: 'vous' as const}}
+		/>
+
+		{/* La publicité de Grain d'Esthétique, l'institut de Jocelyne : 35 s, le grain qui révèle. */}
+		<Composition
+			id="grain-35s"
+			component={Grain35}
+			durationInFrames={GRAIN35_DUREE}
+			fps={GRAIN35_FPS}
+			width={GRAIN35_L}
+			height={GRAIN35_H}
 		/>
 
 		<Composition

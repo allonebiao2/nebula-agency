@@ -201,6 +201,31 @@ l'accueil, elle vaut plus qu'un QR vers le site pour une cliente qui vient de
 sortir de soin. C'est le produit « QR Code Google Review » de NEBULA (30 000 F).
 **Le lien n'existe que depuis sa fiche Google**, à récupérer auprès d'elle.
 
+## 🎬 LA PUBLICITÉ VIDÉO DE 35 s (2026-10-03)
+
+Demandée par Mongazi : une vidéo motion design qui donne envie de prendre
+rendez-vous, avec SES images et SA vitrine, voix off d'Alimata (ElevenLabs).
+Montée dans le studio vidéo : composition **`grain-35s`** de `_studio-video/`,
+détail complet dans la section « GRAIN D'ESTHÉTIQUE · la publicité » de
+`_studio-video/README.md`. La pub à envoyer : `_studio-video/out/Grain-d-Esthetique-pub-35s.mp4`.
+
+- **La phrase** : un grain de peau qu'on révèle (celle de l'affiche). Le grain d'or
+  balaie chaque scène ; l'œil de son logo s'ouvre au début et la caméra plonge dans
+  sa pupille ; à la fin **son logo s'écrit couche par couche** (ses vrais contours,
+  `logo-grain-esthetique.svg`) et **le point rond du « i » tombe en dernier : le grain**.
+- **Ses choix** : pas de tournage, pas d'offre (pub intemporelle), 9:16 seulement,
+  ses vrais avis Google (7 captures dans `_partage`).
+- **Polices** choisies sur spécimen (« ultra pro, différente ») : **Gloock** +
+  **Instrument Serif italique** (or) + **Instrument Sans**. Pas celles de la vitrine.
+- **Voix** : Alimata, Eleven v4, balises d'émotion. ⚠️ Elle dit « **rendez-vous** »
+  (ElevenLabs a développé « RDV ») : l'écran dit pareil.
+- **Musique** : « Soulfire, the midnight ritual » (djoldcatz, Pixabay 460495), une
+  fenêtre de 35 s sans raccord ; l'autre (jacquesflix, 293723) est en réserve
+  (`python _outils/grain35_son.py afro-chill`). ⏳ **Garder les liens des pages Pixabay.**
+- ⛔ **Rien d'inventé** : prix, numéro, horaires, maisons, devise lus dans la vitrine
+  (`_outils/grain35_faits.py`) ; avis mot pour mot ; **aucune note moyenne affichée**
+  (un avis est à 4★ : la moyenne n'est peut-être pas 5,0, quoi que dise le « 5★ » de la vitrine).
+
 ## Prospectus « Fête de l'Igname » (2026-08-15)
 Prospectus **A5 recto-verso** (148 × 210 mm), dans l'univers de l'institut : rose `#C4648A`,
 or `#D4AF72`, encre `#1A0E14`, Cormorant Garamond + Jost, équerres dorées, filet à la gemme.
@@ -233,6 +258,8 @@ Une **version vectorielle** reste à faire si on veut l'imprimer en grand.
 - [ ] Confirmer `https://graindesthetique.com` en ligne + SSL actif (custom domain « active »), puis débrancher/supprimer l'ancien Netlify.
 - [ ] Optionnel : vraies photos supplémentaires, vrais avis Google, mini-vidéo institut.
 - [ ] **Prospectus Igname** : faire confirmer dates + montants par Jocelyne, puis imprimer.
+- [ ] **Pub vidéo 35 s** : la faire écouter et regarder par Mongazi (et Jocelyne), puis publier (statut WhatsApp, Facebook, Instagram, TikTok).
+- [ ] **Vérifier la note moyenne Google** : la vitrine dit « 5★ », or un avis est à 4★. Si la fiche affiche 4,9, corriger la vitrine.
 - [x] ✅ **Logo en vectoriel FAIT le 2026-09-02** : `assets/images/logo-grain-esthetique.svg` (+ `logo-grain-marque.svg`), tracé de son PNG par `_outils/_vectoriser_logo.py`.
 
 ## Liens

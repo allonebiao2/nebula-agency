@@ -80,6 +80,14 @@ Et la vidéo de marque de l'agence (2026-10-02) :
 
 Voir la section « NEBULA · la vidéo de marque » plus bas.
 
+Et la publicité d'une cliente (2026-10-03) :
+
+| Composition | Contenu | Durée |
+|---|---|---|
+| `grain-35s` | **GRAIN D'ESTHÉTIQUE · le grain qui révèle** : l'institut de Jocelyne, pour faire écrire « rendez-vous » sur WhatsApp | 35 s |
+
+Voir la section « GRAIN D'ESTHÉTIQUE · la publicité » plus bas.
+
 ## Ce qui manque encore
 
 - **Les plans filmés.** Le visage qui fait oui ou non n'est pas tourné. En
@@ -100,6 +108,7 @@ npm run rendu           # les trois vidéos dans out/
 npm run rendu:prix      # une seule
 npm run rendu:dimanche  # le plan du dimanche, par morceaux (~1 h 30, garde-éveil)
 npm run rendu:nebula30  # la vidéo de marque NEBULA, par morceaux, puis le mastering du son
+npm run rendu:grain35   # la pub Grain d'Esthétique, par morceaux, mastering, vérification
 npm run verifier        # contrôle TypeScript, sans rien rendre
 ```
 
@@ -312,3 +321,90 @@ dit aucun chiffre** : prix, délai et numéros vivent à l'écran (`FAITS` dans
 - **La version TikTok** (tutoiement, règle de la marque) : les textes sont prêts
   (`TEXTES.tu`), il manque sa voix. Elle n'est pas déclarée tant qu'elle manque.
 - Une version 16:9 (YouTube, site) si on la veut.
+
+---
+
+## GRAIN D'ESTHÉTIQUE · la publicité (`grain-35s`, 2026-10-03)
+
+> Un institut comme celui-ci, c'est **un grain de peau qu'on révèle** (la phrase
+> de son affiche). L'objet du film : **le grain d'or**. Il dérive sur les bords et
+> laisse le centre libre, il balaie une scène pour révéler la suivante (comme un
+> gommage révèle la peau), et c'est lui qui tombe en dernier sur le logo : le
+> point rond du « i » de « Grain ». Et sa marque est un **œil** : il s'ouvre au
+> début, et la caméra plonge dans sa pupille pour entrer dans l'institut.
+
+Pour l'institut de Jocelyne, la mère de Mongazi. **Un seul but : qu'on écrive sur
+WhatsApp.** 35 s, 1080x1920, 30 i/s.
+
+| Temps | Voix (Alimata, Eleven v4, avec balises) | Image |
+|---|---|---|
+| 0 → 4,8 s | « Vous vous occupez de tout le monde… Mais qui s'occupe de vous ? » | l'œil de son logo se dessine en or ; les mots d'une journée saturent l'écran puis se dissolvent sur « vous » |
+| 4,1 → 8,6 s | « Chez Grain d'Esthétique, vous passez enfin en premier. » | la plongée dans la pupille, l'or remplit l'écran, l'iris s'ouvre sur SA photo |
+| 8,6 → 12 s | « Des soins signés Sothys Paris et Sultane de Saba. » | les deux noms en très grand, un reflet d'or |
+| 12 → 16 s | (musique : la relance) | la vague de grains finit PILE sur la relance ; ses vrais avis Google |
+| 16 → 20,8 s | « Un visage qui s'illumine. Un corps qui respire. » | la lumière qui s'épanouit, les ondes qui respirent, ses prix |
+| 20,8 → 25 s | « Et des lèvres repulpées… sans une seule piqûre. » | les lèvres se tracent ; sur l'ARRÊT de la musique une seringue, sur LA RELANCE elle éclate en grains ; sa fiche Hyaluropen |
+| 25 → 28,5 s | « C'est votre tour : écrivez rendez-vous sur WhatsApp. » | sa vitrine, le doigt, WhatsApp, « Rendez-vous » tapé au rythme de la voix, ✓✓ |
+| 28,5 → 35 s | « Grain d'Esthétique. La beauté est un art de vivre. » | SON logo s'écrit (sourcil, eyeliner, l'œil s'ouvre, le G, les lettres, LE GRAIN tombe sur un premier temps), la devise, le numéro |
+
+### La chaîne, dans l'ordre
+
+```bash
+python _outils/grain35_logo.py       # SON logo vectoriel en 40 couches + src/grain35/couches.ts
+python _outils/grain35_faits.py      # les faits LUS dans sa vitrine → src/grain35/faits.ts
+python _outils/grain35_captures.py   # sa vitrine photographiée en ligne (sections)
+python _outils/grain35_son.py        # voix coupée et placée, musique montée → src/grain35/minutage.ts
+                                     #   (python _outils/grain35_son.py afro-chill : l'autre musique)
+node _outils/planches.mjs grain-35s 3.6 12.3 23.4 31.4   # REGARDER avant de rendre
+npm run rendu:grain35                # rendu par morceaux (1 onglet), mastering −14 LUFS, vérification
+```
+
+La pub à envoyer : **`out/Grain-d-Esthetique-pub-35s.mp4`** (⚠️ pas `grain-35s.mp4`,
+le provisoire que le mastering lit : sous Windows la casse ne compte pas).
+
+Entrées hors dépôt, dans `public/grain35/` : `sources/voix-brute.mp3` (Alimata,
+vitesse 1,08, stabilité 50, balises `[warmly]`, `[whispers]`…), les deux musiques
+**Pixabay** (« Soulfire, the midnight ritual » de djoldcatz, n° 460495 ; « Afrobeat
+ethnic beat electro chill » de jacquesflix, n° 293723 : garder le lien des pages,
+c'est la preuve de licence), `institut.jpg` (sa seule photo), `vitrine/` (captures).
+
+### Ce qui n'est pas inventé
+
+- **Les prix, le numéro, les horaires, le quartier, les maisons, la devise** sont lus
+  dans sa vitrine (`faits.ts`). ⚠️ Pas « le moins cher de la section » : celui du
+  visage est un remplissage de faux cils (7 000 F). On lit des soins **par leur nom**
+  (« Soin visage mini Sothys », 17 000 F) ; un nom absent fait échouer l'outil.
+- **Les avis** sont recopiés mot pour mot des 7 captures de sa fiche Google
+  (extraits en « … », accents rétablis, prénom + initiale). **Aucune note moyenne** :
+  un avis est à 4 étoiles, la moyenne n'est peut-être pas 5,0.
+- **La seule photo** est la sienne. Aucune personne d'une banque d'images.
+- La conversation WhatsApp **s'arrête au message envoyé** : aucune réponse inventée.
+
+### Le son
+
+- La voix (23,95 s) est coupée en **13 répliques dans ses silences mesurés** (il y a
+  −91 dB entre « repulpées » et « sans ») et posée sur la musique. ⚠️ ElevenLabs a
+  dit « **rendez-vous** » pour « RDV » (Whisper sans indice, 0,99) : l'écran dit
+  donc « rendez-vous » aussi. « Sothys » est juste (« Sotis »).
+- **Soulfire, 90 BPM, une seule fenêtre sans raccord (piste 211,36 → 246,36 s)** : la
+  basse entre sur « Mais qui s'occupe de vous ? », deux ARRÊTS d'un temps suivis
+  d'une relance (12,67 s : les avis ; 23,33 s : « sans une seule piqûre »), le grain
+  tombe sur un premier temps (31,33 s), la vraie fin du morceau s'éteint sous le logo.
+- La musique est baissée sous la voix (−28 LUFS momentanés) : écart médian **12 LU**.
+  Le chuchotement est posé à 8 LU au-dessus : un secret, pas un murmure perdu.
+- Les bruitages sont ceux de NEBULA, synthétisés (aucun fichier tiers).
+
+### Les pièges rencontrés
+
+- ⛔ **`Logo.tsx` et `logo.ts` dans le même dossier** : sous Windows c'est le même
+  fichier pour TypeScript. Les couches s'appellent `couches.ts`.
+- ⛔ **`np.convolve` sur une fenêtre de 400 ms** (sonie momentanée) : 2,7·10¹⁰
+  opérations, l'outil ne finissait pas en 5 minutes. Moyenne glissante par somme
+  cumulée : **9 secondes**.
+- ⛔ **Whisper avec un `initial_prompt` recrache l'indice** quand il n'entend pas bien
+  (vu sur le clip de JP le même jour) : la voix est transcrite **sans indice**, et
+  c'est aussi ce qui prouve que « Sothys » est bien prononcé.
+- La vitrine pose un bouton WhatsApp flottant (`.wa-fab`) sur tout : il s'était
+  imprimé sur la fiche Hyaluropen. Masqué dans `grain35_captures.py`.
+- Les mots de l'accroche **tirés au hasard** se chevauchaient et sortaient de l'écran :
+  ils ont des places composées.
