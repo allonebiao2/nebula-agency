@@ -79,6 +79,34 @@ entre les mains de quelqu'un.* **L'objet** : la feuille et son cachet de cire.
    la sonde de contraste mesurait le fond une section à côté au téléphone (la
    capture d'élément refait défiler). Témoins ajoutés.
 
+## Décisions du 2026-10-16 au soir (le dossier `_partage/ma lettre`, et la suite)
+
+Mongazi a déposé 11 vidéos, 6 images et un modèle 3D dans `_partage/ma lettre/` pour « tout » :
+vitrine, création, rendu, pub. Ce sont surtout des **faire-part de mariage concurrents**
+(mayainvite, @convite_sofisticado, invitelytr, un studio Canva, @es_wedding), avec leurs
+filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
+- **Le dossier sert de RÉFÉRENCES uniquement** : on reproduit leurs idées dans notre code et nos
+  images, rien de leur contenu n'est publié ni commité.
+- **La voix off** : Mongazi l'enregistre sur ElevenLabs (Alimata) à partir de notre texte. Rien
+  n'est généré (WaveSpeed 0,04 $, Higgsfield 0 crédit).
+- **L'ouverture spectaculaire (3D, vibration, son) est pour tout le monde**, l'habillage (cire,
+  sceau, papier, pluie, phrase à gratter) pour les offres payantes, **sans changer les prix**.
+- **Le son** : activé, discret, avec un bouton pour le couper.
+- **« Lui répondre sur WhatsApp »** : si l'acheteur coche la case (décochée par défaut), toutes
+  les offres. **Aucun avis d'ouverture** : on garde « aucune mesure d'audience ».
+- **Le faire-part de mariage** : « des gens peuvent se marier à tout moment ». **Sur demande
+  tout de suite** (fait par NEBULA) et **en libre-service ensuite**, **25 000 F**, les invités
+  répondent **par WhatsApp aux mariés** (aucun serveur).
+- **L'adresse** : `malettre.nebula-agency.online`.
+- **La pub** : TikTok, Facebook et Instagram, statuts WhatsApp (deux fois 15 s), YouTube
+  Shorts.
+- **Le français ET l'anglais sur tout le parcours** (vitrine, constructeur, lettre, plume,
+  exemples, pub), **dans chaque vague**.
+- **Vendre dès que possible.**
+- Le plan en vagues (0 : les deux langues · 1 : le rendu pour tous · 2 : l'habillage payant et
+  la réponse · 3 : la vitrine · 4 : le faire-part sur demande · 5 : la pub) est dans
+  `~/.claude/plans/dynamic-conjuring-piglet.md`, et repris ici au fil des vagues.
+
 ## Ce qui attend Mongazi
 
 - Le **feu vert** pour la mise en ligne, et d'abord **brancher la caisse**
