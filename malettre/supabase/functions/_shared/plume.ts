@@ -270,8 +270,20 @@ const aNumero = (s: string) =>
   (s.match(NUMERO) ?? []).some((x) => x.replace(/\D/g, '').length >= 8 && !/^\d{4}\D+\d{4}$/.test(x.trim()))
 const COURRIEL = /\S+@\S+\.\S+/
 
+/*
+  ⛔ LES ÉLISIONS. Le modèle a écrit « je te écris » deux fois sur onze
+  lettres, malgré la règle dans le système : une consigne n'est pas un
+  contrôle. « je, me, te, se, ne, que » devant une voyelle s'élident, toujours.
+  ⚠️ Pas devant un h : « je hais » ne s'élide pas, et deviner l'h muet est
+  un piège qu'on ne prend pas.
+*/
+const ELISION = /\b(je|me|te|se|ne|que|Je|Me|Te|Se|Ne|Que) (?=[aeiouyéèêëàâîïôûAEIOUYÉÈÊÀÂÎÔÛ])/g
+export function elider(s: string): string {
+  return s.replace(ELISION, (_m, mot: string) => mot.slice(0, -1) + "'")
+}
+
 export function propre(s: unknown): string {
-  return String(s ?? '')
+  return elider(String(s ?? ''))
     .replace(LONGS, ', ')
     .replace(IMAGES, '')
     .replace(/[\u2028\u2029]/g, ' ')

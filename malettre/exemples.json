@@ -1,0 +1,376 @@
+{
+  "_lire": "Six lettres d'EXEMPLE. Les personnes sont inventees, et la page le dit (CONDITIONS.md §5). Elles ont ete ecrites par la vraie plume le 2026-10-16 a partir de ces fiches, puis relues. Jamais de photo de visage.",
+  "exemples": [
+    {
+      "id": "afi",
+      "de": "Kofi",
+      "pour": "Afi",
+      "occasion": "valentin",
+      "occasionNom": "Saint-Valentin",
+      "ville": "Lomé",
+      "titre": "Pour toi, ma douce",
+      "lettre": [
+        "Ma douce, je commence par le bord de mer à Lomé, notre premier rendez-vous. L'orage est arrivé sans prévenir, on a couru se cacher sous la paillote d'un vendeur de coco. Moi, je ne regardais plus le ciel. Je te regardais rire sous la pluie.",
+        "Ce qui m'a fait craquer, c'est ton sourire, et puis ta voix. Elle est posée, elle fait du bien, même quand la journée a été longue. Et il y a ta douceur, ta patience, si rares. Près de toi, je respire plus lentement.",
+        "Alors en cette Saint-Valentin, je compte les jours jusqu'à ton retour d'Accra. Chaque jour qui passe me rapproche de toi. Reviens vite, ma douce. L'orage peut venir, j'ai déjà ma paillote."
+      ],
+      "formule": "Je t'embrasse très fort,",
+      "ouvre": "2027-02-14T00:00",
+      "fiche": {
+        "reponses": [
+          {
+            "q": "Qui est-ce pour toi ?",
+            "r": [
+              "Mon amour"
+            ]
+          },
+          {
+            "q": "Le ton",
+            "r": [
+              "Tendre",
+              "Poétique"
+            ]
+          },
+          {
+            "q": "Ce qui t'a fait craquer",
+            "r": [
+              "Son sourire",
+              "Sa voix"
+            ]
+          },
+          {
+            "q": "Ce que cette personne a de rare",
+            "r": [
+              "Sa douceur",
+              "Sa patience"
+            ]
+          },
+          {
+            "q": "La longueur",
+            "r": [
+              "Moyenne"
+            ]
+          },
+          {
+            "q": "Le français",
+            "r": [
+              "De tous les jours"
+            ]
+          }
+        ],
+        "souvenir": "Notre premier rendez-vous au bord de la mer à Lomé : l'orage est arrivé, on a couru se cacher sous la paillote d'un vendeur de coco.",
+        "consignes": "Appelle-la « ma douce ». Dis-lui que je compte les jours jusqu'à son retour d'Accra."
+      }
+    },
+    {
+      "id": "papa",
+      "de": "Afi",
+      "pour": "Papa",
+      "occasion": "papa",
+      "occasionNom": "Fête des pères",
+      "ville": "Cotonou",
+      "titre": "Merci pour chaque matin",
+      "lettre": [
+        "Je pense à ces matins où tu me déposais à l'école à moto, même sous la pluie, dans ton vieux ciré bleu. Tu ne t'es jamais plaint. Je crois que j'ai compris là ce que veut dire le courage.",
+        "Avec ta patience, tu m'as appris le travail, et aussi à me relever quand je tombe. Aujourd'hui, je te dis merci pour tout cela. Que Dieu te garde et te bénisse."
+      ],
+      "formule": "Ta fille qui t'aime,",
+      "ouvre": "",
+      "fiche": {
+        "reponses": [
+          {
+            "q": "Qui est-ce pour toi ?",
+            "r": [
+              "Mon père"
+            ]
+          },
+          {
+            "q": "Le ton",
+            "r": [
+              "Émouvant"
+            ]
+          },
+          {
+            "q": "Ce que cette personne a de rare",
+            "r": [
+              "Son courage",
+              "Sa patience"
+            ]
+          },
+          {
+            "q": "Ce que cette personne t'a appris",
+            "r": [
+              "Le travail",
+              "Se relever"
+            ]
+          },
+          {
+            "q": "La longueur",
+            "r": [
+              "Courte"
+            ]
+          },
+          {
+            "q": "Une bénédiction à la fin",
+            "r": [
+              "Chrétienne"
+            ]
+          }
+        ],
+        "souvenir": "Il me déposait à l'école à moto chaque matin, même sous la pluie, avec son vieux ciré bleu.",
+        "consignes": ""
+      }
+    },
+    {
+      "id": "zara",
+      "de": "Robert",
+      "pour": "Zara",
+      "occasion": "rupture",
+      "occasionNom": "Rupture",
+      "ville": "Cotonou",
+      "titre": "Ce qu'on ne veut pas pareil",
+      "lettre": [
+        "Je t'écris ceci avec le cœur tranquille, et je préfère être clair dès le début : c'est fini entre nous. Ce n'est la faute de personne. On ne veut simplement pas la même vie, et je crois qu'on le sait tous les deux.",
+        "Je repense à notre premier garba à Fidjrossè. Tu avais mis trop de piment, et tu as fait semblant que tout allait bien, les yeux pleins d'eau, le sourire bien accroché. Ce jour-là, j'ai ri, et j'ai aimé ta façon de tenir bon. Ce souvenir reste à moi, et il est doux.",
+        "Je ne regrette pas le temps passé ensemble. Je te souhaite une vie qui te ressemble, avec des repas moins pimentés, ou alors exactement autant que tu veux. Si un jour on se croise, on pourra se saluer sans gêne, et même en rire. On peut rester en bons termes, et je le souhaite vraiment."
+      ],
+      "formule": "Avec respect et tendresse,",
+      "ouvre": "",
+      "fiche": {
+        "reponses": [
+          {
+            "q": "Qui est-ce pour toi ?",
+            "r": [
+              "Ma copine"
+            ]
+          },
+          {
+            "q": "Le ton",
+            "r": [
+              "Drôle",
+              "Respectueux"
+            ]
+          },
+          {
+            "q": "Pourquoi",
+            "r": [
+              "On ne veut pas la même vie"
+            ]
+          },
+          {
+            "q": "La porte",
+            "r": [
+              "On peut rester en bons termes"
+            ]
+          },
+          {
+            "q": "Depuis combien de temps",
+            "r": [
+              "Un an ou deux"
+            ]
+          },
+          {
+            "q": "La longueur",
+            "r": [
+              "Moyenne"
+            ]
+          },
+          {
+            "q": "Le français",
+            "r": [
+              "Avec nos expressions d'ici"
+            ]
+          }
+        ],
+        "souvenir": "Notre premier garba à Fidjrossè : elle avait mis trop de piment et elle a fait semblant que tout allait bien.",
+        "consignes": "Reste gentil, aucun reproche."
+      }
+    },
+    {
+      "id": "maman",
+      "de": "Aminata",
+      "pour": "Maman",
+      "occasion": "maman",
+      "occasionNom": "Fête des mères",
+      "ville": "Abidjan",
+      "titre": "Merci, Maman, pour tout",
+      "lettre": [
+        "Je pense à toi au marché d'Adjamé, où tu vendais l'attiéké. Chaque fois, tu gardais la plus belle part pour moi, enveloppée dans une feuille. Je n'ai jamais oublié ce geste. Il en dit long sur ce que tu es.",
+        "Ta force, je l'ai vue tous les jours. Ta générosité aussi : tu donnais sans compter, et sans en parler. C'est auprès de toi que j'ai appris le partage et le courage. Ce sont des leçons que je porte partout où je vais.",
+        "Merci pour mes études. Tu t'es battue pour que je puisse apprendre, et chaque pas que j'ai fait, je l'ai fait grâce à toi. Aujourd'hui, en cette fête des mères, je voulais te le dire simplement : ma réussite te doit beaucoup. Que Dieu te garde, te protège et t'accorde santé et paix."
+      ],
+      "formule": "Ta fille qui t'aime,",
+      "ouvre": "",
+      "fiche": {
+        "reponses": [
+          {
+            "q": "Qui est-ce pour toi ?",
+            "r": [
+              "Ma mère"
+            ]
+          },
+          {
+            "q": "Le ton",
+            "r": [
+              "Chaleureux",
+              "Émouvant"
+            ]
+          },
+          {
+            "q": "Ce que cette personne a de rare",
+            "r": [
+              "Sa force",
+              "Sa générosité"
+            ]
+          },
+          {
+            "q": "Ce que cette personne t'a appris",
+            "r": [
+              "Le partage",
+              "Le courage"
+            ]
+          },
+          {
+            "q": "La longueur",
+            "r": [
+              "Moyenne"
+            ]
+          },
+          {
+            "q": "Le français",
+            "r": [
+              "De tous les jours"
+            ]
+          },
+          {
+            "q": "Une bénédiction à la fin",
+            "r": [
+              "Musulmane"
+            ]
+          }
+        ],
+        "souvenir": "Au marché d'Adjamé, elle vendait l'attiéké et gardait toujours la plus belle part pour moi, enveloppée dans une feuille.",
+        "consignes": "Remercie-la pour mes études. Ne parle pas d'argent."
+      }
+    },
+    {
+      "id": "grace",
+      "de": "Sèna",
+      "pour": "Grâce",
+      "occasion": "couple",
+      "occasionNom": "Demande de couple",
+      "ville": "Abomey-Calavi",
+      "titre": "Une question, sans pression",
+      "lettre": [
+        "Je t'écris parce qu'à voix haute, je suis sûr que je m'embrouillerais plus qu'en statistiques. Alors voilà, je prends mon courage et je le pose sur le papier.",
+        "Tu te souviens de la calculatrice, en TD ? Tu me l'as prêtée en me disant : « tu me la rends quand tu sauras compter ». Je ne sais toujours pas très bien compter, mais je sais que depuis ce jour-là, je guette ta façon de parler et ton humour. Tu me fais rire et, en même temps, tu me rends un peu timide.",
+        "Alors je te pose la question simplement : est-ce que tu aurais envie qu'on sorte ensemble ? Tu peux dire non, vraiment. Ça ne changera rien à mon respect pour toi, et je serai content de garder ce qu'on a déjà. Prends le temps qu'il te faut."
+      ],
+      "formule": "Avec toute ma sincérité,",
+      "ouvre": "",
+      "fiche": {
+        "reponses": [
+          {
+            "q": "Qui est-ce pour toi ?",
+            "r": [
+              "Mon crush"
+            ]
+          },
+          {
+            "q": "Le ton",
+            "r": [
+              "Tendre",
+              "Drôle"
+            ]
+          },
+          {
+            "q": "Ce qui t'a fait craquer",
+            "r": [
+              "Sa façon de parler",
+              "Son humour"
+            ]
+          },
+          {
+            "q": "Vous vous êtes connus",
+            "r": [
+              "À l'école ou à la fac"
+            ]
+          },
+          {
+            "q": "Depuis combien de temps",
+            "r": [
+              "Quelques mois"
+            ]
+          },
+          {
+            "q": "La longueur",
+            "r": [
+              "Moyenne"
+            ]
+          }
+        ],
+        "souvenir": "En TD de statistiques à la fac, elle m'a prêté sa calculatrice et m'a dit : « tu me la rends quand tu sauras compter ».",
+        "consignes": ""
+      }
+    },
+    {
+      "id": "fatou",
+      "de": "Ismaël",
+      "pour": "Tata Fatou",
+      "occasion": "tabaski",
+      "occasionNom": "Tabaski",
+      "ville": "Parakou",
+      "titre": "Pour cette Tabaski, de loin",
+      "lettre": [
+        "Cette année, je ne pourrai pas être près de toi pour la Tabaski : je suis à Paris. Mais ma pensée est auprès de toi, et je t'envoie mes vœux les plus respectueux. Je te souhaite la santé, la paix et une longue vie.",
+        "Je me souviens que, chaque Tabaski, quand j'étais petit, tu me confiais le grand plateau à porter chez les voisins. Je n'en ai jamais fait tomber un, et j'en étais fier. Cette confiance m'a accompagné bien plus loin que la rue. Qu'Allah te garde et t'accorde une belle fête."
+      ],
+      "formule": "Je t'embrasse avec respect,",
+      "ouvre": "",
+      "fiche": {
+        "reponses": [
+          {
+            "q": "Qui est-ce pour toi ?",
+            "r": [
+              "Ma tante"
+            ]
+          },
+          {
+            "q": "Le ton",
+            "r": [
+              "Chaleureux"
+            ]
+          },
+          {
+            "q": "Ce que tu lui souhaites",
+            "r": [
+              "La santé",
+              "La paix",
+              "Une longue vie"
+            ]
+          },
+          {
+            "q": "La longueur",
+            "r": [
+              "Courte"
+            ]
+          },
+          {
+            "q": "Le français",
+            "r": [
+              "Soigné"
+            ]
+          },
+          {
+            "q": "Une bénédiction à la fin",
+            "r": [
+              "Musulmane"
+            ]
+          }
+        ],
+        "souvenir": "Chaque Tabaski, quand j'étais petit, elle me confiait le grand plateau à porter chez les voisins, et je n'en ai jamais fait tomber un.",
+        "consignes": "Je ne pourrai pas venir cette année, je suis à Paris."
+      }
+    }
+  ]
+}

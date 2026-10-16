@@ -510,6 +510,15 @@ const sansVirgule = P.lireReponse(rep({ ...BONNE, formule: 'Prends soin de toi',
 dit(sansVirgule.ok && sansVirgule.formule === 'Prends soin de toi,' && sansVirgule.titre === 'Merci',
     'la formule finit par une virgule, le titre sans point')
 
+/* ⛔ Les elisions : « je te ecris » est sorti de la plume deux fois. */
+for (const [brut, voulu] of [
+  ['Je te écris ceci.', "Je t'écris ceci."], ['je ne arrive pas', "je n'arrive pas"],
+  ['parce que il pleut', "parce qu'il pleut"], ['je aime ta voix', "j'aime ta voix"],
+  ['Que on se revoie', "Qu'on se revoie"], ['je hais les adieux', 'je hais les adieux'],
+  ['je te souhaite', 'je te souhaite'], ['le homme', 'le homme'], ['cheque en blanc', 'cheque en blanc'],
+])
+  dit(P.propre(brut) === voulu, `élision : « ${brut} » donne « ${voulu} »`, P.propre(brut))
+
 dit(!/[\u2014\u2013\u2028\u2029]/.test(lire('supabase/functions/_shared/plume.ts')),
     'plume.ts ne contient aucun des caractères qu’il retire')
 
@@ -545,10 +554,11 @@ const fouiller = (d) => {
     const rel = d ? `${d}/${n.name}` : n.name
     if (n.isDirectory()) { if (!['_vues', '__pycache__', 'exemples'].includes(n.name)) fouiller(rel); continue }
     if (!/\.(html|ts|py|mjs|sql|md|json)$/.test(n.name)) continue
-    /* Ce fichier nomme ce qu'il cherche : il se dénoncerait lui-même. */
-    if (rel === '_qc_caisse.mjs') continue
+    /* Ces fichiers nomment ce qu'ils cherchent : ils se dénonceraient eux-mêmes. */
+    if (rel === '_qc_caisse.mjs' || rel === '_qc_accueil.py') continue
     let t = lire(rel).replace(TOLERE, '')
-    if (rel === 'README.md') t = t.replace(/<!-- HISTOIRE DU NOM -->[\s\S]*?<!-- FIN HISTOIRE -->/g, '')
+    /* L'histoire du nom, balisée, dans le README et dans CONTEXT.md (qui archive le récit LE PLI). */
+    if (/\.md$/.test(rel)) t = t.replace(/<!-- HISTOIRE DU NOM -->[\s\S]*?<!-- FIN HISTOIRE -->/g, '')
     if (/LE PLI|lepli|LEPLI/.test(t)) traces.push(rel)
   }
 }

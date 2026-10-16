@@ -43,7 +43,7 @@ Conditions et retrait : `malettre/CONDITIONS.md`
 
 | Brique | État |
 |---|---|
-| **Le gabarit de la lettre** (`lettre.html`) | ✅ construit, **203 contrôles verts** (`_qc.py`) |
+| **Le gabarit de la lettre** (`lettre.html`) | ✅ construit, **212 contrôles verts** (`_qc.py`) |
 | **Le constructeur** (`creer.html`) | ✅ construit |
 | **La sauvegarde du formulaire** | ✅ à chaque frappe, restaurée au retour |
 | **L'heure d'ouverture** | ✅ **dans la lettre**, depuis le 2026-09-06 |
@@ -53,9 +53,43 @@ Conditions et retrait : `malettre/CONDITIONS.md`
 | **La vidéo de démonstration** | ✅ construite le 2026-09-03, publiable dès que l'adresse existe |
 | **Les occasions** | ✅ **27**, rangées en quatre familles, depuis le 2026-10-16 · ⛔ pas de deuil |
 | **La plume** (l'agent qui écrit la lettre) | ✅ écrite, contrôlée, **essayée en vrai sur le modèle** · ⏳ pas déployée |
+| **La page d'accueil** (`index.html`) | ✅ construite le 2026-10-16, **78 contrôles verts** (`_qc_accueil.py`) · ⏳ pas en ligne |
+| **La publication** (`_dist.py`) | ✅ prête (16 fichiers, `404`, `_headers`, `robots.txt`) · ⛔ rien de déployé |
 
 Le manuel disait : *« un gabarit irréprochable, la sauvegarde du formulaire, la
 livraison à l'heure choisie, dans cet ordre »*. **Les trois sont faits.**
+
+### La page d'accueil (2026-10-16)
+
+**La phrase** : une lettre, c'est une feuille qui devient une enveloppe scellée,
+puis qui redevient une feuille entre les mains de quelqu'un. Le récit et la liste
+des sections : `CONTEXT.md`.
+
+```bash
+python malettre/_build_accueil.py     # index.html + exemples/*.html (GÉNÉRÉS)
+python malettre/_qc_accueil.py        # 78 contrôles, tous verts avant publication
+python malettre/_voir_accueil.py      # captures 390 et 1440 dans _vues/accueil, à REGARDER
+python malettre/_og.py                # og.jpg (1200 × 630, réseau requis pour les polices)
+python malettre/_dist.py              # _dist/ : seulement ce qui doit être en ligne
+```
+
+- ⛔ **On édite `_accueil_src.html`, `exemples.json` ou le catalogue de
+  `creer.html`**, jamais `index.html` ni `exemples/*.html`.
+- ⛔ **Aucun prix, aucune occasion n'est écrit dans la source** : le build les
+  lit dans `creer.html`, et le contrôle les relit dans le NAVIGATEUR (pas avec
+  la regex du build, sinon il vérifierait le build par lui-même).
+- ⛔ **Les exemples sont de vraies lettres** bâties par `_injecter.poser()` ;
+  leurs personnes sont inventées et la lettre le dit (« Exemple · »).
+- ⚠️ **Au téléphone, un élément trop large ne déborde pas : il DÉZOOME la
+  page**, et `innerWidth` grandit avec lui. Le contrôle compare donc à la
+  largeur demandée (390), jamais à `innerWidth`. Deux coupables trouvés le
+  2026-10-16 : l'`input` du prénom (largeur naturelle ~440 px) et les timbres
+  agrandis avant leur frappe.
+- ⚠️ **La sonde de contraste a deux témoins** (un gris sur gris doit échouer, le
+  fond papier du bouton de la barre doit être lu) : au téléphone, une capture
+  d'élément refait défiler la page et mesurait le fond une section à côté.
+- ⚠️ **Pour voir le chargement, figer ses transitions** (`getAnimations()`,
+  `pause()`, `currentTime`), pas `clock.install()` qui laisse couler le temps.
 
 ### La vidéo de démonstration
 
