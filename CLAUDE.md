@@ -305,10 +305,12 @@
   pluie, phrase à gratter) et « Répondre sur WhatsApp » ✅ · 3 la vitrine ✅ (« Ouvre-la toi-même » : une
   vraie lettre qu'on rhabille par pastilles, exemples habillés, prochaine grande date calculée, FAQ +
   `FAQPage` lu dans la page, `llms.txt`, **faire-part sur demande à 25 000 F**, prix dans
-  `malettre/faire-part/offre.json` et nulle part ailleurs) · 4 le faire-part ⏳ · 5 la pub ⏳.
+  `malettre/faire-part/offre.json` et nulle part ailleurs) · 4 le faire-part ✅ (`python malettre/_faire_part.py
+  FICHE`, compte à l'heure du LIEU, réponses au WhatsApp des mariés ; ⛔ fiches des couples dans
+  `faire-part/_couples/`, JAMAIS dans git, `_dist.py` refuse si une page publiée manque) · 5 la pub ⏳.
   Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
 - **Contrôles, tous verts avant toute publication** : `_qc.py` (269) · `node --experimental-strip-types
-  malettre/_qc_caisse.mjs` (301) · `_qc_accueil.py` (235, FR + EN) · `_qc_langues.py` (52).
+  malettre/_qc_caisse.mjs` (301) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
 - **Publier** (feu vert de Mongazi ET caisse branchée) : `python malettre/_dist.py` puis
   `wrangler pages deploy malettre/_dist --project-name malettre --branch main`. ⛔ Jamais le dossier entier.
   ⚠️ La route `/l/<jeton>` arrive avec la caisse : `_dist` devra la porter.

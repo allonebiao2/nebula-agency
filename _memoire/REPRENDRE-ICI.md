@@ -7,17 +7,19 @@
 
 ---
 
-## 0 sexdecies. LE 2026-10-16 · MA LETTRE À… (ex-LE PLI) : VAGUES 0 À 3 FAITES
+## 0 sexdecies. LE 2026-10-17 · MA LETTRE À… (ex-LE PLI) : VAGUES 0 À 4 FAITES
 
 - **Le nom** : LE PLI devient **MA LETTRE À…** (Mongazi). Code `malettre/`. **Rien n'est en ligne.**
 - **Le plan en six vagues** (`malettre/CONTEXT.md`) : 0 les deux langues ✅ · 1 le rendu pour tous (3D,
   son, vibration) ✅ · 2 l'habillage payant et « Répondre » ✅ · 3 la vitrine (« Ouvre-la toi-même »,
-  exemples habillés, faire-part sur demande à 25 000 F, FAQ, `llms.txt`) ✅ · **4 le faire-part
-  (gabarit + générateur) ⏳ · 5 la pub ⏳ (attend les six MP3 ElevenLabs de Mongazi)**.
-- **Contrôles verts** : `_qc_accueil.py` 235 · `_qc.py` 269 · `_qc_caisse.mjs` 301 · `_qc_langues.py` 52.
+  exemples habillés, faire-part sur demande à 25 000 F, FAQ, `llms.txt`) ✅ · 4 le faire-part (gabarit +
+  générateur, `README.md` § « Le faire-part ») ✅ · **5 la pub ⏳ (attend les six MP3 ElevenLabs de Mongazi)**.
+- **Contrôles verts** : `_qc_accueil.py` 239 · `_qc.py` 269 · `_qc_caisse.mjs` 301 · `_qc_langues.py` 52 ·
+  `_qc_faire_part.py` 83.
   La publication est prête (`python malettre/_dist.py`), **pas déployée** : la caisse n'est pas branchée.
-- 🔴 **Par quoi commencer** : `malettre/CONTEXT.md` § « Vague 3 » et « Ce qui attend Mongazi », puis la
-  vague 4 (le faire-part se vend sans la caisse, par WhatsApp).
+- 🔴 **Par quoi commencer** : `malettre/CONTEXT.md` § « Ce qui attend Mongazi ». Le faire-part peut se
+  vendre SANS la caisse (par WhatsApp) : il lui faut le feu vert pour publier le site, le compte qui
+  encaisse les 25 000 F, et une sauvegarde de `faire-part/_couples/`. Puis la vague 5 (la pub) dès les MP3.
   Détail : `_memoire/conversations/2026-10-16-malettre-accueil.md`.
 
 ---

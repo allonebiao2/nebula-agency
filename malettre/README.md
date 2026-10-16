@@ -148,6 +148,54 @@ python malettre/_og.py                # og.jpg et og-en.jpg
   polices (une image de partage est sortie sans un mot) ; le sélecteur de
   langue a fait passer « Write my letter » sur deux lignes au téléphone.
 
+### Le faire-part de mariage, sur demande (vague 4, 2026-10-16)
+
+NEBULA le fait pour le couple, **25 000 F** payés hors de la caisse (prix et
+numéro : `faire-part/offre.json`, seule source). Le couple écrit depuis le bouton
+de la vitrine ; on remplit sa fiche ; la page part à une adresse impossible à
+deviner. Les invités répondent sur **le WhatsApp des mariés**, jamais celui de
+NEBULA.
+
+```bash
+python malettre/_faire_part.py                      # les deux exemples (Kossi & Afiwa, FR et EN)
+python malettre/_faire_part.py malettre/faire-part/_couples/sena-grace.json   # un vrai couple
+python malettre/_qc_faire_part.py                   # 83 contrôles
+python malettre/_dist.py                            # publie les exemples ET les pages des couples
+```
+
+**Pour un vrai couple** :
+1. Leur demander (un seul message WhatsApp) : vos deux prénoms · les familles
+   (facultatif) · la date · pour chaque moment de la journée l'heure, ce que c'est
+   et le lieu · la ville · la tenue et ses couleurs · un mot pour vos invités
+   (facultatif) · jusqu'à 12 photos · le numéro WhatsApp où recevoir les réponses ·
+   la date limite pour répondre.
+2. Copier `faire-part/exemple.json` en `faire-part/_couples/<prenoms>.json`, retirer
+   `_lire` et `exemple`, remplir. Le fuseau : `+01:00` au Bénin, `+00:00` au Togo et
+   en Côte d'Ivoire. Le numéro : indicatif compris, chiffres seuls (le `01` béninois
+   GARDÉ : `2290197…`). Les photos : des chemins relatifs à la fiche.
+3. Fabriquer : le générateur valide tout (il refuse et liste les fautes), tire le
+   **jeton** à la première fois et l'écrit dans la fiche (l'adresse ne change plus
+   ensuite), embarque les photos en données (1 200 px), et note l'**empreinte**
+   du jeton dans `faire-part/publies.txt`.
+4. Ouvrir la page (`faire-part/_couples/sortie/<jeton>.html`), la faire valider au
+   couple, encaisser, publier (feu vert de Mongazi), envoyer l'adresse
+   `https://malettre.nebula-agency.online/f/<jeton>`.
+
+- ⛔ **Les fiches et les pages des couples ne vont JAMAIS dans git** (dépôt public :
+  noms, lieux, numéros ; et le jeton EST l'adresse). `faire-part/_couples/` est
+  ignoré. ⚠️ **Le sauvegarder ailleurs** : si ce disque meurt, les fiches meurent.
+- ⛔ **`_dist.py` refuse de construire si une page publiée manque sur ce disque**
+  (il compare les empreintes de `publies.txt`) : un déploiement Pages est un
+  instantané complet, publier depuis un autre poste effacerait les faire-part en
+  ligne. Publier depuis le poste qui porte `faire-part/_couples/`.
+- ⚠️ **Le compte vise l'heure du LIEU** (date, heure, fuseau), pas celle du
+  téléphone comme la lettre : un mariage a lieu à une heure de Cotonou.
+- Le jour J, le compte laisse place à « C'est aujourd'hui ! » ; 36 h après, à « Merci
+  d'avoir été là », et les réponses se ferment.
+- ⚠️ **L'exemple est daté du samedi 12 décembre 2026** : passé ce jour, le
+  générateur le refuse et le contrôle rougit. Changer la date dans les deux fiches
+  d'exemple.
+
 ### La vidéo de démonstration
 
 `_studio-video/`, composition **`lepli-demo`** : 1080x1920, 30 s.

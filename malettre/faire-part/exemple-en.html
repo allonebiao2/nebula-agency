@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Faire-part</title>
+<!--
+  MA LETTRE À… · le gabarit du FAIRE-PART DE MARIAGE (vague 4, 2026-10-16).
+
+  LA PHRASE : un faire-part, c'est un carton qu'on sort de son enveloppe, et
+  qu'on garde jusqu'au jour J. L'OBJET : le carton et son cachet d'or aux
+  initiales du couple. Chaque animation en sort :
+    le seuil      le cachet aux initiales se brise, le carton sort (le moteur de la lettre)
+    le carton     les noms s'écrivent
+    le compte     les chiffres jusqu'au jour J
+    le programme  le fil d'or qui relie les moments de la journée
+    la réponse    deux boutons vers le WhatsApp DES MARIÉS (jamais celui de NEBULA)
+
+  Règles reprises de la lettre (lettre.html) :
+  - aucune bibliothèque, aucun appel réseau, AUCUNE police téléchargée ;
+  - les photos sont des données (data:), jamais des liens ;
+  - les données arrivent à la place de FP_DONNEES, posées par
+    `_faire_part.py` avec le sérialiseur de `_injecter.py` (le seul qui
+    neutralise </script> et U+2028) ; le script n'écrit JAMAIS du HTML avec
+    elles : textContent, toujours ;
+  - noindex : un faire-part se donne, il ne se trouve pas.
+
+  ⚠️ DIFFÉRENCE VOULUE AVEC LA LETTRE : la lettre s'ouvre à l'heure du
+  TÉLÉPHONE de qui la lit (minuit, c'est minuit chez elle). Un mariage, lui,
+  a lieu à une heure du LIEU : le compte vise un instant absolu (date, heure
+  ET fuseau du lieu), sinon un invité de Paris attendrait une heure de trop.
+-->
+<style>
+:root{
+  --nuit:#141019;--nuit-2:#1d1826;
+  --papier:#f4ede0;--papier-2:#ebe0cd;--ivoire:#fbf7ef;
+  --encre:#241d2b;--gris:#5d5468;--gris-nuit:#a39bb3;
+  --or:#c9a227;--or-doux:#e0c266;--or-texte:#7a5a10;
+  --cire:#b8892b;--cire-clair:#e0b85a;--cire-fonce:#7a5a14;--cire-texte:#4a3608;
+  --dos-1:#e9dcc4;--dos-2:#d9c7a6;--carte-haut:#fbf7ef;
+  --rabat-1:#f1e7d5;--rabat-2:#e4d5bb;--rabat-3:#dccbad;--rabat-4:#cbb895;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --t:cubic-bezier(.25,1,.5,1);
+}
+/* La cire du cachet : les tons de la lettre (or par défaut, c'est un mariage). */
+.cire-bordeaux{--cire:#8c2f39;--cire-clair:#b2434e;--cire-fonce:#6d1f27;--cire-texte:#f0d6cf}
+.cire-nuit{--cire:#2b2433;--cire-clair:#4a3f56;--cire-fonce:#141019;--cire-texte:#e0c266}
+.cire-sapin{--cire:#2f5d4a;--cire-clair:#4f8a6f;--cire-fonce:#1b3a2d;--cire-texte:#f0e6cf}
+.cire-rose{--cire:#b25a72;--cire-clair:#d88aa0;--cire-fonce:#7e3a4e;--cire-texte:#fbeef1}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--nuit);color:var(--papier);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--or-doux);outline-offset:3px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.serif{font-family:var(--serif)}
+
+/* ══ 1 · LE SEUIL : le cachet aux initiales se brise (le moteur de la lettre) ══ */
+#seuil{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(18px,4vh,32px);padding:24px;text-align:center;
+  background:radial-gradient(120% 90% at 50% 40%,var(--nuit-2) 0%,var(--nuit) 62%);transition:opacity .7s var(--t),visibility .7s}
+.js #seuil{display:flex}
+#seuil.parti{opacity:0;visibility:hidden;pointer-events:none}
+.pour{font-size:clamp(12px,3.3vw,14px);letter-spacing:.24em;text-transform:uppercase;color:var(--gris-nuit)}
+.pour b{color:var(--or-doux);font-weight:600}
+.enveloppe{position:relative;width:min(78vw,340px);aspect-ratio:1.62;perspective:1000px;cursor:pointer}
+.enveloppe::before{content:"";position:absolute;inset:4% 3% 0;border-radius:6px;box-shadow:0 30px 70px rgba(0,0,0,.55);transition:opacity .5s .7s}
+.env3d{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(6deg);transition:transform .9s var(--t)}
+.env3d .dos{position:absolute;inset:0;border-radius:6px;background:linear-gradient(170deg,var(--dos-1),var(--dos-2))}
+.env3d .carte{position:absolute;left:7%;right:7%;top:9%;height:84%;border-radius:3px;transform:translateZ(1px);
+  background:linear-gradient(180deg,var(--carte-haut),var(--papier) 70%,var(--papier-2));color:var(--encre);
+  box-shadow:0 1px 4px rgba(36,29,43,.18);display:flex;flex-direction:column;align-items:center;padding-top:8%;
+  font-family:var(--serif);font-size:clamp(15px,4vw,18px);line-height:1.15;transition:transform .62s cubic-bezier(.3,.9,.3,1)}
+.env3d .carte i{font-style:italic;color:var(--or-texte)}
+.env3d .poche{position:absolute;inset:0;border-radius:6px;transform:translateZ(3px);
+  background:linear-gradient(168deg,var(--papier) 0%,var(--papier-2) 100%);clip-path:polygon(0 0,50% 54%,100% 0,100% 100%,0 100%)}
+.env3d .couture{position:absolute;inset:0;transform:translateZ(3.5px);pointer-events:none;background:
+  linear-gradient(to top right,transparent calc(50% - .6px),rgba(36,29,43,.13) 50%,transparent calc(50% + .6px)) left bottom/50% 46% no-repeat,
+  linear-gradient(to top left,transparent calc(50% - .6px),rgba(36,29,43,.13) 50%,transparent calc(50% + .6px)) right bottom/50% 46% no-repeat}
+.rabat{position:absolute;left:0;right:0;top:0;height:56%;transform-origin:50% 0;transform-style:preserve-3d;transform:translateZ(4px) rotateX(0deg)}
+.rabat i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;clip-path:polygon(0 0,100% 0,50% 100%)}
+.rabat .dehors{background:linear-gradient(180deg,var(--rabat-1),var(--rabat-2))}
+.rabat .dedans{background:linear-gradient(0deg,var(--rabat-3),var(--rabat-4));transform:rotateX(180deg)}
+/* Passé 90 deg, le rabat recule derrière la carte qui sort (leçon de la lettre). */
+@keyframes leve{0%{transform:translateZ(4px) rotateX(0deg)}49%{transform:translateZ(4px) rotateX(88deg)}
+  51%{transform:translateZ(-2px) rotateX(92deg)}100%{transform:translateZ(-2px) rotateX(178deg)}}
+.brise .rabat{animation:leve .62s cubic-bezier(.6,0,.3,1) .12s both}
+.brise .env3d .carte{transform:translateZ(1px) translateY(-58%);transition-delay:.5s}
+.brise .env3d{transform:rotateX(0deg) translateY(14%)}
+.brise::before{opacity:.35}
+.cachet,.fendu{position:absolute;left:50%;top:56%;width:clamp(70px,19vw,90px);aspect-ratio:1;border-radius:50%}
+.cachet{transform:translate(-50%,-50%) translateZ(6px);z-index:3;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce) 100%);
+  box-shadow:0 8px 20px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.28) inset;color:var(--cire-texte);
+  font-family:var(--serif);font-size:clamp(19px,5vw,23px);white-space:nowrap;animation:respire 3.4s ease-in-out infinite}
+.cachet i{font-style:italic;font-size:.82em;margin:0 1px}
+.cachet::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px dashed rgba(255,248,230,.45)}
+@keyframes respire{0%,100%{transform:translate(-50%,-50%) translateZ(6px) scale(1)}50%{transform:translate(-50%,-50%) translateZ(6px) scale(1.045)}}
+.fendu{transform:translate(-50%,-50%) translateZ(6px);pointer-events:none;opacity:0;z-index:4}
+.fendu i{position:absolute;inset:0;border-radius:50%;box-shadow:0 6px 14px rgba(0,0,0,.35);
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce) 100%)}
+.fendu .g{clip-path:polygon(0 0,52% 0,46% 22%,55% 40%,44% 58%,54% 76%,47% 100%,0 100%)}
+.fendu .d{clip-path:polygon(52% 0,100% 0,100% 100%,47% 100%,54% 76%,44% 58%,55% 40%,46% 22%)}
+.brise .fendu{opacity:1;transition:opacity .01s}
+.brise .cachet{animation:none;opacity:0;transition:opacity .18s}
+.brise .fendu .g{transform:translate(-62%,38%) rotate(-34deg);opacity:0;transition:transform .55s cubic-bezier(.3,.6,.4,1),opacity .3s .3s}
+.brise .fendu .d{transform:translate(62%,44%) rotate(30deg);opacity:0;transition:transform .55s cubic-bezier(.3,.6,.4,1),opacity .3s .3s}
+.touche{font-size:clamp(13px,3.5vw,15px);color:var(--gris-nuit)}
+.ouvrir{padding:14px 30px;border-radius:999px;background:var(--papier);color:var(--encre);font-weight:700;font-size:15px;
+  min-height:48px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .2s var(--t)}
+.ouvrir:hover{transform:translateY(-2px)}
+.enveloppe.brise ~ .touche,.enveloppe.brise ~ .ouvrir{opacity:0;transition:opacity .25s;pointer-events:none}
+.son{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;color:var(--gris-nuit);border:1px solid rgba(244,237,224,.16)}
+.son svg{width:20px;height:20px}
+.son .barre-son{display:none}
+.son[aria-pressed="false"] .barre-son{display:inline}
+.son[aria-pressed="false"] .onde{display:none}
+.pluie{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:150}
+
+/* ══ Le faire-part, une fois sorti ══ */
+.js main{visibility:hidden}
+.js main.ouvert{visibility:visible}
+main{max-width:620px;margin:0 auto;padding:clamp(18px,5vw,40px) clamp(14px,4vw,24px) 40px}
+.sec{margin-top:clamp(26px,6vw,40px)}
+.sec h2{font-family:var(--serif);font-weight:400;font-size:clamp(26px,7vw,34px);line-height:1.1;text-align:center;color:var(--papier)}
+.sec .sous{display:block;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:12px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--or-doux);margin-bottom:8px;font-weight:700}
+
+/* ══ 2 · LE CARTON : les noms s'écrivent ══ */
+.carton{background:linear-gradient(175deg,#fdf9f1,#f3ead8);color:var(--encre);border-radius:6px;padding:12px;
+  box-shadow:0 34px 70px rgba(0,0,0,.5)}
+.cadre{border:1px solid var(--or);outline:1px solid rgba(201,162,39,.45);outline-offset:-7px;padding:clamp(34px,9vw,52px) clamp(18px,5vw,32px) clamp(30px,8vw,44px);text-align:center}
+.exemple{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:var(--or-texte);margin-bottom:14px}
+.familles{font-family:var(--serif);font-size:clamp(16px,4.3vw,19px);line-height:1.4}
+.annonce{font-family:var(--serif);font-style:italic;font-size:clamp(15px,4vw,18px);color:var(--gris);margin-top:4px}
+.noms{font-family:var(--serif);font-weight:400;font-size:clamp(44px,13vw,64px);line-height:1.02;margin:clamp(18px,5vw,26px) 0 6px}
+.noms span{display:block}
+.noms i{display:block;font-style:italic;font-size:.6em;color:var(--or-texte);margin:2px 0}
+.noms:focus-visible{outline:none}
+.ecrit{clip-path:inset(0 100% 0 0)}
+.ouvert .ecrit{clip-path:inset(0 0 0 0);transition:clip-path 1.1s cubic-bezier(.6,0,.3,1) .35s}
+.ouvert .ecrit.n2{transition-delay:.85s}
+.oui{font-family:var(--serif);font-style:italic;font-size:clamp(18px,5vw,22px);color:var(--gris)}
+.filet{width:64px;height:1px;background:var(--or);margin:clamp(18px,5vw,24px) auto}
+.date{font-size:clamp(13px,3.6vw,15px);letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+/* L'heure sur SA ligne : collée à la date, elle se coupait en « 10 / H » (vu en 390). */
+.heure-l{font-family:var(--serif);font-style:italic;font-size:clamp(16px,4.4vw,18px);white-space:nowrap;margin-top:2px}
+.ville{color:var(--gris);font-size:clamp(14px,3.8vw,16px);margin-top:2px}
+
+/* ══ 3 · LE COMPTE jusqu'au jour J ══ */
+.compte{text-align:center}
+.chiffres{display:flex;gap:clamp(10px,3.4vw,20px);justify-content:center;margin-top:10px}
+.chiffres span{display:flex;flex-direction:column;align-items:center;min-width:clamp(52px,15vw,72px)}
+.chiffres b{font-family:var(--serif);font-weight:400;font-size:clamp(36px,11vw,54px);line-height:1;font-variant-numeric:tabular-nums}
+.chiffres i{font-style:normal;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris-nuit);margin-top:6px}
+.jour-j{font-family:var(--serif);font-style:italic;font-size:clamp(28px,8vw,40px);color:var(--or-doux)}
+
+/* Le mot des mariés */
+.mot{background:var(--nuit-2);border:1px solid rgba(244,237,224,.1);border-radius:14px;padding:clamp(20px,5vw,30px)}
+.mot p{font-family:var(--serif);font-size:clamp(17px,4.6vw,19px);line-height:1.6}
+.mot .sig{font-style:italic;color:var(--or-doux);text-align:right;margin-top:10px}
+
+/* ══ 4 · LE PROGRAMME : le fil d'or ══ */
+.prog{list-style:none;position:relative;margin-top:22px;padding-left:34px}
+.prog::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:1px;background:var(--or);transform-origin:50% 0;transform:scaleY(0);
+  transition:transform 1.4s cubic-bezier(.6,0,.3,1)}
+.prog.vu::before{transform:scaleY(1)}
+.prog li{position:relative;padding:0 0 26px;opacity:0;transform:translateY(14px);transition:opacity .6s,transform .7s var(--t)}
+.prog.vu li{opacity:1;transform:none}
+.prog li::before{content:"";position:absolute;left:-30px;top:6px;width:13px;height:13px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce))}
+.prog .h{display:block;font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--or-doux)}
+.prog b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(21px,5.6vw,25px);line-height:1.2;margin-top:2px}
+.prog .lieu{display:block;color:var(--gris-nuit);font-size:15px;margin-top:2px}
+.prog a{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:4px;color:var(--papier);font-weight:600;font-size:14.5px;
+  text-decoration:none;border-bottom:1px solid rgba(201,162,39,.6)}
+.prog a svg{width:16px;height:16px;flex:none;color:var(--or-doux)}
+
+/* La tenue */
+.tenue{text-align:center}
+.tenue p{max-width:44ch;margin:12px auto 0;color:var(--papier)}
+.teintes{display:flex;gap:12px;justify-content:center;margin-top:16px}
+.teintes span{width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 1px rgba(244,237,224,.3) inset,0 4px 10px rgba(0,0,0,.4)}
+
+/* Les photos */
+.grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:18px}
+.grille img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px;display:block}
+.grille img:first-child:nth-last-child(odd){grid-column:1/-1;aspect-ratio:3/2}
+
+/* ══ 5 · LA RÉPONSE : vers le WhatsApp des mariés ══ */
+.reponse{background:linear-gradient(175deg,#fdf9f1,#f3ead8);color:var(--encre);border-radius:14px;padding:clamp(24px,6vw,36px);text-align:center}
+.reponse h2{color:var(--encre)}
+.avant{color:var(--gris);margin-top:6px;font-size:15px}
+.reponse label{display:block;text-align:left;font-weight:700;font-size:14px;margin:20px 0 6px}
+.reponse input{width:100%;min-height:50px;border-radius:12px;border:1.5px solid rgba(36,29,43,.22);background:#fffdf8;padding:12px 14px;font-size:16px}
+.reponse input:focus{outline:none;border-color:var(--or-texte)}
+.nombre{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;text-align:left;font-weight:700;font-size:14px}
+.pas{display:flex;align-items:center;gap:6px}
+.pas button{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(36,29,43,.22);font-size:20px;line-height:1}
+.pas output{min-width:2ch;text-align:center;font-family:var(--serif);font-size:24px;font-weight:400}
+.choix{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.choix a{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border-radius:999px;font-weight:700;text-decoration:none;font-size:16px}
+.choix .r-oui{background:var(--encre);color:var(--papier)}
+.choix .r-non{border:1.5px solid rgba(36,29,43,.3);color:var(--encre)}
+.choix svg{width:18px;height:18px;flex:none}
+.note{margin-top:14px;font-size:14px;color:var(--gris)}
+.merci{text-align:center;font-family:var(--serif);font-style:italic;font-size:clamp(24px,7vw,32px);color:var(--or-doux)}
+.pied{text-align:center;margin-top:44px;font-size:13.5px;color:var(--gris-nuit)}
+.pied a{display:inline-flex;align-items:center;min-height:44px;color:var(--papier)}
+
+/* Les révélations : visibles sans délai pour qui a coupé les animations. */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .8s var(--t),transform .9s var(--t)}
+.rv.vu{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important;transition-delay:0s!important}
+  .rv,.prog li{opacity:1;transform:none}
+  .prog::before{transform:none}
+  .ecrit{clip-path:none}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add("js")</script>
+<noscript><p style="padding:24px;text-align:center">Ce faire-part a besoin de JavaScript pour s'ouvrir. · This invitation needs JavaScript to open.</p></noscript>
+
+<div id="seuil" role="dialog" aria-modal="true" aria-labelledby="s-pour">
+  <button class="son" id="son" type="button" aria-pressed="true" aria-label="Couper le son">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9h3l5-4v14l-5-4H4z"/><path class="onde" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/><path class="barre-son" d="M16 9l5 6M21 9l-5 6"/>
+    </svg>
+  </button>
+  <p class="pour" id="s-pour">Une invitation</p>
+  <div class="enveloppe" id="env">
+    <div class="env3d" aria-hidden="true">
+      <div class="dos"></div>
+      <div class="carte"><span id="c-1"></span><i>&amp;</i><span id="c-2"></span></div>
+      <div class="poche"></div>
+      <div class="couture"></div>
+      <div class="rabat"><i class="dehors"></i><i class="dedans"></i></div>
+    </div>
+    <div class="fendu" aria-hidden="true"><i class="g"></i><i class="d"></i></div>
+    <div class="cachet" aria-hidden="true"><span id="s-i1"></span><i>&amp;</i><span id="s-i2"></span></div>
+  </div>
+  <p class="touche" id="s-touche">Touchez le cachet.</p>
+  <button class="ouvrir" id="btn-ouvrir" type="button">Ouvrir l'invitation</button>
+</div>
+
+<main id="fp" aria-hidden="true">
+  <section class="carton">
+    <div class="cadre">
+      <p class="exemple" id="f-exemple" hidden></p>
+      <p class="familles" id="f-familles" hidden></p>
+      <p class="annonce" id="f-annonce" hidden></p>
+      <h1 class="noms" id="f-noms" tabindex="-1"><span class="ecrit" id="f-n1"></span><i class="ecrit">&amp;</i><span class="ecrit n2" id="f-n2"></span></h1>
+      <p class="oui" id="f-oui"></p>
+      <div class="filet"></div>
+      <p class="date" id="f-date"></p>
+      <p class="heure-l" id="f-heure"></p>
+      <p class="ville" id="f-ville"></p>
+    </div>
+  </section>
+
+  <section class="sec compte rv" id="f-compte">
+    <span class="sous" id="f-compte-t"></span>
+    <div class="chiffres" id="f-chiffres" aria-hidden="true">
+      <span><b id="c-j">0</b><i id="c-jl"></i></span><span><b id="c-h">00</b><i id="c-hl"></i></span>
+      <span><b id="c-m">00</b><i id="c-ml"></i></span><span><b id="c-s">00</b><i id="c-sl"></i></span>
+    </div>
+    <p class="sr" id="c-phrase"></p>
+    <p class="jour-j" id="f-jourj" hidden></p>
+  </section>
+
+  <section class="sec mot rv" id="f-mot" hidden><p id="f-mot-t"></p><p class="sig" id="f-mot-s"></p></section>
+
+  <section class="sec rv" id="f-programme">
+    <h2><span class="sous" id="f-prog-s"></span><span id="f-prog-t"></span></h2>
+    <ol class="prog" id="f-prog"></ol>
+  </section>
+
+  <section class="sec tenue rv" id="f-tenue" hidden>
+    <h2><span class="sous" id="f-tenue-s"></span><span id="f-tenue-h"></span></h2>
+    <p id="f-tenue-t"></p>
+    <div class="teintes" id="f-teintes"></div>
+  </section>
+
+  <section class="sec rv" id="f-photos" hidden><div class="grille" id="f-grille"></div></section>
+
+  <section class="sec reponse rv" id="f-reponse">
+    <h2 id="r-t"></h2>
+    <p class="avant" id="r-avant" hidden></p>
+    <label for="r-nom" id="r-nom-l"></label>
+    <input id="r-nom" maxlength="40" autocomplete="name" enterkeyhint="done">
+    <div class="nombre"><span id="r-n-l"></span>
+      <div class="pas"><button type="button" id="r-moins">&#8722;</button><output id="r-n" aria-live="polite">1</output><button type="button" id="r-plus">+</button></div>
+    </div>
+    <div class="choix">
+      <a class="r-oui" id="r-oui" href="#" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span id="r-oui-t"></span></a>
+      <a class="r-non" id="r-non" href="#" rel="noopener"><span id="r-non-t"></span></a>
+    </div>
+    <p class="note" id="r-note" role="status"></p>
+  </section>
+
+  <section class="sec merci" id="f-merci" hidden><p id="f-merci-t"></p></section>
+
+  <footer class="pied"><a id="pied-lien" href="#"></a></footer>
+</main>
+
+<script>
+"use strict";
+var D = /*FP_DONNEES*/{"langue":"en","exemple":true,"noms":["Kossi","Afiwa"],"familles":"The Amouzou and Mensah families","phrase":"","date":"2026-12-12","heure":"10:00","fuseau":"+01:00","ville":"Cotonou","programme":[{"heure":"10:00","quoi":"Civil ceremony","lieu":"Cotonou Town Hall","carte":"https://www.google.com/maps/search/?api=1&query=Cotonou%20Town%20Hall%2C%20Cotonou"},{"heure":"14:00","quoi":"Church blessing","lieu":"Saint Michael's Parish, Cotonou","carte":"https://www.google.com/maps/search/?api=1&query=Saint%20Michael%27s%20Parish%2C%20Cotonou%2C%20Cotonou"},{"heure":"19:00","quoi":"Dinner and party","lieu":"Reception hall, Fidjrossè","carte":"https://www.google.com/maps/search/?api=1&query=Reception%20hall%2C%20Fidjross%C3%A8%2C%20Cotonou"}],"tenue":"Family wax print: midnight blue and gold. For other guests, formal wear.","teintes":["#1d2b5a","#c9a227"],"mot":"After six years on the road together, we want to celebrate this yes with you. Having you there will be our most beautiful gift.","photos":[],"whatsapp":"","repondre_avant":"2026-11-28","cire":"or","pluie":"petales","lien":"https://malettre.nebula-agency.online/en/"}/*FIN_FP_DONNEES*/;
+var $ = function(s){ return document.querySelector(s); };
+var doux = matchMedia("(prefers-reduced-motion: reduce)").matches;
+var EN = D.langue === "en";
+var txt = function(el, t){ el.textContent = t == null ? "" : String(t); };
+
+var L = EN ? {
+  titre: "Invitation · %1 & %2", pour: "An invitation from", touche: "Touch the seal.", ouvrir: "Open the invitation",
+  exemple: "Example · invented couple", annonce: "are delighted to announce the wedding of", oui: "are getting married",
+  dans: "The big day, in", jours: "days", jour: "day", h: "h", min: "min", s: "s", auj: "It's today!",
+  prog: "The day", progS: "Programme", carte: "See on the map", tenueS: "Dress code", tenue: "What to wear",
+  rep: "Will you be there?", avant: "Please reply by %d.", nom: "Your name", nombre: "How many of you?",
+  repOui: "I'll be there", repNon: "I can't make it", merci: "Thank you for being there.",
+  pied: "An invitation made with Ma lettre à…", couper: "Turn sound off", remettre: "Turn sound on",
+  moins: "One person fewer", plus: "One more person",
+  noteEx: "Here, guests write straight to the couple, on their WhatsApp. This invitation is an example.",
+  phrase: "%j days, %h hours and %m minutes until the wedding.",
+  jours7: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  mois: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  et: " and ",
+  msgOui: function(n, qui, nb, quand){ return "Hello " + n + "! " + (qui ? "It's " + qui + ". " : "") +
+    (nb > 1 ? "There will be " + nb + " of us at your wedding on " + quand + "." : "I'll be there for your wedding on " + quand + ".") + " Congratulations!"; },
+  msgNon: function(n, qui, nb, quand){ return "Hello " + n + ", " + (qui ? "it's " + qui + ". " : "") +
+    "I'm so sorry I won't be able to come to your wedding on " + quand + ", but I'm thinking of you. Congratulations!"; }
+} : {
+  titre: "Faire-part · %1 & %2", pour: "Une invitation de", touche: "Touchez le cachet.", ouvrir: "Ouvrir l'invitation",
+  exemple: "Exemple · couple inventé", annonce: "ont la joie de vous faire part du mariage de", oui: "se disent oui",
+  dans: "Le grand jour, dans", jours: "jours", jour: "jour", h: "h", min: "min", s: "s", auj: "C'est aujourd'hui !",
+  prog: "La journée", progS: "Le programme", carte: "Voir sur la carte", tenueS: "La tenue", tenue: "Comment s'habiller",
+  rep: "Serez-vous là ?", avant: "Merci de répondre avant le %d.", nom: "Votre prénom", nombre: "Vous serez combien ?",
+  repOui: "Je serai là", repNon: "Je ne pourrai pas venir", merci: "Merci d'avoir été là.",
+  pied: "Un faire-part Ma lettre à…", couper: "Couper le son", remettre: "Remettre le son",
+  moins: "Une personne de moins", plus: "Une personne de plus",
+  noteEx: "Ici, l'invité écrit directement aux mariés, sur leur WhatsApp. Ce faire-part est un exemple.",
+  phrase: "Encore %j jours, %h heures et %m minutes avant le mariage.",
+  jours7: ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
+  mois: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
+  et: " et ",
+  msgOui: function(n, qui, nb, quand){ return "Bonjour " + n + " ! " + (qui ? "C'est " + qui + ". " : "") +
+    (nb > 1 ? "Nous serons " + nb + " à votre mariage, le " + quand + "." : "Je serai bien là pour votre mariage, le " + quand + ".") + " Félicitations !"; },
+  msgNon: function(n, qui, nb, quand){ return "Bonjour " + n + ", " + (qui ? "c'est " + qui + ". " : "") +
+    "Je ne pourrai malheureusement pas venir à votre mariage, le " + quand + ", mais je pense fort à vous. Félicitations !"; }
+};
+
+/* ── Les dates : lues à la main, jamais confiées à new Date() pour le jour ── */
+function jma(iso){ var p = String(iso).split("-"); return { a: +p[0], m: +p[1], j: +p[2] }; }
+function dateMots(iso, avecJour){
+  var d = jma(iso), js = new Date(Date.UTC(d.a, d.m - 1, d.j)).getUTCDay();
+  var t = (avecJour ? L.jours7[js] + " " : "") + d.j + " " + L.mois[d.m - 1] + " " + d.a;
+  return EN || !avecJour ? t : t.charAt(0).toUpperCase() + t.slice(1);
+}
+function heureMots(h){
+  var p = String(h).split(":"), hh = +p[0], mm = p[1] || "00";
+  if (!EN) { return hh + " h" + (mm !== "00" ? " " + mm : ""); }
+  var pm = hh >= 12, h12 = hh % 12 || 12;
+  return h12 + (mm !== "00" ? ":" + mm : "") + (pm ? " pm" : " am");
+}
+var n1 = D.noms[0], n2 = D.noms[1];
+var lesNoms = n1 + L.et + n2;
+var INSTANT = Date.parse(D.date + "T" + D.heure + ":00" + D.fuseau);
+
+/* ── Le seuil ── */
+document.title = L.titre.replace("%1", n1).replace("%2", n2);
+document.documentElement.lang = EN ? "en" : "fr";
+if (/^(bordeaux|nuit|sapin|rose)$/.test(String(D.cire || ""))) { document.documentElement.classList.add("cire-" + D.cire); }
+/* « Une invitation de Kossi & Afiwa » : les noms en or, posés en texte. */
+txt($("#s-pour"), L.pour + " ");
+var sb = document.createElement("b"); txt(sb, n1 + " & " + n2); $("#s-pour").appendChild(sb);
+txt($("#c-1"), n1); txt($("#c-2"), n2);
+txt($("#s-i1"), n1.charAt(0).toUpperCase()); txt($("#s-i2"), n2.charAt(0).toUpperCase());
+txt($("#s-touche"), L.touche); txt($("#btn-ouvrir"), L.ouvrir);
+
+/* ── Le carton ── */
+if (D.exemple) { $("#f-exemple").hidden = false; txt($("#f-exemple"), L.exemple); }
+if (D.familles) { $("#f-familles").hidden = false; txt($("#f-familles"), D.familles); $("#f-annonce").hidden = false; txt($("#f-annonce"), L.annonce); }
+txt($("#f-n1"), n1); txt($("#f-n2"), n2);
+txt($("#f-oui"), D.phrase || L.oui);
+txt($("#f-date"), dateMots(D.date, true));
+txt($("#f-heure"), (EN ? "at " : "à ") + heureMots(D.heure));
+txt($("#f-ville"), D.ville);
+
+/* ── Le mot des mariés ── */
+if (D.mot) { $("#f-mot").hidden = false; txt($("#f-mot-t"), D.mot); txt($("#f-mot-s"), n1 + " & " + n2); }
+
+/* ── Le programme ── */
+txt($("#f-prog-s"), L.progS); txt($("#f-prog-t"), L.prog);
+var PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>';
+(D.programme || []).forEach(function(p){
+  var li = document.createElement("li"), h = document.createElement("span"), b = document.createElement("b"), l = document.createElement("span");
+  h.className = "h"; txt(h, heureMots(p.heure));
+  txt(b, p.quoi);
+  l.className = "lieu"; txt(l, p.lieu);
+  li.appendChild(h); li.appendChild(b); li.appendChild(l);
+  /* Le lien de carte a été VÉRIFIÉ par le générateur (Google Maps, https). On revérifie. */
+  if (/^https:\/\/(www\.google\.[a-z.]+\/maps|maps\.google\.[a-z.]+|maps\.app\.goo\.gl|goo\.gl\/maps)\b/.test(String(p.carte || ""))) {
+    var a = document.createElement("a");
+    a.href = p.carte; a.target = "_blank"; a.rel = "noopener";
+    a.innerHTML = PIN;   /* un dessin fixe, jamais une donnée */
+    a.appendChild(document.createTextNode(L.carte));
+    li.appendChild(a);
+  }
+  $("#f-prog").appendChild(li);
+});
+
+/* ── La tenue ── */
+if (D.tenue) {
+  $("#f-tenue").hidden = false;
+  txt($("#f-tenue-s"), L.tenueS); txt($("#f-tenue-h"), L.tenue); txt($("#f-tenue-t"), D.tenue);
+  (D.teintes || []).forEach(function(c){
+    if (!/^#[0-9a-fA-F]{6}$/.test(c)) { return; }
+    var s = document.createElement("span"); s.style.background = c; s.setAttribute("aria-hidden", "true");
+    $("#f-teintes").appendChild(s);
+  });
+}
+
+/* ── Les photos : des données, jamais des liens ── */
+var photos = (D.photos || []).filter(function(p){ return /^data:image\/(jpeg|png|webp);base64,/.test(String(p)); });
+if (photos.length) {
+  $("#f-photos").hidden = false;
+  photos.forEach(function(p, i){
+    var im = document.createElement("img"); im.src = p; im.alt = (EN ? "Photo " : "Photo ") + (i + 1) + " · " + n1 + " & " + n2;
+    im.loading = "lazy"; im.decoding = "async"; $("#f-grille").appendChild(im);
+  });
+}
+
+/* ── Le compte jusqu'au jour J ── */
+txt($("#f-compte-t"), L.dans);
+txt($("#c-hl"), L.h); txt($("#c-ml"), L.min); txt($("#c-sl"), L.s);
+var deux = function(n){ return (n < 10 ? "0" : "") + n; };
+var passe = false;
+function compter(){
+  var r = INSTANT - Date.now();
+  if (r <= 0) {
+    passe = true;
+    $("#f-chiffres").hidden = true;
+    var fin = r < -36 * 3600e3;
+    if (fin) {
+      /* Le mariage est passé : plus de compte, plus de réponse, un merci. */
+      $("#f-compte").hidden = true; $("#f-reponse").hidden = true;
+      $("#f-merci").hidden = false; txt($("#f-merci-t"), L.merci);
+    } else { $("#f-jourj").hidden = false; txt($("#f-jourj"), L.auj); $("#f-reponse").hidden = true; }
+    return false;
+  }
+  var j = Math.floor(r / 864e5), h = Math.floor(r % 864e5 / 36e5), m = Math.floor(r % 36e5 / 6e4), s = Math.floor(r % 6e4 / 1e3);
+  txt($("#c-j"), j); txt($("#c-jl"), j > 1 ? L.jours : L.jour);
+  txt($("#c-h"), deux(h)); txt($("#c-m"), deux(m)); txt($("#c-s"), deux(s));
+  var ph = L.phrase.replace("%j", j).replace("%h", h).replace("%m", m);
+  if ($("#c-phrase").textContent !== ph) { txt($("#c-phrase"), ph); }
+  return true;
+}
+if (compter()) { var tic = setInterval(function(){ if (!compter()) { clearInterval(tic); } }, 1000); }
+
+/* ── La réponse : un message prêt, vers le WhatsApp DES MARIÉS ── */
+txt($("#r-t"), L.rep);
+if (D.repondre_avant) { $("#r-avant").hidden = false; txt($("#r-avant"), L.avant.replace("%d", dateMots(D.repondre_avant, true).toLowerCase())); }
+txt($("#r-nom-l"), L.nom); txt($("#r-n-l"), L.nombre);
+$("#r-moins").setAttribute("aria-label", L.moins); $("#r-plus").setAttribute("aria-label", L.plus);
+txt($("#r-oui-t"), L.repOui); txt($("#r-non-t"), L.repNon);
+var nb = 1, quand = dateMots(D.date, true);
+quand = EN ? quand : quand.charAt(0).toLowerCase() + quand.slice(1);
+function liens(){
+  txt($("#r-n"), nb);
+  if (D.exemple || !/^\d{10,15}$/.test(String(D.whatsapp))) { return; }
+  var qui = $("#r-nom").value.replace(/\s+/g, " ").trim().slice(0, 40);
+  $("#r-oui").href = "https://wa.me/" + D.whatsapp + "?text=" + encodeURIComponent(L.msgOui(lesNoms, qui, nb, quand));
+  $("#r-non").href = "https://wa.me/" + D.whatsapp + "?text=" + encodeURIComponent(L.msgNon(lesNoms, qui, nb, quand));
+}
+$("#r-nom").addEventListener("input", liens);
+$("#r-moins").addEventListener("click", function(){ nb = Math.max(1, nb - 1); liens(); });
+$("#r-plus").addEventListener("click", function(){ nb = Math.min(12, nb + 1); liens(); });
+if (D.exemple) {
+  ["#r-oui", "#r-non"].forEach(function(s){
+    $(s).addEventListener("click", function(e){ e.preventDefault(); txt($("#r-note"), L.noteEx); });
+  });
+}
+liens();
+$("#pied-lien").href = D.lien || "https://malettre.nebula-agency.online/";
+txt($("#pied-lien"), L.pied);
+
+/* ── Le son (repris de la lettre) : discret, coupable, né seulement du geste ── */
+var SON = { on: true, ctx: null, sortie: null };
+try { SON.on = localStorage.getItem("malettre:son") !== "0"; } catch (e) {}
+function peindreSon(){
+  $("#son").setAttribute("aria-pressed", SON.on ? "true" : "false");
+  $("#son").setAttribute("aria-label", SON.on ? L.couper : L.remettre);
+}
+peindreSon();
+$("#son").addEventListener("click", function(){
+  SON.on = !SON.on;
+  try { localStorage.setItem("malettre:son", SON.on ? "1" : "0"); } catch (e) {}
+  peindreSon();
+});
+function audio(){
+  if (!SON.on) { return null; }
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) { return null; }
+  try {
+    if (!SON.ctx) {
+      SON.ctx = new AC();
+      var vide = SON.ctx.createBufferSource();
+      vide.buffer = SON.ctx.createBuffer(1, 1, 22050); vide.connect(SON.ctx.destination); vide.start(0);
+      var comp = SON.ctx.createDynamicsCompressor(), gain = SON.ctx.createGain();
+      gain.gain.value = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? .55 : .35;
+      comp.connect(gain); gain.connect(SON.ctx.destination); SON.sortie = comp;
+    }
+    if (SON.ctx.state === "suspended") { SON.ctx.resume(); }
+    return SON.ctx;
+  } catch (e) { return null; }
+}
+function sonOuverture(){
+  var ctx = audio();
+  if (!ctx) { return; }
+  var t = ctx.currentTime, n = Math.floor(ctx.sampleRate * .08), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
+  for (var i = 0; i < n; i++) { d[i] = Math.random() * 2 - 1; }
+  var c = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+  c.buffer = b; f.type = "bandpass"; f.frequency.value = 2300; f.Q.value = .8;
+  g.gain.setValueAtTime(.8, t); g.gain.exponentialRampToValueAtTime(.001, t + .08);
+  c.connect(f); f.connect(g); g.connect(SON.sortie); c.start(t);
+  /* puis trois notes claires, comme un carillon : c'est un mariage */
+  [784, 988, 1175].forEach(function(fq, k){
+    var o = ctx.createOscillator(), g2 = ctx.createGain(), t2 = t + .45 + k * .16;
+    o.type = "sine"; o.frequency.value = fq;
+    g2.gain.setValueAtTime(.001, t2); g2.gain.exponentialRampToValueAtTime(.16, t2 + .02); g2.gain.exponentialRampToValueAtTime(.001, t2 + .9);
+    o.connect(g2); g2.connect(SON.sortie); o.start(t2); o.stop(t2 + .95);
+  });
+}
+
+/* ── La pluie de l'ouverture (reprise de la lettre) : par le temps, pas par image ── */
+function pleuvoir(type){
+  if (doux || !type || type === "aucune") { return; }
+  var cv = document.createElement("canvas");
+  cv.className = "pluie"; cv.setAttribute("aria-hidden", "true"); document.body.appendChild(cv);
+  var k = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+  cv.width = W * k; cv.height = H * k;
+  var g = cv.getContext("2d"); g.scale(k, k);
+  var COUL = { petales: ["#b2434e", "#d88aa0", "#f0c6cf", "#f4ede0"], confettis: ["#c9a227", "#b2434e", "#4f8a6f", "#e0c266", "#f4ede0"],
+               etoiles: ["#e0c266", "#c9a227", "#f7e7b0"] }[type] || ["#e0c266"];
+  var P = [];
+  for (var i = 0; i < 64; i++) {
+    P.push({ x: Math.random() * W, y: -20 - Math.random() * H * .6, v: 1.6 + Math.random() * 2.4, d: (Math.random() - .5) * 1.2,
+             r: Math.random() * 6.28, vr: (Math.random() - .5) * .12, t: 4 + Math.random() * 6, c: COUL[i % COUL.length], o: Math.random() * 6.28 });
+  }
+  var t0 = 0, av = 0;
+  function pas(now){
+    if (!t0) { t0 = now; av = now; }
+    var dt = Math.min(48, now - av) / 16.7, age = now - t0;
+    av = now;
+    g.clearRect(0, 0, W, H);
+    g.globalAlpha = age > 2000 ? Math.max(0, 1 - (age - 2000) / 600) : 1;
+    P.forEach(function(q){
+      q.y += q.v * dt; q.x += (q.d + Math.sin(q.o + age / 420) * .6) * dt; q.r += q.vr * dt;
+      g.save(); g.translate(q.x, q.y); g.rotate(q.r); g.fillStyle = q.c;
+      if (type === "confettis") { g.fillRect(-q.t / 2, -q.t / 4, q.t, q.t / 2); }
+      else if (type === "etoiles") { g.beginPath(); for (var e = 0; e < 8; e++) { var an = e * Math.PI / 4, rr = e % 2 ? q.t * .3 : q.t * .8; g.lineTo(Math.cos(an) * rr, Math.sin(an) * rr); } g.closePath(); g.fill(); }
+      else { g.beginPath(); g.ellipse(0, 0, q.t, q.t * .55, 0, 0, 6.2832); g.fill(); }
+      g.restore();
+    });
+    if (age < 2600) { requestAnimationFrame(pas); } else { cv.remove(); }
+  }
+  requestAnimationFrame(pas);
+}
+
+/* ── Les révélations : l'observateur, ET un filet (une section ne reste jamais invisible) ── */
+function reveler(){
+  var vh = innerHeight;
+  document.querySelectorAll(".rv:not(.vu), .prog:not(.vu)").forEach(function(e){
+    if (e.getBoundingClientRect().top < vh * .92) { e.classList.add("vu"); }
+  });
+}
+addEventListener("scroll", function(){ requestAnimationFrame(reveler); }, { passive: true });
+
+/* ── L'ouverture ── */
+var ouvert = false;
+function ouvrir(){
+  if (ouvert) { return; }
+  ouvert = true;
+  $("#env").classList.add("brise");
+  if (!doux && navigator.vibrate) { try { navigator.vibrate([16, 40, 24]); } catch (e) {} }
+  sonOuverture();
+  setTimeout(function(){
+    $("#seuil").classList.add("parti");
+    var m = $("#fp");
+    m.classList.add("ouvert"); m.setAttribute("aria-hidden", "false");
+    $("#f-noms").focus({ preventScroll: true });
+    setTimeout(function(){ pleuvoir(/^(petales|confettis|etoiles|aucune)$/.test(String(D.pluie || "")) ? D.pluie : "petales"); }, 450);
+    reveler();
+    setTimeout(function(){ document.querySelectorAll(".rv, .prog").forEach(function(e){ if (e.getBoundingClientRect().top < innerHeight) { e.classList.add("vu"); } }); }, 1600);
+  }, doux ? 0 : 1150);
+}
+$("#btn-ouvrir").addEventListener("click", ouvrir);
+$("#env").addEventListener("click", ouvrir);
+</script>
+</body>
+</html>

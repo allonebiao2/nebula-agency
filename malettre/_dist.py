@@ -17,6 +17,7 @@ adresse inconnue), `robots.txt` et `_headers`.
 `malettre-lettre`) arrive avec le branchement de la caisse : ce jour-là,
 `_dist` devra la porter (`_redirects` ou fonction Pages). Voir PAIEMENT.md.
 """
+import hashlib
 import pathlib
 import shutil
 import sys
@@ -28,7 +29,9 @@ PAGES = ["index.html", "creer.html", "lettre.html", "paiement.html", "merci.html
          # l'anglais (2026-10-16) : fabriqué par _build_accueil.py, qui lance _traduire.py
          "og-en.jpg", "en/index.html", "en/creer.html", "en/paiement.html", "en/merci.html",
          # ce qu'un agent lit sans rendre la page (vague 3) : fabriqué par _build_accueil.py
-         "llms.txt"]
+         "llms.txt",
+         # le faire-part d'exemple (vague 4) : fabriqué par _faire_part.py
+         "faire-part/exemple.html", "faire-part/exemple-en.html"]
 SOURCES_ACCUEIL = ["_accueil_src.html", "exemples.json", "exemples.en.json", "creer.html", "lettre.html",
                    "_build_accueil.py", "i18n/en.txt", "faire-part/offre.json"]
 
@@ -111,6 +114,13 @@ ENTETES = """/*
 
 /favicon.svg
   Cache-Control: public, max-age=3600
+
+/f/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Referrer-Policy: no-referrer
+
+/faire-part/*
+  X-Robots-Tag: noindex, nofollow
 """
 
 
@@ -122,6 +132,24 @@ def main():
     exemples = sorted((ICI / "exemples").glob("*.html")) + sorted((ICI / "en" / "exemples").glob("*.html"))
     if len(exemples) < 12:
         sys.exit("⛔ il manque des exemples (%d sur 12) : python malettre/_build_accueil.py" % len(exemples))
+
+    # Le faire-part d'exemple est à jour de son gabarit et de ses fiches.
+    fp = ICI / "faire-part"
+    plus_vieux = min((fp / n).stat().st_mtime for n in ("exemple.html", "exemple-en.html"))
+    sources_fp = [fp / "gabarit.html", fp / "exemple.json", fp / "exemple.en.json", ICI / "_faire_part.py"]
+    if any(p.stat().st_mtime > plus_vieux + 1 for p in sources_fp):
+        sys.exit("⛔ le faire-part d'exemple est plus ancien que son gabarit : python malettre/_faire_part.py")
+    # ⛔ LES FAIRE-PART DES COUPLES vivent sur CE disque seulement (le dépôt est
+    # public). `publies.txt` garde l'empreinte de chacun : s'il en manque un ici,
+    # déployer depuis ce poste l'effacerait du site, sans un mot. On refuse.
+    couples = sorted((fp / "_couples" / "sortie").glob("*.html"))
+    ici = {hashlib.sha256(p.stem.encode("utf-8")).hexdigest() for p in couples}
+    publies = [l.strip() for l in (fp / "publies.txt").read_text(encoding="utf-8").splitlines()
+               if l.strip() and not l.startswith("#")]
+    manquent = [h[:12] for h in publies if h not in ici]
+    if manquent:
+        sys.exit("⛔ %d faire-part publié(s) absent(s) de ce disque (%s…) : déployer d'ici les effacerait"
+                 " du site. Publier depuis le poste qui porte faire-part/_couples/." % (len(manquent), ", ".join(manquent)))
 
     if DIST.is_dir():
         shutil.rmtree(DIST)
@@ -136,6 +164,12 @@ def main():
         shutil.copy2(src, dst)
         total += dst.stat().st_size
         print("  %-26s %7.1f Ko" % (rel, dst.stat().st_size / 1024))
+    for p in couples:
+        dst = DIST / "f" / p.name
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(p, dst)
+        total += dst.stat().st_size
+    print("  f/ : %d faire-part de couple(s)" % len(couples))
     for nom, contenu in (("404.html", ERREUR), ("robots.txt", ROBOTS), ("_headers", ENTETES)):
         (DIST / nom).write_text(contenu, encoding="utf-8", newline="\n")
         total += (DIST / nom).stat().st_size

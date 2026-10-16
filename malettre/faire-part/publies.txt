@@ -1,0 +1,3 @@
+# Les faire-part PUBLIÉS : l'EMPREINTE sha256 de chaque jeton, jamais le jeton (le dépôt est public,
+# le jeton EST l'adresse). Écrit par _faire_part.py. _dist.py refuse de construire si l'une de ces
+# pages manque sur le disque : un déploiement fait d'ailleurs l'effacerait du site.

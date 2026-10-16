@@ -655,6 +655,8 @@ FR: fait sur mesure par notre équipe, d'après ce que vous nous racontez. Kossi
 EN: made to measure by our team, from what you tell us. Kossi and Afiwa are an invented couple.
 FR: </span>Demander notre faire-part<
 EN: </span>Ask for our invitation<
+FR: data-src="faire-part/exemple.html" data-titre="Exemple · Kossi &amp; Afiwa">Ouvrir l'exemple<
+EN: data-src="../faire-part/exemple-en.html" data-titre="Example · Kossi &amp; Afiwa">Open the example<
 # ── le seuil ──
 FR: <p class="sur" data-rv>Ce qu'elle vit</p>
 EN: <p class="sur" data-rv>What they experience</p>

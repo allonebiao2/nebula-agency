@@ -940,3 +940,10 @@ MD5, 53 plats balisés, fichier absent → 404).
   rangée ne tenait plus sous le téléphone en 390).
 - **Exemple de faire-part** : Kossi & Afiwa, couple inventé et dit tel, samedi 12 décembre 2026 à
   Cotonou (date à changer après ce jour).
+
+## 2026-10-17 · MA LETTRE À… : le faire-part sur demande (choix de Claude, à valider)
+- **Les fiches et pages des vrais couples ne vont jamais dans git** (`malettre/faire-part/_couples/`,
+  ignoré) : le dépôt est public, et le jeton est l'adresse. Seule l'empreinte sha256 du jeton est
+  versionnée (`faire-part/publies.txt`), et `_dist.py` refuse de publier si une page manque.
+- **Le compte du faire-part vise l'heure du lieu** (date + heure + fuseau), pas celle du téléphone.
+- **Les invités répondent au WhatsApp des mariés** (prénom, nombre, date pré-écrits), jamais à NEBULA.

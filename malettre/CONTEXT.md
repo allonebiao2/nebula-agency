@@ -186,6 +186,38 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
   rouge sans `PYTHONIOENCODING` (console cp1252) : il le pose lui-même désormais.
 - Contrôles : accueil **235** (FR + EN), lettre 269, caisse 301, anglais 52.
 
+## Vague 4 · le faire-part sur demande (2026-10-16 → 17)
+
+- **Le gabarit** `faire-part/gabarit.html` reprend le moteur de la lettre : l'enveloppe
+  3D, le cachet d'or **aux initiales du couple** qui se brise, le son, la vibration, la
+  pluie de pétales. Puis le carton (familles, noms qui s'écrivent, date, heure, ville),
+  **le compte jusqu'au jour J à l'heure du LIEU** (date + heure + fuseau : un mariage a
+  lieu à une heure de Cotonou, pas à celle du téléphone), le mot des mariés, **le
+  programme sur un fil d'or** avec « Voir sur la carte » (Google Maps), la tenue et ses
+  couleurs, les photos (données, jamais des liens), et **la réponse** : prénom, nombre
+  de personnes, « Je serai là » / « Je ne pourrai pas venir » vers **le WhatsApp des
+  mariés**, message prêt. Le jour J : « C'est aujourd'hui ! » ; 36 h après : « Merci
+  d'avoir été là », réponses fermées. FR et EN. 37 Ko sans photo.
+- **Le générateur** `_faire_part.py` : valide toute la fiche (refuse et liste les
+  fautes : numéro, date passée, lien de carte qui n'est pas Google Maps, photo absente),
+  tire un **jeton de 16 caractères** gardé d'une version à l'autre, réduit les photos à
+  1 200 px, écrit l'**empreinte** du jeton dans `faire-part/publies.txt`.
+- ⛔ **Les vrais couples hors de git** (`faire-part/_couples/`, ignoré) : le dépôt est
+  public et le jeton EST l'adresse. ⛔ **`_dist.py` refuse** si une page publiée manque
+  sur le disque (un déploiement d'ailleurs l'effacerait).
+- **L'exemple** (Kossi & Afiwa, couple inventé et dit tel, samedi 12 décembre 2026) :
+  `faire-part/exemple.html` et `exemple-en.html`, ouverts depuis la vitrine par
+  « Ouvrir l'exemple » (fenêtre téléphone), publiés par `_dist` (`/faire-part/exemple`).
+  Ses réponses ne partent nulle part, elles expliquent.
+- Contrôles : `_qc_faire_part.py` **83** (générateur, témoins de refus, `</script>` et
+  U+2028, jeton et empreinte, garde de `_dist`, photo réduite ; dans le navigateur
+  aucune requête réseau, ouverture, compte, cartes, réponses, jour J et lendemain,
+  contraste sur les pixels avec témoin, langues, mouvement réduit) · accueil **239**.
+- Trouvé en route : « Une invitation de » sans nom au seuil · l'heure qui se coupait
+  (« 10 / H ») · la sonde du seuil lisait « KOSSI » (`innerText` applique le
+  `text-transform`, deuxième fois le même jour) · le générateur effaçait les marqueurs
+  de données (gardés désormais, la page se relit et se refabrique).
+
 ## Ce qui attend Mongazi
 
 - Le **feu vert** pour la mise en ligne, et d'abord **brancher la caisse**
@@ -200,8 +232,9 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
   (`_studio-video/src/malettre/VOIX.md`), **les six MP3 ElevenLabs sont à déposer**
   dans `_partage/ma lettre/voix/`.
 - **Le faire-part sur demande peut se vendre AVANT la caisse** (il passe par WhatsApp) :
-  le gabarit et le générateur viennent en vague 4. ⚠️ La date du carton d'exemple
-  (samedi 12 décembre 2026) sera à changer après cette date.
+  tout est prêt (README § « Le faire-part de mariage, sur demande »). Il lui faut **le feu
+  vert pour publier le site** (pas la caisse), **le compte** où le couple paie les 25 000 F, et
+  une **sauvegarde** de `faire-part/_couples/` hors de ce disque. ⚠️ La date de l'exemple (12 décembre 2026) sera à changer après ce jour.
 
 ---
 

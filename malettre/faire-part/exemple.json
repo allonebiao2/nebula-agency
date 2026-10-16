@@ -1,0 +1,42 @@
+{
+ "_lire": "L'EXEMPLE de la vitrine : un couple INVENTÉ, et la page le dit (« Exemple · couple inventé »). Aucune photo de visage. Ses réponses ne partent nulle part. ⚠️ Sa date doit rester dans le futur : le générateur refuse sinon (changer la date après le 12 décembre 2026).",
+ "exemple": true,
+ "langue": "fr",
+ "noms": [
+  "Kossi",
+  "Afiwa"
+ ],
+ "familles": "Les familles Amouzou et Mensah",
+ "date": "2026-12-12",
+ "heure": "10:00",
+ "fuseau": "+01:00",
+ "ville": "Cotonou",
+ "programme": [
+  {
+   "heure": "10:00",
+   "quoi": "Mariage civil",
+   "lieu": "Mairie de Cotonou"
+  },
+  {
+   "heure": "14:00",
+   "quoi": "Bénédiction nuptiale",
+   "lieu": "Paroisse Saint-Michel, Cotonou"
+  },
+  {
+   "heure": "19:00",
+   "quoi": "Dîner et soirée",
+   "lieu": "Salle de réception, Fidjrossè"
+  }
+ ],
+ "tenue": "Pagne de la famille : bleu nuit et or. Pour les autres invités, tenue de cérémonie.",
+ "teintes": [
+  "#1d2b5a",
+  "#c9a227"
+ ],
+ "mot": "Après six ans de route ensemble, nous avons envie de fêter ce oui avec vous. Votre présence sera notre plus beau cadeau.",
+ "whatsapp": "",
+ "repondre_avant": "2026-11-28",
+ "cire": "or",
+ "pluie": "petales",
+ "photos": []
+}

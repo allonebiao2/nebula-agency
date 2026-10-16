@@ -154,3 +154,16 @@ pris pour du français oublié dans la page anglaise ; le contrôle de caisse ro
 
 Contrôles : accueil 235 (FR + EN), lettre 269, caisse 301, anglais 52. **Rien de déployé.**
 Prochaines vagues : 4 (le gabarit et le générateur du faire-part), 5 (la pub, en attente des MP3).
+
+## La nuit : vague 4, le faire-part sur demande
+
+Le faire-part reprend le moteur de la lettre (l'enveloppe, le cachet, le son, la pluie) avec le cachet
+d'or aux initiales du couple, puis le carton, le compte jusqu'au jour J **à l'heure du lieu** (différence
+voulue avec la lettre), le programme sur un fil d'or avec les cartes, la tenue, les photos, et deux
+réponses vers le WhatsApp des mariés. Le générateur valide la fiche et refuse ce qui est faux ; les
+couples ne vont jamais dans git (dépôt public), seule l'empreinte de leur jeton y est, et `_dist.py`
+refuse de publier si une page publiée manque sur le disque. L'exemple Kossi & Afiwa s'ouvre depuis la
+vitrine. Contrôles : faire-part 83, accueil 239.
+
+Reste à décider par Mongazi : **sur quel compte le couple paie** les 25 000 F, et **où sauvegarder**
+`faire-part/_couples/`. Prochaine vague : la pub (attend les six MP3 ElevenLabs).

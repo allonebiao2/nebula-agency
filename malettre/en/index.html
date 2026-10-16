@@ -447,7 +447,8 @@ button{background:none;border:0;cursor:pointer}
 .fp-prix{margin-top:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--gris-nuit);font-size:15px}
 .fp-prix .px{font-family:var(--serif);font-size:40px;color:var(--or);line-height:1;white-space:nowrap}
 .fp-prix span:last-child{flex:1 1 220px}
-.fp .pri{margin-top:24px;background:var(--papier);color:var(--encre)}
+.fp-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:24px}
+.fp .pri{background:var(--papier);color:var(--encre)}
 
 /* ══ 6 · LE SEUIL : la vraie lettre, qu'on ouvre et qu'on rhabille soi-même ══ */
 /* Le téléphone et ses pastilles forment UN bloc : au téléphone, on touche une
@@ -756,7 +757,11 @@ button{background:none;border:0;cursor:pointer}
         <h3 class="fp-h" data-rv>Getting married?<br><em>We'll write it for you.</em></h3>
         <p class="fp-p" data-rv>An invitation that opens like a letter: the seal with your initials, the countdown to the big day, the schedule, the venue on the map, the dress code, your photos. Your guests reply with a tap, straight to your WhatsApp.</p>
         <p class="fp-prix" data-rv><span class="px">25 000 F</span><span>made to measure by our team, from what you tell us. Kossi and Afiwa are an invented couple.</span></p>
-        <a class="pri" id="fp-demander" data-rv href="https://wa.me/22996740732?text=Hello%2C%20we%20are%20getting%20married%20and%20we%20would%20like%20a%20Ma%20lettre%20%C3%A0%E2%80%A6%20wedding%20invitation." rel="noopener"><span class="sceau" aria-hidden="true"></span>Ask for our invitation</a>
+        <div class="fp-actions" data-rv>
+          <a class="pri" id="fp-demander" href="https://wa.me/22996740732?text=Hello%2C%20we%20are%20getting%20married%20and%20we%20would%20like%20a%20Ma%20lettre%20%C3%A0%E2%80%A6%20wedding%20invitation." rel="noopener"><span class="sceau" aria-hidden="true"></span>Ask for our invitation</a>
+          <!-- Le vrai faire-part d'exemple (vague 4), dans la fenêtre téléphone des exemples. -->
+          <button class="sec-btn" type="button" id="fp-voir" data-src="../faire-part/exemple-en.html" data-titre="Example · Kossi &amp; Afiwa">Open the example</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1076,6 +1081,15 @@ function fermer(){
   modaleCadre.removeAttribute("src");
   if (dernier) { dernier.focus(); }
 }
+/* Le faire-part d'exemple s'ouvre dans la même fenêtre téléphone. */
+var fpVoir = $("#fp-voir");
+fpVoir.addEventListener("click", function(){
+  dernier = fpVoir;
+  modaleCadre.src = fpVoir.dataset.src;
+  $("#modale-t").textContent = fpVoir.dataset.titre;
+  modale.hidden = false;
+  $("#modale-fermer").focus();
+});
 $("#modale-fermer").addEventListener("click", fermer);
 modale.addEventListener("click", function(e){ if (e.target === modale) { fermer(); } });
 document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !modale.hidden) { fermer(); } });

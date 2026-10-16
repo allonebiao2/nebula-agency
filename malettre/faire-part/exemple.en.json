@@ -1,0 +1,42 @@
+{
+ "_lire": "The EXAMPLE on the showcase: an INVENTED couple, and the page says so. No photos of faces. Replies go nowhere. Its date must stay in the future.",
+ "exemple": true,
+ "langue": "en",
+ "noms": [
+  "Kossi",
+  "Afiwa"
+ ],
+ "familles": "The Amouzou and Mensah families",
+ "date": "2026-12-12",
+ "heure": "10:00",
+ "fuseau": "+01:00",
+ "ville": "Cotonou",
+ "programme": [
+  {
+   "heure": "10:00",
+   "quoi": "Civil ceremony",
+   "lieu": "Cotonou Town Hall"
+  },
+  {
+   "heure": "14:00",
+   "quoi": "Church blessing",
+   "lieu": "Saint Michael's Parish, Cotonou"
+  },
+  {
+   "heure": "19:00",
+   "quoi": "Dinner and party",
+   "lieu": "Reception hall, Fidjrossè"
+  }
+ ],
+ "tenue": "Family wax print: midnight blue and gold. For other guests, formal wear.",
+ "teintes": [
+  "#1d2b5a",
+  "#c9a227"
+ ],
+ "mot": "After six years on the road together, we want to celebrate this yes with you. Having you there will be our most beautiful gift.",
+ "whatsapp": "",
+ "repondre_avant": "2026-11-28",
+ "cire": "or",
+ "pluie": "petales",
+ "photos": []
+}

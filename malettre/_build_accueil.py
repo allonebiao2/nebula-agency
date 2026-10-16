@@ -79,7 +79,8 @@ LANGUES = {
                  "offres": "Les offres", "plume": "La plume : +%s, seulement si on envoie la version qu'elle a écrite",
                  "fp": "Faire-part de mariage, sur demande : %s, fait sur mesure par l'équipe de NEBULA",
                  "faq": "Questions fréquentes", "pages": "Pages", "accueil": "Accueil",
-                 "creer": "Écrire une lettre", "wa": "Demander un faire-part (WhatsApp)"},
+                 "creer": "Écrire une lettre", "wa": "Demander un faire-part (WhatsApp)",
+                 "fp_ex": "Un faire-part d'exemple", "fp_page": "/faire-part/exemple"},
     },
     "en": {
         "creer": ICI / "en" / "creer.html", "exemples": ICI / "exemples.en.json",
@@ -109,7 +110,8 @@ LANGUES = {
                  "offres": "Offers", "plume": "The Quill: +%s, only if you send the version it wrote",
                  "fp": "Wedding invitation, on request: %s, made to measure by the NEBULA team",
                  "faq": "Frequently asked questions", "pages": "Pages", "accueil": "Home",
-                 "creer": "Write a letter", "wa": "Ask for a wedding invitation (WhatsApp)"},
+                 "creer": "Write a letter", "wa": "Ask for a wedding invitation (WhatsApp)",
+                 "fp_ex": "An example wedding invitation", "fp_page": "/faire-part/exemple-en"},
     },
 }
 
@@ -464,7 +466,8 @@ def llms_bloc(langue, info, fp, niveau):
     lignes += ["%s %s" % (h, X["pages"]), "",
                "- [%s](%s)" % (X["accueil"], T["lien"]),
                "- [%s](%s)" % (X["creer"], T["lien"].rstrip("/") + "/creer.html"),
-               "- [%s](%s)" % (X["wa"], info["wa_fp"]), ""]
+               "- [%s](%s)" % (X["wa"], info["wa_fp"]),
+               "- [%s](%s)" % (X["fp_ex"], SITE + X["fp_page"]), ""]
     return lignes
 
 

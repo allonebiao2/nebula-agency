@@ -299,6 +299,17 @@ def vague3(pg, larg, cat, offre):
         bool(m) and m.group(1) == offre["whatsapp"] and L["fp_mot"] in urllib.parse.unquote(m.group(2)).lower(), href[:90])
     dit("%d : la barre mène au faire-part" % larg,
         pg.evaluate("() => !!document.querySelector('.barre nav a[href=\"#faire-part\"]') && !!document.getElementById('faire-part')"))
+    # « Ouvrir l'exemple » : le VRAI faire-part (vague 4), dans la fenêtre téléphone.
+    pg.click("#fp-voir")
+    try:
+        fr = pg.frame_locator("#modale-cadre")
+        qui = fr.locator("#s-pour").text_content(timeout=4000) or ""
+    except Exception:
+        qui = ""
+    src = pg.get_attribute("#modale-cadre", "src") or ""
+    dit("%d : « Ouvrir l'exemple » montre le vrai faire-part de Kossi et Afiwa" % larg,
+        re.search(r"faire-part/exemple(-en)?\.html$", src) is not None and "Kossi" in qui and "Afiwa" in qui, (src, qui))
+    pg.click("#modale-fermer")
     q = pg.get_attribute("#question", "href") or ""
     dit("%d : « Une autre question ? » écrit au WhatsApp de NEBULA" % larg, q.startswith("https://wa.me/%s?text=" % NEBULA_WA), q[:60])
 

@@ -2966,3 +2966,12 @@ bordeaux) : 2,3:1 sur la nuit. Le CSS se lisait juste, seule la sonde sur les pi
 (`.fp .sur`, `.fp .pri`) ; le contrôle de contraste doit lister ses textes.
 Même jour, même famille : en `display:grid`, « K<span>&</span>A » fait **trois cases empilées** (chaque
 morceau de texte devient un élément de grille) : une rangée se pose en `flex`.
+
+## 2026-10-17 · Une donnée qui ne vit que sur un disque, et un déploiement qui est un instantané
+
+Faire-part de MA LETTRE À… : les pages des couples ne peuvent pas aller dans le dépôt (public), donc
+elles ne vivent que sur le PC de Cotonou. Or un déploiement Cloudflare Pages publie EXACTEMENT le dossier :
+déployer depuis le téléphone ou une autre machine les aurait effacées du site sans un mot.
+**Règle** : quand une partie du livrable vit hors de git, versionner son EMPREINTE (pas son contenu, pas
+son adresse) et faire refuser la construction du livrable s'il en manque une, avec un témoin dans le
+contrôle. Et la sonde de texte lit `textContent`, jamais `innerText` (deuxième fois le même jour).
