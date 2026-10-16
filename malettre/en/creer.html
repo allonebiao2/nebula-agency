@@ -131,6 +131,22 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 .compte-plume{background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.4);
   border-radius:12px;padding:12px 14px;font-size:13.5px;margin-top:14px}
 
+/* ── L'habillage (2026-10-16) : des pastilles, aucune saisie, tout facultatif ── */
+.habille{border:1.5px solid var(--ligne);border-radius:16px;padding:16px 16px 6px;margin-bottom:20px}
+.habille .opt{font-weight:400;color:var(--gris-clair)}
+.h-t{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gris-clair);font-weight:700;margin:14px 0 8px}
+.pastilles{display:flex;flex-wrap:wrap;gap:8px}
+.pastille{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--ligne);border-radius:999px;
+  padding:7px 14px 7px 8px;font-size:13.5px;min-height:44px;transition:border-color .15s,background .15s}
+.pastille[aria-checked="true"]{border-color:var(--or);background:rgba(201,162,39,.16)}
+.pastille .rond{width:22px;height:22px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(244,237,224,.25)}
+.pastille.sans-rond{padding-left:14px}
+/* Le numéro : l'indicatif, puis le numéro. */
+.num{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:8px}
+.case{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;margin-top:12px;min-height:44px;cursor:pointer}
+.case input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--or)}
+.case em{font-style:normal;color:var(--gris-clair)}
+
 /* ── Les paliers ── */
 .paliers{display:grid;gap:10px}
 .pal{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--ligne);
@@ -329,6 +345,27 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
         <p class="indice">They are resized and kept inside the letter itself. Nothing is sent until you order.</p>
       </div>
 
+      <!-- L'HABILLAGE (2026-10-16) : réservé aux offres payantes, sans changer
+           les prix. On essaie tout librement ; l'aperçu suit ; le choix de
+           l'offre dit honnêtement ce qui part. -->
+      <div class="groupe habille" id="g-habillage">
+        <label>The finish <span class="opt" id="h-offres"></span></label>
+        <p class="indice">All optional. Change it, the preview follows.</p>
+        <p class="h-t" id="h-t-cire">The wax</p>
+        <div class="pastilles" id="h-cire" role="radiogroup" aria-labelledby="h-t-cire"></div>
+        <p class="h-t" id="h-t-sceau">The seal</p>
+        <div class="pastilles" id="h-sceau" role="radiogroup" aria-labelledby="h-t-sceau"></div>
+        <p class="h-t" id="h-t-papier">The paper</p>
+        <div class="pastilles" id="h-papier" role="radiogroup" aria-labelledby="h-t-papier"></div>
+        <p class="h-t" id="h-t-pluie">When it opens</p>
+        <div class="pastilles" id="h-pluie" role="radiogroup" aria-labelledby="h-t-pluie"></div>
+        <div class="groupe" style="margin-top:16px">
+          <label for="f-gratter">A line to scratch off <span class="opt">(optional)</span></label>
+          <input type="text" id="f-gratter" maxlength="80" placeholder="Will you marry me?" autocomplete="off">
+          <p class="indice">Hidden under a gold film: they reveal it by scratching with a finger.</p>
+        </div>
+      </div>
+
       <div class="deux">
         <div class="groupe">
           <label for="f-depuis">Together since <span style="font-weight:400;color:var(--gris)">(optional)</span></label>
@@ -367,6 +404,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       <p class="sous">The letter is already written. It is the same whatever the price.</p>
       <div class="paliers" id="liste-paliers"></div>
       <p class="compte-plume" id="photos-note" hidden></p>
+      <p class="compte-plume" id="habillage-note" hidden></p>
       <p class="compte-plume" id="plume-note" hidden>The Quill wrote your letter: <b>500 F</b> is added to the offer you choose, already counted above.</p>
       <div class="actions">
         <button class="sec" data-vers="e-lettre">Back</button>
@@ -392,8 +430,18 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 
       <div class="groupe">
         <label for="f-wa">Your WhatsApp</label>
-        <input type="tel" id="f-wa" placeholder="01 97 08 55 76" autocomplete="tel">
+        <div class="num">
+          <select id="f-indicatif" aria-label="The country of your number">
+            <option value="229">Benin +229</option>
+            <option value="228">Togo +228</option>
+            <option value="225">Côte d'Ivoire +225</option>
+            <option value="">Other country (type the +)</option>
+          </select>
+          <input type="tel" id="f-wa" placeholder="01 97 08 55 76" autocomplete="tel">
+        </div>
         <p class="indice">That's where we write to you if something goes wrong. We never write to the person who receives the letter.</p>
+        <label class="case"><input type="checkbox" id="f-repondre">
+          <span>Add a “Reply” button to this WhatsApp in the letter <em>(your number will be visible in it)</em></span></label>
       </div>
 
       <div class="actions">
@@ -559,11 +607,27 @@ var QUESTIONS = {
 /* Ce qui est coche d'office tant que l'acheteur n'a rien touche. */
 var DEFAUTS = {longueur:"Medium", langue:"Everyday"};
 var PALIERS = [
-  {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,     pied:true,  photos:1},
-  {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,  pied:false, photos:3},
-  {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,  pied:false, photos:3},
-  {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000, pied:false, photos:20}
+  {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,     pied:true,  photos:1, habillage:false},
+  {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,  pied:false, photos:3, habillage:true},
+  {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,  pied:false, photos:3, habillage:true},
+  {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000, pied:false, photos:20, habillage:true}
 ];
+/* ⛔ L'HABILLAGE (2026-10-16) : les MÊMES listes que `_shared/lettre.ts`
+   (HABILLAGE) et que le gabarit ; un contrôle exige qu'elles soient égales.
+   La première valeur de chaque liste est celle d'une lettre sans habillage.
+   `c` : la couleur de la pastille, rien de plus. */
+var HABILLAGE = {
+  cire: [{id:"bordeaux", nom:"Burgundy", c:"#8c2f39"}, {id:"or", nom:"Gold", c:"#b8892b"},
+         {id:"nuit", nom:"Night", c:"#2b2433"}, {id:"sapin", nom:"Forest green", c:"#2f5d4a"},
+         {id:"rose", nom:"Rose", c:"#b25a72"}],
+  sceau: [{id:"initiale", nom:"Your initial"}, {id:"coeur", nom:"A heart"},
+          {id:"colombe", nom:"A dove"}, {id:"couronne", nom:"A crown"}],
+  papier: [{id:"creme", nom:"Cream", c:"#f4ede0"}, {id:"coton", nom:"Ivory cotton", c:"#efe6d4"},
+           {id:"kraft", nom:"Kraft", c:"#d6bf98"}, {id:"nuit", nom:"Night", c:"#241e2e"}],
+  pluie: [{id:"aucune", nom:"Nothing"}, {id:"petales", nom:"Petals"},
+          {id:"confettis", nom:"Confetti"}, {id:"etoiles", nom:"Gold stars"}]
+};
+var SANS_HABILLAGE = {cire:"bordeaux", sceau:"initiale", papier:"creme", pluie:"aucune"};
 /* ⛔ LE COFFRET PROMETTAIT « la livraison WhatsApp à l'heure choisie » : rien
    ne la faisait, et c'est contraire a la regle « on n'ecrit jamais a la
    personne qui recoit » (CONDITIONS.md). Il dit desormais ce qu'il contient.
@@ -615,7 +679,9 @@ var E = {
   occasion:"anniv", palier:"lettre",
   pour:"", de:"", titre:"", lettre:"", formule:"", photos:[],
   depuis:"", code:"", quand:"", quandH:"00:00",
-  wa:"",
+  wa:"", indicatif:"229", repondre:false,
+  /* L'habillage : essayé librement, gardé dans le brouillon. */
+  habillage:{cire:"bordeaux", sceau:"initiale", papier:"creme", pluie:"aucune"}, gratter:"",
   /* La plume. `mode` : qui ecrit. `plume` : le texte vient-il d'elle (c'est
      ce qui se paie, pas le mode). `plumeAvant` : sa derniere lettre, gardee
      quand on repart d'une page blanche, pour pouvoir revenir en arriere.
@@ -648,6 +714,12 @@ function reprendre(){
     ["autre", "souvenir", "consignes"].forEach(function(k){
       if (typeof E.fiche[k] !== "string") { E.fiche[k] = ""; }
     });
+    /* Un brouillon d'avant l'habillage n'en a pas : on lui donne le sien. */
+    if (!E.habillage || typeof E.habillage !== "object") { E.habillage = {}; }
+    Object.keys(SANS_HABILLAGE).forEach(function(g){
+      if (!HABILLAGE[g].some(function(x){ return x.id === E.habillage[g]; })) { E.habillage[g] = SANS_HABILLAGE[g]; }
+    });
+    if (typeof E.gratter !== "string") { E.gratter = ""; }
     return !!(E.lettre || E.pour || E.photos.length);
   } catch (e) { return false; }
 }
@@ -696,6 +768,10 @@ function donnees(){
     .map(function(s){ return s.replace(/\n/g, " ").trim(); })
     .filter(Boolean);
   var maxPhotos = pal.photos;
+  /* L'habillage ne part qu'avec une offre qui le porte : l'aperçu d'une
+     lettre gratuite montre ce qu'elle sera vraiment (le serveur, lui, le
+     retire de toute façon). */
+  var vetu = !!pal.habillage;
   return {
     occasion: occ.nom,
     pour: E.pour || "you",
@@ -717,6 +793,9 @@ function donnees(){
     pied: pal.pied,
     lien: "https://malettre.nebula-agency.online/en/",
     langue: LANGUE,
+    habillage: vetu ? E.habillage : SANS_HABILLAGE,
+    gratter: vetu ? (E.gratter || "") : "",
+    repondre: E.repondre ? numeroInternational() : "",
     /* Ouvert d'office pendant l'ecriture, ferme quand on demande a revoir
        le seuil. Ce drapeau ne part JAMAIS dans la lettre commandee : voir
        htmlCommande(). */
@@ -761,7 +840,10 @@ function commande(){
     /* Un oui ou un non, jamais un prix : la caisse sait ce que vaut la plume. */
     plume: !!E.plume,
     whatsapp: E.wa,
-    langue: LANGUE
+    langue: LANGUE,
+    /* ⛔ Des choix, jamais un droit : la caisse décide si l'offre les porte. */
+    habillage: E.habillage, gratter: E.gratter || "",
+    indicatif: E.indicatif, repondre: !!E.repondre
   };
 }
 
@@ -1041,6 +1123,46 @@ $("#btn-remettre").addEventListener("click", function(){
   });
 });
 
+/* ── L'habillage : des pastilles, l'aperçu suit. ── */
+function habillageUtilise(){
+  return Object.keys(SANS_HABILLAGE).some(function(g){ return E.habillage[g] !== SANS_HABILLAGE[g]; })
+      || !!String(E.gratter || "").trim();
+}
+function peindreHabillage(){
+  Object.keys(HABILLAGE).forEach(function(g){
+    $$("#h-" + g + " .pastille").forEach(function(b){
+      b.setAttribute("aria-checked", b.dataset.v === E.habillage[g] ? "true" : "false");
+    });
+  });
+}
+Object.keys(HABILLAGE).forEach(function(g){
+  HABILLAGE[g].forEach(function(x){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "pastille" + (x.c ? "" : " sans-rond");
+    b.setAttribute("role", "radio"); b.dataset.v = x.id;
+    if (x.c) { var r = document.createElement("span"); r.className = "rond"; r.style.background = x.c; b.appendChild(r); }
+    b.appendChild(document.createTextNode(x.nom));
+    b.addEventListener("click", function(){
+      E.habillage[g] = x.id;
+      peindreHabillage(); peindrePaliers(); garder(); peindre();
+    });
+    $("#h-" + g).appendChild(b);
+  });
+});
+/* Les offres qui portent l'habillage, écrites à partir du barème. */
+(function(){
+  var n = PALIERS.filter(function(p){ return p.habillage; }).map(function(p){ return p.nom; });
+  $("#h-offres").textContent = "(with " + (n.length > 1 ? n.slice(0, -1).join(", ") + " or " + n[n.length - 1] : n[0]) + ")";
+})();
+
+/* Le numéro au format international, comme le serveur le composera. */
+function numeroInternational(){
+  var brut = String(E.wa || ""), n = brut.replace(/\D/g, "");
+  if (/^\s*(\+|00)/.test(brut)) { n = n.replace(/^00/, ""); }
+  else { if (!/^\d{1,4}$/.test(E.indicatif || "")) { return ""; } n = E.indicatif + n; }
+  return /^\d{10,15}$/.test(n) ? n : "";
+}
+
 /* ── Les paliers ── */
 PALIERS.forEach(function(p){
   var b = document.createElement("button");
@@ -1079,12 +1201,21 @@ function peindrePaliers(){
     $("#photos-note").textContent = "You added " + E.photos.length + " photos: "
       + pal.nom + " keeps " + (pal.photos === 1 ? "the first one." : "the first " + pal.photos + ".");
   }
+  /* L'habillage choisi avec une offre qui ne le porte pas : on le DIT, avec
+     le prix de la première offre qui le porte, au lieu de l'enlever en silence. */
+  var nu = !pal.habillage && habillageUtilise();
+  $("#habillage-note").hidden = !nu;
+  if (nu) {
+    var vetue = PALIERS.filter(function(p){ return p.habillage; })[0];
+    $("#habillage-note").textContent = "Your finish (wax, paper, line to scratch) needs "
+      + vetue.nom + " (" + fmt(vetue.prix) + "): with the free offer, your letter will go without it.";
+  }
 }
 
 /* ── Les champs. Un seul chemin : champ -> etat -> sauvegarde -> apercu. ── */
 var CHAMPS = { "f-pour":"pour", "f-de":"de", "f-titre":"titre", "f-lettre":"lettre", "f-formule":"formule",
                "f-depuis":"depuis", "f-code":"code", "f-quand":"quand",
-               "f-quand-h":"quandH", "f-wa":"wa" };
+               "f-quand-h":"quandH", "f-wa":"wa", "f-gratter":"gratter", "f-indicatif":"indicatif" };
 Object.keys(CHAMPS).forEach(function(id){
   var el = document.getElementById(id);
   if (!el) { return; }
@@ -1097,10 +1228,14 @@ Object.keys(CHAMPS).forEach(function(id){
          plume n'est plus comptee. Retoucher sa lettre, si. */
       if (E.plume && !el.value.trim()) { E.plume = false; E.plumeAvant = null; peindreMode(); }
     }
+    if (id === "f-gratter") { peindrePaliers(); }
     garder();
     peindre();
   });
+  /* Un <select> annonce son choix par « change » : on l'écoute aussi. */
+  if (el.tagName === "SELECT") { el.addEventListener("change", function(){ E[CHAMPS[id]] = el.value; garder(); peindre(); }); }
 });
+$("#f-repondre").addEventListener("change", function(){ E.repondre = this.checked; garder(); peindre(); });
 
 /* ── Les photos. Reduites AVANT d'entrer dans l'etat : une photo de
      téléphone fait 4 Mo, et tout ceci part dans un seul HTML. ── */
@@ -1329,6 +1464,10 @@ Object.keys(CHAMPS).forEach(function(id){
   var el = document.getElementById(id);
   if (el && E[CHAMPS[id]]) { el.value = E[CHAMPS[id]]; }
 });
+/* L'indicatif « Autre pays » est une chaîne vide : il faut la reposer à la main. */
+$("#f-indicatif").value = E.indicatif || "";
+$("#f-repondre").checked = !!E.repondre;
+peindreHabillage();
 $("#c-lettre").textContent = String((E.lettre || "").length);
 dessinerPhotos();
 $$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === E.occasion); });

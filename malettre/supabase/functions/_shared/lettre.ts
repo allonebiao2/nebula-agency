@@ -36,13 +36,17 @@ export type Palier = {
   /* Le nom de l'offre en anglais : la page de paiement et le reçu le lisent
      ICI, comme le nom français (« le nom de l'offre vient de la caisse »). */
   en: string
+  /* L'habillage (cire, sceau, papier, pluie, phrase à gratter) : décision de
+     Mongazi du 2026-10-16, réservé aux offres payantes, sans changer les prix.
+     ⛔ Le même droit vit dans `creer.html` (PALIERS) ; un contrôle compare. */
+  habillage: boolean
 }
 
 export const PALIERS: Palier[] = [
-  { id: 'gratuit', nom: 'Gratuit',    prix: 0,     pied: true,  jours: 7,   photos: 1,  en: 'Free' },
-  { id: 'mot',     nom: 'Le Mot',     prix: 2000,  pied: false, jours: 365, photos: 3,  en: 'The Note' },
-  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 3,  en: 'The Letter' },
-  { id: 'coffret', nom: 'Le Coffret', prix: 10000, pied: false, jours: 365, photos: 20, en: 'The Keepsake' },
+  { id: 'gratuit', nom: 'Gratuit',    prix: 0,     pied: true,  jours: 7,   photos: 1,  en: 'Free',         habillage: false },
+  { id: 'mot',     nom: 'Le Mot',     prix: 2000,  pied: false, jours: 365, photos: 3,  en: 'The Note',     habillage: true },
+  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 3,  en: 'The Letter',   habillage: true },
+  { id: 'coffret', nom: 'Le Coffret', prix: 10000, pied: false, jours: 365, photos: 20, en: 'The Keepsake', habillage: true },
 ]
 
 /* ── Les deux langues (2026-10-16) ─────────────────────────────────────────
@@ -58,6 +62,50 @@ export const accueilDe = (l: Langue) => SITE_LETTRES + (l === 'en' ? '/en/' : ''
 export function nomOffre(p: Palier, plume: boolean, l: Langue): string {
   const n = l === 'en' ? p.en : p.nom
   return plume ? (l === 'en' ? `${n} + the Quill` : `${n} + la plume`) : n
+}
+
+/* ── L'habillage (2026-10-16) ───────────────────────────────────────────────
+   Des listes FERMÉES : la première valeur de chacune est celle d'une lettre
+   sans habillage (et de toute lettre gratuite). ⛔ Les mêmes listes vivent
+   dans `creer.html` (HABILLAGE) ; un contrôle exige qu'elles soient égales. */
+export const HABILLAGE = {
+  cire: ['bordeaux', 'or', 'nuit', 'sapin', 'rose'],
+  sceau: ['initiale', 'coeur', 'colombe', 'couronne'],
+  papier: ['creme', 'coton', 'kraft', 'nuit'],
+  pluie: ['aucune', 'petales', 'confettis', 'etoiles'],
+} as const
+export type Habillage = { cire: string; sceau: string; papier: string; pluie: string }
+export const SANS_HABILLAGE: Habillage = { cire: 'bordeaux', sceau: 'initiale', papier: 'creme', pluie: 'aucune' }
+export function lireHabillage(v: unknown, permis: boolean): Habillage {
+  if (!permis || !v || typeof v !== 'object') return { ...SANS_HABILLAGE }
+  const h = v as Record<string, unknown>
+  const un = (liste: readonly string[], x: unknown) => (liste.includes(String(x)) ? String(x) : liste[0])
+  return {
+    cire: un(HABILLAGE.cire, h.cire), sceau: un(HABILLAGE.sceau, h.sceau),
+    papier: un(HABILLAGE.papier, h.papier), pluie: un(HABILLAGE.pluie, h.pluie),
+  }
+}
+
+/* « Lui répondre sur WhatsApp » : le numéro de l'ACHETEUR, en format
+   international, et seulement s'il a coché la case. ⛔ Jamais un numéro écrit
+   ailleurs que dans le champ WhatsApp de la commande : sinon un acheteur
+   pourrait poser dans la lettre le numéro de quelqu'un d'autre. */
+export function numeroReponse(d: any): string {
+  if (d?.repondre !== true) return ''
+  const brut = String(d?.whatsapp ?? '')
+  let n = brut.replace(/\D/g, '')
+  if (/^\s*(\+|00)/.test(brut)) {
+    n = n.replace(/^00/, '')               // déjà international
+  } else {
+    /* L'indicatif est choisi à côté du champ (Bénin, Togo, Côte d'Ivoire…) :
+       229 + 0197085576 donne 2290197085576. ⚠️ On ne retire jamais le 01
+       béninois (deux formes vivantes, leçon du parc). */
+    /* L'indicatif vient d'une liste : tel quel ou rien, jamais « nettoyé ». */
+    const ind = String(d?.indicatif ?? '').trim()
+    if (!/^\d{1,4}$/.test(ind)) return ''
+    n = ind + n
+  }
+  return /^\d{10,15}$/.test(n) ? n : ''
 }
 
 export function palier(id: unknown): Palier | null {
@@ -242,6 +290,11 @@ export type Lettre = {
   pied: boolean
   lien: string
   langue: Langue
+  habillage: Habillage
+  /* La phrase à gratter : réservée aux offres payantes, comme l'habillage. */
+  gratter: string
+  /* Le numéro de l'acheteur pour « Lui répondre », ou rien. */
+  repondre: string
 }
 
 /* Un mot d'acheteur n'a pas de raison de faire dix mille signes, et une lettre
@@ -311,6 +364,11 @@ export function lireCommande(d: any): Accord | Refus {
     pied: p.pied,
     lien: accueilDe(langue),
     langue,
+    /* ⛔ L'habillage vient du PALIER autant que du navigateur : une lettre
+       gratuite qui en arriverait vêtue le perd ici, comme le prix. */
+    habillage: lireHabillage(d?.habillage, p.habillage),
+    gratter: p.habillage ? texte(d?.gratter, 80) : '',
+    repondre: numeroReponse(d),
   }
 
   /* ⛔ Et JAMAIS le drapeau d'aperçu : le seuil EST le produit, une lettre

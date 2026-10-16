@@ -639,6 +639,59 @@ for (const k of ['deuil', 'nuisible', 'hors-sujet']) {
   dit(P.SYSTEME_EN.includes(`« ${k} »`) && P.SYSTEME.includes(`« ${k} »`), `les deux plumes refusent avec « ${k} »`)
 }
 
+/* ═══ 19 · l'habillage et la réponse (2026-10-16) ═════════════════════════
+   Réservé aux offres payantes, sans changer les prix : le serveur le retire
+   d'une lettre gratuite, comme il fixe le prix. Trois copies des listes
+   (serveur, constructeur, gabarit), comparées. */
+console.log('\n== L’habillage')
+const creerFr = lire('creer.html')
+const blocPal = /var PALIERS = \[([\s\S]*?)\n\];/.exec(creerFr)[1]
+const droits = Object.fromEntries([...blocPal.matchAll(/\{id:"([a-z]+)"[^}]*habillage:(true|false)\}/g)].map((m) => [m[1], m[2] === 'true']))
+for (const p of M.PALIERS) {
+  dit(droits[p.id] === p.habillage, `« ${p.nom} » : le même droit à l’habillage des deux côtés`, `${droits[p.id]} contre ${p.habillage}`)
+}
+dit(M.PALIERS.find((p) => p.id === 'gratuit').habillage === false && M.PALIERS.filter((p) => p.habillage).length === 3,
+    'seules les trois offres payantes portent l’habillage')
+const blocHab = /var HABILLAGE = \{([\s\S]*?)\n\};/.exec(creerFr)[1]
+const gab = G.GABARIT
+for (const g of Object.keys(M.HABILLAGE)) {
+  const debut = blocHab.indexOf(`${g}: [`)
+  const fin = blocHab.indexOf(']', debut)
+  const idsCreer = [...blocHab.slice(debut, fin).matchAll(/id:"([a-z]+)"/g)].map((m) => m[1])
+  dit(JSON.stringify(idsCreer) === JSON.stringify(M.HABILLAGE[g]), `« ${g} » : les mêmes choix dans le constructeur et le serveur`, idsCreer.join(','))
+  const enGab = new RegExp(`${g}: un\\(\\[([^\\]]*)\\]`).exec(gab)
+  const idsGab = enGab ? [...enGab[1].matchAll(/"([a-z]+)"/g)].map((m) => m[1]) : []
+  dit(JSON.stringify(idsGab) === JSON.stringify(M.HABILLAGE[g]), `« ${g} » : les mêmes choix dans le gabarit`, idsGab.join(','))
+}
+const VETUE = { cire: 'or', sceau: 'coeur', papier: 'kraft', pluie: 'petales' }
+const hPaye = M.lireCommande({ ...BON, habillage: VETUE, gratter: 'Veux-tu m’épouser ?' })
+dit(hPaye.ok && JSON.stringify(hPaye.lettre.habillage) === JSON.stringify(VETUE), 'une offre payante garde son habillage')
+dit(hPaye.lettre?.gratter === 'Veux-tu m’épouser ?', 'une offre payante garde sa phrase à gratter')
+const hGratuit = M.lireCommande({ ...BON, palier: 'gratuit', habillage: VETUE, gratter: 'Surprise' })
+dit(hGratuit.ok && JSON.stringify(hGratuit.lettre.habillage) === JSON.stringify(M.SANS_HABILLAGE),
+    '⛔ une lettre GRATUITE envoyée avec un habillage arrive sans lui')
+dit(hGratuit.lettre?.gratter === '', '⛔ une lettre gratuite perd sa phrase à gratter')
+dit(hGratuit.prix === 0, 'et l’habillage ne change jamais le prix')
+const bizarre = M.lireCommande({ ...BON, habillage: { cire: 'violet', sceau: '<script>', papier: 42, pluie: null } })
+dit(JSON.stringify(bizarre.lettre?.habillage) === JSON.stringify(M.SANS_HABILLAGE), 'une valeur inconnue retombe sur le défaut')
+dit(JSON.stringify(M.lireCommande({ ...BON, habillage: 'or' }).lettre?.habillage) === JSON.stringify(M.SANS_HABILLAGE),
+    'un habillage qui n’est pas un objet retombe sur le défaut')
+dit(M.lireCommande({ ...BON, gratter: 'x'.repeat(300) }).lettre?.gratter.length === 80, 'la phrase à gratter est bornée à 80 signes')
+dit(M.lireCommande(BON).lettre?.repondre === '', 'sans la case, aucun numéro dans la lettre')
+const num = (o) => M.numeroReponse({ repondre: true, ...o })
+dit(num({ whatsapp: '01 97 08 55 76', indicatif: '229' }) === '2290197085576', 'Bénin : 229 + 01 97 08 55 76, le 01 est gardé')
+dit(num({ whatsapp: '90 12 34 56', indicatif: '228' }) === '22890123456', 'Togo : 228 + 8 chiffres')
+dit(num({ whatsapp: '+44 7700 900123', indicatif: '229' }) === '447700900123', 'un numéro déjà international reste le sien')
+dit(num({ whatsapp: '0033612345678', indicatif: '' }) === '33612345678', '00 vaut +')
+dit(num({ whatsapp: '0197085576', indicatif: '' }) === '', 'sans indicatif ni +, aucun numéro deviné')
+dit(num({ whatsapp: '0197085576', indicatif: '229<x>' }) === '', 'un indicatif bricolé ne passe pas')
+dit(M.numeroReponse({ repondre: 'true', whatsapp: '0197085576', indicatif: '229' }) === '', 'seul un vrai « true » met le numéro')
+const avecCase = M.lireCommande({ ...BON, whatsapp: '0197085576', indicatif: '229', repondre: true })
+dit(avecCase.lettre?.repondre === '2290197085576', 'la case cochée met le numéro de l’acheteur dans la lettre')
+const cmdTs2 = lire('supabase/functions/malettre-commande/index.ts')
+dit(/\+\$\{indicatif\}\$\{tape\}/.test(cmdTs2), 'la caisse garde le WhatsApp de l’acheteur au format international')
+dit(/\/\^\\d\{10,15\}\$\/\.test\(String\(D\.repondre/.test(gab), 'le gabarit revérifie la forme du numéro')
+
 /* ═══ le compte ═══════════════════════════════════════════════════════════ */
 for (const [q, d] of verts) console.log('  [ok]', q, d ? `· ${d}` : '')
 for (const [q, d] of rouges) console.log('  [KO]', q, d ? `· ${d}` : '')

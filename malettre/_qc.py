@@ -110,8 +110,10 @@ def main():
     print("\n== Le fichier")
     dit("aucune balise script externe", not re.search(r"<script[^>]+src=", src))
     dit("aucune feuille de style externe", "<link" not in src)
+    # ⚠️ Un LIEN qu'on suit en touchant n'est pas une ressource chargée : le
+    # pied (NEBULA) et « Répondre sur WhatsApp » (wa.me, 2026-10-16) le sont.
     dit("aucune URL http(s) dans le CSS ou le HTML de structure",
-        not re.search(r"(src|href)\s*=\s*[\"']https?://(?!nebula-agency)", src))
+        not re.search(r"(src|href)\s*=\s*[\"']https?://(?!nebula-agency|wa\.me/)", src))
     dit("noindex present", 'name="robots"' in src and "noindex" in src)
     dit("referrer no-referrer", 'name="referrer"' in src)
     dit("prefers-reduced-motion honore", "prefers-reduced-motion" in src)
@@ -379,8 +381,12 @@ def main():
             pg.evaluate("window.__temoin") == 1)
         dit("l'heure arrive : on le dit a celle qui attend",
             "C'est l'heure" in pg.text_content("#s-touche"))
+        # ⚠️ La cire s'allume en 1,1 s de transition : lu au moment où le
+        # bouton paraît, le filtre valait encore celui de départ sur un PC lent.
+        # On attend la fin, et on exige la cire ALLUMÉE (aucun filtre).
+        pg.wait_for_timeout(1300)
         chaude = pg.eval_on_selector(".cachet", "e=>getComputedStyle(e).filter")
-        dit("l'heure arrive : la cire s'allume", froide != chaude and froide != "none",
+        dit("l'heure arrive : la cire s'allume", froide != "none" and chaude == "none",
             "%s -> %s" % (froide, chaude))
         pg.click("#btn-ouvrir")
         pg.wait_for_timeout(1400)
@@ -428,7 +434,9 @@ def main():
             pg = nav.new_page(viewport={"width": larg, "height": 900})
             pg.goto(f.as_uri())
             pg.click("#btn-ouvrir")
-            pg.wait_for_timeout(3400)
+            # ⚠️ 4,4 s : depuis l'enveloppe en 3D (vague 1), la lettre s'ouvre à
+            # 1,15 s et la troisième ligne finit de sécher vers 3,7 s.
+            pg.wait_for_timeout(4400)
             deb = pg.evaluate(
                 "document.documentElement.scrollWidth - document.documentElement.clientWidth")
             dit("%d px : aucun debordement horizontal" % larg, deb <= 0, "%d px" % deb)
@@ -1308,6 +1316,189 @@ def main():
         pg.goto(page_avec(dict(BASE, ouvre=tard, langue="en"), "_qc_compte_en2.html").as_uri())
         pg.wait_for_timeout(400)
         dit("compte en anglais : « days »", pg.text_content("#d-j i").strip() == "days")
+        pg.close()
+
+        # ───────────────────────────── 13 · l'habillage et la réponse (2026-10-16)
+        print("\n== L'habillage et la réponse")
+        srv, port = servir(ICI)
+        try:
+            base = "http://127.0.0.1:%d/creer.html" % port
+            pg = nav.new_page(viewport={"width": 390, "height": 844})
+            bugs, envois = [], []
+            pg.on("pageerror", lambda e: bugs.append(str(e)))
+
+            def capter(r):
+                envois.append(json.loads(r.request.post_data or "{}"))
+                r.fulfill(status=200, content_type="application/json", body=json.dumps(
+                    {"ok": True, "offert": True, "adresse": "https://malettre.nebula-agency.online/l/abc"}))
+            pg.route("**/functions/v1/malettre-commande", capter)
+            pg.goto(base)
+            pg.evaluate("localStorage.clear()")
+            pg.goto(base)
+            attendre(lambda: len(pg.eval_on_selector("#apercu", "e=>e.srcdoc") or "") > 3000)
+            pg.click('.occ[data-id="valentin"]')
+            n = pg.evaluate("() => ['cire','sceau','papier','pluie'].map(g => document.querySelectorAll('#h-' + g + ' .pastille').length)")
+            dit("habillage : 5 cires, 4 sceaux, 4 papiers, 4 ouvertures", n == [5, 4, 4, 4], n)
+            dit("habillage : les offres qui le portent sont nommees a partir du bareme",
+                pg.text_content("#h-offres") == "(avec Le Mot, La Lettre ou Le Coffret)", pg.text_content("#h-offres"))
+            pg.fill("#f-pour", "Zara")
+            pg.fill("#f-de", "Robert")
+            for g, v in (("cire", "or"), ("papier", "kraft"), ("sceau", "coeur"), ("pluie", "petales")):
+                pg.click('#h-%s .pastille[data-v="%s"]' % (g, v))
+            pg.fill("#f-gratter", "Veux-tu m'épouser ?")
+            dit("habillage : la pastille choisie est cochee",
+                pg.get_attribute('#h-cire .pastille[data-v="or"]', "aria-checked") == "true"
+                and pg.get_attribute('#h-cire .pastille[data-v="bordeaux"]', "aria-checked") == "false")
+            pg.wait_for_timeout(500)
+            ap = pg.eval_on_selector("#apercu", "e=>e.srcdoc")
+            dit("habillage : l'apercu suit (cire, papier, sceau, pluie, phrase)",
+                all(x in ap for x in ('"cire":"or"', '"papier":"kraft"', '"sceau":"coeur"', '"pluie":"petales"', '"gratter":"Veux-tu')))
+            pg.click("#vers-palier")
+            pg.click('.pal[data-id="gratuit"]')
+            pg.wait_for_timeout(500)
+            ap = pg.eval_on_selector("#apercu", "e=>e.srcdoc")
+            dit("offre gratuite : l'apercu montre la lettre SANS habillage", '"cire":"bordeaux"' in ap and '"gratter":""' in ap)
+            note = (pg.text_content("#habillage-note") or "").replace("\u00a0", " ")
+            dit("offre gratuite : on DIT que l'habillage demande Le Mot, avec son prix",
+                pg.is_visible("#habillage-note") and "Le Mot (2 000 F)" in note, note)
+            pg.click('.pal[data-id="lettre"]')
+            dit("offre payante : la note disparait", not pg.is_visible("#habillage-note"))
+            pg.click("#vers-paiement")
+            pg.fill("#f-wa", "0197085576")
+            dit("repondre : la case est decochee par defaut", not pg.is_checked("#f-repondre"))
+            dit("repondre : le Benin est l'indicatif par defaut", pg.input_value("#f-indicatif") == "229")
+            pg.check("#f-repondre")
+            pg.wait_for_timeout(500)
+            dit("repondre : l'apercu porte le numero international",
+                '"repondre":"2290197085576"' in pg.eval_on_selector("#apercu", "e=>e.srcdoc"))
+            pg.click("#btn-commander")
+            attendre(lambda: len(envois) > 0, 6000)
+            c = envois[-1] if envois else {}
+            dit("commande : elle porte l'habillage choisi (le serveur decide s'il part)",
+                (c.get("habillage") or {}).get("cire") == "or" and c.get("gratter") == "Veux-tu m'épouser ?")
+            dit("commande : l'indicatif et la case partent a part, le WhatsApp tel que tape",
+                c.get("indicatif") == "229" and c.get("repondre") is True and c.get("whatsapp") == "0197085576")
+            dit("habillage : aucune erreur JavaScript dans le constructeur", not bugs, " | ".join(bugs[:2]))
+            pg.close()
+        finally:
+            srv.shutdown()
+
+        HAB = dict(BASE, habillage={"cire": "or", "sceau": "coeur", "papier": "kraft", "pluie": "petales"},
+                   gratter="Veux-tu m'épouser ?", repondre="2290197085576")
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        bugs = []
+        pg.on("pageerror", lambda e: bugs.append(str(e)))
+        pg.goto(page_avec(HAB, "_qc_habille.html").as_uri())
+        pg.wait_for_timeout(300)
+        cls = pg.evaluate("document.documentElement.className")
+        dit("lettre habillee : cire, papier et sceau poses sur la page",
+            all(x in cls for x in ("cire-or", "papier-kraft", "sceau-coeur")), cls)
+        dit("lettre habillee : le sceau dessine remplace l'initiale",
+            pg.is_visible(".cachet .sc-coeur") and not pg.is_visible("#s-init"))
+        dit("lettre habillee : la cire change de couleur",
+            pg.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--cire').trim()") == "#b8892b")
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(1750)
+        dit("pluie : des petales tombent sur la lettre ouverte", pg.locator("canvas.pluie").count() == 1)
+        pg.wait_for_timeout(2700)
+        dit("pluie : puis ils s'en vont", pg.locator("canvas.pluie").count() == 0)
+        dit("gratter : la phrase est la, cachee aux lecteurs d'ecran tant qu'on n'a pas gratte",
+            pg.is_visible("#l-gratter") and pg.get_attribute("#g-mot", "aria-hidden") == "true")
+        pg.locator("#g-pellicule").scroll_into_view_if_needed()
+        b = pg.locator("#g-pellicule").bounding_box()
+        pg.mouse.move(b["x"] + 6, b["y"] + 6)
+        pg.mouse.down()
+        for i in range(36):
+            y = b["y"] + 6 + (i % 6) * (b["height"] - 12) / 5
+            pg.mouse.move(b["x"] + (b["width"] - 6 if i % 2 else 6), y, steps=10)
+        pg.mouse.up()
+        pg.wait_for_timeout(300)
+        dit("gratter : au doigt, la phrase se revele",
+            pg.eval_on_selector("#l-gratter", "e=>e.classList.contains('gratte')") and pg.get_attribute("#g-mot", "aria-hidden") is None)
+        lien = pg.get_attribute("#repondre-lien", "href") or ""
+        dit("repondre : le bouton mene au WhatsApp de l'acheteur, message deja ecrit",
+            lien.startswith("https://wa.me/2290197085576?text=") and "ouvert%20ta%20lettre" in lien, lien[:90])
+        dit("repondre : le bouton nomme celui qui ecrit", pg.text_content("#repondre-mot").strip() == "Répondre à Robert sur WhatsApp")
+        dit("lettre habillee : aucune erreur JavaScript", not bugs, " | ".join(bugs[:2]))
+        pg.close()
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(page_avec(HAB, "_qc_habille2.html").as_uri())
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(1500)
+        pg.click("#g-reveler")
+        dit("gratter : le bouton revele sans gratter (clavier, lecteur d'ecran)",
+            pg.eval_on_selector("#l-gratter", "e=>e.classList.contains('gratte')"))
+        pg.close()
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844}, reduced_motion="reduce")
+        pg.goto(page_avec(HAB, "_qc_habille3.html").as_uri())
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(1200)
+        dit("mouvement reduit : aucune pluie", pg.locator("canvas.pluie").count() == 0)
+        pg.close()
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(page_avec(dict(BASE), "_qc_nue.html").as_uri())
+        cls = pg.evaluate("document.documentElement.className")
+        dit("sans habillage : cire bordeaux, papier creme, l'initiale", "cire-bordeaux" in cls and "papier-creme" in cls
+            and pg.is_visible("#s-init"))
+        dit("sans habillage : ni phrase a gratter, ni bouton repondre",
+            not pg.is_visible("#l-gratter") and not pg.is_visible("#l-repondre"))
+        pg.goto(page_avec(dict(BASE, repondre="javascript:alert(1)", habillage={"cire": "<b>"}), "_qc_bricole.html").as_uri())
+        dit("un numero bricole n'affiche aucun bouton", not pg.is_visible("#l-repondre"))
+        dit("une cire bricolee retombe sur le bordeaux", "cire-bordeaux" in pg.evaluate("document.documentElement.className"))
+        pg.close()
+
+        # Le contraste de CHAQUE cire sur CHAQUE papier, mesuré sur les pixels :
+        # le texte est lu, puis rendu transparent, puis le fond photographié.
+        from io import BytesIO
+        from PIL import Image
+
+        def lum(c):
+            v = [x / 255 for x in c]
+            v = [x / 12.92 if x <= .03928 else ((x + .055) / 1.055) ** 2.4 for x in v]
+            return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(page_avec(dict(BASE, depuis="2024-03-14"), "_qc_couleurs.html").as_uri())
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(3200)
+        pg.add_style_tag(content=".sonde-x,.sonde-x *{color:transparent!important;-webkit-text-fill-color:transparent!important}")
+
+        def mesurer(sel):
+            i = pg.evaluate("""(s) => { const e = document.querySelector(s); e.scrollIntoView({block: 'center'});
+                const cs = getComputedStyle(e);
+                return {c: cs.color.match(/[\\d.]+/g).slice(0, 3).map(Number), t: parseFloat(cs.fontSize), g: parseInt(cs.fontWeight)}; }""", sel)
+            r = pg.evaluate("""(s) => { const e = document.querySelector(s); e.classList.add('sonde-x');
+                const r = e.getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height, vw: innerWidth}; }""", sel)
+            png = pg.screenshot()
+            pg.evaluate("(s) => document.querySelector(s).classList.remove('sonde-x')", sel)
+            im = Image.open(BytesIO(png)).convert("RGB")
+            k = im.width / r["vw"]
+            px = sorted(im.crop((int(r["x"] * k), int(r["y"] * k), int((r["x"] + r["w"]) * k), int((r["y"] + r["h"]) * k))).getdata(), key=lum)
+            fond = px[len(px) // 2]
+            a, b2 = lum(i["c"]), lum(fond)
+            grand = i["t"] >= 24 or (i["t"] >= 18.66 and i["g"] >= 700)
+            return (max(a, b2) + .05) / (min(a, b2) + .05), (3.0 if grand else 4.5)
+
+        faibles, mesures = [], 0
+        for cire in ("bordeaux", "or", "nuit", "sapin", "rose"):
+            for papier in ("creme", "coton", "kraft", "nuit"):
+                pg.evaluate("""([c, p]) => { const h = document.documentElement;
+                    h.className = h.className.split(' ').filter(x => !/^(cire|papier)-/.test(x)).concat(['cire-' + c, 'papier-' + p]).join(' '); }""",
+                            [cire, papier])
+                pg.wait_for_timeout(60)
+                for sel in ("#l-occasion", "#l-titre", "#l-corps p", "#l-formule", "#l-jours", "#l-jours-lib"):
+                    ratio, seuil = mesurer(sel)
+                    mesures += 1
+                    if ratio < seuil:
+                        faibles.append("%s/%s %s %.2f:1" % (cire, papier, sel, ratio))
+        dit("habillage : chaque cire tient sur chaque papier (%d mesures sur les pixels)" % mesures, not faibles, " | ".join(faibles[:6]))
+        # LE TÉMOIN : une sonde qui ne voit pas un gris clair sur le papier ne prouve rien.
+        pg.evaluate("() => { const h = document.documentElement; h.className = h.className.split(' ').filter(x => !/^(cire|papier)-/.test(x)).concat(['cire-bordeaux', 'papier-creme']).join(' '); document.getElementById('l-occasion').style.color = '#d8cdb8'; }")
+        ratio, seuil = mesurer("#l-occasion")
+        dit("habillage : temoin, la sonde attrape un gris clair sur le papier", ratio < seuil, "%.2f" % ratio)
         pg.close()
 
         nav.close()

@@ -41,7 +41,10 @@
   --cire-clair:#b2434e;
   --or:#c9a227;
   --or-doux:#e0c266;
-  --gris:#6d6478;
+  /* ⚠️ #6d6478 tenait 4,8:1 sur la couleur PLATE du papier, et 4,38:1 mesuré
+     sur les pixels en bas de la feuille, où le dégradé fonce (la formule de
+     fin, « jours ensemble »). Trouvé par la sonde de l'habillage. */
+  --gris:#5d5468;
   /* ⚠️ LE MEME GRIS NE VA PAS SUR LES DEUX FONDS. #6d6478 tient 4,8:1 sur le
      papier de la lettre, et tombe a 3,4:1 sur la nuit du seuil, ou vivent la
      ligne d'attente et LE COMPTE A REBOURS. Un gris pour le papier, un gris
@@ -49,6 +52,11 @@
   --gris-nuit:#8f86a0;
   --pli:rgba(36,29,43,.12);
   --t:cubic-bezier(.25,1,.5,1);
+  /* L'habillage (2026-10-16) : des jetons dont la valeur par défaut est la
+     couleur d'avant. Une lettre sans habillage ne change pas d'un pixel. */
+  --cire-fonce:#6d1f27;--cire-texte:var(--cire);--cire-lumiere:#e08a93;
+  --dos-1:#e9dcc4;--dos-2:#d9c7a6;--carte-haut:#fbf7ef;
+  --rabat-1:#f1e7d5;--rabat-2:#e4d5bb;--rabat-3:#dccbad;--rabat-4:#cbb895;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -97,14 +105,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .env3d{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(6deg);
   transition:transform .9s var(--t)}
 .env3d .dos{position:absolute;inset:0;border-radius:6px;transform:translateZ(0);
-  background:linear-gradient(170deg,#e9dcc4,#d9c7a6)}
+  background:linear-gradient(170deg,var(--dos-1),var(--dos-2))}
 .env3d .carte{position:absolute;left:7%;right:7%;top:9%;height:84%;border-radius:3px;transform:translateZ(1px);
-  background:linear-gradient(180deg,#fbf7ef,var(--papier) 70%,var(--papier-2));color:var(--encre);
+  background:linear-gradient(180deg,var(--carte-haut),var(--papier) 70%,var(--papier-2));color:var(--encre);
   box-shadow:0 1px 4px rgba(36,29,43,.18);display:flex;flex-direction:column;align-items:center;
   justify-content:flex-start;padding-top:9%;transition:transform .62s cubic-bezier(.3,.9,.3,1)}
 .env3d .carte .c1{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-size:clamp(13px,3.6vw,16px)}
 .env3d .carte .c2{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-style:italic;
-  font-size:clamp(22px,6.4vw,30px);color:var(--cire);line-height:1.1}
+  font-size:clamp(22px,6.4vw,30px);color:var(--cire-texte);line-height:1.1}
 .env3d .poche{position:absolute;inset:0;border-radius:6px;transform:translateZ(3px);
   background:linear-gradient(168deg,var(--papier) 0%,var(--papier-2) 100%);
   clip-path:polygon(0 0,50% 54%,100% 0,100% 100%,0 100%)}
@@ -118,8 +126,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   transform:translateZ(4px) rotateX(0deg)}
 .rabat i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
   clip-path:polygon(0 0,100% 0,50% 100%)}
-.rabat .dehors{background:linear-gradient(180deg,#f1e7d5,#e4d5bb)}
-.rabat .dedans{background:linear-gradient(0deg,#dccbad,#cbb895);transform:rotateX(180deg)}
+.rabat .dehors{background:linear-gradient(180deg,var(--rabat-1),var(--rabat-2))}
+.rabat .dedans{background:linear-gradient(0deg,var(--rabat-3),var(--rabat-4));transform:rotateX(180deg)}
 /* ⚠️ Passé 90 deg, le rabat doit glisser DERRIÈRE la carte : sinon la carte qui
    sort passe sous le rabat ouvert. Il recule donc à mi-course. */
 @keyframes leve{
@@ -136,7 +144,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .fendu{position:absolute;left:50%;top:56%;width:clamp(64px,17vw,84px);aspect-ratio:1;
   transform:translate(-50%,-50%) translateZ(6px);pointer-events:none;opacity:0;z-index:4}
 .fendu i{position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,#6d1f27 100%);
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce) 100%);
   box-shadow:0 6px 14px rgba(0,0,0,.35)}
 .fendu .g{clip-path:polygon(0 0,52% 0,46% 22%,55% 40%,44% 58%,54% 76%,47% 100%,0 100%)}
 .fendu .d{clip-path:polygon(52% 0,100% 0,100% 100%,47% 100%,54% 76%,44% 58%,55% 40%,46% 22%)}
@@ -151,7 +159,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);
   width:clamp(64px,17vw,84px);aspect-ratio:1;border-radius:50%;
   display:grid;place-items:center;z-index:3;
-  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,#6d1f27 100%);
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce) 100%);
   box-shadow:0 8px 20px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.28) inset;
   color:var(--papier);font-size:clamp(19px,5vw,24px);letter-spacing:.06em;
   animation:respire 3.4s ease-in-out infinite;
@@ -269,7 +277,7 @@ main.ouverte{opacity:1}
 .ouverte .feuille{transform:scaleY(1)}
 
 .entete{text-align:center;margin-bottom:clamp(22px,5vw,34px)}
-.occasion{font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--cire);font-weight:700}
+.occasion{font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--cire-texte);font-weight:700}
 .titre{font-size:clamp(30px,9vw,52px);line-height:1.08;margin:10px 0 0;font-weight:600;
   letter-spacing:-.015em}
 .filet{width:52px;height:2px;background:var(--or);margin:18px auto 0;border-radius:2px}
@@ -318,7 +326,7 @@ main.ouverte{opacity:1}
 .compte{text-align:center;margin:clamp(26px,6vw,42px) 0;
   padding:clamp(20px,5vw,30px) 0;border-top:1px solid var(--pli);border-bottom:1px solid var(--pli)}
 .compte .n{font-size:clamp(38px,12vw,68px);font-weight:600;line-height:1;
-  letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--cire)}
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--cire-texte)}
 .compte .l{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:8px}
 
 /* ══════════════════════════════════════════════════════════════════
@@ -352,6 +360,59 @@ main.ouverte{opacity:1}
 .pied .sceau{width:20px;height:20px;border-radius:50%;
   background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%);flex:none}
 .pied .note{font-size:12.5px;color:var(--gris);margin-top:14px;letter-spacing:.04em}
+
+/* ══════════════════════════════════════════════════════════════════
+   8 · L'HABILLAGE (offres payantes, 2026-10-16)
+   La cire, le sceau, le papier, la pluie, la phrase à gratter. Une classe
+   sur <html> par choix ; le serveur l'a déjà retiré d'une lettre gratuite.
+   ⚠️ Chaque cire a sa couleur de TEXTE, mesurée sur chaque papier : l'or du
+   cachet (#b8892b) ne tient pas 3:1 sur le papier, son texte est #6e500c.
+   ══════════════════════════════════════════════════════════════════ */
+.cire-or{--cire:#b8892b;--cire-clair:#e0b85a;--cire-fonce:#7a5a14;--cire-texte:#6e500c;--cire-lumiere:#e0c266}
+.cire-nuit{--cire:#2b2433;--cire-clair:#4a3f56;--cire-fonce:#141019;--cire-texte:#2b2433;--cire-lumiere:#c4b9d4}
+.cire-sapin{--cire:#2f5d4a;--cire-clair:#4f8a6f;--cire-fonce:#1b3a2d;--cire-texte:#2f5d4a;--cire-lumiere:#8cc9ab}
+.cire-rose{--cire:#b25a72;--cire-clair:#d88aa0;--cire-fonce:#7e3a4e;--cire-texte:#93415a;--cire-lumiere:#eaa9bb}
+/* Le kraft : un papier brun, l'enveloppe assortie. */
+.papier-kraft .feuille,.papier-kraft .env3d{--papier:#e6d3b3;--papier-2:#d6bf98;--carte-haut:#ecdcc0;--gris:#463e50;
+  --dos-1:#d2b98f;--dos-2:#c2a679;--rabat-1:#dfc9a3;--rabat-2:#d1b88e;--rabat-3:#c9ae84;--rabat-4:#b89a6e}
+/* Le coton : un relief de papier fait main, dessiné par la lumière (SVG),
+   zéro octet téléchargé. Il se multiplie au papier, il ne le remplace pas. */
+.papier-coton .feuille{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.032' numOctaves='4' seed='3'/%3E%3CfeDiffuseLighting lighting-color='%23fbf6ec' surfaceScale='1.4'%3E%3CfeDistantLight azimuth='235' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"),
+  linear-gradient(178deg,#f8f2e6 0%,#efe6d4 100%);background-blend-mode:multiply;background-size:260px 260px,auto}
+/* La nuit : un papier sombre, une encre claire, une enveloppe noire. */
+.papier-nuit .feuille{--papier:#241e2e;--papier-2:#1b1622;--encre:#f4ede0;--gris:#b3a9c2;--pli:rgba(244,237,224,.14);
+  --cire-texte:var(--cire-lumiere);box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 1px rgba(244,237,224,.07)}
+.papier-nuit .env3d{--papier:#2a2333;--papier-2:#211b29;--encre:#f4ede0;--carte-haut:#322a3c;--cire-texte:var(--cire-lumiere);
+  --dos-1:#1d1826;--dos-2:#17131e;--rabat-1:#2e2738;--rabat-2:#26202f;--rabat-3:#1f1a27;--rabat-4:#19151f}
+.papier-nuit .env3d .couture{opacity:.4}
+.papier-nuit .polaroid figcaption{color:#6d6478}
+
+/* Le sceau : l'initiale, ou un dessin frappé dans la cire. */
+.cachet .sc{display:none;width:46%;height:46%;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linejoin:round;stroke-linecap:round}
+.sceau-coeur #s-init,.sceau-colombe #s-init,.sceau-couronne #s-init{display:none}
+.sceau-coeur .sc-coeur,.sceau-colombe .sc-colombe,.sceau-couronne .sc-couronne{display:block}
+
+/* La phrase à gratter : une pellicule d'or, qu'on gratte du doigt. */
+.gratter{margin:clamp(22px,5vw,34px) 0;text-align:center}
+.g-t{font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--cire-texte);font-weight:700;margin-bottom:12px}
+.g-zone{position:relative;border-radius:12px;overflow:hidden;min-height:96px;display:grid;place-items:center;
+  padding:20px 18px;border:1px solid var(--pli);touch-action:none}
+.g-mot{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-style:italic;
+  font-size:clamp(22px,6vw,30px);line-height:1.25;color:var(--encre)}
+.g-pellicule{position:absolute;inset:0;width:100%;height:100%;cursor:grab;transition:opacity .6s}
+.gratte .g-pellicule{opacity:0;pointer-events:none}
+.g-reveler{margin-top:8px;font-size:13px;color:var(--gris);text-decoration:underline;min-height:44px;padding:0 10px}
+.gratte .g-reveler{visibility:hidden}
+
+/* Répondre : un bouton vers le WhatsApp de celui qui écrit, s'il l'a voulu. */
+.repondre{text-align:center;margin-top:clamp(26px,6vw,38px)}
+.repondre a{display:inline-flex;align-items:center;gap:9px;min-height:48px;padding:12px 24px;border-radius:999px;
+  border:1.5px solid var(--pli);color:var(--encre);text-decoration:none;font-weight:700;font-size:14.5px}
+.repondre a svg{width:18px;height:18px;flex:none}
+
+/* La pluie de l'ouverture : un canvas posé un instant, qui ne touche à rien. */
+.pluie{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:150}
 
 /* ── Le mouvement reduit : la lettre s'ouvre, mais rien ne bouge. ── */
 @media (prefers-reduced-motion:reduce){
@@ -387,7 +448,11 @@ main.ouverte{opacity:1}
     </div>
     <span class="eclat e1"></span><span class="eclat e2"></span><span class="eclat e3"></span>
     <div class="fendu" aria-hidden="true"><i class="g"></i><i class="d"></i></div>
-    <div class="cachet serif" aria-hidden="true"><span id="s-init">M</span></div>
+    <div class="cachet serif" aria-hidden="true"><span id="s-init">M</span>
+      <svg class="sc sc-coeur" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      <svg class="sc sc-colombe" viewBox="0 0 24 24"><path d="M3.5 13.5c2.2.4 4.3-.2 6-1.8 1.6-1.6 2.3-3.9 4.4-4.8 1.6-.7 3.4-.4 4.6.6l-2.1.8c.5 1.9 0 3.9-1.5 5.4-1.9 1.9-4.7 2.7-7.3 2.4-1.5-.2-2.9-.8-4.1-1.7z"/><path d="M9.8 11.5C8.3 9.4 8 6.9 9.1 4.6c1.6 1.6 2.4 3.7 2.4 5.8"/><path d="M3.5 13.5 2 16.5l3-1.2"/></svg>
+      <svg class="sc sc-couronne" viewBox="0 0 24 24"><path d="M4 17 3 8l5 4 4-6 4 6 5-4-1 9z"/><path d="M5 20h14"/></svg>
+    </div>
   </div>
 
   <p class="touche" id="s-touche" role="status" aria-live="polite">Une lettre t'attend.</p>
@@ -428,6 +493,14 @@ main.ouverte{opacity:1}
 
     <div class="lettre" id="l-corps"></div>
 
+    <!-- La phrase à gratter (offres payantes). -->
+    <div class="gratter" id="l-gratter" hidden>
+      <p class="g-t" id="g-t">Gratte pour découvrir</p>
+      <div class="g-zone"><p class="g-mot" id="g-mot" aria-hidden="true"></p>
+        <canvas class="g-pellicule" id="g-pellicule" aria-hidden="true"></canvas></div>
+      <button class="g-reveler" id="g-reveler" type="button">Révéler sans gratter</button>
+    </div>
+
     <div class="photos" id="l-photos"></div>
 
     <div class="compte" id="l-compte" hidden>
@@ -443,6 +516,11 @@ main.ouverte{opacity:1}
           <path d="M2,7 C40,2 78,9 116,4 C146,0 176,6 198,3"/>
         </svg>
       </p>
+    </div>
+
+    <!-- Répondre, si celui qui écrit l'a voulu. -->
+    <div class="repondre" id="l-repondre" hidden>
+      <a id="repondre-lien" href="#" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.2A8 8 0 1 1 20 12z"/></svg><span id="repondre-mot">Répondre</span></a>
     </div>
   </article>
 
@@ -480,7 +558,10 @@ var L = EN ? {
   photo: "Keepsake photo", jour: "day together", jours: "days together",
   formule: "With all my heart,", pied: "Write yours: Ma lettre à…",
   note: "A letter, an envelope, a seal. In five minutes.",
-  jours_c: "days", jour_c: "day", couper: "Mute the sound", remettre: "Turn the sound on"
+  jours_c: "days", jour_c: "day", couper: "Mute the sound", remettre: "Turn the sound on",
+  gratte: "Scratch to reveal", gratteIci: "Scratch here", reveler: "Reveal without scratching",
+  repondreA: "Reply to ", repondre: "Reply", surWa: " on WhatsApp",
+  repMsg: function(t){ return t ? "I opened your letter \u201c" + t + "\u201d." : "I opened your letter."; }
 } : {
   pour: "Ma lettre à ", toi: "toi", attend: "Une lettre t'attend.", heure: "C'est l'heure.",
   ouvre: "Elle s'ouvre ", briser: "Briser le cachet", demande: "Entre le code qu'on t'a donné.",
@@ -489,8 +570,28 @@ var L = EN ? {
   photo: "Photo souvenir", jour: "jour ensemble", jours: "jours ensemble",
   formule: "Avec tout mon cœur,", pied: "Écris la tienne : Ma lettre à…",
   note: "Une lettre, une enveloppe, un cachet. En cinq minutes.",
-  jours_c: "jours", jour_c: "jour", couper: "Couper le son", remettre: "Remettre le son"
+  jours_c: "jours", jour_c: "jour", couper: "Couper le son", remettre: "Remettre le son",
+  gratte: "Gratte pour découvrir", gratteIci: "Gratte ici", reveler: "Révéler sans gratter",
+  repondreA: "Répondre à ", repondre: "Répondre", surWa: " sur WhatsApp",
+  repMsg: function(t){ return t ? "J'ai ouvert ta lettre \u00ab " + t + " \u00bb." : "J'ai ouvert ta lettre."; }
 };
+
+/* ── L'HABILLAGE (2026-10-16). Le serveur l'a déjà retiré d'une lettre
+   gratuite ; le gabarit relit quand même chaque valeur dans SA liste fermée
+   (une troisième copie des listes de `lettre.ts`, comparée par un contrôle). ── */
+var HAB = (function(h){
+  h = h && typeof h === "object" ? h : {};
+  var un = function(liste, v){ return liste.indexOf(String(v)) >= 0 ? String(v) : liste[0]; };
+  return {
+    cire: un(["bordeaux", "or", "nuit", "sapin", "rose"], h.cire),
+    sceau: un(["initiale", "coeur", "colombe", "couronne"], h.sceau),
+    papier: un(["creme", "coton", "kraft", "nuit"], h.papier),
+    pluie: un(["aucune", "petales", "confettis", "etoiles"], h.pluie)
+  };
+})(D.habillage);
+["cire-" + HAB.cire, "sceau-" + HAB.sceau, "papier-" + HAB.papier].forEach(function(c){
+  document.documentElement.classList.add(c);
+});
 if (EN) {
   document.documentElement.lang = "en";
   $(".pour").firstChild.nodeValue = L.pour;
@@ -572,6 +673,113 @@ if (D.depuis) {
 if (jours > 0) {
   $("#l-compte").hidden = false;
   $("#l-jours-lib").textContent = jours > 1 ? L.jours : L.jour;
+}
+
+/* ── La phrase à gratter. ⚠️ La pellicule se dessine à la taille de mise en
+   page (offsetWidth) : avant l'ouverture, la feuille est écrasée par un
+   scaleY, et getBoundingClientRect rendrait une hauteur de six pour cent. ── */
+if (D.gratter) {
+  var gBloc = $("#l-gratter"), gCv = $("#g-pellicule"), gCtx = gCv.getContext("2d"), gFini = false, gCoups = 0, gAppui = false;
+  gBloc.hidden = false;
+  txt($("#g-mot"), D.gratter);
+  txt($("#g-t"), L.gratte);
+  txt($("#g-reveler"), L.reveler);
+  var pellicule = function(){
+    var w = gCv.offsetWidth, h = gCv.offsetHeight, k = Math.min(2, window.devicePixelRatio || 1);
+    if (!w || !h || gFini) { return; }
+    gCv.width = Math.round(w * k); gCv.height = Math.round(h * k);
+    gCtx.setTransform(k, 0, 0, k, 0, 0);
+    gCtx.globalCompositeOperation = "source-over";
+    var or = gCtx.createLinearGradient(0, 0, w, h);
+    or.addColorStop(0, "#a8791f"); or.addColorStop(.42, "#e2c46e"); or.addColorStop(.52, "#f5e6a8"); or.addColorStop(1, "#9c6f1a");
+    gCtx.fillStyle = or; gCtx.fillRect(0, 0, w, h);
+    for (var i = 0; i < 160; i++) {
+      gCtx.fillStyle = "rgba(255,255,255," + (Math.random() * .4).toFixed(2) + ")";
+      gCtx.fillRect(Math.random() * w, Math.random() * h, 1.6, 1.6);
+    }
+    gCtx.fillStyle = "rgba(36,29,43,.62)";
+    gCtx.font = "700 13px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif";
+    gCtx.textAlign = "center"; gCtx.fillText(L.gratteIci, w / 2, h / 2 + 4);
+  };
+  var reveler = function(){
+    if (gFini) { return; }
+    gFini = true;
+    gBloc.classList.add("gratte");
+    $("#g-mot").removeAttribute("aria-hidden");
+    if (!doux && navigator.vibrate) { try { navigator.vibrate(12); } catch (e) {} }
+  };
+  var gratter = function(ev){
+    if (gFini) { return; }
+    var r = gCv.getBoundingClientRect();
+    gCtx.globalCompositeOperation = "destination-out";
+    gCtx.beginPath(); gCtx.arc(ev.clientX - r.left, ev.clientY - r.top, 20, 0, 6.2832); gCtx.fill();
+    /* Toutes les six touches, on mesure ce qui est gratté (un point sur seize). */
+    if (++gCoups % 6 === 0) {
+      var d = gCtx.getImageData(0, 0, gCv.width, gCv.height).data, n = 0, t = 0;
+      for (var i = 3; i < d.length; i += 64) { t++; if (d[i] < 40) { n++; } }
+      if (t && n / t > .55) { reveler(); }
+    }
+  };
+  gCv.addEventListener("pointerdown", function(e){ gAppui = true; try { gCv.setPointerCapture(e.pointerId); } catch (x) {} gratter(e); });
+  gCv.addEventListener("pointermove", function(e){ if (gAppui) { gratter(e); } });
+  gCv.addEventListener("pointerup", function(){ gAppui = false; });
+  gCv.addEventListener("pointercancel", function(){ gAppui = false; });
+  $("#g-reveler").addEventListener("click", reveler);
+  pellicule();
+  addEventListener("resize", pellicule);
+}
+
+/* ── Répondre : le numéro vient du serveur, seulement si l'acheteur l'a
+   voulu. Le gabarit vérifie encore sa forme : des chiffres, rien d'autre. ── */
+if (/^\d{10,15}$/.test(String(D.repondre || ""))) {
+  $("#l-repondre").hidden = false;
+  txt($("#repondre-mot"), (D.de ? L.repondreA + D.de : L.repondre) + L.surWa);
+  $("#repondre-lien").href = "https://wa.me/" + D.repondre + "?text=" + encodeURIComponent(L.repMsg(D.titre || ""));
+}
+
+/* ── La pluie de l'ouverture : des pétales, des confettis ou des étoiles
+   d'or, deux secondes et demie, une fois. ⚠️ Elle avance par le TEMPS, pas
+   par image : à 30 images/s, une boucle sans dt dure deux fois plus. ── */
+function etoile(g, r){
+  g.beginPath();
+  for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4, rr = i % 2 ? r * .38 : r; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+  g.closePath(); g.fill();
+}
+function pleuvoir(type){
+  if (doux || !type || type === "aucune") { return; }
+  var c = document.createElement("canvas");
+  c.className = "pluie"; c.setAttribute("aria-hidden", "true");
+  document.body.appendChild(c);
+  var k = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+  c.width = W * k; c.height = H * k;
+  var g = c.getContext("2d"); g.scale(k, k);
+  var COUL = { petales: ["#b2434e", "#d88aa0", "#f0c6cf", "#8c2f39"],
+               confettis: ["#c9a227", "#b2434e", "#4f8a6f", "#e0c266", "#f4ede0"],
+               etoiles: ["#e0c266", "#c9a227", "#f7e7b0"] }[type] || ["#c9a227"];
+  var P = [], N = type === "etoiles" ? 46 : 70;
+  for (var i = 0; i < N; i++) {
+    P.push({ x: Math.random() * W, y: -20 - Math.random() * H * .6, v: 1.6 + Math.random() * 2.4,
+             d: (Math.random() - .5) * 1.2, r: Math.random() * 6.28, vr: (Math.random() - .5) * .12,
+             t: 4 + Math.random() * 6, c: COUL[i % COUL.length], o: Math.random() * 6.28 });
+  }
+  var t0 = 0, avant = 0;
+  function pas(now){
+    if (!t0) { t0 = now; avant = now; }
+    var dt = Math.min(48, now - avant) / 16.7, age = now - t0;
+    avant = now;
+    g.clearRect(0, 0, W, H);
+    g.globalAlpha = age > 2000 ? Math.max(0, 1 - (age - 2000) / 600) : 1;
+    P.forEach(function(q){
+      q.y += q.v * dt; q.x += (q.d + Math.sin(q.o + age / 420) * .6) * dt; q.r += q.vr * dt;
+      g.save(); g.translate(q.x, q.y); g.rotate(q.r); g.fillStyle = q.c;
+      if (type === "petales") { g.beginPath(); g.ellipse(0, 0, q.t, q.t * .55, 0, 0, 6.2832); g.fill(); }
+      else if (type === "confettis") { g.fillRect(-q.t / 2, -q.t / 4, q.t, q.t / 2); }
+      else { etoile(g, q.t * .8); }
+      g.restore();
+    });
+    if (age < 2600) { requestAnimationFrame(pas); } else { c.remove(); }
+  }
+  requestAnimationFrame(pas);
 }
 
 if (!D.pied) { $("#l-pied").hidden = true; }
@@ -786,6 +994,8 @@ function ouvrir(){
     h.setAttribute("tabindex", "-1");
     h.focus({ preventScroll: true });
     setTimeout(rouler, doux ? 0 : 900);
+    /* La feuille vient de se déplier : la pluie tombe dessus. */
+    setTimeout(function(){ pleuvoir(HAB.pluie); }, 450);
   }, attendre);
 }
 

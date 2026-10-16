@@ -119,6 +119,57 @@ FR: La plume a écrit ta lettre : <b>500 F</b> s'ajoutent à l'offre que tu choi
 EN: The Quill wrote your letter: <b>500 F</b> is added to the offer you choose, already counted above.
 FR: >Continuer<
 EN: >Continue<
+# ── l'habillage (vague 2, 2026-10-16) ──
+FR: <p class="indice">Tout est facultatif. Change, l'aperçu suit.</p>
+EN: <p class="indice">All optional. Change it, the preview follows.</p>
+FR: <label>L'habillage <span
+EN: <label>The finish <span
+FR: >La cire</p>
+EN: >The wax</p>
+FR: >Le sceau</p>
+EN: >The seal</p>
+FR: >Le papier</p>
+EN: >The paper</p>
+FR: >À l'ouverture</p>
+EN: >When it opens</p>
+FR: <label for="f-gratter">Une phrase à gratter <span
+EN: <label for="f-gratter">A line to scratch off <span
+FR: placeholder="Veux-tu m'épouser ?"
+EN: placeholder="Will you marry me?"
+FR: Cachée sous une pellicule d'or : on la découvre en grattant du doigt.
+EN: Hidden under a gold film: they reveal it by scratching with a finger.
+FR: aria-label="Le pays de ton numéro"
+EN: aria-label="The country of your number"
+FR: <option value="229">Bénin +229</option>
+EN: <option value="229">Benin +229</option>
+FR: <option value="225">Côte d'Ivoire +225</option>
+EN: <option value="225">Côte d'Ivoire +225</option>
+FR: <option value="">Autre pays (écris le +)</option>
+EN: <option value="">Other country (type the +)</option>
+FR: <span>Mettre dans la lettre un bouton « Répondre » vers ce WhatsApp <em>(ton numéro y sera visible)</em></span>
+EN: <span>Add a “Reply” button to this WhatsApp in the letter <em>(your number will be visible in it)</em></span>
+FR: cire: [{id:"bordeaux", nom:"Bordeaux", c:"#8c2f39"}, {id:"or", nom:"Or", c:"#b8892b"},
+EN: cire: [{id:"bordeaux", nom:"Burgundy", c:"#8c2f39"}, {id:"or", nom:"Gold", c:"#b8892b"},
+FR: {id:"nuit", nom:"Nuit", c:"#2b2433"}, {id:"sapin", nom:"Vert sapin", c:"#2f5d4a"},
+EN: {id:"nuit", nom:"Night", c:"#2b2433"}, {id:"sapin", nom:"Forest green", c:"#2f5d4a"},
+FR: sceau: [{id:"initiale", nom:"Ton initiale"}, {id:"coeur", nom:"Un cœur"},
+EN: sceau: [{id:"initiale", nom:"Your initial"}, {id:"coeur", nom:"A heart"},
+FR: {id:"colombe", nom:"Une colombe"}, {id:"couronne", nom:"Une couronne"}],
+EN: {id:"colombe", nom:"A dove"}, {id:"couronne", nom:"A crown"}],
+FR: papier: [{id:"creme", nom:"Crème", c:"#f4ede0"}, {id:"coton", nom:"Coton ivoire", c:"#efe6d4"},
+EN: papier: [{id:"creme", nom:"Cream", c:"#f4ede0"}, {id:"coton", nom:"Ivory cotton", c:"#efe6d4"},
+FR: {id:"kraft", nom:"Kraft", c:"#d6bf98"}, {id:"nuit", nom:"Nuit", c:"#241e2e"}],
+EN: {id:"kraft", nom:"Kraft", c:"#d6bf98"}, {id:"nuit", nom:"Night", c:"#241e2e"}],
+FR: pluie: [{id:"aucune", nom:"Rien"}, {id:"petales", nom:"Des pétales"},
+EN: pluie: [{id:"aucune", nom:"Nothing"}, {id:"petales", nom:"Petals"},
+FR: {id:"confettis", nom:"Des confettis"}, {id:"etoiles", nom:"Des étoiles d'or"}]
+EN: {id:"confettis", nom:"Confetti"}, {id:"etoiles", nom:"Gold stars"}]
+FR: $("#h-offres").textContent = "(avec " + (n.length > 1 ? n.slice(0, -1).join(", ") + " ou " + n[n.length - 1] : n[0]) + ")";
+EN: $("#h-offres").textContent = "(with " + (n.length > 1 ? n.slice(0, -1).join(", ") + " or " + n[n.length - 1] : n[0]) + ")";
+FR: $("#habillage-note").textContent = "Ton habillage (cire, papier, phrase à gratter) demande "
+EN: $("#habillage-note").textContent = "Your finish (wax, paper, line to scratch) needs "
+FR: + vetue.nom + " (" + fmt(vetue.prix) + ") : avec l'offre gratuite, ta lettre partira sans lui.";
+EN: + vetue.nom + " (" + fmt(vetue.prix) + "): with the free offer, your letter will go without it.";
 FR: Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>
 EN: Mobile Money. You leave this page, then come back: <b>your letter is waiting, it's saved.</b>
 FR: Mobile Money ou carte, sur la page de notre encaisseur.

@@ -56,10 +56,15 @@ Deno.serve(async (req: Request) => {
 
   /* Le WhatsApp de l'ACHETEUR : c'est là qu'on lui rend SON lien. On ne
      demande jamais celui de la destinataire, on ne lui écrit pas. */
-  const whatsapp = String(d?.whatsapp ?? '').replace(/[^\d+]/g, '').slice(0, 20)
-  if (whatsapp.replace(/\D/g, '').length < 8) {
+  const tape = String(d?.whatsapp ?? '').replace(/[^\d+]/g, '').slice(0, 20)
+  if (tape.replace(/\D/g, '').length < 8) {
     return repondre({ ok: false, erreur: 'WhatsApp' }, 400)
   }
+  /* L'indicatif est choisi à côté du champ (2026-10-16) : on garde le numéro
+     au format international, pour joindre un acheteur de Lomé ou de Londres
+     comme un acheteur de Cotonou. Déjà international (+ ou 00) : tel quel. */
+  const indicatif = String(d?.indicatif ?? '').replace(/\D/g, '').slice(0, 4)
+  const whatsapp = /^(\+|00)/.test(tape) || !indicatif ? tape : `+${indicatif}${tape}`
 
   const db = createClient(
     Deno.env.get('SUPABASE_URL')!,
