@@ -4,6 +4,7 @@ moments du défilement, en 390 (téléphone émulé) et en 1440.
 
     python malettre/_voir_accueil.py            # tout
     python malettre/_voir_accueil.py scene      # la scène seule
+    python malettre/_voir_accueil.py en         # la page anglaise (_vues/accueil-en)
 
 Ce script ne juge rien : il fabrique ce qu'il faut REGARDER (standard maison
 §5). ⚠️ Émulation `is_mobile` en 390, sinon le viewport est ignoré.
@@ -17,9 +18,11 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from playwright.sync_api import sync_playwright
 
 ICI = pathlib.Path(__file__).resolve().parent
-OUT = ICI / "_vues" / "accueil"
+ARGS = sys.argv[1:]
+LANGUE = "en" if "en" in ARGS else "fr"
+OUT = ICI / "_vues" / ("accueil-en" if LANGUE == "en" else "accueil")
 OUT.mkdir(parents=True, exist_ok=True)
-SEULE = sys.argv[1] if len(sys.argv) > 1 else ""
+SEULE = next((a for a in ARGS if a != "en"), "")
 
 SECTIONS = ["haut", "exemples", "plume", "occasions", "seuil", "prix", "promesses", "fin"]
 MOMENTS = [0.06, 0.2, 0.36, 0.5, 0.6, 0.72, 0.84, 0.97]
@@ -34,7 +37,7 @@ def main():
     srv = ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Muet, directory=str(ICI)))
     srv.daemon_threads = True
     threading.Thread(target=srv.serve_forever, daemon=True).start()
-    base = "http://127.0.0.1:%d/index.html" % srv.server_address[1]
+    base = "http://127.0.0.1:%d/%sindex.html" % (srv.server_address[1], "en/" if LANGUE == "en" else "")
     with sync_playwright() as pw:
         nav = pw.chromium.launch()
         for larg, haut, mob in ((390, 844, True), (1440, 900, False)):

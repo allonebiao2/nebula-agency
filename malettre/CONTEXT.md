@@ -107,6 +107,19 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
   la réponse · 3 : la vitrine · 4 : le faire-part sur demande · 5 : la pub) est dans
   `~/.claude/plans/dynamic-conjuring-piglet.md`, et repris ici au fil des vagues.
 
+## Vague 0 · les deux langues (faite le 2026-10-16 au soir)
+
+- La lettre, la caisse, la plume, le constructeur, le paiement, le merci et
+  l'accueil existent en anglais (`/en/`). Le français reste la source ;
+  `i18n/en.txt` est le dictionnaire, `_traduire.py` refuse d'écrire s'il manque
+  une phrase. Détail technique : `README.md` § « Les deux langues ».
+- Six exemples anglais écrits par la vraie plume anglaise (`exemples.en.json`),
+  mêmes personnes inventées ; Ismaël écrit depuis Londres.
+- **Trouvé en essayant pour de vrai** : la plume anglaise titrait en français
+  (2 lettres sur 6) → système renforcé ET relecture qui refuse (`'langue'`).
+- Contrôles : caisse 269, lettre 212, anglais 51, accueil (FR + EN).
+- Image de partage anglaise `og-en.jpg`, 404 bilingue, `_dist` à 27 fichiers.
+
 ## Ce qui attend Mongazi
 
 - Le **feu vert** pour la mise en ligne, et d'abord **brancher la caisse**

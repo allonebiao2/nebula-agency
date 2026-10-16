@@ -32,21 +32,38 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from playwright.sync_api import sync_playwright
 
 ICI = pathlib.Path(__file__).resolve().parent
-INDEX = ICI / "index.html"
 SOURCE = ICI / "_accueil_src.html"
-EXEMPLES = ICI / "exemples.json"
 NEBULA_WA = "22996740732"  # le numéro de NEBULA, le même que `merci.html`
+
+# Les deux langues (2026-10-16) : les MÊMES contrôles, sur l'accueil français
+# puis sur l'accueil anglais. Ce qui change, c'est ce qu'on s'attend à lire.
+SOURCES = [SOURCE, ICI / "creer.html", ICI / "lettre.html", ICI / "_build_accueil.py"]
+LANGS = {
+    "fr": {"tag": "fr", "index": ICI / "index.html", "prefixe": "", "exemples": ICI / "exemples.json",
+           "dossier": "exemples", "inventes": "personnes inventées", "marque": '"occasion":"Exemple · ',
+           "og": "og.jpg", "offert": "Offert", "plume": "La plume", "des": "la plume dès ",
+           "seuil": '"titre":"C\'est l\'heure"', "occ": "Exemple",
+           "sources": SOURCES + [ICI / "exemples.json"]},
+    "en": {"tag": "en", "index": ICI / "en" / "index.html", "prefixe": "en/", "exemples": ICI / "exemples.en.json",
+           "dossier": "en/exemples", "inventes": "invented people", "marque": '"occasion":"Example · ',
+           "og": "og-en.jpg", "offert": "Free", "plume": "The Quill", "des": "the Quill from ",
+           "seuil": '"titre":"It\'s time"', "occ": "Example",
+           "sources": SOURCES + [ICI / "exemples.en.json", ICI / "i18n" / "en.txt", ICI / "en" / "creer.html"]},
+}
+L = LANGS["fr"]   # la langue en cours, posée par main()
 NB = " "
 
 verts, rouges = [], []
 
 
 def ok(nom):
+    nom = "%s · %s" % (L["tag"], nom)
     verts.append(nom)
     print("  [ok] %s" % nom)
 
 
 def ko(nom, detail=""):
+    nom = "%s · %s" % (L["tag"], nom)
     rouges.append((nom, detail))
     print("  [KO] %s %s" % (nom, ("-> " + str(detail)) if detail else ""))
 
@@ -63,7 +80,7 @@ class Muet(SimpleHTTPRequestHandler):
 
 def fmt(n):
     if n == 0:
-        return "Offert"
+        return L["offert"]
     return re.sub(r"\B(?=(\d{3})+(?!\d))", " ", str(n)) + " F"
 
 
@@ -74,9 +91,9 @@ def plat(t):
 # ── 1 · Le fichier lui-même ──────────────────────────────────────────────
 def statiques():
     print("\n· le livrable")
+    INDEX = L["index"]
     s = INDEX.read_text(encoding="utf-8")
-    sources = [SOURCE, EXEMPLES, ICI / "creer.html", ICI / "lettre.html", ICI / "_build_accueil.py"]
-    vieux = [p.name for p in sources if p.stat().st_mtime > INDEX.stat().st_mtime + 1]
+    vieux = [p.name for p in L["sources"] if p.stat().st_mtime > INDEX.stat().st_mtime + 1]
     dit("index.html est à jour de ses sources (sinon : python malettre/_build_accueil.py)", not vieux, vieux)
     dit("aucun marqueur du build oublié", "<!--__" not in s and "/*__DONNEES__*/" not in s)
     dit("aucun tiret cadratin dans la page", "—" not in s, s.count("—"))
@@ -84,24 +101,27 @@ def statiques():
     dit("aucun script chargé d'ailleurs", not re.search(r"<script[^>]+src=", s, re.I))
     avis = re.findall(r"AggregateRating|\"Review\"|ratingValue|reviewRating", s)
     dit("aucun balisage d'avis (des personnes inventées ne notent rien)", not avis, avis)
-    dit("la page dit que les exemples sont inventés", "personnes inventées" in s)
+    dit("la page dit que les exemples sont inventés", L["inventes"] in s)
     dit("le chargement porte « by NEBULA Agency »", "by NEBULA Agency" in s)
     dit("le retrait se demande au WhatsApp de NEBULA",
         bool(re.search(r'id="retrait" href="https://wa\.me/%s\?text=' % NEBULA_WA, s)))
     og = re.search(r'property="og:image" content="([^"]+)"', s)
-    dit("l'image de partage existe sur le disque (og.jpg)",
-        bool(og) and og.group(1).endswith("/og.jpg") and (ICI / "og.jpg").exists())
+    dit("l'image de partage existe sur le disque (%s)" % L["og"],
+        bool(og) and og.group(1).endswith("/" + L["og"]) and (ICI / L["og"]).exists())
     canon = re.search(r'rel="canonical" href="([^"]+)"', s)
-    dit("canonical, og:url et og:image sur la même adresse",
-        bool(canon and og) and og.group(1).startswith(canon.group(1)) and ('og:url" content="%s"' % canon.group(1)) in s)
+    # L'image vit à la racine du site (/og-en.jpg), la page anglaise sous /en/ :
+    # on exige le même DOMAINE, et un og:url égal à l'adresse canonique.
+    site = re.match(r"https://[^/]+/", canon.group(1)).group(0) if canon else "?"
+    dit("canonical, og:url et og:image sur le même site",
+        bool(canon and og) and og.group(1).startswith(site) and ('og:url" content="%s"' % canon.group(1)) in s)
 
-    doc = json.loads(EXEMPLES.read_text(encoding="utf-8"))
+    doc = json.loads(L["exemples"].read_text(encoding="utf-8"))
     ids = [x["id"] for x in doc["exemples"]]
     for x in doc["exemples"]:
-        f = ICI / "exemples" / ("%s.html" % x["id"])
+        f = ICI / L["dossier"] / ("%s.html" % x["id"])
         t = f.read_text(encoding="utf-8") if f.exists() else ""
-        dit("exemple %s : une vraie lettre, marquée « Exemple · »" % x["id"],
-            '"occasion":"Exemple · ' in t and "noindex" in t)
+        dit("exemple %s : une vraie lettre, marquée « %s · »" % (x["id"], L["occ"]),
+            L["marque"] in t and "noindex" in t)
         dit("exemple %s : aucun tiret cadratin" % x["id"],
             "—" not in json.dumps(x, ensure_ascii=False))
     dit("une carte par exemple, ni plus ni moins",
@@ -223,7 +243,8 @@ def navigateur(base, s):
         # Le catalogue tel que le NAVIGATEUR le lit dans creer.html.
         ctx = nav.new_context()
         pg = ctx.new_page()
-        pg.goto(base + "creer.html")
+        page = base + L["prefixe"]
+        pg.goto(page + "creer.html")
         cat = pg.evaluate("() => ({paliers: PALIERS.map(p => ({nom: p.nom, prix: p.prix})), plume: PLUME.prix,"
                           " occasions: OCCASIONS.map(o => o.id)})")
         ctx.close()
@@ -238,7 +259,12 @@ def navigateur(base, s):
                 if (!e.hadRecentInput) window.__cls += e.value; }).observe({type: 'layout-shift', buffered: true});""")
             poids = []
             pg.on("response", lambda r: poids.append(r))
-            pg.goto(base, wait_until="load")
+            pg.goto(page, wait_until="domcontentloaded")
+            # ⚠️ Lu TOUT DE SUITE : le chargement vit 3 s, et attendre « load »
+            # puis peser les réponses (polices comprises) en prenait parfois plus.
+            # La sonde lisait alors « none » sur une page juste.
+            vu = pg.evaluate("() => getComputedStyle(document.getElementById('chargement')).display")
+            pg.wait_for_load_state("load")
             pg.wait_for_timeout(1200)
             octets = 0
             for r in poids:
@@ -250,7 +276,6 @@ def navigateur(base, s):
                 "%d Ko" % (octets // 1024))
             iw = pg.evaluate("() => Math.max(innerWidth, document.documentElement.scrollWidth)")
             dit("%d : la page tient dans l'écran dès l'ouverture (aucun dézoom)" % larg, iw <= larg, iw)
-            vu = pg.evaluate("() => getComputedStyle(document.getElementById('chargement')).display")
             dit("%d : le chargement couvre la page à l'ouverture" % larg, vu != "none", vu)
             try:
                 pg.wait_for_function("document.getElementById('chargement').hidden", timeout=4800)
@@ -294,6 +319,10 @@ def navigateur(base, s):
                 .map(e => { const r = e.getBoundingClientRect(); return [e.className || e.id || e.tagName, Math.round(r.width), Math.round(r.height)]; })
                 .filter(x => x[2] < 44 || x[1] < 44)""")
             dit("%d : aucune cible tactile sous 44 px" % larg, not petites, petites[:5])
+            # ⚠️ « Write my letter » passait sur deux lignes au téléphone quand le
+            # sélecteur de langue est arrivé dans la barre (vu sur capture).
+            hb = pg.evaluate("() => document.querySelector('.barre .pri').getBoundingClientRect().height")
+            dit("%d : le bouton de la barre tient sur une ligne" % larg, hb <= 48, round(hb))
 
             # Les éléments fixes ne sont sous aucun parent transformé.
             tr = pg.evaluate("""() => ['chargement', 'modale', 'plume-s'].map(id => { let e = document.getElementById(id).parentElement, n = 0;
@@ -302,11 +331,11 @@ def navigateur(base, s):
 
             # Le prix : chaque timbre contre le catalogue du constructeur.
             timbres = pg.evaluate("() => [...document.querySelectorAll('.timbre')].map(t => [t.querySelector('.nm').textContent, t.querySelector('.vl').textContent])")
-            attendu = [[p["nom"], fmt(p["prix"])] for p in cat["paliers"]] + [["La plume", "+" + fmt(cat["plume"])]]
+            attendu = [[p["nom"], fmt(p["prix"])] for p in cat["paliers"]] + [[L["plume"], "+" + fmt(cat["plume"])]]
             dit("%d : les timbres disent les prix du constructeur" % larg,
                 [[plat(a), plat(b)] for a, b in timbres] == attendu, (timbres, attendu))
             dit("%d : le prix de la plume, partout le même" % larg,
-                plat(pg.inner_text(".pl-prix .px")) == fmt(cat["plume"]) and ("la plume dès " + fmt(cat["plume"])) in plat(pg.inner_text(".petit")))
+                plat(pg.inner_text(".pl-prix .px")) == fmt(cat["plume"]) and (L["des"] + fmt(cat["plume"])) in plat(pg.inner_text(".petit")))
             occ = pg.evaluate("() => [...document.querySelectorAll('.case')].map(a => new URL(a.href).searchParams.get('occasion'))")
             dit("%d : chaque case du casier mène à une occasion qui existe (%d)" % (larg, len(occ)),
                 len(occ) == len(cat["occasions"]) and set(occ) == set(cat["occasions"]))
@@ -323,12 +352,12 @@ def navigateur(base, s):
                     occ_t = fr.locator("#l-occasion").text_content(timeout=4000) or ""
                 except Exception:
                     occ_t = ""
-                if src != "exemples/%s.html" % cid or not occ_t.startswith("Exemple"):
+                if src != "exemples/%s.html" % cid or not occ_t.startswith(L["occ"]):
                     mauvais.append((cid, src, occ_t))
                 pg.click("#modale-fermer")
                 if not pg.evaluate("() => document.getElementById('modale').hidden"):
                     mauvais.append((cid, "ne se ferme pas"))
-            dit("%d : chaque exemple ouvre sa vraie lettre, marquée « Exemple »" % larg, ids and not mauvais, mauvais)
+            dit("%d : chaque exemple ouvre sa vraie lettre, marquée « %s »" % (larg, L["occ"]), ids and not mauvais, mauvais)
             pg.click('.carte[data-id="%s"]' % ids[0])
             pg.keyboard.press("Escape")
             dit("%d : Échap ferme la modale et rend le focus à la carte" % larg,
@@ -340,7 +369,7 @@ def navigateur(base, s):
                 pg.wait_for_function("(document.getElementById('seuil-cadre').srcdoc || '').length > 5000", timeout=6000)
                 doc = pg.get_attribute("#seuil-cadre", "srcdoc")
                 dit("%d : le seuil joue une vraie lettre (gabarit rempli)" % larg,
-                    "/*MALETTRE_DONNEES*/" not in doc and '"titre":"C\'est l\'heure"' in doc)
+                    "/*MALETTRE_DONNEES*/" not in doc and L["seuil"] in doc)
             except Exception:
                 ko("%d : le seuil joue une vraie lettre (gabarit rempli)" % larg, "srcdoc jamais posé")
 
@@ -361,7 +390,7 @@ def navigateur(base, s):
         print("\n· mouvement réduit, sans JavaScript")
         ctx = nav.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, reduced_motion="reduce")
         pg = ctx.new_page()
-        pg.goto(base, wait_until="load")
+        pg.goto(page, wait_until="load")
         try:
             pg.wait_for_function("document.getElementById('chargement').hidden", timeout=1500)
             ok("mouvement réduit : le chargement part en moins d'1,5 s")
@@ -375,16 +404,20 @@ def navigateur(base, s):
 
         ctx = nav.new_context(viewport={"width": 390, "height": 844}, java_script_enabled=False)
         pg = ctx.new_page()
-        pg.goto(base, wait_until="load")
+        pg.goto(page, wait_until="load")
         dit("sans JavaScript : pas de chargement qui couvrirait tout", pg.locator("#chargement").is_hidden())
         dit("sans JavaScript : les sections sont lisibles",
             pg.locator("#prix .h2").is_visible() and pg.locator(".timbre").first.is_visible())
         ctx.close()
 
         # La mesure : images par seconde dans la scène, processeur ralenti ×4.
+        # Une seule fois : la scène est la même dans les deux langues.
+        if L["tag"] != "fr":
+            nav.close()
+            return
         ctx = nav.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
         pg = ctx.new_page()
-        pg.goto(base, wait_until="load")
+        pg.goto(page, wait_until="load")
         pg.wait_for_function("document.getElementById('chargement').hidden", timeout=6000)
         cdp = ctx.new_cdp_session(pg)
         cdp.send("Emulation.setCPUThrottlingRate", {"rate": 4})
@@ -405,12 +438,16 @@ def navigateur(base, s):
 
 
 def main():
-    s = statiques()
+    global L
     srv = ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Muet, directory=str(ICI)))
     srv.daemon_threads = True
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     try:
-        navigateur("http://127.0.0.1:%d/" % srv.server_address[1], s)
+        for langue in ("fr", "en"):
+            L = LANGS[langue]
+            print("\n════════ %s ════════" % langue)
+            s = statiques()
+            navigateur("http://127.0.0.1:%d/" % srv.server_address[1], s)
     finally:
         srv.shutdown()
     print("\n%d contrôles verts, %d en échec" % (len(verts), len(rouges)))

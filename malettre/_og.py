@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """MA LETTRE À… · l'image de partage (`og.jpg`, 1200 × 630).
 
-    python malettre/_og.py
+    python malettre/_og.py            # og.jpg (français) et og-en.jpg (anglais)
 
 Sans `og:image` en JPEG, un lien collé dans WhatsApp s'affiche en carte grise
 (leçon du parc). Rendue par Playwright, comme les logos de Mon Bénin : les
@@ -13,9 +13,14 @@ import pathlib
 from playwright.sync_api import sync_playwright
 
 ICI = pathlib.Path(__file__).resolve().parent
-SORTIE = ICI / "og.jpg"
+TEXTES = {
+    "og.jpg": {"lang": "fr", "sur": "Lettres digitales scellées", "ma": "Ma lettre à",
+               "chapo": "Une lettre scellée qui s'ouvre à l'heure que tu choisis."},
+    "og-en.jpg": {"lang": "en", "sur": "Sealed digital letters", "ma": "My letter to",
+                  "chapo": "A sealed letter that opens at the time you choose."},
+}
 
-PAGE = """<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+PAGE = """<!DOCTYPE html><html lang="__LANG__"><head><meta charset="utf-8">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Pinyon+Script&family=Schibsted+Grotesk:wght@500;700&display=block">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -42,9 +47,9 @@ h1{font-family:"Libre Caslon Display",Georgia,serif;font-weight:400;font-size:11
   background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent)}
 </style></head><body>
 <div class="g">
-  <p class="sur">Lettres digitales scellées</p>
-  <h1>Ma lettre à<span class="nom">Afi</span></h1>
-  <p class="chapo">Une lettre scellée qui s'ouvre à l'heure que tu choisis.</p>
+  <p class="sur">__SUR__</p>
+  <h1>__MA__<span class="nom">Afi</span></h1>
+  <p class="chapo">__CHAPO__</p>
 </div>
 <div class="scene"><div class="ombre"></div><div class="env"><div class="face"><div class="rabat"></div><div class="cire">K</div></div></div></div>
 <p class="by">by NEBULA Agency</p>
@@ -55,12 +60,26 @@ def main():
     with sync_playwright() as pw:
         nav = pw.chromium.launch()
         pg = nav.new_page(viewport={"width": 1200, "height": 630})
-        pg.set_content(PAGE, wait_until="networkidle")
-        pg.evaluate("document.fonts.ready")
-        pg.wait_for_timeout(300)
-        pg.screenshot(path=str(SORTIE), type="jpeg", quality=88)
+        for nom, t in TEXTES.items():
+            page = (PAGE.replace("__LANG__", t["lang"]).replace("__SUR__", t["sur"])
+                    .replace("__MA__", t["ma"]).replace("__CHAPO__", t["chapo"]))
+            pg.set_content(page, wait_until="networkidle")
+            # ⚠️ `document.fonts.ready` répondait AVANT que les polices soient
+            # demandées : la première image (og.jpg) est sortie SANS UN MOT,
+            # la seconde était juste (polices en cache). On charge chaque
+            # police par son nom, et on refuse d'écrire si l'une manque.
+            ok = pg.evaluate("""async () => {
+                const f = ['118px "Libre Caslon Display"', '150px "Pinyon Script"',
+                           '700 19px "Schibsted Grotesk"', '500 27px "Schibsted Grotesk"'];
+                await Promise.all(f.map(x => document.fonts.load(x)));
+                await document.fonts.ready;
+                return f.every(x => document.fonts.check(x)); }""")
+            if not ok:
+                raise SystemExit("⛔ %s : une police n'est pas arrivée (réseau ?), rien n'est écrit" % nom)
+            pg.wait_for_timeout(300)
+            pg.screenshot(path=str(ICI / nom), type="jpeg", quality=88)
+            print("%s : %d Ko" % (nom, (ICI / nom).stat().st_size // 1024))
         nav.close()
-    print("og.jpg : %d Ko" % (SORTIE.stat().st_size // 1024))
 
 
 if __name__ == "__main__":

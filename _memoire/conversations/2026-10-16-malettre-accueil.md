@@ -83,6 +83,36 @@ ligne attend le feu vert de Mongazi. `_dist.py` est prêt.
 La vidéo publicitaire (Mongazi : « une fois fini on va passer à la vidéo
 publicitaire, tu me poseras des questions »).
 
+## 7 · Le soir : le dossier `_partage/ma lettre`, les décisions, la vague 0
+
+Mongazi a déposé 11 vidéos, 6 images et un modèle 3D « pour tout ». Regardés un
+par un : surtout des **faire-part de mariage concurrents** (filigranes, vrais
+couples) et 3 clips IA d'auteur inconnu → **références uniquement** (décision
+de Mongazi). Douze questions posées, toutes tranchées (voir `malettre/CONTEXT.md`
+§ « Décisions du 2026-10-16 au soir ») : voix sur ElevenLabs par Mongazi,
+ouverture spectaculaire pour tous et habillage payant, son discret, « Lui
+répondre » si l'acheteur l'accepte, aucun avis d'ouverture, **faire-part sur
+demande tout de suite à 25 000 F** (« des gens peuvent se marier à tout
+moment »), adresse `malettre.nebula-agency.online`, pub sur quatre canaux,
+**français ET anglais partout**, vendre dès que possible.
+
+**Vague 0 faite : les deux langues.** Lettre bilingue (champ `langue`),
+serveur (liste fermée, noms anglais des offres, retour `/en/merci.html`, pages
+d'une lettre bilingues), plume anglaise (son système, pas d'élision),
+constructeur, paiement, merci et accueil anglais fabriqués depuis un
+dictionnaire sans échappement, six exemples anglais écrits par la vraie plume.
+
+Trouvé en route :
+- ⛔ la plume anglaise **titrait en français** (2 sur 6) → système renforcé et
+  relecture qui refuse ;
+- ⛔ `og.jpg` est sortie **sans un mot** (`document.fonts.ready` trop tôt) ;
+- ⛔ au téléphone, le sélecteur de langue faisait passer « Write my letter »
+  sur deux lignes → barre resserrée, contrôle ajouté ;
+- ⚠️ trois sondes à corriger : `innerText` et le `text-transform`, une variable
+  `rep` déjà déclarée, et dans mes commandes shell `\\` ramené à `\` (un `\b`
+  devenu retour arrière) : les échappements passent par un fichier ou l'outil
+  d'édition.
+
 ## Fichiers touchés
 
 - `malettre/_accueil_src.html`, `index.html`, `exemples/*.html`, `exemples.json`,

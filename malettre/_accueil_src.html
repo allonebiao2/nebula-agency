@@ -6,8 +6,13 @@
 <title>Ma lettre à… · une lettre scellée qui s'ouvre à l'heure dite</title>
 <meta name="description" content="Écris une lettre digitale, scelle-la, envoie le lien. Elle reste fermée jusqu'à l'heure que tu choisis. Tu l'écris, ou la plume l'écrit avec toi. Gratuite pour commencer.">
 <link rel="canonical" href="https://malettre.nebula-agency.online/">
+<!-- Les deux langues se désignent l'une l'autre (identiques dans les deux pages). -->
+<link rel="alternate" hreflang="fr" href="https://malettre.nebula-agency.online/">
+<link rel="alternate" hreflang="en" href="https://malettre.nebula-agency.online/en/">
+<link rel="alternate" hreflang="x-default" href="https://malettre.nebula-agency.online/">
 <meta name="theme-color" content="#141019">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
 <meta property="og:title" content="Ma lettre à…">
 <meta property="og:description" content="Une lettre scellée qui s'ouvre à l'heure que tu choisis. Tu l'écris, ou la plume l'écrit avec toi.">
 <meta property="og:image" content="https://malettre.nebula-agency.online/og.jpg">
@@ -115,6 +120,22 @@ button{background:none;border:0;cursor:pointer}
 .barre nav a{text-decoration:none;font-size:14.5px;color:var(--gris-nuit);padding:12px 12px;min-height:44px;display:inline-flex;align-items:center;border-radius:999px}
 .barre nav a:hover{color:var(--papier)}
 .barre .pri{min-height:44px;padding:10px 18px;font-size:14.5px}
+.barre .droite{display:flex;align-items:center;gap:6px}
+.barre .pri{white-space:nowrap}
+/* ⚠️ Au téléphone, la marque, le sélecteur de langue et le bouton ne tenaient
+   plus sur une ligne : « Write my letter » passait sur deux (vu en 390). La
+   barre se resserre, le bouton ne se coupe jamais. */
+@media(max-width:480px){
+  .barre{gap:8px;padding:0 12px}
+  .marque{font-size:19px;gap:8px}
+  .marque .cachet-mini{width:20px;height:20px}
+  .barre .pri{padding:10px 14px;font-size:13.5px}
+  .barre .pri .sceau{display:none}
+}
+/* Le sélecteur de langue : l'autre langue, nommée dans SA langue. */
+.langue{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border-radius:999px;
+  font-size:12.5px;font-weight:700;letter-spacing:.12em;color:var(--gris-nuit);text-decoration:none}
+.langue:hover{color:var(--papier)}
 @media(max-width:860px){.barre nav{display:none}}
 .progres{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--cire-clair);transform-origin:0 50%;transform:scaleX(0)}
 
@@ -517,7 +538,10 @@ button{background:none;border:0;cursor:pointer}
     <a href="#plume">La plume</a>
     <a href="#prix">Le prix</a>
   </nav>
-  <a class="pri" href="creer.html"><span class="sceau" aria-hidden="true"></span>Écrire ma lettre</a>
+  <div class="droite">
+    <a class="langue" href="en/" hreflang="en" lang="en" title="Read this page in English">EN</a>
+    <a class="pri" href="creer.html"><span class="sceau" aria-hidden="true"></span>Écrire ma lettre</a>
+  </div>
   <span class="progres" aria-hidden="true"></span>
 </header>
 

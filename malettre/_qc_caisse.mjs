@@ -620,6 +620,19 @@ const lu = P.lireReponse(repModele({ titre: 'For you', lettre: ['Tell me about y
 dit(lu.ok && lu.lettre[0] === 'Tell me about your day.' && lu.lettre[1] === 'Me and you, always.',
     'la relecture d’une lettre anglaise ne touche pas « me and you »')
 dit(lu.ok && lu.formule === 'With love,', 'la formule anglaise reçoit sa virgule')
+/* Le garde-fou de la langue (mesuré le 2026-10-16 : deux titres en français
+   sur six lettres anglaises). Témoins dans les deux sens. */
+const lireEn = (o) => P.lireReponse(repModele({ formule: 'With love', refus: '', lettre: ['A true word.'], titre: 'For you', ...o }), 'en')
+dit(lireEn({ titre: 'Merci pour chaque matin' }).refus === 'langue', 'un titre français dans une lettre anglaise est refusé')
+dit(lireEn({ formule: 'Avec tout mon amour' }).refus === 'langue', 'une formule française dans une lettre anglaise est refusée')
+dit(lireEn({ lettre: ['Je pense à toi, pour toujours, avec les étoiles et des fleurs.'] }).refus === 'langue',
+    'un corps en français dans une lettre anglaise est refusé')
+dit(lireEn({ titre: 'Happy birthday, Ma' }).ok && lireEn({ formule: 'Bon voyage, my love' }).ok,
+    'témoin : « Ma » et « bon voyage » restent permis en anglais')
+dit(lireEn({ lettre: ['She kept the best attiéké for me, and said merci with a smile.'] }).ok,
+    'témoin : un mot français cité dans le corps reste permis')
+dit(P.lireReponse(repModele({ titre: 'Merci pour tout', lettre: ['Un mot.'], formule: 'Avec amour', refus: '' }), 'fr').ok,
+    'témoin : une lettre française n’est jamais refusée pour son français')
 dit(P.SYSTEME_EN.includes('Always write the letter in English') && !/[\u2014\u2013]/.test(P.SYSTEME_EN),
     'le système anglais demande l’anglais, sans un tiret long')
 for (const k of ['deuil', 'nuisible', 'hors-sujet']) {

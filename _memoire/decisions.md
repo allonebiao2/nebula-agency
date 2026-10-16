@@ -914,3 +914,19 @@ MD5, 53 plats balisés, fichier absent → 404).
   Mongazi. Le retrait d'une lettre se demande au WhatsApp de NEBULA (`wa.me/22996740732`, le numéro de
   `merci.html`), lien posé au pied de la page d'accueil. Le Coffret ne promet plus de livraison WhatsApp.
   Rien n'est mis en ligne avant le branchement de la caisse et le feu vert de Mongazi.
+
+## 2026-10-16 (soir) · MA LETTRE À… : le dossier de références, les deux langues, le faire-part
+
+- **Décision** (Mongazi, douze réponses) : le dossier `_partage/ma lettre` sert de **références
+  uniquement** (faire-part concurrents, vrais couples, clips IA d'auteur inconnu) · la voix off est
+  enregistrée par Mongazi sur ElevenLabs · l'ouverture spectaculaire (3D, vibration, son discret) est
+  pour tous, l'habillage (cire, sceau, papier, pluie, phrase à gratter) pour les offres payantes, **sans
+  changer les prix** · « Lui répondre sur WhatsApp » si l'acheteur coche la case · **aucun avis
+  d'ouverture** · **faire-part de mariage sur demande tout de suite, 25 000 F**, réponses des invités
+  par WhatsApp aux mariés, libre-service ensuite · pub sur TikTok, Facebook/Instagram, statuts
+  WhatsApp (2 × 15 s), YouTube Shorts · **français ET anglais sur tout le parcours** · vendre dès que
+  possible.
+- **Contexte** : « des gens peuvent se marier à tout moment et venir demander nos services » ;
+  WaveSpeed à 0,04 $ et Higgsfield à 0 crédit, donc rien n'est généré.
+- **Conséquences** : six vagues (0 les deux langues, faite le soir même · 1 le rendu · 2 l'habillage ·
+  3 la vitrine · 4 le faire-part · 5 la pub). Détail : `malettre/CONTEXT.md`.

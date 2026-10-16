@@ -333,6 +333,8 @@ FR:   "occasion": "Dis d'abord quelle occasion.",
 EN:   "occasion": "First say which occasion.",
 FR:   "pas-branchee": "La plume n'est pas encore ouverte. Écris ta lettre toi-même, ou reviens bientôt : ta fiche est gardée."
 EN:   "pas-branchee": "The Quill isn't open yet. Write your letter yourself, or come back soon: your answers are saved."
+FR:   "langue": "La plume s'est trompée de langue. Réessaie."
+EN:   "langue": "The Quill slipped into French. Try again."
 FR: return MOTS[j.refus] || "La plume a buté sur cette version. Réessaie.";
 EN: return MOTS[j.refus] || "The Quill stumbled on this version. Try again.";
 FR: b.textContent = "La plume écrit…";
@@ -473,3 +475,182 @@ FR: if (!jeton) { $("#etat").textContent = "En attente"; return; }
 EN: if (!jeton) { $("#etat").textContent = "Waiting"; return; }
 FR: $("#etat").textContent = "Toujours en attente";
 EN: $("#etat").textContent = "Still waiting";
+
+== _accueil_src.html
+# La page d'accueil. Le build (`_build_accueil.py`) traduit la SOURCE avant de
+# la remplir : les prix, les occasions et les exemples viennent ensuite de
+# `en/creer.html` et de `exemples.en.json`.
+FR: <html lang="fr">
+EN: <html lang="en">
+FR: <title>Ma lettre à… · une lettre scellée qui s'ouvre à l'heure dite</title>
+EN: <title>Ma lettre à… · a sealed letter that opens at the time you choose</title>
+FR: content="Écris une lettre digitale, scelle-la, envoie le lien. Elle reste fermée jusqu'à l'heure que tu choisis. Tu l'écris, ou la plume l'écrit avec toi. Gratuite pour commencer."
+EN: content="Write a digital letter, seal it, send the link. It stays closed until the time you choose. You write it, or the Quill writes it with you. Free to start."
+FR: <link rel="canonical" href="https://malettre.nebula-agency.online/">
+EN: <link rel="canonical" href="https://malettre.nebula-agency.online/en/">
+FR: <meta property="og:locale" content="fr_FR">
+EN: <meta property="og:locale" content="en_GB">
+FR: <meta property="og:description" content="Une lettre scellée qui s'ouvre à l'heure que tu choisis. Tu l'écris, ou la plume l'écrit avec toi.">
+EN: <meta property="og:description" content="A sealed letter that opens at the time you choose. You write it, or the Quill writes it with you.">
+FR: <meta property="og:image" content="https://malettre.nebula-agency.online/og.jpg">
+EN: <meta property="og:image" content="https://malettre.nebula-agency.online/og-en.jpg">
+FR: <meta property="og:url" content="https://malettre.nebula-agency.online/">
+EN: <meta property="og:url" content="https://malettre.nebula-agency.online/en/">
+FR: <link rel="icon" href="favicon.svg" type="image/svg+xml">
+EN: <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+# ── le chargement ──
+FR: <div class="ch-mot"><b>Ma lettre à</b><i>toi</i></div>
+EN: <div class="ch-mot"><b>My letter to</b><i>you</i></div>
+# ── la barre ──
+FR: <a href="#comment">Comment ça marche</a>
+EN: <a href="#comment">How it works</a>
+FR: <a href="#exemples">Exemples</a>
+EN: <a href="#exemples">Examples</a>
+FR: <a href="#plume">La plume</a>
+EN: <a href="#plume">The Quill</a>
+FR: <a href="#prix">Le prix</a>
+EN: <a href="#prix">Pricing</a>
+FR: <a class="langue" href="en/" hreflang="en" lang="en" title="Read this page in English">EN</a>
+EN: <a class="langue" href="../" hreflang="fr" lang="fr" title="Lire cette page en français">FR</a>
+FR: </span>Écrire ma lettre<
+EN: </span>Write my letter<
+# ── le héros ──
+FR: <p class="sur">Lettres digitales scellées</p>
+EN: <p class="sur">Sealed digital letters</p>
+FR: aria-label="Ma lettre à… : une lettre scellée qui s'ouvre à l'heure que tu choisis"
+EN: aria-label="Ma lettre à…: a sealed letter that opens at the time you choose"
+FR: <span class="ma">Ma lettre à</span>
+EN: <span class="ma">My letter to</span>
+FR: Une lettre qui reste scellée jusqu'à l'heure que tu choisis. Tu l'écris, ou la plume l'écrit avec toi. Tu envoies le lien. Le jour venu, on brise le cachet, et on lit.
+EN: A letter that stays sealed until the time you choose. You write it, or the Quill writes it with you. You send the link. When the day comes, they break the seal and read.
+FR: À qui écris-tu ?</label>
+EN: Who are you writing to?</label>
+FR: <span aria-hidden="true">Ma lettre à</span>
+EN: <span aria-hidden="true">My letter to</span>
+FR: placeholder="son prénom"
+EN: placeholder="their first name"
+FR: Gratuite pour commencer · <b>la plume dès <!--__PLUME_PRIX__--></b> · Bénin, Togo, Côte d'Ivoire et partout où l'on a un téléphone
+EN: Free to start · <b>the Quill from <!--__PLUME_PRIX__--></b> · Benin, Togo, Côte d'Ivoire and anywhere there's a phone
+FR: <div class="tampon-h">COTONOU<br>MINUIT<br>MA LETTRE</div>
+EN: <div class="tampon-h">COTONOU<br>MIDNIGHT<br>MA LETTRE</div>
+FR: <div class="a1">Ma lettre à</div>
+EN: <div class="a1">My letter to</div>
+# ── la scène ──
+FR: aria-label="Comment ça marche"
+EN: aria-label="How it works"
+FR: <h3>Tu écris.</h3><p>Avec tes mots, ou ceux que la plume te prête. Tu relis, tu corriges, tu signes.</p>
+EN: <h3>You write.</h3><p>In your own words, or the ones the Quill lends you. You reread, you edit, you sign.</p>
+FR: <h3>On la plie.</h3><p>En trois, comme une vraie lettre.</p>
+EN: <h3>We fold it.</h3><p>In three, like a real letter.</p>
+FR: <h3>On la glisse.</h3><p>Dans une enveloppe à son nom.</p>
+EN: <h3>We slip it in.</h3><p>Into an envelope with their name on it.</p>
+FR: <h3>On la scelle.</h3><p>Un cachet de cire, à ton initiale.</p>
+EN: <h3>We seal it.</h3><p>A wax seal, with your initial.</p>
+FR: <h3>Tu envoies le lien.</h3><p>Sur WhatsApp, quand tu veux : trois jours avant ou la veille. C'est toi qui l'envoies, jamais nous.</p>
+EN: <h3>You send the link.</h3><p>On WhatsApp, whenever you like: three days before, or the night before. You send it, never us.</p>
+FR: <h3>Elle attend l'heure.</h3><p>Avant l'heure, le cachet dort. À l'heure choisie, la cire s'allume. L'heure de son téléphone, où qu'il soit.</p>
+EN: <h3>It waits for the hour.</h3><p>Before the time, the seal sleeps. At the chosen time, the wax lights up. By the clock on their phone, wherever they are.</p>
+FR: <h3>On brise le cachet.</h3><p>La lettre s'ouvre, se déplie, et se lit.</p>
+EN: <h3>They break the seal.</h3><p>The letter opens, unfolds, and is read.</p>
+FR: <small id="heure-mot">avant l'heure</small>
+EN: <small id="heure-mot">before the hour</small>
+FR: heureMot.textContent = "l'heure dite";
+EN: heureMot.textContent = "the hour has come";
+FR: heureMot.textContent = "avant l'heure";
+EN: heureMot.textContent = "before the hour";
+# ── les exemples ──
+FR: <p class="sur" data-rv>Exemples · personnes inventées</p>
+EN: <p class="sur" data-rv>Examples · invented people</p>
+FR: <h2 class="h2" data-rv>Six lettres,<br><em>six vies.</em></h2>
+EN: <h2 class="h2" data-rv>Six letters,<br><em>six lives.</em></h2>
+FR: Écrites par la plume, à partir d'une fiche. Les personnes sont inventées ; les situations, elles, sont de tous les jours.
+EN: Written by the Quill, from a short form. The people are invented; the situations are everyday ones.
+FR: Touche une enveloppe pour l'ouvrir. <b>Celle d'Afi s'ouvre le 14 février à minuit</b> : essaie, elle attendra.
+EN: Tap an envelope to open it. <b>Afi's opens on 14 February at midnight</b>: try it, it will wait.
+# ── la plume ──
+FR: <p class="sur" data-rv>La plume</p>
+EN: <p class="sur" data-rv>The Quill</p>
+FR: <h2 class="h2" data-rv>Tu coches.<br><em>Elle écrit.</em></h2>
+EN: <h2 class="h2" data-rv>You tick.<br><em>It writes.</em></h2>
+FR: Quelques questions, un souvenir, tes consignes. La plume écrit une première version ; tu relis, tu changes ce que tu veux. Ce sont tes mots : elle te les prête.
+EN: A few questions, a memory, your instructions. The Quill writes a first version; you reread and change what you like. These are your words: it only lends them to you.
+FR: <span>de plus, seulement si tu l'envoies. Essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.</span>
+EN: <span>extra, only if you send it. Trying costs nothing, and it never makes up a memory for you.</span>
+# ── les occasions ──
+FR: <p class="sur" data-rv>Les occasions</p>
+EN: <p class="sur" data-rv>The occasions</p>
+FR: <h2 class="h2" data-rv>Un casier pour<br><em>chaque grand jour.</em></h2>
+EN: <h2 class="h2" data-rv>A pigeonhole for<br><em>every big day.</em></h2>
+FR: L'amour, la famille, les fêtes, les réussites. Et même la rupture, avec classe.
+EN: Love, family, holidays, achievements. And even a breakup, with class.
+# ── le seuil ──
+FR: <p class="sur" data-rv>Ce qu'elle vit</p>
+EN: <p class="sur" data-rv>What they experience</p>
+FR: <h2 class="h2" data-rv>L'heure dite,<br><em>en vrai.</em></h2>
+EN: <h2 class="h2" data-rv>The chosen hour,<br><em>for real.</em></h2>
+FR: Voici une vraie lettre. Elle s'ouvrira dans quelques secondes : reste là et regarde le cachet. Avant l'heure, il dort. À l'heure, la cire s'allume, et le bouton paraît.
+EN: Here is a real letter. It will open in a few seconds: stay here and watch the seal. Before the time, it sleeps. At the time, the wax lights up and the button appears.
+FR: >La refermer et recommencer<
+EN: >Close it and start again<
+FR: title="Une vraie lettre qui attend son heure"
+EN: title="A real letter waiting for its hour"
+# ── le prix ──
+FR: <p class="sur" data-rv>Le prix</p>
+EN: <p class="sur" data-rv>Pricing</p>
+FR: <h2 class="h2" data-rv>Ce que<br><em>ça coûte.</em></h2>
+EN: <h2 class="h2" data-rv>What it<br><em>costs.</em></h2>
+FR: La lettre est la même à chaque offre. Ce qui change : combien de temps elle reste en ligne, combien de photos elle garde, et si notre signature figure en bas.
+EN: The letter is the same with every offer. What changes: how long it stays online, how many photos it keeps, and whether our signature appears at the bottom.
+FR: On paie par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur. Rien à recopier, aucun code à nous donner.
+EN: You pay by Mobile Money or card, on our payment provider's secure page. Nothing to copy, no code to give us.
+# ── la confiance ──
+FR: <p class="sur" data-rv>Ce qu'on promet</p>
+EN: <p class="sur" data-rv>What we promise</p>
+FR: <h2 class="h2" data-rv>Mot pour mot,<br><em>rien de plus.</em></h2>
+EN: <h2 class="h2" data-rv>Word for word,<br><em>nothing more.</em></h2>
+FR: <b>Le cachet tient jusqu'à l'heure.</b><p>Il ne se brise pas avant l'heure choisie, et c'est l'heure du téléphone de qui la reçoit : minuit à Abidjan n'est pas minuit à Cotonou.</p>
+EN: <b>The seal holds until the hour.</b><p>It does not break before the chosen time, and that is the time on the receiver's phone: midnight in Abidjan is not midnight in Cotonou.</p>
+FR: <b>Une adresse que personne ne devine.</b><p>Tirée au hasard, jamais indexée, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée.</p>
+EN: <b>An address nobody can guess.</b><p>Drawn at random, never indexed, and it expires: seven days for a free letter, a year for a paid one.</p>
+FR: <b>On n'écrit jamais à la personne.</b><p>C'est toi qui lui donnes le lien, quand tu veux. Aucune machine ne lui écrit à ta place.</p>
+EN: <b>We never write to the person.</b><p>You give them the link, whenever you like. No machine writes to them in your place.</p>
+FR: <b>Retirée sous 24 heures.</b><p>Si la personne qui la reçoit le demande, la lettre est retirée, sans discussion.</p>
+EN: <b>Removed within 24 hours.</b><p>If the person who receives it asks, the letter is removed, no questions asked.</p>
+FR: Une lettre est un cadeau emballé, pas un coffre-fort. On ne te promet pas le secret : on te promet l'heure.
+EN: A letter is a wrapped gift, not a safe. We don't promise you secrecy: we promise you the hour.
+# ── la fin ──
+FR: <p class="sur" data-rv>À toi</p>
+EN: <p class="sur" data-rv>Your turn</p>
+FR: <h2 class="h2" data-rv>Il ne manque<br><em>qu'un prénom.</em></h2>
+EN: <h2 class="h2" data-rv>All it needs<br><em>is a name.</em></h2>
+FR: <div class="a">Ma lettre à<span class="curs"></span></div>
+EN: <div class="a">My letter to<span class="curs"></span></div>
+# ── le pied ──
+FR: est un service de <a href="https://www.nebula-agency.online/">NEBULA Agency</a>, à Cotonou.</p>
+EN: is a service by <a href="https://www.nebula-agency.online/">NEBULA Agency</a>, in Cotonou.</p>
+FR: <p>Les lettres de cette page sont des exemples : les personnes sont inventées. Pour faire retirer une lettre, <a id="retrait" href="https://wa.me/22996740732?text=Bonjour%2C%20je%20demande%20le%20retrait%20de%20cette%20lettre%20%3A%20">écris-nous sur WhatsApp</a> en joignant son lien : elle est retirée sous 24 heures, sans discussion.</p>
+EN: <p>The letters on this page are examples: the people are invented. To have a letter removed, <a id="retrait" href="https://wa.me/22996740732?text=Hello%2C%20please%20remove%20this%20letter%3A%20">message us on WhatsApp</a> with its link: it is removed within 24 hours, no questions asked.</p>
+# ── la fenêtre des exemples ──
+FR: Une lettre d'exemple
+EN: An example letter
+FR: <span id="modale-t">Exemple · personnes inventées</span>
+EN: <span id="modale-t">Example · invented people</span>
+FR: >Fermer<
+EN: >Close<
+# ── le script ──
+FR: var PRENOMS = ["Afi", "papa", "Zara", "maman", "Grâce", "toi"];
+EN: var PRENOMS = ["Afi", "Dad", "Zara", "Mum", "Grâce", "you"];
+FR: $("#modale-t").textContent = "Exemple · " + c.dataset.titre;
+EN: $("#modale-t").textContent = "Example · " + c.dataset.titre;
+FR: occasion: "Exemple", pour: saisi || "toi", de: "Ma lettre à…", titre: "C'est l'heure",
+EN: occasion: "Example", pour: saisi || "you", de: "Ma lettre à…", titre: "It's time",
+FR: code: "", photos: [], depuis: "", formule: "Avec tout notre cœur,", pied: true,
+EN: code: "", photos: [], depuis: "", formule: "With all our heart,", pied: true,
+FR: lien: "https://malettre.nebula-agency.online",
+EN: lien: "https://malettre.nebula-agency.online/en/", langue: "en",
+FR: lettre: ["Voilà ce que vivra la personne qui reçoit ta lettre : un cachet qui attend son heure, puis qui s'allume.",
+EN: lettre: ["This is what the person who receives your letter will see: a seal that waits for its hour, then lights up.",
+FR: "Le reste, c'est toi qui l'écris."],
+EN: "The rest is yours to write."],
+FR: fetch("lettre.html")
+EN: fetch("../lettre.html")

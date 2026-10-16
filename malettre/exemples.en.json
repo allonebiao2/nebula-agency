@@ -1,0 +1,377 @@
+{
+ "_lire": "Les six lettres d'exemple EN ANGLAIS (2026-10-16), écrites par la vraie plume anglaise (SYSTEME_EN de plume.ts) à partir des mêmes fiches que le français, traduites. Personnes inventées. Relues avant usage. Le build (_build_accueil.py en) en fait de vraies lettres avec langue « en ».",
+ "exemples": [
+  {
+   "id": "afi",
+   "de": "Kofi",
+   "pour": "Afi",
+   "occasion": "valentin",
+   "occasionNom": "Valentine's Day",
+   "ville": "Lomé",
+   "titre": "Counting the days, my sweet",
+   "lettre": [
+    "Happy Valentine's Day, my sweet. I think of our first date by the sea in Lomé. The storm came out of nowhere, and we ran to hide under a coconut seller's straw hut. I remember laughing while the rain drummed on the straw, and thinking: I want more days like this one.",
+    "What caught me first was your smile, and then your voice, which calms me even when I did not know I was worried. You are gentle and you are patient, and that is rare. You make room for people without making any noise about it.",
+    "Now I am counting the days until you are back from Accra. The house is quieter without you. Come home soon, and I will be waiting, with the storm or without it."
+   ],
+   "formule": "Yours always,",
+   "ouvre": "2027-02-14T00:00",
+   "fiche": {
+    "reponses": [
+     {
+      "q": "Who are they to you?",
+      "r": [
+       "My love"
+      ]
+     },
+     {
+      "q": "The tone",
+      "r": [
+       "Tender",
+       "Poetic"
+      ]
+     },
+     {
+      "q": "What made you fall for them",
+      "r": [
+       "Their smile",
+       "Their voice"
+      ]
+     },
+     {
+      "q": "What is rare about them",
+      "r": [
+       "Their gentleness",
+       "Their patience"
+      ]
+     },
+     {
+      "q": "Length",
+      "r": [
+       "Medium"
+      ]
+     },
+     {
+      "q": "Your English",
+      "r": [
+       "Everyday"
+      ]
+     }
+    ],
+    "souvenir": "Our first date by the sea in Lomé: the storm came out of nowhere, and we ran to hide under a coconut seller's straw hut.",
+    "consignes": "Call her “my sweet”. Tell her I'm counting the days until she's back from Accra."
+   }
+  },
+  {
+   "id": "papa",
+   "de": "Afi",
+   "pour": "Dad",
+   "occasion": "papa",
+   "occasionNom": "Father's Day",
+   "ville": "Cotonou",
+   "titre": "Thank you for every morning",
+   "lettre": [
+    "Every morning you took me to school on your motorbike, even in the rain, in your old blue raincoat. I did not understand then what it cost you. I do now. That was courage, and it was patience too, day after day without complaint.",
+    "You taught me to work hard and to get back up when I fall. I carry that with me everywhere. May God keep you and bless you, Dad."
+   ],
+   "formule": "With all my love,",
+   "ouvre": "",
+   "fiche": {
+    "reponses": [
+     {
+      "q": "Who are they to you?",
+      "r": [
+       "My father"
+      ]
+     },
+     {
+      "q": "The tone",
+      "r": [
+       "Moving"
+      ]
+     },
+     {
+      "q": "What is rare about them",
+      "r": [
+       "Their courage",
+       "Their patience"
+      ]
+     },
+     {
+      "q": "What they taught you",
+      "r": [
+       "Hard work",
+       "Getting back up"
+      ]
+     },
+     {
+      "q": "Length",
+      "r": [
+       "Short"
+      ]
+     },
+     {
+      "q": "A blessing at the end",
+      "r": [
+       "Christian"
+      ]
+     }
+    ],
+    "souvenir": "Every morning he took me to school on his motorbike, even in the rain, in his old blue raincoat.",
+    "consignes": ""
+   }
+  },
+  {
+   "id": "zara",
+   "de": "Robert",
+   "pour": "Zara",
+   "occasion": "rupture",
+   "occasionNom": "Breakup",
+   "ville": "Cotonou",
+   "titre": "It is over, but kindly",
+   "lettre": [
+    "Zara, I am writing this slowly because you deserve honest words. Our story ends here. We don't want the same life, and pretending otherwise would not be fair to either of us. There is no blame in this, none at all.",
+    "I still think about our first garba in Fidjrossè. You put in far too much chilli and acted like everything was fine, while your eyes told a different story. I laughed then, and I smile now. That is how I want to remember us.",
+    "We spent a year or two together, and I am grateful for it. I hope we can stay on good terms, with no wahala between us. Take care of yourself, and go well."
+   ],
+   "formule": "With respect and warmth,",
+   "ouvre": "",
+   "fiche": {
+    "reponses": [
+     {
+      "q": "Who are they to you?",
+      "r": [
+       "My girlfriend"
+      ]
+     },
+     {
+      "q": "The tone",
+      "r": [
+       "Funny",
+       "Respectful"
+      ]
+     },
+     {
+      "q": "Why",
+      "r": [
+       "We don't want the same life"
+      ]
+     },
+     {
+      "q": "The door",
+      "r": [
+       "We can stay on good terms"
+      ]
+     },
+     {
+      "q": "For how long",
+      "r": [
+       "A year or two"
+      ]
+     },
+     {
+      "q": "Length",
+      "r": [
+       "Medium"
+      ]
+     },
+     {
+      "q": "Your English",
+      "r": [
+       "With our own expressions"
+      ]
+     }
+    ],
+    "souvenir": "Our first garba in Fidjrossè: she put in far too much chilli and pretended everything was fine.",
+    "consignes": "Stay kind, no blame."
+   }
+  },
+  {
+   "id": "maman",
+   "de": "Aminata",
+   "pour": "Mum",
+   "occasion": "maman",
+   "occasionNom": "Mother's Day",
+   "ville": "Abidjan",
+   "titre": "Thank you, Mum, for everything",
+   "lettre": [
+    "I want to start with a simple picture. At Adjamé market you sold attiéké all day, and you always kept the best portion for me, wrapped in a leaf. You never made a speech about it. You just did it, and that is how I learned what love looks like.",
+    "Your strength has carried our home for as long as I can remember. Your generosity never counted what was left for you. From you I learned to share, and I learned courage by watching you get up and begin again.",
+    "Thank you for my studies. Every step I took was built on your tiredness and your faith in me. Whatever I become, a part of it is yours. May God keep you in good health and peace, and reward you for all you have given."
+   ],
+   "formule": "With all my love,",
+   "ouvre": "",
+   "fiche": {
+    "reponses": [
+     {
+      "q": "Who are they to you?",
+      "r": [
+       "My mother"
+      ]
+     },
+     {
+      "q": "The tone",
+      "r": [
+       "Warm",
+       "Moving"
+      ]
+     },
+     {
+      "q": "What is rare about them",
+      "r": [
+       "Their strength",
+       "Their generosity"
+      ]
+     },
+     {
+      "q": "What they taught you",
+      "r": [
+       "Sharing",
+       "Courage"
+      ]
+     },
+     {
+      "q": "Length",
+      "r": [
+       "Medium"
+      ]
+     },
+     {
+      "q": "Your English",
+      "r": [
+       "Everyday"
+      ]
+     },
+     {
+      "q": "A blessing at the end",
+      "r": [
+       "Muslim"
+      ]
+     }
+    ],
+    "souvenir": "At Adjamé market she sold attiéké and always kept the best portion for me, wrapped in a leaf.",
+    "consignes": "Thank her for my studies. Don't mention money."
+   }
+  },
+  {
+   "id": "grace",
+   "de": "Sèna",
+   "pour": "Grâce",
+   "occasion": "couple",
+   "occasionNom": "Asking them out",
+   "ville": "Abomey-Calavi",
+   "titre": "A question, and a calculator",
+   "lettre": [
+    "I will say it plainly, because I have been practising this sentence for days and it still shakes a little. I have liked you for a few months now, and I would like to ask if you would want to go out with me.",
+    "It started in that statistics tutorial, when you lent me your calculator and told me to give it back when I could count. I still have not worked out how you made a joke like that sound so easy. It is the way you talk, and your humour, that got me. I laugh more when you are around, and I would like to find out what more there could be.",
+    "There is no pressure at all. If your answer is no, I will take it well, and I would still like us to stay friends. Whatever you decide, I wanted you to know it from me, with courage borrowed from a calculator."
+   ],
+   "formule": "With all my honesty,",
+   "ouvre": "",
+   "fiche": {
+    "reponses": [
+     {
+      "q": "Who are they to you?",
+      "r": [
+       "My crush"
+      ]
+     },
+     {
+      "q": "The tone",
+      "r": [
+       "Tender",
+       "Funny"
+      ]
+     },
+     {
+      "q": "What made you fall for them",
+      "r": [
+       "The way they talk",
+       "Their humour"
+      ]
+     },
+     {
+      "q": "Where you met",
+      "r": [
+       "At school or university"
+      ]
+     },
+     {
+      "q": "For how long",
+      "r": [
+       "A few months"
+      ]
+     },
+     {
+      "q": "Length",
+      "r": [
+       "Medium"
+      ]
+     }
+    ],
+    "souvenir": "In a statistics tutorial at uni, she lent me her calculator and said: “give it back when you can count”.",
+    "consignes": ""
+   }
+  },
+  {
+   "id": "fatou",
+   "de": "Ismaël",
+   "pour": "Auntie Fatou",
+   "occasion": "tabaski",
+   "occasionNom": "Tabaski",
+   "ville": "Parakou",
+   "titre": "Tabaski blessings, Auntie",
+   "lettre": [
+    "I am thinking of you this Tabaski, and I am sorry I cannot be with you this year. London is far, but my heart is at your table.",
+    "I still remember the big tray you trusted me to carry to the neighbours every Tabaski when I was small. I never dropped one, and I was so proud. That trust meant more to me than you know.",
+    "I wish you good health, a peaceful home and a long life, surrounded by those who love you."
+   ],
+   "formule": "May God bless you,",
+   "ouvre": "",
+   "fiche": {
+    "reponses": [
+     {
+      "q": "Who are they to you?",
+      "r": [
+       "My aunt"
+      ]
+     },
+     {
+      "q": "The tone",
+      "r": [
+       "Warm"
+      ]
+     },
+     {
+      "q": "What you wish them",
+      "r": [
+       "Health",
+       "Peace",
+       "A long life"
+      ]
+     },
+     {
+      "q": "Length",
+      "r": [
+       "Short"
+      ]
+     },
+     {
+      "q": "Your English",
+      "r": [
+       "Polished"
+      ]
+     },
+     {
+      "q": "A blessing at the end",
+      "r": [
+       "Muslim"
+      ]
+     }
+    ],
+    "souvenir": "Every Tabaski when I was small, she trusted me with the big tray to carry to the neighbours, and I never dropped one.",
+    "consignes": "I can't come this year, I'm in London."
+   }
+  }
+ ]
+}

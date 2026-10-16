@@ -46,12 +46,16 @@ MOTS_FR = re.compile(r"\b(le|la|les|des|une|est|pour|avec|tu|ta|ton|tes|ses|sa|v
                      r"sur|mais|elle|aux|du|au|cette|mon|mes|et|ou|ne|ici|lettre|cachet|offre|"
                      # les mots d'interface sans accent, que la liste ci-dessus laisserait passer
                      r"copier|payer|retour|continuer|choisir|merci|ouvrir|envoyer|recevoir|commencer|gratuit|"
-                     r"offert|commande|mois|jours|heure|minuit|toi|moi|ensemble|avant|chaque|encore|rien|jamais|toujours)\b", re.I)
+                     r"offert|commande|mois|jours|heure|minuit|toi|moi|ensemble|avant|chaque|rien|jamais|toujours)\b", re.I)
 # Ce qui a le droit de rester : la marque, des noms propres, deux mots que
 # l'anglais a pris au français, et une clé interne du script.
-PERMIS = ["« Ma lettre à… »", "Ma lettre à…", "Ma lettre à", "Ma lettre", "malettre", "fiancée", "fiancé", "Lomé"]
+PERMIS = ["« Ma lettre à… »", "Ma lettre à…", "Ma lettre à", "Ma lettre", "MA LETTRE", "malettre", "fiancée", "fiancé", "Lomé",
+          # les personnes et les lieux des exemples (inventés, mais avec leurs accents)
+          "Côte d'Ivoire", "Grâce", "Sèna", "Ismaël", "Fidjrossè", "attiéké", "Adjamé"]
 # Des clés internes : « prénom » (une clé de MOTS), « pour » (un champ de l'état).
-CLES = {"prénom", "pour"}
+CLES = {"prénom", "pour",
+        # les identifiants des offres (posés par le build dans les données de la page)
+        "gratuit", "mot", "lettre", "coffret"}
 
 
 def francais(t):
@@ -110,7 +114,7 @@ def restes(nom, html_txt):
     for s in chaines_js("\n".join(t.scripts)):
         if s in CLES or s in ids or not re.search(r"[A-Za-zÀ-ÿ]", s):
             continue
-        if re.fullmatch(r"[#.]?[a-z0-9]+(?:[-:_][a-z0-9]+)+|[#.][a-z0-9-]+", s):
+        if re.fullmatch(r"[#.]?[a-z0-9]+(?:[-:_][a-z0-9]+)+|[#.][\w\s#.\[\]=\"'():,>-]+", s):   # identifiant, sélecteur
             continue
         if re.fullmatch(r"[\w./-]+\.html(\?.*)?", s) or re.match(r"https?://\S+$", s):   # un chemin, une adresse
             continue
@@ -134,6 +138,7 @@ def statiques():
         reel = (ICI / "en" / nom).read_text(encoding="utf-8") if (ICI / "en" / nom).exists() else ""
         dit("en/%s est exactement ce que fabrique le dictionnaire (python malettre/_traduire.py)" % nom, reel == attendu)
         restes("en/" + nom, reel)
+    restes("en/index.html", (ICI / "en" / "index.html").read_text(encoding="utf-8"))
     fr = (ICI / "creer.html").read_text(encoding="utf-8")
     en = (ICI / "en" / "creer.html").read_text(encoding="utf-8")
     dit("le constructeur anglais écrit des lettres anglaises", 'var LANGUE = "en";' in en and 'var LANGUE = "fr";' in fr)
@@ -270,6 +275,21 @@ def navigateur(base):
         dit("lettre en : la note du pied est anglaise", "In five minutes." in pg.inner_text("#l-pied .note"))
         dit("lettre en : le texte de l'acheteur n'est jamais traduit", "Tell me about your day." in pg.inner_text("#l-corps"))
         dit("lettre en : aucune erreur JavaScript", not erreurs, erreurs[:2])
+        ctx.close()
+
+        print("\n· les lettres d'exemple anglaises, rendues")
+        ctx = nav.new_context(viewport={"width": 390, "height": 844}, is_mobile=True)
+        pg = ctx.new_page()
+        for ex, ouvrir in (("afi", False), ("papa", True)):
+            pg.goto(base + "en/exemples/%s.html" % ex)
+            if ouvrir:
+                pg.click("#btn-ouvrir")
+                pg.wait_for_timeout(1500)
+            # Le corps est écrit par la plume (relu par son propre garde-fou) :
+            # ici, seuls les mots du GABARIT comptent.
+            txt = pg.evaluate("() => { const c = document.getElementById('l-corps'); if (c) c.remove(); return document.body.innerText; }")
+            dit("exemple %s : le gabarit parle anglais (%s)" % (ex, "ouverte" if ouvrir else "scellée"),
+                not francais(txt) and "Example ·" in pg.text_content("#l-occasion"), txt[:120])
         ctx.close()
 
         print("\n· le paiement et le merci, en anglais")

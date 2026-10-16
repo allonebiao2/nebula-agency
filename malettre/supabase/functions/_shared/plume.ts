@@ -216,6 +216,7 @@ What makes a good letter here:
 - It speaks directly and warmly to the person who receives it.
 - It names the person by their first name once at most in the body: the name is already on the envelope.
 - Pronouns: infer the person's gender from the relationship chosen (my mother, my brother, my girlfriend). If nothing says it, write sentences that need no gendered pronoun. Do the same for the buyer.
+- Everything you return is in English: the title, every paragraph and the closing words. The register of the occasion is described in French: never borrow its language, not even one word.
 - It is a letter: it does not claim to speak "face to face" or "in person".
 - Proofread: spelling and grammar without fault, in natural English.
 - The register "With our own expressions" allows a few turns of phrase from English as spoken in West Africa, known to all and used accurately, never as caricature.
@@ -348,6 +349,10 @@ export type Rendu =
   | { ok: true; titre: string; lettre: string[]; formule: string }
   | { ok: false; refus: string }
 
+const MOTS_FRANCAIS = '\\b(merci|pour|avec|tout|toute|toutes|je|tu|nous|vous|les|des|une|est|pas|dans|joyeux|joyeuse|bonne|cher|chère|chaque|maman)\\b'
+const FRANCAIS = new RegExp(MOTS_FRANCAIS, 'i')
+const FRANCAIS_G = new RegExp(MOTS_FRANCAIS, 'gi')
+
 export function lireReponse(m: any, langue: 'fr' | 'en' = 'fr'): Rendu {
   if (!m) return { ok: false, refus: 'illisible' }
   if (m.stop_reason === 'refusal') return { ok: false, refus: 'nuisible' }
@@ -379,6 +384,18 @@ export function lireReponse(m: any, langue: 'fr' | 'en' = 'fr'): Rendu {
   if (lettre.length === 1 && lettre[0].length > BORNES_LETTRE.total) lettre = [lettre[0].slice(0, BORNES_LETTRE.total)]
   if (!lettre.length || !titre) return { ok: false, refus: 'vide' }
 
+  /* ⛔ UNE LETTRE ANGLAISE NE GLISSE PAS EN FRANÇAIS. Mesuré le 2026-10-16 :
+     sur six lettres, la plume anglaise en a titré deux en français (« Merci
+     pour chaque matin »), entraînée par les registres, qui sont en français.
+     Une consigne n'est pas un contrôle. Le titre et la formule ne tolèrent
+     aucun mot français ; le corps, deux au plus (un « merci » cité, un nom de
+     plat). ⚠️ Pas « ma », « mon », « ton », « bon » : ce sont aussi des mots
+     anglais (« Ma » pour une mère, « a ton of », « bon voyage »). */
+  if (langue === 'en') {
+    const corps = lettre.join(' ')
+    const n = (corps.match(FRANCAIS_G) ?? []).length
+    if (FRANCAIS.test(titre) || FRANCAIS.test(formule) || n > 2) return { ok: false, refus: 'langue' }
+  }
   for (const s of [titre, formule, ...lettre]) {
     if (LIEN.test(s) || aNumero(s) || COURRIEL.test(s)) return { ok: false, refus: 'nuisible' }
   }

@@ -24,14 +24,17 @@ import sys
 ICI = pathlib.Path(__file__).resolve().parent
 DIST = ICI / "_dist"
 
-PAGES = ["index.html", "creer.html", "lettre.html", "paiement.html", "merci.html", "favicon.svg", "og.jpg"]
-SOURCES_ACCUEIL = ["_accueil_src.html", "exemples.json", "creer.html", "lettre.html", "_build_accueil.py"]
+PAGES = ["index.html", "creer.html", "lettre.html", "paiement.html", "merci.html", "favicon.svg", "og.jpg",
+         # l'anglais (2026-10-16) : fabriqué par _build_accueil.py, qui lance _traduire.py
+         "og-en.jpg", "en/index.html", "en/creer.html", "en/paiement.html", "en/merci.html"]
+SOURCES_ACCUEIL = ["_accueil_src.html", "exemples.json", "exemples.en.json", "creer.html", "lettre.html",
+                   "_build_accueil.py", "i18n/en.txt"]
 
 ERREUR = """<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Lettre introuvable · Ma lettre à…</title>
+<title>Lettre introuvable · Letter not found · Ma lettre à…</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
 html,body{margin:0;min-height:100%;background:#141019;color:#f4ede0}
@@ -41,6 +44,8 @@ body{display:grid;place-items:center;min-height:100vh;padding:24px;box-sizing:bo
  background:radial-gradient(circle at 34% 30%,#b2434e,#8c2f39 62%,#6d1f27);box-shadow:0 8px 18px rgba(0,0,0,.4)}
 h1{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-weight:400;font-size:clamp(32px,7vw,56px);margin:0 0 14px;line-height:1.05}
 p{color:#a39bb3;margin:0 auto 28px;max-width:32em;line-height:1.6}
+.en{margin-top:-8px;font-size:14px}
+.liens{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 a{display:inline-flex;align-items:center;min-height:52px;padding:0 28px;border-radius:999px;background:#f4ede0;
  color:#241d2b;text-decoration:none;font-weight:700}
 </style></head><body><main>
@@ -48,7 +53,10 @@ a{display:inline-flex;align-items:center;min-height:52px;padding:0 28px;border-r
 <h1>Cette lettre n'est pas ici</h1>
 <p>L'adresse est peut-être incomplète, ou la lettre a expiré, ou elle a été retirée.
 Vérifie le lien qu'on t'a envoyé, en entier.</p>
-<a href="/">Écrire ma lettre</a>
+<!-- On ne sait pas d'où vient le visiteur : la page parle les deux langues. -->
+<p class="en" lang="en">This letter is not here. The link may be incomplete, or the letter has
+expired or been removed. Check the whole link you were sent.</p>
+<div class="liens"><a href="/">Écrire ma lettre</a><a href="/en/" lang="en">Write my letter</a></div>
 </main></body></html>
 """
 
@@ -75,6 +83,15 @@ ENTETES = """/*
 /exemples/*
   X-Robots-Tag: noindex, nofollow
 
+/en/exemples/*
+  X-Robots-Tag: noindex, nofollow
+
+/en/paiement.html
+  X-Robots-Tag: noindex, nofollow
+
+/en/merci.html
+  X-Robots-Tag: noindex, nofollow
+
 /lettre.html
   X-Robots-Tag: noindex, nofollow
 
@@ -87,25 +104,28 @@ ENTETES = """/*
 /og.jpg
   Cache-Control: public, max-age=3600
 
+/og-en.jpg
+  Cache-Control: public, max-age=3600
+
 /favicon.svg
   Cache-Control: public, max-age=3600
 """
 
 
 def main():
-    index = ICI / "index.html"
-    vieux = [n for n in SOURCES_ACCUEIL if (ICI / n).stat().st_mtime > index.stat().st_mtime + 1]
+    index = min((ICI / "index.html").stat().st_mtime, (ICI / "en" / "index.html").stat().st_mtime)
+    vieux = [n for n in SOURCES_ACCUEIL if (ICI / n).stat().st_mtime > index + 1]
     if vieux:
         sys.exit("⛔ index.html est plus ancien que %s : python malettre/_build_accueil.py" % ", ".join(vieux))
-    exemples = sorted((ICI / "exemples").glob("*.html"))
-    if not exemples:
-        sys.exit("⛔ aucun exemple : python malettre/_build_accueil.py")
+    exemples = sorted((ICI / "exemples").glob("*.html")) + sorted((ICI / "en" / "exemples").glob("*.html"))
+    if len(exemples) < 12:
+        sys.exit("⛔ il manque des exemples (%d sur 12) : python malettre/_build_accueil.py" % len(exemples))
 
     if DIST.is_dir():
         shutil.rmtree(DIST)
     DIST.mkdir()
     total = 0
-    for rel in PAGES + ["exemples/" + p.name for p in exemples]:
+    for rel in PAGES + [p.relative_to(ICI).as_posix() for p in exemples]:
         src = ICI / rel
         if not src.exists():
             sys.exit("⛔ MANQUE : " + rel)

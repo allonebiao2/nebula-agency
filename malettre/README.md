@@ -91,6 +91,42 @@ python malettre/_dist.py              # _dist/ : seulement ce qui doit être en 
 - ⚠️ **Pour voir le chargement, figer ses transitions** (`getAnimations()`,
   `pause()`, `currentTime`), pas `clock.install()` qui laisse couler le temps.
 
+### Les deux langues (2026-10-16)
+
+Décision de Mongazi : le français ET l'anglais sur tout le parcours (vitrine,
+constructeur, lettre, plume, exemples, pub). **Le français est la source.**
+
+```bash
+python malettre/_build_accueil.py     # lance _traduire.py, puis l'accueil FR et EN
+python malettre/_qc_langues.py        # 51 contrôles : aucun mot français dans l'anglais
+python malettre/_voir_accueil.py en   # captures de la page anglaise (_vues/accueil-en)
+python malettre/_og.py                # og.jpg et og-en.jpg
+```
+
+- **La lettre** porte un champ `langue` (`fr` ou `en`, liste fermée côté
+  serveur : tout le reste est du français). Le gabarit a son petit
+  dictionnaire `L` ; **seuls les mots du gabarit changent, jamais ceux de
+  l'acheteur.** En anglais le seuil dit « My letter to Afi » ; la marque reste
+  « Ma lettre à… ». Les heures se disent sur douze (« at 6:30 pm »).
+- **Les pages anglaises** (`en/*.html`) sont FABRIQUÉES par `_traduire.py` à
+  partir de `i18n/en.txt`. Format **sans échappement** (une ligne `FR:`, une
+  ligne `EN:`). ⛔ Il refuse d'écrire si une phrase française est introuvable :
+  **une phrase changée en français doit l'être aussi dans `i18n/en.txt`**.
+- **La plume anglaise** a son propre système (`SYSTEME_EN`), mis en cache à
+  part. ⛔ Elle a titré deux lettres sur six en français le jour de son
+  écriture (« Merci pour chaque matin ») : la relecture refuse désormais un
+  titre ou une formule anglaise contenant du français (`refus: 'langue'`).
+  ⛔ L'élision française ne s'applique qu'au français (« tell m'about »).
+- **Les offres** ont leur nom anglais côté serveur (`en` dans `PALIERS` :
+  Free, The Note, The Letter, The Keepsake), comparé à `en/creer.html` par un
+  contrôle. La caisse renvoie l'acheteur anglais vers `/en/merci.html`.
+- **Un brouillon par langue** (`malettre:brouillon:en`) : repris en anglais, un
+  brouillon français garderait des réponses qu'aucune puce anglaise ne coche.
+- ⚠️ **Pièges du jour** : `innerText` applique le `text-transform` (« DAYS
+  TOGETHER ») ; `document.fonts.ready` répondait avant le chargement des
+  polices (une image de partage est sortie sans un mot) ; le sélecteur de
+  langue a fait passer « Write my letter » sur deux lignes au téléphone.
+
 ### La vidéo de démonstration
 
 `_studio-video/`, composition **`lepli-demo`** : 1080x1920, 30 s.
