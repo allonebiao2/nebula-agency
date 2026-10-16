@@ -47,6 +47,22 @@ export function palier(id: unknown): Palier | null {
   return PALIERS.find((p) => p.id === s) ?? null
 }
 
+/*
+  La plume : l'agent qui écrit la lettre à la place de l'acheteur
+  (`_shared/plume.ts`). C'est une OPTION, pas un palier : elle s'ajoute à
+  l'offre choisie, et avec l'offre gratuite la lettre coûte 500 F.
+
+  ⛔ Même règle que les paliers : ce prix est le seul qui engage la caisse, et
+  un contrôle le compare à celui de `creer.html`.
+*/
+export const PLUME = { prix: 500 }
+
+/* Le prix d'une commande. Le navigateur dit s'il a pris la plume (un oui ou
+   un non), jamais combien elle coûte. */
+export function prixTotal(p: Palier, plume: boolean): number {
+  return p.prix + (plume ? PLUME.prix : 0)
+}
+
 /* ── L'adresse ──────────────────────────────────────────────────────────── */
 
 /*
@@ -201,6 +217,10 @@ export type Lettre = {
   photos: { src: string; legende: string }[]
   depuis: string
   ouvre: string
+  /* La formule de fin, juste avant la signature (« Avec tout mon cœur, »).
+     Elle suit l'occasion : une lettre de rupture ne se signe pas « avec tout
+     mon cœur ». */
+  formule: string
   pied: boolean
   lien: string
 }
@@ -219,7 +239,7 @@ export const BORNES = {
 const texte = (v: unknown, max = BORNES.texte) => String(v ?? '').slice(0, max).trim()
 
 export type Refus = { ok: false; erreur: string }
-export type Accord = { ok: true; lettre: Lettre; palier: Palier }
+export type Accord = { ok: true; lettre: Lettre; palier: Palier; plume: boolean; prix: number }
 
 /*
   ⛔ TOUT CE QUI ARRIVE EST HOSTILE JUSQU'À PREUVE DU CONTRAIRE, y compris ce
@@ -265,6 +285,7 @@ export function lireCommande(d: any): Accord | Refus {
     photos,
     depuis: /^\d{4}-\d{2}-\d{2}$/.test(String(d?.depuis ?? '')) ? String(d.depuis) : '',
     ouvre: ouvreValide(d?.ouvre),
+    formule: texte(d?.formule, 60),
     /* ⛔ Le pied vient du PALIER, jamais du navigateur : sinon la boucle de
        croissance se retire d'un clic dans la console, gratuitement. */
     pied: p.pied,
@@ -277,5 +298,8 @@ export function lireCommande(d: any): Accord | Refus {
   const poids = JSON.stringify(lettre).length
   if (poids > BORNES.total) return { ok: false, erreur: 'lettre trop lourde' }
 
-  return { ok: true, lettre, palier: p }
+  /* ⚠️ Seul un vrai « true » vaut la plume : une chaîne « false » ou « 0 »
+     envoyée par un navigateur bricolé ne doit rien coûter, ni rien offrir. */
+  const plume = d?.plume === true
+  return { ok: true, lettre, palier: p, plume, prix: prixTotal(p, plume) }
 }

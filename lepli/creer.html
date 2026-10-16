@@ -38,6 +38,11 @@ body{
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--or);outline-offset:3px;border-radius:6px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* ⛔ `hidden` doit GAGNER. `.repris{display:flex}` l'emportait sur l'attribut :
+   le bandeau « On a retrouvé ta lettre en cours » s'affichait a TOUT LE MONDE,
+   des la premiere visite, et le « + » des photos (`display:grid`) ne partait
+   jamais a trois photos. Le controle lisait l'attribut, pas ce qui est peint. */
+[hidden]{display:none!important}
 
 /* ── La barre ── */
 header{
@@ -85,6 +90,41 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 .occ b{font-size:15px}
 .occ span{font-size:12.5px;color:var(--gris-clair)}
 .occ em{font-style:normal;font-size:12.5px;color:var(--or);font-weight:700}
+/* Vingt-sept occasions : sans familles, c'est une liste qu'on ne lit pas. */
+.fam{margin:26px 0 11px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gris-clair);font-weight:700}
+.fam:first-child{margin-top:0}
+.autre-mot{margin-top:22px;font-size:13.5px;color:var(--gris-clair)}
+
+/* ── Qui ecrit : la plume ou l'acheteur ── */
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+@media(max-width:420px){.mode{grid-template-columns:1fr}}
+.m{border:1.5px solid var(--ligne);border-radius:14px;padding:13px 14px;text-align:left;
+  min-height:66px;display:flex;flex-direction:column;gap:2px;transition:.18s var(--t)}
+.m.on{border-color:var(--or);background:rgba(201,162,39,.10)}
+.m b{font-size:14.5px}
+.m span{font-size:12.5px;color:var(--gris-clair)}
+
+/* ── La fiche de la plume ── */
+.fiche{border:1.5px solid rgba(201,162,39,.32);border-radius:16px;padding:18px 16px 16px;
+  margin-bottom:24px;background:rgba(201,162,39,.04)}
+.fiche-t{font-size:13.5px;color:var(--gris-clair);margin-bottom:16px}
+.q{margin-bottom:17px}
+.q-t{font-size:13px;font-weight:700;margin-bottom:8px;letter-spacing:.02em}
+.q-t span{font-weight:400;color:var(--gris-clair);font-size:12px;margin-left:6px}
+.puces{display:flex;flex-wrap:wrap;gap:8px}
+.puce{border:1.5px solid var(--ligne);border-radius:999px;padding:9px 15px;font-size:13.5px;
+  min-height:44px;transition:border-color .15s,background .15s}
+.puce:hover{border-color:rgba(201,162,39,.5)}
+.puce[aria-pressed="true"]{border-color:var(--or);background:rgba(201,162,39,.18)}
+.q.plein .puce[aria-pressed="false"]{opacity:.55}
+.plume-act{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.mot-plume{font-size:13.5px;color:var(--gris-clair);margin-top:12px}
+.mot-plume b{color:var(--papier)}
+.lienbtn{font-size:13px;color:var(--or);font-weight:700;text-decoration:underline;
+  min-height:44px;padding:0 4px}
+.compte-plume{background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.4);
+  border-radius:12px;padding:12px 14px;font-size:13.5px;margin-top:14px}
 
 /* ── Les paliers ── */
 .paliers{display:grid;gap:10px}
@@ -179,14 +219,17 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
     <!-- ÉCRAN 2 · l'occasion -->
     <section class="ecran on" id="e-occasion">
       <h1 class="serif">Pour quelle occasion ?</h1>
-      <p class="sous">L'occasion décide du ton de la lettre, et du prix.</p>
-      <div class="occasions" id="liste-occasions"></div>
+      <!-- ⚠️ « et du prix » a vecu ici jusqu'au 2026-10-16, faux depuis le
+           2026-09-06 : l'occasion decide du TON, le palier decide du PRIX. -->
+      <p class="sous">L'occasion décide du ton de la lettre.</p>
+      <div id="liste-occasions"></div>
+      <p class="autre-mot">Tu ne trouves pas ton grand jour ? Choisis « Autre occasion ».</p>
     </section>
 
     <!-- ÉCRAN 3 · il remplit ET il voit -->
     <section class="ecran" id="e-lettre">
       <h1 class="serif">Écris-la.</h1>
-      <p class="sous">Tout ce que tu tapes apparaît à droite, comme elle le verra.</p>
+      <p class="sous">Tout ce qui s'écrit ici apparaît dans l'aperçu, tel qu'on le verra en l'ouvrant.</p>
 
       <div class="repris" id="repris" hidden>
         <span>On a retrouvé ta lettre en cours.</span>
@@ -195,13 +238,61 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 
       <div class="deux">
         <div class="groupe">
-          <label for="f-pour">Elle s'appelle</label>
+          <label for="f-pour">Son prénom</label>
           <input type="text" id="f-pour" maxlength="30" placeholder="Zara" autocomplete="off">
         </div>
         <div class="groupe">
-          <label for="f-de">Et toi</label>
+          <label for="f-de">Ton prénom</label>
           <input type="text" id="f-de" maxlength="30" placeholder="Robert" autocomplete="off">
         </div>
+      </div>
+
+      <!-- QUI ECRIT. ⚠️ Le vrai frein d'une lettre n'est pas le prix, c'est
+           la page blanche : beaucoup regardent la case vide et repartent. -->
+      <div class="mode" role="radiogroup" aria-label="Qui écrit la lettre">
+        <button type="button" class="m" data-mode="plume" role="radio">
+          <b>La plume l'écrit pour moi</b>
+          <span>Quelques questions, tu relis, tu corriges · 500 F de plus</span>
+        </button>
+        <button type="button" class="m" data-mode="moi" role="radio">
+          <b>Je l'écris moi-même</b>
+          <span>Tes mots, rien d'autre</span>
+        </button>
+      </div>
+
+      <!-- LA FICHE. Des choix pour aller vite, deux zones libres pour ce
+           qu'aucun choix ne dira. ⛔ Elle n'est gardee nulle part chez nous :
+           elle part a la plume, la lettre revient, la fonction oublie. -->
+      <div class="fiche" id="fiche">
+        <p class="fiche-t">Réponds à ce que tu veux, la plume fait le reste. Tu pourras tout retoucher.</p>
+        <div class="groupe" id="g-autre" hidden>
+          <label for="f-autre">Quelle occasion ?</label>
+          <input type="text" id="f-autre" maxlength="60" placeholder="Son installation à Parakou, ta soutenance…">
+        </div>
+        <div id="questions"></div>
+        <div class="groupe">
+          <label for="f-souvenir">Un souvenir ou un détail que vous seuls connaissez <span style="font-weight:400;color:var(--gris-clair)">(facultatif)</span></label>
+          <textarea id="f-souvenir" maxlength="300" style="min-height:92px"
+            placeholder="Le jour où tu m'as attendu deux heures devant la fac, sous la pluie."></textarea>
+        </div>
+        <div class="groupe">
+          <label for="f-consignes">Comment tu la veux ? <span style="font-weight:400;color:var(--gris-clair)">(facultatif)</span></label>
+          <textarea id="f-consignes" maxlength="400" style="min-height:92px"
+            placeholder="Appelle-la « ma reine ». Parle de notre voyage à Ouidah. Ne parle pas de son travail."></textarea>
+          <p class="indice">Ce qu'il faut absolument dire, ou éviter. La plume n'invente rien à ta place.</p>
+        </div>
+        <div class="plume-act">
+          <button type="button" class="pri" id="btn-plume">Écrire ma lettre</button>
+        </div>
+        <p class="mot-plume" id="plume-mot" role="status" aria-live="polite" hidden></p>
+      </div>
+
+      <!-- ⚠️ Visible dans les DEUX modes : passer a « je l'ecris moi-meme »
+           ne fait pas disparaitre le texte de la plume, ni ce qu'il coute. -->
+      <div class="compte-plume" id="plume-compte" hidden>
+        <span id="plume-compte-t"></span>
+        <button type="button" class="lienbtn" id="btn-blanche">Repartir d'une page blanche</button>
+        <button type="button" class="lienbtn" id="btn-remettre">Remettre la lettre de la plume</button>
       </div>
 
       <div class="groupe">
@@ -214,6 +305,12 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
         <textarea id="f-lettre" maxlength="1200"
           placeholder="Écris comme tu parles.&#10;&#10;Une ligne vide sépare deux paragraphes."></textarea>
         <p class="indice"><span id="c-lettre">0</span> / 1200 caractères</p>
+      </div>
+
+      <div class="groupe">
+        <label for="f-formule">La formule de fin</label>
+        <input type="text" id="f-formule" maxlength="60" placeholder="Avec tout mon cœur,">
+        <p class="indice">Juste avant ta signature.</p>
       </div>
 
       <div class="groupe">
@@ -244,12 +341,12 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       </div>
 
       <div class="groupe">
-        <label for="f-quand">Elle la reçoit</label>
+        <label for="f-quand">Elle s'ouvre le</label>
         <div class="deux">
           <input type="date" id="f-quand">
           <input type="time" id="f-quand-h" value="00:00">
         </div>
-        <p class="indice">Sa lettre ne s'ouvrira pas avant cette heure, à l'heure de <b>son</b> téléphone. Laisse vide pour qu'elle s'ouvre tout de suite.</p>
+        <p class="indice">La lettre ne s'ouvrira pas avant cette heure, à l'heure du téléphone de <b>celui ou celle qui la lit</b>. Laisse vide pour qu'elle s'ouvre tout de suite.</p>
       </div>
 
       <div class="actions">
@@ -263,6 +360,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       <h1 class="serif">Choisis ton offre.</h1>
       <p class="sous">La lettre est déjà écrite. Elle ne change pas selon le prix.</p>
       <div class="paliers" id="liste-paliers"></div>
+      <p class="compte-plume" id="plume-note" hidden>La plume a écrit ta lettre : <b>500 F</b> s'ajoutent à l'offre que tu choisis, déjà comptés ci-dessus.</p>
       <div class="actions">
         <button class="sec" data-vers="e-lettre">Retour</button>
         <button class="pri" id="vers-paiement">Continuer</button>
@@ -318,7 +416,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
   <!-- L'aperçu : le VRAI gabarit, pas une imitation -->
   <aside class="col apercu-col">
     <div class="apercu-t">
-      <span>Ce qu'elle verra</span>
+      <span>Ce qu'on verra</span>
       <button class="rejouer" id="btn-rejouer">Rejouer l'ouverture</button>
     </div>
     <div class="telephone">
@@ -341,20 +439,128 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
    puis le palier gratuit, et on payait 0 F. Deux echelles dans un fichier
    sont deux verites. L'occasion decide du TON, le palier decide du PRIX,
    et l'ecran des paliers le dit deja : « elle ne change pas selon le prix ». */
-var OCCASIONS = [
-  {id:"mois",     nom:"Mois de rencontre", note:"« Happy 1 month »", titre:"Un mois avec toi"},
-  {id:"anniv",    nom:"Anniversaire",      note:"Le plus demandé",   titre:"Joyeux anniversaire"},
-  {id:"rdv",      nom:"Une invitation",    note:"Un rendez-vous",    titre:"Ça te dit ?"},
-  {id:"pardon",   nom:"Excuse",            note:"Réconciliation",    titre:"Je m'excuse"},
-  {id:"maman",    nom:"Fête des mères",    note:"Toute la fratrie",  titre:"Merci maman"},
-  {id:"demande",  nom:"Demande en mariage",note:"Sobriété maximale", titre:"Veux-tu m'épouser ?"}
+/* ⚠️ LES IDENTIFIANTS SONT AUSSI CEUX DE LA PLUME (`_shared/plume.ts`,
+   `REGISTRES`) : un controle lit les deux listes. Une occasion ajoutee ici
+   seulement serait ecrite sans consigne.
+   `titre` et `formule` se posent tant que l'acheteur ne les a pas touches.
+   `jour` (mois-jour) pose la date d'ouverture d'une fete a date fixe.
+   `fiche` : les questions de la plume, dans l'ordre (voir QUESTIONS).
+   ⛔ PAS DE DEUIL : `CONDITIONS.md` §7, il ne s'ouvre qu'apres relecture par
+   quelqu'un qui vient d'enterrer un proche. */
+var FAMILLES = [
+  {id:"amour",   nom:"L'amour"},
+  {id:"proches", nom:"La famille et les amis"},
+  {id:"fetes",   nom:"Les fêtes"},
+  {id:"vie",     nom:"Les grands jours"}
 ];
+var OCCASIONS = [
+  {id:"couple",   fam:"amour", nom:"Demande de couple", note:"Le grand saut", titre:"Tu veux sortir avec moi ?", formule:"En espérant ton oui,",
+   fiche:["lien-crush","ton-doux","craquer","rencontre","duree","longueur","langue"]},
+  {id:"mois",     fam:"amour", nom:"Mois de rencontre", note:"« Happy 1 month »", titre:"Un mois avec toi", formule:"Avec tout mon cœur,",
+   fiche:["lien-amour","ton-doux","craquer","rencontre","longueur","langue"]},
+  {id:"valentin", fam:"amour", nom:"Saint-Valentin", note:"Le 14 février", titre:"Joyeuse Saint-Valentin", formule:"À toi, pour toujours,", jour:"02-14",
+   fiche:["lien-amour","ton-doux","craquer","qualites","longueur","langue"]},
+  {id:"nous",     fam:"amour", nom:"Anniversaire de couple", note:"Un an, cinq ans, vingt ans", titre:"Joyeux anniversaire, mon amour", formule:"Avec tout mon amour,",
+   fiche:["lien-amour","ton-doux","duree","rencontre","qualites","longueur","langue"]},
+  {id:"demande",  fam:"amour", nom:"Demande en mariage", note:"Sobriété maximale", titre:"Veux-tu m'épouser ?", formule:"À toi, pour la vie,",
+   fiche:["lien-amour","ton-sobre","duree","rencontre","qualites","longueur","foi"]},
+  {id:"pardon",   fam:"amour", nom:"Excuse", note:"Réconciliation", titre:"Je m'excuse", formule:"Pardonne-moi,",
+   fiche:["lien-proches","ton-sobre","faute","longueur","langue"]},
+  {id:"rupture",  fam:"amour", nom:"Rupture", note:"Avec classe, ou avec humour", titre:"Il faut que je te dise", formule:"Prends soin de toi,",
+   fiche:["lien-ex","ton-rupture","pourquoi-rupture","porte","duree","longueur","langue"]},
+
+  {id:"anniv",    fam:"proches", nom:"Anniversaire", note:"Le plus demandé", titre:"Joyeux anniversaire", formule:"Avec toute mon affection,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue","foi"]},
+  {id:"maman",    fam:"proches", nom:"Fête des mères", note:"Toute la fratrie", titre:"Merci maman", formule:"Ton enfant qui t'aime,",
+   fiche:["lien-mere","ton-fete","qualites","appris","longueur","langue","foi"]},
+  {id:"papa",     fam:"proches", nom:"Fête des pères", note:"Pour le pilier", titre:"Merci papa", formule:"Ton enfant qui t'aime,",
+   fiche:["lien-pere","ton-fete","qualites","appris","longueur","langue","foi"]},
+  {id:"naissance",fam:"proches", nom:"Naissance", note:"Ou un baptême", titre:"Bienvenue au monde", formule:"Avec toute notre joie,",
+   fiche:["lien-bebe","bebe","ton-fete","souhaits","longueur","foi"]},
+  {id:"mariage",  fam:"proches", nom:"Mariage", note:"Pour les mariés", titre:"Tous mes vœux de bonheur", formule:"Avec toute mon affection,",
+   fiche:["lien-maries","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"amitie",   fam:"proches", nom:"Amitié", note:"Merci d'être là", titre:"Merci d'être là", formule:"Merci d'exister,",
+   fiche:["lien-amis","ton-fete","qualites","duree","longueur","langue"]},
+  {id:"brouille", fam:"proches", nom:"Rupture d'amitié", note:"Dire les choses une fois", titre:"Je préfère te l'écrire", formule:"Sans rancune,",
+   fiche:["lien-amis","ton-rupture","pourquoi-amitie","porte","duree","longueur","langue"]},
+
+  {id:"noel",     fam:"fetes", nom:"Noël", note:"Le 25 décembre", titre:"Joyeux Noël", formule:"Joyeux Noël,", jour:"12-25",
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"nouvelan", fam:"fetes", nom:"Nouvel an", note:"Le 1er janvier", titre:"Bonne année", formule:"Bonne et heureuse année,", jour:"01-01",
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"tabaski",  fam:"fetes", nom:"Tabaski", note:"Aïd el-Kébir", titre:"Bonne fête de Tabaski", formule:"Bonne fête,", defauts:{foi:"Musulmane"},
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"ramadan",  fam:"fetes", nom:"Fin du Ramadan", note:"Aïd el-Fitr", titre:"Bonne fête de Ramadan", formule:"Aïd Moubarak,", defauts:{foi:"Musulmane"},
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+  {id:"paques",   fam:"fetes", nom:"Pâques", note:"Le dimanche de Pâques", titre:"Joyeuses Pâques", formule:"Joyeuses Pâques,", defauts:{foi:"Chrétienne"},
+   fiche:["lien-proches","ton-fete","souhaits","longueur","langue","foi"]},
+
+  {id:"reussite", fam:"vie", nom:"Réussite", note:"Examen, diplôme, concours", titre:"Félicitations !", formule:"Bravo encore,",
+   fiche:["lien-proches","quoi-reussite","ton-fete","qualites","longueur","langue","foi"]},
+  {id:"courage",  fam:"vie", nom:"Encouragement", note:"Avant une épreuve", titre:"Tu vas y arriver", formule:"Je crois en toi,",
+   fiche:["lien-proches","epreuve","ton-fete","qualites","longueur","langue","foi"]},
+  {id:"guerison", fam:"vie", nom:"Bon rétablissement", note:"Pour qui se soigne", titre:"Prompt rétablissement", formule:"Je pense fort à toi,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue","foi"]},
+  {id:"travail",  fam:"vie", nom:"Nouveau travail", note:"Ou une promotion", titre:"Félicitations pour ce nouveau départ", formule:"Bravo encore,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue"]},
+  {id:"retraite", fam:"vie", nom:"Départ à la retraite", note:"Une vie de travail", titre:"Bonne retraite", formule:"Avec toute ma reconnaissance,",
+   fiche:["lien-travail","ton-fete","qualites","souhaits","longueur","langue"]},
+  {id:"merci",    fam:"vie", nom:"Merci", note:"Pour dire merci", titre:"Merci", formule:"Avec toute ma gratitude,",
+   fiche:["lien-proches","ton-fete","qualites","longueur","langue"]},
+  {id:"rdv",      fam:"vie", nom:"Une invitation", note:"Un rendez-vous", titre:"Ça te dit ?", formule:"J'espère que tu diras oui,",
+   fiche:["lien-crush","sortie","ton-doux","craquer","longueur","langue"]},
+  {id:"autre",    fam:"vie", nom:"Autre occasion", note:"Tout autre grand jour", titre:"Une lettre pour toi", formule:"Avec tout mon cœur,",
+   fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue","foi"]}
+];
+
+/* Les questions de la plume. `un` : un seul choix ; `max` : plusieurs, au
+   plus tant. Le libelle `q` part tel quel a la plume avec les reponses : la
+   fiche se lit comme une conversation, pas comme un formulaire. */
+var QUESTIONS = {
+  "lien-amour":   {q:"Qui est-ce pour toi ?", un:true, choix:["Mon amour","Ma femme","Mon mari","Ma copine","Mon copain","Mon crush"]},
+  "lien-crush":   {q:"Qui est-ce pour toi ?", un:true, choix:["Mon crush","Une amie","Un ami","Une collègue","Un collègue"]},
+  "lien-ex":      {q:"Qui est-ce pour toi ?", un:true, choix:["Ma copine","Mon copain","Ma femme","Mon mari","Ma fiancée","Mon fiancé"]},
+  "lien-proches": {q:"Qui est-ce pour toi ?", un:true, choix:["Mon amour","Ma mère","Mon père","Ma sœur","Mon frère","Ma fille","Mon fils","Mon amie","Mon ami","Ma collègue","Mon collègue"]},
+  "lien-mere":    {q:"Qui est-ce pour toi ?", un:true, choix:["Ma mère","Ma grand-mère","Ma belle-mère","Ma tante","La mère de mes enfants"]},
+  "lien-pere":    {q:"Qui est-ce pour toi ?", un:true, choix:["Mon père","Mon grand-père","Mon beau-père","Mon oncle","Le père de mes enfants"]},
+  "lien-amis":    {q:"Qui est-ce pour toi ?", un:true, choix:["Ma meilleure amie","Mon meilleur ami","Mon amie","Mon ami","Mon groupe d'amis"]},
+  "lien-bebe":    {q:"La lettre est pour", un:true, choix:["Les parents","La maman","Le papa","Le bébé, pour plus tard"]},
+  "lien-maries":  {q:"La lettre est pour", un:true, choix:["Les mariés","La mariée","Le marié"]},
+  "lien-travail": {q:"Qui est-ce pour toi ?", un:true, choix:["Ma patronne","Mon patron","Ma collègue","Mon collègue","Mon équipe"]},
+  "ton-doux":     {q:"Le ton", max:2, choix:["Tendre","Drôle","Poétique","Passionné","Simple et direct","Nostalgique"]},
+  "ton-fete":     {q:"Le ton", max:2, choix:["Chaleureux","Drôle","Émouvant","Poétique","Simple et direct","Solennel"]},
+  "ton-rupture":  {q:"Le ton", max:2, choix:["Respectueux","Drôle","Cash","Reconnaissant","Sans rancune","Ferme"]},
+  "ton-sobre":    {q:"Le ton", max:2, choix:["Tendre","Solennel","Simple et direct","Poétique","Émouvant"]},
+  "qualites":     {q:"Ce que cette personne a de rare", max:3, choix:["Sa gentillesse","Son humour","Son courage","Sa patience","Sa douceur","Sa force","Sa foi","Sa loyauté","Son intelligence","Son élégance","Sa générosité","Son sourire"]},
+  "craquer":      {q:"Ce qui t'a fait craquer", max:3, choix:["Son sourire","Son regard","Sa voix","Son humour","Sa gentillesse","Sa façon de parler","Son style","Son intelligence"]},
+  "rencontre":    {q:"Vous vous êtes connus", un:true, choix:["À l'école ou à la fac","Au travail","À l'église","À la mosquée","Par des amis","Sur les réseaux","Dans le quartier","En voyage"]},
+  "duree":        {q:"Depuis combien de temps", un:true, choix:["Quelques semaines","Quelques mois","Un an ou deux","Plus de cinq ans","Depuis toujours"]},
+  "souhaits":     {q:"Ce que tu lui souhaites", max:3, choix:["La santé","La réussite","L'amour","La paix","La joie","La prospérité","Des enfants","Une longue vie","La sagesse","De beaux voyages"]},
+  "faute":        {q:"Ce que tu regrettes", max:2, choix:["Une parole de trop","Un oubli","Un mensonge","Une absence","Une colère","De la jalousie"]},
+  "appris":       {q:"Ce que cette personne t'a appris", max:3, choix:["Le travail","La foi","Le respect","Le courage","Le partage","La patience","L'honnêteté","Se relever"]},
+  "pourquoi-rupture": {q:"Pourquoi", un:true, choix:["On s'est éloignés","Trop de disputes","La distance","Je ne ressens plus la même chose","On ne veut pas la même vie","Je préfère ne pas le dire"]},
+  "pourquoi-amitie":  {q:"Pourquoi", un:true, choix:["On n'a plus rien en commun","Une trahison","Tu n'es jamais là","Trop de disputes","Je préfère ne pas le dire"]},
+  "porte":        {q:"La porte", un:true, choix:["Fermée pour de bon","On peut rester en bons termes","Peut-être un jour","J'aimerais qu'on en parle"]},
+  "quoi-reussite":{q:"Quelle réussite", un:true, choix:["Un examen","Un diplôme","Un concours","Le permis","Un projet"]},
+  "epreuve":      {q:"Quelle épreuve", un:true, choix:["Un examen","Un entretien","Un concours","Une période difficile","Un nouveau départ"]},
+  "sortie":       {q:"Tu proposes", un:true, choix:["Un dîner","Un verre","Une balade","Un week-end","Une surprise"]},
+  "bebe":         {q:"C'est", un:true, choix:["Une fille","Un garçon","Des jumeaux","Un baptême"]},
+  "longueur":     {q:"La longueur", un:true, choix:["Courte","Moyenne","Longue"]},
+  "langue":       {q:"Le français", un:true, choix:["Soigné","De tous les jours","Avec nos expressions d'ici"]},
+  "foi":          {q:"Une bénédiction à la fin", un:true, choix:["Non","Chrétienne","Musulmane"]}
+};
+/* Ce qui est coche d'office tant que l'acheteur n'a rien touche. */
+var DEFAUTS = {longueur:"Moyenne", langue:"De tous les jours"};
 var PALIERS = [
   {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, le pied LE PLI reste", prix:0,     pied:true},
   {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, sans le pied LE PLI",               prix:2000,  pied:false},
   {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",              prix:5000,  pied:false},
   {id:"coffret", nom:"Le Coffret",  desc:"Tout, plus la livraison WhatsApp à l'heure choisie",prix:10000, pied:false}
 ];
+/* La plume est une OPTION, pas un palier : elle s'ajoute a l'offre choisie.
+   ⛔ Le meme prix vit dans `_shared/lettre.ts` (`PLUME`), et un controle
+   compare les deux. Ici, il ne fait que s'AFFICHER : la caisse recalcule. */
+var PLUME = {prix:500};
 /* ══════════════════════════════════════════════════════════════════════
    LA CAISSE. C'est la fonction de bord qui depose la lettre, en fixe le
    prix (⛔ jamais ce fichier : il s'edite dans la console en trois
@@ -366,7 +572,19 @@ var PALIERS = [
    « Commande recue » pour une commande que personne n'a recue.
    ══════════════════════════════════════════════════════════════════════ */
 var POINT = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-commande";
+var POINT_PLUME = "https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-plume";
 var CLE = "lepli:brouillon";
+
+/* ⛔ LA CLE PUBLIQUE DU PROJET, et elle l'est par conception : c'est celle que
+   PISTE envoie deja. Sans elle, une fonction deployee avec la verification du
+   jeton (c'est le cas de `lepli-commande`, voir PAIEMENT.md) repond 401 a
+   tout le monde, et la caisse n'aurait jamais encaisse un franc. Le defaut
+   dormait ici depuis le 2026-09-06, invisible tant que rien n'etait en ligne. */
+var CLE_PUBLIQUE = "sb_publishable_pOEeVKbTixrVx3BPIaohMg_FigTtoBH";
+function entetes(){
+  return { "Content-Type": "application/json",
+           apikey: CLE_PUBLIQUE, Authorization: "Bearer " + CLE_PUBLIQUE };
+}
 
 var $ = function(s){ return document.querySelector(s); };
 var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
@@ -375,9 +593,15 @@ var fmt = function(n){ return n === 0 ? "Offert" : String(n).replace(/\B(?=(\d{3
 /* L'etat. C'est LUI qu'on sauvegarde, jamais le DOM. */
 var E = {
   occasion:"anniv", palier:"lettre",
-  pour:"", de:"", titre:"", lettre:"", photos:[],
+  pour:"", de:"", titre:"", lettre:"", formule:"", photos:[],
   depuis:"", code:"", quand:"", quandH:"00:00",
-  wa:""
+  wa:"",
+  /* La plume. `mode` : qui ecrit. `plume` : le texte vient-il d'elle (c'est
+     ce qui se paie, pas le mode). `plumeAvant` : sa derniere lettre, gardee
+     quand on repart d'une page blanche, pour pouvoir revenir en arriere.
+     `id` : le brouillon, pour que la plume compte ses versions. */
+  mode:"plume", plume:false, plumeAvant:null, plumeFin:false, id:"",
+  fiche:{ reponses:{}, autre:"", souvenir:"", consignes:"" }
 };
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -398,6 +622,12 @@ function reprendre(){
   try {
     var v = JSON.parse(brut);
     Object.keys(E).forEach(function(k){ if (k in v) { E[k] = v[k]; } });
+    /* Un brouillon d'avant la plume n'a pas de fiche : on lui en donne une. */
+    if (!E.fiche || typeof E.fiche !== "object") { E.fiche = {}; }
+    if (!E.fiche.reponses || typeof E.fiche.reponses !== "object") { E.fiche.reponses = {}; }
+    ["autre", "souvenir", "consignes"].forEach(function(k){
+      if (typeof E.fiche[k] !== "string") { E.fiche[k] = ""; }
+    });
     return !!(E.lettre || E.pour || E.photos.length);
   } catch (e) { return false; }
 }
@@ -426,8 +656,21 @@ function serialiser(o){
     .replace(/\u2029/g, "\\u2029");
 }
 
+function occasion(id){
+  return OCCASIONS.filter(function(o){ return o.id === id; })[0]
+      || OCCASIONS.filter(function(o){ return o.id === "anniv"; })[0];
+}
+function palierDe(id){
+  return PALIERS.filter(function(p){ return p.id === id; })[0] || PALIERS[2];
+}
+/* Ce que la commande coute, tel qu'on l'AFFICHE. La caisse le recalcule. */
+function total(p){ return p.prix + (E.plume ? PLUME.prix : 0); }
+
 function donnees(){
-  var occ = OCCASIONS.filter(function(o){ return o.id === E.occasion; })[0] || OCCASIONS[1];
+  /* ⚠️ On cherchait l'occasion par sa POSITION (OCCASIONS[1], qui etait
+     l'anniversaire) : ajouter une occasion en tete aurait change la lettre
+     par defaut sans un mot. On la cherche par son nom. */
+  var occ = occasion(E.occasion);
   var pal = PALIERS.filter(function(p){ return p.id === E.palier; })[0] || PALIERS[2];
   var lignes = (E.lettre || "").split(/\n{2,}/)
     .map(function(s){ return s.replace(/\n/g, " ").trim(); })
@@ -444,6 +687,7 @@ function donnees(){
       return { src: p.src, legende: p.legende || "" };
     }),
     depuis: E.depuis || "",
+    formule: E.formule || occ.formule || "Avec tout mon cœur,",
     /* L'HEURE. Elle etait demandee a l'acheteur, promise sur l'ecran final,
        et n'entrait dans aucune lettre. C'est elle qui donne son nom au
        produit : sans elle, LE PLI s'appelle « une jolie page ».
@@ -492,7 +736,9 @@ function commande(){
     palier: E.palier,
     occasion: d.occasion, pour: d.pour, de: d.de, titre: d.titre,
     code: d.code, lettre: d.lettre, photos: d.photos,
-    depuis: d.depuis, ouvre: d.ouvre,
+    depuis: d.depuis, ouvre: d.ouvre, formule: d.formule,
+    /* Un oui ou un non, jamais un prix : la caisse sait ce que vaut la plume. */
+    plume: !!E.plume,
     whatsapp: E.wa
   };
 }
@@ -519,22 +765,256 @@ function aller(id){
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* ── Les occasions ── */
-OCCASIONS.forEach(function(o){
-  var b = document.createElement("button");
-  b.type = "button";
-  b.className = "occ" + (o.id === E.occasion ? " on" : "");
-  b.dataset.id = o.id;
-  var n = document.createElement("b"); n.textContent = o.nom;
-  var s = document.createElement("span"); s.textContent = o.note;
-  b.appendChild(n); b.appendChild(s);
-  b.addEventListener("click", function(){
-    E.occasion = o.id;
-    if (!E.titre) { $("#f-titre").value = o.titre; E.titre = o.titre; }
-    $$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === o.id); });
-    garder(); peindre(); aller("e-lettre");
+/* ── Les occasions, par familles ── */
+FAMILLES.forEach(function(f){
+  var h = document.createElement("h2"); h.className = "fam"; h.textContent = f.nom;
+  var g = document.createElement("div"); g.className = "occasions";
+  OCCASIONS.filter(function(o){ return o.fam === f.id; }).forEach(function(o){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "occ" + (o.id === E.occasion ? " on" : "");
+    b.dataset.id = o.id;
+    var n = document.createElement("b"); n.textContent = o.nom;
+    var s = document.createElement("span"); s.textContent = o.note;
+    b.appendChild(n); b.appendChild(s);
+    b.addEventListener("click", function(){ choisirOccasion(o); });
+    g.appendChild(b);
   });
-  $("#liste-occasions").appendChild(b);
+  $("#liste-occasions").appendChild(h);
+  $("#liste-occasions").appendChild(g);
+});
+
+/* Un titre ou une formule PAR DEFAUT suit l'occasion ; un titre ecrit par
+   l'acheteur, jamais. Changer d'avis entre « Anniversaire » et « Noel » ne
+   doit pas laisser « Joyeux anniversaire » en tete d'une lettre de Noel. */
+function parDefaut(cle, v){ return OCCASIONS.some(function(o){ return o[cle] === v; }); }
+
+/* La prochaine fois que tombe un jour fixe (le 25 decembre, le 14 fevrier). */
+function prochain(mmjj){
+  var t = new Date(); t.setHours(0, 0, 0, 0);
+  var m = +mmjj.slice(0, 2), j = +mmjj.slice(3, 5);
+  var d = new Date(t.getFullYear(), m - 1, j);
+  if (d < t) { d = new Date(t.getFullYear() + 1, m - 1, j); }
+  return d.getFullYear() + "-" + ("0" + m).slice(-2) + "-" + ("0" + j).slice(-2);
+}
+
+function choisirOccasion(o){
+  E.occasion = o.id;
+  if (!E.titre || parDefaut("titre", E.titre)) { E.titre = o.titre; $("#f-titre").value = o.titre; }
+  if (!E.formule || parDefaut("formule", E.formule)) { E.formule = o.formule; $("#f-formule").value = o.formule; }
+  /* Noel s'ouvre le 25 a minuit : on le propose, sans jamais ecraser une date
+     que l'acheteur a deja choisie. */
+  if (o.jour && !E.quand) {
+    E.quand = prochain(o.jour); E.quandH = "00:00";
+    $("#f-quand").value = E.quand; $("#f-quand-h").value = "00:00";
+  }
+  $$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === o.id); });
+  dessinerFiche();
+  garder(); peindre(); aller("e-lettre");
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   LA FICHE DE LA PLUME
+   ══════════════════════════════════════════════════════════════════════ */
+function dessinerFiche(){
+  var o = occasion(E.occasion);
+  var R = E.fiche.reponses;
+  var bac = $("#questions");
+  bac.textContent = "";
+  $("#g-autre").hidden = o.id !== "autre";
+  o.fiche.forEach(function(qid){
+    var Q = QUESTIONS[qid];
+    if (!Q) { return; }
+    /* Les choix d'office ne s'appliquent qu'a une question jamais touchee :
+       une question videe expres reste vide. */
+    if (!(qid in R)) {
+      var d = (o.defauts && o.defauts[qid]) || DEFAUTS[qid];
+      if (d) { R[qid] = [d]; }
+    }
+    var box = document.createElement("div");
+    box.className = "q"; box.dataset.q = qid;
+    box.setAttribute("role", "group");
+    var t = document.createElement("p");
+    t.className = "q-t"; t.id = "q-" + qid; t.textContent = Q.q;
+    if (Q.max) {
+      var sp = document.createElement("span"); sp.textContent = Q.max + " au plus";
+      t.appendChild(sp);
+    }
+    box.setAttribute("aria-labelledby", t.id);
+    var pu = document.createElement("div"); pu.className = "puces";
+    Q.choix.forEach(function(c){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "puce"; b.textContent = c; b.dataset.q = qid;
+      b.setAttribute("aria-pressed", (R[qid] || []).indexOf(c) >= 0 ? "true" : "false");
+      b.addEventListener("click", function(){ basculer(qid, c); });
+      pu.appendChild(b);
+    });
+    box.appendChild(t); box.appendChild(pu);
+    bac.appendChild(box);
+  });
+  marquerPleines();
+}
+
+function basculer(qid, c){
+  var Q = QUESTIONS[qid];
+  var r = (E.fiche.reponses[qid] || []).slice();
+  var i = r.indexOf(c);
+  if (i >= 0) { r.splice(i, 1); }
+  else if (Q.un) { r = [c]; }
+  else if (r.length < (Q.max || 99)) { r.push(c); }
+  else { return; }   /* pleine : on ne remplace pas en silence un choix deja fait */
+  E.fiche.reponses[qid] = r;
+  $$('.puce[data-q="' + qid + '"]').forEach(function(b){
+    b.setAttribute("aria-pressed", r.indexOf(b.textContent) >= 0 ? "true" : "false");
+  });
+  marquerPleines();
+  garder();
+}
+
+function marquerPleines(){
+  $$("#questions .q").forEach(function(box){
+    var Q = QUESTIONS[box.dataset.q];
+    var n = (E.fiche.reponses[box.dataset.q] || []).length;
+    box.classList.toggle("plein", !!Q.max && n >= Q.max);
+  });
+}
+
+/* Ce qui part a la plume : la fiche, lisible comme une conversation. */
+function ficheEnvoyee(){
+  var o = occasion(E.occasion);
+  return {
+    occasion: o.id, autre: E.fiche.autre,
+    pour: E.pour, de: E.de,
+    reponses: o.fiche
+      .filter(function(q){ return QUESTIONS[q] && (E.fiche.reponses[q] || []).length; })
+      .map(function(q){ return { q: QUESTIONS[q].q, r: E.fiche.reponses[q] }; }),
+    souvenir: E.fiche.souvenir, consignes: E.fiche.consignes,
+    brouillon: E.id
+  };
+}
+
+function peindreMode(){
+  $$(".m").forEach(function(b){
+    var on = b.dataset.mode === E.mode;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-checked", on ? "true" : "false");
+  });
+  $("#fiche").hidden = E.mode !== "plume";
+  $("#btn-plume").textContent = E.plume ? "Une autre version" : "Écrire ma lettre";
+  $("#btn-plume").disabled = !!E.plumeFin;
+  $("#f-lettre").placeholder = E.mode === "plume"
+    ? "La plume écrira ici. Tu pourras tout retoucher."
+    : "Écris comme tu parles.\n\nUne ligne vide sépare deux paragraphes.";
+  var garde = !E.plume && !!E.plumeAvant;
+  $("#plume-compte").hidden = !E.plume && !garde;
+  $("#plume-compte-t").textContent = E.plume
+    ? "La plume a écrit cette lettre : elle compte " + fmt(PLUME.prix) + ", même retouchée."
+    : "Page blanche : la plume n'est plus comptée.";
+  $("#btn-blanche").hidden = !E.plume;
+  $("#btn-remettre").hidden = !garde;
+}
+
+function dire(t){
+  $("#plume-mot").textContent = t;
+  $("#plume-mot").hidden = !t;
+}
+
+var PAS_LA = "La plume n'a pas répondu. Réessaie dans un moment, ou écris ta lettre toi-même : ta fiche est gardée.";
+var MOTS = {
+  "deuil": "LE PLI n'écrit pas encore les lettres de deuil. Nous préférons le faire bien plutôt que vite.",
+  "nuisible": "La plume ne peut pas écrire cette lettre-là. Change tes consignes et réessaie.",
+  "hors-sujet": "La plume n'a pas compris quelle lettre écrire. Précise l'occasion ou tes consignes.",
+  "limite": "Tu as eu tes trois versions. Retouche celle-ci à la main : c'est comme ça qu'elle devient la tienne.",
+  "occupee": "La plume est très demandée en ce moment. Réessaie dans une minute.",
+  "prénom": "Donne d'abord son prénom, tout en haut.",
+  "occasion": "Dis d'abord quelle occasion.",
+  "pas-branchee": "La plume n'est pas encore ouverte. Écris ta lettre toi-même, ou reviens bientôt : ta fiche est gardée."
+};
+function motErreur(code, j){
+  if (j.refus) { return MOTS[j.refus] || "La plume a buté sur cette version. Réessaie."; }
+  if (j.erreur && MOTS[j.erreur]) { return MOTS[j.erreur]; }
+  if (code === 404) { return MOTS["pas-branchee"]; }
+  return PAS_LA;
+}
+
+function ecrireAvecPlume(){
+  var f = ficheEnvoyee();
+  if (!String(f.pour).trim()) { dire(MOTS["prénom"]); $("#f-pour").focus(); return; }
+  if (f.occasion === "autre" && !String(f.autre).trim()) { dire(MOTS.occasion); $("#f-autre").focus(); return; }
+  if (!POINT_PLUME) { dire(MOTS["pas-branchee"]); return; }
+  var b = $("#btn-plume");
+  b.disabled = true; b.textContent = "La plume écrit…";
+  dire("");
+  fetch(POINT_PLUME, { method: "POST", headers: entetes(), body: JSON.stringify(f) })
+    .then(function(r){
+      return r.json().catch(function(){ return {}; })
+        .then(function(j){ return { code: r.status, j: j || {} }; });
+    })
+    .then(function(rep){
+      if (rep.j.ok) { poserPlume(rep.j); return; }
+      if (rep.j.erreur === "limite") { E.plumeFin = true; }
+      peindreMode();
+      dire(motErreur(rep.code, rep.j));
+    })
+    .catch(function(){ peindreMode(); dire(PAS_LA); });
+}
+
+/* ⛔ La reponse est du TEXTE et le reste : elle va dans des champs, jamais
+   dans du HTML. Elle a ete relue par le serveur, mais un navigateur se
+   relit aussi. */
+function poserPlume(j){
+  var corps = (Array.isArray(j.lettre) ? j.lettre : []).map(String).filter(Boolean);
+  if (!corps.length) { peindreMode(); dire(PAS_LA); return; }
+  E.titre = String(j.titre || E.titre);
+  E.lettre = corps.join("\n\n");
+  if (j.formule) { E.formule = String(j.formule); }
+  E.plume = true; E.plumeAvant = null;
+  E.plumeFin = j.restantes === 0;
+  $("#f-titre").value = E.titre;
+  $("#f-lettre").value = E.lettre;
+  $("#f-formule").value = E.formule;
+  $("#c-lettre").textContent = String(E.lettre.length);
+  var reste = typeof j.restantes === "number" ? j.restantes : null;
+  dire("Voilà ta lettre. Relis-la et change ce que tu veux : ce sont tes mots maintenant."
+    + (reste === 0 ? " C'était la dernière version, à toi de la finir."
+       : reste ? " Encore " + reste + (reste > 1 ? " versions possibles." : " version possible.") : ""));
+  peindreMode(); garder(); peindre();
+  $("#f-titre").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+$$(".m").forEach(function(b){
+  b.addEventListener("click", function(){
+    E.mode = b.dataset.mode;
+    peindreMode(); garder();
+  });
+});
+$("#btn-plume").addEventListener("click", ecrireAvecPlume);
+
+/* Repartir d'une page blanche : la plume n'est plus comptee, et sa lettre
+   reste a portee d'un clic. Toute suppression se rattrape. */
+$("#btn-blanche").addEventListener("click", function(){
+  E.plumeAvant = { titre: E.titre, lettre: E.lettre, formule: E.formule };
+  E.plume = false; E.lettre = "";
+  $("#f-lettre").value = ""; $("#c-lettre").textContent = "0";
+  dire("");
+  peindreMode(); garder(); peindre();
+});
+$("#btn-remettre").addEventListener("click", function(){
+  var a = E.plumeAvant;
+  if (!a) { return; }
+  E.titre = a.titre; E.lettre = a.lettre; E.formule = a.formule;
+  E.plume = true; E.plumeAvant = null;
+  $("#f-titre").value = E.titre; $("#f-lettre").value = E.lettre; $("#f-formule").value = E.formule;
+  $("#c-lettre").textContent = String(E.lettre.length);
+  peindreMode(); garder(); peindre();
+});
+
+/* Les zones libres de la fiche. */
+[["f-autre", "autre"], ["f-souvenir", "souvenir"], ["f-consignes", "consignes"]].forEach(function(x){
+  $("#" + x[0]).addEventListener("input", function(){
+    E.fiche[x[1]] = this.value;
+    garder();
+  });
 });
 
 /* ── Les paliers ── */
@@ -547,19 +1027,29 @@ PALIERS.forEach(function(p){
   var n = document.createElement("b"); n.textContent = p.nom;
   var d = document.createElement("span"); d.textContent = p.desc;
   t.appendChild(n); t.appendChild(d);
-  var x = document.createElement("div"); x.className = "px"; x.textContent = fmt(p.prix);
+  var x = document.createElement("div"); x.className = "px"; x.textContent = fmt(total(p));
   b.appendChild(t); b.appendChild(x);
   b.addEventListener("click", function(){
     E.palier = p.id;
     $$(".pal").forEach(function(y){ y.classList.toggle("on", y.dataset.id === p.id); });
+    peindrePaliers();
     peindreReglement();
     garder(); peindre();
   });
   $("#liste-paliers").appendChild(b);
 });
 
+/* Les prix de chaque offre, plume comprise. ⚠️ Avec la plume, l'offre
+   « Gratuit » coute 500 F : on l'ecrit sur la carte, pas en petit dessous. */
+function peindrePaliers(){
+  $$(".pal").forEach(function(b){
+    b.querySelector(".px").textContent = fmt(total(palierDe(b.dataset.id)));
+  });
+  $("#plume-note").hidden = !E.plume;
+}
+
 /* ── Les champs. Un seul chemin : champ -> etat -> sauvegarde -> apercu. ── */
-var CHAMPS = { "f-pour":"pour", "f-de":"de", "f-titre":"titre", "f-lettre":"lettre",
+var CHAMPS = { "f-pour":"pour", "f-de":"de", "f-titre":"titre", "f-lettre":"lettre", "f-formule":"formule",
                "f-depuis":"depuis", "f-code":"code", "f-quand":"quand",
                "f-quand-h":"quandH", "f-wa":"wa" };
 Object.keys(CHAMPS).forEach(function(id){
@@ -568,7 +1058,12 @@ Object.keys(CHAMPS).forEach(function(id){
   el.addEventListener("input", function(){
     if (id === "f-code") { el.value = el.value.replace(/\D/g, "").slice(0, 4); }
     E[CHAMPS[id]] = el.value;
-    if (id === "f-lettre") { $("#c-lettre").textContent = String(el.value.length); }
+    if (id === "f-lettre") {
+      $("#c-lettre").textContent = String(el.value.length);
+      /* Tout effacer a la main, c'est repartir d'une page blanche : la
+         plume n'est plus comptee. Retoucher sa lettre, si. */
+      if (E.plume && !el.value.trim()) { E.plume = false; E.plumeAvant = null; peindreMode(); }
+    }
     garder();
     peindre();
   });
@@ -632,7 +1127,7 @@ $("#f-photo").addEventListener("change", function(ev){
 $$("[data-vers]").forEach(function(b){
   b.addEventListener("click", function(){ aller(b.dataset.vers); });
 });
-$("#vers-palier").addEventListener("click", function(){ aller("e-palier"); });
+$("#vers-palier").addEventListener("click", function(){ peindrePaliers(); aller("e-palier"); });
 /* ⛔ Une lettre OFFERTE n'a pas de caisse. La ligne d'avant disait
    « aller(p.prix === 0 ? "e-paiement" : "e-paiement") » : les deux branches
    etaient identiques, donc l'intention avait ete ecrite puis perdue, et le
@@ -641,15 +1136,18 @@ $("#vers-palier").addEventListener("click", function(){ aller("e-palier"); });
    pour zero franc. On garde UN seul ecran (le WhatsApp se demande dans les
    deux cas) et c'est l'ecran qui change de nature. */
 function peindreReglement(){
-  var p = PALIERS.filter(function(x){ return x.id === E.palier; })[0];
-  var offert = p.prix === 0;
-  $("#p-somme").textContent = fmt(p.prix);
+  var p = palierDe(E.palier);
+  /* ⚠️ Offerte veut dire ZERO FRANC, pas « palier gratuit » : avec la plume,
+     l'offre gratuite coute 500 F et passe par la caisse. */
+  var t = total(p);
+  var offert = t === 0;
+  $("#p-somme").textContent = fmt(t);
   $("#bloc-reglement").hidden = offert;
   $("#pay-titre").textContent = offert ? "Où t'envoyer ta lettre." : "Le règlement.";
   $("#pay-sous").innerHTML = offert
     ? "Elle est offerte. Dis-nous seulement où t'envoyer le lien."
     : "Tu vas payer sur une page sécurisée, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>";
-  $("#btn-commander").textContent = offert ? "Recevoir ma lettre" : ("Payer " + fmt(p.prix));
+  $("#btn-commander").textContent = offert ? "Recevoir ma lettre" : ("Payer " + fmt(t));
 }
 
 $("#vers-paiement").addEventListener("click", function(){
@@ -718,7 +1216,7 @@ function envoyer(c, p){
 
   fetch(POINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: entetes(),
     body: JSON.stringify(c)
   }).then(function(r){
     return r.json().then(function(j){ return { code: r.status, j: j }; });
@@ -763,6 +1261,12 @@ function envoyer(c, p){
 peindreReglement();
 
 var repris = reprendre();
+/* L'identifiant du brouillon : la plume compte ses versions par lui. */
+if (!/^[a-z0-9]{8,32}$/.test(E.id || "")) {
+  var A = "abcdefghijkmnpqrstuvwxyz23456789", t8 = new Uint8Array(16);
+  try { crypto.getRandomValues(t8); } catch (e) { for (var k = 0; k < 16; k++) { t8[k] = Math.floor(Math.random() * 256); } }
+  E.id = Array.prototype.map.call(t8, function(o){ return A[o % A.length]; }).join("");
+}
 Object.keys(CHAMPS).forEach(function(id){
   var el = document.getElementById(id);
   if (el && E[CHAMPS[id]]) { el.value = E[CHAMPS[id]]; }
@@ -771,6 +1275,12 @@ $("#c-lettre").textContent = String((E.lettre || "").length);
 dessinerPhotos();
 $$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === E.occasion); });
 $$(".pal").forEach(function(x){ x.classList.toggle("on", x.dataset.id === E.palier); });
+$("#f-autre").value = E.fiche.autre;
+$("#f-souvenir").value = E.fiche.souvenir;
+$("#f-consignes").value = E.fiche.consignes;
+dessinerFiche();
+peindreMode();
+peindrePaliers();
 
 if (repris) {
   $("#repris").hidden = false;

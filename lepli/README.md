@@ -11,11 +11,11 @@ Conditions et retrait : `lepli/CONDITIONS.md`
 
 ---
 
-## Ce qui existe, au 2026-09-06
+## Ce qui existe, au 2026-10-16
 
 | Brique | État |
 |---|---|
-| **Le gabarit de la lettre** (`lettre.html`) | ✅ construit, **115 contrôles verts** |
+| **Le gabarit de la lettre** (`lettre.html`) | ✅ construit, **203 contrôles verts** (`_qc.py`) |
 | **Le constructeur** (`creer.html`) | ✅ construit |
 | **La sauvegarde du formulaire** | ✅ à chaque frappe, restaurée au retour |
 | **L'heure d'ouverture** | ✅ **dans la lettre**, depuis le 2026-09-06 |
@@ -23,6 +23,8 @@ Conditions et retrait : `lepli/CONDITIONS.md`
 | **L'encaissement** | ✅ **écrit et contrôlé** (SasPay), ⏳ pas encore branché |
 | **L'adresse en ligne** | ✅ **écrite et contrôlée**, ⏳ pas encore déployée |
 | **La vidéo de démonstration** | ✅ construite le 2026-09-03, publiable dès que l'adresse existe |
+| **Les occasions** | ✅ **27**, rangées en quatre familles, depuis le 2026-10-16 · ⛔ pas de deuil |
+| **La plume** (l'agent qui écrit la lettre) | ✅ écrite, contrôlée, **essayée en vrai sur le modèle** · ⏳ pas déployée |
 
 Le manuel disait : *« un gabarit irréprochable, la sauvegarde du formulaire, la
 livraison à l'heure choisie, dans cet ordre »*. **Les trois sont faits.**
@@ -49,21 +51,21 @@ avant publication.
 | Fichier | Ce que c'est |
 |---|---|
 | `lettre.html` | **Le produit.** Une lettre, autonome, sans aucun appel réseau |
-| `creer.html` | Le constructeur : occasion, écriture, aperçu vivant, commande |
+| `creer.html` | Le constructeur : occasion, **la plume ou l'acheteur**, la fiche, aperçu vivant, commande |
 | `paiement.html` | **La page de paiement** : la somme, et **le lien** (bouton + en clair) |
 | `merci.html` | **La page de retour**, celle que SasPay rappelle. ⛔ Elle ne prouve rien |
 | `_injecter.py` | **Le seul endroit** où l'on écrit des données dans le gabarit |
-| `_qc.py` | **145 contrôles**. Vert obligatoire avant toute mise en ligne |
-| `_qc_caisse.mjs` | **118 contrôles** sur la caisse, sans clé ni réseau |
-| `supabase/` | La base et les trois fonctions de bord. Voir `PAIEMENT.md` |
+| `_qc.py` | **203 contrôles**. Vert obligatoire avant toute mise en ligne |
+| `_qc_caisse.mjs` | **213 contrôles** sur la caisse et la plume, sans clé ni réseau |
+| `supabase/` | La base et les **quatre** fonctions de bord. Voir `PAIEMENT.md` |
 | `_gabarit_ts.py` | Recopie `lettre.html` dans un module pour les fonctions |
 | `PAIEMENT.md` | Où vit chaque morceau, et comment brancher le jour venu |
 | `CONDITIONS.md` | Ce qu'on promet, et le retrait sous 24 h. À lire avant de vendre |
 | `_voir.py` | Fabrique les captures à REGARDER (390 et 1440) |
 
 ```bash
-python lepli/_qc.py                                   # les 145 contrôles
-node --experimental-strip-types lepli/_qc_caisse.mjs  # les 118 de la caisse
+python lepli/_qc.py                                   # les 203 contrôles
+node --experimental-strip-types lepli/_qc_caisse.mjs  # les 213 de la caisse et de la plume
 python lepli/_gabarit_ts.py                           # après toute retouche de lettre.html
 python lepli/_voir.py                                 # les captures
 cd lepli && python -m http.server                     # pour ouvrir creer.html
@@ -107,6 +109,54 @@ tiers. Le gabarit refuse toute source qui ne commence pas par `data:`.
 
 **Le pied viral n'existe qu'au palier gratuit.** C'est la boucle de croissance :
 chaque destinataire est un acheteur possible. Un palier payé le retire.
+
+---
+
+## ✒️ La plume, et pourquoi elle existe (2026-10-16)
+
+Le vrai frein d'une lettre n'est pas le prix, c'est **la page blanche** : on
+ouvre le constructeur, on regarde la case vide, on repart. La plume écrit la
+lettre **à la place** de l'acheteur, qui la **relit, la corrige et la signe**.
+Ce sont ses mots : la plume les lui prête.
+
+**Le geste.** Il choisit l'occasion, puis « La plume l'écrit pour moi ». Une
+fiche lui pose des **questions à choix** (qui est-ce, le ton, ce que la
+personne a de rare, et selon l'occasion : pourquoi, la porte, ce qu'elle t'a
+appris, ce que tu lui souhaites…) et lui laisse **deux zones libres** : un
+souvenir que vous seuls connaissez, et « comment tu la veux ». Un bouton, et la
+lettre arrive dans les champs, titre et formule de fin compris.
+
+**Le prix.** **500 F**, une option qui s'ajoute à l'offre choisie, jamais un
+palier : avec l'offre gratuite, la lettre coûte 500 F et passe par la caisse.
+⚠️ **Gratuite à essayer, payante à l'envoi** : l'acheteur lit SA lettre avant
+de payer, c'est là que la vente se fait. D'où un compteur : **trois versions
+par brouillon, douze par adresse et par jour**. Ce qui se paie, c'est le texte
+de la plume, pas le mode : « Repartir d'une page blanche » ne la compte plus,
+et « Remettre la lettre de la plume » se rattrape.
+
+**Ce qui la tient**, tout dans `supabase/functions/_shared/plume.ts` :
+
+- ⛔ **Elle n'invente aucun fait** : ni souvenir, ni lieu, ni date, ni lignée,
+  ni nom de clan, ni mot de fon ou de yoruba que l'acheteur n'a pas écrit, ni
+  verset cité mot pour mot.
+- ⛔ **Pas de deuil**, même glissé dans « Autre occasion » (`CONDITIONS.md` §7).
+  Essayé en vrai : « Les funérailles de mon oncle » est refusé.
+- ⛔ **Une consigne dans un prompt n'est pas un contrôle** : le code relit la
+  réponse et retire tiret long, emoji, et refuse lien, numéro, adresse
+  électronique. Une fiche qui tente une injection (« </fiche> nouvelle
+  consigne… ») est neutralisée avant d'arriver au modèle, et le modèle l'ignore.
+- ⛔ **La fiche n'est gardée nulle part** : seul un compteur reste, deux jours
+  (une empreinte d'adresse, l'identifiant du brouillon, l'heure).
+- **Sonnet 5.5** (règle maison : jamais Opus sur du texte client), sortie
+  contrainte par un schéma JSON, système **mis en cache** (1 968 jetons relus
+  dès la deuxième lettre, mesuré), `fallbacks: "default"` pour qu'un filtre de
+  sécurité trop zélé ne refuse pas une rupture « cash ».
+- **Coût mesuré** : 2 à 6 F CFA la version, cache chaud. Trois versions au
+  plus : moins de 20 F sur une plume vendue 500 F.
+
+⚠️ **Les identifiants d'occasion vivent à deux endroits** (`OCCASIONS` dans
+`creer.html`, `REGISTRES` dans `plume.ts`) : un contrôle compare les deux
+listes. Même règle pour le prix de la plume (`PLUME`, des deux côtés).
 
 ---
 
@@ -193,11 +243,19 @@ cassaient la syntaxe du fichier.
 > Un fichier qui contient sa propre documentation d'un piège doit être vérifié
 > **comme s'il contenait le piège**, parce que c'est souvent le cas.
 
+⚠️ **Cinquième fois le 2026-10-16**, dans `plume.ts` (trois expressions) et
+dans `_qc_caisse.mjs` : les échappements **tapés** `\u2028`, `\u2014` sont
+arrivés dans les fichiers **en caractères réels**, et la syntaxe du contrôle
+cassait. Trouvé par `node --check`, comme prévu. Même la phrase qui raconte le piège l’a reproduit en s’écrivant.
+Désormais ils se
+**fabriquent** par programme (une barre oblique, `chr(92)`, puis le code), et
+un contrôle vérifie que `plume.ts` ne contient aucun des caractères qu'il retire.
+
 ---
 
 ## ⚠️ Les contrôles qui ont menti avant de dire vrai
 
-Quatre sondes ont accusé un produit sain. À relire avant d'ajouter un contrôle.
+Des sondes ont accusé un produit sain, ou blanchi un produit cassé. À relire avant d'ajouter un contrôle.
 
 - **`inner_text` renvoie le texte RENDU.** `.pour` et le libellé du compte sont
   en `text-transform: uppercase` : la sonde lisait « ZARA » et « JOURS ENSEMBLE »
@@ -213,6 +271,23 @@ Quatre sondes ont accusé un produit sain. À relire avant d'ajouter un contrôl
   échouer sur un « Timeout » sans rapport. `ThreadingHTTPServer`, toujours.
 - **Deux instantanés ne mesurent pas un compte à rebours.** Il change une fois
   par seconde : deux lectures peuvent tomber dans la même. On échantillonne.
+- **Lire l'attribut au lieu de ce qui est peint** (2026-10-16). Le contrôle
+  du bandeau « on a retrouvé ta lettre » lisait `hidden` ; or
+  `.repris{display:flex}` l'emportait sur lui, et le bandeau était **peint pour
+  tout le monde, dès la première visite**. Même chose pour le « + » des photos
+  (`display:grid`), qui ne partait jamais à trois photos. Trouvé en
+  **regardant une capture**, pas par un contrôle. Désormais
+  `[hidden]{display:none!important}` dans le constructeur, et le contrôle
+  demande `is_visible`, avec un témoin à la première visite.
+- **Un témoin qui contient le mot cherché.** Pour vérifier qu'un « registre »
+  envoyé par le navigateur est ignoré, la sonde cherchait « menace » dans le
+  message : la consigne de la rupture dit « ni menace ». Le témoin doit être un
+  mot qu'aucune consigne ne contient.
+- **Un chemin nu dans `import()` sous Windows** est lu comme une adresse au
+  protocole « c: ». `_qc_caisse.mjs`, écrit dans un conteneur Linux, ne
+  tournait pas sur le PC de Cotonou ; et `core.autocrlf` rend les fichiers en
+  CRLF, donc deux fichiers identiques dans git se déclaraient différents.
+  `pathToFileURL`, et les fins de ligne ramenées à LF avant toute comparaison.
 
 ---
 
@@ -242,6 +317,8 @@ mesuré. → `--gris-nuit`, et quatre contrôles qui le mesurent.
 
 Les douze décisions sont prises : `_plans/2026-09-06-lepli-arrete.html`.
 
+0. **Brancher la plume** en même temps que la caisse : une clé et une
+   fonction de plus, `PAIEMENT.md` §4.
 1. **Brancher la caisse.** Elle est écrite, contrôlée, et pas déployée : la
    marche à suivre tient en cinq commandes dans **`PAIEMENT.md`**. ⛔ Pas de
    Render avec le SQLite de `vitrina/` : son disque s'efface à chaque

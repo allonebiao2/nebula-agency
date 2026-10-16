@@ -9,15 +9,18 @@ import { expireLe, jeton, lireCommande } from '../_shared/lettre.ts'
       supabase functions deploy lepli-commande
 
   DEUX CHEMINS, UN SEUL DÉPÔT
-    Palier offert → la lettre est vivante tout de suite, on rend son adresse.
-    Palier payé   → la lettre attend, on rend une adresse de paiement.
-    ⛔ Le palier gratuit ne passe pas par la caisse : c'est la décision du
-      2026-09-06, et elle vaut ici comme dans le constructeur.
+    Lettre à 0 F → la lettre est vivante tout de suite, on rend son adresse.
+    Lettre payée → la lettre attend, on rend une adresse de paiement.
+    ⛔ Une lettre à zéro franc ne passe pas par la caisse : c'est la décision
+      du 2026-09-06, et elle vaut ici comme dans le constructeur.
+    ⚠️ Depuis la plume (2026-10-16), « palier gratuit » ne veut plus dire
+      « zéro franc » : l'offre gratuite avec la plume coûte 500 F.
 
   ⛔ LE PRIX NE VIENT JAMAIS DU NAVIGATEUR. Il est lu dans le barème de
     `_shared/lettre.ts`, à partir du seul identifiant de palier que le client
-    envoie. Si le navigateur pouvait annoncer le montant, on paierait 0 F pour
-    un Coffret, et ça ne se verrait qu'en comptant la caisse.
+    envoie, et d'un oui ou d'un non pour la plume (`prixTotal`). Si le
+    navigateur pouvait annoncer le montant, on paierait 0 F pour un Coffret,
+    et ça ne se verrait qu'en comptant la caisse.
 
   ⛔ ON NE STOCKE JAMAIS SON HTML. On stocke ses données. Une porte publique
     qui accepte du HTML et le sert sur notre domaine est un hébergeur de pages
@@ -46,7 +49,10 @@ Deno.serve(async (req: Request) => {
 
   const lu = lireCommande(d)
   if (!lu.ok) return repondre({ ok: false, erreur: lu.erreur }, 400)
-  const { lettre, palier } = lu
+  const { lettre, palier, prix, plume } = lu
+  /* Le nom de l'offre tel que l'acheteur le lira sur la page de paiement et
+     sur son reçu. */
+  const offre = plume ? `${palier.nom} + la plume` : palier.nom
 
   /* Le WhatsApp de l'ACHETEUR : c'est là qu'on lui rend SON lien. On ne
      demande jamais celui de la destinataire, on ne lui écrit pas. */
@@ -61,12 +67,14 @@ Deno.serve(async (req: Request) => {
   )
 
   const j = jeton()
-  const offert = palier.prix === 0
+  /* ⚠️ Offerte veut dire « zéro franc », pas « palier gratuit » : avec la
+     plume, l'offre gratuite coûte 500 F et passe par la caisse. */
+  const offert = prix === 0
 
   const { error } = await db.rpc('lepli_deposer', {
     p_jeton: j,
     p_palier: palier.id,
-    p_prix: palier.prix,
+    p_prix: prix,
     p_donnees: lettre,
     p_whatsapp: whatsapp,
     /* Offerte : vivante immédiatement. Payée : elle attend son argent. */
@@ -101,8 +109,8 @@ Deno.serve(async (req: Request) => {
     nomDefaut: 'Client LE PLI',
   }, {
     reference: j,
-    montant: palier.prix,
-    description: `LE PLI · ${palier.nom}`,
+    montant: prix,
+    description: `LE PLI · ${offre}`,
   })
   if (!s.ok) {
     console.error('saspay session', j, s.erreur)
@@ -113,7 +121,7 @@ Deno.serve(async (req: Request) => {
      portera peut-être que l'identifiant de session. Sans ce répertoire, un
      paiement bien réel serait impossible à rattacher à une lettre. */
   const { error: eS } = await db.rpc('lepli_paiement_session', {
-    p_session: s.session, p_jeton: j, p_montant: palier.prix,
+    p_session: s.session, p_jeton: j, p_montant: prix,
     p_devise: r.devise, p_url: s.url,
   })
   if (eS) console.error('saspay session non enregistrée', j, eS.message)
@@ -123,6 +131,6 @@ Deno.serve(async (req: Request) => {
      dans le navigateur est un prix qu'on peut reecrire dans la console. */
   return repondre({
     ok: true, offert: false, jeton: j, adresse, paiement: s.url,
-    palier: palier.nom, prix: palier.prix,
+    palier: offre, prix,
   })
 })

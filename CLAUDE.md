@@ -394,7 +394,20 @@
   3e sérialiseur = une 3e vérité** : Python écrivait `"a": 1` là où les deux
   autres écrivent `"a":1` → séparateurs compacts partout, et le contrôle exige
   **le même octet** des deux implémentations · **QC 115 → 127 + 118**
-- ⏳ **CE QUI RESTE** : **brancher** la caisse (5 commandes, `PAIEMENT.md`) ·
+- ✒️ **LA PLUME ET 27 OCCASIONS (2026-10-16)** : l'agent écrit la lettre à la
+  place de l'acheteur, qui la relit et la signe (option **500 F** qui s'ajoute à
+  l'offre, **gratuite à essayer**, 3 versions par brouillon), à partir d'une
+  **fiche** : questions à choix propres à l'occasion + un souvenir + « comment tu
+  la veux ». **27 occasions en 4 familles** (ruptures de couple et d'amitié, fêtes
+  des pères, Noël, Tabaski…), ⛔ **pas de deuil**. Sonnet 5.5, fiche gardée nulle
+  part, réponse relue par le code. Essayée en vrai : injection ignorée, deuil
+  déguisé refusé, 2 à 6 F la version. ⛔ **Le constructeur n'envoyait pas la clé
+  publique Supabase** : 401 garanti au lancement, corrigé. QC **203 + 213**.
+  ⚠️ **Le Coffret promet encore « la livraison WhatsApp à l'heure choisie »**,
+  contraire à « NEBULA n'écrit jamais à la destinataire » : à trancher. Détail :
+  `_memoire/conversations/2026-10-16-lepli-plume.md`.
+- ⏳ **CE QUI RESTE** : **brancher** la caisse (5 commandes, `PAIEMENT.md`) et la
+  plume (`ANTHROPIC_API_KEY` + `lepli-plume`) ·
   ⛔ **PAS de Render avec le SQLite de `vitrina/`** : le disque de Render
   s'efface à chaque déploiement (c'est ce qui avait fait disparaître les 2 PDF
   des partenaires) — un déploiement, et les lettres payées n'existent plus ·

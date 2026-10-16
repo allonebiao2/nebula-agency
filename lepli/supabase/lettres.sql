@@ -214,6 +214,46 @@ BEGIN
   RETURN v_fait;
 END $$;
 
+-- ── 3 bis. la plume ─────────────────────────────────────────────────────────
+--
+-- La plume écrit la lettre à la place de l'acheteur, et elle est GRATUITE À
+-- ESSAYER : il doit lire SA lettre avant de payer. Une porte publique qui
+-- écrit gratuitement serait donc un générateur de textes ouvert à tous ; ce
+-- compteur la ferme à trois versions par brouillon et douze par adresse et
+-- par jour (les nombres vivent dans `_shared/plume.ts`, pas ici).
+--
+-- ⛔ ON NE GARDE NI LA FICHE, NI LA LETTRE, NI L'ADRESSE EN CLAIR : une
+-- empreinte, l'identifiant du brouillon, l'heure. Et deux jours au plus.
+CREATE TABLE IF NOT EXISTS lepli.plume_journal (
+  id        bigserial   PRIMARY KEY,
+  ip        text        NOT NULL,
+  brouillon text        NOT NULL DEFAULT '',
+  cree_le   timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS plume_journal_ip        ON lepli.plume_journal (ip, cree_le DESC);
+CREATE INDEX IF NOT EXISTS plume_journal_brouillon ON lepli.plume_journal (brouillon, cree_le DESC);
+
+-- Rend le numéro de la version accordée (1, 2, 3…), ou -1 si la limite est
+-- atteinte. Le ménage se fait au passage : rien ne reste plus de deux jours.
+CREATE OR REPLACE FUNCTION public.lepli_plume_permis(
+  p_ip text, p_brouillon text, p_max_ip integer, p_max_brouillon integer)
+RETURNS integer
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = lepli, public AS $$
+DECLARE v_ip integer; v_br integer := 0;
+BEGIN
+  DELETE FROM lepli.plume_journal WHERE cree_le < now() - interval '2 days';
+  SELECT count(*) INTO v_ip FROM lepli.plume_journal
+   WHERE ip = p_ip AND cree_le > now() - interval '1 day';
+  IF v_ip >= p_max_ip THEN RETURN -1; END IF;
+  IF p_brouillon <> '' THEN
+    SELECT count(*) INTO v_br FROM lepli.plume_journal
+     WHERE brouillon = p_brouillon AND cree_le > now() - interval '1 day';
+    IF v_br >= p_max_brouillon THEN RETURN -1; END IF;
+  END IF;
+  INSERT INTO lepli.plume_journal (ip, brouillon) VALUES (p_ip, p_brouillon);
+  RETURN v_br + 1;
+END $$;
+
 -- ── 4. les droits ───────────────────────────────────────────────────────────
 --
 -- ⚠️ AUCUNE de ces portes n'est ouverte au navigateur. Elles ne parlent qu'au
@@ -235,5 +275,6 @@ END $$;
 ALTER TABLE lepli.lettres            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lepli.paiement_session   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lepli.paiement_evenement ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lepli.plume_journal      ENABLE ROW LEVEL SECURITY;
 -- Aucune politique : sans politique, personne ne lit rien, sauf le
 -- `service_role` qui les contourne par construction. C'est voulu.

@@ -123,12 +123,21 @@ photos.
 **On ne demande jamais** le numéro de la personne qui reçoit : on n'en a pas
 besoin, puisqu'on ne lui écrit pas.
 
+**La plume** (2026-10-16) : la fiche que l'acheteur remplit pour qu'elle
+écrive sa lettre (ses choix, son souvenir, ses consignes) part au modèle, la
+lettre revient, et **la fiche n'est gardée nulle part**. Il reste seulement,
+deux jours, un compteur de versions : une empreinte de l'adresse (jamais
+l'adresse elle-même), l'identifiant du brouillon et l'heure. La lettre écrite
+par la plume est ensuite un texte de l'acheteur comme un autre : il la relit,
+la corrige et la signe.
+
 ---
 
 ## 7 · Le deuil
 
 Cette ligne n'ouvre pas tant que la page n'a pas été relue par **quelqu'un qui
-vient d'enterrer un proche**. Ce n'est pas une précaution de style, c'est la
+vient d'enterrer un proche**. ⛔ **La plume le refuse aussi**, même glissé dans
+« Autre occasion » : essayé en vrai le 2026-10-16. Ce n'est pas une précaution de style, c'est la
 condition d'ouverture.
 
 Quand elle ouvrira : sobriété totale, aucune animation ludique, aucun emoji,

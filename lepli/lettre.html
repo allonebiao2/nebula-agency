@@ -349,7 +349,7 @@ main.ouverte{opacity:1}
     </div>
 
     <div class="signe">
-      <p class="de">Avec tout mon cœur,</p>
+      <p class="de" id="l-formule">Avec tout mon cœur,</p>
       <p class="nom" id="l-de">
         <span id="l-de-nom"></span>
         <svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true">
@@ -387,6 +387,7 @@ var D = /*LEPLI_DONNEES*/{
   photos:[],
   depuis:"",
   ouvre:"",
+  formule:"Avec tout mon cœur,",
   pied:true,
   lien:"https://lepli.nebula-agency.online"
 }/*FIN_LEPLI_DONNEES*/;
@@ -402,6 +403,10 @@ txt($("#s-init"), (D.de || "M").trim().charAt(0).toUpperCase() || "M");
 txt($("#l-occasion"), D.occasion || "");
 txt($("#l-titre"), D.titre || "");
 txt($("#l-de-nom"), D.de || "");
+/* La formule suit l'occasion : une lettre de rupture ne se signe pas « avec
+   tout mon cœur ». Une lettre d'avant la plume n'en porte pas : on garde
+   alors celle de toujours. */
+txt($("#l-formule"), D.formule || "Avec tout mon cœur,");
 document.title = "Une lettre pour " + (D.pour || "toi");
 
 var corps = $("#l-corps");

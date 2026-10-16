@@ -34,10 +34,12 @@ Mobile Money et le choix du réseau. Il n'y a plus qu'un seul moyen de payer.
 | `functions/_shared/gabarit.ts` | Deno | `lettre.html`, recopié par `python lepli/_gabarit_ts.py`. **Fichier généré** |
 | `functions/lepli-commande/` | Deno | Dépose la lettre, et ouvre son paiement s'il y en a un |
 | `functions/lepli-paiement-recu/` | Deno | Le webhook. Vérifie la signature, marque payé, **ouvre la lettre** |
+| `functions/_shared/plume.ts` | Deno | **La plume** : ce qu'elle accepte, ce qu'elle demande au modèle, ce qu'elle refuse de rendre |
+| `functions/lepli-plume/` | Deno | Reçoit une fiche, compte la version, appelle le modèle, rend une lettre. ⛔ N'écrit la fiche nulle part |
 | `functions/lepli-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, dit son état à `/l/<jeton>/etat`, et la retire à `/l/<jeton>/retrait` |
 | `paiement.html` | Cloudflare Pages | **La page de paiement** : ce qu'on achète, la somme, et **le lien** |
 | `merci.html` | Cloudflare Pages | **La page de retour**, celle que SasPay rappelle |
-| `_qc_caisse.mjs` | Node, sans clé ni réseau | 118 contrôles sur tout ce qui décide |
+| `_qc_caisse.mjs` | Node, sans clé ni réseau | 213 contrôles sur tout ce qui décide, plume comprise |
 
 ---
 
@@ -115,6 +117,7 @@ client par défaut aussi (« Client PISTE » sur un reçu LE PLI).
 supabase secrets set SASPAY_CLE_SECRETE=…        # déjà posé pour PISTE
 supabase secrets set SASPAY_SECRET_WEBHOOK=…     # déjà posé pour PISTE
 supabase secrets set LEPLI_SITE=https://lepli.nebula-agency.online
+supabase secrets set ANTHROPIC_API_KEY=…         # la plume. Sans elle, « pas encore ouverte »
 
 # 2. le gabarit, à refaire À CHAQUE modification de lettre.html
 python lepli/_gabarit_ts.py
@@ -124,14 +127,25 @@ cd lepli
 supabase functions deploy lepli-commande
 supabase functions deploy lepli-paiement-recu --no-verify-jwt
 supabase functions deploy lepli-lettre        --no-verify-jwt
+supabase functions deploy lepli-plume
 
 # 4. dans le tableau de bord SasPay, onglet « Webhooks », déclarer :
 #    https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/lepli-paiement-recu
 
 # 5. les contrôles, avant tout
-python lepli/_qc.py                                   # 127
-node --experimental-strip-types lepli/_qc_caisse.mjs  # 118
+python lepli/_qc.py                                   # 203
+node --experimental-strip-types lepli/_qc_caisse.mjs  # 213
 ```
+
+⛔ **Le constructeur présente la clé publique du projet** (`apikey` et
+`Authorization`), comme PISTE. Avant le 2026-10-16 il ne l'envoyait pas :
+`lepli-commande`, déployée avec la vérification du jeton, aurait répondu 401 à
+tous les acheteurs, et la caisse n'aurait jamais encaissé un franc. Le défaut
+était invisible tant que rien n'était en ligne. ⚠️ Au premier essai réel,
+vérifier que la clé `sb_publishable_…` passe bien cette vérification, comme
+chez PISTE ; sinon, déployer `lepli-commande` et `lepli-plume` en
+`--no-verify-jwt` (ce qui les protège est le barème côté serveur et le
+compteur de la plume, pas le jeton).
 
 ⛔ **`--no-verify-jwt` n'est pas une négligence.** SasPay n'a pas de jeton
 Supabase à présenter, et celle qui reçoit une lettre n'a pas de compte. Ce qui

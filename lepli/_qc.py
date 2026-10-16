@@ -551,8 +551,19 @@ def main():
             pg.wait_for_timeout(900)
 
             dit("le constructeur s'ouvre sans erreur", not bugs, " | ".join(bugs[:2]))
-            dit("les 6 occasions sont proposees",
-                pg.eval_on_selector_all(".occ", "n=>n.length") == 6)
+            # ⚠️ TEMOIN du bandeau de reprise : a la premiere visite, il n'y a
+            # rien a reprendre, donc rien a dire.
+            pg.click('.occ[data-id="anniv"]')
+            dit("premiere visite : aucun « on a retrouve ta lettre »", not pg.is_visible("#repris"))
+            pg.click('#e-lettre [data-vers="e-occasion"]')
+            # ⚠️ CONTROLE RETOURNE (2026-10-16). Il comptait « 6 », recopie a la
+            # main : il est devenu faux a la premiere occasion ajoutee. Le
+            # nombre se LIT dans le fichier.
+            n_occ = len(re.findall(r'\{id:"([a-z]+)"', bloc_occ.group(1)))
+            dit("toutes les occasions du catalogue sont proposees (%d)" % n_occ,
+                pg.eval_on_selector_all(".occ", "n=>n.length") == n_occ)
+            dit("elles sont rangees par familles",
+                pg.eval_on_selector_all(".fam", "n=>n.length") >= 4)
             dit("les 4 paliers sont proposes",
                 pg.eval_on_selector_all(".pal", "n=>n.length") == 4)
 
@@ -606,8 +617,10 @@ def main():
                 pg.input_value("#f-lettre").startswith("Un mot vrai"))
             dit("au retour, les prenoms sont retrouves",
                 pg.input_value("#f-pour") == "Zara" and pg.input_value("#f-de") == "Robert")
-            dit("au retour, on le DIT a l'acheteur",
-                not pg.eval_on_selector("#repris", "e=>e.hidden"))
+            # ⚠️ CONTROLE RETOURNE (2026-10-16) : il lisait l'attribut `hidden`,
+            # et `.repris{display:flex}` l'emportait sur lui. Le bandeau etait
+            # donc peint pour tout le monde. On regarde ce qui est VU.
+            dit("au retour, on le DIT a l'acheteur", pg.is_visible("#repris"))
             dit("au retour, on le remet sur l'ecran d'ecriture",
                 pg.eval_on_selector("#e-lettre", "e=>e.classList.contains('on')"))
 
@@ -869,6 +882,260 @@ def main():
                 (pg.get_attribute("#ouvrir", "href") or "").endswith("c" * 22))
             dit("l'adresse est copiable", pg.is_visible("#copier"))
             pg.unroute("**/etat")
+            pg.close()
+
+            # ═══════════════════════════════════════════════════════════
+            # 11 · LES OCCASIONS ET LA PLUME
+            # La plume est interceptee : on mesure ce que le constructeur
+            # ENVOIE et ce qu'il fait de la reponse, pas le modele.
+            # ═══════════════════════════════════════════════════════════
+            print("\n== Les occasions et la plume")
+            pg = nav.new_page(viewport={"width": 1280, "height": 900})
+            bugs = []
+            pg.on("pageerror", lambda e: bugs.append(str(e)))
+            pg.goto(base)
+            pg.evaluate("localStorage.clear()")
+            pg.goto(base)
+            pg.wait_for_timeout(900)
+            sel = lambda q, t: '.puce[data-q="%s"]:text-is("%s")' % (q, t)
+            presses = lambda q: pg.eval_on_selector_all(
+                '.puce[data-q="%s"][aria-pressed="true"]' % q, "n=>n.map(e=>e.textContent)")
+
+            pg.click('.occ[data-id="rupture"]')
+            dit("rupture : le titre suit l'occasion",
+                pg.input_value("#f-titre") == "Il faut que je te dise", pg.input_value("#f-titre"))
+            dit("rupture : la formule de fin suit l'occasion",
+                pg.input_value("#f-formule") == "Prends soin de toi,", pg.input_value("#f-formule"))
+            cadre = pg.frame_locator("#apercu")
+            dit("la formule de fin arrive dans la lettre",
+                attendre(lambda: cadre.locator("#l-formule").inner_text().strip() == "Prends soin de toi,"))
+            qs = pg.eval_on_selector_all("#questions .q-t", "n=>n.map(e=>e.firstChild.textContent)")
+            dit("rupture : la fiche demande pourquoi, et la porte",
+                "Pourquoi" in qs and "La porte" in qs, str(qs))
+            dit("la longueur est cochee d'office", presses("longueur") == ["Moyenne"], str(presses("longueur")))
+
+            pg.click(sel("pourquoi-rupture", "Trop de disputes"))
+            pg.click(sel("pourquoi-rupture", "La distance"))
+            dit("un choix unique remplace le precedent",
+                presses("pourquoi-rupture") == ["La distance"], str(presses("pourquoi-rupture")))
+            for t in ("Drôle", "Cash", "Ferme"):
+                pg.click(sel("ton-rupture", t))
+            dit("« 2 au plus » : le troisieme choix ne passe pas",
+                presses("ton-rupture") == ["Drôle", "Cash"], str(presses("ton-rupture")))
+            pg.click(sel("ton-rupture", "Drôle"))
+            dit("un choix se decoche", presses("ton-rupture") == ["Cash"], str(presses("ton-rupture")))
+
+            # Un titre ECRIT ne suit plus l'occasion ; un titre par defaut, si.
+            pg.fill("#f-titre", "Mon titre a moi")
+            pg.click('#e-lettre [data-vers="e-occasion"]')
+            pg.click('.occ[data-id="noel"]')
+            dit("un titre ecrit par l'acheteur ne se remplace pas",
+                pg.input_value("#f-titre") == "Mon titre a moi")
+            dit("une formule par defaut, elle, suit l'occasion",
+                pg.input_value("#f-formule") == "Joyeux Noël,", pg.input_value("#f-formule"))
+            q = pg.input_value("#f-quand")
+            dit("Noel propose le 25 decembre a minuit",
+                q.endswith("-12-25") and pg.input_value("#f-quand-h") == "00:00", q)
+            # ⚠️ TEMOIN : une date choisie n'est jamais ecrasee par une fete.
+            pg.fill("#f-quand", "2027-03-01")
+            pg.click('#e-lettre [data-vers="e-occasion"]')
+            pg.click('.occ[data-id="valentin"]')
+            dit("une date choisie n'est jamais ecrasee par une fete",
+                pg.input_value("#f-quand") == "2027-03-01", pg.input_value("#f-quand"))
+            pg.click('#e-lettre [data-vers="e-occasion"]')
+            pg.click('.occ[data-id="tabaski"]')
+            dit("Tabaski : la benediction musulmane est cochee d'office",
+                presses("foi") == ["Musulmane"], str(presses("foi")))
+            pg.click('#e-lettre [data-vers="e-occasion"]')
+            pg.click('.occ[data-id="autre"]')
+            dit("« Autre occasion » demande laquelle", pg.is_visible("#f-autre"))
+
+            # ── la plume, interceptee ──
+            appels = []
+
+            def plume_ok(route, request):
+                appels.append({"corps": json.loads(request.post_data or "{}"),
+                               "entetes": request.headers})
+                route.fulfill(status=200, content_type="application/json", body=json.dumps({
+                    "ok": True, "titre": "Il faut que je te dise",
+                    "lettre": ["Premier paragraphe.",
+                               "Second <img src=x onerror=window.__pwn=1> paragraphe."],
+                    "formule": "Sans rancune,", "version": 1, "restantes": 2}))
+
+            pg.route("**/lepli-plume", plume_ok)
+            pg.fill("#f-pour", "")
+            pg.click("#btn-plume")
+            pg.wait_for_timeout(250)
+            dit("sans prenom, la plume ne part pas",
+                not appels and "prénom" in pg.inner_text("#plume-mot"))
+            pg.fill("#f-pour", "Zara")
+            pg.click("#btn-plume")
+            pg.wait_for_timeout(250)
+            dit("« Autre occasion » sans la nommer : la plume ne part pas",
+                not appels and "occasion" in pg.inner_text("#plume-mot"))
+
+            pg.click('#e-lettre [data-vers="e-occasion"]')
+            pg.click('.occ[data-id="rupture"]')
+            pg.fill("#f-de", "Robert")
+            pg.fill("#f-souvenir", "Notre premier garba.")
+            pg.fill("#f-consignes", "Reste gentil.")
+            pg.click("#btn-plume")
+            attendre(lambda: len(appels) > 0)
+            c = appels[0]["corps"] if appels else {}
+            dit("la fiche part a la plume", c.get("occasion") == "rupture" and c.get("pour") == "Zara", str(c)[:120])
+            dit("elle porte les reponses en clair, question et choix",
+                {"q": "Le ton", "r": ["Cash"]} in (c.get("reponses") or []), str(c.get("reponses"))[:160])
+            dit("elle porte le souvenir et les consignes",
+                c.get("souvenir") == "Notre premier garba." and c.get("consignes") == "Reste gentil.")
+            dit("elle porte l'identifiant du brouillon",
+                bool(re.match(r"^[a-z0-9]{8,32}$", c.get("brouillon") or "")), str(c.get("brouillon")))
+            dit("⛔ elle ne porte ni prix ni consigne d'ecriture",
+                not any(k in c for k in ("prix", "total", "montant", "registre", "systeme")))
+            dit("elle presente la cle publique du projet",
+                bool(appels) and appels[0]["entetes"].get("apikey", "").startswith("sb_publishable_"))
+            dit("la lettre de la plume remplit les champs",
+                attendre(lambda: pg.input_value("#f-titre") == "Il faut que je te dise")
+                and "Premier paragraphe." in pg.input_value("#f-lettre"))
+            dit("sa formule de fin aussi", pg.input_value("#f-formule") == "Sans rancune,")
+            dit("la plume dit combien de versions restent",
+                "Encore 2 versions" in pg.inner_text("#plume-mot"), pg.inner_text("#plume-mot"))
+            dit("le bouton propose une autre version",
+                pg.inner_text("#btn-plume").strip() == "Une autre version")
+            dit("on dit que la plume compte 500 F, meme retouchee",
+                pg.is_visible("#plume-compte") and "500 F" in pg.inner_text("#plume-compte-t"))
+            dit("⛔ le texte de la plume reste du texte",
+                pg.evaluate("window.__pwn === undefined")
+                and attendre(lambda: "<img" in cadre.locator("#l-corps").inner_text())
+                and cadre.locator("#l-corps img").count() == 0)
+
+            # ── le prix, plume comprise ──
+            pg.click("#vers-palier")
+            px = lambda i: pg.inner_text('.pal[data-id="%s"] .px' % i).strip()
+            dit("avec la plume, l'offre gratuite affiche 500 F", px("gratuit") == "500 F", px("gratuit"))
+            dit("avec la plume, La Lettre affiche 5 500 F", px("lettre") == "5 500 F", px("lettre"))
+            dit("on le dit sous les offres", pg.is_visible("#plume-note"))
+            pg.click('.pal[data-id="gratuit"]')
+            pg.click("#vers-paiement")
+            pg.wait_for_timeout(250)
+            dit("gratuit + plume : la caisse s'ouvre",
+                pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is False)
+            dit("gratuit + plume : on paie 500 F", "500 F" in pg.inner_text("#btn-commander"),
+                pg.inner_text("#btn-commander"))
+
+            cmds = []
+
+            def caisse_plume(route, request):
+                cmds.append({"c": json.loads(request.post_data or "{}"), "h": request.headers})
+                route.fulfill(status=200, content_type="application/json", body=json.dumps({
+                    "ok": True, "offert": False, "jeton": "f" * 22,
+                    "adresse": "https://exemple.invalid/l/" + "f" * 22,
+                    "paiement": "https://paiement.invalid/session/7",
+                    "palier": "Gratuit + la plume", "prix": 500}))
+
+            pg.route("**/lepli-commande", caisse_plume)
+            pg.fill("#f-wa", "0197085576")
+            pg.click("#btn-commander")
+            attendre(lambda: len(cmds) > 0)
+            cm = cmds[0]["c"] if cmds else {}
+            dit("la commande dit « plume » par un oui", cm.get("plume") is True, str(cm.get("plume")))
+            dit("⛔ et toujours aucun prix", not any(k in cm for k in ("prix", "total", "montant")))
+            dit("la commande porte la formule de fin", cm.get("formule") == "Sans rancune,", str(cm.get("formule")))
+            dit("⛔ la commande presente la cle publique (sinon 401 a tout le monde)",
+                bool(cmds) and cmds[0]["h"].get("authorization", "").startswith("Bearer sb_publishable_"))
+            try:
+                pg.wait_for_url("**/paiement.html", timeout=15000)
+                pg.wait_for_timeout(300)
+                dit("la page de paiement montre l'offre avec la plume",
+                    "la plume" in pg.inner_text("#r-palier"), pg.inner_text("#r-palier"))
+            except Exception as e:
+                ko("la page de paiement montre l'offre avec la plume", str(e).splitlines()[0])
+
+            # ── il revient : la lettre de la plume, et son compte ──
+            pg.goto(base)
+            pg.wait_for_timeout(900)
+            dit("au retour, la lettre de la plume est retrouvee, et comptee",
+                pg.is_visible("#plume-compte") and "Premier paragraphe." in pg.input_value("#f-lettre"))
+            pg.click("#btn-blanche")
+            dit("page blanche : le texte part", pg.input_value("#f-lettre") == "")
+            dit("page blanche : la plume n'est plus comptee",
+                "plus comptée" in pg.inner_text("#plume-compte-t"), pg.inner_text("#plume-compte-t"))
+            pg.click("#vers-palier")
+            dit("page blanche : l'offre gratuite redevient offerte", px("gratuit") == "Offert", px("gratuit"))
+            pg.click('#e-palier [data-vers="e-lettre"]')
+            pg.click("#btn-remettre")
+            dit("toute suppression se rattrape : la lettre de la plume revient",
+                "Premier paragraphe." in pg.input_value("#f-lettre")
+                and "500 F" in pg.inner_text("#plume-compte-t"))
+            pg.click('.m[data-mode="moi"]')
+            dit("« je l'ecris moi-meme » range la fiche", not pg.is_visible("#fiche"))
+            dit("mais le compte de la plume reste en vue", pg.is_visible("#plume-compte"))
+            pg.click('.m[data-mode="plume"]')
+
+            # ── ce qui peut mal tourner ──
+            def repondre_plume(code, corps):
+                pg.unroute("**/lepli-plume")
+                pg.route("**/lepli-plume", lambda r, q: r.fulfill(
+                    status=code, content_type="application/json", body=json.dumps(corps)))
+
+            repondre_plume(200, {"ok": False, "refus": "deuil", "version": 2})
+            pg.click("#btn-plume")
+            dit("deuil : la plume le dit, avec egards",
+                attendre(lambda: "deuil" in pg.inner_text("#plume-mot")), pg.inner_text("#plume-mot"))
+            dit("un refus n'efface pas la lettre deja ecrite",
+                "Premier paragraphe." in pg.input_value("#f-lettre"))
+            repondre_plume(404, {"code": "NOT_FOUND"})
+            pg.click("#btn-plume")
+            dit("plume pas deployee : on le dit",
+                attendre(lambda: "pas encore ouverte" in pg.inner_text("#plume-mot")), pg.inner_text("#plume-mot"))
+            pg.unroute("**/lepli-plume")
+            pg.route("**/lepli-plume", lambda r, q: r.abort())
+            pg.click("#btn-plume")
+            dit("reseau coupe : on le dit, et la fiche reste",
+                attendre(lambda: "pas répondu" in pg.inner_text("#plume-mot"))
+                and pg.input_value("#f-souvenir") == "Notre premier garba.")
+            repondre_plume(429, {"ok": False, "erreur": "limite"})
+            pg.click("#btn-plume")
+            dit("trois versions : on le dit",
+                attendre(lambda: "trois versions" in pg.inner_text("#plume-mot")), pg.inner_text("#plume-mot"))
+            dit("et le bouton ne propose plus de version",
+                pg.eval_on_selector("#btn-plume", "e=>e.disabled"))
+            # ⛔ Le « + » des photos restait peint a trois photos : `.ajout` est
+            # en `display:grid`, qui l'emportait sur `hidden`.
+            import base64
+            png = base64.b64decode(
+                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==")
+            for i in range(3):
+                pg.set_input_files("#f-photo", files=[{"name": "p%d.png" % i, "mimeType": "image/png", "buffer": png}])
+                attendre(lambda: pg.eval_on_selector_all(".vign", "n=>n.length") == i + 1)
+            dit("trois photos : le « + » disparait vraiment",
+                pg.eval_on_selector_all(".vign", "n=>n.length") == 3 and not pg.is_visible(".ajout"))
+            pg.click(".vign button")
+            dit("une photo retiree : le « + » revient", pg.is_visible(".ajout"))
+            dit("la plume n'a leve aucune erreur JavaScript", not bugs, " | ".join(bugs[:2]))
+            pg.close()
+
+            # La fiche, sur telephone : rien ne deborde, tout se touche.
+            pg = nav.new_page(viewport={"width": 390, "height": 844})
+            pg.goto(base)
+            pg.evaluate("localStorage.clear()")
+            pg.goto(base)
+            pg.wait_for_timeout(900)
+            pg.click('.occ[data-id="anniv"]')
+            pg.wait_for_timeout(300)
+            deb = pg.evaluate(
+                "document.documentElement.scrollWidth - document.documentElement.clientWidth")
+            dit("fiche 390 px : aucun debordement", deb <= 0, "%d px" % deb)
+            petites = pg.evaluate("""() => {
+              const out = [];
+              document.querySelectorAll('#e-lettre button, #e-lettre input:not(.sr), #e-lettre textarea').forEach(e => {
+                const r = e.getBoundingClientRect();
+                if (r.width === 0 && r.height === 0) return;
+                if (r.height < 44) out.push((e.id || e.textContent || e.tagName).slice(0, 24) + ' ' + Math.round(r.height));
+              });
+              return out;
+            }""")
+            dit("fiche 390 px : toutes les puces et tous les champs font 44 px", not petites,
+                " | ".join(petites[:3]))
             pg.close()
 
             # Sur telephone.

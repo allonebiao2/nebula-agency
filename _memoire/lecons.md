@@ -2922,3 +2922,25 @@ originaux ne sont sauvegardés **nulle part**.
 **Règle** : avant de supprimer un worktree, lister `git status --short --ignored`, comparer chaque
 fichier ignoré au dossier principal, recopier ce qui manque et vérifier octet par octet (`cmp`).
 Seulement ensuite, supprimer.
+
+## 2026-10-16 · `hidden` perd contre `display` : un contrôle doit regarder ce qui est PEINT
+
+Dans le constructeur de LE PLI, `.repris{display:flex}` l'emportait sur l'attribut `hidden` : le
+bandeau « On a retrouvé ta lettre en cours » s'affichait **à tout le monde, dès la première visite**,
+et le « + » des photos (`display:grid`) ne disparaissait jamais. Le contrôle vérifiait
+`e.hidden === false` et passait au vert. Trouvé en **regardant une capture**, comme le veut la règle
+des vitrines.
+**Règle** : toute page qui cache par `hidden` porte `[hidden]{display:none!important}` ; un contrôle
+de visibilité demande `is_visible` (ce qui est peint), jamais la valeur d'un attribut, et il a un
+**témoin** dans l'autre sens (première visite : rien n'est montré).
+
+## 2026-10-16 · Un échappement TAPÉ peut arriver en caractère réel
+
+Cinquième et sixième fois dans LE PLI : des `\u2028` et `\u2014` écrits comme échappements dans
+`plume.ts`, dans `_qc_caisse.mjs`, puis dans la phrase du README qui racontait l'incident, sont arrivés
+dans les fichiers **en caractères réels**. U+2028 est une fin de ligne pour JavaScript : la syntaxe
+cassait. `node --check` l'a vu à chaque fois.
+**Règle** : un échappement qui doit survivre se **fabrique** (`chr(92) + "u2028"`), il ne se tape
+pas ; après toute écriture qui en contient, compter les caractères réels dans le fichier, et
+`node --check` sur tout script. ⚠️ La leçon du 2026-09 sur ce même piège porte elle-même le caractère réel entre ses accents graves (là où il fallait lire l’échappement) : elle est laissée telle quelle, la preuve est dedans.
+
