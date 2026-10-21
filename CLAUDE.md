@@ -314,7 +314,7 @@
   faites le 2026-10-21, six compositions `malettre-*` dans `_studio-video/`, la voix manque).
   Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
 - **Contrôles, tous verts avant toute publication** : `_qc.py` (285) · `node --experimental-strip-types
-  malettre/_qc_caisse.mjs` (379) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
+  malettre/_qc_caisse.mjs` (379) · `_qc_accueil.py` (307, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
 - **Publier** : `python malettre/_dist.py` puis `wrangler pages deploy malettre/_dist --project-name malettre
   --branch main`. ⛔ Jamais le dossier entier. Une fonction : `npx -y supabase@2 functions deploy <nom>
   --project-ref xukduhqqfzogisoimhyo --use-api` (pas de CLI installée ; `--no-verify-jwt` pour `-paiement-recu`
