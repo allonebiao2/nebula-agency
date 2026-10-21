@@ -217,7 +217,9 @@ Ce qui fait une bonne lettre ici :
 
 Le métier, ce qui fait une lettre exceptionnelle et pas seulement correcte :
 - La première phrase entre dans le vrai : le souvenir, une image, une phrase qu'on dirait à voix haute. Jamais « Je t'écris cette lettre pour », jamais « En ce jour ».
-- Le souvenir se raconte avec ses détails à lui, sans l'enjoliver : aucun détail ajouté (ni lieu, ni moment, ni parole) qu'il ne contient pas.
+- Le souvenir se raconte avec ses détails à lui, pas un de plus. Ce que tu as le droit d'écrire sans la fiche : ce que l'acheteur ressent AUJOURD'HUI, en écrivant (« j'y pense encore », « ça me fait sourire »). Ce que tu n'as pas le droit d'ajouter : une scène, un geste, une parole, une personne présente, un objet, un état (« je dormais à moitié »), ni ce que l'autre a fait ou ressenti, si la fiche ne le dit pas.
+- N'attribue à la personne aucune qualité ni aucun trait de caractère que la fiche ne choisit pas : sans qualités dans la fiche, parle de ce qu'on lui souhaite et de ce qu'on ressent pour elle.
+- Le genre de l'acheteur n'est presque jamais dans la fiche : écris ses phrases sans accord (ni « celui qui », ni « fier », ni « fière »), sauf si la fiche le dit.
 - La dernière phrase porte la lettre : elle répond à l'ouverture, ou pose le vœu, la question ou la promesse de l'occasion. Jamais un résumé de ce qui précède.
 - Le titre vient du cœur de cette lettre-ci (le souvenir, la promesse, la question), pas du seul nom de l'occasion.
 - La formule de fin s'accorde au lien et au ton : on n'embrasse pas un patron, on ne salue pas son amour « respectueusement ».
@@ -271,7 +273,9 @@ What makes a good letter here:
 
 The craft, what makes a letter exceptional and not merely correct:
 - The first sentence steps straight into something true: the memory, an image, a sentence one would say out loud. Never "I am writing this letter to", never "On this day".
-- The memory is told with its own details, unembellished: no detail added (no place, no moment, no words spoken) that it does not contain.
+- The memory is told with its own details, not one more. What you may write without the form: what the buyer feels TODAY, writing it ("I still think of it", "it makes me smile"). What you may not add: a scene, a gesture, words spoken, a person present, an object, a state ("I was half asleep"), or what the other person did or felt, if the form does not say it.
+- Give the person no quality or trait the form does not choose: with no qualities in the form, speak of what you wish them and what you feel for them.
+- Do not assume the buyer's gender unless the form says it.
 - The last sentence carries the letter: it answers the opening, or gives the wish, the question or the promise of the occasion. Never a summary of what came before.
 - The title comes from the heart of this very letter (the memory, the promise, the question), not from the name of the occasion alone.
 - The closing words match the relationship and the tone: no kisses to a boss, no "respectfully" to a lover.
@@ -390,7 +394,7 @@ export const BORNES_LETTRE = { titre: 60, formule: 60, paragraphes: 6, total: 12
 */
 const LONGS = /\s*[\u2014\u2013]\s*/g
 const IMAGES = /[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu
-const LIEN = /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|bj|ci|tg|fr|online)\b)/i
+const LIEN = /(https?\s*:\s*\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|bj|ci|tg|fr|online)\b)/i
 /* Un numéro, c'est au moins huit chiffres : « de 2019 à 2026 » n'en est pas
    un, « 2019 - 2026 » non plus (huit chiffres, mais deux nombres de quatre). */
 const NUMERO = /\+?\d[\d .-]{6,}\d/g
@@ -405,16 +409,33 @@ const COURRIEL = /\S+@\S+\.\S+/
   ⚠️ Pas devant un h : « je hais » ne s'élide pas, et deviner l'h muet est
   un piège qu'on ne prend pas.
 */
-const ELISION = /\b(je|me|te|se|ne|que|Je|Me|Te|Se|Ne|Que) (?=[aeiouyéèêëàâîïôûAEIOUYÉÈÊÀÂÎÔÛ])/g
+/* ⛔ PAS DE `\b` ICI (trouvé par le banc d'essai le 2026-10-21) : en JavaScript,
+   `\b` ne connaît que l'ASCII, et une lettre accentuée compte comme une
+   frontière. « même avec » devenait « mêm'avec », « s'arrête ici »
+   « s'arrêt'ici », « une fête en famille » « une fêt'en famille ». Le mot
+   doit commencer après tout ce qui n'est ni une lettre (accentuée ou non),
+   ni un chiffre, ni une apostrophe. */
+const ELISION = /(?<![\p{L}\p{N}'’])(je|me|te|se|ne|que|Je|Me|Te|Se|Ne|Que) (?=[aeiouyéèêëàâîïôûAEIOUYÉÈÊÀÂÎÔÛ])/gu
 export function elider(s: string): string {
   return s.replace(ELISION, (_m, mot: string) => mot.slice(0, -1) + "'")
 }
 
 /* ⛔ L'élision est FRANÇAISE : en anglais, « tell me about » deviendrait
    « tell m'about ». Elle ne s'applique qu'aux lettres en français. */
+/* La typographie française : une espace avant « : ; ! ? » (« ce mardi: c'est »
+   est sorti de la plume). Seulement après une lettre, une parenthèse ou un
+   guillemet fermant : une heure (« 10:30 ») ne bouge pas. */
+/* ⛔ Jamais devant « // » : « https:// » devenait « https :// », et la sonde des
+   liens ne reconnaissait plus un lien glissé dans une lettre (attrapé par le
+   contrôle « https://x.y ne sort pas » le jour même). */
+const AVANT_PONCTUATION = /([\p{L}»)])([:;!?])(?!\/\/)/gu
+export function typographier(s: string): string {
+  return s.replace(AVANT_PONCTUATION, '$1 $2')
+}
+
 export function propre(s: unknown, langue: 'fr' | 'en' = 'fr'): string {
   const t = String(s ?? '')
-  return (langue === 'en' ? t : elider(t))
+  return (langue === 'en' ? t : typographier(elider(t)))
     .replace(LONGS, ', ')
     .replace(IMAGES, '')
     .replace(/[\u2028\u2029]/g, ' ')

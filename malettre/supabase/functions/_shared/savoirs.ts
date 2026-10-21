@@ -51,15 +51,15 @@ export const SAVOIRS: Record<string, string> = {
   brouille:
     "Clair et digne. Dis tôt que l'amitié s'arrête ou s'éloigne, selon « La porte ». La raison en une phrase, sans reproche détaillé ni témoin pris à partie ; aucune raison si la fiche préfère ne pas la dire. Une phrase juste sur ce qui a été bon. Finis sans claquer la porte, même si elle est fermée.",
   noel:
-    "La chaleur d'une fête qu'on vit ensemble ou de loin. Un détail concret (le souvenir, une habitude de la fiche) plutôt que sapin et neige, surtout à Cotonou. Des vœux pour la personne, pas pour l'humanité. Une bénédiction courte si elle est demandée.",
+    "La chaleur d'une fête qu'on vit ensemble ou de loin, et « Joyeux Noël » dit en toutes lettres. Un détail concret (le souvenir, une habitude de la fiche) plutôt que sapin et neige, surtout à Cotonou. Des vœux pour la personne, pas pour l'humanité. Une bénédiction courte si elle est demandée.",
   nouvelan:
     "Regarde l'année qui vient, en t'appuyant sur ce que la fiche dit de celle qui s'achève. Des vœux précis (pris dans « Ce que tu lui souhaites » s'il est rempli) plutôt que « santé, bonheur, prospérité » en série. Finis sur ce que vous ferez ensemble cette année, si la fiche le permet.",
   tabaski:
-    "Des vœux respectueux pour l'Aïd el-Kébir. Un souvenir de fête s'il y en a un (le partage, la famille, la table). Les souhaits de la fiche, puis une bénédiction courte et générale si elle est demandée. Aucune citation du Coran, aucun détail rituel que la fiche ne donne pas.",
+    "Des vœux respectueux pour l'Aïd el-Kébir, et la fête souhaitée en toutes lettres (« Bonne fête de Tabaski »). Un souvenir de fête s'il y en a un (le partage, la famille, la table). Les souhaits de la fiche, puis une bénédiction courte et générale si elle est demandée. Aucune citation du Coran, aucun détail rituel que la fiche ne donne pas.",
   ramadan:
-    "Des vœux pour la fin du jeûne : la joie du partage retrouvé, la famille, la paix. Un souvenir de fête s'il y en a un. Une bénédiction courte et générale si elle est demandée. Aucune citation du Coran, aucune leçon de religion.",
+    "Des vœux pour la fin du jeûne, et la fête souhaitée en toutes lettres (« Bonne fête de Ramadan »). La joie du partage retrouvé, la famille, la paix. Un souvenir de fête s'il y en a un. Une bénédiction courte et générale si elle est demandée. Aucune citation du Coran, aucune leçon de religion.",
   paques:
-    "Des vœux de Pâques : le renouveau, la joie, la famille ou la communauté. Un souvenir s'il y en a un. Une bénédiction courte si elle est demandée. Aucune citation de la Bible mot pour mot, aucun sermon.",
+    "Des vœux de Pâques, et la fête souhaitée en toutes lettres (« Joyeuses Pâques »). Le renouveau, la joie, la famille ou la communauté. Un souvenir s'il y en a un. Une bénédiction courte si elle est demandée. Aucune citation de la Bible mot pour mot, aucun sermon.",
   reussite:
     "La fierté juste. Dis précisément quelle réussite (ce que la fiche donne), puis le travail qu'elle a demandé si la fiche en parle. Ne grandis rien : pas de « tu seras président ». Finis tourné vers la suite, avec confiance.",
   courage:
@@ -90,7 +90,7 @@ export const SAVOIRS: Record<string, string> = {
 */
 export const RETOUCHES: Record<string, string> = {
   courte:
-    "Raccourcis d'environ un tiers. Garde le souvenir, la phrase la plus forte et la chute ; retire ce qui répète ou explique.",
+    "Raccourcis d'au moins un tiers : compte les mots, la nouvelle lettre en a au plus les deux tiers. Garde le souvenir, la phrase la plus forte et la chute ; retire ce qui répète ou explique.",
   longue:
     "Allonge d'environ un tiers sans rien inventer : développe ce que la fiche donne déjà (le souvenir, les qualités, les souhaits). Jamais un fait nouveau. Reste sous 1 100 caractères.",
   tendre:

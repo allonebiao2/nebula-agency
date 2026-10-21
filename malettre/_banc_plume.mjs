@@ -96,7 +96,9 @@ function controles(cas, fiche, r) {
   const k = []
   const corps = r.lettre.join('\n\n')
   const longueur = fiche.reponses.find((x) => /longueur|length/i.test(x.q))?.r[0] ?? 'Moyenne'
-  const [a, b] = BANDES[longueur] ?? BANDES.Moyenne
+  let [a, b] = BANDES[longueur] ?? BANDES.Moyenne
+  /* Une fiche maigre donne une lettre courte et juste (la règle du système) : on ne la punit pas d'être courte. */
+  if (cas.attendu.maigre) a = 40
   const n = MOTS(corps)
   k.push([n >= a && n <= b, `longueur « ${longueur} » : ${n} mots (attendu ${a} à ${b})`])
   const prenom = fiche.pour.split(/\s+/)[0]
@@ -134,6 +136,7 @@ const JUGE = `Tu relis, en éditeur exigeant, une lettre écrite par une IA pour
 - naturel : une personne qui parle, pas une carte de vœux ; aucun cliché.
 - langue : orthographe, accords, élisions, registre sans faute.
 - chute : la dernière phrase porte la lettre.
+Ce qui N'EST PAS un défaut, parce que la page le fait : la lettre n'a ni « Cher » en tête ni signature (le prénom de l'acheteur est ajouté par la page après la formule). La « chute » est la dernière phrase du CORPS, avant la formule. Ce que l'acheteur dit ressentir aujourd'hui, en écrivant, n'est pas un fait inventé ; une scène, un geste, une parole, un objet, une qualité ou ce que l'autre a fait, absents de la fiche, le sont.
 Liste les faits inventés (vide s'il n'y en a pas) et les défauts précis. Cite la meilleure phrase. Sois sévère : 5 est rare.`
 
 async function appeler(k, corps) {

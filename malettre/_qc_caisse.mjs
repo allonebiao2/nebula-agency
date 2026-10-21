@@ -811,6 +811,19 @@ dit(fGros.ok && fGros.fiche.actuelle.lettre.length <= P.BORNES_LETTRE.paragraphe
     'la lettre actuelle est bornée comme une lettre rendue')
 const fEn = P.lireFiche({ ...FICHE, langue: 'en', demande: 'Mention our trip', actuelle: ACTUELLE })
 dit(P.message(fEn.fiche).trim().endsWith('Rewrite this letter in English, applying the touch-up.'), 'la retouche anglaise est demandée en anglais')
+/* ⛔ LE BUG TROUVÉ PAR LE BANC (2026-10-21) : `\b` ne connaît que l'ASCII, et
+   l'élision coupait tout mot finissant en « te, me, se, ne, que » après une
+   lettre accentuée. Ces phrases doivent sortir telles quelles. */
+for (const t of ["notre amitié s'arrête ici", 'même avec toi', 'une fête en famille', 'le thème est beau', 'cette chère amie', 'ta tête est ailleurs'])
+  dit(P.propre(t) === t, `l’élision ne casse pas « ${t} »`, P.propre(t))
+dit(P.propre('je arrive') === "j'arrive" && P.propre('Que il vienne') === "Qu'il vienne" && P.propre('la paix que on garde') === "la paix qu'on garde",
+    'l’élision fait toujours son travail sur les vrais mots')
+dit(P.propre("ce mardi: c'est le jour") === "ce mardi : c'est le jour" && P.propre('Tu viens?') === 'Tu viens ?',
+    'la typographie française : une espace avant « : » et « ? »')
+dit(P.propre('À 10:30, viens') === 'À 10:30, viens', 'une heure ne prend pas d’espace')
+dit(P.propre('Are you sure? Yes: I am.', 'en') === 'Are you sure? Yes: I am.', 'l’anglais garde sa typographie')
+dit(P.SYSTEME.includes("ressent AUJOURD'HUI") && P.SYSTEME.includes('aucune qualité ni aucun trait'),
+    'le système dit ce qu’on a le droit d’ajouter, et ce qu’on n’a pas le droit d’ajouter')
 dit(P.LIMITES.brouillon === 5, 'cinq versions par lettre, retouches comprises')
 const boutons = (t) => [...t.matchAll(/data-retouche="([a-z]+)"/g)].map((m) => m[1]).sort()
 const idsT = Object.keys(S.RETOUCHES).sort()
