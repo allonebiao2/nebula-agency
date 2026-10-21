@@ -361,6 +361,12 @@ main.ouverte{opacity:1}
   background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%);flex:none}
 .pied .note{font-size:12.5px;color:var(--gris);margin-top:14px;letter-spacing:.04em}
 
+/* 7 bis · RETIRER CETTE LETTRE : seulement à /l/<jeton>, en deux temps. */
+.retrait{text-align:center;padding:0 20px 40px;font-size:13px;color:var(--gris)}
+.retrait button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-decoration:underline;min-height:44px;padding:10px 14px}
+.retrait button:hover,.retrait .oui,.retrait a{color:var(--papier)}
+.retrait .q{max-width:34ch;margin:4px auto;line-height:1.55}
+
 /* ══════════════════════════════════════════════════════════════════
    8 · L'HABILLAGE (offres payantes, 2026-10-16)
    La cire, le sceau, le papier, la pluie, la phrase à gratter. Une classe
@@ -532,6 +538,17 @@ main.ouverte{opacity:1}
     </a>
     <p class="note">Une lettre, une enveloppe, un cachet. En cinq minutes.</p>
   </footer>
+
+  <div class="retrait" id="l-retrait" hidden>
+    <button type="button" id="retrait-btn">Retirer cette lettre</button>
+    <div id="retrait-confirme" hidden>
+      <p class="q" id="retrait-q">Elle disparaîtra tout de suite, pour tout le monde. Personne ne sera prévenu.</p>
+      <button type="button" class="oui" id="retrait-oui">Oui, la retirer</button>
+      <button type="button" id="retrait-non">Non, la garder</button>
+    </div>
+    <p class="q" id="retrait-repli" hidden><span id="retrait-rate">Le retrait n'a pas pu se faire.</span>
+      <a id="retrait-wa" href="#" rel="noopener">Écris-nous sur WhatsApp</a><span id="retrait-main">, on le fait à la main.</span></p>
+  </div>
 </main>
 
 <script>
@@ -784,6 +801,29 @@ function pleuvoir(type){
 
 if (!D.pied) { $("#l-pied").hidden = true; }
 else { $("#pied-lien").href = D.lien || ("https://malettre.nebula-agency.online" + (EN ? "/en/" : "")); }
+
+/* ── RETIRER (2026-10-21) : jeton = JETON_FORME de `lettre.ts` ; échec = WhatsApp. ── */
+var CHEMIN_L = /^\/l\/[23456789bcdfghjkmnpqrstvwxyz]{22}\/?$/;
+if (CHEMIN_L.test(location.pathname)) {
+  var Rt = function(id){ return $("#retrait-" + id); };
+  var RX = EN ? { btn: "Remove this letter", q: "It will disappear right away, for everyone. Nobody will be told.",
+    oui: "Yes, remove it", non: "No, keep it", rate: "The removal did not go through.", wa: "Message us on WhatsApp",
+    main: " and we will do it by hand.", msg: "Hello, I am asking for this letter to be removed: " }
+    : { msg: "Bonjour, je demande le retrait de cette lettre : " };
+  for (var k in RX) { if (k !== "msg") { Rt(k).textContent = RX[k]; } }
+  $("#l-retrait").hidden = false;
+  Rt("wa").href = "https://wa.me/22996740732?text=" + encodeURIComponent(RX.msg + location.href);
+  var bascule = function(c){ Rt("btn").hidden = c; Rt("confirme").hidden = !c; Rt(c ? "oui" : "btn").focus(); };
+  Rt("btn").onclick = function(){ bascule(true); };
+  Rt("non").onclick = function(){ bascule(false); };
+  Rt("oui").onclick = function(){
+    Rt("oui").disabled = true;
+    fetch(location.pathname.replace(/\/$/, "") + "/retrait", { method: "POST" })
+      .then(function(r){ if (!r.ok) { throw 0; } return r.text(); })
+      .then(function(h){ document.open(); document.write(h); document.close(); })
+      .catch(function(){ Rt("confirme").hidden = true; Rt("repli").hidden = false; });
+  };
+}
 
 /* ── Les chiffres qui roulent, une fois la lettre ouverte. ── */
 function rouler(){

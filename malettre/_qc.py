@@ -1501,6 +1501,70 @@ def main():
         dit("habillage : temoin, la sonde attrape un gris clair sur le papier", ratio < seuil, "%.2f" % ratio)
         pg.close()
 
+        # ───────────────────────────────────── RETIRER CETTE LETTRE (2026-10-21)
+        # La porte existait (POST /l/<jeton>/retrait), le bouton non. Il n'apparait
+        # QU'A /l/<jeton> : la lettre est servie ici par une route, comme le ferait
+        # le serveur, et le retrait renvoie sa page « C'est retire ».
+        print("\n== Retirer cette lettre")
+        jeton = "b" * 22
+        lettre_servie = poser(BASE)
+        appels = []
+
+        def route_lettre(route, req, echec=False):
+            if req.method == "POST" and req.url.endswith("/" + jeton + "/retrait"):
+                appels.append(req.url)
+                if echec:
+                    route.fulfill(status=503, body="non", content_type="text/html")
+                else:
+                    route.fulfill(status=200, content_type="text/html; charset=utf-8",
+                                  body="<!DOCTYPE html><html><body><h1>C’est retiré.</h1></body></html>")
+            else:
+                route.fulfill(status=200, content_type="text/html; charset=utf-8", body=lettre_servie)
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.goto(page_avec(BASE).as_uri())
+        dit("retrait : AUCUN bouton sur une page qui n'est pas /l/<jeton> (exemple, apercu)",
+            pg.eval_on_selector("#l-retrait", "e => e.hidden"))
+        pg.route("http://lettre.test/**", route_lettre)
+        pg.goto("http://lettre.test/l/" + jeton)
+        dit("retrait : le bouton apparait sur une lettre servie a /l/<jeton>",
+            not pg.eval_on_selector("#l-retrait", "e => e.hidden"))
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(1400)
+        pg.click("#retrait-btn")
+        dit("retrait : un premier clic demande seulement la confirmation, rien n'est envoye",
+            pg.is_visible("#retrait-oui") and not appels)
+        pg.click("#retrait-non")
+        dit("retrait : « Non » remet le bouton, toujours rien d'envoye", pg.is_visible("#retrait-btn") and not appels)
+        pg.click("#retrait-btn")
+        pg.click("#retrait-oui")
+        attendre(lambda: "retiré" in pg.inner_text("body"))
+        dit("retrait : « Oui » envoie UN POST a /l/<jeton>/retrait et affiche la page du serveur",
+            len(appels) == 1 and "retiré" in pg.inner_text("body"), str(appels))
+        pg.close()
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.route("http://lettre.test/**", lambda r, q: route_lettre(r, q, echec=True))
+        pg.goto("http://lettre.test/l/" + jeton)
+        pg.click("#btn-ouvrir")
+        pg.wait_for_timeout(1400)
+        pg.click("#retrait-btn")
+        pg.click("#retrait-oui")
+        attendre(lambda: pg.is_visible("#retrait-repli"))
+        lien_wa = pg.get_attribute("#retrait-wa", "href") or ""
+        dit("retrait rate : le repli WhatsApp s'affiche, avec le lien de la lettre dans le message",
+            pg.is_visible("#retrait-repli") and lien_wa.startswith("https://wa.me/22996740732?text=")
+            and ("lettre.test%2Fl%2F" + jeton) in lien_wa, lien_wa[:90])
+        pg.close()
+
+        pg = nav.new_page(viewport={"width": 390, "height": 844})
+        pg.route("http://lettre.test/**", lambda r, q: r.fulfill(
+            status=200, content_type="text/html; charset=utf-8", body=poser(dict(BASE, langue="en"))))
+        pg.goto("http://lettre.test/l/" + jeton)
+        dit("retrait : en anglais sur une lettre anglaise", pg.inner_text("#retrait-btn") == "Remove this letter",
+            pg.inner_text("#retrait-btn"))
+        pg.close()
+
         nav.close()
 
     print("\n%d controles verts, %d en echec" % (len(verts), len(rouges)))

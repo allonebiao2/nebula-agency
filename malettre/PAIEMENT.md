@@ -4,7 +4,7 @@
 > (`_plans/2026-09-06-lepli-arrete.html`).
 >
 > **Rien de tout ça n'est encore en ligne.** Le code est écrit, contrôlé
-> (`node --experimental-strip-types malettre/_qc_caisse.mjs`, 118 contrôles),
+> (`node --experimental-strip-types malettre/_qc_caisse.mjs`, 327 contrôles au 2026-10-21),
 > et il attend six réponses de Mongazi, listées en bas.
 
 ---
@@ -39,7 +39,9 @@ Mobile Money et le choix du réseau. Il n'y a plus qu'un seul moyen de payer.
 | `functions/malettre-lettre/` | Deno | Sert la lettre à `/l/<jeton>`, dit son état à `/l/<jeton>/etat`, et la retire à `/l/<jeton>/retrait` |
 | `paiement.html` | Cloudflare Pages | **La page de paiement** : ce qu'on achète, la somme, et **le lien** |
 | `merci.html` | Cloudflare Pages | **La page de retour**, celle que SasPay rappelle |
-| `_qc_caisse.mjs` | Node, sans clé ni réseau | 213 contrôles sur tout ce qui décide, plume comprise |
+| `_qc_caisse.mjs` | Node, sans clé ni réseau | 327 contrôles sur tout ce qui décide : plume, code secret, relais `/l/*` compris |
+| `_relais.js` | Cloudflare Pages (`_dist/_worker.js`) | **Le relais** : `/l/<jeton>`, `/l/<jeton>/retrait` et `/l/<jeton>/etat` vont à `malettre-lettre`, le reste aux fichiers du site ; il pose lui-même les en-têtes de sécurité (2026-10-21) |
+| `_menage.py` + `.github/workflows/malettre-menage.yml` | GitHub Actions, chaque nuit 03 h 30 UTC | **Le ménage** : `malettre_menage()` vide les lettres expirées. Secret `MALETTRE_DATABASE_URL`, ou à défaut `PISTE_DATABASE_URL` (même base). Avant le branchement, il le dit et sort sans erreur |
 
 ---
 
@@ -92,7 +94,9 @@ client par défaut aussi (« Client PISTE » sur un reçu MA LETTRE À…).
 
 3. ⛔ **Le pied viral et le code secret sont des décisions du serveur.** Sinon
    le pied se retire d'un clic dans la console, et la boucle de croissance
-   avec.
+   avec. **Le code secret n'appartient qu'à La Lettre et au Coffret**
+   (2026-10-21) : envoyé avec Le Mot, il est retiré, comme l'habillage d'une
+   lettre gratuite. Le droit `code` vit dans les deux barèmes, comparés.
 
 4. ⛔ **Le retrait passe avant tout le reste.** Avant l'état de la commande,
    avant la date, avant le remboursement. Une lettre payée puis retirée reste
@@ -132,9 +136,18 @@ supabase functions deploy malettre-plume
 # 4. dans le tableau de bord SasPay, onglet « Webhooks », déclarer :
 #    https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-paiement-recu
 
-# 5. les contrôles, avant tout
-python malettre/_qc.py                                   # 203
-node --experimental-strip-types malettre/_qc_caisse.mjs  # 213
+# 5. les contrôles, avant tout (nombres du 2026-10-21)
+python malettre/_qc.py                                   # 276
+node --experimental-strip-types malettre/_qc_caisse.mjs  # 327
+python malettre/_qc_accueil.py                           # 239
+python malettre/_qc_langues.py                           # 52
+python malettre/_qc_faire_part.py                        # 83
+
+# 6. le site (avec le feu vert de Mongazi) : le relais /l/* part avec lui
+python malettre/_dist.py
+wrangler pages deploy malettre/_dist --project-name malettre --branch main
+#    puis vérifier : une adresse /l/<jeton> inconnue rend « Cette lettre n'existe pas »
+#    (la fonction), et pas l'accueil ni la page 404 du site
 ```
 
 ⛔ **Le constructeur présente la clé publique du projet** (`apikey` et

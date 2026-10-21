@@ -1,0 +1,34 @@
+# MA LETTRE À… · le ménage des lettres expirées, chaque nuit.
+#
+# `malettre_menage()` existait dans la base et rien ne l'appelait : une lettre
+# expirée gardait son mot et ses photos pour toujours. Comme PISTE, c'est GitHub
+# qui se réveille : le PC de Cotonou n'a pas à être allumé.
+#
+# Le secret : MALETTRE_DATABASE_URL, ou à défaut PISTE_DATABASE_URL (c'est la
+# même base Supabase, le projet partagé). Port 6543, le pooler.
+
+name: MA LETTRE À… · ménage des lettres expirées
+
+on:
+  schedule:
+    # 03:30 UTC, soit 04:30 à Cotonou, après le moteur de PISTE.
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  menage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: malettre/_menage.py
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet "psycopg[binary]"
+      - name: Ménage
+        env:
+          DATABASE_URL: ${{ secrets.MALETTRE_DATABASE_URL || secrets.PISTE_DATABASE_URL }}
+        run: python malettre/_menage.py

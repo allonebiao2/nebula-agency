@@ -142,10 +142,10 @@ def catalogue(creer):
     src = creer.read_text(encoding="utf-8")
     paliers = []
     for m in re.finditer(r'\{id:"([a-z]+)",\s*nom:"([^"]+)",\s*desc:"([^"]+)",\s*prix:(\d+),\s*pied:(true|false),\s*photos:(\d+)'
-                         r'(?:,\s*habillage:(true|false))?\}', bloc(src, "PALIERS")):
+                         r'(?:,\s*habillage:(true|false))?(?:,\s*code:(true|false))?\}', bloc(src, "PALIERS")):
         paliers.append({"id": m.group(1), "nom": m.group(2), "desc": m.group(3),
                         "prix": int(m.group(4)), "pied": m.group(5) == "true", "photos": int(m.group(6)),
-                        "habillage": m.group(7) == "true"})
+                        "habillage": m.group(7) == "true", "code": m.group(8) == "true"})
     plume = re.search(r"var PLUME = \{prix:(\d+)\};", src)
     familles = [{"id": m.group(1), "nom": m.group(2)}
                 for m in re.finditer(r'\{id:"([a-z]+)",\s*nom:"([^"]+)"\}', bloc(src, "FAMILLES"))]

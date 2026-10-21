@@ -13,9 +13,10 @@ téléchargeables pendant des mois).
 Écrit aussi `404.html` (sans lui, Pages sert l'accueil en 200 pour toute
 adresse inconnue), `robots.txt` et `_headers`.
 
-⚠️ La route `/l/<jeton>` (les lettres payées, servies par la fonction
-`malettre-lettre`) arrive avec le branchement de la caisse : ce jour-là,
-`_dist` devra la porter (`_redirects` ou fonction Pages). Voir PAIEMENT.md.
+La route `/l/<jeton>` (les lettres payées, servies par la fonction
+`malettre-lettre`) est portée par le RELAIS : `_relais.js` copié en
+`_dist/_worker.js` (Cloudflare Pages, mode avancé, 2026-10-21). Il pose aussi les
+en-têtes de sécurité lui-même, au cas où `_headers` ne s'appliquerait plus.
 """
 import hashlib
 import pathlib
@@ -170,6 +171,8 @@ def main():
         shutil.copy2(p, dst)
         total += dst.stat().st_size
     print("  f/ : %d faire-part de couple(s)" % len(couples))
+    shutil.copy2(ICI / "_relais.js", DIST / "_worker.js")
+    print("  %-26s %7.1f Ko" % ("_worker.js (le relais /l/)", (DIST / "_worker.js").stat().st_size / 1024))
     for nom, contenu in (("404.html", ERREUR), ("robots.txt", ROBOTS), ("_headers", ENTETES)):
         (DIST / nom).write_text(contenu, encoding="utf-8", newline="\n")
         total += (DIST / nom).stat().st_size
@@ -177,7 +180,7 @@ def main():
 
     # La garde : rien de privé n'a glissé dans le livrable.
     fuites = [str(p.relative_to(DIST)) for p in DIST.rglob("*")
-              if p.is_file() and (p.name.startswith(("_", ".")) and p.name != "_headers"
+              if p.is_file() and (p.name.startswith(("_", ".")) and p.name not in ("_headers", "_worker.js")
                                   or p.suffix in (".md", ".py", ".mjs", ".ts", ".sql", ".json"))]
     if fuites:
         sys.exit("⛔ fichiers privés dans _dist : %s" % fuites)

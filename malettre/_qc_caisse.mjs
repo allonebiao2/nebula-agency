@@ -715,6 +715,51 @@ dit(M.lireCommande({ ...BON, palier: 'lettre' }).lettre?.code === '1234', 'La Le
 dit(M.lireCommande({ ...BON, palier: 'coffret' }).lettre?.code === '1234', 'Le Coffret garde son code')
 dit(/code: pal\.code \? \(E\.code \|\| ""\) : ""/.test(creerFr), 'le constructeur n’envoie le code qu’avec une offre qui le porte')
 
+/* ═══ 21 · le relais /l/* (2026-10-21) ═══════════════════════════════════
+   `_relais.js` devient `_dist/_worker.js` : les lettres vont à la fonction,
+   le reste aux fichiers du site. On le fait tourner ici, avec un faux site et
+   une fausse fonction : aucune requête ne sort. */
+console.log('\n== Le relais /l/*')
+{
+const srcRelais = lire('_relais.js')
+const R = (await import('data:text/javascript;base64,' + Buffer.from(srcRelais).toString('base64'))).default
+const vusR = []
+const vraiFetch = globalThis.fetch
+globalThis.fetch = async (u, init) => {
+  vusR.push({ u: String(u), m: init?.method, corps: init?.body ? Buffer.from(init.body).toString() : '' })
+  return new Response('<p>la lettre</p>', { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } })
+}
+const SITE = { fetch: async (req) => new Response('le site ' + new URL(req.url).pathname, { status: 200 }) }
+const J22 = 'b'.repeat(22)
+const r1 = await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22), { ASSETS: SITE })
+dit(vusR.length === 1 && vusR[0].u.endsWith('/functions/v1/malettre-lettre/' + J22) && vusR[0].m === 'GET',
+    '/l/<jeton> va à la fonction malettre-lettre', JSON.stringify(vusR[0] || {}))
+dit(r1.headers.get('X-Robots-Tag')?.includes('noindex') && r1.headers.get('Referrer-Policy') === 'no-referrer',
+    'une lettre repart en noindex et no-referrer')
+dit(r1.headers.get('X-Frame-Options') === 'SAMEORIGIN' && r1.headers.get('X-Content-Type-Options') === 'nosniff',
+    'les en-têtes de sécurité sont posés par le relais lui-même')
+await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22 + '/retrait', { method: 'POST', body: 'x' }), { ASSETS: SITE })
+dit(vusR.length === 2 && vusR[1].u.endsWith('/' + J22 + '/retrait') && vusR[1].m === 'POST', 'le POST de retrait passe, en POST')
+await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22 + '/etat'), { ASSETS: SITE })
+dit(vusR.length === 3 && vusR[2].u.endsWith('/' + J22 + '/etat'), 'l’état passe (la page « merci »)')
+const r4 = await R.fetch(new Request('https://malettre.nebula-agency.online/creer.html'), { ASSETS: SITE })
+dit(vusR.length === 3 && (await r4.text()) === 'le site /creer.html', 'le reste du site est servi par les fichiers, sans la fonction')
+dit(r4.headers.get('Strict-Transport-Security')?.startsWith('max-age='), 'le site aussi reçoit les en-têtes de sécurité')
+const r5 = await R.fetch(new Request('https://malettre.nebula-agency.online/l/abc'), { ASSETS: SITE })
+dit(vusR.length === 3 && (await r5.text()) === 'le site /l/abc', 'un jeton mal formé ne va jamais à la fonction')
+await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22 + '/autre'), { ASSETS: SITE })
+dit(vusR.length === 3, 'un geste inconnu ne va pas à la fonction')
+globalThis.fetch = async () => { throw new Error('réseau') }
+const r6 = await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22), { ASSETS: SITE })
+dit(r6.status === 503 && (await r6.text()).includes('Réessaie'), 'fonction injoignable : une page claire en 503, jamais l’accueil')
+globalThis.fetch = vraiFetch
+const distPy = lire('_dist.py')
+dit(/shutil\.copy2\(ICI \/ "_relais\.js", DIST \/ "_worker\.js"\)/.test(distPy), '_dist.py copie le relais en _worker.js')
+dit(/JETON_FORME = \/\^\[23456789bcdfghjkmnpqrstvwxyz\]\{22\}\$\//.test(lire('supabase/functions/_shared/lettre.ts'))
+    && srcRelais.includes('[23456789bcdfghjkmnpqrstvwxyz]{22}') && lire('lettre.html').includes('[23456789bcdfghjkmnpqrstvwxyz]{22}'),
+    'la forme du jeton est la même au serveur, au relais et au bouton de retrait')
+}
+
 /* ═══ le compte ═══════════════════════════════════════════════════════════ */
 for (const [q, d] of verts) console.log('  [ok]', q, d ? `· ${d}` : '')
 for (const [q, d] of rouges) console.log('  [KO]', q, d ? `· ${d}` : '')

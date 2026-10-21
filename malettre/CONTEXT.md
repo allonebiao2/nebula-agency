@@ -218,29 +218,62 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
   `text-transform`, deuxième fois le même jour) · le générateur effaçait les marqueurs
   de données (gardés désormais, la page se relit et se refabrique).
 
-## 🔴 Reprendre ici (2026-10-17)
+## 🔴 Reprendre ici (2026-10-21)
 
-- **REPRENDRE ICI, dans cet ordre** (arrêté le 2026-10-17 à la demande de Mongazi, qui teste une stratégie) :
-  1. **Le code secret de « Le Mot »** : le constructeur (`code: pal.id === "gratuit" ? "" : …`) et le serveur le
-     donnent à Le Mot, dont la description ne le promet pas. Le réserver à La Lettre et au Coffret : un droit
-     `code` dans les DEUX barèmes (`PALIERS` de `creer.html` et de `_shared/lettre.ts`), comparé par un contrôle,
-     comme `photos` et `habillage`. (Sinon La Lettre = Le Mot plus cher.)
-  2. **Le bouton « Retirer cette lettre »** dans le pied de `lettre.html` : la porte existe déjà
-     (`POST /l/<jeton>/retrait`, `malettre-lettre`), le bouton non. Avec confirmation ; repli WhatsApp
-     `22996740732`. Seulement sur une lettre servie à `/l/<jeton>` (pas sur les exemples ni l'aperçu).
-  3. **Le relais `/l/*` dans `_dist`** : un `_worker.js` (modèle `_proxy/_worker.js`) qui passe `/l/*` à
-     `https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-lettre` et sert le reste par
-     `env.ASSETS`. ⚠️ Vérifier que `_headers` s'applique encore en mode avancé, sinon reporter les en-têtes.
-  4. **Le ménage des lettres expirées** : `malettre_menage()` (`supabase/lettres.sql`) n'est appelé par rien.
-     Une tâche quotidienne GitHub Actions, comme PISTE.
-  5. `PAIEMENT.md` : les nombres de contrôles sont périmés (203 / 213 → 269 / 301, + accueil 239, faire-part 83).
-  6. Vérifier que les **critères d'arrêt au 1er décembre 2026** sont écrits (sinon les écrire).
-  7. Puis **la vague 5, les vidéos** (« demain », dit Mongazi) : les 6 MP3 ElevenLabs dans
-     `_partage/ma lettre/voix/`, les prises d'écran du vrai produit par Playwright, la composition Remotion
-     `malettre-pub` (30 s + 2 × 15 s, FR et EN), rendu à UN onglet.
-- **La mémoire du PC** (2026-10-17) : 0,6 Go libre sur 7,9. Ce ne sont pas mes restes : **27 processus de
-  ton Chrome (3,2 Go)** et MT5. Aucun Python, Node ni navigateur de contrôle ne traînait. Fermer des onglets
-  avant de lancer les rendus vidéo.
+Le point de reprise du 2026-10-17 (sept étapes) est **fait**, sauf ce qui attend Mongazi :
+
+1. ✅ **Le code secret n'appartient qu'à La Lettre et au Coffret** : droit `code` dans les deux
+   `PALIERS` (`creer.html`, `_shared/lettre.ts`), comparés par la caisse (section 20). Commit `beed2ed`.
+2. ✅ **« Retirer cette lettre »** dans le pied de `lettre.html` : visible seulement sur une lettre
+   servie à `/l/<jeton>` (22 signes du bon alphabet), deux temps (Oui / Non), `POST …/retrait`, puis la
+   page du serveur ; repli WhatsApp `22996740732`. Contrôlé par `_qc.py` (« Retirer cette lettre »).
+   ⚠️ **La lettre pèse 61 372 octets pour un seuil de 61 440 : il reste 68 octets.** Le moindre
+   ajout à `lettre.html` passe par une économie ailleurs (les textes anglais du retrait vivent déjà
+   dans un objet `RX` compact pour cette raison).
+3. ✅ **Le relais `/l/*`** : `malettre/_relais.js`, copié en `_dist/_worker.js` par `_dist.py`.
+   `/l/<jeton>`, `/retrait`, `/etat` vont à `malettre-lettre`, le reste aux fichiers ; il pose
+   lui-même les en-têtes de sécurité (en mode avancé, `_headers` ne s'applique plus). Caisse section 21.
+4. ✅ **Le ménage** : `malettre/_menage.py` + `.github/workflows/malettre-menage.yml`, chaque nuit
+   03 h 30 UTC, secret `MALETTRE_DATABASE_URL` ou `PISTE_DATABASE_URL`. Avant le branchement, il le
+   dit et sort sans erreur (essayé).
+5. ✅ **`PAIEMENT.md`** : relais, ménage, règle du code, étape 6 (publier), nombres du jour.
+6. ✅ **Les critères d'arrêt** sont recopiés ci-dessous, avec le conflit de calendrier à trancher.
+7. 🟡 **La pub (vague 5)** : **les images sont faites**, la voix non. Six compositions
+   `malettre-*` dans `_studio-video/` (30 s FR/EN, 2 × 15 s par langue), le vrai constructeur
+   photographié par `_outils/malettre_captures.py`, planches regardées en FR et EN. Il manque **les six
+   MP3** de Mongazi (`_studio-video/src/malettre/VOIX.md`) ; ensuite caler `minutage.ts` sur la voix
+   et rendre à UN onglet. Détail : `_studio-video/README.md`.
+
+**Contrôles au 2026-10-21, tous verts** : `_qc.py` **276** · caisse **327** · accueil **239** ·
+langues **52** · faire-part **83**.
+
+**La suite, dans l'ordre** : les MP3 → caler et rendre la pub · le feu vert de Mongazi → brancher
+la caisse et la plume (`PAIEMENT.md`) → publier `_dist` (le relais part avec) → vérifier qu'une
+adresse `/l/<jeton>` inconnue rend « Cette lettre n'existe pas ».
+
+## Les critères d'arrêt (recopiés le 2026-10-21, étape 6 du point de reprise)
+
+**Ils sont écrits**, et depuis le début : dossier de décision du 27/08/2026
+(`_plans/2026-08-27-minuit-dossier.html`, § « Critères d'arrêt, écrits d'avance »),
+confirmés par la décision 12 de l'arrêté du 06/09 (`_memoire/decisions.md` :
+« le 1er décembre 2026, critères du dossier inchangés »). Le texte, mot pour mot :
+
+> Après huit semaines de publication quotidienne et 200 pages gratuites créées : si la
+> conversion payante reste sous 3 % et qu'aucun revendeur n'a signé, la ligne romantique
+> est un loisir. Dans ce cas, on ne s'entête pas : on garde le palier gratuit comme aimant
+> pour le Catalogue à 50 000 F, et les heures repartent vers Boussole et PISTE.
+
+⚠️ **Ils ne tiennent plus dans le calendrier, et c'est à Mongazi de trancher** (rien n'est
+changé ici) : ils demandent **huit semaines de publication et 200 lettres gratuites**, or
+**rien n'est en ligne** au 2026-10-21 et le 1er décembre est dans **six semaines**. Les
+deux lectures possibles :
+- **garder la date** du 1er décembre : la mesure portera sur ce qui aura tourné d'ici là,
+  donc sur moins de huit semaines ;
+- **garder les critères** : la date devient « huit semaines après la mise en ligne ».
+
+Deux mots du texte ont vieilli sans changer la règle : « revendeur » (l'abonnement des
+professionnels du dossier n'a pas été construit) et « publication quotidienne » (la vague 5,
+les vidéos, n'est pas encore faite).
 
 ## Ce qui attend Mongazi
 
@@ -252,9 +285,11 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
 - **Filmer 10 secondes de vraie matière** (une main qui ferme une enveloppe,
   un cachet qu'on brise) : sert la page ET la vidéo publicitaire.
 - Les 5 réponses déjà en attente (bloc archivé ci-dessous).
-- **La vidéo publicitaire** (vague 5) : les textes de la voix sont prêts
-  (`_studio-video/src/malettre/VOIX.md`), **les six MP3 ElevenLabs sont à déposer**
-  dans `_partage/ma lettre/voix/`.
+- **La vidéo publicitaire** (vague 5) : **les images sont faites** (2026-10-21) ;
+  **les six MP3 ElevenLabs sont à déposer** dans `_partage/ma lettre/voix/` (textes dans
+  `_studio-video/src/malettre/VOIX.md`).
+- **Trancher les critères d'arrêt** : garder la date du 1er décembre, ou « huit semaines
+  après la mise en ligne » (section ci-dessus).
 - **Le faire-part sur demande peut se vendre AVANT la caisse** (il passe par WhatsApp) :
   tout est prêt (README § « Le faire-part de mariage, sur demande »). Il lui faut **le feu
   vert pour publier le site** (pas la caisse), **le compte** où le couple paie les 25 000 F, et
