@@ -130,6 +130,12 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
   min-height:44px;padding:0 4px}
 .compte-plume{background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.4);
   border-radius:12px;padding:12px 14px;font-size:13.5px;margin-top:14px}
+.retouches{margin-top:14px}
+.retouches-t{font-size:13.5px;color:var(--gris-clair);margin-bottom:10px}
+.retouche-libre{display:flex;gap:8px;align-items:center;margin-top:10px}
+.retouche-libre input{flex:1;min-width:0}
+.retouche-libre .sec{padding:12px 18px;white-space:nowrap}
+.retouches button[disabled]{opacity:.45;pointer-events:none}
 
 /* ── L'habillage (2026-10-16) : des pastilles, aucune saisie, tout facultatif ── */
 .habille{border:1.5px solid var(--ligne);border-radius:16px;padding:16px 16px 6px;margin-bottom:20px}
@@ -315,6 +321,27 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
         <span id="plume-compte-t"></span>
         <button type="button" class="lienbtn" id="btn-blanche">Repartir d'une page blanche</button>
         <button type="button" class="lienbtn" id="btn-remettre">Remettre la lettre de la plume</button>
+      </div>
+
+      <!-- LES RETOUCHES (2026-10-21). « Presque bien » est l'insatisfaction la
+           plus frequente : la plume repart de la lettre TELLE QU'ELLE EST dans
+           les champs, corrections a la main comprises. Les identifiants sont
+           ceux de `_shared/savoirs.ts` (RETOUCHES), et un controle les compare. -->
+      <div class="retouches" id="retouches" hidden>
+        <p class="retouches-t">Pas tout à fait ça ? Demande une retouche à la plume :</p>
+        <div class="puces">
+          <button type="button" class="puce" data-retouche="courte">Plus courte</button>
+          <button type="button" class="puce" data-retouche="longue">Plus longue</button>
+          <button type="button" class="puce" data-retouche="tendre">Plus tendre</button>
+          <button type="button" class="puce" data-retouche="drole">Plus drôle</button>
+          <button type="button" class="puce" data-retouche="simple">Plus simple</button>
+          <button type="button" class="puce" data-retouche="solennelle">Plus solennelle</button>
+        </div>
+        <div class="retouche-libre">
+          <input type="text" id="f-retouche" maxlength="140" autocomplete="off" aria-label="Ce que la plume doit changer"
+            placeholder="Ou dis-lui quoi changer : « parle de notre voyage à Ouidah »">
+          <button type="button" class="sec" id="btn-retouche">Retoucher</button>
+        </div>
       </div>
 
       <div class="groupe">
@@ -1022,6 +1049,8 @@ function peindreMode(){
     : "Page blanche : la plume n'est plus comptée.";
   $("#btn-blanche").hidden = !E.plume;
   $("#btn-remettre").hidden = !garde;
+  $("#retouches").hidden = !E.plume || !!E.plumeFin;
+  $$("#retouches button").forEach(function(x){ x.disabled = false; });
 }
 
 function dire(t){
@@ -1034,7 +1063,9 @@ var MOTS = {
   "deuil": "Nous n'écrivons pas encore les lettres de deuil. Nous préférons le faire bien plutôt que vite.",
   "nuisible": "La plume ne peut pas écrire cette lettre-là. Change tes consignes et réessaie.",
   "hors-sujet": "La plume n'a pas compris quelle lettre écrire. Précise l'occasion ou tes consignes.",
-  "limite": "Tu as eu tes trois versions. Retouche celle-ci à la main : c'est comme ça qu'elle devient la tienne.",
+  "limite": "Tu as eu tes cinq versions. Retouche celle-ci à la main : c'est comme ça qu'elle devient la tienne.",
+  "retouche": "Il n'y a pas encore de lettre à retoucher.",
+  "que-changer": "Dis à la plume ce qu'il faut changer, ou choisis une retouche.",
   "occupee": "La plume est très demandée en ce moment. Réessaie dans une minute.",
   "prénom": "Donne d'abord son prénom, tout en haut.",
   "occasion": "Dis d'abord quelle occasion.",
@@ -1048,13 +1079,36 @@ function motErreur(code, j){
   return PAS_LA;
 }
 
+function fichePrete(f){
+  if (!String(f.pour).trim()) { dire(MOTS["prénom"]); $("#f-pour").focus(); return false; }
+  if (f.occasion === "autre" && !String(f.autre).trim()) { dire(MOTS.occasion); $("#f-autre").focus(); return false; }
+  if (!POINT_PLUME) { dire(MOTS["pas-branchee"]); return false; }
+  return true;
+}
+
 function ecrireAvecPlume(){
   var f = ficheEnvoyee();
-  if (!String(f.pour).trim()) { dire(MOTS["prénom"]); $("#f-pour").focus(); return; }
-  if (f.occasion === "autre" && !String(f.autre).trim()) { dire(MOTS.occasion); $("#f-autre").focus(); return; }
-  if (!POINT_PLUME) { dire(MOTS["pas-branchee"]); return; }
+  if (fichePrete(f)) { envoyerPlume(f, "La plume écrit…"); }
+}
+
+/* La retouche : la plume repart de la lettre DES CHAMPS, pas de sa derniere
+   version, pour que les corrections faites a la main survivent. */
+function retoucher(id){
+  var f = ficheEnvoyee();
+  if (!fichePrete(f)) { return; }
+  var demande = id ? "" : String($("#f-retouche").value || "").trim();
+  if (!id && !demande) { dire(MOTS["que-changer"]); $("#f-retouche").focus(); return; }
+  var corps = String(E.lettre || "").split(/\n\s*\n/).map(function(x){ return x.trim(); }).filter(Boolean);
+  if (!corps.length) { dire(MOTS.retouche); return; }
+  f.retouche = id || ""; f.demande = demande;
+  f.actuelle = { titre: E.titre || "", lettre: corps, formule: E.formule || "" };
+  envoyerPlume(f, "La plume retouche…");
+}
+
+function envoyerPlume(f, attente){
   var b = $("#btn-plume");
-  b.disabled = true; b.textContent = "La plume écrit…";
+  b.disabled = true; b.textContent = attente;
+  $$("#retouches button").forEach(function(x){ x.disabled = true; });
   dire("");
   fetch(POINT_PLUME, { method: "POST", headers: entetes(), body: JSON.stringify(f) })
     .then(function(r){
@@ -1062,7 +1116,7 @@ function ecrireAvecPlume(){
         .then(function(j){ return { code: r.status, j: j || {} }; });
     })
     .then(function(rep){
-      if (rep.j.ok) { poserPlume(rep.j); return; }
+      if (rep.j.ok) { poserPlume(rep.j, !!f.actuelle); return; }
       if (rep.j.erreur === "limite") { E.plumeFin = true; }
       peindreMode();
       dire(motErreur(rep.code, rep.j));
@@ -1073,7 +1127,7 @@ function ecrireAvecPlume(){
 /* ⛔ La reponse est du TEXTE et le reste : elle va dans des champs, jamais
    dans du HTML. Elle a ete relue par le serveur, mais un navigateur se
    relit aussi. */
-function poserPlume(j){
+function poserPlume(j, retouchee){
   var corps = (Array.isArray(j.lettre) ? j.lettre : []).map(String).filter(Boolean);
   if (!corps.length) { peindreMode(); dire(PAS_LA); return; }
   E.titre = String(j.titre || E.titre);
@@ -1086,7 +1140,9 @@ function poserPlume(j){
   $("#f-formule").value = E.formule;
   $("#c-lettre").textContent = String(E.lettre.length);
   var reste = typeof j.restantes === "number" ? j.restantes : null;
-  dire("Voilà ta lettre. Relis-la et change ce que tu veux : ce sont tes mots maintenant."
+  if (retouchee) { $("#f-retouche").value = ""; }
+  dire((retouchee ? "Voilà la retouche. Relis-la et change ce que tu veux."
+    : "Voilà ta lettre. Relis-la et change ce que tu veux : ce sont tes mots maintenant.")
     + (reste === 0 ? " C'était la dernière version, à toi de la finir."
        : reste ? " Encore " + reste + (reste > 1 ? " versions possibles." : " version possible.") : ""));
   peindreMode(); garder(); peindre();
@@ -1100,6 +1156,13 @@ $$(".m").forEach(function(b){
   });
 });
 $("#btn-plume").addEventListener("click", ecrireAvecPlume);
+$$("#retouches [data-retouche]").forEach(function(x){
+  x.addEventListener("click", function(){ retoucher(x.dataset.retouche); });
+});
+$("#btn-retouche").addEventListener("click", function(){ retoucher(""); });
+$("#f-retouche").addEventListener("keydown", function(ev){
+  if (ev.key === "Enter") { ev.preventDefault(); retoucher(""); }
+});
 
 /* Repartir d'une page blanche : la plume n'est plus comptee, et sa lettre
    reste a portee d'un clic. Toute suppression se rattrape. */

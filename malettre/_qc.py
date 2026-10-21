@@ -1010,6 +1010,7 @@ def main():
                 "Encore 2 versions" in pg.inner_text("#plume-mot"), pg.inner_text("#plume-mot"))
             dit("le bouton propose une autre version",
                 pg.inner_text("#btn-plume").strip() == "Une autre version")
+            dit("les retouches paraissent sous la lettre de la plume", pg.is_visible("#retouches"))
             dit("on dit que la plume compte 500 F, meme retouchee",
                 pg.is_visible("#plume-compte") and "500 F" in pg.inner_text("#plume-compte-t"))
             dit("⛔ le texte de la plume reste du texte",
@@ -1104,8 +1105,9 @@ def main():
                 and pg.input_value("#f-souvenir") == "Notre premier garba.")
             repondre_plume(429, {"ok": False, "erreur": "limite"})
             pg.click("#btn-plume")
-            dit("trois versions : on le dit",
-                attendre(lambda: "trois versions" in pg.inner_text("#plume-mot")), pg.inner_text("#plume-mot"))
+            dit("cinq versions : on le dit",
+                attendre(lambda: "cinq versions" in pg.inner_text("#plume-mot")), pg.inner_text("#plume-mot"))
+            dit("et les retouches se rangent", not pg.is_visible("#retouches"))
             dit("et le bouton ne propose plus de version",
                 pg.eval_on_selector("#btn-plume", "e=>e.disabled"))
             # ⛔ Le « + » des photos restait peint au maximum : `.ajout` est en

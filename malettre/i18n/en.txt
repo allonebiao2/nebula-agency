@@ -69,6 +69,26 @@ FR: <button type="button" class="pri" id="btn-plume">Écrire ma lettre</button>
 EN: <button type="button" class="pri" id="btn-plume">Write my letter</button>
 FR: >Repartir d'une page blanche<
 EN: >Start from a blank page<
+FR: <p class="retouches-t">Pas tout à fait ça ? Demande une retouche à la plume :</p>
+EN: <p class="retouches-t">Not quite right? Ask the Quill for a touch-up:</p>
+FR: >Plus courte<
+EN: >Shorter<
+FR: >Plus longue<
+EN: >Longer<
+FR: >Plus tendre<
+EN: >More tender<
+FR: >Plus drôle<
+EN: >Funnier<
+FR: >Plus simple<
+EN: >Simpler<
+FR: >Plus solennelle<
+EN: >More solemn<
+FR: aria-label="Ce que la plume doit changer"
+EN: aria-label="What the Quill should change"
+FR: placeholder="Ou dis-lui quoi changer : « parle de notre voyage à Ouidah »"
+EN: placeholder="Or tell it what to change: “mention our trip to Ouidah”"
+FR: >Retoucher<
+EN: >Touch up<
 FR: >Remettre la lettre de la plume<
 EN: >Bring back the Quill's letter<
 FR: <label for="f-titre">Le grand titre</label>
@@ -380,8 +400,12 @@ FR:   "nuisible": "La plume ne peut pas écrire cette lettre-là. Change tes con
 EN:   "nuisible": "The Quill can't write that letter. Change your instructions and try again.",
 FR:   "hors-sujet": "La plume n'a pas compris quelle lettre écrire. Précise l'occasion ou tes consignes.",
 EN:   "hors-sujet": "The Quill didn't understand which letter to write. Say more about the occasion or your instructions.",
-FR:   "limite": "Tu as eu tes trois versions. Retouche celle-ci à la main : c'est comme ça qu'elle devient la tienne.",
-EN:   "limite": "You've had your three versions. Edit this one by hand: that's how it becomes yours.",
+FR:   "limite": "Tu as eu tes cinq versions. Retouche celle-ci à la main : c'est comme ça qu'elle devient la tienne.",
+EN:   "limite": "You've had your five versions. Edit this one by hand: that's how it becomes yours.",
+FR:   "retouche": "Il n'y a pas encore de lettre à retoucher.",
+EN:   "retouche": "There is no letter to touch up yet.",
+FR:   "que-changer": "Dis à la plume ce qu'il faut changer, ou choisis une retouche.",
+EN:   "que-changer": "Tell the Quill what to change, or choose a touch-up.",
 FR:   "occupee": "La plume est très demandée en ce moment. Réessaie dans une minute.",
 EN:   "occupee": "The Quill is in high demand right now. Try again in a minute.",
 FR:   "prénom": "Donne d'abord son prénom, tout en haut.",
@@ -394,10 +418,14 @@ FR:   "langue": "La plume s'est trompée de langue. Réessaie."
 EN:   "langue": "The Quill slipped into French. Try again."
 FR: return MOTS[j.refus] || "La plume a buté sur cette version. Réessaie.";
 EN: return MOTS[j.refus] || "The Quill stumbled on this version. Try again.";
-FR: b.textContent = "La plume écrit…";
-EN: b.textContent = "The Quill is writing…";
-FR: dire("Voilà ta lettre. Relis-la et change ce que tu veux : ce sont tes mots maintenant."
-EN: dire("Here is your letter. Reread it and change what you like: these are your words now."
+FR: envoyerPlume(f, "La plume écrit…");
+EN: envoyerPlume(f, "The Quill is writing…");
+FR: dire((retouchee ? "Voilà la retouche. Relis-la et change ce que tu veux."
+EN: dire((retouchee ? "Here is the touch-up. Reread it and change what you like."
+FR: : "Voilà ta lettre. Relis-la et change ce que tu veux : ce sont tes mots maintenant.")
+EN: : "Here is your letter. Reread it and change what you like: these are your words now.")
+FR: envoyerPlume(f, "La plume retouche…");
+EN: envoyerPlume(f, "The Quill is touching it up…");
 FR: + (reste === 0 ? " C'était la dernière version, à toi de la finir."
 EN: + (reste === 0 ? " That was the last version, it's yours to finish."
 FR: : reste ? " Encore " + reste + (reste > 1 ? " versions possibles." : " version possible.") : ""));
