@@ -479,7 +479,8 @@
   le TDI ; garder la nuit rapporte moins ; **son envers** (0033c, D-095, vrai ordre stop ou au marché) **ne tient pas non
   plus** ; gardée en attente par Mongazi (même renvoi).
   Le 20 octobre : les trois en démo s'appellent **LE TRIO** (D-099) ; la **0034** (QQE MOD) **ne tient pas** (D-096) ;
-  la 0035 puis la **0036 « breakout & retest des quarts »** (méthode de Mongazi, 58 752 réglages, D-100) en calcul
+  le 21 la **0035** (SuperTrend + QQE) **ne tient pas** non plus (D-097, sous le hasard) ; la **0036 « breakout & retest
+  des quarts »** (méthode de Mongazi, 58 752 réglages, D-100) en calcul
   (renvoi : `_memoire/conversations/2026-10-20-trading-reprise-nova-quarts.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
