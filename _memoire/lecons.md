@@ -2985,3 +2985,10 @@ lettre se serait affichée en code source, scripts bloqués, avec 373 contrôles
 **Règle** : une imitation reproduit ce que la dépendance RENVOIE (mesuré sur la vraie, tous les en-têtes
 lus), pas ce qu'on lui envoie. Et un secret de webhook appartient à un POINT DE RÉCEPTION, pas à un compte :
 deux webhooks SasPay = deux secrets, alors que les secrets Supabase valent pour tout le projet.
+## 2026-10-22 · Un défilement ne débloque pas le son, et Playwright ment sur l'autoplay (MA LETTRE À…)
+- Au téléphone, le premier contact est un défilement : la lecture est refusée (`NotAllowedError`). Le code de la
+  vitrine retirait son écoute au premier geste : la musique ne partait JAMAIS (« j'entends pas la musique »).
+  Seuls une touche relâchée, un clic ou une touche du clavier débloquent le son. Réessayer jusqu'à une lecture réussie.
+- Les contrôles ne l'avaient pas vu : Playwright lance Chromium SANS la règle de lecture et ses `evaluate` comptent
+  comme un geste. Tester par le protocole (CDP), `userGesture: false`, après avoir vérifié que la page n'est pas activée.
+- Même jour : un décor 3D invisible (les timbres) prenait le doigt sur toute la page ; sonder une page NEUVE.

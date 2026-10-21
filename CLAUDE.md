@@ -436,7 +436,7 @@
 - **En arrivant là-bas** : `_cerveau/CERVEAU.md`, puis `_cerveau/VUE-DENSEMBLE.md`.
 - ⛔ **Rien n'est rentable, rien ne tourne en réel.** Le test d'un an du
   2026-09-18 a montré que LE REFLUX perd chez un vrai courtier ; les chiffres
-  flatteurs venaient d'un simulateur non causal. **24 méthodes au cimetière**,
+  flatteurs venaient d'un simulateur non causal. **26 méthodes au cimetière**,
   dont toutes celles qui avaient un jour paru marcher. Les 30 septembre et
   1er octobre, les méthodes 0010 et 0011 et deux exhumations ont été jugées :
   **aucune ne tient** (renvoi : `_memoire/conversations/2026-10-01-recherche-trading.md`).
@@ -496,7 +496,7 @@
   Le 20 octobre : les trois en démo s'appellent **LE TRIO** (D-099) ; la **0034** (QQE MOD) **ne tient pas** (D-096) ;
   le 21 la **0035** (SuperTrend + QQE) **ne tient pas** non plus (D-097 : mieux que le hasard, perte quand même) ; la **0036 « breakout & retest
   des quarts »** (méthode de Mongazi, 58 752 réglages, D-100) **ne tient pas** (aucun réglage positif, finalistes sous le hasard,
-  aucun FTMO viable ; enterrement à la décision de Mongazi)
+  aucun FTMO viable ; **enterrée le 21**, cimetière à 26)
   (renvoi : `_memoire/conversations/2026-10-20-trading-reprise-nova-quarts.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.

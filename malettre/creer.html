@@ -552,7 +552,8 @@ var Bruits = (function(){
       sortie = ctx.createGain(); sortie.gain.value = MOBILE ? 1.45 : .9; sortie.connect(comp);
     } catch (e) { ctx = null; }
   }
-  ["pointerdown", "keydown", "touchstart"].forEach(function(t){
+  /* le contexte se reveille aussi aux gestes qui AUTORISENT le son au telephone (touche relachee, clic) */
+  ["pointerdown", "pointerup", "touchend", "click", "keydown"].forEach(function(t){
     addEventListener(t, function(){ pret = true; ouvrir(); }, { capture: true, passive: true });
   });
   function bruitBlanc(){

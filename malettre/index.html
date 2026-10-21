@@ -1220,7 +1220,8 @@ var Bruits = (function(){
       sortie = ctx.createGain(); sortie.gain.value = MOBILE ? 1.45 : .9; sortie.connect(comp);
     } catch (e) { ctx = null; }
   }
-  ["pointerdown", "keydown", "touchstart"].forEach(function(t){
+  
+  ["pointerdown", "pointerup", "touchend", "click", "keydown"].forEach(function(t){
     addEventListener(t, function(){ pret = true; ouvrir(); }, { capture: true, passive: true });
   });
   function bruitBlanc(){
@@ -1748,18 +1749,19 @@ if (!doux && matchMedia("(hover:hover) and (pointer:fine)").matches) {
 (function(){
   var btn = $("#son");
   if (!btn) { return; }
-  var CLE = "malettre:son", audio = null, ctx = null, gain = null, coupee = false, baisse = false;
+  var CLE = "malettre:son", NIVEAU = .15, NIVEAU_BAS = .05;
+  var audio = null, ctx = null, gain = null, coupee = false, baisse = false, joue = false;
   try { coupee = localStorage.getItem(CLE) === "non"; } catch (e) {}
-  function niveau(){ return coupee || document.hidden ? 0 : (baisse ? .07 : .3); }
+  function niveau(){ return coupee || document.hidden ? 0 : (baisse ? NIVEAU_BAS : NIVEAU); }
   function regler(t){
     if (!audio) { return; }
     if (gain && ctx) { gain.gain.cancelScheduledValues(ctx.currentTime); gain.gain.setTargetAtTime(niveau(), ctx.currentTime, t || .5); }
     else { audio.volume = niveau(); }
-    btn.classList.toggle("joue", !coupee);
-    btn.setAttribute("aria-pressed", coupee ? "false" : "true");
+    btn.classList.toggle("joue", joue && !coupee);
+    btn.setAttribute("aria-pressed", joue && !coupee ? "true" : "false");
   }
-  function demarrer(){
-    if (audio) { if (ctx && ctx.resume) { ctx.resume(); } audio.play().catch(function(){}); regler(1.2); return; }
+  function preparer(){
+    if (audio) { return; }
     audio = new Audio(btn.dataset.src);
     audio.loop = true;
     try {
@@ -1767,21 +1769,37 @@ if (!doux && matchMedia("(hover:hover) and (pointer:fine)").matches) {
       ctx = new AC(); gain = ctx.createGain(); gain.gain.value = 0;
       ctx.createMediaElementSource(audio).connect(gain); gain.connect(ctx.destination);
     } catch (e) { ctx = null; gain = null; audio.volume = 0; }
-    audio.play().then(function(){ regler(1.8); }).catch(function(){ audio = null; ctx = null; gain = null; });
   }
+  function demarrer(){
+    preparer();
+    if (ctx) {
+      try { var b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch (e) {}
+      if (ctx.state === "suspended") { try { var p = ctx.resume(); if (p && p.catch) { p.catch(function(){}); } } catch (e) {} }
+    }
+    var essai;
+    try { essai = audio.play(); } catch (e) { return; }
+    if (essai && essai.then) { essai.then(verifier, function(){}); } else { verifier(); }
+  }
+  function verifier(){
+    if (ctx && ctx.state !== "running") { return; }   /* le contexte dort encore : le prochain geste le réveille */
+    joue = true; ecouter(false); regler(1.8);
+  }
+  var GESTES = ["pointerup", "touchend", "click", "keydown"];
   function geste(e){
     if (e && e.target && e.target.closest && e.target.closest("#son")) { return; }
-    ["pointerdown", "keydown", "touchstart"].forEach(function(t){ removeEventListener(t, geste, true); });
-    if (!coupee) { demarrer(); }
+    if (!coupee && !joue) { demarrer(); }
   }
-  ["pointerdown", "keydown", "touchstart"].forEach(function(t){ addEventListener(t, geste, true); });
+  function ecouter(oui){
+    GESTES.forEach(function(t){ if (oui) { addEventListener(t, geste, true); } else { removeEventListener(t, geste, true); } });
+  }
+  ecouter(true);
   btn.addEventListener("click", function(){
-    if (!audio || coupee) { coupee = false; demarrer(); } else { coupee = true; }
+    if (!joue || coupee) { coupee = false; demarrer(); } else { coupee = true; }
     try { localStorage.setItem(CLE, coupee ? "non" : "oui"); } catch (e) {}
     regler(.4);
   });
   document.addEventListener("visibilitychange", function(){
-    if (!audio) { return; }
+    if (!audio || !joue) { return; }
     if (document.hidden) { audio.pause(); } else if (!coupee) { audio.play().catch(function(){}); }
     regler(.3);
   });

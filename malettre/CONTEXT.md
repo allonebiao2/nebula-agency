@@ -289,12 +289,37 @@ Récit complet : `_memoire/conversations/2026-10-21-malettre-quatre-demandes.md`
    organises », « Chacun apporte », un ton à elle (dont « Mystérieux ») ; l'aide des consignes demande le lieu et
    l'heure. **La plume ne les invente jamais** (registre + savoir-faire, essayé au banc : avec lieu et heure, elle
    les reprend ; sans, « les détails arrivent en message »). Anglais : « Night with friends ». `malettre-plume`
-   republiée. ⏳ **Le nom est à confirmer par Mongazi** (« Chill privé » était l'autre piste).
+   republiée. ✅ **Nom confirmé par Mongazi le 2026-10-21.**
 
 **La page livrée n'a plus ses commentaires** (`alleger()` du build) : ils pesaient 23 Ko sur 178, et le premier écran
 dépassait ses 320 Ko (321). La source les garde tous. ⚠️ **Pour comprendre un morceau de la vitrine, lire
 `_accueil_src.html`, jamais `index.html`.** Contrôles de la nuit : accueil, langues, constructeur, caisse, faire-part
 (chiffres dans le récit de la nuit).
+
+## ⏳ LES PRIX, REVUS EN PROFONDEUR (2026-10-22) : PROPOSITION, EN ATTENTE DE MONGAZI
+
+Demande : « réfléchis en profondeur et revois le prix, à la hausse ou à la baisse ». Skills : `pricing-strategy`,
+`marketing-psychology`. Rien n'est changé dans la caisse tant que Mongazi n'a pas dit oui.
+
+- **Le constat** : aucune lettre, aucun paiement en base au 2026-10-21. Le goulot est la venue des visiteurs, pas le
+  prix : baisser n'apporte personne. 2 000 F (environ 3 €) est déjà un prix d'impulsion.
+- **Le défaut de la grille** : La Lettre (5 000 F) = Le Mot (2 000 F) + un code secret. +3 000 F pour quatre
+  chiffres : le palier conseillé (présélectionné) ne se défend pas. Et la plume à +500 F sur tout casse les totaux
+  ronds (5 500, 10 500 F) dans un pays qui paie en billets de 5 000 et 10 000.
+- **La proposition** : Offert 0 F et Le Mot 2 000 F inchangés ; **La Lettre 5 000 F, plume incluse, 10 photos,
+  code secret** (« notre conseil ») ; **Le Coffret 10 000 F, plume incluse, 20 photos** ; la plume reste à 500 F
+  avec Offert et Le Mot (c'est le premier franc) ; **le faire-part passe de 25 000 à 35 000 F** (le marché d'un
+  sur-mesure) ; **l'équivalent en euros affiché** pour la diaspora (décidé à l'arrêté 08, jamais fait).
+- **Repères** (recherches du 2026-10-22) : invitations digitales en Côte d'Ivoire, Carte Event de 7 500 à 30 000 F
+  en libre-service, monmariage.net 35 000 F (promo 25 000) ; faire-part imprimé 500 à 800 F l'unité, 50 au moins ;
+  bouquet de roses environ 10 000 F, 15 000 à 20 000 F autour du 14 février (Sénégal) ; pages d'amour en libre-service
+  à l'étranger 9,99 à 12 $ (dossier du 27/08) ; frais Mobile Money marchand réels 2,3 à 3,5 % (estimations), ceux de
+  SasPay toujours inconnus.
+- **Ce qu'on ne fait pas** : aucun « le plus choisi » (aucune vente), aucune fausse urgence, aucun prix en 4 990 F
+  (le franc se compte en billets ronds), aucun prix par occasion (arrêté 07), aucune durée « à vie » (la lettre expire,
+  `CONDITIONS.md`).
+- **Ce qu'on mesure ensuite** (après 30 à 50 lettres payées) : la part de chaque palier ; si La Lettre reste sous 25 %,
+  on revoit son contenu ; si plus de la moitié des Le Mot prennent la plume, on essaie la plume à 1 000 F.
 
 ## Reprendre ici (2026-10-21, avant la mise en ligne)
 

@@ -92,3 +92,15 @@ critique), `redesign-existing-projects`, `design-taste-frontend`, `high-end-visu
   vrai toucher sur une case mène à `/creer?occasion=mois`, 28 occasions, aucune erreur.
 - ⏳ Mongazi : confirmer « Soirée entre potes », écouter les bruitages au téléphone (le mode silencieux de l'iPhone
   coupe le Web Audio), le premier franc.
+
+## Le 22 · la musique, l'enterrement, les prix
+
+- Mongazi : « le bruitage passe mais j'entends pas la musique, mets-la avec un volume léger ». Cause trouvée et
+  reproduite en ligne dans les conditions d'un vrai téléphone : le premier contact (un défilement) ne débloque pas
+  le son, et le code retirait son écoute au premier geste. Corrigé (on réessaie jusqu'à jouer vraiment, réveil du son
+  dans le geste), **volume 0,30 → 0,15**, publié et vérifié en ligne (la musique part à la première touche).
+  Les bruitages se réveillent aussi aux gestes qui débloquent. Contrôles : 307 · 285 · 379 · 52 · 83.
+- Mongazi confirme **« Soirée entre potes »** et **l'enterrement de la 0036** (fiche 26 du cimetière, `2717cdc`,
+  leçon 15 rattachée à son contrôle, cerveau 72 verts).
+- **Les prix** : revus en profondeur (skills `pricing-strategy`, `marketing-psychology`, recherches de marché) ;
+  proposition dans `malettre/CONTEXT.md` § « LES PRIX, REVUS EN PROFONDEUR », **en attente de Mongazi**.
