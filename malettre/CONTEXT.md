@@ -244,7 +244,7 @@ Le point de reprise du 2026-10-17 (sept étapes) est **fait**, sauf ce qui atten
    MP3** de Mongazi (`_studio-video/src/malettre/VOIX.md`) ; ensuite caler `minutage.ts` sur la voix
    et rendre à UN onglet. Détail : `_studio-video/README.md`.
 
-**Contrôles au 2026-10-21, tous verts** : `_qc.py` **285** · caisse **362** · accueil **239** ·
+**Contrôles au 2026-10-21, tous verts** : `_qc.py` **285** · caisse **373** · accueil **239** ·
 langues **52** · faire-part **83**.
 
 **La suite, dans l'ordre** : les MP3 → caler et rendre la pub · le feu vert de Mongazi → brancher
@@ -278,9 +278,29 @@ MÉTIER (comment on fait bien) :
   destinataires, un patron, une fiche maigre, une consigne humiliante, le deuil glissé dans
   « Autre », l'anglais) + une retouche ; contrôles codés (longueur, prénom, vouvoiement, question
   finale, bénédiction, titre, formule) et relecture par un juge (fidélité, souvenir, consignes, ton,
-  naturel, langue, chute). ⛔ **Appels payants, environ 32** : rien ne part sans `--oui`, et
-  **il n'a pas encore tourné** (accord de Mongazi attendu). Résultat dans `_vues/` (ignoré par git).
-- Contrôles : caisse **362** (35 nouveaux : couverture des savoir-faire, un seul envoyé, retouches,
+  naturel, langue, chute). ⛔ **Appels payants, environ 32** (1 à 2 $) : rien ne part sans `--oui`.
+  Résultat dans `_vues/` (ignoré par git). **Lancé deux fois le 2026-10-21** (« finalise ça maintenant ») :
+  - **1er passage** : il a trouvé **un vrai bug de production** : l'élision codée (`elider`) utilisait ``,
+    qui en JavaScript ne connaît que l'ASCII ; « notre amitié s'arrête ici » sortait « s'arrêt'ici »,
+    « même avec » « mêm'avec ». Corrigé (frontière Unicode), contrôlé sur six phrases. Les six exemples
+    publiés étaient intacts (relus avant publication). Aussi : la plume ajoutait des détails à la
+    scène (47 « faits inventés » relevés par le juge), la retouche « Plus courte » raccourcissait d'un
+    cinquième, il manquait l'espace avant « : ».
+  - **Corrections** : ce qu'on a le droit d'ajouter (ce que l'acheteur ressent aujourd'hui) et ce
+    qu'on n'a pas le droit d'ajouter (scène, geste, parole, objet, qualité non choisie) écrits dans les
+    deux systèmes ; genre de l'acheteur jamais supposé ; « Plus courte » = au moins un tiers en moins ;
+    « Bonne fête de Tabaski », « Joyeux Noël »… dits en toutes lettres ; typographie française (espace
+    avant « : ; ! ? »), ⚠️ **sans casser la sonde des liens** : « https:// » devenait « https :// » et un
+    lien passait, attrapé par la caisse le jour même (`(?!//)` + sonde tolérante).
+  - **2e passage** (moyennes du juge sur 15 lettres, 1er → 2e) : fidélité 3,33 → **3,67**, consignes
+    3,6 → **4,0**, langue 3,67 → **4,07**, chute 2,47 → **3,13**, souvenir 4,27, ton 3,93, naturel 3,0 ;
+    faits inventés 47 → **34** ; la retouche passe de 140 à 64 mots. Le juge est sévère exprès (il
+    compte « jour après jour » comme inventé).
+  - ⏳ **Reste faible** : les souvenirs comiques s'enrichissent encore (« je tenais le sac », « la
+    vendeuse ») et le « naturel » plafonne à 3 ; le registre « Avec nos expressions d'ici » est
+    très prudent. À reprendre avec un troisième passage, de préférence une fois la plume en ligne et
+    les premières vraies fiches lues.
+- Contrôles : caisse **373** (46 nouveaux : couverture des savoir-faire, un seul envoyé, retouches,
   bornes, pièges, boutons égaux des deux côtés) ; `_qc.py` : les boutons de retouche essayés dans le
   vrai constructeur (la lettre des champs part, la demande écrite part avec Entrée, la limite les range).
 

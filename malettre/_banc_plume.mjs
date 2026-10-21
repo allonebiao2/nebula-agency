@@ -100,7 +100,8 @@ function controles(cas, fiche, r) {
   /* Une fiche maigre donne une lettre courte et juste (la règle du système) : on ne la punit pas d'être courte. */
   if (cas.attendu.maigre) a = 40
   const n = MOTS(corps)
-  k.push([n >= a && n <= b, `longueur « ${longueur} » : ${n} mots (attendu ${a} à ${b})`])
+  /* Une retouche « Plus courte » se juge contre la lettre d'avant, pas contre la fiche. */
+  if (fiche.retouche !== 'courte') k.push([n >= a && n <= b, `longueur « ${longueur} » : ${n} mots (attendu ${a} à ${b})`])
   const prenom = fiche.pour.split(/\s+/)[0]
   const fois = (corps.match(new RegExp(`\\b${prenom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g')) ?? []).length
   k.push([fois <= 1, `prénom dans le corps : ${fois} fois (1 au plus)`])

@@ -312,7 +312,7 @@
   faites le 2026-10-21, six compositions `malettre-*` dans `_studio-video/`, la voix manque).
   Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
 - **Contrôles, tous verts avant toute publication** : `_qc.py` (285) · `node --experimental-strip-types
-  malettre/_qc_caisse.mjs` (362) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
+  malettre/_qc_caisse.mjs` (373) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
 - **Publier** (feu vert de Mongazi ET caisse branchée) : `python malettre/_dist.py` puis
   `wrangler pages deploy malettre/_dist --project-name malettre --branch main`. ⛔ Jamais le dossier entier.
   Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes. ⚠️ `lettre.html` est
