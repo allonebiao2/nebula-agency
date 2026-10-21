@@ -476,6 +476,9 @@
   ses exemples retrouvés, 36 288 puis 3 888 réglages sur 7 majeures (D-092, D-093) : **ne tient pas**, ni seule ni avec
   le TDI ; garder la nuit rapporte moins ; **son envers** (0033c, D-095, vrai ordre stop ou au marché) **ne tient pas non
   plus** ; gardée en attente par Mongazi (même renvoi).
+  Le 20 octobre : les trois en démo s'appellent **LE TRIO** (D-099) ; la **0034** (QQE MOD) **ne tient pas** (D-096) ;
+  la 0035 puis la **0036 « breakout & retest des quarts »** (méthode de Mongazi, 58 752 réglages, D-100) en calcul
+  (renvoi : `_memoire/conversations/2026-10-20-trading-reprise-nova-quarts.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
