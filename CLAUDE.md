@@ -321,6 +321,13 @@
   et `-lettre`). Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes.
   ⛔ **Supabase sert tout HTML en `text/plain` + `sandbox`** : le relais rend leur type aux pages de NOTRE
   fonction, sinon la lettre s'affiche en code source. ⚠️ `lettre.html` est à 68 octets de son seuil (61 440).
+- **La vitrine en profondeur (2026-10-21)** : GSAP 3.13 servi d'ici (`vendor/`), chargé APRÈS le premier écran ;
+  **la nuit des lettres** (une enveloppe par occasion réelle) ; fonds d'ambiance par `_fonds.py` (une zone n'en a
+  que si l'image existe, chargés à l'approche, celui du héros après le rideau ET le chargement) qui VIVENT en CSS
+  en attendant les vidéos ; musique par `_son.py` (⛔ le MP3 n'est pas dans le dépôt : licence Pixabay) ; logo par
+  `_logo.py` (le cachet aux trois points). Premier écran < 320 Ko, contrôlé. Récit :
+  `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md`. 📋 **Quatre demandes en attente** (police,
+  bruitages, verre, occasion « fête entre potes ») : `malettre/CONTEXT.md` § « À APPLIQUER, UNE PAR UNE ».
 - ⛔ **Pièges qui ont déjà mordu** : `</script>` et U+2028 écrits par un acheteur tuent la page (tout passe
   par `_injecter.py`, et les échappements se fabriquent par programme : 6 fois arrivés en clair) · on ne
   stocke JAMAIS le HTML du navigateur, on rebâtit depuis le gabarit · le prix ne vient jamais du navigateur

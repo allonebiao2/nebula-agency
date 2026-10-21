@@ -187,9 +187,20 @@ def mesurer(pg, sel):
     """
     from io import BytesIO
     from PIL import Image
+    # ⚠️ GSAP (2026-10-21) : un mouvement lié au défilement a de l'INERTIE (scrub).
+    # Après le saut de scrollIntoView, la feuille est encore en train de se
+    # redresser : on la laisse arriver (la pose qu'un visiteur lit), sinon on
+    # photographie le fond d'à côté. Et l'opacité est celle qu'on VOIT : le
+    # produit des parents, et rien si un parent est caché (le bouton de la fin
+    # de la nuit des lettres, invisible tant qu'on n'y est pas, mesurait 1,07:1).
     info = pg.evaluate("""(s) => { const e = document.querySelector(s); e.scrollIntoView({block: 'center'});
+        if (window.ScrollTrigger) { ScrollTrigger.update();
+            ScrollTrigger.getAll().forEach(t => { const tw = t.getTween && t.getTween(); if (tw) tw.progress(1); }); }
         const cs = getComputedStyle(e);
-        return {c: cs.color, o: parseFloat(cs.opacity), t: parseFloat(cs.fontSize), g: parseInt(cs.fontWeight),
+        let o = 1, x = e;
+        while (x && x.nodeType === 1) { const c = getComputedStyle(x); o *= parseFloat(c.opacity); x = x.parentElement; }
+        if (cs.visibility === 'hidden') o = 0;
+        return {c: cs.color, o: o, t: parseFloat(cs.fontSize), g: parseInt(cs.fontWeight),
                 nom: (e.className || e.id || e.tagName) + ' « ' + e.innerText.trim().slice(0, 30) + ' »'}; }""", sel)
     r = pg.evaluate("""(s) => { const e = document.querySelector(s); e.classList.add('sonde-x');
         const r = e.getBoundingClientRect();
@@ -369,6 +380,104 @@ def vague3(pg, larg, cat, offre):
         '"papier":"nuit"' in doc2 and re.search(r'"ouvre":"\d{4}-', doc2) is not None)
 
 
+POSER = """() => { if (window.ScrollTrigger) { ScrollTrigger.update();
+    ScrollTrigger.getAll().forEach(t => { const tw = t.getTween && t.getTween(); if (tw) tw.progress(1); }); } }"""
+
+
+def profondeur(pg, larg, cat, base):
+    """La profondeur (2026-10-21) : GSAP servi d'ici, la nuit des lettres, les
+    volets du faire-part, la barre d'achat. On laisse chaque mouvement arriver
+    (`POSER`) avant de lire : c'est la pose qu'un visiteur voit."""
+    pg.evaluate("() => scrollTo(0, 60)")
+    try:
+        pg.wait_for_function("document.documentElement.classList.contains('gsap')", timeout=8000)
+        ok("%d : GSAP est arrivé après un geste" % larg)
+    except Exception:
+        ko("%d : GSAP est arrivé après un geste" % larg)
+    scripts = pg.evaluate("() => performance.getEntriesByType('resource').filter(r => r.initiatorType === 'script').map(r => r.name)")
+    dit("%d : aucun script d'une autre origine, GSAP servi d'ici et versionné" % larg,
+        all(x.startswith(base) for x in scripts) and any("vendor/gsap.min.js?v=3.13.0" in x for x in scripts)
+        and any("vendor/ScrollTrigger.min.js?v=3.13.0" in x for x in scripts), scripts)
+
+    # Les fonds : exactement les zones dont l'image est sur le disque ; celui du
+    # héros s'est allumé quand le rideau s'est levé (et pas dans le premier écran).
+    zones = sorted({p.name[:-len("-l.webp")] for p in (ICI / "fonds").glob("*-l.webp")})
+    poses = pg.evaluate("() => [...document.querySelectorAll('.fond')].map(f => f.dataset.fond).sort()")
+    heros = pg.evaluate("""() => { const f = document.querySelector('.fond[data-fond="heros"] i b');
+        return f ? getComputedStyle(f).backgroundImage : ''; }""")
+    dit("%d : un fond par image présente sur le disque (%d), celui du héros allumé après le rideau" % (larg, len(zones)),
+        poses == zones and ("heros" not in zones or "heros-" in heros), (poses, zones, heros[:70]))
+
+    # La musique : le bouton n'existe que si le morceau est sur le disque, et son crédit va au pied.
+    if (ICI / "son" / "musique.mp3").exists():
+        b = pg.evaluate("""() => { const b = document.getElementById('son'); if (!b) return null; const r = b.getBoundingClientRect();
+            return [Math.round(r.width), Math.round(r.height), b.getAttribute('aria-label'), b.dataset.src]; }""")
+        cre = pg.evaluate("() => (document.querySelector('.credit-son') || {}).textContent || ''")
+        dit("%d : le bouton son (44 px, nommé, le morceau d'ici) et le crédit de la musique au pied" % larg,
+            bool(b) and b[0] >= 44 and b[1] >= 44 and bool(b[2]) and b[3].endswith("son/musique.mp3") and "Pixabay" in cre, (b, cre))
+
+    # La nuit des lettres : une enveloppe par occasion RÉELLE, puis la caméra.
+    noms = pg.evaluate("() => [...document.querySelectorAll('.nl-ev b')].map(b => b.textContent)")
+    dit("%d : la nuit des lettres porte une enveloppe par occasion du constructeur (%d)" % (larg, len(noms)),
+        [plat(n) for n in noms] == [plat(n) for n in cat["noms"]], (len(noms), len(cat["noms"])))
+
+    def nuit(p):
+        pg.evaluate("""p => { const s = document.getElementById('nuit-lettres'); const top = s.getBoundingClientRect().top + scrollY;
+            scrollTo(0, top - 62 + p * (s.offsetHeight - innerHeight)); }""", p)
+        # On ATTEND que la caméra arrive (inertie 1,1 s), comme un visiteur qui
+        # s'arrête : pousser l'inertie à sa fin ne suffisait pas sur un PC chargé.
+        pg.wait_for_timeout(150)
+        pg.evaluate(POSER)
+        pg.wait_for_timeout(1500)
+        return pg.evaluate("""() => ({texte: parseFloat(getComputedStyle(document.getElementById('nl-texte')).opacity),
+            fin: document.getElementById('nl-fin').classList.contains('on'),
+            achat: document.getElementById('achat-bas').classList.contains('on'),
+            vues: [...document.querySelectorAll('.nl-ev')].filter(e => getComputedStyle(e).visibility === 'visible'
+                  && parseFloat(e.style.opacity) > .05).length,
+            tienne: (() => { const t = document.querySelector('.nl-vol .nl-tienne'); return t ? [t.classList.contains('allume'),
+                  t.querySelector('.nl-nom').textContent, getComputedStyle(t).visibility] : null; })()})""")
+    a, m, z = nuit(0.0), nuit(.5), nuit(1.0)
+    dit("%d : nuit, au début : le titre se lit, le bouton n'est pas encore là" % larg, a["texte"] > .95 and not a["fin"], a)
+    dit("%d : nuit, au milieu : des enveloppes traversent le ciel, le titre s'est effacé" % larg,
+        m["vues"] >= 3 and m["texte"] < .05, m)
+    dit("%d : nuit, à la fin : la tienne arrive au prénom tapé, cachet allumé, et le bouton paraît" % larg,
+        z["fin"] and z["tienne"] and z["tienne"][0] and z["tienne"][1] == "Sèna" and z["tienne"][2] == "visible", z)
+    # ⚠️ Vu sur capture : la barre d'achat recouvrait « Écrire la mienne » (deux boutons empilés).
+    # Au téléphone seulement (sur ordinateur, la barre n'existe pas) ; relu après quelques images,
+    # le temps que la boucle tourne (le PC chargé retardait sa lecture).
+    if larg < 761:
+        pg.wait_for_timeout(300)
+        achat = pg.evaluate("() => document.getElementById('achat-bas').classList.contains('on')")
+        dit("%d : nuit, à la fin : la barre d'achat s'efface devant « Écrire la mienne »" % larg, not achat, z)
+
+    # Le faire-part : les volets s'ouvrent sur le carton.
+    pg.evaluate("() => document.querySelector('.fp-carton').scrollIntoView({block: 'center'})")
+    pg.wait_for_timeout(150)
+    pg.evaluate(POSER)
+    pg.wait_for_timeout(1000)
+    ang = pg.evaluate("""() => [...document.querySelectorAll('.fp-volet')].map(v => {
+        const m = new DOMMatrix(getComputedStyle(v).transform); return Math.round(Math.atan2(-m.m13, m.m11) * 180 / Math.PI); })""")
+    dit("%d : le faire-part ouvre ses deux volets quand on le regarde" % larg,
+        len(ang) == 2 and ang[0] <= -90 and ang[1] >= 90, ang)
+
+    # La barre d'achat : au téléphone seulement, après le héros, jamais devant la fin.
+    if larg < 761:
+        def etat(js):
+            pg.evaluate(js)
+            pg.wait_for_timeout(300)
+            return pg.evaluate("() => document.getElementById('achat-bas').classList.contains('on')")
+        haut = etat("() => scrollTo(0, 0)")
+        milieu = etat("() => document.getElementById('prix').scrollIntoView()")
+        fin = etat("() => document.querySelector('#fin .qui').scrollIntoView({block: 'center'})")
+        fond = pg.evaluate("() => getComputedStyle(document.getElementById('achat-bas')).backgroundColor")
+        lien = pg.get_attribute("#achat-bas a", "href")
+        dit("%d : la barre d'achat paraît après le héros, s'efface devant le formulaire de la fin, opaque" % larg,
+            not haut and milieu and not fin and fond.startswith("rgb(") and lien == "creer.html", (haut, milieu, fin, fond, lien))
+    else:
+        dit("%d : pas de barre d'achat sur ordinateur" % larg,
+            pg.evaluate("() => getComputedStyle(document.getElementById('achat-bas')).display") == "none")
+
+
 def navigateur(base, s):
     with sync_playwright() as pw:
         nav = pw.chromium.launch()
@@ -379,7 +488,7 @@ def navigateur(base, s):
         page = base + L["prefixe"]
         pg.goto(page + "creer.html")
         cat = pg.evaluate("() => ({paliers: PALIERS.map(p => ({nom: p.nom, prix: p.prix, habillage: !!p.habillage})),"
-                          " plume: PLUME.prix, occasions: OCCASIONS.map(o => o.id),"
+                          " plume: PLUME.prix, occasions: OCCASIONS.map(o => o.id), noms: OCCASIONS.map(o => o.nom),"
                           " dates: OCCASIONS.filter(o => o.jour).map(o => ({id: o.id, nom: o.nom, jour: o.jour})),"
                           " hab: {cire: HABILLAGE.cire.map(o => o.id), papier: HABILLAGE.papier.map(o => o.id),"
                           " pluie: HABILLAGE.pluie.map(o => o.id)}})")
@@ -419,6 +528,9 @@ def navigateur(base, s):
                     pass
             dit("%d : premier écran sous 320 Ko (fichiers bruts, polices comprises)" % larg, octets < 320 * 1024,
                 "%d Ko" % (octets // 1024))
+            # GSAP (2026-10-21) arrive APRÈS le premier écran, jamais dedans.
+            dit("%d : GSAP n'est pas dans le premier écran" % larg, not any("/vendor/" in r.url for r in poids),
+                [r.url for r in poids if "/vendor/" in r.url][:2])
             iw = pg.evaluate("() => Math.max(innerWidth, document.documentElement.scrollWidth)")
             dit("%d : la page tient dans l'écran dès l'ouverture (aucun dézoom)" % larg, iw <= larg, iw)
             dit("%d : le chargement couvre la page à l'ouverture" % larg, vu != "none", vu)
@@ -470,9 +582,9 @@ def navigateur(base, s):
             dit("%d : le bouton de la barre tient sur une ligne" % larg, hb <= 48, round(hb))
 
             # Les éléments fixes ne sont sous aucun parent transformé.
-            tr = pg.evaluate("""() => ['chargement', 'modale', 'plume-s'].map(id => { let e = document.getElementById(id).parentElement, n = 0;
+            tr = pg.evaluate("""() => ['chargement', 'modale', 'plume-s', 'achat-bas'].map(id => { let e = document.getElementById(id).parentElement, n = 0;
                 while (e) { if (getComputedStyle(e).transform !== 'none') n++; e = e.parentElement; } return n; })""")
-            dit("%d : chargement, modale et curseur sous aucun parent transformé" % larg, tr == [0, 0, 0], tr)
+            dit("%d : chargement, modale, curseur et barre d'achat sous aucun parent transformé" % larg, tr == [0, 0, 0, 0], tr)
 
             # Le prix : chaque timbre contre le catalogue du constructeur.
             timbres = pg.evaluate("() => [...document.querySelectorAll('.timbre')].map(t => [t.querySelector('.nm').textContent, t.querySelector('.vl').textContent])")
@@ -519,6 +631,7 @@ def navigateur(base, s):
                 ko("%d : le seuil joue une vraie lettre (gabarit rempli)" % larg, "srcdoc jamais posé")
 
             vague3(pg, larg, cat, offre)
+            profondeur(pg, larg, cat, base)
 
             # Les réponses ouvertes, le temps que le pli finisse : leur contraste se mesure aussi.
             pg.evaluate("() => document.querySelectorAll('.faq details.q').forEach(d => d.open = true)")
@@ -550,6 +663,13 @@ def navigateur(base, s):
         dit("mouvement réduit : tout est visible sans défiler (révélations, 7 étapes)", caches == 0, caches)
         dit("mouvement réduit : la scène n'est plus épinglée",
             pg.evaluate("() => getComputedStyle(document.querySelector('.scene-cadre')).position") == "relative")
+        pg.evaluate("() => scrollTo(0, document.documentElement.scrollHeight / 2)")
+        pg.wait_for_timeout(400)
+        dit("mouvement réduit : la nuit des lettres à plat (titre, la tienne, le bouton), et GSAP jamais chargé",
+            pg.evaluate("""() => getComputedStyle(document.querySelector('.nl-cadre')).position === 'relative'
+                && parseFloat(getComputedStyle(document.getElementById('nl-fin')).opacity) > .99
+                && getComputedStyle(document.querySelector('.nl-fin .nl-tienne')).display !== 'none'
+                && !document.querySelector('script[src*="vendor/"]')"""))
         ctx.close()
 
         ctx = nav.new_context(viewport={"width": 390, "height": 844}, java_script_enabled=False)
@@ -558,6 +678,9 @@ def navigateur(base, s):
         dit("sans JavaScript : pas de chargement qui couvrirait tout", pg.locator("#chargement").is_hidden())
         dit("sans JavaScript : les sections sont lisibles",
             pg.locator("#prix .h2").is_visible() and pg.locator(".timbre").first.is_visible())
+        dit("sans JavaScript : la nuit des lettres se lit (titre, la tienne, le bouton)",
+            pg.locator("#nl-titre").is_visible() and pg.locator(".nl-fin .pri").is_visible()
+            and pg.locator(".nl-fin .nl-tienne").is_visible())
         ctx.close()
 
         # La mesure : images par seconde dans la scène, processeur ralenti ×4.

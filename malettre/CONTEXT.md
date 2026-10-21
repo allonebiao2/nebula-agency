@@ -238,6 +238,69 @@ branchement est dans `PAIEMENT.md` § 4 ; le récit dans `_memoire/conversations
   --project-ref xukduhqqfzogisoimhyo --use-api` (et `python malettre/_gabarit_ts.py` avant `malettre-lettre`
   si `lettre.html` a bougé).
 
+## La vitrine en profondeur (2026-10-21, « effet WOW à 200 % »)
+
+- **GSAP 3.13.0 + ScrollTrigger**, servis d'ici (`vendor/`, `?v=3.13.0`), chargés **après le premier écran**,
+  jamais en mouvement réduit ; sans eux rien ne manque. Une animation de profondeur par zone, tirée de la
+  lettre (détail : `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md` et l'en-tête de
+  `_accueil_src.html`).
+- **La nuit des lettres** (`#nuit-lettres`, entre la plume et les occasions) : une enveloppe par occasion
+  RÉELLE (le build les lit dans `creer.html`), la caméra les traverse, la tienne arrive au prénom tapé.
+- **Les fonds** : `python malettre/_fonds.py` (sources `_partage/ma lettre/fonds/<zone>-paysage|portrait.*`)
+  puis `_build_accueil.py`. Une zone n'a d'emplacement que si son image existe ; chargement à l'approche ;
+  celui du héros attend le rideau ET la fin du chargement (premier écran < 320 Ko). Les **sept zones** ont
+  leur image (Mongazi, 2026-10-21). Elles **vivent en CSS** (travelling, flamme, pluie, eau, fumée, cachet,
+  lumière), en pause hors de l'écran, ⏳ en attendant ses vraies vidéos (`_partage/ma lettre/videos/`).
+- **La musique** : `python malettre/_son.py "<mp3>" "<auteur>"` puis rebuild ; le bouton paraît seul, le
+  crédit va au pied. Morceau : Alex Morgan (Pixabay), égalisé à -16 LUFS, 2,1 Mo. ⛔ **Le MP3 n'est pas dans
+  le dépôt** (public, licence Pixabay) : il ne vit que sur ce PC et sur le site.
+- **Le logo** : `python malettre/_logo.py` → `logo/cachet.svg`, `cachet-brise.svg`, `favicon.svg` (le cachet
+  aux trois points ; la fissure passe ENTRE deux points). Onglet et cachet de la barre. ⏳ Le nom à côté, `og.jpg`.
+- **La barre d'achat** au téléphone (bande de bord opaque).
+- Contrôles : accueil (nouveaux : GSAP d'ici et hors du premier écran, nuit, volets, barre d'achat, fonds),
+  la sonde de contraste lit l'opacité VUE et laisse l'inertie finir.
+
+## 📋 À APPLIQUER, UNE PAR UNE (demandes de Mongazi, 2026-10-21)
+
+*« Ajoute chacune de ces demandes en mémoire, on y reviendra et on les appliquera une à une. »*
+**Rien n'est commencé.** L'ordre de la liste est celui de sa demande, pas une priorité.
+
+1. **La police du texte courant, et tout ce qui « fait IA ».**
+   - Ses mots : les textes en petits caractères (ceux qui expliquent, celui de « Comment ça marche ») font
+     « trop simpliste ». Changer cette police pour une plus professionnelle, **plus rare**, adaptée à l'idée
+     de la lettre.
+   - Puis **analyser en profondeur** la vitrine et repérer tout ce qui saute aux yeux et pourrait donner
+     l'impression d'un site généré par une IA ; invoquer et utiliser tous les skills utiles (`impeccable`
+     audit et critique, `design-taste-frontend`, `high-end-visual-design`, `redesign-existing-projects`…)
+     pour qu'on ne sente « pas une once d'IA », **et vérifier que l'objectif est atteint**.
+   - ⛔ **Sans toucher aux animations.**
+   - Aujourd'hui : texte courant en Schibsted Grotesk (`--sans`), titres Libre Caslon Display, italique
+     Libre Caslon Text, script Pinyon. ⚠️ À tenir : jamais deux polices du même genre ; **vérifier la licence**
+     d'une police rare (une police hors Google Fonts s'héberge ici, avec son fichier de licence) ; le premier
+     écran reste **sous 320 Ko** (contrôlé).
+2. **Des bruitages, et la zone de choix de l'occasion plus claire.**
+   - Un « clic » quand on touche certaines zones ou qu'on survole les options, et dans la **zone de
+     sélection de l'événement** (le casier des occasions de l'accueil ; le choix de l'occasion de
+     `creer.html` est à confirmer avec lui).
+   - Cette zone doit être **plus claire, plus explicite**, avec des **animations au toucher** et le bruitage.
+   - ⚠️ Son **synthétisé en Web Audio** (comme la lettre : aucun fichier), jamais avant un geste, discret,
+     et il obéit au bouton son de la musique ; leçon `feedback_audio-mobile` (buffer muet iOS, compresseur,
+     gain mobile).
+3. **Du glassmorphisme partout sur la vitrine**, en invoquant tous les skills nécessaires
+   (`ui-ux-pro-max` a ce style, `impeccable`, `high-end-visual-design`), objectif 100 %.
+   - ⛔ Les règles qui tiennent : **aucune animation infinie sous un `backdrop-filter`** (leçon Boussole
+     2026-07-21, la latence) ; le flou coûte cher aux téléphones d'entrée de gamme → **mesurer les images par
+     seconde** (le QC le fait sur la scène, processeur ralenti ×4) ; le contraste sur verre se mesure **sur les
+     pixels** ; la barre du haut et la barre d'achat sont des **bandes de bord qui restent opaques** (« rien de
+     fixe ne recouvre du texte ») : un verre teinté opaque, à trancher avec lui.
+4. **Une nouvelle occasion : le chill privé, la fête privée entre potes.**
+   - Nom exact à trancher (« Chill privé », « Fête entre potes »…).
+   - Où : `OCCASIONS` de `creer.html` (famille, note, ton), ses questions (`QUESTIONS`), **son savoir-faire dans
+     `supabase/functions/_shared/savoirs.ts`** (la caisse exige un savoir-faire par occasion), l'anglais
+     (`i18n/en.txt`). Le casier et la nuit des lettres suivent seuls (le build les lit). Puis redéployer
+     `malettre-plume` et le site.
+   - À discuter : c'est presque une **invitation** (lieu, heure, « je serai là »), cousine du faire-part.
+
 ## Reprendre ici (2026-10-21, avant la mise en ligne)
 
 Le point de reprise du 2026-10-17 (sept étapes) est **fait**, sauf ce qui attend Mongazi :

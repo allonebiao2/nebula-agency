@@ -125,3 +125,6 @@ _partage/capturemethod*.png
 malettre/faire-part/_couples/
 # Supabase CLI : état local du lien au projet (2026-10-21)
 **/supabase/.temp/
+# MA LETTRE A... : la musique (Pixabay) part avec le site, jamais dans ce depot PUBLIC
+# (la licence interdit de redistribuer le fichier seul). Source : _partage/, outil : malettre/_son.py
+malettre/son/*.mp3

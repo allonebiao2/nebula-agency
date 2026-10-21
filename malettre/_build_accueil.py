@@ -29,6 +29,7 @@ Leurs personnes sont inventées, et la lettre le dit elle-même (« Exemple · �
 import html
 import json
 import pathlib
+import random
 import re
 import sys
 import urllib.parse
@@ -54,7 +55,7 @@ LANGUES = {
         "ouvrir": "Ouvrir l'exemple : Ma lettre à %s, de %s (%s)", "de": "de %s · %s",
         "fiche": "La fiche de %s", "souvenir": "Un souvenir que vous seuls connaissez",
         "consignes": "Comment il la veut", "exemple": "%s · exemple", "ecrire": "Écrire",
-        "plume": "La plume",
+        "plume": "La plume", "musique": "Musique", "credit_son": "Musique : %s, sur Pixabay.",
         "plume_ds": "Elle écrit avec toi. Gratuite à essayer, comptée seulement si tu l'envoies.",
         "occ": "Exemple · ",
         "mois": ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
@@ -90,7 +91,7 @@ LANGUES = {
         "ouvrir": "Open the example: My letter to %s, from %s (%s)", "de": "from %s · %s",
         "fiche": "%s's form", "souvenir": "A memory only you two know",
         "consignes": "How he wants it", "exemple": "%s · example", "ecrire": "Write",
-        "plume": "The Quill",
+        "plume": "The Quill", "musique": "Music", "credit_son": "Music: %s, on Pixabay.",
         "plume_ds": "It writes with you. Free to try, counted only if you send it.",
         "occ": "Example · ",
         "mois": ["January", "February", "March", "April", "May", "June", "July", "August",
@@ -269,6 +270,76 @@ def casier(familles, occasions, T):
     return "".join(out)
 
 
+# ── La nuit des lettres : une enveloppe par occasion RÉELLE du constructeur ──
+# Les heures sont des exemples d'heure choisie, pas des ventes : aucun chiffre.
+HEURES = ["00:00", "06:30", "08:00", "12:00", "18:45", "21:00", "23:59", "07:15", "19:30", "05:45"]
+
+
+def vol(occasions, tons):
+    """Chaque enveloppe à sa place : x, y en % du cadre, z en px, r en degrés.
+    Une graine FIXE : la page est la même à chaque build. Le couloir central
+    reste libre (la caméra y passe, et la tienne y arrive)."""
+    rnd = random.Random(20261021)
+    cires = [tons[k] for k in sorted(tons)]
+    out = []
+    for i, o in enumerate(occasions):
+        while True:
+            x, y = rnd.uniform(-44, 44), rnd.uniform(-38, 38)
+            if abs(x) > 15 or abs(y) > 17:
+                break
+        z = -700 - i * 250 - rnd.uniform(0, 120)
+        c = cires[i % len(cires)]
+        out.append('<div class="nl-ev" data-x="%.1f" data-y="%.1f" data-z="%d" data-r="%.1f" '
+                   'style="--cc:%s;--cc-c:%s;--cc-f:%s"><s>%s</s><b>%s</b></div>'
+                   % (x, y, z, rnd.uniform(-14, 14), c[0], c[1], c[2], HEURES[i % len(HEURES)], e(o["nom"])))
+    return "".join(out)
+
+
+# ── Les fonds d'ambiance : seulement si l'image est sur le disque ─────────
+FONDS = ["heros", "plume", "nuit", "faire-part", "seuil", "promesses", "fin"]
+# Ce qui VIT dans chaque image (demande de Mongazi : « animé comme une vidéo ») :
+# la flamme, la pluie, l'eau, la fumée, le cachet, la lumière du jour.
+VIVANT = {"heros": '<s class="lueur"></s>', "plume": '<s class="lueur"></s>', "nuit": '<s class="miroir"></s>',
+          "seuil": '<s class="pluie"></s><s class="pluie p2"></s>',
+          "promesses": '<s class="fumee"></s><s class="fumee f2"></s>',
+          "faire-part": '<s class="soleil"></s>', "fin": '<s class="cire-lueur"></s>'}
+
+
+def fonds(langue):
+    """Le marqueur de chaque zone devient un emplacement, ou rien. L'adresse
+    des images se pose sur `.fond.pret` : rien n'est téléchargé avant l'approche."""
+    rac = "" if langue == "fr" else "../"
+    blocs, regles = {}, []
+    for z in FONDS:
+        l, p = ICI / "fonds" / ("%s-l.webp" % z), ICI / "fonds" / ("%s-p.webp" % z)
+        if l.exists() and p.exists():
+            # ⚠️ Même le héros attend : le JS l'allume quand le rideau se lève
+            # (sinon le premier écran passait de 282 à 341 Ko, au-dessus des 320).
+            blocs[z] = '<div class="fond" data-fond="%s" aria-hidden="true"><i><b></b>%s</i></div>' % (z, VIVANT.get(z, ""))
+            regles.append('.fond.pret[data-fond="%s"]{--fond-l:url("%sfonds/%s-l.webp");--fond-p:url("%sfonds/%s-p.webp")}'
+                          % (z, rac, z, rac, z))
+        else:
+            blocs[z] = ""
+    return blocs, "\n".join(regles)
+
+
+def credit_son(T):
+    """Le crédit de la musique, au pied (Pixabay ne l'exige pas, on le donne)."""
+    f = ICI / "son" / "credit.txt"
+    if not (ICI / "son" / "musique.mp3").exists() or not f.exists():
+        return ""
+    return '<p class="credit-son">%s</p>' % e(T["credit_son"] % f.read_text(encoding="utf-8").strip())
+
+
+def son(langue, T):
+    """Le bouton de la musique, seulement si `son/musique.mp3` existe."""
+    if not (ICI / "son" / "musique.mp3").exists():
+        return ""
+    rac = "" if langue == "fr" else "../"
+    return ('<button class="son" id="son" type="button" aria-pressed="false" aria-label="%s" data-src="%sson/musique.mp3">'
+            '<span class="ondes" aria-hidden="true"><i></i><i></i><i></i></span></button>' % (e(T["musique"]), rac))
+
+
 TAMPON = ('<svg class="tampon" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="33"/>'
           '<circle cx="40" cy="40" r="25"/><path d="M4 46 Q22 38 40 46 T76 46"/><path d="M4 54 Q22 46 40 54 T76 54"/></svg>')
 
@@ -388,6 +459,22 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><r
            '<stop offset="0" stop-color="#b2434e"/><stop offset=".62" stop-color="#8c2f39"/><stop offset="1" stop-color="#6d1f27"/>'
            '</radialGradient></defs><circle cx="32" cy="32" r="29" fill="url(#c)"/>'
            '<text x="32" y="43" text-anchor="middle" font-family="Georgia,serif" font-size="30" fill="#f0d6cf">M</text></svg>')
+# ⚠️ Depuis le 2026-10-21, LA MARQUE est le cachet aux trois points (`_logo.py`) :
+# l'onglet et le cachet de la barre la reprennent. L'ancien « M » ne sert que si
+# le logo n'a pas été dessiné.
+MARQUE = ICI / "logo" / "favicon.svg"
+
+
+def favicon():
+    return MARQUE.read_text(encoding="utf-8") if MARQUE.exists() else FAVICON
+
+
+def cachet_mini():
+    """Le cachet de la barre : la marque en image de fond, dans la page (aucune requête)."""
+    if not MARQUE.exists():
+        return ""
+    return '.marque .cachet-mini{background:url("data:image/svg+xml,%s") center/contain no-repeat}' % \
+        urllib.parse.quote(MARQUE.read_text(encoding="utf-8"), safe=" =:/,.-")   # « # » et « " » encodés
 
 
 def construire(langue, dico, tons, fp):
@@ -419,7 +506,19 @@ def construire(langue, dico, tons, fp):
         "<!--__FAQ_PRIX__-->": faq_prix(paliers, plume, T),
         "<!--__FP_PRIX__-->": e(fmt(fp["prix"], T)),
         "<!--__FP_WA__-->": e(wa_fp),
+        "<!--__VOL__-->": vol(occasions, tons),
+        "<!--__SON__-->": son(langue, T),
+        "<!--__SON_CREDIT__-->": credit_son(T),
     }
+    # Avec le bouton son, la barre se resserre au téléphone (la marque garde son cachet).
+    if son(langue, T):
+        if '<header class="barre">' not in s:
+            sys.exit('⛔ <header class="barre"> introuvable : la barre ne pourrait pas se resserrer')
+        s = s.replace('<header class="barre">', '<header class="barre a-son">', 1)
+    blocs, regles = fonds(langue)
+    for z, bloc_ in blocs.items():
+        remplacer["<!--__FOND:%s__-->" % z] = bloc_
+    remplacer["/*__FONDS__*/"] = regles + "\n" + cachet_mini()
     for k, v in remplacer.items():
         if k not in s:
             sys.exit("⛔ marqueur absent de la source : %s" % k)
@@ -486,7 +585,7 @@ def main():
     tons, fp = tons_de_cire(), offre_fp()
     infos = {"fr": construire("fr", dico, tons, fp), "en": construire("en", dico, tons, fp)}
     ecrire_llms(infos, fp)
-    (ICI / "favicon.svg").write_text(FAVICON, encoding="utf-8")
+    (ICI / "favicon.svg").write_text(favicon(), encoding="utf-8")
 
 
 if __name__ == "__main__":

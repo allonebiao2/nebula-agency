@@ -38,17 +38,22 @@
     héros       l'encre qui écrit le prénom
     la scène    le pli, la cire, l'heure, le bris (3D au défilement)
     exemples    la distribution du courrier
-    la plume    les cases qui se cochent, puis l'encre qui coule
+    la plume    les cases qui se cochent, la feuille qui se redresse du bureau,
+                le bec qui suit la ligne qui s'écrit
+    la nuit     la caméra traverse un ciel d'enveloppes (une par occasion) ;
+                la tienne arrive du fond, à ton prénom, et son cachet s'allume
     occasions   la lettre qui sort du casier du facteur
-    faire-part  le carton du mariage, posé de biais (dans les occasions)
-    le seuil    le vrai compte à rebours d'une vraie lettre, qu'on rhabille
-    le prix     le timbre et le tampon de la poste
-    confiance   le billet qui se déplie
-    questions   la réponse qui se déplie comme un pli ; le « + » est un cachet
-    fin         la page blanche qui attend un prénom
+    faire-part  le carton du mariage, ses deux volets s'ouvrent sur le sceau
+    le seuil    le téléphone sort de la nuit ; les pastilles, gouttes de cire
+    le prix     la feuille de timbres se lève du comptoir ; le tampon frappe
+    confiance   le billet qui tombe de sa profondeur et se déplie
+    questions   les fiches montent du tiroir ; le « + » est un cachet
+    fin         la page blanche se lève du bureau et prend le prénom
 
-  ⛔ Aucune bibliothèque : CSS 3D (perspective, preserve-3d) et UNE boucle
-  requestAnimationFrame qui lit scrollY une fois par image.
+  Le moteur : CSS 3D (perspective, preserve-3d) et UNE boucle
+  requestAnimationFrame qui lit scrollY une fois par image. Par-dessus, depuis
+  le 2026-10-21 (demande de Mongazi), GSAP 3.13 + ScrollTrigger, servis d'ICI
+  (`vendor/`) et chargés APRÈS le premier écran : sans eux, rien ne manque.
   ⛔ Seuls `transform` et `opacity` s'animent (le CLS vient toujours de nous).
   ⛔ Dans un groupe en `preserve-3d`, ni `opacity`, ni `overflow`, ni `filter`
   sur le groupe : ils l'aplatissent. On les pose sur les faces.
@@ -564,6 +569,251 @@ button{background:none;border:0;cursor:pointer}
 .timbre[data-rv]{transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .25s;transition-delay:var(--d,0s)}
 .timbre.vu .tampon circle,.timbre.vu .tampon path{stroke-dashoffset:0;transition:stroke-dashoffset 1.2s ease-out;transition-delay:calc(var(--d,0s) + .45s)}
 
+/* ══ LA PROFONDEUR (2026-10-21, demande de Mongazi : « effet WOW à 200 % ») ══
+   GSAP 3.13 + ScrollTrigger, servis d'ICI (`vendor/`), chargés APRÈS le premier
+   écran (au premier geste, ou 3,5 s après « load ») : le premier écran reste léger
+   sur la 3G. Sans eux (réseau, mouvement réduit), tout est à sa place et lisible :
+   ils n'ajoutent que le mouvement. `.gsap` sur <html> = ils sont arrivés. */
+
+/* Les fonds d'ambiance : posés par le build SEULEMENT si l'image existe
+   (`fonds/<zone>-l.webp` paysage, `-p.webp` portrait), téléchargés à l'approche
+   (`.pret`), jamais avant. Le voile garde le contraste du texte (mesuré sur les pixels). */
+.fond{position:absolute;inset:0;z-index:-2;pointer-events:none;overflow:hidden;border-radius:inherit}
+/* i : la nappe que GSAP décale (parallaxe) · b : l'image, en lent travelling ·
+   s : ce qui VIT dedans, pour qu'une photo se regarde comme une vidéo (demande
+   de Mongazi, 2026-10-21, en attendant ses vraies vidéos). Transform et opacité
+   seulement ; tout est EN PAUSE hors de l'écran (`.joue`, posé par l'observateur). */
+.fond i{position:absolute;inset:-7% 0;opacity:0;transition:opacity 1.6s ease;will-change:transform}
+.fond.pret i{opacity:var(--fond-o,.5)}
+.fond i b{position:absolute;inset:0;background:var(--fond-pos,50% 50%)/cover no-repeat;will-change:transform;
+  animation:travelling 26s ease-in-out infinite alternate paused}
+.fond.pret i b{background-image:var(--fond-p)}
+@media(min-width:761px){.fond.pret i b{background-image:var(--fond-l)}}
+.fond i s{position:absolute;pointer-events:none;text-decoration:none}
+.fond.joue i b,.fond.joue i s{animation-play-state:running}
+@keyframes travelling{from{transform:scale(1.03) translate3d(-1%,.5%,0)}to{transform:scale(1.11) translate3d(1.2%,-1%,0)}}
+/* la flamme : une lumière chaude qui vacille, du côté de la bougie */
+.fond .lueur{left:var(--lx,82%);top:var(--ly,18%);width:var(--lw,52%);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(closest-side,rgba(255,184,92,.34),rgba(255,140,60,.12) 50%,rgba(255,140,60,0) 75%);
+  animation:vacille 2.8s ease-in-out infinite paused}
+@keyframes vacille{0%,100%{opacity:.8;transform:translate(-50%,-50%) scale(1)}13%{opacity:.55;transform:translate(-50%,-50%) scale(.95)}
+  22%{opacity:.95;transform:translate(-50%,-50%) scale(1.03)}37%{opacity:.68;transform:translate(-50%,-50%) scale(.97)}
+  52%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}66%{opacity:.7;transform:translate(-50%,-50%) scale(.96)}
+  81%{opacity:.92;transform:translate(-50%,-50%) scale(1.02)}}
+/* la pluie sur la vitre : deux rideaux de traits à deux vitesses ; le motif glisse
+   d'exactement un carreau, la boucle ne saute pas */
+.fond .pluie{left:-30px;top:-240px;width:calc(100% + 60px);height:calc(100% + 240px);opacity:.42;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='240'%3E%3Cg stroke='rgba(225,232,255,.55)' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M14 10 11 34M52 60 49 80M90 18 86 46M130 120 127 142M168 40 165 66M34 150 31 170M76 200 73 226M112 170 109 188M150 214 147 236M188 140 185 164M6 96 4 112M100 96 98 110M60 8 58 20M176 96 174 108'/%3E%3C/g%3E%3C/svg%3E") 0 0/200px 240px;
+  animation:pluie .9s linear infinite paused}
+.fond .pluie.p2{top:-360px;height:calc(100% + 360px);opacity:.26;background-size:300px 360px;animation-name:pluie2;animation-duration:1.6s}
+@keyframes pluie{to{transform:translate3d(-30px,240px,0)}}
+@keyframes pluie2{to{transform:translate3d(-45px,360px,0)}}
+/* la lagune : l'eau ondule sous l'horizon */
+.fond .miroir{left:-5%;right:-5%;top:var(--hy,73%);bottom:-4%;opacity:.5;
+  background:repeating-linear-gradient(180deg,rgba(255,190,140,0) 0 5px,rgba(255,190,140,.14) 6px,rgba(20,16,25,.25) 8px,rgba(255,190,140,0) 9px 17px);
+  -webkit-mask:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent);mask:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent);
+  animation:onde 7s ease-in-out infinite alternate paused}
+@keyframes onde{from{transform:translate3d(0,0,0) scaleY(1)}to{transform:translate3d(0,8px,0) scaleY(1.05)}}
+/* la cire : un filet de fumée qui monte et se défait */
+.fond .fumee{left:var(--fx,60%);top:var(--fy,46%);width:15%;aspect-ratio:.45;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 70%,rgba(235,230,225,.18),rgba(235,230,225,.06) 45%,rgba(235,230,225,0) 70%);
+  animation:fumee 7s ease-in infinite paused}
+.fond .fumee.f2{left:calc(var(--fx,60%) + 3%);animation-delay:-3.5s}
+@keyframes fumee{0%{opacity:0;transform:translate3d(0,10%,0) scale(.7,.8)}25%{opacity:1}
+  100%{opacity:0;transform:translate3d(-30%,-85%,0) scale(1.4,1.6) rotate(-8deg)}}
+/* le cachet tendu : son rouge respire */
+.fond .cire-lueur{left:var(--cx,50%);top:var(--cy,62%);width:30%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(closest-side,rgba(229,72,80,.36),rgba(229,72,80,.1) 50%,rgba(229,72,80,0) 75%);
+  animation:pouls 3.6s ease-in-out infinite paused}
+@keyframes pouls{0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(.92)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+/* le lin du faire-part : la lumière du jour passe lentement */
+.fond .soleil{left:-30%;top:-20%;width:55%;height:140%;transform:rotate(18deg) translate3d(-40%,0,0);
+  background:linear-gradient(90deg,rgba(255,240,210,0),rgba(255,240,210,.2),rgba(255,240,210,0));
+  animation:soleil 14s ease-in-out infinite alternate paused}
+@keyframes soleil{to{transform:rotate(18deg) translate3d(170%,0,0)}}
+.fond[data-fond="heros"]{--lx:91%;--ly:13%}
+.fond[data-fond="plume"]{--fond-pos:86% 40%;--lx:80%;--ly:10%}
+.fond[data-fond="promesses"]{--fond-pos:78% 50%}
+.fond[data-fond="nuit"]{--hy:73%}
+@media(max-width:760px){
+  .fond[data-fond="heros"]{--lx:50%;--ly:27%}
+  .fond[data-fond="plume"]{--lx:62%;--ly:10%}
+  .fond[data-fond="nuit"]{--hy:86%}
+  .fond[data-fond="fin"]{--cy:57%}
+}
+.fond::after{content:"";position:absolute;inset:0;background:var(--fond-voile,transparent)}
+/* les adresses des images présentes sur le disque, posées par le build : */
+/*__FONDS__*/
+.fond[data-fond="heros"]{--fond-o:.7;--fond-voile:linear-gradient(90deg,var(--nuit) 12%,rgba(20,16,25,.62) 52%,rgba(20,16,25,.2))}
+.fond[data-fond="plume"]{--fond-o:.6;--fond-voile:linear-gradient(90deg,var(--nuit) 20%,rgba(20,16,25,.7) 55%,rgba(20,16,25,.4))}
+.fond[data-fond="nuit"]{--fond-o:.85;--fond-voile:linear-gradient(180deg,rgba(14,11,18,.55),rgba(14,11,18,.15) 45%,rgba(14,11,18,.6))}
+.fond[data-fond="seuil"]{--fond-o:.6;--fond-voile:linear-gradient(90deg,var(--nuit) 22%,rgba(20,16,25,.66) 58%,rgba(20,16,25,.38))}
+.fond[data-fond="promesses"]{--fond-o:.55;--fond-voile:linear-gradient(90deg,var(--nuit-2) 25%,rgba(29,24,38,.72) 60%,rgba(29,24,38,.45))}
+/* le faire-part : un lin CLAIR côté carton (le carton y semble posé), qui se fond
+   dans la nuit avant le texte ; le texte ne lit jamais sur le clair (mesuré) */
+.fond[data-fond="faire-part"]{--fond-o:.92;--fond-voile:linear-gradient(90deg,rgba(20,16,25,.08) 0%,rgba(20,16,25,.3) 24%,var(--nuit) 45%)}
+.fond[data-fond="fin"]{--fond-o:.55;--fond-voile:linear-gradient(180deg,var(--nuit) 8%,rgba(20,16,25,.72) 45%,rgba(20,16,25,.5))}
+@media(max-width:760px){
+  .fond[data-fond="heros"],.fond[data-fond="plume"],.fond[data-fond="seuil"]{--fond-voile:linear-gradient(180deg,var(--nuit) 30%,rgba(20,16,25,.7) 70%,rgba(20,16,25,.5))}
+  .fond[data-fond="promesses"]{--fond-voile:linear-gradient(180deg,var(--nuit-2) 30%,rgba(29,24,38,.72))}
+  .fond[data-fond="faire-part"]{--fond-voile:linear-gradient(180deg,rgba(20,16,25,.08) 0%,rgba(20,16,25,.3) 26%,var(--nuit) 46%)}
+}
+.fp{position:relative;isolation:isolate}
+
+/* Le héros : deux nappes de poussière d'or et de cire, à deux distances. */
+.poussiere{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.poussiere i{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);border-radius:50%;opacity:var(--o);
+  background:radial-gradient(circle at 35% 30%,#f3d98c,var(--or) 52%,rgba(201,162,39,0) 72%);
+  animation:derive var(--t) ease-in-out infinite alternate;will-change:transform}
+.poussiere i.c{background:radial-gradient(circle at 35% 30%,var(--cire-clair),var(--cire) 52%,rgba(140,47,57,0) 72%)}
+@keyframes derive{to{transform:translate3d(var(--dx),var(--dy),0) rotate(28deg)}}
+@media(max-width:760px){.poussiere i:nth-child(n+4){display:none}}
+
+/* La plume : la feuille se redresse du bureau, le bec suit la ligne qui s'écrit. */
+.pl-grille{perspective:1500px}
+.bec-pl{position:absolute;left:0;top:0;width:30px;height:30px;margin:-27px 0 0 -3px;pointer-events:none;opacity:0;transition:opacity .35s;
+  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M2 26 L6 14 L20 2 L26 8 L14 22 Z' fill='%23c9a227' stroke='%23141019' stroke-width='1'/%3E%3Cpath d='M2 26 L12 16' stroke='%23141019' stroke-width='1.2'/%3E%3C/svg%3E");
+  will-change:transform}
+.bec-pl.on{opacity:1}
+.bec-pl::after{content:"";position:absolute;left:0;bottom:0;width:5px;height:5px;border-radius:50%;background:var(--encre);opacity:.75}
+
+/* ══ 4 bis · LA NUIT DES LETTRES : la caméra traverse un ciel d'enveloppes ══ */
+.nl-sec{position:relative;background:var(--nuit-3)}
+.nl-cadre{position:relative;isolation:isolate;overflow:hidden;min-height:calc(100svh - var(--barre));display:grid;align-content:center;
+  gap:40px;padding:90px clamp(20px,5vw,72px);text-align:center;
+  background:radial-gradient(120% 90% at 50% 62%,#251b35 0%,var(--nuit) 52%,var(--nuit-3) 100%)}
+.js .nl-sec{height:430vh}
+.js .nl-cadre{position:sticky;top:var(--barre);height:calc(100svh - var(--barre));min-height:0;display:block;padding:0}
+@media(max-width:760px){.js .nl-sec{height:340vh}}
+/* deux nappes d'étoiles : la plus proche bouge plus vite */
+.nl-etoiles{position:absolute;inset:-8%;z-index:0;pointer-events:none}
+.nl-etoiles i{position:absolute;inset:0;will-change:transform;
+  background-image:radial-gradient(1.3px 1.3px at 23px 37px,rgba(244,237,224,.9),transparent 70%),
+    radial-gradient(1px 1px at 141px 92px,rgba(244,237,224,.7),transparent 70%),
+    radial-gradient(1.6px 1.6px at 77px 171px,rgba(232,197,108,.85),transparent 70%),
+    radial-gradient(1px 1px at 199px 213px,rgba(244,237,224,.6),transparent 70%);
+  background-size:240px 240px;opacity:.55;animation:scintille 4.2s ease-in-out infinite alternate}
+.nl-etoiles i + i{background-size:390px 390px;opacity:.4;transform:rotate(9deg);animation-duration:6.6s;animation-delay:-2.4s}
+/* les étoiles scintillent (opacité seule : la caméra, elle, pose le transform) */
+@keyframes scintille{from{opacity:.62}to{opacity:.22}}
+.nl-ciel{display:none;position:absolute;inset:0;z-index:1;perspective:900px;perspective-origin:50% 48%;pointer-events:none}
+.js .nl-ciel{display:block}
+.nl-vol{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+/* une enveloppe : la face d'adresse, le rabat dessiné, son cachet, son heure */
+.nl-ev,.nl-tienne{position:absolute;left:0;top:0;aspect-ratio:1.6;border-radius:5px;color:var(--encre);
+  background:linear-gradient(160deg,#fbf6ec,var(--papier) 55%,var(--papier-2));box-shadow:0 22px 46px rgba(0,0,0,.5)}
+.nl-ev{width:clamp(118px,15vw,196px);opacity:0;visibility:hidden;will-change:transform,opacity}
+/* au téléphone, 16 enveloppes suffisent au ciel (et au processeur) */
+@media(max-width:760px){.nl-ev:nth-child(n+17){display:none}}
+.nl-ev::before,.nl-tienne::before{content:"";position:absolute;inset:0;border-radius:inherit;background:
+  linear-gradient(to bottom right,transparent calc(50% - .7px),rgba(36,29,43,.16) 50%,transparent calc(50% + .7px)) left top/50% 62% no-repeat,
+  linear-gradient(to bottom left,transparent calc(50% - .7px),rgba(36,29,43,.16) 50%,transparent calc(50% + .7px)) right top/50% 62% no-repeat}
+.nl-ev::after{content:"";position:absolute;left:50%;top:62%;width:19%;aspect-ratio:1;margin:-9.5% 0 0 -9.5%;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,var(--cc-c,var(--cire-clair)),var(--cc,var(--cire)) 62%,var(--cc-f,var(--cire-fonce)));
+  box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.nl-ev b{position:absolute;left:8%;right:8%;bottom:7%;font-family:var(--serif);font-weight:400;font-size:clamp(12px,1.25vw,16px);
+  line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.nl-ev s{position:absolute;right:8%;top:8%;text-decoration:none;font-size:10.5px;letter-spacing:.14em;color:var(--cire);font-weight:700}
+.nl-texte{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.js .nl-texte{position:absolute;left:0;right:0;top:12%;padding:0 clamp(20px,5vw,72px);will-change:transform,opacity}
+.nl-texte .chapo{margin-left:auto;margin-right:auto;color:var(--gris-nuit)}
+.nl-texte .sur{color:var(--or)}
+.nl-texte .h2 em{color:var(--or)}
+.nl-fin{position:relative;z-index:3;display:grid;justify-items:center;gap:26px}
+.js .nl-fin{position:absolute;left:0;right:0;bottom:7%;opacity:0;visibility:hidden;transition:opacity .5s,visibility 0s .5s}
+.js .nl-fin.on{opacity:1;visibility:visible;transition:opacity .6s}
+/* la tienne : dans le ciel (JS) elle arrive du fond ; à plat, elle est posée là */
+.nl-tienne{position:relative;width:min(430px,76vw)}
+.js .nl-fin .nl-tienne{display:none}
+.nl-sec .nl-vol .nl-tienne{position:absolute;opacity:0;visibility:hidden;will-change:transform,opacity}
+.nl-tienne .nl-heure{position:absolute;right:7%;top:8%;font-size:12px;letter-spacing:.16em;font-weight:700;color:var(--cire)}
+.nl-tienne .nl-a{position:absolute;left:8%;bottom:30%;font-family:var(--serif);font-size:clamp(16px,2vw,21px)}
+.nl-tienne .nl-nom{position:absolute;left:8%;right:30%;bottom:9%;font-family:var(--main);font-size:clamp(34px,4.6vw,50px);line-height:1;
+  color:var(--cire);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.nl-tienne .nl-cachet{position:absolute;left:50%;top:62%;width:20%;aspect-ratio:1;margin:-10% 0 0 -10%;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,var(--cire-fonce));box-shadow:0 4px 10px rgba(0,0,0,.35);
+  transition:box-shadow .8s,filter .8s;filter:saturate(.5) brightness(.65)}
+.nl-tienne.allume .nl-cachet{filter:none;box-shadow:0 0 0 6px rgba(229,104,96,.22),0 0 42px 14px rgba(229,104,96,.55),0 4px 10px rgba(0,0,0,.35)}
+
+/* Le faire-part : deux volets, fermés sur le sceau, qui s'ouvrent (GSAP seulement). */
+.fp{perspective:1600px}
+.fp-carton{position:relative;transform-style:preserve-3d}
+.fp-volet{display:none;position:absolute;top:0;bottom:0;width:50%;z-index:2;transform-style:preserve-3d;pointer-events:none}
+.gsap .fp-volet{display:block}
+.fp-volet.g{left:0;transform-origin:0 50%}
+.fp-volet.d{right:0;transform-origin:100% 50%}
+.fp-volet i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.fp-volet .de{background:linear-gradient(170deg,#fdf9f1,#f0e5cf);box-shadow:inset 0 0 0 1px rgba(201,162,39,.55),inset 0 0 0 7px #f7efe0,inset 0 0 0 8px rgba(201,162,39,.4)}
+.fp-volet .dd{transform:rotateY(180deg);background:linear-gradient(170deg,#efe3cc,#e2d2b4)}
+.fp-volet.g .de{border-radius:4px 0 0 4px}
+.fp-volet.d .de{border-radius:0 4px 4px 0}
+/* le sceau d'or, à cheval sur les deux volets : chaque volet en emporte la moitié */
+.fp-volet .de::after{content:"";position:absolute;top:50%;width:62px;height:62px;margin-top:-31px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#e8c56c,#c9a227 60%,#8a6a16);box-shadow:0 5px 12px rgba(0,0,0,.25)}
+.fp-volet.g .de::after{right:-31px;clip-path:inset(0 50% 0 0)}
+.fp-volet.d .de::after{left:-31px;clip-path:inset(0 0 0 50%)}
+#occasions{overflow-x:hidden}
+@supports (overflow:clip){#occasions{overflow-x:clip}}
+
+/* Le seuil : le téléphone sort de la nuit, un rai de lumière le balaie. */
+.essai{perspective:1400px}
+.tel-d{position:relative}
+.balaie{position:absolute;inset:0;pointer-events:none;transform:translateX(-140%);
+  background:linear-gradient(105deg,transparent 30%,rgba(244,237,224,.2) 48%,rgba(232,197,108,.12) 54%,transparent 70%)}
+
+/* Le prix : la feuille de timbres se lève du comptoir de la poste. */
+#prix .etroit{perspective:1700px}
+.timbres{transform-origin:50% 100%}
+
+/* Les questions : les fiches montent du tiroir. */
+.faq{perspective:1100px}
+.aveu .mot{display:inline-block;white-space:pre}
+
+/* La fin : la page blanche se lève du bureau et prend le prénom. */
+#fin{perspective:1300px}
+.page-b .pb-nom{font-family:var(--main);font-weight:400;color:var(--cire);font-size:1.3em;margin-left:.25em}
+
+/* Le son : au premier geste, jamais avant (la molette ne compte pas). */
+.son{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:999px;color:var(--gris-nuit)}
+/* au téléphone, avec le bouton son, la barre ne tenait plus (mesuré : 397 px pour 366) :
+   la marque n'y garde que son cachet ; le nom est écrit en grand dans le héros */
+@media(max-width:480px){
+  .barre.a-son .marque{font-size:0;gap:0;min-width:44px;justify-content:center}
+  .barre.a-son .droite{gap:2px}
+}
+.credit-son{font-size:13px}
+.son:hover{color:var(--papier)}
+.son .ondes{display:flex;align-items:flex-end;gap:3px;height:16px}
+.son .ondes i{width:3px;height:100%;border-radius:2px;background:currentColor;transform:scaleY(.3);transform-origin:50% 100%}
+.son.joue{color:var(--or)}
+.son.joue .ondes i{animation:onde 1.1s ease-in-out infinite}
+.son.joue .ondes i:nth-child(2){animation-delay:-.4s}
+.son.joue .ondes i:nth-child(3){animation-delay:-.8s}
+@keyframes onde{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+
+/* L'achat sous le pouce (téléphone) : bande de bord opaque, jamais sur du texte. */
+.achat-bas{display:none}
+@media(max-width:760px){
+  .js .achat-bas{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:var(--nuit);border-top:1px solid var(--ligne-nuit);transform:translateY(110%);visibility:hidden;
+    transition:transform .4s var(--t),visibility 0s .4s}
+  .js .achat-bas.on{transform:none;visibility:visible;transition:transform .4s var(--t)}
+  .achat-bas .pri{width:100%}
+  .js .pied{padding-bottom:calc(46px + 74px + env(safe-area-inset-bottom))}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .js .nl-sec{height:auto}
+  .js .nl-cadre{position:relative;top:0;height:auto;min-height:calc(100svh - var(--barre));display:grid;align-content:center;gap:40px;padding:90px clamp(20px,5vw,72px)}
+  .js .nl-ciel{display:none}
+  .js .nl-texte{position:relative;top:0;padding:0}
+  .js .nl-fin{position:relative;bottom:0;opacity:1;visibility:visible}
+  .js .nl-fin .nl-tienne{display:block}
+  .poussiere{display:none}
+  .fond i b,.nl-etoiles i{animation:none}
+  .fond i s{display:none}
+}
+
 /* Le curseur plume, sur ordinateur seulement. */
 .plume-s{position:fixed;left:0;top:0;width:28px;height:28px;margin:-26px 0 0 -2px;pointer-events:none;z-index:90;opacity:0;
   background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M2 26 L6 14 L20 2 L26 8 L14 22 Z' fill='%23c9a227' stroke='%23141019' stroke-width='1'/%3E%3Cpath d='M2 26 L12 16' stroke='%23141019' stroke-width='1.2'/%3E%3C/svg%3E");
@@ -624,6 +874,7 @@ button{background:none;border:0;cursor:pointer}
     <a href="#faire-part">Faire-part</a>
   </nav>
   <div class="droite">
+    <!--__SON__-->
     <a class="langue" href="en/" hreflang="en" lang="en" title="Read this page in English">EN</a>
     <a class="pri" href="creer.html"><span class="sceau" aria-hidden="true"></span>Écrire ma lettre</a>
   </div>
@@ -660,6 +911,12 @@ button{background:none;border:0;cursor:pointer}
       <div class="ombre-h"></div>
     </div>
   </div>
+  <!-- La profondeur du héros : le fond (s'il existe), puis deux nappes de
+       poussière d'or et de cire à deux distances. Elles dérivent seules
+       (transform seul), et GSAP les décale au défilement, chacune à sa vitesse. -->
+  <!--__FOND:heros__-->
+  <div class="poussiere loin" aria-hidden="true"><i style="--x:6%;--y:18%;--s:4px;--o:.4;--t:17s;--dx:14px;--dy:-22px"></i><i style="--x:38%;--y:9%;--s:3px;--o:.35;--t:21s;--dx:-18px;--dy:16px"></i><i style="--x:57%;--y:74%;--s:5px;--o:.4;--t:15s;--dx:20px;--dy:-14px"></i><i style="--x:88%;--y:12%;--s:3px;--o:.35;--t:19s;--dx:-12px;--dy:24px"></i><i style="--x:22%;--y:86%;--s:4px;--o:.3;--t:23s;--dx:16px;--dy:-18px"></i><i style="--x:74%;--y:46%;--s:3px;--o:.3;--t:18s;--dx:-20px;--dy:-10px"></i></div>
+  <div class="poussiere pres" aria-hidden="true"><i style="--x:12%;--y:64%;--s:9px;--o:.5;--t:13s;--dx:26px;--dy:-30px"></i><i class="c" style="--x:93%;--y:30%;--s:11px;--o:.55;--t:16s;--dx:-24px;--dy:20px"></i><i style="--x:47%;--y:22%;--s:7px;--o:.45;--t:14s;--dx:18px;--dy:26px"></i><i class="c" style="--x:66%;--y:90%;--s:8px;--o:.5;--t:12s;--dx:-16px;--dy:-28px"></i><i style="--x:30%;--y:40%;--s:6px;--o:.4;--t:15s;--dx:-22px;--dy:14px"></i></div>
 </section>
 
 <!-- 2 · LA SCÈNE -->
@@ -714,15 +971,45 @@ button{background:none;border:0;cursor:pointer}
 
 <!-- 4 · LA PLUME -->
 <section class="nuit grain sec" id="plume">
+  <!--__FOND:plume__-->
   <div class="etroit">
     <p class="sur" data-rv>La plume</p>
     <h2 class="h2" data-rv>Tu coches.<br><em>Elle écrit.</em></h2>
     <p class="chapo" data-rv>Quelques questions, un souvenir, tes consignes. La plume écrit une première version ; tu relis, tu changes ce que tu veux. Ce sont tes mots : elle te les prête.</p>
     <div class="pl-grille">
       <div class="fiche-d" data-rv><!--__FICHE__--></div>
-      <div class="lettre-d" id="lettre-d" data-rv><!--__LETTRE_PLUME__--></div>
+      <!-- ⚠️ Sans data-rv : GSAP la redresse (posée sur le bureau, puis face à
+           toi). Sans GSAP, elle est simplement là. Le bec suit la ligne qui s'écrit. -->
+      <div class="lettre-d" id="lettre-d"><!--__LETTRE_PLUME__--><span class="bec-pl" id="bec-pl" aria-hidden="true"></span></div>
     </div>
     <div class="pl-prix" data-rv><span class="px"><!--__PLUME_PRIX__--></span><span>de plus, seulement si tu l'envoies. Essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.</span></div>
+  </div>
+</section>
+
+<!-- 4 bis · LA NUIT DES LETTRES (2026-10-21, demande de Mongazi : « encore plus
+     d'animation avec de la profondeur »). La caméra traverse un ciel où flotte
+     une enveloppe par occasion RÉELLE du constructeur (le build les lit), chacune
+     à sa profondeur. À la fin, une seule s'avance : la tienne, au prénom tapé.
+     ⛔ Aucun chiffre, aucune lettre « vendue » : ce sont les occasions, pas des clients.
+     Sans JavaScript ou en mouvement réduit : le texte, la tienne et le bouton, à plat. -->
+<section class="nl-sec" id="nuit-lettres" aria-label="La nuit des lettres">
+  <div class="nl-cadre">
+    <!--__FOND:nuit__-->
+    <div class="nl-etoiles" aria-hidden="true"><i></i><i></i></div>
+    <div class="nl-ciel" aria-hidden="true"><div class="nl-vol" id="nl-vol"><!--__VOL__--></div></div>
+    <div class="nl-texte" id="nl-texte">
+      <p class="sur">La nuit des lettres</p>
+      <h2 class="h2" id="nl-titre">Chacune attend<br><em>son heure.</em></h2>
+      <p class="chapo">Un anniversaire à minuit, un pardon au lever du jour, une fête au petit matin. Chaque lettre dort sous son cachet jusqu'à l'heure que tu as choisie.</p>
+    </div>
+    <div class="nl-fin" id="nl-fin">
+      <div class="nl-tienne" id="nl-tienne" aria-hidden="true">
+        <span class="nl-heure">00:00</span>
+        <span class="nl-a">Ma lettre à</span><span class="nl-nom" id="nl-nom">toi</span>
+        <span class="nl-cachet"></span>
+      </div>
+      <a class="pri" href="creer.html"><span class="sceau" aria-hidden="true"></span>Écrire la mienne</a>
+    </div>
   </div>
 </section>
 
@@ -741,7 +1028,12 @@ button{background:none;border:0;cursor:pointer}
          fait par NEBULA, hors de la caisse. Son prix et le numéro viennent de
          `faire-part/offre.json`, et de nulle part ailleurs. -->
     <div class="fp" id="faire-part">
+      <!--__FOND:faire-part__-->
       <div class="fp-carton" data-rv aria-hidden="true">
+        <!-- Les deux volets du carton, fermés sur le sceau, s'ouvrent au défilement
+             (GSAP). Sans GSAP ils n'existent pas : le carton est déjà ouvert. -->
+        <div class="fp-volet g"><i class="de"></i><i class="dd"></i></div>
+        <div class="fp-volet d"><i class="de"></i><i class="dd"></i></div>
         <div class="fp-cadre">
           <p class="fp-o">Faire-part · exemple</p>
           <div class="fp-cachet">K<span>&amp;</span>A</div>
@@ -769,6 +1061,7 @@ button{background:none;border:0;cursor:pointer}
 
 <!-- 6 · LE SEUIL -->
 <section class="nuit grain sec" id="seuil">
+  <!--__FOND:seuil__-->
   <div class="etroit seuil-g">
     <div class="seuil-t">
       <p class="sur" data-rv>Ce qu'elle vit</p>
@@ -776,7 +1069,7 @@ button{background:none;border:0;cursor:pointer}
       <p class="chapo" data-rv>Voici une vraie lettre. Elle s'ouvre dans dix secondes : regarde le cachet dormir, puis la cire s'allumer. Ensuite, habille-la : touche une pastille, puis le cachet.</p>
     </div>
     <div class="essai" data-rv>
-      <div class="tel-d"><iframe id="seuil-cadre" title="Une vraie lettre qui attend son heure" sandbox="allow-scripts" loading="lazy"></iframe></div>
+      <div class="tel-d"><iframe id="seuil-cadre" title="Une vraie lettre qui attend son heure" sandbox="allow-scripts" loading="lazy"></iframe><span class="balaie" aria-hidden="true"></span></div>
       <div class="habille">
         <p class="hb-t">Habille-la <span><!--__HAB_DES__--></span></p>
         <!--__PASTILLES__-->
@@ -802,14 +1095,17 @@ button{background:none;border:0;cursor:pointer}
 
 <!-- 8 · LA CONFIANCE -->
 <section class="sombre grain sec" id="promesses">
+  <!--__FOND:promesses__-->
   <div class="etroit">
     <p class="sur" data-rv>Ce qu'on promet</p>
     <h2 class="h2" data-rv>Mot pour mot,<br><em>rien de plus.</em></h2>
+    <!-- ⚠️ Sans data-rv depuis GSAP : chaque billet tombe de sa profondeur et se
+         déplie au défilement. Sans GSAP, ils sont simplement là, dépliés. -->
     <div class="billets">
-      <div class="billet" data-rv><b>Le cachet tient jusqu'à l'heure.</b><p>Il ne se brise pas avant l'heure choisie, et c'est l'heure du téléphone de qui la reçoit : minuit à Abidjan n'est pas minuit à Cotonou.</p></div>
-      <div class="billet" data-rv style="--d:.12s"><b>Une adresse que personne ne devine.</b><p>Tirée au hasard, jamais indexée, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée.</p></div>
-      <div class="billet" data-rv style="--d:.24s"><b>On n'écrit jamais à la personne.</b><p>C'est toi qui lui donnes le lien, quand tu veux. Aucune machine ne lui écrit à ta place.</p></div>
-      <div class="billet" data-rv style="--d:.36s"><b>Retirée sous 24 heures.</b><p>Si la personne qui la reçoit le demande, la lettre est retirée, sans discussion.</p></div>
+      <div class="billet"><b>Le cachet tient jusqu'à l'heure.</b><p>Il ne se brise pas avant l'heure choisie, et c'est l'heure du téléphone de qui la reçoit : minuit à Abidjan n'est pas minuit à Cotonou.</p></div>
+      <div class="billet"><b>Une adresse que personne ne devine.</b><p>Tirée au hasard, jamais indexée, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée.</p></div>
+      <div class="billet"><b>On n'écrit jamais à la personne.</b><p>C'est toi qui lui donnes le lien, quand tu veux. Aucune machine ne lui écrit à ta place.</p></div>
+      <div class="billet"><b>Retirée sous 24 heures.</b><p>Si la personne qui la reçoit le demande, la lettre est retirée, sans discussion.</p></div>
     </div>
     <p class="aveu" data-rv>Une lettre est un cadeau emballé, pas un coffre-fort. On ne te promet pas le secret : on te promet l'heure.</p>
   </div>
@@ -823,14 +1119,14 @@ button{background:none;border:0;cursor:pointer}
     <p class="sur" data-rv>Les questions</p>
     <h2 class="h2" data-rv>Ce qu'on nous<br><em>demande.</em></h2>
     <div class="faq">
-      <details class="q" data-rv><summary>Comment la personne reçoit-elle la lettre ?</summary><div class="r"><p>Par un lien que tu lui envoies toi-même, sur WhatsApp ou ailleurs, quand tu veux : trois jours avant ou la veille. Nous n'écrivons jamais à la personne. Elle ouvre le lien sur son téléphone, sans rien installer, et trouve une enveloppe scellée qui attend son heure.</p></div></details>
-      <details class="q" data-rv><summary>Que voit-elle si elle ouvre le lien avant l'heure ?</summary><div class="r"><p>Une enveloppe fermée et un compte à rebours, rien d'autre : le cachet dort, aucun bouton ne l'ouvre. À l'heure choisie, la cire s'allume et le bouton paraît, sans recharger la page. C'est l'heure de son téléphone qui compte : minuit à Abidjan n'est pas minuit à Cotonou.</p></div></details>
-      <details class="q" data-rv><summary>Faut-il installer une application ?</summary><div class="r"><p>Non. La lettre est une page qui s'ouvre dans le navigateur du téléphone, même avec une petite connexion. Il n'y a ni application à télécharger ni compte à créer, ni pour toi, ni pour la personne qui la reçoit.</p></div></details>
-      <details class="q" data-rv><summary>Combien coûte une lettre ?</summary><div class="r"><p><!--__FAQ_PRIX__--></p></div></details>
-      <details class="q" data-rv><summary>Comment paie-t-on ?</summary><div class="r"><p>Par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur, où tu choisis ton réseau. Rien à recopier, aucun code à nous donner. Une lettre gratuite ne passe pas du tout par la caisse : tu l'écris, tu reçois ton lien.</p></div></details>
-      <details class="q" data-rv><summary>Qu'est-ce que la plume ?</summary><div class="r"><p>Une aide pour écrire. Tu réponds à quelques questions, tu racontes un souvenir, tu dis comment tu veux ta lettre, et la plume en écrit une première version. Tu relis, tu changes ce que tu veux, tu signes. L'essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.</p></div></details>
-      <details class="q" data-rv><summary>Ma lettre est-elle privée ?</summary><div class="r"><p>Son adresse est tirée au hasard, jamais indexée par les moteurs de recherche, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée. Mais qui a le lien peut la lire : c'est un cadeau emballé, pas un coffre-fort. Et si la personne qui la reçoit demande son retrait, elle est retirée sous 24 heures.</p></div></details>
-      <details class="q" data-rv><summary>Pouvez-vous faire notre faire-part de mariage ?</summary><div class="r"><p>Oui, sur demande, pour <!--__FP_PRIX__-->, fait sur mesure par notre équipe. Il s'ouvre comme une lettre, avec le cachet à vos initiales, le compte à rebours jusqu'au grand jour, le programme, le lieu, la tenue et vos photos. Vos invités vous répondent directement sur votre WhatsApp.</p></div></details>
+      <details class="q"><summary>Comment la personne reçoit-elle la lettre ?</summary><div class="r"><p>Par un lien que tu lui envoies toi-même, sur WhatsApp ou ailleurs, quand tu veux : trois jours avant ou la veille. Nous n'écrivons jamais à la personne. Elle ouvre le lien sur son téléphone, sans rien installer, et trouve une enveloppe scellée qui attend son heure.</p></div></details>
+      <details class="q"><summary>Que voit-elle si elle ouvre le lien avant l'heure ?</summary><div class="r"><p>Une enveloppe fermée et un compte à rebours, rien d'autre : le cachet dort, aucun bouton ne l'ouvre. À l'heure choisie, la cire s'allume et le bouton paraît, sans recharger la page. C'est l'heure de son téléphone qui compte : minuit à Abidjan n'est pas minuit à Cotonou.</p></div></details>
+      <details class="q"><summary>Faut-il installer une application ?</summary><div class="r"><p>Non. La lettre est une page qui s'ouvre dans le navigateur du téléphone, même avec une petite connexion. Il n'y a ni application à télécharger ni compte à créer, ni pour toi, ni pour la personne qui la reçoit.</p></div></details>
+      <details class="q"><summary>Combien coûte une lettre ?</summary><div class="r"><p><!--__FAQ_PRIX__--></p></div></details>
+      <details class="q"><summary>Comment paie-t-on ?</summary><div class="r"><p>Par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur, où tu choisis ton réseau. Rien à recopier, aucun code à nous donner. Une lettre gratuite ne passe pas du tout par la caisse : tu l'écris, tu reçois ton lien.</p></div></details>
+      <details class="q"><summary>Qu'est-ce que la plume ?</summary><div class="r"><p>Une aide pour écrire. Tu réponds à quelques questions, tu racontes un souvenir, tu dis comment tu veux ta lettre, et la plume en écrit une première version. Tu relis, tu changes ce que tu veux, tu signes. L'essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.</p></div></details>
+      <details class="q"><summary>Ma lettre est-elle privée ?</summary><div class="r"><p>Son adresse est tirée au hasard, jamais indexée par les moteurs de recherche, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée. Mais qui a le lien peut la lire : c'est un cadeau emballé, pas un coffre-fort. Et si la personne qui la reçoit demande son retrait, elle est retirée sous 24 heures.</p></div></details>
+      <details class="q"><summary>Pouvez-vous faire notre faire-part de mariage ?</summary><div class="r"><p>Oui, sur demande, pour <!--__FP_PRIX__-->, fait sur mesure par notre équipe. Il s'ouvre comme une lettre, avec le cachet à vos initiales, le compte à rebours jusqu'au grand jour, le programme, le lieu, la tenue et vos photos. Vos invités vous répondent directement sur votre WhatsApp.</p></div></details>
     </div>
     <p class="ecris" data-rv>Une autre question ? <a id="question" href="https://wa.me/22996740732?text=Bonjour%2C%20j%27ai%20une%20question%20sur%20Ma%20lettre%20%C3%A0%E2%80%A6%20%3A%20">Écris-nous sur WhatsApp</a>.</p>
   </div>
@@ -838,9 +1134,11 @@ button{background:none;border:0;cursor:pointer}
 
 <!-- 10 · LA FIN -->
 <section class="nuit grain sec fin" id="fin">
+  <!--__FOND:fin__-->
   <p class="sur" data-rv>À toi</p>
   <h2 class="h2" data-rv>Il ne manque<br><em>qu'un prénom.</em></h2>
-  <div class="page-b" data-rv aria-hidden="true"><div class="a">Ma lettre à<span class="curs"></span></div><div class="lv"></div><div class="lv"></div><div class="lv"></div></div>
+  <!-- La page blanche se lève du bureau (GSAP) et prend le prénom tapé. -->
+  <div class="page-b" aria-hidden="true"><div class="a">Ma lettre à<b class="pb-nom" id="pb-nom"></b><span class="curs"></span></div><div class="lv"></div><div class="lv"></div><div class="lv"></div></div>
   <form class="qui" action="creer.html" method="get">
     <label for="q-pour-2" class="sr">À qui écris-tu ?</label>
     <div class="rangee">
@@ -856,8 +1154,15 @@ button{background:none;border:0;cursor:pointer}
   <div class="etroit">
     <p><b style="color:var(--papier)">Ma lettre à…</b> est un service de <a href="https://www.nebula-agency.online/">NEBULA Agency</a>, à Cotonou.</p>
     <p>Les lettres de cette page sont des exemples : les personnes sont inventées. Pour faire retirer une lettre, <a id="retrait" href="https://wa.me/22996740732?text=Bonjour%2C%20je%20demande%20le%20retrait%20de%20cette%20lettre%20%3A%20">écris-nous sur WhatsApp</a> en joignant son lien : elle est retirée sous 24 heures, sans discussion.</p>
+    <!--__SON_CREDIT__-->
   </div>
 </footer>
+
+<!-- Au téléphone, l'achat sous le pouce : une bande de bord OPAQUE (rien de fixe
+     ne recouvre du texte), au niveau du body, sous aucun parent transformé. Elle
+     paraît une fois le héros passé, s'efface devant le formulaire de la fin et la
+     modale ; le pied lui réserve sa hauteur. -->
+<div class="achat-bas" id="achat-bas"><a class="pri" href="creer.html"><span class="sceau" aria-hidden="true"></span>Écrire ma lettre</a></div>
 
 <div class="modale" id="modale" role="dialog" aria-modal="true" aria-label="Une lettre d'exemple" hidden>
   <div>
@@ -880,6 +1185,10 @@ var lerp = function(a, b, k){ return a + (b - a) * k; };
 var seg = function(p, a, b){ return p <= a ? 0 : p >= b ? 1 : (p - a) / (b - a); };
 var cube = function(k){ return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
 var sort = function(k){ return 1 - Math.pow(1 - k, 3); };
+/* La racine du site vue de CETTE page (l'anglaise vit dans en/). */
+var RACINE = "";
+var BARRE = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--barre")) || 62;
+var gsapPret = false;
 
 /* ══ Le chargement : le nœud se défait, la lettre se déplie, la page paraît ══ */
 (function(){
@@ -890,6 +1199,14 @@ var sort = function(k){ return 1 - Math.pow(1 - k, 3); };
     if (fini) { return; }
     fini = true;
     ch.classList.add("parti");
+    /* le fond du héros s'allume quand le rideau est levé ET la page chargée,
+       jamais avant : sur une connexion lente, les polices passaient après lui
+       (mesuré : 343 Ko au premier écran, plafond 320). Le texte, puis l'ambiance. */
+    var allumer = function(){ setTimeout(function(){
+      var fh = document.querySelector('.fond[data-fond="heros"]');
+      if (fh) { fh.classList.add("pret"); }
+    }, 1500); };
+    if (document.readyState === "complete") { allumer(); } else { addEventListener("load", allumer, { once: true }); }
     setTimeout(function(){ ch.hidden = true; }, 700);
   }
   if (doux) { setTimeout(partir, 500); return; }
@@ -935,8 +1252,15 @@ $$('input[name="pour"]').forEach(function(inp){
     $$('input[name="pour"]').forEach(function(x){ if (x !== inp) { x.value = inp.value; } });
     poserNom(saisi || PRENOMS[0]);
     poserFeuille();
+    poserTienne();
   });
 });
+/* La tienne (la nuit des lettres) et la page blanche (la fin) prennent le prénom tapé. */
+function poserTienne(){
+  $$(".nl-nom").forEach(function(n){ n.textContent = saisi || NL_DEFAUT; });
+  var pb = $("#pb-nom");
+  if (pb) { pb.textContent = saisi; }
+}
 
 /* L'enveloppe du héros suit le doigt, doucement. Aucune boucle infinie. */
 var envH = $("#env-h");
@@ -1073,6 +1397,7 @@ cartes.forEach(function(c){
     modaleCadre.src = "exemples/" + c.dataset.id + ".html";
     $("#modale-t").textContent = "Exemple · " + c.dataset.titre;
     modale.hidden = false;
+    demander();
     $("#modale-fermer").focus();
   });
 });
@@ -1080,6 +1405,7 @@ function fermer(){
   modale.hidden = true;
   modaleCadre.removeAttribute("src");
   if (dernier) { dernier.focus(); }
+  demander();
 }
 /* Le faire-part d'exemple s'ouvre dans la même fenêtre téléphone. */
 var fpVoir = $("#fp-voir");
@@ -1088,6 +1414,7 @@ fpVoir.addEventListener("click", function(){
   modaleCadre.src = fpVoir.dataset.src;
   $("#modale-t").textContent = fpVoir.dataset.titre;
   modale.hidden = false;
+  demander();
   $("#modale-fermer").focus();
 });
 $("#modale-fermer").addEventListener("click", fermer);
@@ -1165,6 +1492,88 @@ $$(".habille input").forEach(function(x){
   el.appendChild(lien);
 })();
 
+/* ══ La nuit des lettres : le défilement est la caméra ══
+   Chaque enveloppe porte sa place (data-x, data-y en % du cadre, data-z en px,
+   data-r en degrés), posée par le build. La caméra avance de NL_FIN pixels ; une
+   enveloppe paraît au loin, grandit, passe à côté et s'efface avant de toucher
+   l'œil. La tienne est la plus lointaine : elle s'arrête face à toi, et son
+   cachet s'allume. Avant GSAP, LA BOUCLE la peint ; ensuite GSAP, avec inertie. */
+var nlSec = $("#nuit-lettres"), nlVol = $("#nl-vol"), nlTexte = $("#nl-texte"), nlFin = $("#nl-fin");
+var nlEt = $$(".nl-etoiles i"), nlFond = $(".nl-cadre .fond i"), nlCadre = $(".nl-cadre");
+var NL_DEFAUT = ($("#nl-nom") || {}).textContent || "";
+var nlT3 = null, nlEvs = $$(".nl-ev"), nlD = [], NL_FIN = 1, nlW = 0, nlH = 0, nlP = -1;
+if (nlVol && $("#nl-tienne")) {
+  nlT3 = $("#nl-tienne").cloneNode(true);
+  nlT3.removeAttribute("id");
+  $$("[id]", nlT3).forEach(function(x){ x.removeAttribute("id"); });
+  nlVol.appendChild(nlT3);
+}
+function mesurerNuit(){
+  if (!nlCadre) { return; }
+  nlW = nlCadre.clientWidth; nlH = nlCadre.clientHeight;
+  var fond = 0;
+  nlD = nlEvs.map(function(el){
+    var d = {x: +el.dataset.x, y: +el.dataset.y, z: +el.dataset.z, r: +el.dataset.r,
+             vu: getComputedStyle(el).display !== "none", on: false};
+    el.style.visibility = "hidden";
+    if (d.vu) { fond = Math.min(fond, d.z); }
+    return d;
+  });
+  NL_FIN = -fond + 700;
+  /* repeindre tout de suite, à la même pose : sans ça le ciel restait vide
+     pendant l'approche, tant que la caméra n'avait pas bougé */
+  var garde = nlP < 0 ? 0 : nlP;
+  nlP = -1;
+  if (!doux) { peindreNuit(garde); }
+}
+function peindreNuit(p){
+  if (!nlT3 || Math.abs(p - nlP) < .0002) { return; }
+  nlP = p;
+  var cam = p * NL_FIN;
+  nlD.forEach(function(d, i){
+    if (!d.vu) { return; }
+    var el = nlEvs[i], z = d.z + cam;
+    /* au tout début, seul le ciel SOUS le titre porte déjà des lettres (à
+       demi) : rien ne passe derrière le texte tant qu'il se lit */
+    var debut = d.y > 8 ? .45 + .55 * seg(p, 0, .1) : seg(p, .06, .16);
+    var o = seg(z, -4600, -3300) * (1 - seg(z, 120, 600)) * debut;
+    if (o <= .002) {
+      if (d.on) { el.style.visibility = "hidden"; d.on = false; }
+      return;
+    }
+    if (!d.on) { el.style.visibility = "visible"; d.on = true; }
+    el.style.opacity = o.toFixed(3);
+    el.style.transform = "translate(-50%,-50%) translate3d(" + (d.x * nlW / 100).toFixed(1) + "px," + (d.y * nlH / 100).toFixed(1) + "px,"
+      + z.toFixed(1) + "px) rotateZ(" + d.r + "deg) rotateY(" + (d.r * 1.6 + (z + 4000) * .006).toFixed(1) + "deg)";
+  });
+  /* la tienne : partie du fond du ciel, elle s'arrête face à toi */
+  var zt = -NL_FIN - 150 + cam, ot = seg(zt, -4400, -3000), pose = 1 - seg(p, .72, .97);
+  nlT3.style.visibility = ot > .002 ? "visible" : "hidden";
+  nlT3.style.opacity = ot.toFixed(3);
+  nlT3.style.transform = "translate(-50%,-62%) translate3d(0,0," + zt.toFixed(1) + "px) rotateY(" + (pose * -28).toFixed(1)
+    + "deg) rotateX(" + (pose * 10).toFixed(1) + "deg) rotateZ(" + (pose * 7).toFixed(1) + "deg)";
+  nlT3.classList.toggle("allume", p > .93);
+  var t = seg(p, .04, .2);
+  nlTexte.style.opacity = (1 - t).toFixed(3);
+  nlTexte.style.transform = "translateY(" + (-t * 60).toFixed(1) + "px) scale(" + (1 - t * .06).toFixed(3) + ")";
+  nlTexte.style.visibility = t >= 1 ? "hidden" : "visible";
+  /* le bouton paraît : la barre d'achat doit s'effacer TOUT DE SUITE (l'inertie
+     de GSAP finit après le dernier défilement, LA BOUCLE ne le verrait pas) */
+  if ((p > .9) !== nlFin.classList.contains("on")) { nlFin.classList.toggle("on", p > .9); demander(); }
+  if (nlEt[0]) { nlEt[0].style.transform = "translate3d(0," + (-p * 50).toFixed(1) + "px,0) scale(" + (1 + p * .12).toFixed(3) + ")"; }
+  if (nlEt[1]) { nlEt[1].style.transform = "rotate(9deg) translate3d(0," + (-p * 130).toFixed(1) + "px,0) scale(" + (1 + p * .45).toFixed(3) + ")"; }
+  if (nlFond) { nlFond.style.transform = "scale(" + (1 + p * .12).toFixed(3) + ")"; }
+}
+
+/* Le bec de la plume : la géométrie des paragraphes, en mise en page. */
+var becPl = $("#bec-pl"), geoP = [];
+function mesurerPlume(){
+  geoP = $$("#lettre-d p").map(function(p){ return {x: p.offsetLeft, y: p.offsetTop, w: p.offsetWidth, h: p.offsetHeight}; });
+}
+
+/* L'achat sous le pouce, et ce qui le fait paraître. */
+var achat = $("#achat-bas"), formH = $(".heros .qui"), formF = $("#fin .qui");
+
 /* ══ LA BOUCLE : une seule, scrollY lu une fois par image ══ */
 var barre = $(".progres"), revele = $$("[data-rv]"), puces = $$(".fiche-d .puce[data-choisie]"), lignesP = $$("#lettre-d p");
 var cases = $$(".case"), evs = cases.map(function(c){ return $(".ev", c); });
@@ -1184,6 +1593,8 @@ function image(){
   var rl = lignesP.map(function(c){ return c.getBoundingClientRect(); });
   var rr = revele.map(function(c){ return c.classList.contains("vu") ? 1e9 : c.getBoundingClientRect().top; });
   var rsu = secSeuil.getBoundingClientRect().top;
+  var rnl = nlSec ? nlSec.getBoundingClientRect() : null;
+  var rhq = formH.getBoundingClientRect().bottom, rfq = formF.getBoundingClientRect();
 
   if (!doux && rs.bottom > 0 && rs.top < vh) {
     var p = seg(-rs.top, 0, rs.height - (vh - 62));
@@ -1195,14 +1606,39 @@ function image(){
       var e = ecarts[i];
       if (!e) { return; }
       var q = cube(seg(q0, i * .07, .5 + i * .07));
-      c.style.transform = "translate(" + (e.x * (1 - q)).toFixed(1) + "px," + (e.y * (1 - q)).toFixed(1) + "px) rotate(" + (e.r * (1 - q)).toFixed(2) + "deg)";
+      /* --tx / --ty : l'inclinaison sous le pointeur, posée à part (ordinateur) */
+      c.style.transform = "translate(" + (e.x * (1 - q)).toFixed(1) + "px," + (e.y * (1 - q)).toFixed(1) + "px) rotate(" + (e.r * (1 - q)).toFixed(2) + "deg)"
+        + " perspective(900px) rotateX(var(--tx,0deg)) rotateY(var(--ty,0deg))";
     });
   }
   rp.forEach(function(t, i){ puces[i].classList.toggle("prise", doux || t < vh * .72); });
+  var ecrit = -1, kE = 0;
   rl.forEach(function(r, i){
     var k = doux ? 1 : seg(vh * .9 - r.top, 0, r.height + vh * .12);
     lignesP[i].style.setProperty("--k", k.toFixed(3));
+    if (ecrit < 0 && k > 0 && k < 1) { ecrit = i; kE = k; }
   });
+  /* Le bec suit la ligne qui s'écrit : il descend avec elle et va et vient,
+     comme une main qui écrit. Positions de MISE EN PAGE (offset*), pas d'écran :
+     la feuille est inclinée par GSAP pendant qu'elle s'écrit. */
+  if (becPl) {
+    becPl.classList.toggle("on", ecrit >= 0 && !doux);
+    var gp = geoP[ecrit];
+    if (gp) {
+      var aller = (kE * 7) % 1;
+      becPl.style.transform = "translate(" + (gp.x + gp.w * (.04 + .9 * aller)).toFixed(1) + "px,"
+        + (gp.y + gp.h * kE).toFixed(1) + "px) rotate(" + (aller * 10 - 5).toFixed(1) + "deg)";
+    }
+  }
+  if (nlSec && !gsapPret && !doux && rnl.top < vh && rnl.bottom > 0) {
+    peindreNuit(seg(BARRE - rnl.top, 0, rnl.height - vh));
+  }
+  /* l'achat sous le pouce : après le héros, jamais devant le formulaire de la
+     fin, ni devant « Écrire la mienne » de la nuit des lettres (deux boutons empilés) */
+  if (achat) {
+    var nlBouton = nlFin && nlFin.classList.contains("on") && rnl && rnl.top < vh && rnl.bottom > 0;
+    achat.classList.toggle("on", rhq < 0 && !(rfq.top < vh && rfq.bottom > 0) && modale.hidden && !nlBouton);
+  }
   rc.forEach(function(t, i){
     var k = doux ? 1 : sort(seg(vh * 1.02 - t, 0, vh * .38));
     evs[i].style.transform = "translateY(" + lerp(70, -4, k).toFixed(1) + "%)";
@@ -1213,8 +1649,12 @@ function image(){
 }
 function demander(){ if (!attente) { attente = true; requestAnimationFrame(image); } }
 addEventListener("scroll", demander, { passive: true });
-addEventListener("resize", function(){ vh = innerHeight; mesurerCartes(); demander(); });
+addEventListener("resize", function(){ vh = innerHeight; mesurerCartes(); mesurerPlume(); mesurerNuit(); demander(); });
 mesurerCartes();
+mesurerPlume();
+mesurerNuit();
+/* les polices arrivent après : les paragraphes changent de hauteur */
+if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function(){ mesurerPlume(); demander(); }); }
 poserFeuille();
 if (doux) { peindreScene(.56); }
 demander();
@@ -1222,6 +1662,200 @@ demander();
    défilement par ancre) se fait quand même. Une section ne reste jamais
    invisible (leçon du 2026-08). */
 setTimeout(function(){ revele.forEach(function(e){ if (e.getBoundingClientRect().top < vh) { e.classList.add("vu"); } }); }, 1600);
+
+/* ══ Les fonds d'ambiance : téléchargés à l'approche, jamais avant ══ */
+(function(){
+  /* `.pret` : l'image se télécharge (le héros attend le rideau, voir « Le
+     chargement »). `.joue` : ses mouvements tournent, seulement près de l'écran. */
+  var fonds = $$(".fond");
+  if (!fonds.length) { return; }
+  if (!("IntersectionObserver" in window)) {
+    fonds.forEach(function(f){ if (f.dataset.fond !== "heros") { f.classList.add("pret"); } f.classList.add("joue"); });
+    return;
+  }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.isIntersecting && e.target.dataset.fond !== "heros") { e.target.classList.add("pret"); }
+      e.target.classList.toggle("joue", e.isIntersecting && !doux);
+    });
+  }, { rootMargin: "120% 0px" });
+  fonds.forEach(function(f){ io.observe(f); });
+})();
+
+/* ══ Les exemples : la carte s'incline sous le pointeur (ordinateur) ══ */
+if (!doux && matchMedia("(hover:hover) and (pointer:fine)").matches) {
+  cartes.forEach(function(c){
+    function poser(tx, ty, d){
+      if (window.gsap) { window.gsap.to(c, { "--tx": tx + "deg", "--ty": ty + "deg", duration: d, ease: "power3.out", overwrite: "auto" }); }
+      else { c.style.setProperty("--tx", tx + "deg"); c.style.setProperty("--ty", ty + "deg"); }
+    }
+    c.addEventListener("pointermove", function(e){
+      var r = c.getBoundingClientRect();
+      poser(((.5 - (e.clientY - r.top) / r.height) * 14).toFixed(2), (((e.clientX - r.left) / r.width - .5) * 18).toFixed(2), .4);
+    });
+    c.addEventListener("pointerleave", function(){ poser(0, 0, .8); });
+  });
+}
+
+/* ══ La musique : au premier geste, jamais avant (la molette ne compte pas) ══
+   Le bouton n'existe que si `son/musique.mp3` est sur le disque (le build). Le
+   son passe par Web Audio : sur iPhone, `audio.volume` est en lecture seule, et
+   il faut pouvoir la baisser quand une lettre d'exemple joue ses propres sons. */
+(function(){
+  var btn = $("#son");
+  if (!btn) { return; }
+  var CLE = "malettre:son", audio = null, ctx = null, gain = null, coupee = false, baisse = false;
+  try { coupee = localStorage.getItem(CLE) === "non"; } catch (e) {}
+  function niveau(){ return coupee || document.hidden ? 0 : (baisse ? .07 : .3); }
+  function regler(t){
+    if (!audio) { return; }
+    if (gain && ctx) { gain.gain.cancelScheduledValues(ctx.currentTime); gain.gain.setTargetAtTime(niveau(), ctx.currentTime, t || .5); }
+    else { audio.volume = niveau(); }
+    btn.classList.toggle("joue", !coupee);
+    btn.setAttribute("aria-pressed", coupee ? "false" : "true");
+  }
+  function demarrer(){
+    if (audio) { if (ctx && ctx.resume) { ctx.resume(); } audio.play().catch(function(){}); regler(1.2); return; }
+    audio = new Audio(btn.dataset.src);
+    audio.loop = true;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      ctx = new AC(); gain = ctx.createGain(); gain.gain.value = 0;
+      ctx.createMediaElementSource(audio).connect(gain); gain.connect(ctx.destination);
+    } catch (e) { ctx = null; gain = null; audio.volume = 0; }
+    audio.play().then(function(){ regler(1.8); }).catch(function(){ audio = null; ctx = null; gain = null; });
+  }
+  function geste(e){
+    if (e && e.target && e.target.closest && e.target.closest("#son")) { return; }
+    ["pointerdown", "keydown", "touchstart"].forEach(function(t){ removeEventListener(t, geste, true); });
+    if (!coupee) { demarrer(); }
+  }
+  ["pointerdown", "keydown", "touchstart"].forEach(function(t){ addEventListener(t, geste, true); });
+  btn.addEventListener("click", function(){
+    if (!audio || coupee) { coupee = false; demarrer(); } else { coupee = true; }
+    try { localStorage.setItem(CLE, coupee ? "non" : "oui"); } catch (e) {}
+    regler(.4);
+  });
+  document.addEventListener("visibilitychange", function(){
+    if (!audio) { return; }
+    if (document.hidden) { audio.pause(); } else if (!coupee) { audio.play().catch(function(){}); }
+    regler(.3);
+  });
+  /* une lettre qui joue ses sons (modale, ou le téléphone du seuil touché) : on baisse */
+  function suivre(){ baisse = !modale.hidden || (document.activeElement && document.activeElement.tagName === "IFRAME"); regler(.4); }
+  new MutationObserver(suivre).observe(modale, { attributes: true, attributeFilter: ["hidden"] });
+  addEventListener("blur", function(){ setTimeout(suivre, 0); });
+  addEventListener("focus", suivre);
+})();
+
+/* ══ GSAP : chargé APRÈS le premier écran (premier geste, ou au repos) ══
+   Servi d'ICI, version dans l'adresse (le cache est d'un an). Jamais en
+   mouvement réduit : la page est alors complète sans lui. */
+function chargerGsap(){
+  if (chargerGsap.fait || doux) { return; }
+  chargerGsap.fait = true;
+  var a = document.createElement("script");
+  a.src = RACINE + "vendor/gsap.min.js?v=3.13.0";
+  a.onload = function(){
+    var b = document.createElement("script");
+    b.src = RACINE + "vendor/ScrollTrigger.min.js?v=3.13.0";
+    b.onload = animer;
+    document.head.appendChild(b);
+  };
+  document.head.appendChild(a);
+}
+["scroll", "pointerdown", "touchstart", "keydown"].forEach(function(t){ addEventListener(t, chargerGsap, { once: true, passive: true }); });
+addEventListener("load", function(){ setTimeout(chargerGsap, 3500); });
+
+function animer(){
+  var g = window.gsap, ST = window.ScrollTrigger;
+  if (!g || !ST || doux) { return; }
+  g.registerPlugin(ST);
+  document.documentElement.classList.add("gsap");
+  var B = "top " + BARRE + "px";
+  var mm = g.matchMedia();
+  mm.add("(prefers-reduced-motion: no-preference)", function(){
+    /* 1 · LE HÉROS : on le quitte, l'enveloppe plonge vers la scène,
+       le texte s'éloigne, la poussière file à deux vitesses */
+    var quitte = { trigger: "#haut", start: B, end: "bottom top", scrub: .7 };
+    g.to(".heros-objet", { yPercent: 36, rotateX: 44, rotateZ: 9, scale: .76, ease: "none", scrollTrigger: quitte });
+    g.to(".heros > div:first-child", { yPercent: -12, opacity: .15, ease: "none", scrollTrigger: quitte });
+    g.to(".poussiere.loin", { yPercent: -20, ease: "none", scrollTrigger: quitte });
+    g.to(".poussiere.pres", { yPercent: -60, ease: "none", scrollTrigger: quitte });
+    /* les fonds glissent plus lentement que la page : la profondeur */
+    /* (sauf la nuit : sa caméra zoome déjà son ciel, deux maîtres feraient trembler) */
+    g.utils.toArray('.fond:not([data-fond="nuit"]) i').forEach(function(f){
+      g.fromTo(f, { yPercent: -5 }, { yPercent: 5, ease: "none",
+        scrollTrigger: { trigger: f.parentNode.parentNode, start: "top bottom", end: "bottom top", scrub: true } });
+    });
+
+    /* 4 · LA PLUME : la feuille posée sur le bureau se redresse vers toi */
+    g.fromTo("#lettre-d", { rotateX: 46, y: 90, transformOrigin: "50% 100%" }, { rotateX: 0, y: 0, ease: "none",
+      scrollTrigger: { trigger: "#lettre-d", start: "top bottom", end: "top 62%", scrub: .6 } });
+
+    /* 4 bis · LA NUIT DES LETTRES : la caméra, avec de l'inertie */
+    if (nlSec && nlT3) {
+      var etat = { p: Math.max(0, nlP) };
+      g.to(etat, { p: 1, ease: "none", onUpdate: function(){ peindreNuit(etat.p); },
+        scrollTrigger: { trigger: nlSec, start: B, end: "bottom bottom", scrub: 1.1 } });
+    }
+
+    /* 5 bis · LE FAIRE-PART : les volets s'ouvrent vers toi, le sceau se sépare */
+    var fp = { trigger: ".fp-carton", start: "top 82%", end: "top 30%", scrub: .6 };
+    g.fromTo(".fp-volet.g", { rotateY: 0 }, { rotateY: -100, ease: "none", scrollTrigger: fp });
+    g.fromTo(".fp-volet.d", { rotateY: 0 }, { rotateY: 100, ease: "none", scrollTrigger: fp });
+    g.fromTo(".fp-volet i", { opacity: 1 }, { opacity: 0, ease: "none",
+      scrollTrigger: { trigger: ".fp-carton", start: "top 42%", end: "top 26%", scrub: .6 } });
+
+    /* 6 · LE SEUIL : le téléphone sort de la nuit, un rai de lumière le balaie,
+       les pastilles tombent comme des gouttes de cire */
+    g.fromTo(".tel-d", { rotateX: 26, rotateY: -30, z: -340, y: 70 }, { rotateX: 0, rotateY: 0, z: 0, y: 0, ease: "none",
+      scrollTrigger: { trigger: ".essai", start: "top bottom", end: "top 30%", scrub: .7 } });
+    ST.create({ trigger: ".essai", start: "top 40%", onEnter: function(){
+      g.fromTo(".balaie", { xPercent: -140 }, { xPercent: 140, duration: 1.6, ease: "power2.inOut" });
+    } });
+    ST.create({ trigger: ".habille", start: "top 88%", once: true, onEnter: function(){
+      g.fromTo(".habille .pt", { y: -34, scale: .3, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .55,
+        ease: "back.out(2.6)", stagger: .035, clearProps: "transform,opacity" });
+    } });
+
+    /* 7 · LE PRIX : la feuille de timbres se lève du comptoir de la poste */
+    g.fromTo(".timbres", { rotateX: 58, y: 110 }, { rotateX: 0, y: 0, ease: "none",
+      scrollTrigger: { trigger: ".timbres", start: "top bottom", end: "top 58%", scrub: .7 } });
+
+    /* 8 · LES PROMESSES : chaque billet tombe de sa profondeur et se déplie */
+    g.utils.toArray(".billet").forEach(function(b, i){
+      g.fromTo(b, { rotateX: -88, z: -160 - i * 70, y: 60, transformOrigin: "50% 0%" }, { rotateX: 0, z: 0, y: 0, ease: "none",
+        scrollTrigger: { trigger: b, start: "top bottom", end: "top 58%", scrub: .6 } });
+    });
+    /* l'aveu : les mots s'allument un à un (découpés ici, une seule fois) */
+    var aveu = $(".aveu");
+    if (aveu && !aveu.querySelector(".mot")) {
+      var morceaux = aveu.textContent.split(/(\s+)/);
+      aveu.textContent = "";
+      morceaux.forEach(function(m){
+        if (!m) { return; }
+        if (/^\s+$/.test(m)) { aveu.appendChild(document.createTextNode(m)); return; }
+        var s = document.createElement("span");
+        s.className = "mot"; s.textContent = m; aveu.appendChild(s);
+      });
+    }
+    g.fromTo(".aveu .mot", { opacity: .16 }, { opacity: 1, stagger: .08, ease: "none",
+      scrollTrigger: { trigger: ".aveu", start: "top 86%", end: "top 46%", scrub: .5 } });
+
+    /* 9 · LES QUESTIONS : les fiches montent du tiroir, une à une */
+    ST.batch(".faq .q", { start: "top 94%", once: true, onEnter: function(lot){
+      g.fromTo(lot, { rotateX: -55, y: 46, z: -70, opacity: 0, transformOrigin: "50% 100%" },
+        { rotateX: 0, y: 0, z: 0, opacity: 1, duration: .9, ease: "power3.out", stagger: .07, clearProps: "transform,opacity" });
+    } });
+
+    /* 10 · LA FIN : la page blanche se lève du bureau */
+    g.fromTo(".page-b", { rotateX: 64, y: 50, z: -160, transformOrigin: "50% 100%" }, { rotateX: 0, y: 0, z: 0, ease: "none",
+      scrollTrigger: { trigger: ".page-b", start: "top bottom", end: "top 50%", scrub: .7 } });
+  });
+  gsapPret = true;
+  ST.refresh();
+}
 
 /* ══ Le curseur plume, sur ordinateur ══ */
 if (!doux && matchMedia("(hover:hover) and (pointer:fine)").matches) {

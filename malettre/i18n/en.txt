@@ -773,8 +773,8 @@ FR: <p class="sur" data-rv>À toi</p>
 EN: <p class="sur" data-rv>Your turn</p>
 FR: <h2 class="h2" data-rv>Il ne manque<br><em>qu'un prénom.</em></h2>
 EN: <h2 class="h2" data-rv>All it needs<br><em>is a name.</em></h2>
-FR: <div class="a">Ma lettre à<span class="curs"></span></div>
-EN: <div class="a">My letter to<span class="curs"></span></div>
+FR: <div class="a">Ma lettre à<b class="pb-nom" id="pb-nom"></b><span class="curs"></span></div>
+EN: <div class="a">My letter to<b class="pb-nom" id="pb-nom"></b><span class="curs"></span></div>
 # ── le pied ──
 FR: est un service de <a href="https://www.nebula-agency.online/">NEBULA Agency</a>, à Cotonou.</p>
 EN: is a service by <a href="https://www.nebula-agency.online/">NEBULA Agency</a>, in Cotonou.</p>
@@ -806,3 +806,19 @@ FR: d.gratter = "Tu peux cacher une phrase ici.";
 EN: d.gratter = "You can hide a line here.";
 FR: fetch("lettre.html")
 EN: fetch("../lettre.html")
+# ── la nuit des lettres (2026-10-21) ──
+FR: aria-label="La nuit des lettres"
+EN: aria-label="The night of letters"
+FR: <p class="sur">La nuit des lettres</p>
+EN: <p class="sur">The night of letters</p>
+FR: <h2 class="h2" id="nl-titre">Chacune attend<br><em>son heure.</em></h2>
+EN: <h2 class="h2" id="nl-titre">Each one waits<br><em>for its hour.</em></h2>
+FR: Un anniversaire à minuit, un pardon au lever du jour, une fête au petit matin. Chaque lettre dort sous son cachet jusqu'à l'heure que tu as choisie.
+EN: A birthday at midnight, an apology at sunrise, a celebration at dawn. Each letter sleeps under its seal until the time you chose.
+FR: <span class="nl-a">Ma lettre à</span>
+EN: <span class="nl-a">My letter to</span>
+FR: id="nl-nom">toi<
+EN: id="nl-nom">you<
+# ── la racine du site, vue de en/ (GSAP, fonds, musique) ──
+FR: var RACINE = "";
+EN: var RACINE = "../";

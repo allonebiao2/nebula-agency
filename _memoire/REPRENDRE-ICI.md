@@ -7,6 +7,16 @@
 
 ---
 
+## 0 octodecies. LE 2026-10-21 (soir) · LA VITRINE DE MA LETTRE À… EN PROFONDEUR, EN LIGNE
+
+- 🟢 Publiée : GSAP (servi d'ici, après le premier écran), **la nuit des lettres**, une animation de profondeur par
+  zone, les **sept fonds** de Mongazi qui vivent en CSS, la **musique** (Alex Morgan, Pixabay ; ⛔ hors du dépôt),
+  le **logo** (le cachet aux trois points, `_logo.py`), la barre d'achat au téléphone. Contrôles : accueil **289**,
+  langues 52, caisse 379, lettre 285, faire-part 83.
+- ⏳ **Ses vraies vidéos** (prompts donnés) remplaceront les mouvements CSS des fonds.
+- 📋 **Quatre demandes en attente, à appliquer une par une** : `malettre/CONTEXT.md` § « À APPLIQUER, UNE PAR UNE ».
+- Récit : `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md`.
+
 ## 0 septendecies. LE 2026-10-21 (après-midi) · MA LETTRE À… EST EN LIGNE
 
 - 🟢 **https://malettre.nebula-agency.online** (feu vert de Mongazi) : base, 4 fonctions, webhook SasPay à son

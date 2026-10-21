@@ -27,6 +27,9 @@ ICI = pathlib.Path(__file__).resolve().parent
 DIST = ICI / "_dist"
 
 PAGES = ["index.html", "creer.html", "lettre.html", "paiement.html", "merci.html", "favicon.svg", "og.jpg",
+         # GSAP 3.13.0 (npm, licence « no charge »), servi d'ICI : aucun script d'une autre origine.
+         # L'accueil le charge APRÈS le premier écran (au premier geste ou au repos).
+         "vendor/gsap.min.js", "vendor/ScrollTrigger.min.js",
          # l'anglais (2026-10-16) : fabriqué par _build_accueil.py, qui lance _traduire.py
          "og-en.jpg", "en/index.html", "en/creer.html", "en/paiement.html", "en/merci.html",
          # ce qu'un agent lit sans rendre la page (vague 3) : fabriqué par _build_accueil.py
@@ -73,8 +76,9 @@ ROBOTS = """User-agent: *
 Allow: /
 """
 
-# ⚠️ Jamais `immutable` : aucun fichier n'est versionné par `?v=` ici, une
-# image changée resterait périmée un an. Une heure suffit.
+# ⚠️ Jamais `immutable`, SAUF `/vendor/*` : GSAP y est appelé avec `?v=3.13.0`,
+# et changer de version change l'adresse. Le reste n'est pas versionné : une
+# image changée resterait périmée un an. Une heure (un jour pour fonds et son).
 ENTETES = """/*
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
@@ -115,6 +119,15 @@ ENTETES = """/*
 
 /favicon.svg
   Cache-Control: public, max-age=3600
+
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonds/*
+  Cache-Control: public, max-age=86400
+
+/son/*
+  Cache-Control: public, max-age=86400
 
 /f/*
   X-Robots-Tag: noindex, nofollow, noarchive
@@ -163,6 +176,15 @@ def main():
         dst = DIST / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
+        total += dst.stat().st_size
+        print("  %-26s %7.1f Ko" % (rel, dst.stat().st_size / 1024))
+    # Ce qui n'existe que si on l'a fourni : les fonds d'ambiance (WebP, faits par
+    # `_fonds.py`) et la musique. La page ne les nomme que s'ils sont sur le disque.
+    for p in sorted((ICI / "fonds").glob("*.webp")) + sorted((ICI / "son").glob("*.mp3")):
+        rel = p.relative_to(ICI).as_posix()
+        dst = DIST / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(p, dst)
         total += dst.stat().st_size
         print("  %-26s %7.1f Ko" % (rel, dst.stat().st_size / 1024))
     for p in couples:
