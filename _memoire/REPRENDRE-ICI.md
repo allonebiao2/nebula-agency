@@ -1,5 +1,5 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-10-16
+## Point de reprise pour une session terminal · dernière mise à jour 2026-10-21
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
@@ -7,38 +7,25 @@
 
 ---
 
-## 0 sexdecies. LE 2026-10-17 · MA LETTRE À… (ex-LE PLI) : VAGUES 0 À 4 FAITES
+## 0 sexdecies. LE 2026-10-21 · MA LETTRE À… (ex-LE PLI) : VAGUES 0 À 4 FAITES, LA PUB EN IMAGES
 
 - **Le nom** : LE PLI devient **MA LETTRE À…** (Mongazi). Code `malettre/`. **Rien n'est en ligne.**
 - **Le plan en six vagues** (`malettre/CONTEXT.md`) : 0 les deux langues ✅ · 1 le rendu pour tous (3D,
   son, vibration) ✅ · 2 l'habillage payant et « Répondre » ✅ · 3 la vitrine (« Ouvre-la toi-même »,
   exemples habillés, faire-part sur demande à 25 000 F, FAQ, `llms.txt`) ✅ · 4 le faire-part (gabarit +
   générateur, `README.md` § « Le faire-part ») ✅ · **5 la pub ⏳ (attend les six MP3 ElevenLabs de Mongazi)**.
-- **Contrôles verts** : `_qc_accueil.py` 239 · `_qc.py` 269 · `_qc_caisse.mjs` 301 · `_qc_langues.py` 52 ·
-  `_qc_faire_part.py` 83.
-  La publication est prête (`python malettre/_dist.py`), **pas déployée** : la caisse n'est pas branchée.
-- 🔴 **Par quoi commencer** : `malettre/CONTEXT.md` § « Ce qui attend Mongazi ». Le faire-part peut se
-  vendre SANS la caisse (par WhatsApp) : il lui faut le feu vert pour publier le site, le compte qui
-  encaisse les 25 000 F, et une sauvegarde de `faire-part/_couples/`. Puis la vague 5 (la pub) dès les MP3.
-  Détail : `_memoire/conversations/2026-10-16-malettre-accueil.md`.
-- **REPRENDRE ICI, dans cet ordre** (arrêté le 2026-10-17 à la demande de Mongazi, qui teste une stratégie) :
-  1. **Le code secret de « Le Mot »** : le constructeur (`code: pal.id === "gratuit" ? "" : …`) et le serveur le
-     donnent à Le Mot, dont la description ne le promet pas. Le réserver à La Lettre et au Coffret : un droit
-     `code` dans les DEUX barèmes (`PALIERS` de `creer.html` et de `_shared/lettre.ts`), comparé par un contrôle,
-     comme `photos` et `habillage`. (Sinon La Lettre = Le Mot plus cher.)
-  2. **Le bouton « Retirer cette lettre »** dans le pied de `lettre.html` : la porte existe déjà
-     (`POST /l/<jeton>/retrait`, `malettre-lettre`), le bouton non. Avec confirmation ; repli WhatsApp
-     `22996740732`. Seulement sur une lettre servie à `/l/<jeton>` (pas sur les exemples ni l'aperçu).
-  3. **Le relais `/l/*` dans `_dist`** : un `_worker.js` (modèle `_proxy/_worker.js`) qui passe `/l/*` à
-     `https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/malettre-lettre` et sert le reste par
-     `env.ASSETS`. ⚠️ Vérifier que `_headers` s'applique encore en mode avancé, sinon reporter les en-têtes.
-  4. **Le ménage des lettres expirées** : `malettre_menage()` (`supabase/lettres.sql`) n'est appelé par rien.
-     Une tâche quotidienne GitHub Actions, comme PISTE.
-  5. `PAIEMENT.md` : les nombres de contrôles sont périmés (203 / 213 → 269 / 301, + accueil 239, faire-part 83).
-  6. Vérifier que les **critères d'arrêt au 1er décembre 2026** sont écrits (sinon les écrire).
-  7. Puis **la vague 5, les vidéos** (« demain », dit Mongazi) : les 6 MP3 ElevenLabs dans
-     `_partage/ma lettre/voix/`, les prises d'écran du vrai produit par Playwright, la composition Remotion
-     `malettre-pub` (30 s + 2 × 15 s, FR et EN), rendu à UN onglet.
+- **Contrôles verts au 2026-10-21** : `_qc.py` 276 · caisse 327 · accueil 239 · langues 52 · faire-part 83.
+  La publication est prête (`python malettre/_dist.py`, relais `/l/*` compris), **pas déployée** : la caisse
+  n'est pas branchée.
+- ✅ **Le point de reprise du 2026-10-17 est fait (2026-10-21)** : code secret réservé à La Lettre et au
+  Coffret · bouton « Retirer cette lettre » · relais `_relais.js` → `_dist/_worker.js` · ménage nocturne
+  (GitHub Actions) · `PAIEMENT.md` à jour · critères d'arrêt recopiés (conflit de calendrier à trancher).
+  ⚠️ `lettre.html` est à **68 octets** de son seuil de poids.
+- 🟡 **La pub (vague 5) : les images sont faites**, six compositions `malettre-*` dans `_studio-video/`
+  (le vrai constructeur photographié, les exemples de la vraie plume). **Il manque les six MP3** de Mongazi
+  (`_studio-video/src/malettre/VOIX.md`) : ensuite caler `minutage.ts` sur la voix et rendre à UN onglet.
+- 🔴 **Par quoi commencer** : `malettre/CONTEXT.md` § « Reprendre ici (2026-10-21) » et « Ce qui attend
+  Mongazi ». Détail : `_memoire/conversations/2026-10-21-malettre-reprise-et-pub.md`.
 - **La mémoire du PC** (2026-10-17) : 0,6 Go libre sur 7,9. Ce ne sont pas mes restes : **27 processus de
   ton Chrome (3,2 Go)** et MT5. Aucun Python, Node ni navigateur de contrôle ne traînait. Fermer des onglets
   avant de lancer les rendus vidéo.

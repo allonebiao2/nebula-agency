@@ -16,6 +16,9 @@ import {DUREE as NEBULA30_DUREE, FPS as NEBULA30_FPS, HAUTEUR as NEBULA30_H, LAR
 import {Nebula30} from './nebula30/Nebula30';
 import {DUREE as GRAIN35_DUREE, FPS as GRAIN35_FPS, HAUTEUR as GRAIN35_H, LARGEUR as GRAIN35_L} from './grain35/donnees';
 import {Grain35} from './grain35/Grain35';
+import {FPS as MALETTRE_FPS, HAUTEUR as MALETTRE_H, LARGEUR as MALETTRE_L} from './malettre/donnees';
+import {VERSIONS as MALETTRE_VERSIONS, type VersionId as MalettreVersion} from './malettre/minutage';
+import {Pub as MalettrePub} from './malettre/Pub';
 
 /** TikTok : vertical plein cadre, 1080x1920. */
 const LARGEUR = 1080;
@@ -128,6 +131,23 @@ export const Racine: React.FC = () => (
 				width={LEPLI_L}
 				height={LEPLI_H}
 			/>
+		</Folder>
+
+		{/* MA LETTRE À… · la pub : 30 s et deux coupes de 15 s, en français et en
+		    anglais. Une composition par MP3 de `src/malettre/VOIX.md`. */}
+		<Folder name="malettre-pub">
+			{(Object.keys(MALETTRE_VERSIONS) as MalettreVersion[]).map((id) => (
+				<Composition
+					key={id}
+					id={`malettre-${id}`}
+					component={MalettrePub}
+					defaultProps={{version: id}}
+					durationInFrames={Math.round(MALETTRE_VERSIONS[id].duree * MALETTRE_FPS)}
+					fps={MALETTRE_FPS}
+					width={MALETTRE_L}
+					height={MALETTRE_H}
+				/>
+			))}
 		</Folder>
 	</>
 );

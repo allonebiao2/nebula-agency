@@ -27,6 +27,7 @@ Et la démonstration d'un produit de la maison :
 |---|---|---|
 | `lepli-demo` | **LE PLI · la lettre digitale**, six plans | 30 s |
 | `lepli-plans/` | Les six plans, chacun réglable seul | |
+| `malettre-pub/` | **MA LETTRE À… · la pub** : `fr-30`, `en-30`, et les deux coupes de 15 s des statuts (`fr-15-lettre`, `fr-15-plume`, `en-15-letter`, `en-15-quill`) | 30 s / 15 s |
 
 Le rythme est celui du document : la question tient **1,5 s**, la réponse
 **1 s**, la carte finale **3 s**, et la coupe est **sèche** (aucune transition,
@@ -109,6 +110,7 @@ npm run rendu:prix      # une seule
 npm run rendu:dimanche  # le plan du dimanche, par morceaux (~1 h 30, garde-éveil)
 npm run rendu:nebula30  # la vidéo de marque NEBULA, par morceaux, puis le mastering du son
 npm run rendu:grain35   # la pub Grain d'Esthétique, par morceaux, mastering, vérification
+npm run rendu:malettre  # MA LETTRE À… : les six versions, UN onglet (⛔ pas avant la voix et le site)
 npm run verifier        # contrôle TypeScript, sans rien rendre
 ```
 
@@ -408,3 +410,54 @@ c'est la preuve de licence), `institut.jpg` (sa seule photo), `vitrine/` (captur
   imprimé sur la fiche Hyaluropen. Masqué dans `grain35_captures.py`.
 - Les mots de l'accroche **tirés au hasard** se chevauchaient et sortaient de l'écran :
   ils ont des places composées.
+
+## MA LETTRE À… · la publicité (`malettre-pub/`, 2026-10-21)
+
+Six versions, une par MP3 de `src/malettre/VOIX.md` : 30 s en français et en
+anglais, et deux coupes de 15 s par langue pour les statuts WhatsApp (A vend le
+cachet, B lève le frein de la page blanche). **Les images sont faites ; la voix ne
+l'est pas** : le minutage de `src/malettre/minutage.ts` est provisoire, écrit
+d'après le tableau de `VOIX.md`.
+
+La phrase, celle du produit : une lettre digitale, c'est une **enveloppe cachetée
+qu'on ouvre à l'heure dite**. Sept plans, sept gestes de cet objet :
+
+| Plan | Signature |
+|---|---|
+| L'accroche | le prénom qui se remplit (« Ma lettre à… papa. À Afi. À maman. »), chaque enveloppe avec l'habillage réel de son exemple |
+| Scellée | la cire qu'on presse, qui s'écrase un peu puis respire |
+| La plume | le **vrai constructeur photographié** : la fiche d'Afi, ses puces cochées une à une, puis la lettre que la plume a écrite |
+| L'attente | le lien nu dans une bulle, puis l'enveloppe et le compte à rebours du produit |
+| L'ouverture | la cire s'allume, le cachet casse en trois éclats, la feuille se déplie, l'encre sèche |
+| Les occasions | quatre cachets pressés, quatre noms exacts du constructeur |
+| La marque | le cachet se reforme (le favicon), « Gratuite pour commencer » ou « La plume : 500 F de plus », l'adresse |
+| La page blanche (coupe B) | une feuille vide où le curseur clignote |
+
+### La chaîne, dans l'ordre
+
+1. `python _outils/malettre_captures.py` : photographie `malettre/creer.html` et
+   `en/creer.html` (390 px, ×3) dans `public/malettre/<langue>/`, et écrit
+   `src/malettre/captures.ts` (taille de la fiche, centre de chaque puce cochée :
+   c'est là que le doigt tombe). À relancer si le constructeur change.
+2. ⏳ **Quand les six MP3 sont posés** dans `_partage/ma lettre/voix/` : on les
+   transcrit au mot (Whisper, comme `nebula30_son.py`), on nettoie la voix vers
+   `public/malettre/`, et on réécrit `minutage.ts` : chaque plan commence sur sa
+   phrase, ses `temps` tombent sur leur mot, `voix` passe du `null` au fichier.
+   **Aucune scène n'est à toucher** : un plan étire ses gestes sur la durée reçue.
+3. `npm run rendu:malettre`, à UN onglet, pas pendant un calcul lourd.
+
+### Ce qui n'est pas inventé
+
+Les couleurs, cires, papiers et dessins de sceau sont ceux de `malettre/lettre.html`.
+Les lettres montrées sont les **exemples écrits par la vraie plume** le 2026-10-16
+(`exemples.json`, `exemples.en.json` ; la lettre anglaise n'est pas une traduction).
+La phrase sous l'enveloppe est celle que la lettre affiche (`L.ouvre` + `libQuand()` :
+« Elle s'ouvre dimanche 14 février à minuit. »). Le lien n'a pas d'aperçu d'image,
+parce qu'une lettre n'en a pas (`lettre.html` n'en porte aucune, exprès) ; son jeton
+a le bon alphabet et n'ouvre rien.
+
+### ⛔ Avant de publier
+
+L'adresse `malettre.nebula-agency.online` doit répondre, et la caisse être branchée :
+la fin de la vidéo promet les deux. La licence Remotion : on livre le MP4.
+

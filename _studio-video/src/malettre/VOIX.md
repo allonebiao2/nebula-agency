@@ -14,6 +14,11 @@
 > celui qui reçoit : jamais « elle », pour ne pas réserver le produit à un
 > seul public.
 
+> ✅ **Les images sont prêtes (2026-10-21)** : les six versions sont dans le studio
+> (`npm run studio`, dossier `malettre-pub`), calées provisoirement sur ce tableau.
+> Il ne manque que ta voix : dès que les MP3 sont posés, je cale l'image dessus et
+> je rends. Détail : `_studio-video/README.md`, § « MA LETTRE À… · la publicité ».
+
 ## Comment enregistrer (pour Mongazi)
 
 1. Une prise par version : **colle le bloc « Texte à coller »** tel quel dans

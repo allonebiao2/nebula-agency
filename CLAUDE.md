@@ -307,13 +307,15 @@
   `FAQPage` lu dans la page, `llms.txt`, **faire-part sur demande à 25 000 F**, prix dans
   `malettre/faire-part/offre.json` et nulle part ailleurs) · 4 le faire-part ✅ (`python malettre/_faire_part.py
   FICHE`, compte à l'heure du LIEU, réponses au WhatsApp des mariés ; ⛔ fiches des couples dans
-  `faire-part/_couples/`, JAMAIS dans git, `_dist.py` refuse si une page publiée manque) · 5 la pub ⏳.
+  `faire-part/_couples/`, JAMAIS dans git, `_dist.py` refuse si une page publiée manque) · 5 la pub 🟡 (images
+  faites le 2026-10-21, six compositions `malettre-*` dans `_studio-video/`, la voix manque).
   Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
-- **Contrôles, tous verts avant toute publication** : `_qc.py` (269) · `node --experimental-strip-types
-  malettre/_qc_caisse.mjs` (301) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
+- **Contrôles, tous verts avant toute publication** : `_qc.py` (276) · `node --experimental-strip-types
+  malettre/_qc_caisse.mjs` (327) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
 - **Publier** (feu vert de Mongazi ET caisse branchée) : `python malettre/_dist.py` puis
   `wrangler pages deploy malettre/_dist --project-name malettre --branch main`. ⛔ Jamais le dossier entier.
-  ⚠️ La route `/l/<jeton>` arrive avec la caisse : `_dist` devra la porter.
+  Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes. ⚠️ `lettre.html` est
+  à 68 octets de son seuil de poids (61 440).
 - ⛔ **Pièges qui ont déjà mordu** : `</script>` et U+2028 écrits par un acheteur tuent la page (tout passe
   par `_injecter.py`, et les échappements se fabriquent par programme : 6 fois arrivés en clair) · on ne
   stocke JAMAIS le HTML du navigateur, on rebâtit depuis le gabarit · le prix ne vient jamais du navigateur

@@ -1,0 +1,6 @@
+/**
+ * Écrit par `_outils/malettre_captures.py` : NE PAS ÉDITER À LA MAIN.
+ * Les mesures du vrai constructeur (px CSS, téléphone de 390 px) : la hauteur de
+ * l'en-tête, la taille de la fiche de la plume, le centre de chaque puce cochée.
+ */
+export const CAPTURES = {"fr": {"entete": 57, "fiche": {"l": 350, "h": 1668.5}, "puces": [{"x": 68.1, "y": 129.0, "texte": "Mon amour"}, {"x": 53.1, "y": 270.8, "texte": "Tendre"}, {"x": 211.8, "y": 270.8, "texte": "Poétique"}, {"x": 66.7, "y": 464.6, "texte": "Son sourire"}, {"x": 266.9, "y": 464.6, "texte": "Sa voix"}, {"x": 66.4, "y": 814.4, "texte": "Sa douceur"}, {"x": 182.0, "y": 762.4, "texte": "Sa patience"}], "souvenir": {"x": 175.0, "y": 1335.6}, "doigt": {"moi": {"x": 195.0, "y": 504.3}, "plume": {"x": 195.0, "y": 421.2}}}, "en": {"entete": 57, "fiche": {"l": 350, "h": 1720.5}, "puces": [{"x": 56.5, "y": 129.0, "texte": "My love"}, {"x": 53.1, "y": 322.8, "texte": "Tender"}, {"x": 207.3, "y": 322.8, "texte": "Poetic"}, {"x": 65.2, "y": 516.6, "texte": "Their smile"}, {"x": 269.4, "y": 516.6, "texte": "Their voice"}, {"x": 81.6, "y": 866.4, "texte": "Their gentleness"}, {"x": 196.8, "y": 814.4, "texte": "Their patience"}], "souvenir": {"x": 175.0, "y": 1387.6}, "doigt": {"moi": {"x": 195.0, "y": 504.3}, "plume": {"x": 195.0, "y": 421.2}}}} as const;
