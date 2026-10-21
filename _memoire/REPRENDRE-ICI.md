@@ -7,9 +7,18 @@
 
 ---
 
+## 0 septendecies. LE 2026-10-21 (après-midi) · MA LETTRE À… EST EN LIGNE
+
+- 🟢 **https://malettre.nebula-agency.online** (feu vert de Mongazi) : base, 4 fonctions, webhook SasPay à son
+  propre secret, plume, site et domaine. Essayé en ligne puis effacé. Caisse **379**.
+- ⛔ Piège trouvé : Supabase sert tout HTML en `text/plain` + `sandbox` ; le relais rend leur type aux pages de
+  notre fonction (autorisé par Mongazi). 
+- ⏳ **Le premier franc réel** (500 F : offre gratuite + plume). Détail :
+  `_memoire/conversations/2026-10-21-malettre-mise-en-ligne.md` et `malettre/PAIEMENT.md` § 4.
+
 ## 0 sexdecies. LE 2026-10-21 · MA LETTRE À… (ex-LE PLI) : VAGUES 0 À 4 FAITES, LA PUB EN IMAGES
 
-- **Le nom** : LE PLI devient **MA LETTRE À…** (Mongazi). Code `malettre/`. **Rien n'est en ligne.**
+- **Le nom** : LE PLI devient **MA LETTRE À…** (Mongazi). Code `malettre/`. *(En ligne depuis l'après-midi, voir ci-dessus.)*
 - **Le plan en six vagues** (`malettre/CONTEXT.md`) : 0 les deux langues ✅ · 1 le rendu pour tous (3D,
   son, vibration) ✅ · 2 l'habillage payant et « Répondre » ✅ · 3 la vitrine (« Ouvre-la toi-même »,
   exemples habillés, faire-part sur demande à 25 000 F, FAQ, `llms.txt`) ✅ · 4 le faire-part (gabarit +

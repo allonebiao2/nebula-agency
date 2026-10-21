@@ -33,7 +33,12 @@ const ok = (c: unknown, code = 200) =>
 Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') return ok({ ok: false, erreur: 'méthode' }, 405)
 
-  const r = reglages()
+  /* ⛔ CE WEBHOOK A SON PROPRE SECRET (2026-10-21). SasPay signe chaque point
+     de réception avec le sien, or `SASPAY_SECRET_WEBHOOK` est celui de PISTE et
+     les secrets Supabase valent pour tout le projet. Pas de repli sur celui de
+     PISTE : il ne signerait rien d'ici, et un secret absent doit refuser, pas
+     deviner. `_shared/saspay.ts` reste la copie exacte de celui de PISTE. */
+  const r = { ...reglages(), secretSig: Deno.env.get('MALETTRE_SECRET_WEBHOOK') ?? '' }
 
   /* ⛔ LE CORPS BRUT, JAMAIS REPARSÉ. `JSON.parse` puis `JSON.stringify`
      réordonne les clés : la signature ne correspondrait plus jamais, et on

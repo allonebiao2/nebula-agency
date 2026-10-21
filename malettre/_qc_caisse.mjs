@@ -343,6 +343,11 @@ dit(/verifierSignature/.test(recu) && /horodatageFrais/.test(recu),
     'la notification est signée ET fraîche, deux contrôles')
 dit(/await req.text\(\)/.test(recu) && !/JSON.stringify\(await req/.test(recu),
     'le corps brut n’est jamais reparsé avant la signature')
+/* ⛔ Le webhook de MA LETTRE a son propre secret chez SasPay (2026-10-21) :
+   vérifier avec celui de PISTE refuserait toutes les notifications. */
+dit(/secretSig: Deno\.env\.get\('MALETTRE_SECRET_WEBHOOK'\) \?\? ''/.test(recu)
+    && !/get\('SASPAY_SECRET_WEBHOOK'\)/.test(recu),
+    'la notification se vérifie avec le secret de SON webhook, sans repli sur celui de PISTE')
 dit(/malettre_retirer/.test(serv), 'le retrait est une porte, pas une intention')
 dit(/verdict\(/.test(serv), 'servir une lettre passe par la décision commune')
 
@@ -725,9 +730,19 @@ const srcRelais = lire('_relais.js')
 const R = (await import('data:text/javascript;base64,' + Buffer.from(srcRelais).toString('base64'))).default
 const vusR = []
 const vraiFetch = globalThis.fetch
+/* ⚠️ LA FAUSSE FONCTION RÉPOND COMME LA VRAIE (mesuré le 2026-10-21) : Supabase réécrit tout HTML en
+   `text/plain`, ajoute `default-src 'none'; sandbox` et un cookie de son domaine. L'ancienne fausse
+   fonction répondait en `text/html` : le relais passait ici et la vraie lettre s'affichait en code source. */
 globalThis.fetch = async (u, init) => {
   vusR.push({ u: String(u), m: init?.method, corps: init?.body ? Buffer.from(init.body).toString() : '' })
-  return new Response('<p>la lettre</p>', { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } })
+  const etat = String(u).endsWith('/etat')
+  return new Response(etat ? '{"etat":"vivante"}' : '<p>la lettre</p>', { status: 200, headers: {
+    'Content-Type': etat ? 'application/json' : 'text/plain',
+    'Content-Security-Policy': "default-src 'none'; sandbox",
+    'Set-Cookie': '__cf_bm=x; Domain=supabase.co; Path=/; Secure; HttpOnly',
+    'Cache-Control': 'private, no-store, max-age=0', 'X-Robots-Tag': 'noindex, nofollow, noarchive, nosnippet',
+    'X-Deno-Execution-Id': 'x', 'Sb-Project-Ref': 'x',
+  } })
 }
 const SITE = { fetch: async (req) => new Response('le site ' + new URL(req.url).pathname, { status: 200 }) }
 const J22 = 'b'.repeat(22)
@@ -738,10 +753,19 @@ dit(r1.headers.get('X-Robots-Tag')?.includes('noindex') && r1.headers.get('Refer
     'une lettre repart en noindex et no-referrer')
 dit(r1.headers.get('X-Frame-Options') === 'SAMEORIGIN' && r1.headers.get('X-Content-Type-Options') === 'nosniff',
     'les en-têtes de sécurité sont posés par le relais lui-même')
-await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22 + '/retrait', { method: 'POST', body: 'x' }), { ASSETS: SITE })
+dit(r1.headers.get('Content-Type') === 'text/html; charset=utf-8',
+    '⛔ la lettre repart en HTML, pas dans le `text/plain` de Supabase', r1.headers.get('Content-Type'))
+dit(!r1.headers.has('Content-Security-Policy') && !r1.headers.has('Set-Cookie')
+    && !r1.headers.has('X-Deno-Execution-Id') && !r1.headers.has('Sb-Project-Ref'),
+    '⛔ ni le `sandbox` de Supabase (il bloquerait les scripts), ni son cookie, ni ses en-têtes internes')
+dit(r1.headers.get('Cache-Control')?.includes('no-store'), 'la lettre ne se met jamais en cache')
+const r2 = await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22 + '/retrait', { method: 'POST', body: 'x' }), { ASSETS: SITE })
 dit(vusR.length === 2 && vusR[1].u.endsWith('/' + J22 + '/retrait') && vusR[1].m === 'POST', 'le POST de retrait passe, en POST')
-await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22 + '/etat'), { ASSETS: SITE })
+dit(r2.headers.get('Content-Type') === 'text/html; charset=utf-8', 'la page du retrait repart en HTML')
+const r3 = await R.fetch(new Request('https://malettre.nebula-agency.online/l/' + J22 + '/etat'), { ASSETS: SITE })
 dit(vusR.length === 3 && vusR[2].u.endsWith('/' + J22 + '/etat'), 'l’état passe (la page « merci »)')
+dit(r3.headers.get('Content-Type')?.startsWith('application/json') && (await r3.json()).etat === 'vivante',
+    'l’état reste du JSON')
 const r4 = await R.fetch(new Request('https://malettre.nebula-agency.online/creer.html'), { ASSETS: SITE })
 dit(vusR.length === 3 && (await r4.text()) === 'le site /creer.html', 'le reste du site est servi par les fichiers, sans la fonction')
 dit(r4.headers.get('Strict-Transport-Security')?.startsWith('max-age='), 'le site aussi reçoit les en-têtes de sécurité')

@@ -123,3 +123,5 @@ _partage/capturemethod*.png
 
 # MA LETTRE À… : les fiches et les pages des VRAIS couples (noms, lieux, numéros) ne vont jamais dans ce dépôt public
 malettre/faire-part/_couples/
+# Supabase CLI : état local du lien au projet (2026-10-21)
+**/supabase/.temp/

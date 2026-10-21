@@ -218,7 +218,27 @@ filigranes et de vrais couples, plus 3 clips IA d'enveloppe d'auteur inconnu.
   `text-transform`, deuxième fois le même jour) · le générateur effaçait les marqueurs
   de données (gardés désormais, la page se relit et se refabrique).
 
-## 🔴 Reprendre ici (2026-10-21)
+## 🟢 EN LIGNE DEPUIS LE 2026-10-21 · https://malettre.nebula-agency.online
+
+Feu vert de Mongazi le 2026-10-21 (« tu as le feu vert pour mettre en ligne »). Tout le détail du
+branchement est dans `PAIEMENT.md` § 4 ; le récit dans `_memoire/conversations/2026-10-21-malettre-mise-en-ligne.md`.
+
+- **Base** (schéma `malettre`, 4 tables, RLS) · **4 fonctions** (commande et plume vérifiées par la clé
+  publique, paiement-reçu et lettre sans vérification du jeton) · **webhook SasPay avec SON secret**
+  (`MALETTRE_SECRET_WEBHOOK`) · **la plume** (clé Anthropic du Bureau) · **site** Pages `malettre` + domaine.
+- ⛔ **Piège trouvé à la mise en ligne** : Supabase sert tout HTML en `text/plain` avec
+  `default-src 'none'; sandbox` ; la lettre s'affichait en code source. Corrigé dans le relais (autorisé par
+  Mongazi), et la caisse imite désormais la vraie réponse de Supabase (**379** contrôles).
+- **Essayé en ligne, puis effacé** : lettre offerte créée, ouverte, retirée · commande à 5 000 F jusqu'à
+  SasPay puis annulée · webhook signé / faux / vieux · une lettre de la plume.
+- ⏳ **Le premier franc réel** (Mongazi) : le plus petit est l'offre gratuite + la plume, **500 F**. Puis
+  lire `malettre.paiement_evenement` : c'est le seul essai qui prouve le dernier maillon.
+- **Publier une modification** : `python malettre/_dist.py` puis `wrangler pages deploy malettre/_dist
+  --project-name malettre --branch main` ; une fonction : `npx -y supabase@2 functions deploy <nom>
+  --project-ref xukduhqqfzogisoimhyo --use-api` (et `python malettre/_gabarit_ts.py` avant `malettre-lettre`
+  si `lettre.html` a bougé).
+
+## Reprendre ici (2026-10-21, avant la mise en ligne)
 
 Le point de reprise du 2026-10-17 (sept étapes) est **fait**, sauf ce qui attend Mongazi :
 
@@ -330,9 +350,9 @@ les vidéos, n'est pas encore faite).
 
 ## Ce qui attend Mongazi
 
-- Le **feu vert** pour la mise en ligne, et d'abord **brancher la caisse**
-  (5 commandes, `PAIEMENT.md`) et **la plume** (`ANTHROPIC_API_KEY` +
-  `malettre-plume`).
+- ✅ ~~Le feu vert, la caisse, la plume~~ : **en ligne le 2026-10-21**. Le compte qui encaisse est celui
+  de PISTE (par défaut). ⏳ **Le premier franc réel** (500 F : l'offre gratuite + la plume), puis lire
+  le journal ; et la **commission SasPay**, toujours écrite nulle part.
 - **Acheter `malettre.app`** (ou non).
 - **Faire lire les six exemples** à deux ou trois personnes.
 - **Filmer 10 secondes de vraie matière** (une main qui ferme une enveloppe,
@@ -342,10 +362,11 @@ les vidéos, n'est pas encore faite).
   **les six MP3 ElevenLabs sont à déposer** dans `_partage/ma lettre/voix/` (textes dans
   `_studio-video/src/malettre/VOIX.md`).
 - **Trancher les critères d'arrêt** : garder la date du 1er décembre, ou « huit semaines
-  après la mise en ligne » (section ci-dessus).
+  après la mise en ligne » (section ci-dessus). La mise en ligne étant le 21 octobre, la
+  seconde lecture tombe le **16 décembre 2026**.
 - **Le faire-part sur demande peut se vendre AVANT la caisse** (il passe par WhatsApp) :
-  tout est prêt (README § « Le faire-part de mariage, sur demande »). Il lui faut **le feu
-  vert pour publier le site** (pas la caisse), **le compte** où le couple paie les 25 000 F, et
+  tout est prêt (README § « Le faire-part de mariage, sur demande »). **Le site est en ligne
+  depuis le 2026-10-21** ; il lui faut **le compte** où le couple paie les 25 000 F, et
   une **sauvegarde** de `faire-part/_couples/` hors de ce disque. ⚠️ La date de l'exemple (12 décembre 2026) sera à changer après ce jour.
 
 ---

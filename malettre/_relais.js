@@ -22,6 +22,21 @@ const SECURITE = {
   "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 };
 
+// ⛔ SUPABASE SERT TOUT HTML EN `text/plain`, AVEC `Content-Security-Policy: default-src 'none'; sandbox`
+// et un cookie de SON domaine (mesuré le 2026-10-21 sur la fonction déployée) : c'est sa défense contre les
+// pages d'hameçonnage hébergées sur `supabase.co`. Recopiée telle quelle, la lettre s'affichait en code
+// source, scripts bloqués. Le relais ne garde donc que les en-têtes choisis ci-dessous et rend leur type
+// aux pages ; il en a le droit parce que tout ce qui passe ici est bâti par NOTRE fonction sur NOTRE gabarit,
+// le texte de l'acheteur neutralisé par `_injecter` (autorisé par Mongazi le 2026-10-21).
+const GARDES = ["cache-control", "x-robots-tag", "referrer-policy", "x-content-type-options"];
+
+function venueDeLaFonction(resp, geste) {
+  const h = new Headers();
+  for (const k of GARDES) { const v = resp.headers.get(k); if (v) h.set(k, v); }
+  h.set("Content-Type", geste === "etat" ? "application/json; charset=utf-8" : "text/html; charset=utf-8");
+  return new Response(resp.body, { status: resp.status, statusText: resp.statusText, headers: h });
+}
+
 function avecEntetes(resp, lettre) {
   const h = new Headers(resp.headers);
   for (const [k, v] of Object.entries(SECURITE)) if (!h.has(k)) h.set(k, v);
@@ -44,7 +59,7 @@ export default {
     if (request.method !== "GET" && request.method !== "HEAD") init.body = await request.arrayBuffer();
     let resp;
     try {
-      resp = await fetch(cible, init);
+      resp = venueDeLaFonction(await fetch(cible, init), m[2]);
     } catch (e) {
       // ⛔ jamais l'accueil à la place d'une lettre : une page claire, en deux langues
       resp = new Response("<!DOCTYPE html><meta charset=utf-8><title>Un instant</title>" +

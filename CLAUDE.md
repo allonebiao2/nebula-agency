@@ -300,7 +300,9 @@
   et des **retouches**, banc d'essai `_banc_plume.mjs`), choisit l'heure, paie, **envoie le lien lui-même** ;
   le cachet dort jusqu'à l'heure du téléphone de qui la reçoit, puis s'allume. Le nom se finit par un
   prénom : « Ma lettre à Afi ». Code : **`malettre/`** (ex-`lepli/`, renommé le 2026-10-16, commit `5af692d`).
-- **Rien n'est en ligne.** Adresse prévue `malettre.nebula-agency.online` (une constante).
+- 🟢 **EN LIGNE DEPUIS LE 2026-10-21 : https://malettre.nebula-agency.online** (Pages `malettre`, schéma
+  Supabase `malettre`, 4 fonctions `malettre-*`, webhook SasPay à **son propre secret** `MALETTRE_SECRET_WEBHOOK`,
+  plume branchée). Essayé en ligne puis effacé. ⏳ **Le premier franc réel n'a pas eu lieu.** Détail : `PAIEMENT.md` § 4.
 - **Six vagues** (plan dans `malettre/CONTEXT.md`), **FR et EN partout** (`i18n/en.txt`, `_traduire.py`) :
   0 les deux langues ✅ · 1 la lettre en 3D, son, vibration ✅ · 2 l'habillage payant (cire, sceau, papier,
   pluie, phrase à gratter) et « Répondre sur WhatsApp » ✅ · 3 la vitrine ✅ (« Ouvre-la toi-même » : une
@@ -312,21 +314,23 @@
   faites le 2026-10-21, six compositions `malettre-*` dans `_studio-video/`, la voix manque).
   Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
 - **Contrôles, tous verts avant toute publication** : `_qc.py` (285) · `node --experimental-strip-types
-  malettre/_qc_caisse.mjs` (373) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
-- **Publier** (feu vert de Mongazi ET caisse branchée) : `python malettre/_dist.py` puis
-  `wrangler pages deploy malettre/_dist --project-name malettre --branch main`. ⛔ Jamais le dossier entier.
-  Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes. ⚠️ `lettre.html` est
-  à 68 octets de son seuil de poids (61 440).
+  malettre/_qc_caisse.mjs` (379) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
+- **Publier** : `python malettre/_dist.py` puis `wrangler pages deploy malettre/_dist --project-name malettre
+  --branch main`. ⛔ Jamais le dossier entier. Une fonction : `npx -y supabase@2 functions deploy <nom>
+  --project-ref xukduhqqfzogisoimhyo --use-api` (pas de CLI installée ; `--no-verify-jwt` pour `-paiement-recu`
+  et `-lettre`). Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes.
+  ⛔ **Supabase sert tout HTML en `text/plain` + `sandbox`** : le relais rend leur type aux pages de NOTRE
+  fonction, sinon la lettre s'affiche en code source. ⚠️ `lettre.html` est à 68 octets de son seuil (61 440).
 - ⛔ **Pièges qui ont déjà mordu** : `</script>` et U+2028 écrits par un acheteur tuent la page (tout passe
   par `_injecter.py`, et les échappements se fabriquent par programme : 6 fois arrivés en clair) · on ne
   stocke JAMAIS le HTML du navigateur, on rebâtit depuis le gabarit · le prix ne vient jamais du navigateur
   (deux barèmes comparés par un contrôle) · ⛔ NEBULA n'écrit jamais à la destinataire, on ne promet pas le
   secret, pas de deuil tant qu'il n'est pas relu · au téléphone, un élément trop large **dézoome** la page
   et `innerWidth` grandit avec lui : comparer à la largeur demandée.
-- ⏳ **Ce qui attend Mongazi** : brancher la caisse (`PAIEMENT.md`) et la plume (`ANTHROPIC_API_KEY` +
-  `malettre-plume`) · le compte qui encaisse, la commission SasPay, qui relit le deuil, un n8n ailleurs ou
-  non, le premier franc · acheter `malettre.app` ou non · faire lire les exemples · **les six MP3
-  ElevenLabs de la pub** (`_studio-video/src/malettre/VOIX.md`) · faire-part pour novembre, arrêt au 1er décembre 2026.
+- ⏳ **Ce qui attend Mongazi** : **le premier franc** (500 F : offre gratuite + plume) · la commission SasPay,
+  qui relit le deuil · acheter `malettre.app` ou non · faire lire les exemples · **les six MP3
+  ElevenLabs de la pub** (`_studio-video/src/malettre/VOIX.md`) · faire-part pour novembre · critères d'arrêt :
+  le 1er décembre, ou huit semaines après la mise en ligne (16 décembre).
 - **Tout le détail** (le récit LE PLI recopié intégralement) : `malettre/CONTEXT.md`.
 
 ### LE STANDARD — l'agent WhatsApp des clients  *(produit interne, 2026-08-28)*
@@ -513,7 +517,8 @@
 ⚠️ **UN SEUL PROJET SUPABASE PORTE TROIS PRODUITS** (vérifié 2026-09-03) : la référence
 `xukduhqqfzogisoimhyo`, région `eu-central-1`, **affichée sous le nom `boussole`** dans le
 tableau de bord. Elle contient le schéma **`piste`** (10 tables), le schéma **`naff`** du
-bureau des partenaires (16 tables) et **`public.boussole_proto_etat`**. Le nom du projet ne
+bureau des partenaires (16 tables), **`public.boussole_proto_etat`**, et depuis le 2026-10-21 le
+schéma **`malettre`** de MA LETTRE À… (4 tables, 4 fonctions `malettre-*`) : **quatre produits**. Le nom du projet ne
 dit donc pas ce qu'il contient. ⛔ **Si ce projet est mis en pause, les trois tombent
 ensemble** — et les deux autres projets du compte (`cercle`, `allonebiao2@gmail.com's
 Project`) sont déjà en pause, donc ça arrive. ⚠️ Un **jeton d'accès** Supabase est lié au

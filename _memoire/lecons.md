@@ -2975,3 +2975,13 @@ déployer depuis le téléphone ou une autre machine les aurait effacées du sit
 **Règle** : quand une partie du livrable vit hors de git, versionner son EMPREINTE (pas son contenu, pas
 son adresse) et faire refuser la construction du livrable s'il en manque une, avec un témoin dans le
 contrôle. Et la sonde de texte lit `textContent`, jamais `innerText` (deuxième fois le même jour).
+
+## 2026-10-21 · Une fausse dépendance doit répondre comme la vraie
+
+Mise en ligne de MA LETTRE À… : la caisse vérifiait le relais `/l/*` avec une fausse fonction qui répondait
+en `text/html`, c'est-à-dire ce que NOTRE code envoie. Or Supabase réécrit tout HTML en `text/plain` et
+ajoute `Content-Security-Policy: default-src 'none'; sandbox` (sa défense anti-hameçonnage) : en ligne, la
+lettre se serait affichée en code source, scripts bloqués, avec 373 contrôles verts.
+**Règle** : une imitation reproduit ce que la dépendance RENVOIE (mesuré sur la vraie, tous les en-têtes
+lus), pas ce qu'on lui envoie. Et un secret de webhook appartient à un POINT DE RÉCEPTION, pas à un compte :
+deux webhooks SasPay = deux secrets, alors que les secrets Supabase valent pour tout le projet.

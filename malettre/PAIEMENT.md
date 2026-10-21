@@ -3,9 +3,9 @@
 > Écrit le 2026-09-06, en appliquant les décisions 05, 06 et 09 de l'arrêté
 > (`_plans/2026-09-06-lepli-arrete.html`).
 >
-> **Rien de tout ça n'est encore en ligne.** Le code est écrit, contrôlé
-> (`node --experimental-strip-types malettre/_qc_caisse.mjs`, 373 contrôles au 2026-10-21),
-> et il attend les réponses de Mongazi listées en bas (section 5).
+> ✅ **En ligne depuis le 2026-10-21** (section 4). Contrôlé par
+> `node --experimental-strip-types malettre/_qc_caisse.mjs` (379 contrôles au 2026-10-21).
+> Ce qui reste à Mongazi est listé en bas (section 5).
 
 ---
 
@@ -113,6 +113,29 @@ client par défaut aussi (« Client PISTE » sur un reçu MA LETTRE À…).
 
 ## 4. Brancher, le jour venu
 
+> ✅ **BRANCHÉ ET EN LIGNE LE 2026-10-21** (feu vert de Mongazi) : https://malettre.nebula-agency.online
+>
+> - Base : `lettres.sql` exécuté par `DATABASE_URL` (le pooler, `prepare_threshold=None`) : 4 tables, RLS, 10 fonctions `service_role`.
+> - Secrets Supabase : `MALETTRE_SITE`, `ANTHROPIC_API_KEY` (la même que le Bureau), **`MALETTRE_SECRET_WEBHOOK`**.
+> - ⛔ **Le webhook de MA LETTRE a SON secret** (SasPay signe chaque point de réception avec le sien) :
+>   `malettre-paiement-recu` lit `MALETTRE_SECRET_WEBHOOK`, sans repli sur celui de PISTE. Copie locale
+>   dans `secrets/saspay.env`. Webhook `16e377dd…`, LIVE, `transaction.success/failed/cancelled/created`.
+> - Fonctions, sans CLI installée : `npx -y supabase@2 functions deploy <nom> --project-ref xukduhqqfzogisoimhyo --use-api`
+>   (+ `--no-verify-jwt` pour `malettre-paiement-recu` et `malettre-lettre`), avec `SUPABASE_ACCESS_TOKEN` de
+>   `secrets/supabase.env`. ✅ **La clé `sb_publishable_…` passe la vérification du jeton** : `malettre-commande`
+>   et `malettre-plume` restent vérifiées. ⚠️ Poser des secrets fait monter la version de TOUTES les fonctions du
+>   projet (PISTE compris) sans toucher leur code : ce n'est pas un redéploiement.
+> - Site : projet Pages `malettre`, domaine déclaré par l'API + CNAME `malettre` → `malettre.pages.dev` (jeton de zone).
+> - ⛔ **SUPABASE SERT TOUT HTML EN `text/plain` AVEC `default-src 'none'; sandbox`** (sa défense contre
+>   l'hameçonnage sur `supabase.co`) : la lettre s'affichait en code source. Le relais ne garde que les en-têtes
+>   choisis et rend leur type aux pages de NOTRE fonction (autorisé par Mongazi). La caisse imite désormais la
+>   vraie réponse de Supabase : sa fausse fonction répondait en `text/html` et ne pouvait rien voir.
+> - Essayé en ligne : lettre offerte créée, ouverte (photographiée au téléphone), retirée (410) · commande à
+>   5 000 F jusqu'à la session SasPay (5 000 XOF, retour sur `merci.html`, référence = jeton), puis annulée ·
+>   webhook signé 200 et journalisé, signature fausse 401, horodatage vieux 401 · une lettre de la plume.
+>   Les lignes d'essai sont effacées. ⏳ **Reste le premier franc réel** (le plus petit : l'offre gratuite +
+>   la plume, 500 F).
+
 ```bash
 # 0. la base, une seule fois, dans l'éditeur SQL de Supabase
 #    → le contenu de malettre/supabase/lettres.sql
@@ -138,7 +161,7 @@ supabase functions deploy malettre-plume
 
 # 5. les contrôles, avant tout (nombres du 2026-10-21)
 python malettre/_qc.py                                   # 285
-node --experimental-strip-types malettre/_qc_caisse.mjs  # 373
+node --experimental-strip-types malettre/_qc_caisse.mjs  # 379
 python malettre/_qc_accueil.py                           # 239
 python malettre/_qc_langues.py                           # 52
 python malettre/_qc_faire_part.py                        # 83
@@ -181,7 +204,7 @@ deux adresses sans en nommer aucune.
 
 | Ce qu'il faut | Pourquoi ça bloque |
 |---|---|
-| **Le compte qui encaisse** | Celui de PISTE, ou un second. Un seul suffit tant que les libellés distinguent les deux produits. |
+| **Le compte qui encaisse** | ✅ Celui de PISTE (2026-10-21, par défaut au feu vert) : les libellés distinguent les deux produits (« Ma lettre à… · … »). |
 | **Le domaine** | `malettre.nebula-agency.online` est prévu (une constante) ; acheter `malettre.app` ou non. |
 | **La commission SasPay** | Sur un ticket à 2 000 F, le taux décide de la marge. Écrit nulle part. |
 | **Le premier franc** | Comme pour PISTE : le seul essai qui prouve le dernier maillon, celui qui relie une notification à une commande. |
