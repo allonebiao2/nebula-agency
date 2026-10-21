@@ -5,7 +5,7 @@
 >
 > **Rien de tout ça n'est encore en ligne.** Le code est écrit, contrôlé
 > (`node --experimental-strip-types malettre/_qc_caisse.mjs`, 373 contrôles au 2026-10-21),
-> et il attend six réponses de Mongazi, listées en bas.
+> et il attend les réponses de Mongazi listées en bas (section 5).
 
 ---
 
@@ -182,15 +182,13 @@ deux adresses sans en nommer aucune.
 | Ce qu'il faut | Pourquoi ça bloque |
 |---|---|
 | **Le compte qui encaisse** | Celui de PISTE, ou un second. Un seul suffit tant que les libellés distinguent les deux produits. |
-| **Le sous-domaine** | L'adresse est la première chose qu'on voit du produit. |
+| **Le domaine** | `malettre.nebula-agency.online` est prévu (une constante) ; acheter `malettre.app` ou non. |
 | **La commission SasPay** | Sur un ticket à 2 000 F, le taux décide de la marge. Écrit nulle part. |
 | **Le premier franc** | Comme pour PISTE : le seul essai qui prouve le dernier maillon, celui qui relie une notification à une commande. |
 
-Et deux choses qui ne dépendent de personne, mais qui ne sont pas faites :
+Les deux choses qui ne dépendaient de personne sont faites (2026-10-21) :
 
-- ⏳ **Le ménage des lettres expirées.** `malettre_menage()` existe et vide les
-  photos d'une lettre expirée ; rien ne l'appelle encore. Une tâche planifiée
-  quotidienne suffit (GitHub Actions le fait déjà gratuitement pour PISTE).
-- ⏳ **Le lien « retirer cette lettre »** n'est pas dans le pied de la lettre :
-  la porte existe, le bouton non. Pour l'instant le retrait passe par WhatsApp,
-  ce que `CONDITIONS.md` décrit déjà.
+- ✅ **Le ménage des lettres expirées** : `_menage.py` appelle `malettre_menage()`
+  chaque nuit (`.github/workflows/malettre-menage.yml`, 03 h 30 UTC).
+- ✅ **« Retirer cette lettre »** est dans le pied de la lettre (deux temps,
+  `POST …/retrait`, repli WhatsApp).
