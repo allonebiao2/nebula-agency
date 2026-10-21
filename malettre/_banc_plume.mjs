@@ -28,6 +28,8 @@ import url from 'node:url'
 const ICI = path.dirname(url.fileURLToPath(import.meta.url))
 const P = await import(url.pathToFileURL(path.join(ICI, 'supabase/functions/_shared/plume.ts')).href)
 const OUI = process.argv.includes('--oui')
+/* `--seul <mot>` : seulement les fiches dont le nom contient ce mot (et pas de retouche) */
+const SEUL = process.argv.includes('--seul') ? process.argv[process.argv.indexOf('--seul') + 1] ?? '' : ''
 
 function cle() {
   if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY
@@ -81,6 +83,15 @@ const FICHES = [
   { nom: 'Encouragement avant le concours', f: { occasion: 'courage', pour: 'Fidèle', de: 'Grand frère',
     reponses: [R('Qui est-ce pour toi ?', 'Mon frère'), R('Quelle épreuve', 'Un concours'), LONG_COURTE, JOURS],
     souvenir: '', consignes: 'Le concours de l’ENAM, lundi.' }, attendu: {} },
+  /* La soirée entre potes (2026-10-21) : une invitation. Le lieu et l'heure ne viennent QUE de la fiche. */
+  { nom: 'Soirée entre potes, lieu et heure donnés', f: { occasion: 'potes', pour: 'La bande', de: 'Kevin',
+    reponses: [R('Qui est-ce pour toi ?', 'Mon groupe d\'amis'), R('Tu organises', 'Un chill à la maison'), R('Le ton', 'Drôle', 'Mystérieux'),
+      R('Chacun apporte', 'À boire', 'De la musique'), LONG_COURTE, R('Le français', 'Avec nos expressions d\'ici')],
+    souvenir: 'La dernière fois, Junior a cassé la chaise en dansant le zouglou.', consignes: 'Samedi 25, 20 h, chez moi à Fidjrossè, derrière la station Oryx.' }, attendu: {} },
+  { nom: 'Soirée entre potes, sans lieu ni heure', f: { occasion: 'potes', pour: 'Sandra', de: 'Ruth',
+    reponses: [R('Qui est-ce pour toi ?', 'Ma meilleure amie'), R('Tu organises', 'Une soirée dansante'), R('Le ton', 'Chaleureux'),
+      R('Chacun apporte', 'Sa bonne humeur'), LONG_COURTE, JOURS],
+    souvenir: '', consignes: '' }, attendu: { sansLieu: true } },
   { nom: 'EN · Mum’s birthday', f: { langue: 'en', occasion: 'anniv', pour: 'Mum', de: 'Ama',
     reponses: [R('Who is this person to you?', 'My mother'), R('The tone', 'Tender'), R('The length', 'Medium')],
     souvenir: 'She sold fabric at the market and still came to every school play, still wearing her market apron.', consignes: '' }, attendu: {} },
@@ -106,6 +117,9 @@ function controles(cas, fiche, r) {
   const fois = (corps.match(new RegExp(`\\b${prenom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g')) ?? []).length
   k.push([fois <= 1, `prénom dans le corps : ${fois} fois (1 au plus)`])
   k.push([!/^(Ch[eè]re?|Dear)\b/.test(corps), 'pas de « Cher » en tête'])
+  /* une invitation sans lieu ni heure dans la fiche : la lettre n'en invente aucun */
+  if (cas.attendu.sansLieu) k.push([!/\b\d{1,2}\s?h(\d{2})?\b|\b\d{1,2}:\d{2}\b|\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b/i.test(corps + ' ' + r.titre),
+    'aucun jour ni aucune heure inventés'])
   const mt = MOTS(r.titre)
   k.push([mt >= 2 && mt <= 7, `titre de ${mt} mots (2 à 7) : « ${r.titre} »`])
   k.push([/[,!.…]$/.test(r.formule), `formule : « ${r.formule} »`])
@@ -170,7 +184,8 @@ async function main() {
   const k = cle()
   if (!k) { console.log('⛔ Pas de clé ANTHROPIC_API_KEY (environnement ou secrets/*.env).'); process.exit(1) }
   const sortie = []
-  for (const cas of [...FICHES, null]) {
+  const choisies = SEUL ? FICHES.filter((c) => c.nom.includes(SEUL)) : [...FICHES, null]
+  for (const cas of choisies) {
     let fiche, nom
     if (cas) { const lu = P.lireFiche({ ...cas.f, brouillon: 'banc' + Date.now().toString(36) }); fiche = lu.fiche; nom = cas.nom }
     else {

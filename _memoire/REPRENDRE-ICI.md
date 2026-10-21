@@ -7,6 +7,15 @@
 
 ---
 
+## 0 novodecies. LA NUIT DU 2026-10-21 · LES QUATRE DEMANDES DE MA LETTRE À…, ET LE VERDICT DE LA 0036
+
+- **Trading** : la 0036 (les quarts) **ne tient pas** (D-100 calculé, dépôt privé `034f97b`). Enterrement : à la décision
+  de Mongazi. ORB et LE PIÈGE n'ont pas tradé le 21 (internet coupé vers 14 h 30, pas un bug).
+- **MA LETTRE À…** : les quatre demandes faites (police et chasse à l'IA · bruitages et casier · verre · soirée entre
+  potes), la plume republiée ; **les timbres fantômes** trouvés en ligne et corrigés. ⏳ Mongazi : confirmer le nom
+  « Soirée entre potes », écouter les bruitages au téléphone, et toujours **le premier franc**.
+- Récit : `_memoire/conversations/2026-10-21-malettre-quatre-demandes.md`.
+
 ## 0 octodecies. LE 2026-10-21 (soir) · LA VITRINE DE MA LETTRE À… EN PROFONDEUR, EN LIGNE
 
 - 🟢 Publiée : GSAP (servi d'ici, après le premier écran), **la nuit des lettres**, une animation de profondeur par
@@ -14,7 +23,7 @@
   le **logo** (le cachet aux trois points, `_logo.py`), la barre d'achat au téléphone. Contrôles : accueil **289**,
   langues 52, caisse 379, lettre 285, faire-part 83.
 - ⏳ **Ses vraies vidéos** (prompts donnés) remplaceront les mouvements CSS des fonds.
-- 📋 **Quatre demandes en attente, à appliquer une par une** : `malettre/CONTEXT.md` § « À APPLIQUER, UNE PAR UNE ».
+- ✅ Les quatre demandes sont faites (voir l'entrée de la nuit, plus haut).
 - Récit : `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md`.
 
 ## 0 septendecies. LE 2026-10-21 (après-midi) · MA LETTRE À… EST EN LIGNE

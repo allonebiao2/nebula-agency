@@ -260,46 +260,41 @@ branchement est dans `PAIEMENT.md` § 4 ; le récit dans `_memoire/conversations
 - Contrôles : accueil (nouveaux : GSAP d'ici et hors du premier écran, nuit, volets, barre d'achat, fonds),
   la sonde de contraste lit l'opacité VUE et laisse l'inertie finir.
 
-## 📋 À APPLIQUER, UNE PAR UNE (demandes de Mongazi, 2026-10-21)
+## ✅ LES QUATRE DEMANDES DE MONGAZI, FAITES (2026-10-21, la nuit)
 
-*« Ajoute chacune de ces demandes en mémoire, on y reviendra et on les appliquera une à une. »*
-**Rien n'est commencé.** L'ordre de la liste est celui de sa demande, pas une priorité.
+*« oui commence et enchaîne un à un, invoque tous les skills qui te seront utiles pour tous les réaliser à 100 % »*.
+Récit complet : `_memoire/conversations/2026-10-21-malettre-quatre-demandes.md`. Skills : `impeccable` (sa fiche
+`malettre/PRODUCT.md`), `redesign-existing-projects`, `design-taste-frontend`, `high-end-visual-design`, `ui-ux-pro-max`.
 
-1. **La police du texte courant, et tout ce qui « fait IA ».**
-   - Ses mots : les textes en petits caractères (ceux qui expliquent, celui de « Comment ça marche ») font
-     « trop simpliste ». Changer cette police pour une plus professionnelle, **plus rare**, adaptée à l'idée
-     de la lettre.
-   - Puis **analyser en profondeur** la vitrine et repérer tout ce qui saute aux yeux et pourrait donner
-     l'impression d'un site généré par une IA ; invoquer et utiliser tous les skills utiles (`impeccable`
-     audit et critique, `design-taste-frontend`, `high-end-visual-design`, `redesign-existing-projects`…)
-     pour qu'on ne sente « pas une once d'IA », **et vérifier que l'objectif est atteint**.
-   - ⛔ **Sans toucher aux animations.**
-   - Aujourd'hui : texte courant en Schibsted Grotesk (`--sans`), titres Libre Caslon Display, italique
-     Libre Caslon Text, script Pinyon. ⚠️ À tenir : jamais deux polices du même genre ; **vérifier la licence**
-     d'une police rare (une police hors Google Fonts s'héberge ici, avec son fichier de licence) ; le premier
-     écran reste **sous 320 Ko** (contrôlé).
-2. **Des bruitages, et la zone de choix de l'occasion plus claire.**
-   - Un « clic » quand on touche certaines zones ou qu'on survole les options, et dans la **zone de
-     sélection de l'événement** (le casier des occasions de l'accueil ; le choix de l'occasion de
-     `creer.html` est à confirmer avec lui).
-   - Cette zone doit être **plus claire, plus explicite**, avec des **animations au toucher** et le bruitage.
-   - ⚠️ Son **synthétisé en Web Audio** (comme la lettre : aucun fichier), jamais avant un geste, discret,
-     et il obéit au bouton son de la musique ; leçon `feedback_audio-mobile` (buffer muet iOS, compresseur,
-     gain mobile).
-3. **Du glassmorphisme partout sur la vitrine**, en invoquant tous les skills nécessaires
-   (`ui-ux-pro-max` a ce style, `impeccable`, `high-end-visual-design`), objectif 100 %.
-   - ⛔ Les règles qui tiennent : **aucune animation infinie sous un `backdrop-filter`** (leçon Boussole
-     2026-07-21, la latence) ; le flou coûte cher aux téléphones d'entrée de gamme → **mesurer les images par
-     seconde** (le QC le fait sur la scène, processeur ralenti ×4) ; le contraste sur verre se mesure **sur les
-     pixels** ; la barre du haut et la barre d'achat sont des **bandes de bord qui restent opaques** (« rien de
-     fixe ne recouvre du texte ») : un verre teinté opaque, à trancher avec lui.
-4. **Une nouvelle occasion : le chill privé, la fête privée entre potes.**
-   - Nom exact à trancher (« Chill privé », « Fête entre potes »…).
-   - Où : `OCCASIONS` de `creer.html` (famille, note, ton), ses questions (`QUESTIONS`), **son savoir-faire dans
-     `supabase/functions/_shared/savoirs.ts`** (la caisse exige un savoir-faire par occasion), l'anglais
-     (`i18n/en.txt`). Le casier et la nuit des lettres suivent seuls (le build les lit). Puis redéployer
-     `malettre-plume` et le site.
-   - À discuter : c'est presque une **invitation** (lieu, heure, « je serai là »), cousine du faire-part.
+1. **La police et tout ce qui « fait IA »** : texte courant en **Commissioner, axe « flair » à 100** (la lignée
+   d'Optima, choisie sur planche contre Proza Libre, Alegreya Sans, Rosario) ; **plus aucun surtitre en capitales
+   espacées** (celui du héros devient « Cotonou, le … », la date du jour) ; la formule « ligne droite + ligne italique
+   colorée » gardée dans UNE section, et la plume dit « Elle écrit. » à la main ; petits libellés en italique Caslon ;
+   gris réchauffé ; **typographie française du texte visible par le build** (apostrophe ’, espace insécable devant
+   ; : ! ? et dans « »). ⚠️ Pas l'espace fine U+202F : ces polices ne la dessinent pas. Animations intactes.
+2. **Les bruitages et le casier** : clic de papier au survol, clic au toucher, cachet frappé et papier qui glisse au
+   casier (Web Audio, aucun fichier, jamais avant un geste, muets si le son est coupé). **Le module vit dans
+   `creer.html` (`/*__BRUITS__*/`), la vitrine le lit au build.** 28 **emblèmes** gravés dans les cachets
+   (`EMBLEMES` de `creer.html`, seule source). Le casier : une consigne explicite, des noms qui ne se coupent plus,
+   **une étagère qu'on fait glisser par famille au téléphone**, la lettre qui sort de sa case au toucher. L'étape
+   « Pour quelle occasion ? » du constructeur a les mêmes cachets, le même son, la même frappe.
+   ⛔ **Trouvé en ligne : les timbres fantômes** (décor 3D invisible qui prenait le doigt sur presque toute la page :
+   au téléphone, toucher une case ne faisait rien). Corrigé, et contrôlé sur une page NEUVE, avec témoin.
+3. **Le verre partout** : verre FUMÉ et GIVRÉ sur la nuit (aucun flou recalculé : les fonds bougent derrière, règle
+   du dépôt), verre clair sur le papier (questions, consigne, paiement), **bouton principal en verre liquide plein**,
+   bandes de bord en verre teinté **plein**, **vrai flou** derrière la fenêtre des exemples (la page dort,
+   `html.voile`). Le papier reste du papier (lettres, enveloppes, timbres, billets).
+4. **La soirée entre potes** : occasion `potes` (famille « La famille et les amis ») : **« Soirée entre potes » ·
+   « Un chill privé, sur invitation »**, titre « Tu es de la fête », formule « On t'attend, » ; questions « Tu
+   organises », « Chacun apporte », un ton à elle (dont « Mystérieux ») ; l'aide des consignes demande le lieu et
+   l'heure. **La plume ne les invente jamais** (registre + savoir-faire, essayé au banc : avec lieu et heure, elle
+   les reprend ; sans, « les détails arrivent en message »). Anglais : « Night with friends ». `malettre-plume`
+   republiée. ⏳ **Le nom est à confirmer par Mongazi** (« Chill privé » était l'autre piste).
+
+**La page livrée n'a plus ses commentaires** (`alleger()` du build) : ils pesaient 23 Ko sur 178, et le premier écran
+dépassait ses 320 Ko (321). La source les garde tous. ⚠️ **Pour comprendre un morceau de la vitrine, lire
+`_accueil_src.html`, jamais `index.html`.** Contrôles de la nuit : accueil, langues, constructeur, caisse, faire-part
+(chiffres dans le récit de la nuit).
 
 ## Reprendre ici (2026-10-21, avant la mise en ligne)
 

@@ -308,6 +308,16 @@ FR:   "lien-mere":    {q:"Qui est-ce pour toi ?", un:true, choix:["Ma mère","Ma
 EN:   "lien-mere":    {q:"Who are they to you?", un:true, choix:["My mother","My grandmother","My mother-in-law","My aunt","The mother of my children"]},
 FR:   "lien-pere":    {q:"Qui est-ce pour toi ?", un:true, choix:["Mon père","Mon grand-père","Mon beau-père","Mon oncle","Le père de mes enfants"]},
 EN:   "lien-pere":    {q:"Who are they to you?", un:true, choix:["My father","My grandfather","My father-in-law","My uncle","The father of my children"]},
+FR:   {id:"potes",    fam:"proches", nom:"Soirée entre potes", note:"Un chill privé, sur invitation", titre:"Tu es de la fête", formule:"On t'attend,",
+EN:   {id:"potes",    fam:"proches", nom:"Night with friends", note:"A private chill, invitation only", titre:"You're on the list", formule:"See you there,",
+FR:    aide:"Samedi 20 h, chez moi à Fidjrossè. Apporte ton meilleur pas de danse. (Le lieu et l'heure : la plume ne les invente jamais.)",
+EN:    aide:"Saturday 8 pm, at my place in Fidjrossè. Bring your best dance moves. (The place and the time: the Quill never makes them up.)",
+FR:   "soiree":       {q:"Tu organises", un:true, choix:["Un chill à la maison","Une soirée dansante","Un barbecue","Un anniversaire surprise","Un match à regarder ensemble","Une soirée jeux"]},
+EN:   "soiree":       {q:"You're hosting", un:true, choix:["A chill at home","A dance party","A barbecue","A surprise birthday","A match to watch together","A game night"]},
+FR:   "apporter":     {q:"Chacun apporte", max:2, choix:["Rien, juste toi","À boire","Un plat à partager","De la musique","Un jeu","Sa bonne humeur"]},
+EN:   "apporter":     {q:"Everyone brings", max:2, choix:["Nothing, just you","Something to drink","A dish to share","Some music","A game","Good vibes"]},
+FR:   "ton-potes":    {q:"Le ton", max:2, choix:["Drôle","Chaleureux","Cash","Mystérieux","Simple et direct"]},
+EN:   "ton-potes":    {q:"The tone", max:2, choix:["Funny","Warm","Blunt","Mysterious","Simple and direct"]},
 FR:   "lien-amis":    {q:"Qui est-ce pour toi ?", un:true, choix:["Ma meilleure amie","Mon meilleur ami","Mon amie","Mon ami","Mon groupe d'amis"]},
 EN:   "lien-amis":    {q:"Who are they to you?", un:true, choix:["My best friend (she)","My best friend (he)","My friend (she)","My friend (he)","My group of friends"]},
 FR:   "lien-bebe":    {q:"La lettre est pour", un:true, choix:["Les parents","La maman","Le papa","Le bébé, pour plus tard"]},
@@ -602,8 +612,10 @@ EN: <a class="langue" href="../" hreflang="fr" lang="fr" title="Lire cette page 
 FR: </span>Écrire ma lettre<
 EN: </span>Write my letter<
 # ── le héros ──
-FR: <p class="sur">Lettres digitales scellées</p>
-EN: <p class="sur">Sealed digital letters</p>
+FR: <p class="lieu-date" id="lieu-date">Cotonou, ce jour</p>
+EN: <p class="lieu-date" id="lieu-date">Cotonou, today</p>
+FR: try { ld.textContent = "Cotonou, le " + new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(new Date()); } catch (e) {}
+EN: try { ld.textContent = "Cotonou, " + new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }).format(new Date()); } catch (e) {}
 FR: aria-label="Ma lettre à… : une lettre scellée qui s'ouvre à l'heure que tu choisis"
 EN: aria-label="Ma lettre à…: a sealed letter that opens at the time you choose"
 FR: <span class="ma">Ma lettre à</span>
@@ -646,30 +658,26 @@ EN: heureMot.textContent = "the hour has come";
 FR: heureMot.textContent = "avant l'heure";
 EN: heureMot.textContent = "before the hour";
 # ── les exemples ──
-FR: <p class="sur" data-rv>Exemples · personnes inventées</p>
-EN: <p class="sur" data-rv>Examples · invented people</p>
-FR: <h2 class="h2" data-rv>Six lettres,<br><em>six vies.</em></h2>
-EN: <h2 class="h2" data-rv>Six letters,<br><em>six lives.</em></h2>
+FR: <h2 class="h2" data-rv>Six lettres, six vies.</h2>
+EN: <h2 class="h2" data-rv>Six letters, six lives.</h2>
 FR: Écrites par la plume, à partir d'une fiche. Les personnes sont inventées ; les situations, elles, sont de tous les jours.
 EN: Written by the Quill, from a short form. The people are invented; the situations are everyday ones.
 FR: Touche une enveloppe pour l'ouvrir. <b>Celle d'Afi s'ouvre le 14 février à minuit</b> : essaie, elle attendra.
 EN: Tap an envelope to open it. <b>Afi's opens on 14 February at midnight</b>: try it, it will wait.
 # ── la plume ──
-FR: <p class="sur" data-rv>La plume</p>
-EN: <p class="sur" data-rv>The Quill</p>
-FR: <h2 class="h2" data-rv>Tu coches.<br><em>Elle écrit.</em></h2>
-EN: <h2 class="h2" data-rv>You tick.<br><em>It writes.</em></h2>
+FR: <h2 class="h2" data-rv>Tu coches.<br><span class="h2-main">Elle écrit.</span></h2>
+EN: <h2 class="h2" data-rv>You tick.<br><span class="h2-main">It writes.</span></h2>
 FR: Quelques questions, un souvenir, tes consignes. La plume écrit une première version ; tu relis, tu changes ce que tu veux. Ce sont tes mots : elle te les prête.
 EN: A few questions, a memory, your instructions. The Quill writes a first version; you reread and change what you like. These are your words: it only lends them to you.
 FR: <span>de plus, seulement si tu l'envoies. Essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.</span>
 EN: <span>extra, only if you send it. Trying costs nothing, and it never makes up a memory for you.</span>
 # ── les occasions ──
-FR: <p class="sur" data-rv>Les occasions</p>
-EN: <p class="sur" data-rv>The occasions</p>
-FR: <h2 class="h2" data-rv>Un casier pour<br><em>chaque grand jour.</em></h2>
-EN: <h2 class="h2" data-rv>A pigeonhole for<br><em>every big day.</em></h2>
+FR: <h2 class="h2" data-rv>Un casier pour chaque grand jour.</h2>
+EN: <h2 class="h2" data-rv>A pigeonhole for every big day.</h2>
 FR: L'amour, la famille, les fêtes, les réussites. Et même la rupture, avec classe.
 EN: Love, family, holidays, achievements. And even a breakup, with class.
+FR: Touche une occasion : ta lettre s'ouvre avec le bon ton, un titre et une formule de fin déjà prêts. Tu peux tout changer.
+EN: Tap an occasion: your letter opens in the right tone, with a title and a closing line already in place. You can change everything.
 # ── le faire-part (vague 3, 2026-10-16) ──
 FR: <p class="fp-o">Faire-part · exemple</p>
 EN: <p class="fp-o">Invitation · example</p>
@@ -679,10 +687,8 @@ FR: <p class="fp-date">Samedi 12 décembre 2026</p>
 EN: <p class="fp-date">Saturday 12 December 2026</p>
 FR: <span>Je serai là</span><span>Je ne pourrai pas venir</span>
 EN: <span>I'll be there</span><span>I can't make it</span>
-FR: <p class="sur" data-rv>Le faire-part de mariage</p>
-EN: <p class="sur" data-rv>The wedding invitation</p>
-FR: Vous vous mariez ?<br><em>On l'écrit pour vous.</em>
-EN: Getting married?<br><em>We'll write it for you.</em>
+FR: Vous vous mariez ?<br>On l'écrit pour vous.
+EN: Getting married?<br>We'll write it for you.
 FR: Un faire-part qui s'ouvre comme une lettre : le cachet à vos initiales, le compte à rebours jusqu'au grand jour, le programme, le lieu sur la carte, la tenue, vos photos. Vos invités répondent d'un geste, directement sur votre WhatsApp.
 EN: An invitation that opens like a letter: the seal with your initials, the countdown to the big day, the schedule, the venue on the map, the dress code, your photos. Your guests reply with a tap, straight to your WhatsApp.
 FR: fait sur mesure par notre équipe, d'après ce que vous nous racontez. Kossi et Afiwa sont un couple inventé.
@@ -692,10 +698,8 @@ EN: </span>Ask for our invitation<
 FR: data-src="faire-part/exemple.html" data-titre="Exemple · Kossi &amp; Afiwa">Ouvrir l'exemple<
 EN: data-src="../faire-part/exemple-en.html" data-titre="Example · Kossi &amp; Afiwa">Open the example<
 # ── le seuil ──
-FR: <p class="sur" data-rv>Ce qu'elle vit</p>
-EN: <p class="sur" data-rv>What they experience</p>
-FR: <h2 class="h2" data-rv>Ouvre-la<br><em>toi-même.</em></h2>
-EN: <h2 class="h2" data-rv>Open it<br><em>yourself.</em></h2>
+FR: <h2 class="h2" data-rv>Ouvre-la toi-même.</h2>
+EN: <h2 class="h2" data-rv>Open it yourself.</h2>
 FR: Voici une vraie lettre. Elle s'ouvre dans dix secondes : regarde le cachet dormir, puis la cire s'allumer. Ensuite, habille-la : touche une pastille, puis le cachet.
 EN: Here is a real letter. It opens in ten seconds: watch the seal sleep, then the wax light up. Then dress it up: tap a swatch, then the seal.
 FR: <p class="hb-t">Habille-la <span>
@@ -707,17 +711,13 @@ EN: >Close it and start again<
 FR: title="Une vraie lettre qui attend son heure"
 EN: title="A real letter waiting for its hour"
 # ── le prix ──
-FR: <p class="sur" data-rv>Le prix</p>
-EN: <p class="sur" data-rv>Pricing</p>
-FR: <h2 class="h2" data-rv>Ce que<br><em>ça coûte.</em></h2>
-EN: <h2 class="h2" data-rv>What it<br><em>costs.</em></h2>
+FR: <h2 class="h2" data-rv>Ce que ça coûte.</h2>
+EN: <h2 class="h2" data-rv>What it costs.</h2>
 FR: L'ouverture est la même à chaque offre : l'enveloppe, le cachet, le son. Ce qui change : combien de temps elle reste en ligne, ses photos, son habillage, et notre signature en bas.
 EN: The opening is the same with every offer: the envelope, the seal, the sound. What changes: how long it stays online, its photos, its finish, and our signature at the bottom.
 FR: On paie par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur. Rien à recopier, aucun code à nous donner.
 EN: You pay by Mobile Money or card, on our payment provider's secure page. Nothing to copy, no code to give us.
 # ── la confiance ──
-FR: <p class="sur" data-rv>Ce qu'on promet</p>
-EN: <p class="sur" data-rv>What we promise</p>
 FR: <h2 class="h2" data-rv>Mot pour mot,<br><em>rien de plus.</em></h2>
 EN: <h2 class="h2" data-rv>Word for word,<br><em>nothing more.</em></h2>
 FR: <b>Le cachet tient jusqu'à l'heure.</b><p>Il ne se brise pas avant l'heure choisie, et c'est l'heure du téléphone de qui la reçoit : minuit à Abidjan n'est pas minuit à Cotonou.</p>
@@ -732,10 +732,8 @@ FR: Une lettre est un cadeau emballé, pas un coffre-fort. On ne te promet pas l
 EN: A letter is a wrapped gift, not a safe. We don't promise you secrecy: we promise you the hour.
 # ── les questions (vague 3, 2026-10-16). Les réponses tiennent debout seules :
 # le FAQPage du <head> est relu dans la page anglaise par le build. ──
-FR: <p class="sur" data-rv>Les questions</p>
-EN: <p class="sur" data-rv>Questions</p>
-FR: <h2 class="h2" data-rv>Ce qu'on nous<br><em>demande.</em></h2>
-EN: <h2 class="h2" data-rv>What people<br><em>ask us.</em></h2>
+FR: <h2 class="h2 h2-court" data-rv>Ce qu'on nous demande.</h2>
+EN: <h2 class="h2 h2-court" data-rv>What people ask us.</h2>
 FR: <summary>Comment la personne reçoit-elle la lettre ?</summary>
 EN: <summary>How does the person receive the letter?</summary>
 FR: Par un lien que tu lui envoies toi-même, sur WhatsApp ou ailleurs, quand tu veux : trois jours avant ou la veille. Nous n'écrivons jamais à la personne. Elle ouvre le lien sur son téléphone, sans rien installer, et trouve une enveloppe scellée qui attend son heure.
@@ -769,10 +767,8 @@ EN: Yes, on request, for <!--__FP_PRIX__-->, made to measure by our team. It ope
 FR: Une autre question ? <a id="question" href="https://wa.me/22996740732?text=Bonjour%2C%20j%27ai%20une%20question%20sur%20Ma%20lettre%20%C3%A0%E2%80%A6%20%3A%20">Écris-nous sur WhatsApp</a>.
 EN: Another question? <a id="question" href="https://wa.me/22996740732?text=Hello%2C%20I%20have%20a%20question%20about%20Ma%20lettre%20%C3%A0%E2%80%A6%3A%20">Message us on WhatsApp</a>.
 # ── la fin ──
-FR: <p class="sur" data-rv>À toi</p>
-EN: <p class="sur" data-rv>Your turn</p>
-FR: <h2 class="h2" data-rv>Il ne manque<br><em>qu'un prénom.</em></h2>
-EN: <h2 class="h2" data-rv>All it needs<br><em>is a name.</em></h2>
+FR: <h2 class="h2" data-rv>Il ne manque qu'un prénom.</h2>
+EN: <h2 class="h2" data-rv>All it needs is a name.</h2>
 FR: <div class="a">Ma lettre à<b class="pb-nom" id="pb-nom"></b><span class="curs"></span></div>
 EN: <div class="a">My letter to<b class="pb-nom" id="pb-nom"></b><span class="curs"></span></div>
 # ── le pied ──
@@ -809,10 +805,8 @@ EN: fetch("../lettre.html")
 # ── la nuit des lettres (2026-10-21) ──
 FR: aria-label="La nuit des lettres"
 EN: aria-label="The night of letters"
-FR: <p class="sur">La nuit des lettres</p>
-EN: <p class="sur">The night of letters</p>
-FR: <h2 class="h2" id="nl-titre">Chacune attend<br><em>son heure.</em></h2>
-EN: <h2 class="h2" id="nl-titre">Each one waits<br><em>for its hour.</em></h2>
+FR: <h2 class="h2" id="nl-titre">Chacune attend son heure.</h2>
+EN: <h2 class="h2" id="nl-titre">Each one waits for its hour.</h2>
 FR: Un anniversaire à minuit, un pardon au lever du jour, une fête au petit matin. Chaque lettre dort sous son cachet jusqu'à l'heure que tu as choisie.
 EN: A birthday at midnight, an apology at sunrise, a celebration at dawn. Each letter sleeps under its seal until the time you chose.
 FR: <span class="nl-a">Ma lettre à</span>

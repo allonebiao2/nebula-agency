@@ -54,7 +54,7 @@ LANGUES = {
         "offert": "Offert", "ma": "Ma lettre à", "verrou": "S'ouvre le %s<br>à minuit",
         "ouvrir": "Ouvrir l'exemple : Ma lettre à %s, de %s (%s)", "de": "de %s · %s",
         "fiche": "La fiche de %s", "souvenir": "Un souvenir que vous seuls connaissez",
-        "consignes": "Comment il la veut", "exemple": "%s · exemple", "ecrire": "Écrire",
+        "consignes": "Comment il la veut", "exemple": "%s · exemple", "ecrire": "Écrire", "fam_n": "%d occasions",
         "plume": "La plume", "musique": "Musique", "credit_son": "Musique : %s, sur Pixabay.",
         "plume_ds": "Elle écrit avec toi. Gratuite à essayer, comptée seulement si tu l'envoies.",
         "occ": "Exemple · ",
@@ -90,7 +90,7 @@ LANGUES = {
         "offert": "Free", "ma": "My letter to", "verrou": "Opens on %s<br>at midnight",
         "ouvrir": "Open the example: My letter to %s, from %s (%s)", "de": "from %s · %s",
         "fiche": "%s's form", "souvenir": "A memory only you two know",
-        "consignes": "How he wants it", "exemple": "%s · example", "ecrire": "Write",
+        "consignes": "How he wants it", "exemple": "%s · example", "ecrire": "Write", "fam_n": "%d occasions",
         "plume": "The Quill", "musique": "Music", "credit_son": "Music: %s, on Pixabay.",
         "plume_ds": "It writes with you. Free to try, counted only if you send it.",
         "occ": "Example · ",
@@ -256,16 +256,48 @@ def fiche_et_lettre(x, questions, T):
     return "".join(f), "".join(l)
 
 
-def casier(familles, occasions, T):
+def emblemes(creer):
+    """Les emblèmes des occasions, LUS dans creer.html (seule source) : {id: tracé SVG}."""
+    src = creer.read_text(encoding="utf-8")
+    em = dict(re.findall(r'^\s*([a-z]+):"([^"]+)"', bloc(src, "EMBLEMES", "{", "};"), re.M))
+    if not em:
+        sys.exit("⛔ EMBLEMES lu vide : la forme de %s a changé" % creer.name)
+    return em
+
+
+def bruits(creer):
+    """Le module de bruitages, LU dans creer.html entre ses deux marqueurs (une seule copie à tenir)."""
+    src = creer.read_text(encoding="utf-8")
+    a, z = "/*__BRUITS__*/", "/*__FIN_BRUITS__*/"
+    if a not in src or z not in src:
+        sys.exit("⛔ le module de bruitages est introuvable dans %s" % creer.name)
+    code = src[src.index(a) + len(a):src.index(z)]
+    # sans ses commentaires : ils sont pour le code, pas pour le visiteur (et 1,5 Ko de moins)
+    return re.sub(r"/\*.*?\*/", "", code, flags=re.S).strip()
+
+
+def cachet_occasion(o, em):
+    """Le cachet de cire d'une occasion : son emblème gravé, ou son initiale."""
+    if o["id"] in em:
+        # le trait (couleur, épaisseur, bouts ronds) est dans le CSS : 27 fois moins d'octets
+        return '<i class="sceau-o" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="%s"/></svg></i>' % e(em[o["id"]])
+    return '<i class="sceau-o" aria-hidden="true">%s</i>' % e(o["nom"][:1])
+
+
+def casier(familles, occasions, T, em):
+    """Une étagère par famille ; chaque case porte une lettre à son cachet. Au téléphone,
+    l'étagère se fait glisser (la page n'est plus un mur de 27 cases)."""
     out = []
     for fam in familles:
         occ = [o for o in occasions if o["fam"] == fam["id"]]
         if not occ:
             continue
-        out.append('<h3 class="fam-t" data-rv>%s</h3><div class="casier">' % e(fam["nom"]))
+        out.append('<h3 class="fam-t" data-rv>%s<span class="fam-n">%s</span></h3><div class="casier" data-fam="%s">'
+                   % (e(fam["nom"]), e(T["fam_n"] % len(occ)), e(fam["id"])))
         for o in occ:
-            out.append('<a class="case" href="creer.html?occasion=%s"><span class="ev"><b>%s</b><span>%s</span></span>'
-                       '<span class="bord">%s</span></a>' % (e(o["id"]), e(o["nom"]), e(o["note"]), e(T["ecrire"])))
+            out.append('<a class="case" href="creer.html?occasion=%s"><span class="ev"><span class="ev-in">%s<b>%s</b>'
+                       '<span class="nt">%s</span></span></span><span class="bord">%s</span></a>'
+                       % (e(o["id"]), cachet_occasion(o, em), e(o["nom"]), e(o["note"]), e(T["ecrire"])))
         out.append("</div>")
     return "".join(out)
 
@@ -416,6 +448,43 @@ def plat_html(h):
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", h))).strip()
 
 
+# ── La typographie du texte VISIBLE (2026-10-21, « pas une once d'IA ») ──
+# L'apostrophe droite et le « ? » qui peut tomber seul en début de ligne sont la
+# marque d'une page faite à la machine. On ne touche QUE le texte entre les balises :
+# jamais un script, un style, un commentaire ni un attribut (le dictionnaire anglais
+# et le JavaScript lisent la source telle qu'elle est écrite).
+# Espace INSÉCABLE devant ; : ! ? et dans les guillemets. Pas l'espace fine (U+202F) :
+# Commissioner et le Caslon ne la dessinent pas, elle tombait à presque rien (« occasion: »).
+FINE = " "
+
+
+def typo_texte(t, langue):
+    # l'apostrophe, écrite telle quelle OU échappée par html.escape (« l&#x27;habillage »)
+    t = re.sub(r"(?<=[^\W\d_])(?:'|&#x27;|&#39;)(?=[^\W\d_])", "’", t)
+    if langue == "fr":
+        t = re.sub(r"[  ]([;:!?])", FINE + r"\1", t)
+        t = re.sub(r"«[  ]", "«" + FINE, t)
+        t = re.sub(r"[  ]»", FINE + "»", t)
+    return t
+
+
+def alleger(s):
+    """La page livrée sans les commentaires (2026-10-21) : ils pesaient 23 Ko sur 178 (13 %) et le
+    premier écran dépassait ses 320 Ko. Ils restent dans la source, qui seule se lit. On retire : les
+    commentaires du CSS, ceux du HTML (hors scripts et styles), et dans les scripts les blocs /* … */
+    qui commencent une ligne (jamais un // : une adresse en contient)."""
+    s = re.sub(r"<style\b.*?</style>", lambda m: re.sub(r"/\*.*?\*/", "", m.group(0), flags=re.S), s, flags=re.S)
+    morceaux = re.split(r"(<script\b.*?</script>|<style\b.*?</style>)", s, flags=re.S)
+    s = "".join(m if i % 2 else re.sub(r"<!--(?!\[).*?-->", "", m, flags=re.S) for i, m in enumerate(morceaux))
+    return re.sub(r"<script>.*?</script>",
+                  lambda m: re.sub(r"(?m)^[ \t]*/\*.*?\*/[ \t]*\n", "", m.group(0), flags=re.S), s, flags=re.S)
+
+
+def typographie(s, langue):
+    morceaux = re.split(r"(<script\b.*?</script>|<style\b.*?</style>|<!--.*?-->|<[^>]+>)", s, flags=re.S)
+    return "".join(m if i % 2 else typo_texte(m, langue) for i, m in enumerate(morceaux))
+
+
 def questions_page(s):
     """Les questions et réponses VISIBLES de la page, dans l'ordre."""
     qs = re.findall(r'<details class="q"[^>]*><summary>(.*?)</summary><div class="r">(.*?)</div></details>', s, re.S)
@@ -499,7 +568,8 @@ def construire(langue, dico, tons, fp):
         "<!--__EXEMPLES__-->": cartes(exemples, T, tons),
         "<!--__FICHE__-->": fiche,
         "<!--__LETTRE_PLUME__-->": lettre,
-        "<!--__CASIER__-->": casier(familles, occasions, T),
+        "<!--__CASIER__-->": casier(familles, occasions, T, emblemes(T["creer"])),
+        "/*__BRUITS__*/": bruits(T["creer"]),
         "<!--__PRIX__-->": timbres(paliers, plume, T),
         "<!--__PASTILLES__-->": pastilles(hab, T),
         "<!--__HAB_DES__-->": e(T["hab_des"] % (vetue["nom"], fmt(vetue["prix"], T))),
@@ -523,6 +593,9 @@ def construire(langue, dico, tons, fp):
         if k not in s:
             sys.exit("⛔ marqueur absent de la source : %s" % k)
         s = s.replace(k, v)
+    # La typographie du texte visible, AVANT de lire la FAQ : le FAQPage dit
+    # alors exactement ce que la page affiche.
+    s = typographie(s, langue)
     # Le FAQPage est LU dans les questions visibles, une fois les prix posés.
     qs = questions_page(s)
     if "<!--__FAQ_LD__-->" not in s:
@@ -533,12 +606,14 @@ def construire(langue, dico, tons, fp):
     dates = [{"id": o["id"], "nom": o["nom"], "jour": o["jour"]} for o in occasions if o["jour"]]
     if not dates:
         sys.exit("⛔ aucune occasion datée : la prochaine grande date n'aurait rien à dire")
-    bientot = dict(T["bientot"], dates=dates)
+    bientot = {k: (typo_texte(v, langue) if isinstance(v, str) else v) for k, v in T["bientot"].items()}
+    bientot["dates"] = dates
     donnees = {"plume": plume, "paliers": [p["id"] for p in paliers], "exemples": [x["id"] for x in exemples],
                "bientot": bientot}
     s = s[:i] + serialiser(donnees) + s[j:]
     if "<!--__" in s:
         sys.exit("⛔ un marqueur n'a pas été remplacé")
+    s = alleger(s)
     T["sortie"].parent.mkdir(exist_ok=True)
     T["sortie"].write_text(s, encoding="utf-8")
     faits = exemples_html(exemples, T, langue, hab)

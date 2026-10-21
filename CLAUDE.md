@@ -326,8 +326,11 @@
   que si l'image existe, chargés à l'approche, celui du héros après le rideau ET le chargement) qui VIVENT en CSS
   en attendant les vidéos ; musique par `_son.py` (⛔ le MP3 n'est pas dans le dépôt : licence Pixabay) ; logo par
   `_logo.py` (le cachet aux trois points). Premier écran < 320 Ko, contrôlé. Récit :
-  `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md`. 📋 **Quatre demandes en attente** (police,
-  bruitages, verre, occasion « fête entre potes ») : `malettre/CONTEXT.md` § « À APPLIQUER, UNE PAR UNE ».
+  `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md`. ✅ **Les quatre demandes de Mongazi, faites
+  la nuit du 21** (Commissioner « flair » et plus aucun surtitre en capitales · bruitages Web Audio, module ET emblèmes
+  LUS dans `creer.html` · verre fumé sans flou sur les fonds animés · occasion `potes`, la plume n'invente jamais le
+  lieu ni l'heure) : `malettre/CONTEXT.md` § « LES QUATRE DEMANDES ». ⛔ **Un décor 3D invisible prenait le doigt
+  partout** (les timbres) : sonde sur page NEUVE dans `_qc_accueil.py`.
 - ⛔ **Pièges qui ont déjà mordu** : `</script>` et U+2028 écrits par un acheteur tuent la page (tout passe
   par `_injecter.py`, et les échappements se fabriquent par programme : 6 fois arrivés en clair) · on ne
   stocke JAMAIS le HTML du navigateur, on rebâtit depuis le gabarit · le prix ne vient jamais du navigateur
@@ -492,7 +495,8 @@
   plus** ; gardée en attente par Mongazi (même renvoi).
   Le 20 octobre : les trois en démo s'appellent **LE TRIO** (D-099) ; la **0034** (QQE MOD) **ne tient pas** (D-096) ;
   le 21 la **0035** (SuperTrend + QQE) **ne tient pas** non plus (D-097 : mieux que le hasard, perte quand même) ; la **0036 « breakout & retest
-  des quarts »** (méthode de Mongazi, 58 752 réglages, D-100) en calcul
+  des quarts »** (méthode de Mongazi, 58 752 réglages, D-100) **ne tient pas** (aucun réglage positif, finalistes sous le hasard,
+  aucun FTMO viable ; enterrement à la décision de Mongazi)
   (renvoi : `_memoire/conversations/2026-10-20-trading-reprise-nova-quarts.md`).
 - ⛔ **Aucun chiffre de trading annoncé sans rejeu par le moteur de l'agent.**
   Cette règle vaut partout, y compris dans une conversation tenue ici.

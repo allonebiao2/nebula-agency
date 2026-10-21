@@ -90,7 +90,8 @@ def fmt(n):
 
 
 def plat(t):
-    return re.sub(r"\s+", " ", (t or "").replace(NB, " ")).strip()
+    # la page a l'apostrophe typographique depuis le 2026-10-21 (le build) : on compare les deux pareil
+    return re.sub(r"\s+", " ", (t or "").replace(NB, " ").replace("’", "'")).strip()
 
 
 # ── 1 · Le fichier lui-même ──────────────────────────────────────────────
@@ -242,9 +243,11 @@ def contraste(pg, larg):
     dit("%d : contraste mesuré sur les pixels, %d textes, tous au seuil" % (larg, mesures), mesures > 40 and not pires,
         "; ".join(pires[:6]) or ("seulement %d mesures" % mesures))
 
+    # Le bouton est un verre liquide depuis le 2026-10-21 (un dégradé clair, ~ 240, 230, 210 sous le texte) :
+    # le témoin vérifie que la sonde lit SA surface claire, pas la barre de nuit derrière lui.
     papier = mesurer(pg, ".barre .pri")
-    dit("%d : témoin, la sonde lit le papier sous le bouton de la barre" % larg,
-        bool(papier) and max(abs(a - b) for a, b in zip(papier["fond"], (244, 237, 224))) <= 6,
+    dit("%d : témoin, la sonde lit la surface claire du bouton de la barre, pas la nuit derrière" % larg,
+        bool(papier) and min(papier["fond"]) >= 195 and max(abs(a - b) for a, b in zip(papier["fond"], (240, 230, 210))) <= 14,
         papier and papier["fond"])
     pg.evaluate("""() => { const t = document.createElement('p'); t.id = 'temoin-sonde'; t.textContent = 'Témoin gris sur gris';
         t.style.cssText = 'background:#8a8a8a;color:#9a9a9a;font-size:16px;padding:10px;margin:0';
@@ -476,6 +479,73 @@ def profondeur(pg, larg, cat, base):
     else:
         dit("%d : pas de barre d'achat sur ordinateur" % larg,
             pg.evaluate("() => getComputedStyle(document.getElementById('achat-bas')).display") == "none")
+
+    # ⛔ LES FANTÔMES (2026-10-21) : un décor incliné en 3D prenait le doigt LOIN de l'endroit où il
+    # est dessiné. En ligne, les timbres invisibles du prix captaient le toucher sur presque toute la
+    # page (une case du casier touchée au téléphone ne faisait rien). On balaie la page sur une grille
+    # de points ; un élément touché à plus de 150 px de sa propre boîte est un fantôme.
+    fantomes = """() => { const out = [];
+      for (let y = 70; y < innerHeight - 10; y += 44) for (let x = 10; x < innerWidth; x += 44) {
+        const e = document.elementFromPoint(x, y); if (!e) continue; const r = e.getBoundingClientRect();
+        if (x < r.left - 150 || x > r.right + 150 || y < r.top - 150 || y > r.bottom + 150)
+          out.push((e.closest('[id]') || {}).id + ' > ' + e.tagName.toLowerCase() + '.' + String(e.className).split(' ')[0]); }
+      return out; }"""
+
+    # ⚠️ Sur une page NEUVE : le fantôme n'existe que tant que les timbres n'ont pas été frappés,
+    # c'est-à-dire avant d'être descendu jusqu'au prix (le cas de qui touche le casier, plus haut).
+    # Balayée après tout le reste, la page avait tout révélé : la sonde ne voyait plus rien.
+    def balayer(temoin):
+        p3 = pg.context.new_page()
+        p3.goto(pg.url.split("#")[0])
+        p3.wait_for_function("document.getElementById('chargement').hidden", timeout=9000)
+        p3.evaluate("() => scrollTo(0, 2)")   # un défilement : GSAP arrive
+        p3.wait_for_function("document.documentElement.classList.contains('gsap')", timeout=12000)
+        if temoin:
+            p3.evaluate("() => { const s = document.createElement('style'); s.textContent = '.timbres{pointer-events:auto!important}'; document.head.appendChild(s); }")
+        trouves = set()
+        haut_page = p3.evaluate("document.documentElement.scrollHeight")
+        for y in range(0, haut_page, 700):
+            p3.evaluate("y => scrollTo(0, y)", y)
+            p3.wait_for_timeout(120)
+            trouves.update(p3.evaluate(fantomes))
+        p3.close()
+        return sorted(trouves)
+    vus = balayer(False)
+    dit("%d : aucun décor 3D ne prend le doigt loin de l'endroit où il est dessiné (page neuve)" % larg, not vus, vus[:4])
+    # Le témoin : on rend le doigt aux timbres, la sonde doit les attraper.
+    temoin = balayer(True)
+    dit("%d : témoin, la sonde attrape les timbres quand on leur rend le doigt" % larg, any("timbre" in t for t in temoin), temoin[:3])
+
+    # Le casier (2026-10-21, demande 2) : chaque case porte son cachet, la consigne dit ce que fait
+    # le choix ; au téléphone, une étagère par famille qu'on fait glisser ; un vrai toucher mène au
+    # constructeur avec l'occasion.
+    cas = pg.evaluate("""() => { const c = [...document.querySelectorAll('.case')];
+        const et = [...document.querySelectorAll('.casier')];
+        return {cases: c.length, cachets: c.filter(x => x.querySelector('.sceau-o')).length,
+                consigne: (document.querySelector('#occasions .consigne') || {}).textContent || '',
+                glisse: et.map(e => e.scrollWidth > e.clientWidth + 4), page: document.documentElement.scrollWidth}; }""")
+    dit("%d : chaque case du casier porte le cachet de son occasion, et la consigne dit ce que fait le choix" % larg,
+        cas["cases"] == cas["cachets"] == len(cat["occasions"]) and len(cas["consigne"]) > 40, cas)
+    if larg < 761:
+        dit("%d : au téléphone, chaque famille est une étagère qu'on fait glisser, sans élargir la page" % larg,
+            all(cas["glisse"]) and cas["page"] <= larg, cas)
+        p2 = pg.context.new_page()
+        p2.goto(base + ("en/" if "/en/" in pg.url else "") + "index.html")
+        p2.wait_for_function("document.getElementById('chargement').hidden", timeout=9000)
+        case = p2.locator(".case").nth(1)
+        case.scroll_into_view_if_needed()
+        p2.wait_for_timeout(600)
+        try:
+            with p2.expect_navigation(timeout=5000):
+                case.tap(timeout=5000)
+            arrivee = p2.url
+        except Exception as ex:
+            arrivee = "rien : %s" % str(ex).splitlines()[0]
+        dit("%d : un vrai toucher sur une case mène au constructeur, l'occasion choisie" % larg,
+            "creer.html?occasion=" in arrivee, arrivee)
+        p2.close()
+    else:
+        dit("%d : sur ordinateur, le casier reste une grille (aucune étagère qui glisse)" % larg, not any(cas["glisse"]), cas)
 
 
 def navigateur(base, s):

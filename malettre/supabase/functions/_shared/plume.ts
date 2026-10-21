@@ -61,6 +61,7 @@ export const REGISTRES: Record<string, string> = {
   naissance: "Une naissance ou un baptême. La joie et l'accueil. Aucune prédiction sur la vie de l'enfant.",
   mariage:   'Des félicitations pour un mariage. Des vœux aux mariés.',
   amitie:    "Une lettre d'amitié : dire merci d'être là.",
+  potes:     "Une invitation à une soirée privée entre amis (un chill). Joyeuse, complice, claire sur ce qu'on fait ; le lieu, le jour et l'heure seulement s'ils sont dans la fiche, jamais inventés.",
   brouille:  "Une rupture d'amitié. Claire, digne, sans règlement de comptes ni reproche humiliant. Même drôle, elle ne se moque pas de la personne. Elle respecte la réponse donnée à « La porte ».",
   noel:      'Noël. Chaleureux.',
   nouvelan:  "Les vœux du nouvel an, tournés vers l'année qui vient.",

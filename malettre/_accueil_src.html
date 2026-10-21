@@ -26,8 +26,8 @@
      JavaScript de la page tant qu'elle n'est pas arrivée. Sur la 3G de Cotonou,
      le nœud du chargement restait figé. Le changement de police se fait sous le
      chargement, qui couvre l'écran pendant ce temps. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital@1&family=Pinyon+Script&family=Schibsted+Grotesk:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital@1&family=Pinyon+Script&family=Schibsted+Grotesk:wght@400;500;700&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital@1&family=Pinyon+Script&family=Commissioner:FLAR,VOLM,wght@100,0,400;100,0,500;100,0,700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital@1&family=Pinyon+Script&family=Commissioner:FLAR,VOLM,wght@100,0,400;100,0,500;100,0,700&display=swap"></noscript>
 <!--
   MA LETTRE À… · la page d'accueil.  ⛔ SOURCE : `_accueil_src.html`.
   Le livrable `index.html` est GÉNÉRÉ par `_build_accueil.py`, jamais édité.
@@ -66,22 +66,28 @@
   --papier:#f4ede0;--papier-2:#ebe0cd;--papier-3:#e2d4bc;
   --encre:#241d2b;--cire:#8c2f39;--cire-clair:#b2434e;--cire-fonce:#6d1f27;
   --or:#c9a227;--or-texte:#7a5a10;
-  --gris-nuit:#a39bb3;--gris-papier:#5d5468;
+  --gris-nuit:#b0a79c;--gris-papier:#5d5468;
   --ligne-nuit:rgba(244,237,224,.13);--ligne-papier:rgba(36,29,43,.14);
   --barre:62px;
   --serif:"Libre Caslon Display","Iowan Old Style","Palatino Linotype",Georgia,serif;
   /* L'italique vient du Caslon de texte : le Display n'en a pas. Une seule
      famille, le caractère des lettres et de l'imprimerie depuis trois siècles. */
   --italique:"Libre Caslon Text","Iowan Old Style",Georgia,serif;
-  --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  /* Le texte courant (2026-10-21, Mongazi : « trop simpliste ») : Commissioner, axe « flair » à 100,
+     les fins de traits évasées de la lignée d'Optima, la police des papeteries et des cartes gravées.
+     Elle s'oppose au Caslon des titres (sans contre empattements) sans lui ressembler. */
+  --sans:"Commissioner","Optima","Candara","Segoe UI",sans-serif;
   --main:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
   --t:cubic-bezier(.22,1,.36,1);
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.11 0 0 0 0 0.17 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:var(--barre)}
-body{background:var(--nuit);color:var(--papier);font-family:var(--sans);font-size:17px;line-height:1.6;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--nuit);color:var(--papier);font-family:var(--sans);font-size:17px;line-height:1.62;
+  font-kerning:normal;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* Des lignes égales dans les titres, pas de mot seul en fin de paragraphe. */
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
 [hidden]{display:none!important}
 a{color:inherit}
 button,input{font:inherit;color:inherit}
@@ -95,17 +101,21 @@ button{background:none;border:0;cursor:pointer}
 .grain::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.05;pointer-events:none;z-index:-1}
 .sec{padding:clamp(90px,12vw,150px) clamp(20px,5vw,72px)}
 .etroit{max-width:1180px;margin:0 auto}
-.sur{font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:700}
+/* En tête de page, comme en tête d'une lettre : le lieu et la date (le JavaScript
+   écrit la date du jour ; sans lui, « Cotonou, ce jour »). Il remplace le surtitre en
+   capitales espacées qu'on trouvait au-dessus de chaque section. */
+.lieu-date{font-family:var(--italique);font-style:italic;font-size:clamp(17px,1.6vw,20px);color:var(--gris-nuit);margin-bottom:18px}
 .h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,7vw,5.4rem);line-height:.98;letter-spacing:-.01em}
 .h2 em{font-family:var(--italique);font-style:italic;font-size:.9em;color:var(--cire)}
+/* La phrase que la plume écrit : à la main, la même écriture que le prénom du héros. */
+.h2-main{display:block;font-family:var(--main);font-weight:400;font-size:1.22em;line-height:1.05;color:var(--or);margin-top:.04em}
+.h2-court{font-size:clamp(2.3rem,5.2vw,4rem)}
 .nuit .h2 em,.sombre .h2 em{color:var(--or)}
 .chapo{font-size:clamp(17px,2.1vw,20px);max-width:58ch;margin-top:22px}
 .papier{background:var(--papier);color:var(--encre)}
 .papier-2{background:var(--papier-2);color:var(--encre)}
 .nuit{background:var(--nuit);color:var(--papier)}
 .sombre{background:var(--nuit-2);color:var(--papier)}
-.papier .sur,.papier-2 .sur{color:var(--cire)}
-.nuit .sur,.sombre .sur{color:var(--or)}
 .papier .chapo,.papier-2 .chapo{color:var(--gris-papier)}
 .nuit .chapo,.sombre .chapo{color:var(--gris-nuit)}
 
@@ -216,7 +226,7 @@ button{background:none;border:0;cursor:pointer}
 .titre{font-family:var(--serif);font-weight:400;font-size:clamp(3.4rem,11.5vw,8.6rem);line-height:.92;letter-spacing:-.015em}
 .titre .ma{display:block}
 .titre .nom{display:inline-flex;align-items:baseline;min-height:1.1em;font-family:var(--main);color:var(--or);
-  font-size:1.18em;line-height:1;padding-right:.1em;position:relative}
+  font-size:1.18em;line-height:1;padding:0 .1em 0 .1em;position:relative}
 .titre .nom .encre{white-space:pre}
 .bec{display:inline-block;width:.38em;height:.6em;margin-left:.06em;align-self:center;
   background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 32'%3E%3Cpath d='M10 31 L3 12 L10 1 L17 12 Z' fill='%23c9a227'/%3E%3Cpath d='M10 31 V14' stroke='%23141019' stroke-width='1.2'/%3E%3Ccircle cx='10' cy='12' r='1.6' fill='%23141019'/%3E%3C/svg%3E");
@@ -359,7 +369,7 @@ button{background:none;border:0;cursor:pointer}
   background:linear-gradient(160deg,#fbf6ec,var(--papier-2));box-shadow:0 18px 38px rgba(36,29,43,.18),0 1px 0 #fff inset;
   padding:7% 8%;display:flex;flex-direction:column;justify-content:flex-end;will-change:transform;transition:box-shadow .3s}
 .carte:hover{box-shadow:0 26px 50px rgba(36,29,43,.26)}
-.carte .occ{position:absolute;left:8%;top:9%;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--cire);font-weight:700}
+.carte .occ{position:absolute;left:8%;top:8%;font-family:var(--italique);font-style:italic;font-size:17px;color:var(--cire)}
 .carte .a1{font-family:var(--serif);font-size:19px}
 .carte .a2{font-family:var(--main);font-size:clamp(34px,3.6vw,46px);line-height:1.05;color:var(--encre)}
 .carte .de{font-size:13.5px;color:var(--gris-papier);margin-top:6px}
@@ -385,7 +395,7 @@ button{background:none;border:0;cursor:pointer}
 .pl-grille{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);margin-top:60px;align-items:start}
 @media(max-width:900px){.pl-grille{grid-template-columns:1fr}}
 .fiche-d{border:1.5px solid rgba(201,162,39,.32);border-radius:18px;padding:22px 20px;background:rgba(201,162,39,.04)}
-.fiche-d .t{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);font-weight:700;margin-bottom:18px}
+.fiche-d .t{font-family:var(--italique);font-style:italic;font-size:20px;color:var(--or);margin-bottom:14px}
 .fiche-d .q{font-size:13.5px;font-weight:700;margin:16px 0 8px}
 .fiche-d .puces{display:flex;flex-wrap:wrap;gap:8px}
 .puce{border:1.5px solid var(--ligne-nuit);border-radius:999px;padding:8px 14px;font-size:13.5px;transition:border-color .35s,background .35s,color .35s}
@@ -404,20 +414,60 @@ button{background:none;border:0;cursor:pointer}
 .pl-prix .px{font-family:var(--serif);font-size:44px;color:var(--or);line-height:1}
 
 /* ══ 5 · LES OCCASIONS : la lettre qui sort du casier ══ */
-.fam-t{font-family:var(--italique);font-style:italic;font-size:26px;margin:44px 0 14px;color:var(--cire)}
-.casier{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-@media(max-width:560px){.casier{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.case{position:relative;height:150px;border-radius:6px;overflow:hidden;text-decoration:none;color:var(--encre);
-  background:linear-gradient(180deg,#d9c9ad,#e6d8c0);box-shadow:inset 0 14px 22px rgba(36,29,43,.28),inset 0 -2px 0 rgba(255,255,255,.4)}
-.case .ev{position:absolute;left:12%;right:12%;top:18%;height:96px;border-radius:4px;padding:12px 12px;
+/* 2026-10-21 (Mongazi : « plus claire, plus explicite, des animations au toucher et un bruitage ») :
+   la consigne dit ce que fait le choix ; chaque lettre porte le cachet de son occasion (la cire de
+   sa famille, l'emblème LU dans creer.html) ; le nom ne se coupe plus ; au téléphone, une étagère
+   par famille qu'on fait glisser, au lieu d'un mur de 27 cases. Au survol, la lettre monte et le
+   papier fait un clic ; au toucher, la lettre sort du casier, le cachet est frappé, puis on écrit. */
+.consigne{margin-top:26px;max-width:58ch;font-size:16px;color:var(--gris-papier)}
+.fam-t{display:flex;align-items:baseline;gap:12px;font-family:var(--italique);font-style:italic;font-weight:400;font-size:26px;margin:44px 0 14px;color:var(--cire)}
+.fam-n{font-family:var(--sans);font-style:normal;font-size:13px;color:var(--gris-papier)}
+.casier{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:12px}
+.casier{--c1:#b2434e;--c2:#8c2f39;--c3:#6d1f27;--grave:#f3e2dc}
+.casier[data-fam="proches"]{--c1:#e3c45a;--c2:#c9a227;--c3:#94740c;--grave:#3a2c08}
+.casier[data-fam="fetes"]{--c1:#4f8c6f;--c2:#2f6b52;--c3:#1d4636;--grave:#e6f1ea}
+.casier[data-fam="vie"]{--c1:#6a5a80;--c2:#46385a;--c3:#2a2136;--grave:#ece4f5}
+.case{position:relative;display:block;height:186px;border-radius:6px;clip-path:inset(-90px 0 0 0 round 6px);text-decoration:none;color:var(--encre);
+  background:linear-gradient(180deg,#d9c9ad,#e6d8c0);box-shadow:inset 0 14px 22px rgba(36,29,43,.28),inset 0 -2px 0 rgba(255,255,255,.4);
+  transition:transform .2s var(--t)}
+.case .ev{position:absolute;left:8%;right:8%;top:11%;height:136px;border-radius:4px;
   background:linear-gradient(170deg,#fbf6ec,var(--papier));box-shadow:0 6px 14px rgba(36,29,43,.2);
   transform:translateY(70%);will-change:transform}
-.case .ev b{display:block;font-family:var(--serif);font-weight:400;font-size:19px;line-height:1.05}
-.case .ev span{display:block;font-size:12px;color:var(--gris-papier);margin-top:4px}
-.case .bord{position:absolute;left:0;right:0;bottom:0;height:24%;background:linear-gradient(180deg,#cbb894,#bda983);
-  box-shadow:0 -1px 0 rgba(255,255,255,.35) inset;display:flex;align-items:center;justify-content:center;
-  font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#4a3f2c}
+/* le geste de la main sur la lettre (le défilement pilote .ev, la main pilote .ev-in) */
+.case .ev-in{display:block;height:100%;padding:11px 11px 10px;border-radius:inherit;background:inherit;
+  transition:transform .35s var(--t)}
+.case .sceau-o{width:32px;height:32px;margin-bottom:8px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--italique);font-style:italic;font-size:16px;line-height:1;color:var(--grave);
+  background:radial-gradient(circle at 34% 30%,var(--c1),var(--c2) 62%,var(--c3));
+  box-shadow:0 2px 4px rgba(36,29,43,.32),inset 0 0 0 2px rgba(0,0,0,.07);transition:transform .3s var(--t)}
+.case .sceau-o svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.case .ev b{display:block;font-family:var(--serif);font-weight:400;font-size:18px;line-height:1.08;
+  -webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
+.case .ev .nt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  font-size:12.5px;line-height:1.35;color:var(--gris-papier);margin-top:4px}
+.case .bord{position:absolute;left:0;right:0;bottom:0;height:23%;background:linear-gradient(180deg,#cbb894,#bda983);
+  box-shadow:0 -1px 0 rgba(255,255,255,.35) inset;display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:14px;font-weight:700;color:#3f3424}
+.case .bord::after{content:"\2192";transition:transform .3s var(--t)}
 .case:focus-visible{outline-offset:2px}
+@media(hover:hover) and (pointer:fine){
+  .case:hover .ev-in{transform:translateY(-12px)}
+  .case:hover .sceau-o{transform:rotate(-9deg) scale(1.08)}
+  .case:hover .bord::after{transform:translateX(4px)}
+}
+.case:active{transform:scale(.98)}
+/* au toucher : la lettre sort du casier, le cachet est frappé */
+.case.tire .ev-in{transform:translateY(-58px) rotate(-2deg);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.case.tire .sceau-o{animation:frappe .34s cubic-bezier(.2,.8,.2,1)}
+@keyframes frappe{0%{transform:scale(1.34) rotate(-12deg)}55%{transform:scale(.9) rotate(0)}100%{transform:scale(1)}}
+/* Au téléphone : une étagère par famille, qu'on fait glisser ; la suivante dépasse au bord (on voit qu'il y en a d'autres). */
+@media(max-width:760px){
+  .casier{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(150px,42%);overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory;scrollbar-width:none;margin:-64px calc(-1 * clamp(20px,5vw,72px)) 0;padding:66px clamp(20px,5vw,72px) 8px;
+    scroll-padding:0 clamp(20px,5vw,72px)}
+  .casier::-webkit-scrollbar{display:none}
+  .case{scroll-snap-align:start}
+}
 
 /* ══ 5 bis · LE FAIRE-PART : le carton qui sort de la boîte ══ */
 .bientot{margin-top:20px;min-height:1.7em;font-size:16.5px;color:var(--encre)}
@@ -445,9 +495,7 @@ button{background:none;border:0;cursor:pointer}
 .fp-rep span:first-child{background:var(--encre);color:var(--papier);border-color:var(--encre)}
 /* ⚠️ Le bloc est NUIT dans une section PAPIER : sans cette règle, son surtitre
    héritait du bordeaux des sections claires (2,3:1, attrapé par la sonde). */
-.fp .sur{color:var(--or)}
 .fp-h{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,4.4vw,3.4rem);line-height:1.02;margin-top:14px}
-.fp-h em{font-family:var(--italique);font-size:.9em;color:var(--or)}
 .fp-p{margin-top:18px;color:var(--gris-nuit);max-width:52ch}
 .fp-prix{margin-top:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--gris-nuit);font-size:15px}
 .fp-prix .px{font-family:var(--serif);font-size:40px;color:var(--or);line-height:1;white-space:nowrap}
@@ -472,9 +520,9 @@ button{background:none;border:0;cursor:pointer}
 .tel-d iframe{width:100%;height:100%;border:0;display:block}
 .sec-btn{min-height:48px;padding:12px 22px;border-radius:999px;border:1.5px solid var(--ligne-nuit);font-weight:700}
 .habille{margin-top:14px;padding:12px 14px 10px;border:1px solid var(--ligne-nuit);border-radius:20px;background:var(--nuit-2)}
-.hb-t{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-size:12px;letter-spacing:.2em;
-  text-transform:uppercase;font-weight:700;color:var(--or);margin:0 2px 2px}
-.hb-t span{letter-spacing:0;text-transform:none;font-weight:400;font-size:13.5px;color:var(--gris-nuit)}
+.hb-t{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font-family:var(--italique);font-style:italic;
+  font-size:19px;color:var(--or);margin:0 2px 2px}
+.hb-t span{font-family:var(--sans);font-style:normal;font-size:13.5px;color:var(--gris-nuit)}
 .hb-g{display:flex;align-items:center}
 .hb-l{flex:none;width:96px;font-size:13.5px;color:var(--gris-nuit);padding-left:2px}
 .pt{position:relative;display:inline-grid;place-items:center;width:44px;height:44px;flex:none;cursor:pointer;color:var(--gris-nuit)}
@@ -717,8 +765,6 @@ button{background:none;border:0;cursor:pointer}
 .nl-texte{position:relative;z-index:2;max-width:760px;margin:0 auto}
 .js .nl-texte{position:absolute;left:0;right:0;top:12%;padding:0 clamp(20px,5vw,72px);will-change:transform,opacity}
 .nl-texte .chapo{margin-left:auto;margin-right:auto;color:var(--gris-nuit)}
-.nl-texte .sur{color:var(--or)}
-.nl-texte .h2 em{color:var(--or)}
 .nl-fin{position:relative;z-index:3;display:grid;justify-items:center;gap:26px}
 .js .nl-fin{position:absolute;left:0;right:0;bottom:7%;opacity:0;visibility:hidden;transition:opacity .5s,visibility 0s .5s}
 .js .nl-fin.on{opacity:1;visibility:visible;transition:opacity .6s}
@@ -764,6 +810,13 @@ button{background:none;border:0;cursor:pointer}
 /* Le prix : la feuille de timbres se lève du comptoir de la poste. */
 #prix .etroit{perspective:1700px}
 .timbres{transform-origin:50% 100%}
+
+/* ⛔ LES FANTÔMES (trouvé le 2026-10-21) : un décor incliné en 3D projette sa zone de
+   toucher très loin de l'endroit où il est dessiné. Invisibles (avant leur frappe), les
+   timbres prenaient le doigt sur presque toute la page : toucher une case du casier,
+   au téléphone, touchait un timbre, et rien ne se passait. Les décors qui n'ont rien à
+   toucher ne prennent plus le doigt ; le contrôle les cherche sur une grille de points. */
+.timbres,.billets,.page-b,.fp-carton,.lettre-d,.heros-objet{pointer-events:none}
 
 /* Les questions : les fiches montent du tiroir. */
 .faq{perspective:1100px}
@@ -814,6 +867,74 @@ button{background:none;border:0;cursor:pointer}
   .fond i s{display:none}
 }
 
+/* ══ LE VERRE (2026-10-21, Mongazi : « du glassmorphisme partout ») ══
+   Le verre habille L'INTERFACE : barres, champs, panneaux, boutons, questions. Le papier
+   reste du papier (lettres, enveloppes, timbres, billets : l'objet même de la marque).
+   ⛔ Aucune animation infinie sous un `backdrop-filter` (leçon Boussole, la latence) : sur
+   les fonds qui bougent (bougie, pluie, lagune…), un verre FUMÉ et GIVRÉ (teinte, grain de
+   givre figé, liseré, arête de lumière), sans flou recalculé à chaque image. Le vrai flou :
+   derrière la fenêtre des exemples, où la page DORT pendant qu'elle est ouverte (html.voile).
+   ⛔ Les deux bandes de bord (la barre du haut, la barre d'achat) restent OPAQUES : un verre
+   teinté PLEIN, rien de fixe ne laisse voir le texte au travers. */
+:root{
+  --givre:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --v-teinte:rgba(34,27,44,.58);--v-bord:rgba(244,237,224,.15);--v-arete:rgba(255,255,255,.3);
+  --v-reflet:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,0) 42%,rgba(255,255,255,.03));
+  --v-lumiere:inset 0 1px 0 rgba(255,255,255,.13),inset 0 0 0 1px rgba(255,255,255,.02),inset 0 -22px 30px -26px rgba(255,255,255,.08);
+  --v-ombre:0 26px 50px -28px rgba(3,2,6,.9);
+  --vc-teinte:rgba(255,255,255,.46);--vc-bord:rgba(255,255,255,.82);
+  --vc-reflet:linear-gradient(160deg,rgba(255,255,255,.72),rgba(255,255,255,.1) 46%,rgba(255,255,255,.28));
+  --vc-ombre:0 20px 40px -26px rgba(60,38,30,.42),0 2px 6px -2px rgba(60,38,30,.12)
+}
+/* le verre de nuit : fumé, givré, une arête de lumière sur le bord haut */
+.champ,.fiche-d,.habille,.sec-btn,.pl-prix,.jalons,.aveu,.fp > div:last-child,.modale .fermer,.tel-d{
+  background-color:var(--v-teinte);background-image:var(--v-reflet),var(--givre);
+  border:1px solid var(--v-bord);border-top-color:var(--v-arete);box-shadow:var(--v-lumiere),var(--v-ombre)}
+.pl-prix{width:fit-content;max-width:100%;padding:14px 20px;border-radius:18px}
+.jalons{display:inline-flex;padding:9px 12px;border-radius:999px}
+.aveu{padding:22px 28px;border-radius:20px}
+.fp > div:last-child{padding:clamp(20px,3vw,32px);border-radius:20px}
+.tel-d{padding:7px;box-shadow:var(--v-lumiere),0 40px 90px rgba(0,0,0,.6)}
+.tel-d iframe{border-radius:23px}
+.sec-btn{color:var(--papier);transition:transform .25s var(--t),background-color .25s}
+.sec-btn:hover{background-color:rgba(48,40,60,.66);transform:translateY(-2px)}
+.sec-btn:active,.pri:active{transform:translateY(1px) scale(.985)}
+/* les puces de la fiche : de petites pastilles de verre, l'or quand elles sont cochées */
+.puce{background-color:rgba(255,255,255,.04);background-image:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0));
+  border:1px solid rgba(244,237,224,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.puce.prise{background-color:rgba(201,162,39,.2);border-color:rgba(201,162,39,.75);
+  box-shadow:inset 0 1px 0 rgba(255,236,170,.25),0 0 0 3px rgba(201,162,39,.08)}
+/* les petits boutons de la barre : du verre, sans ombre portée */
+.son,.langue{background-color:rgba(255,255,255,.045);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0));
+  border:1px solid rgba(244,237,224,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.barre nav a{transition:color .2s,background-color .2s,box-shadow .2s}
+.barre nav a:hover{background-color:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 0 0 1px rgba(244,237,224,.1)}
+/* les bandes de bord : un verre teinté, mais PLEIN */
+.barre{background-color:var(--nuit);background-image:linear-gradient(180deg,#221b2c,#141019 92%);
+  border-bottom-color:rgba(244,237,224,.1);box-shadow:inset 0 -1px 0 rgba(255,255,255,.04),0 14px 34px -22px rgba(0,0,0,.9)}
+.js .achat-bas{background-image:linear-gradient(180deg,#221b2c,#141019);border-top-color:rgba(255,255,255,.12)}
+/* le bouton principal : un verre liquide, plein (le contraste ne dépend jamais du fond) */
+.pri{background-color:var(--papier);background-image:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,0) 55%),linear-gradient(180deg,#fbf6ec,#e6d8bd);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -2px 5px rgba(120,88,40,.16),0 14px 28px -14px rgba(201,162,39,.55)}
+.papier .pri,.papier-2 .pri{background-color:var(--encre);color:var(--papier);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 52%),linear-gradient(180deg,#3a3047,#1c1724);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -2px 6px rgba(0,0,0,.35),0 14px 28px -14px rgba(36,29,43,.6)}
+.fp .pri{background-color:var(--papier);color:var(--encre);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,0) 55%),linear-gradient(180deg,#fbf6ec,#e6d8bd);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -2px 5px rgba(120,88,40,.16),0 14px 28px -14px rgba(201,162,39,.55)}
+/* le verre clair, sur le papier : une plaque givrée */
+.faq{border-top:0}
+.faq .q{margin-bottom:12px;padding:0 22px;border:1px solid var(--vc-bord);border-radius:16px;
+  background-color:var(--vc-teinte);background-image:var(--vc-reflet);box-shadow:inset 0 1px 0 #fff,var(--vc-ombre)}
+.consigne,.payer{width:fit-content;max-width:min(62ch,100%);padding:14px 20px;border-radius:16px;border:1px solid var(--vc-bord);
+  background-color:var(--vc-teinte);background-image:var(--vc-reflet);box-shadow:inset 0 1px 0 #fff,var(--vc-ombre)}
+.fam-n{padding:3px 11px;border-radius:999px;border:1px solid var(--vc-bord);background-color:var(--vc-teinte);
+  background-image:var(--vc-reflet);box-shadow:inset 0 1px 0 #fff}
+/* le vrai flou : la fenêtre des exemples (la page dort derrière, aucune animation sous le verre) */
+.modale{background:rgba(14,11,18,.62);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2)}
+html.voile body > :not(#modale),html.voile body > :not(#modale) *,html.voile body > :not(#modale) *::before,
+html.voile body > :not(#modale) *::after{animation-play-state:paused!important}
+
 /* Le curseur plume, sur ordinateur seulement. */
 .plume-s{position:fixed;left:0;top:0;width:28px;height:28px;margin:-26px 0 0 -2px;pointer-events:none;z-index:90;opacity:0;
   background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M2 26 L6 14 L20 2 L26 8 L14 22 Z' fill='%23c9a227' stroke='%23141019' stroke-width='1'/%3E%3Cpath d='M2 26 L12 16' stroke='%23141019' stroke-width='1.2'/%3E%3C/svg%3E");
@@ -833,6 +954,7 @@ button{background:none;border:0;cursor:pointer}
      spécifique : sans eux ici, ils restaient invisibles jusqu'au défilement
      (9 éléments, trouvés par _qc_accueil.py). */
   .js [data-rv]:not(.vu),.js .billet[data-rv]:not(.vu),.js .timbre[data-rv]:not(.vu){opacity:1;transform:none}
+  .case.tire .sceau-o{animation:none}.case .ev-in,.case:hover .ev-in{transition:none}
   .timbre .tampon circle,.timbre .tampon path{stroke-dashoffset:0}
 }
 </style>
@@ -886,7 +1008,7 @@ button{background:none;border:0;cursor:pointer}
 <!-- 1 · LE HÉROS -->
 <section class="heros nuit grain" id="haut">
   <div>
-    <p class="sur">Lettres digitales scellées</p>
+    <p class="lieu-date" id="lieu-date">Cotonou, ce jour</p>
     <h1 class="titre" aria-label="Ma lettre à… : une lettre scellée qui s'ouvre à l'heure que tu choisis">
       <span class="ma">Ma lettre à</span>
       <span class="nom" aria-hidden="true"><span class="encre" id="nom-heros">Afi</span><span class="bec"></span></span>
@@ -961,8 +1083,7 @@ button{background:none;border:0;cursor:pointer}
 <!-- 3 · LES EXEMPLES -->
 <section class="papier grain sec" id="exemples">
   <div class="etroit">
-    <p class="sur" data-rv>Exemples · personnes inventées</p>
-    <h2 class="h2" data-rv>Six lettres,<br><em>six vies.</em></h2>
+    <h2 class="h2" data-rv>Six lettres, six vies.</h2>
     <p class="chapo" data-rv>Écrites par la plume, à partir d'une fiche. Les personnes sont inventées ; les situations, elles, sont de tous les jours.</p>
     <div class="ex-grille" id="ex-grille"><!--__EXEMPLES__--></div>
     <p class="mention" data-rv>Touche une enveloppe pour l'ouvrir. <b>Celle d'Afi s'ouvre le 14 février à minuit</b> : essaie, elle attendra.</p>
@@ -973,8 +1094,7 @@ button{background:none;border:0;cursor:pointer}
 <section class="nuit grain sec" id="plume">
   <!--__FOND:plume__-->
   <div class="etroit">
-    <p class="sur" data-rv>La plume</p>
-    <h2 class="h2" data-rv>Tu coches.<br><em>Elle écrit.</em></h2>
+    <h2 class="h2" data-rv>Tu coches.<br><span class="h2-main">Elle écrit.</span></h2>
     <p class="chapo" data-rv>Quelques questions, un souvenir, tes consignes. La plume écrit une première version ; tu relis, tu changes ce que tu veux. Ce sont tes mots : elle te les prête.</p>
     <div class="pl-grille">
       <div class="fiche-d" data-rv><!--__FICHE__--></div>
@@ -998,8 +1118,7 @@ button{background:none;border:0;cursor:pointer}
     <div class="nl-etoiles" aria-hidden="true"><i></i><i></i></div>
     <div class="nl-ciel" aria-hidden="true"><div class="nl-vol" id="nl-vol"><!--__VOL__--></div></div>
     <div class="nl-texte" id="nl-texte">
-      <p class="sur">La nuit des lettres</p>
-      <h2 class="h2" id="nl-titre">Chacune attend<br><em>son heure.</em></h2>
+      <h2 class="h2" id="nl-titre">Chacune attend son heure.</h2>
       <p class="chapo">Un anniversaire à minuit, un pardon au lever du jour, une fête au petit matin. Chaque lettre dort sous son cachet jusqu'à l'heure que tu as choisie.</p>
     </div>
     <div class="nl-fin" id="nl-fin">
@@ -1016,12 +1135,12 @@ button{background:none;border:0;cursor:pointer}
 <!-- 5 · LES OCCASIONS -->
 <section class="papier-2 grain sec" id="occasions">
   <div class="etroit">
-    <p class="sur" data-rv>Les occasions</p>
-    <h2 class="h2" data-rv>Un casier pour<br><em>chaque grand jour.</em></h2>
+    <h2 class="h2" data-rv>Un casier pour chaque grand jour.</h2>
     <p class="chapo" data-rv>L'amour, la famille, les fêtes, les réussites. Et même la rupture, avec classe.</p>
     <!-- La prochaine grande date : CALCULÉE au chargement sur les dates des
          occasions, jamais une fausse rareté. Vide sans JavaScript. -->
     <p class="bientot" id="bientot" data-rv></p>
+    <p class="consigne" data-rv>Touche une occasion : ta lettre s'ouvre avec le bon ton, un titre et une formule de fin déjà prêts. Tu peux tout changer.</p>
     <!--__CASIER__-->
 
     <!-- Le faire-part de mariage, SUR DEMANDE (décision de Mongazi, 2026-10-16) :
@@ -1045,8 +1164,7 @@ button{background:none;border:0;cursor:pointer}
         </div>
       </div>
       <div>
-        <p class="sur" data-rv>Le faire-part de mariage</p>
-        <h3 class="fp-h" data-rv>Vous vous mariez ?<br><em>On l'écrit pour vous.</em></h3>
+        <h3 class="fp-h" data-rv>Vous vous mariez ?<br>On l'écrit pour vous.</h3>
         <p class="fp-p" data-rv>Un faire-part qui s'ouvre comme une lettre : le cachet à vos initiales, le compte à rebours jusqu'au grand jour, le programme, le lieu sur la carte, la tenue, vos photos. Vos invités répondent d'un geste, directement sur votre WhatsApp.</p>
         <p class="fp-prix" data-rv><span class="px"><!--__FP_PRIX__--></span><span>fait sur mesure par notre équipe, d'après ce que vous nous racontez. Kossi et Afiwa sont un couple inventé.</span></p>
         <div class="fp-actions" data-rv>
@@ -1064,8 +1182,7 @@ button{background:none;border:0;cursor:pointer}
   <!--__FOND:seuil__-->
   <div class="etroit seuil-g">
     <div class="seuil-t">
-      <p class="sur" data-rv>Ce qu'elle vit</p>
-      <h2 class="h2" data-rv>Ouvre-la<br><em>toi-même.</em></h2>
+      <h2 class="h2" data-rv>Ouvre-la toi-même.</h2>
       <p class="chapo" data-rv>Voici une vraie lettre. Elle s'ouvre dans dix secondes : regarde le cachet dormir, puis la cire s'allumer. Ensuite, habille-la : touche une pastille, puis le cachet.</p>
     </div>
     <div class="essai" data-rv>
@@ -1085,8 +1202,7 @@ button{background:none;border:0;cursor:pointer}
 <!-- 7 · LE PRIX -->
 <section class="papier grain sec" id="prix">
   <div class="etroit">
-    <p class="sur" data-rv>Le prix</p>
-    <h2 class="h2" data-rv>Ce que<br><em>ça coûte.</em></h2>
+    <h2 class="h2" data-rv>Ce que ça coûte.</h2>
     <p class="chapo" data-rv>L'ouverture est la même à chaque offre : l'enveloppe, le cachet, le son. Ce qui change : combien de temps elle reste en ligne, ses photos, son habillage, et notre signature en bas.</p>
     <div class="timbres"><!--__PRIX__--></div>
     <p class="payer" data-rv>On paie par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur. Rien à recopier, aucun code à nous donner.</p>
@@ -1097,7 +1213,6 @@ button{background:none;border:0;cursor:pointer}
 <section class="sombre grain sec" id="promesses">
   <!--__FOND:promesses__-->
   <div class="etroit">
-    <p class="sur" data-rv>Ce qu'on promet</p>
     <h2 class="h2" data-rv>Mot pour mot,<br><em>rien de plus.</em></h2>
     <!-- ⚠️ Sans data-rv depuis GSAP : chaque billet tombe de sa profondeur et se
          déplie au défilement. Sans GSAP, ils sont simplement là, dépliés. -->
@@ -1116,8 +1231,7 @@ button{background:none;border:0;cursor:pointer}
      et ne dit que ce que la page dit déjà. Les prix viennent du catalogue. -->
 <section class="papier grain sec" id="questions">
   <div class="etroit">
-    <p class="sur" data-rv>Les questions</p>
-    <h2 class="h2" data-rv>Ce qu'on nous<br><em>demande.</em></h2>
+    <h2 class="h2 h2-court" data-rv>Ce qu'on nous demande.</h2>
     <div class="faq">
       <details class="q"><summary>Comment la personne reçoit-elle la lettre ?</summary><div class="r"><p>Par un lien que tu lui envoies toi-même, sur WhatsApp ou ailleurs, quand tu veux : trois jours avant ou la veille. Nous n'écrivons jamais à la personne. Elle ouvre le lien sur son téléphone, sans rien installer, et trouve une enveloppe scellée qui attend son heure.</p></div></details>
       <details class="q"><summary>Que voit-elle si elle ouvre le lien avant l'heure ?</summary><div class="r"><p>Une enveloppe fermée et un compte à rebours, rien d'autre : le cachet dort, aucun bouton ne l'ouvre. À l'heure choisie, la cire s'allume et le bouton paraît, sans recharger la page. C'est l'heure de son téléphone qui compte : minuit à Abidjan n'est pas minuit à Cotonou.</p></div></details>
@@ -1135,8 +1249,7 @@ button{background:none;border:0;cursor:pointer}
 <!-- 10 · LA FIN -->
 <section class="nuit grain sec fin" id="fin">
   <!--__FOND:fin__-->
-  <p class="sur" data-rv>À toi</p>
-  <h2 class="h2" data-rv>Il ne manque<br><em>qu'un prénom.</em></h2>
+  <h2 class="h2" data-rv>Il ne manque qu'un prénom.</h2>
   <!-- La page blanche se lève du bureau (GSAP) et prend le prénom tapé. -->
   <div class="page-b" aria-hidden="true"><div class="a">Ma lettre à<b class="pb-nom" id="pb-nom"></b><span class="curs"></span></div><div class="lv"></div><div class="lv"></div><div class="lv"></div></div>
   <form class="qui" action="creer.html" method="get">
@@ -1189,6 +1302,47 @@ var sort = function(k){ return 1 - Math.pow(1 - k, 3); };
 var RACINE = "";
 var BARRE = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--barre")) || 62;
 var gsapPret = false;
+
+/* ══ Les bruitages : le module est LU dans creer.html par le build ══ */
+/*__BRUITS__*/
+
+/* ══ Le casier : au toucher, la lettre sort, le cachet est frappé, puis on écrit.
+   Le survol fait un clic de papier. Ailleurs, les lettres d'exemple, les
+   pastilles, les questions et les boutons font aussi leur clic. ══ */
+(function(){
+  var vu = null;
+  var SURVOL = ".case, .carte, .faq summary, .habille label, .pri, .sec-btn";
+  document.addEventListener("pointerover", function(e){
+    if (e.pointerType !== "mouse") { return; }
+    var c = e.target.closest && e.target.closest(SURVOL);
+    if (c && c !== vu) { Bruits.tic(); }
+    vu = c;
+  }, { passive: true });
+  document.addEventListener("pointerdown", function(e){
+    var c = e.target.closest && e.target.closest(SURVOL);
+    if (!c) { return; }
+    if (c.classList.contains("case")) {
+      c.classList.remove("tire"); void c.offsetWidth; c.classList.add("tire");
+      Bruits.sceau(); Bruits.glisse();
+    } else { Bruits.clic(); }
+  }, { passive: true });
+  $$(".case").forEach(function(c){
+    c.addEventListener("click", function(e){
+      if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) { return; }
+      e.preventDefault();
+      if (!e.detail) { c.classList.add("tire"); Bruits.sceau(); Bruits.glisse(); }   /* au clavier */
+      setTimeout(function(){ location.href = c.href; }, doux ? 0 : 280);
+    });
+  });
+  /* revenir en arrière : la lettre est rentrée dans son casier */
+  addEventListener("pageshow", function(){ $$(".case.tire").forEach(function(c){ c.classList.remove("tire"); }); });
+})();
+
+/* ══ En tête de page : le lieu et la date du jour, comme en tête d'une lettre ══ */
+(function(){
+  var ld = $("#lieu-date");
+  try { ld.textContent = "Cotonou, le " + new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(new Date()); } catch (e) {}
+})();
 
 /* ══ Le chargement : le nœud se défait, la lettre se déplie, la page paraît ══ */
 (function(){
@@ -1391,6 +1545,9 @@ function mesurerCartes(){
 
 /* ══ Les modales : le vrai produit dans un téléphone ══ */
 var modale = $("#modale"), modaleCadre = $("#modale-cadre"), dernier = null;
+/* le voile de verre : la fenêtre ouverte, la page dort (aucune animation sous le flou) */
+new MutationObserver(function(){ document.documentElement.classList.toggle("voile", !modale.hidden); })
+  .observe(modale, { attributes: true, attributeFilter: ["hidden"] });
 cartes.forEach(function(c){
   c.addEventListener("click", function(){
     dernier = c;

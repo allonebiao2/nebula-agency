@@ -59,6 +59,9 @@ CLES = {"prénom", "pour",
 
 
 def francais(t):
+    # L'accueil a l'apostrophe typographique depuis le 2026-10-21 (« Côte d’Ivoire ») :
+    # la liste des mots permis s'écrit avec l'apostrophe droite, on compare les deux pareil.
+    t = t.replace("’", "'")
     for p in PERMIS:
         t = t.replace(p, " ")
     return bool(ACCENTS.search(t) or MOTS_FR.search(t))

@@ -24,7 +24,7 @@ OUT = ICI / "_vues" / ("accueil-en" if LANGUE == "en" else "accueil")
 OUT.mkdir(parents=True, exist_ok=True)
 SEULE = next((a for a in ARGS if a != "en"), "")
 
-SECTIONS = ["haut", "exemples", "plume", "occasions", "faire-part", "seuil", "prix", "promesses", "questions", "fin"]
+SECTIONS = ["haut", "exemples", "plume", "nuit-lettres", "occasions", "faire-part", "seuil", "prix", "promesses", "questions", "fin"]
 MOMENTS = [0.06, 0.2, 0.36, 0.5, 0.6, 0.72, 0.84, 0.97]
 
 

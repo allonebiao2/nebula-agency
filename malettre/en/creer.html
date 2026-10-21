@@ -91,13 +91,27 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 .occ{border:1.5px solid var(--ligne);border-radius:14px;padding:15px 14px;text-align:left;
   transition:.18s var(--t);min-height:78px;display:flex;flex-direction:column;gap:3px}
 .occ:hover{border-color:rgba(201,162,39,.5);transform:translateY(-2px)}
+.occ:active{transform:scale(.98)}
+/* Le cachet de l'occasion : la cire de sa famille, son emblème gravé. Au toucher, on le frappe. */
+.occ .sceau-o{width:34px;height:34px;margin-bottom:8px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font:italic 17px/1 "Iowan Old Style","Palatino Linotype",Georgia,serif;color:var(--grave);
+  background:radial-gradient(circle at 34% 30%,var(--c1),var(--c2) 62%,var(--c3));
+  box-shadow:0 2px 5px rgba(0,0,0,.35),inset 0 0 0 2px rgba(0,0,0,.07);transition:transform .25s var(--t)}
+.occ .sceau-o svg{width:21px;height:21px}
+.occ:hover .sceau-o{transform:rotate(-9deg) scale(1.06)}
+.occ.frappe .sceau-o{animation:frappe .34s cubic-bezier(.2,.8,.2,1)}
+@keyframes frappe{0%{transform:scale(1.34) rotate(-12deg)}55%{transform:scale(.9) rotate(0)}100%{transform:scale(1)}}
+.occasions{--c1:#b2434e;--c2:#8c2f39;--c3:#6d1f27;--grave:#f3e2dc}
+.occasions[data-fam="proches"]{--c1:#e3c45a;--c2:#c9a227;--c3:#94740c;--grave:#3a2c08}
+.occasions[data-fam="fetes"]{--c1:#4f8c6f;--c2:#2f6b52;--c3:#1d4636;--grave:#e6f1ea}
+.occasions[data-fam="vie"]{--c1:#6a5a80;--c2:#46385a;--c3:#2a2136;--grave:#ece4f5}
+@media (prefers-reduced-motion:reduce){.occ.frappe .sceau-o{animation:none}.occ:hover .sceau-o{transform:none}}
 .occ.on{border-color:var(--or);background:rgba(201,162,39,.10)}
 .occ b{font-size:15px}
 .occ span{font-size:12.5px;color:var(--gris-clair)}
 .occ em{font-style:normal;font-size:12.5px;color:var(--or);font-weight:700}
 /* Vingt-sept occasions : sans familles, c'est une liste qu'on ne lit pas. */
-.fam{margin:26px 0 11px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--gris-clair);font-weight:700}
+.fam{margin:28px 0 11px;font:italic 21px/1.2 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;color:var(--or)}
 .fam:first-child{margin-top:0}
 .autre-mot{margin-top:22px;font-size:13.5px;color:var(--gris-clair)}
 
@@ -512,6 +526,79 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 <script>
 "use strict";
 
+/*__BRUITS__*/
+/* Les bruitages (2026-10-21, Mongazi : « un clic quand on touche ou qu'on survole »).
+   Synthétisés en Web Audio : aucun fichier. Jamais avant un geste (le contexte naît
+   au premier toucher), discrets, et muets quand le son du site est coupé (la même
+   clé que la musique de la vitrine). Leçon audio mobile : le tampon muet pour iOS,
+   un compresseur, plus de gain au téléphone. La vitrine LIT ce module ici. */
+var Bruits = (function(){
+  var ctx = null, sortie = null, pret = false, dernier = 0, grain = null;
+  var MOBILE = matchMedia("(max-width:760px)").matches || matchMedia("(pointer:coarse)").matches;
+  function coupe(){ try { return localStorage.getItem("malettre:son") === "non"; } catch (e) { return false; } }
+  function ouvrir(){
+    if (ctx) {
+      if (ctx.state === "suspended") { try { var p = ctx.resume(); if (p && p.catch) { p.catch(function(){}); } } catch (e) {} }
+      return;
+    }
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { return; }
+    try {
+      ctx = new AC();
+      var b = ctx.createBuffer(1, 1, 22050), s0 = ctx.createBufferSource(); s0.buffer = b; s0.connect(ctx.destination); s0.start(0);
+      var comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -10; comp.knee.value = 4; comp.ratio.value = 8; comp.attack.value = .005; comp.release.value = .12;
+      comp.connect(ctx.destination);
+      sortie = ctx.createGain(); sortie.gain.value = MOBILE ? 1.45 : .9; sortie.connect(comp);
+    } catch (e) { ctx = null; }
+  }
+  ["pointerdown", "keydown", "touchstart"].forEach(function(t){
+    addEventListener(t, function(){ pret = true; ouvrir(); }, { capture: true, passive: true });
+  });
+  function bruitBlanc(){
+    if (grain) { return grain; }
+    var n = Math.floor(ctx.sampleRate * .3), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
+    for (var i = 0; i < n; i++) { d[i] = Math.random() * 2 - 1; }
+    return (grain = b);
+  }
+  /* un grain de papier : du bruit filtré, très court */
+  function souffle(t, duree, freq, q, vol, type){
+    var s1 = ctx.createBufferSource(); s1.buffer = bruitBlanc();
+    var f = ctx.createBiquadFilter(); f.type = type || "bandpass"; f.frequency.value = freq; f.Q.value = q;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .002); g.gain.exponentialRampToValueAtTime(.0001, t + duree);
+    s1.connect(f); f.connect(g); g.connect(sortie); s1.start(t); s1.stop(t + duree + .02);
+    return f;
+  }
+  function ton(t, duree, f0, f1, vol){
+    var o = ctx.createOscillator();
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + duree);
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .003); g.gain.exponentialRampToValueAtTime(.0001, t + duree);
+    o.connect(g); g.connect(sortie); o.start(t); o.stop(t + duree + .02);
+  }
+  function jouer(fn){
+    if (!pret || coupe() || document.hidden) { return; }
+    ouvrir();
+    if (!ctx) { return; }
+    try { fn(ctx.currentTime + .005); } catch (e) {}
+  }
+  return {
+    /* le survol : un ongle sur le papier, à peine (jamais deux en 70 ms) */
+    tic: function(){
+      var m = Date.now(); if (m - dernier < 70) { return; } dernier = m;
+      jouer(function(t){ souffle(t, .028, 4200, 1.6, .06); ton(t, .03, 2400, 1900, .014); });
+    },
+    /* le toucher : le clic net d'un carton qu'on pose */
+    clic: function(){ jouer(function(t){ souffle(t, .04, 2600, 1.2, .17); ton(t, .05, 1100, 620, .05); }); },
+    /* le cachet qu'on frappe : un coup mat, la cire */
+    sceau: function(){ jouer(function(t){ ton(t, .12, 420, 160, .16); ton(t, .16, 170, 70, .2); souffle(t, .05, 1500, .9, .12, "lowpass"); }); },
+    /* la lettre qui sort du casier : le papier qui glisse */
+    glisse: function(){ jouer(function(t){ var f = souffle(t, .22, 900, .8, .06); f.frequency.exponentialRampToValueAtTime(3800, t + .2); }); }
+  };
+})();
+/*__FIN_BRUITS__*/
+
 /* ══════════════════════════════════════════════════════════════════════
    Le catalogue. Les prix viennent du manuel du 2026-08-28 et de nulle part
    ailleurs : on ne recopie jamais un prix a la main dans deux fichiers.
@@ -564,6 +651,9 @@ var OCCASIONS = [
    fiche:["lien-maries","ton-fete","souhaits","longueur","langue","foi"]},
   {id:"amitie",   fam:"proches", nom:"Friendship", note:"Thank you for being there", titre:"Thank you for being there", formule:"Thank you for being you,",
    fiche:["lien-amis","ton-fete","qualites","duree","longueur","langue"]},
+  {id:"potes",    fam:"proches", nom:"Night with friends", note:"A private chill, invitation only", titre:"You're on the list", formule:"See you there,",
+   aide:"Saturday 8 pm, at my place in Fidjrossè. Bring your best dance moves. (The place and the time: the Quill never makes them up.)",
+   fiche:["lien-amis","soiree","ton-potes","apporter","longueur","langue"]},
   {id:"brouille", fam:"proches", nom:"Ending a friendship", note:"Saying it once", titre:"I'd rather write it to you", formule:"No hard feelings,",
    fiche:["lien-amis","ton-rupture","pourquoi-amitie","porte","duree","longueur","langue"]},
 
@@ -596,6 +686,40 @@ var OCCASIONS = [
    fiche:["lien-proches","ton-fete","qualites","souhaits","longueur","langue","foi"]}
 ];
 
+/* L'emblème de chaque occasion (2026-10-21) : un dessin au trait, 24 x 24, gravé
+   dans le cachet de cire de son bouton. La vitrine le LIT ici (son casier), il
+   n'est écrit nulle part ailleurs. Une occasion sans emblème prend son initiale. */
+var EMBLEMES = {
+  valentin:"M12 20.5s-7.2-4.5-7.2-10.2A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.2 2.7c0 5.7-7.2 10.2-7.2 10.2z",
+  couple:"M11 18.5s-5.6-3.5-5.6-7.9a3.2 3.2 0 0 1 5.6-2.1a3.2 3.2 0 0 1 5.6 2.1c0 4.4-5.6 7.9-5.6 7.9zM3.5 20.5L20.5 3.5M20.5 3.5h-4M20.5 3.5v4M3.5 20.5h2.6M3.5 20.5v-2.6",
+  mois:"M5 6.5h14v13H5zM5 10.5h14M9 4.5v4M15 4.5v4M12 17.6s-2.4-1.5-2.4-3.3a1.35 1.35 0 0 1 2.4-.8a1.35 1.35 0 0 1 2.4.8c0 1.8-2.4 3.3-2.4 3.3z",
+  nous:"M12 12c-2-2.6-3.6-3.7-5.2-3.7a3.7 3.7 0 0 0 0 7.4c1.6 0 3.2-1.1 5.2-3.7s3.6-3.7 5.2-3.7a3.7 3.7 0 0 1 0 7.4c-1.6 0-3.2-1.1-5.2-3.7z",
+  demande:"M17 15.5a5 5 0 1 1-10 0a5 5 0 0 1 10 0zM9.4 7.6L12 4.5l2.6 3.1L12 10.4zM9.4 7.6h5.2",
+  pardon:"M4.5 19.5C8.5 15.5 12.5 11 19.5 4.5M8.2 15.6c-.6-2 .2-3.8 2-4.7c.5 2-.3 3.8-2 4.7zM8.4 15.8c2 .5 3.8-.2 4.8-1.9c-2-.5-3.8.2-4.8 1.9zM12.6 11.3c-.6-2 .2-3.8 2-4.7c.5 2-.3 3.8-2 4.7zM12.8 11.5c2 .5 3.8-.2 4.8-1.9c-2-.5-3.8.2-4.8 1.9z",
+  rupture:"M12 20.5s-7.2-4.5-7.2-10.2A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.2 2.7c0 5.7-7.2 10.2-7.2 10.2zM12 7.6l-1.7 3.1 2.8 2.1-2 3.4",
+  anniv:"M4.5 20.5h15M6 20.5v-6.2h12v6.2M6 14.3c1.5 1.1 3 1.1 4 0s2.5-1.1 4 0 3 1.1 4 0M12 14.3V9.6M12 7.8c-1-.8-1-2 0-3.3c1 1.3 1 2.5 0 3.3z",
+  maman:"M12 21v-8.3M12 18.3c-2.6 0-4.2-1.6-4.7-3.7c2.4 0 4.2 1.4 4.7 3.7zM7.8 5.8l2.1 2.1L12 4.7l2.1 3.2 2.1-2.1v3.5a4.2 4.2 0 0 1-8.4 0z",
+  papa:"M10.4 4.2h3.2l-.6 2.6h-2zM11 6.8L9.4 15l2.6 4.8 2.6-4.8L13 6.8M6.8 4.5l3.6 1.6M17.2 4.5l-3.6 1.6",
+  naissance:"M3.5 10h14a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6zM10.5 10V4.1a6 6 0 0 1 7 5.9M17.5 10l1.8-3.4h1.7M9.3 19.3a1.8 1.8 0 1 1-3.6 0a1.8 1.8 0 0 1 3.6 0zM16.3 19.3a1.8 1.8 0 1 1-3.6 0a1.8 1.8 0 0 1 3.6 0z",
+  mariage:"M14 13a5 5 0 1 1-10 0a5 5 0 0 1 10 0zM20 13a5 5 0 1 1-10 0a5 5 0 0 1 10 0z",
+  amitie:"M4.5 5h5l-.5 4.2a2 2 0 0 1-4 0zM7 11.2v6.3M5 17.5h4M14.5 5h5l-.5 4.2a2 2 0 0 1-4 0zM17 11.2v6.3M15 17.5h4M11 4.2l-.9-1.1M13 4.2l.9-1.1",
+  brouille:"M9.8 14.2l-2.6 2.6a3 3 0 0 1-4.2-4.2l3-3a3 3 0 0 1 4.2 0M14.2 9.8l2.6-2.6a3 3 0 0 1 4.2 4.2l-3 3a3 3 0 0 1-4.2 0M11.6 13.4l-1 1M13.4 11.6l1-1",
+  noel:"M12 3l4.6 5.6h-2.8l3.8 4.8h-3.3l3.9 5.1H5.8l3.9-5.1H6.4l3.8-4.8H7.4zM11 18.5v2.5h2v-2.5",
+  nouvelan:"M12 12h.01M15.0 13.2L19.6 15.1M13.2 15.0L15.1 19.6M10.8 15.0L8.9 19.6M9.0 13.2L4.4 15.1M9.0 10.8L4.4 8.9M10.8 9.0L8.9 4.4M13.2 9.0L15.1 4.4M15.0 10.8L19.6 8.9M18.2 12.0L19.0 12.0M16.4 16.4L16.9 16.9M12.0 18.2L12.0 19.0M7.6 16.4L7.1 16.9M5.8 12.0L5.0 12.0M7.6 7.6L7.1 7.1M12.0 5.8L12.0 5.0M16.4 7.6L16.9 7.1",
+  tabaski:"M7.2 16.2a2.7 2.7 0 0 1-1.1-5.2a2.9 2.9 0 0 1 4.6-2.8a2.9 2.9 0 0 1 4.8 1a2.7 2.7 0 0 1 .3 5.3zM15.8 9.6c.9-1.4 2.9-1.8 4-.6c1.1 1.2.6 3.5-1 4.2c-.9.4-1.9.1-2.3-.6M18.2 8.6c-.3-1.6 1.6-2.5 2.4-1.3c.6.9-.2 1.9-1 1.6M9.2 16.2v3.3M13.8 16.2v3.3",
+  ramadan:"M15 4.5a8 8 0 1 0 4.6 13.6A6.6 6.6 0 1 1 15 4.5zM18 6.2l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z",
+  paques:"M12 3.2c-3.5 0-6 5.6-6 10.1a6 6 0 0 0 12 0c0-4.5-2.5-10.1-6-10.1zM6.3 12.6l1.9 1.6 1.9-1.6 1.9 1.6 1.9-1.6 1.9 1.6 1.9-1.6",
+  reussite:"M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.6v4.1c1.5 1.4 3.5 2 5.5 2s4-.6 5.5-2v-4.1M21.5 9.5v5",
+  courage:"M2.8 20l6.6-10 3.5 5.1 2.6-3.6L21.2 20zM15.5 11.5V4.3l4 1.5-4 1.5",
+  guerison:"M12 21v-9.2M12 14.2c-3.5 0-5.5-2-6-5c3.4 0 5.5 2 6 5zM12 11.6c.3-3.3 2.4-5.4 6-5.8c-.2 3.4-2.4 5.5-6 5.8zM8 21h8",
+  travail:"M4.5 8h15a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM9 8V6.2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V8M3.5 13h17M11 12h2v2.2h-2z",
+  retraite:"M3 16.8h18M7 16.8a5 5 0 0 1 10 0M12 7.6v2M6.5 10l1.4 1.4M17.5 10l-1.4 1.4M3.6 13.6h2M18.4 13.6h2M7.5 19.8h9",
+  merci:"M12 21l-1.2-8.4M12 21l2.9-8M12 21l-4.1-7.3M13 10.4a2.2 2.2 0 1 1-4.4 0a2.2 2.2 0 0 1 4.4 0zM17.6 11.2a1.8 1.8 0 1 1-3.6 0a1.8 1.8 0 0 1 3.6 0zM9.2 12.1a1.8 1.8 0 1 1-3.6 0a1.8 1.8 0 0 1 3.6 0z",
+  rdv:"M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0zM12 7.4V12l3 2",
+  potes:"M7.5 4.5h6l-.6 5.2a2.4 2.4 0 0 1-4.8 0zM10.5 12.1v6.6M8 18.7h5M16.2 8.6l1.4-1.4M18.4 11.5h2M15.6 5.2l.5-1.9M18.7 15.3l1.3 1M3.9 9.2l1.4.6M4.6 14.8l1.5-.9",
+  autre:"M12 21l-4.6-7.6L12 3l4.6 10.4zM12 21v-8.6M13.1 12a1.1 1.1 0 1 1-2.2 0a1.1 1.1 0 0 1 2.2 0z"
+};
+
 /* Les questions de la plume. `un` : un seul choix ; `max` : plusieurs, au
    plus tant. Le libelle `q` part tel quel a la plume avec les reponses : la
    fiche se lit comme une conversation, pas comme un formulaire. */
@@ -613,6 +737,7 @@ var QUESTIONS = {
   "ton-doux":     {q:"The tone", max:2, choix:["Tender","Funny","Poetic","Passionate","Simple and direct","Nostalgic"]},
   "ton-fete":     {q:"The tone", max:2, choix:["Warm","Funny","Moving","Poetic","Simple and direct","Solemn"]},
   "ton-rupture":  {q:"The tone", max:2, choix:["Respectful","Funny","Blunt","Grateful","No hard feelings","Firm"]},
+  "ton-potes":    {q:"The tone", max:2, choix:["Funny","Warm","Blunt","Mysterious","Simple and direct"]},
   "ton-sobre":    {q:"The tone", max:2, choix:["Tender","Solemn","Simple and direct","Poetic","Moving"]},
   "qualites":     {q:"What is rare about them", max:3, choix:["Their kindness","Their humour","Their courage","Their patience","Their gentleness","Their strength","Their faith","Their loyalty","Their intelligence","Their elegance","Their generosity","Their smile"]},
   "craquer":      {q:"What made you fall for them", max:3, choix:["Their smile","Their eyes","Their voice","Their humour","Their kindness","The way they talk","Their style","Their intelligence"]},
@@ -628,6 +753,8 @@ var QUESTIONS = {
   "epreuve":      {q:"What challenge", un:true, choix:["An exam","A job interview","A competitive exam","A hard time","A new start"]},
   "sortie":       {q:"You suggest", un:true, choix:["Dinner","A drink","A walk","A weekend away","A surprise"]},
   "bebe":         {q:"It's", un:true, choix:["A girl","A boy","Twins","A christening"]},
+  "soiree":       {q:"You're hosting", un:true, choix:["A chill at home","A dance party","A barbecue","A surprise birthday","A match to watch together","A game night"]},
+  "apporter":     {q:"Everyone brings", max:2, choix:["Nothing, just you","Something to drink","A dish to share","Some music","A game","Good vibes"]},
   "longueur":     {q:"Length", un:true, choix:["Short","Medium","Long"]},
   "langue":       {q:"Your English", un:true, choix:["Polished","Everyday","With our own expressions"]},
   "foi":          {q:"A blessing at the end", un:true, choix:["No","Christian","Muslim"]}
@@ -904,16 +1031,23 @@ function aller(id){
 /* ── Les occasions, par familles ── */
 FAMILLES.forEach(function(f){
   var h = document.createElement("h2"); h.className = "fam"; h.textContent = f.nom;
-  var g = document.createElement("div"); g.className = "occasions";
+  var g = document.createElement("div"); g.className = "occasions"; g.dataset.fam = f.id;
   OCCASIONS.filter(function(o){ return o.fam === f.id; }).forEach(function(o){
     var b = document.createElement("button");
     b.type = "button";
     b.className = "occ" + (o.id === E.occasion ? " on" : "");
     b.dataset.id = o.id;
+    var c = document.createElement("i"); c.className = "sceau-o"; c.setAttribute("aria-hidden", "true");
+    if (EMBLEMES[o.id]) {
+      c.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="' + EMBLEMES[o.id] + '"/></svg>';
+    } else { c.textContent = o.nom.charAt(0); }
     var n = document.createElement("b"); n.textContent = o.nom;
     var s = document.createElement("span"); s.textContent = o.note;
-    b.appendChild(n); b.appendChild(s);
-    b.addEventListener("click", function(){ choisirOccasion(o); });
+    b.appendChild(c); b.appendChild(n); b.appendChild(s);
+    /* le survol fait un clic de papier ; le toucher frappe le cachet (le son ET le geste) */
+    b.addEventListener("pointerenter", function(e){ if (e.pointerType === "mouse") { Bruits.tic(); } });
+    b.addEventListener("pointerdown", function(){ b.classList.remove("frappe"); void b.offsetWidth; b.classList.add("frappe"); Bruits.sceau(); });
+    b.addEventListener("click", function(e){ if (!e.detail) { Bruits.sceau(); } choisirOccasion(o); });
     g.appendChild(b);
   });
   $("#liste-occasions").appendChild(h);
@@ -954,6 +1088,11 @@ function choisirOccasion(o){
    ══════════════════════════════════════════════════════════════════════ */
 function dessinerFiche(){
   var o = occasion(E.occasion);
+  /* l'aide des consignes suit l'occasion (la soiree entre potes demande le lieu et l'heure) ;
+     celle de la page est gardee la premiere fois, pour y revenir */
+  var cons = $("#f-consignes");
+  if (cons.dataset.aide0 === undefined) { cons.dataset.aide0 = cons.placeholder; }
+  cons.placeholder = o.aide || cons.dataset.aide0;
   var R = E.fiche.reponses;
   var bac = $("#questions");
   bac.textContent = "";
