@@ -1018,6 +1018,35 @@ def main():
                 and attendre(lambda: "<img" in cadre.locator("#l-corps").inner_text())
                 and cadre.locator("#l-corps img").count() == 0)
 
+            # ── les retouches (2026-10-21) : la plume repart des CHAMPS ──
+            pg.fill("#f-lettre", "Premier paragraphe, corrige a la main.\n\nSecond.")
+            n0 = len(appels)
+            pg.click('#retouches [data-retouche="courte"]')
+            attendre(lambda: len(appels) > n0)
+            rt = appels[-1]["corps"] if len(appels) > n0 else {}
+            act = rt.get("actuelle") or {}
+            dit("« Plus courte » part avec son identifiant",
+                rt.get("retouche") == "courte" and not rt.get("demande"), str({k: rt.get(k) for k in ("retouche", "demande")}))
+            dit("la retouche repart de la lettre DES CHAMPS, correction a la main comprise",
+                act.get("lettre") == ["Premier paragraphe, corrige a la main.", "Second."], str(act)[:160])
+            dit("elle porte le titre et la formule des champs",
+                act.get("titre") == "Il faut que je te dise" and act.get("formule") == "Sans rancune,")
+            dit("la retouche revient dans les champs et le dit",
+                attendre(lambda: "retouche" in pg.inner_text("#plume-mot").lower())
+                and "Premier paragraphe." in pg.input_value("#f-lettre"), pg.inner_text("#plume-mot"))
+            n1 = len(appels)
+            pg.click("#btn-retouche")
+            pg.wait_for_timeout(250)
+            dit("une demande vide ne part pas, et on dit quoi faire",
+                len(appels) == n1 and "changer" in pg.inner_text("#plume-mot"), pg.inner_text("#plume-mot"))
+            pg.fill("#f-retouche", "Parle de notre voyage")
+            pg.press("#f-retouche", "Enter")
+            attendre(lambda: len(appels) > n1)
+            rd = appels[-1]["corps"] if len(appels) > n1 else {}
+            dit("une demande ecrite part avec Entree, sans retouche choisie",
+                rd.get("demande") == "Parle de notre voyage" and rd.get("retouche") == "", str(rd.get("demande")))
+            dit("la demande s'efface une fois servie", attendre(lambda: pg.input_value("#f-retouche") == ""))
+
             # ── le prix, plume comprise ──
             pg.click("#vers-palier")
             px = lambda i: pg.inner_text('.pal[data-id="%s"] .px' % i).strip()

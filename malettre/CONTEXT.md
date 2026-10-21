@@ -244,12 +244,45 @@ Le point de reprise du 2026-10-17 (sept étapes) est **fait**, sauf ce qui atten
    MP3** de Mongazi (`_studio-video/src/malettre/VOIX.md`) ; ensuite caler `minutage.ts` sur la voix
    et rendre à UN onglet. Détail : `_studio-video/README.md`.
 
-**Contrôles au 2026-10-21, tous verts** : `_qc.py` **276** · caisse **327** · accueil **239** ·
+**Contrôles au 2026-10-21, tous verts** : `_qc.py` **285** · caisse **362** · accueil **239** ·
 langues **52** · faire-part **83**.
 
 **La suite, dans l'ordre** : les MP3 → caler et rendre la pub · le feu vert de Mongazi → brancher
 la caisse et la plume (`PAIEMENT.md`) → publier `_dist` (le relais part avec) → vérifier qu'une
 adresse `/l/<jeton>` inconnue rend « Cette lettre n'existe pas ».
+
+## La plume : ses savoir-faire et ses retouches (2026-10-21)
+
+Mongazi : « donne-lui tous les outils et les skills qu'il faut pour satisfaire n'importe quel client
+à 100 %, à tout moment ». La plume avait ses RÈGLES (ce qu'il ne faut pas faire) ; elle a reçu le
+MÉTIER (comment on fait bien) :
+
+- **Un savoir-faire par occasion** (`supabase/functions/_shared/savoirs.ts`, 27 occasions) : comment
+  la lettre s'ouvre, ce qui la porte, comment elle finit, où elle se rate (la vraie excuse en quatre
+  temps, la demande en mariage qui finit sur la question seule, la rupture claire dès le premier
+  paragraphe…). Comme une compétence qu'on charge quand on en a besoin, **seul celui de l'occasion
+  part avec la fiche** (`<savoir-faire>` dans le message) : le système, lui, reste figé et en cache.
+- **Le métier commun, dans le système FR et EN** : à qui on écrit (**vouvoiement au pluriel** pour
+  les mariés, les parents, une équipe, un groupe d'amis ; vouvoiement d'un patron et des
+  beaux-parents ; une lettre « pour plus tard » parle à l'enfant devenu grand), la première phrase
+  qui entre dans le vrai, le souvenir raconté sans enjoliver, la dernière phrase qui porte la lettre,
+  le titre tiré du cœur de la lettre, la formule accordée au lien, la fiche maigre (court et juste),
+  la bénédiction en une phrase, l'humour qui ne se moque jamais de la personne, plus de clichés.
+- **Les retouches** (constructeur FR et EN) : « Plus courte », « Plus longue », « Plus tendre »,
+  « Plus drôle », « Plus simple », « Plus solennelle », ou une demande écrite (140 signes). La plume
+  repart de la lettre **telle qu'elle est dans les champs**, corrections à la main comprises
+  (`<lettre-actuelle>` + `<retouche>`). Une retouche sans lettre est refusée (`retouche`), une
+  retouche inconnue est ignorée, rien de ce que l'acheteur écrit ne ferme un bloc.
+- **Cinq versions par lettre, retouches comprises** (trois avant) : ⚠️ à confirmer par Mongazi.
+- **Le banc d'essai** `_banc_plume.mjs` : 15 fiches inventées (occasions et pièges : plusieurs
+  destinataires, un patron, une fiche maigre, une consigne humiliante, le deuil glissé dans
+  « Autre », l'anglais) + une retouche ; contrôles codés (longueur, prénom, vouvoiement, question
+  finale, bénédiction, titre, formule) et relecture par un juge (fidélité, souvenir, consignes, ton,
+  naturel, langue, chute). ⛔ **Appels payants, environ 32** : rien ne part sans `--oui`, et
+  **il n'a pas encore tourné** (accord de Mongazi attendu). Résultat dans `_vues/` (ignoré par git).
+- Contrôles : caisse **362** (35 nouveaux : couverture des savoir-faire, un seul envoyé, retouches,
+  bornes, pièges, boutons égaux des deux côtés) ; `_qc.py` : les boutons de retouche essayés dans le
+  vrai constructeur (la lettre des champs part, la demande écrite part avec Entrée, la limite les range).
 
 ## Les critères d'arrêt (recopiés le 2026-10-21, étape 6 du point de reprise)
 

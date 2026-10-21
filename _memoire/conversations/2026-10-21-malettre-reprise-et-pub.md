@@ -43,3 +43,29 @@ Le point de reprise du 2026-10-17 (sept étapes, `malettre/CONTEXT.md`) a été 
 - **Les six MP3 ElevenLabs** (`_studio-video/src/malettre/VOIX.md`) → caler et rendre la pub.
 - **Trancher les critères d'arrêt** (garder la date, ou huit semaines après la mise en ligne).
 - Le feu vert de mise en ligne, brancher la caisse et la plume (`malettre/PAIEMENT.md`).
+
+## Ensuite : la plume reçoit son métier (même jour)
+
+Mongazi : « je veux voir la vitrine de ma lettre, et j'espère que tu as donné tous les outils et skills
+qu'il faut pour satisfaire n'importe quel client à 100 % ; si ce n'est pas fait, crée les skills et
+donne-les-lui ». La vitrine lui a été servie en local (`malettre/_dist`, port 8790). Lu comme : la
+plume, l'agent qui écrit les lettres.
+
+- **Un savoir-faire par occasion** (`malettre/supabase/functions/_shared/savoirs.ts`), seul celui de
+  l'occasion part avec la fiche ; **le métier commun** dans les deux systèmes (vouvoiement au pluriel
+  pour plusieurs destinataires, patron et beaux-parents vouvoyés, première et dernière phrase, titre,
+  formule, bénédiction, humour, clichés) ; **les retouches** dans le constructeur FR et EN ; cinq
+  versions par lettre (à confirmer).
+- **Le banc d'essai** `malettre/_banc_plume.mjs` : 15 fiches + 1 retouche, contrôles codés et juge.
+  ⛔ Appels payants (environ 32) : pas lancé sans l'accord de Mongazi.
+- Caisse 362 verts.
+
+## Trading, le même jour
+
+- Mongazi : « 034 donne quoi ? j'ai pas les chiffres » : chiffres donnés (48 % à 1:1, 46 % à 1:2
+  avec l'objectif touché 6 % du temps, nul avant frais, pas mieux que le hasard, FTMO 29-32 % sur
+  indices et or grâce à la règle de FTMO).
+- ⚠️ **Erreur corrigée** : le verdict 0035 avait d'abord été écrit « sous le hasard (t −3,4 à −4,3) ».
+  C'était le t de la moyenne contre zéro. Le t contre le témoin (`t_contre_temoin`) est **+2,3 à
+  +3,0** : mieux que le hasard, perte quand même. Registre (D-097), CLAUDE.md et journal corrigés.
+  **Leçon** : `juge.json` porte deux « t » ; celui du verdict est `t_contre_temoin`.

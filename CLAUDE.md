@@ -296,7 +296,8 @@
 
 ### MA LETTRE À… · la lettre digitale  *(produit interne, ex-MINUIT, ex-LE PLI · **nom tranché le 2026-10-16**)*
 - **Ce que c'est** : une enveloppe cachetée qu'on ouvre à l'heure dite. L'acheteur écrit (ou **la plume**,
-  l'agent, écrit avec lui : +500 F, gratuite à essayer), choisit l'heure, paie, **envoie le lien lui-même** ;
+  l'agent, écrit avec lui : +500 F, gratuite à essayer ; **un savoir-faire par occasion** dans `_shared/savoirs.ts`
+  et des **retouches**, banc d'essai `_banc_plume.mjs`), choisit l'heure, paie, **envoie le lien lui-même** ;
   le cachet dort jusqu'à l'heure du téléphone de qui la reçoit, puis s'allume. Le nom se finit par un
   prénom : « Ma lettre à Afi ». Code : **`malettre/`** (ex-`lepli/`, renommé le 2026-10-16, commit `5af692d`).
 - **Rien n'est en ligne.** Adresse prévue `malettre.nebula-agency.online` (une constante).
@@ -310,8 +311,8 @@
   `faire-part/_couples/`, JAMAIS dans git, `_dist.py` refuse si une page publiée manque) · 5 la pub 🟡 (images
   faites le 2026-10-21, six compositions `malettre-*` dans `_studio-video/`, la voix manque).
   Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
-- **Contrôles, tous verts avant toute publication** : `_qc.py` (276) · `node --experimental-strip-types
-  malettre/_qc_caisse.mjs` (327) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
+- **Contrôles, tous verts avant toute publication** : `_qc.py` (285) · `node --experimental-strip-types
+  malettre/_qc_caisse.mjs` (362) · `_qc_accueil.py` (239, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
 - **Publier** (feu vert de Mongazi ET caisse branchée) : `python malettre/_dist.py` puis
   `wrangler pages deploy malettre/_dist --project-name malettre --branch main`. ⛔ Jamais le dossier entier.
   Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes. ⚠️ `lettre.html` est
