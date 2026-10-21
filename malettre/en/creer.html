@@ -379,7 +379,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
                "abc1234" laissait "abc1", le filtre retirait les lettres,
                et le code tombait a "1" (mesure en navigateur). C'est le
                filtre ci-dessous qui plafonne a quatre chiffres. -->
-          <p class="indice">It only opens with this code.</p>
+          <p class="indice">It only opens with this code. <span id="code-offres"></span></p>
         </div>
       </div>
 
@@ -405,6 +405,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       <div class="paliers" id="liste-paliers"></div>
       <p class="compte-plume" id="photos-note" hidden></p>
       <p class="compte-plume" id="habillage-note" hidden></p>
+      <p class="compte-plume" id="code-note" hidden></p>
       <p class="compte-plume" id="plume-note" hidden>The Quill wrote your letter: <b>500 F</b> is added to the offer you choose, already counted above.</p>
       <div class="actions">
         <button class="sec" data-vers="e-lettre">Back</button>
@@ -607,10 +608,10 @@ var QUESTIONS = {
 /* Ce qui est coche d'office tant que l'acheteur n'a rien touche. */
 var DEFAUTS = {longueur:"Medium", langue:"Everyday"};
 var PALIERS = [
-  {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,     pied:true,  photos:1, habillage:false},
-  {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,  pied:false, photos:3, habillage:true},
-  {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,  pied:false, photos:3, habillage:true},
-  {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000, pied:false, photos:20, habillage:true}
+  {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,     pied:true,  photos:1, habillage:false, code:false},
+  {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,  pied:false, photos:3, habillage:true,  code:false},
+  {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,  pied:false, photos:3, habillage:true,  code:true},
+  {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000, pied:false, photos:20, habillage:true,  code:true}
 ];
 /* ⛔ L'HABILLAGE (2026-10-16) : les MÊMES listes que `_shared/lettre.ts`
    (HABILLAGE) et que le gabarit ; un contrôle exige qu'elles soient égales.
@@ -628,6 +629,10 @@ var HABILLAGE = {
           {id:"confettis", nom:"Confetti"}, {id:"etoiles", nom:"Gold stars"}]
 };
 var SANS_HABILLAGE = {cire:"bordeaux", sceau:"initiale", papier:"creme", pluie:"aucune"};
+/* ⛔ LE CODE SECRET (2026-10-21) : il est promis par La Lettre et Le Coffret,
+   pas par Le Mot. Il etait pourtant donne a Le Mot, et La Lettre devenait Le
+   Mot plus cher. Le droit `code` vit dans les DEUX baremes (PALIERS ici et
+   dans `_shared/lettre.ts`), et un controle les compare. */
 /* ⛔ LE COFFRET PROMETTAIT « la livraison WhatsApp à l'heure choisie » : rien
    ne la faisait, et c'est contraire a la regle « on n'ecrit jamais a la
    personne qui recoit » (CONDITIONS.md). Il dit desormais ce qu'il contient.
@@ -777,7 +782,7 @@ function donnees(){
     pour: E.pour || "you",
     de: E.de || "",
     titre: E.titre || occ.titre,
-    code: pal.id === "gratuit" ? "" : (E.code || ""),
+    code: pal.code ? (E.code || "") : "",
     lettre: lignes.length ? lignes : ["Your letter writes itself here, as you go."],
     photos: E.photos.slice(0, maxPhotos).map(function(p){
       return { src: p.src, legende: p.legende || "" };
@@ -1149,6 +1154,11 @@ Object.keys(HABILLAGE).forEach(function(g){
     $("#h-" + g).appendChild(b);
   });
 });
+/* Les offres qui portent le code secret, écrites à partir du barème. */
+(function(){
+  var n = PALIERS.filter(function(p){ return p.code; }).map(function(p){ return p.nom; });
+  $("#code-offres").textContent = "With " + n.join(" or ") + ".";
+})();
 /* Les offres qui portent l'habillage, écrites à partir du barème. */
 (function(){
   var n = PALIERS.filter(function(p){ return p.habillage; }).map(function(p){ return p.nom; });
@@ -1209,6 +1219,14 @@ function peindrePaliers(){
     var vetue = PALIERS.filter(function(p){ return p.habillage; })[0];
     $("#habillage-note").textContent = "Your finish (wax, paper, line to scratch) needs "
       + vetue.nom + " (" + fmt(vetue.prix) + "): with the free offer, your letter will go without it.";
+  }
+  /* Le code secret avec une offre qui ne le porte pas : on le DIT aussi. */
+  var sansCode = !pal.code && !!E.code;
+  $("#code-note").hidden = !sansCode;
+  if (sansCode) {
+    var codee = PALIERS.filter(function(p){ return p.code; })[0];
+    $("#code-note").textContent = "Your secret code needs " + codee.nom + " (" + fmt(codee.prix)
+      + "): with " + pal.nom + ", your letter will open without a code.";
   }
 }
 

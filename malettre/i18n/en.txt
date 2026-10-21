@@ -101,8 +101,8 @@ FR: <label for="f-code">Code secret <span
 EN: <label for="f-code">Secret code <span
 FR: placeholder="4 chiffres"
 EN: placeholder="4 digits"
-FR: <p class="indice">Elle ne l'ouvre qu'avec ce code.</p>
-EN: <p class="indice">It only opens with this code.</p>
+FR: <p class="indice">Elle ne l'ouvre qu'avec ce code. <span id="code-offres"></span></p>
+EN: <p class="indice">It only opens with this code. <span id="code-offres"></span></p>
 FR: <label for="f-quand">Elle s'ouvre le</label>
 EN: <label for="f-quand">It opens on</label>
 FR: La lettre ne s'ouvrira pas avant cette heure, à l'heure du téléphone de <b>celui ou celle qui la lit</b>. Laisse vide pour qu'elle s'ouvre tout de suite.
@@ -166,6 +166,12 @@ FR: {id:"confettis", nom:"Des confettis"}, {id:"etoiles", nom:"Des étoiles d'or
 EN: {id:"confettis", nom:"Confetti"}, {id:"etoiles", nom:"Gold stars"}]
 FR: $("#h-offres").textContent = "(avec " + (n.length > 1 ? n.slice(0, -1).join(", ") + " ou " + n[n.length - 1] : n[0]) + ")";
 EN: $("#h-offres").textContent = "(with " + (n.length > 1 ? n.slice(0, -1).join(", ") + " or " + n[n.length - 1] : n[0]) + ")";
+FR: $("#code-offres").textContent = "Avec " + n.join(" ou ") + ".";
+EN: $("#code-offres").textContent = "With " + n.join(" or ") + ".";
+FR: $("#code-note").textContent = "Ton code secret demande " + codee.nom + " (" + fmt(codee.prix)
+EN: $("#code-note").textContent = "Your secret code needs " + codee.nom + " (" + fmt(codee.prix)
+FR: + ") : avec " + pal.nom + ", ta lettre s'ouvrira sans code.";
+EN: + "): with " + pal.nom + ", your letter will open without a code.";
 FR: $("#habillage-note").textContent = "Ton habillage (cire, papier, phrase à gratter) demande "
 EN: $("#habillage-note").textContent = "Your finish (wax, paper, line to scratch) needs "
 FR: + vetue.nom + " (" + fmt(vetue.prix) + ") : avec l'offre gratuite, ta lettre partira sans lui.";

@@ -650,7 +650,7 @@ for (const k of ['deuil', 'nuisible', 'hors-sujet']) {
 console.log('\n== L’habillage')
 const creerFr = lire('creer.html')
 const blocPal = /var PALIERS = \[([\s\S]*?)\n\];/.exec(creerFr)[1]
-const droits = Object.fromEntries([...blocPal.matchAll(/\{id:"([a-z]+)"[^}]*habillage:(true|false)\}/g)].map((m) => [m[1], m[2] === 'true']))
+const droits = Object.fromEntries([...blocPal.matchAll(/\{id:"([a-z]+)"[^}]*habillage:(true|false)[,}]/g)].map((m) => [m[1], m[2] === 'true']))
 for (const p of M.PALIERS) {
   dit(droits[p.id] === p.habillage, `« ${p.nom} » : le même droit à l’habillage des deux côtés`, `${droits[p.id]} contre ${p.habillage}`)
 }
@@ -695,6 +695,25 @@ dit(avecCase.lettre?.repondre === '2290197085576', 'la case cochée met le numé
 const cmdTs2 = lire('supabase/functions/malettre-commande/index.ts')
 dit(/\+\$\{indicatif\}\$\{tape\}/.test(cmdTs2), 'la caisse garde le WhatsApp de l’acheteur au format international')
 dit(/\/\^\\d\{10,15\}\$\/\.test\(String\(D\.repondre/.test(gab), 'le gabarit revérifie la forme du numéro')
+
+/* ═══ 20 · le code secret (2026-10-21) ════════════════════════════════════
+   Promis par La Lettre et Le Coffret, pas par Le Mot : il lui était pourtant
+   donné, et La Lettre devenait Le Mot plus cher. Le même droit des deux côtés. */
+console.log('\n== Le code secret')
+const droitsCode = Object.fromEntries([...blocPal.matchAll(/\{id:"([a-z]+)"[^}]*code:(true|false)\}/g)].map((m) => [m[1], m[2] === 'true']))
+for (const p of M.PALIERS) {
+  dit(droitsCode[p.id] === p.code, `« ${p.nom} » : le même droit au code secret des deux côtés`, `${droitsCode[p.id]} contre ${p.code}`)
+}
+dit(M.PALIERS.filter((p) => p.code).map((p) => p.id).join(',') === 'lettre,coffret', 'seules La Lettre et Le Coffret portent le code secret')
+for (const p of M.PALIERS) {
+  const promet = /code secret/.test((/\{id:"([a-z]+)"[^}]*desc:"([^"]*)"/.exec(blocPal.split('\n').find((l) => l.includes(`id:"${p.id}"`))) || [])[2] || '')
+  dit(promet === p.code, `« ${p.nom} » : sa description promet le code secret si et seulement s’il le porte`)
+}
+dit(M.lireCommande({ ...BON, palier: 'mot' }).lettre?.code === '', '⛔ Le Mot envoyé avec un code arrive SANS code')
+dit(M.lireCommande({ ...BON, palier: 'gratuit' }).lettre?.code === '', 'la lettre gratuite arrive sans code')
+dit(M.lireCommande({ ...BON, palier: 'lettre' }).lettre?.code === '1234', 'La Lettre garde son code')
+dit(M.lireCommande({ ...BON, palier: 'coffret' }).lettre?.code === '1234', 'Le Coffret garde son code')
+dit(/code: pal\.code \? \(E\.code \|\| ""\) : ""/.test(creerFr), 'le constructeur n’envoie le code qu’avec une offre qui le porte')
 
 /* ═══ le compte ═══════════════════════════════════════════════════════════ */
 for (const [q, d] of verts) console.log('  [ok]', q, d ? `· ${d}` : '')

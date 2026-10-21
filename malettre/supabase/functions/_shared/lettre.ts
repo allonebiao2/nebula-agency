@@ -40,13 +40,16 @@ export type Palier = {
      Mongazi du 2026-10-16, réservé aux offres payantes, sans changer les prix.
      ⛔ Le même droit vit dans `creer.html` (PALIERS) ; un contrôle compare. */
   habillage: boolean
+  /* Le code secret (2026-10-21) : promis par La Lettre et Le Coffret seulement.
+     ⛔ Le même droit vit dans `creer.html` (PALIERS) ; un contrôle compare. */
+  code: boolean
 }
 
 export const PALIERS: Palier[] = [
-  { id: 'gratuit', nom: 'Gratuit',    prix: 0,     pied: true,  jours: 7,   photos: 1,  en: 'Free',         habillage: false },
-  { id: 'mot',     nom: 'Le Mot',     prix: 2000,  pied: false, jours: 365, photos: 3,  en: 'The Note',     habillage: true },
-  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 3,  en: 'The Letter',   habillage: true },
-  { id: 'coffret', nom: 'Le Coffret', prix: 10000, pied: false, jours: 365, photos: 20, en: 'The Keepsake', habillage: true },
+  { id: 'gratuit', nom: 'Gratuit',    prix: 0,     pied: true,  jours: 7,   photos: 1,  en: 'Free',         habillage: false, code: false },
+  { id: 'mot',     nom: 'Le Mot',     prix: 2000,  pied: false, jours: 365, photos: 3,  en: 'The Note',     habillage: true,  code: false },
+  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 3,  en: 'The Letter',   habillage: true,  code: true },
+  { id: 'coffret', nom: 'Le Coffret', prix: 10000, pied: false, jours: 365, photos: 20, en: 'The Keepsake', habillage: true,  code: true },
 ]
 
 /* ── Les deux langues (2026-10-16) ─────────────────────────────────────────
@@ -352,8 +355,9 @@ export function lireCommande(d: any): Accord | Refus {
     pour: texte(d?.pour) || (langue === 'en' ? 'you' : 'toi'),
     de: texte(d?.de),
     titre: texte(d?.titre),
-    /* Le palier offert n'a pas de code secret : c'est ce qui le distingue. */
-    code: p.id === 'gratuit' ? '' : code,
+    /* Le code secret n'est porté que par les offres qui le promettent (La Lettre,
+       Le Coffret) : envoyé avec une autre offre, il est retiré, comme l'habillage. */
+    code: p.code ? code : '',
     lettre: lignes,
     photos,
     depuis: /^\d{4}-\d{2}-\d{2}$/.test(String(d?.depuis ?? '')) ? String(d.depuis) : '',
