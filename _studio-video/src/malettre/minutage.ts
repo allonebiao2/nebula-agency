@@ -85,13 +85,16 @@ const PLUME15 = (langue: Langue): Version => ({
 });
 
 /** Les six versions, sous le nom de leur MP3 dans `VOIX.md`. */
-export const VERSIONS = {
+export type VersionId = 'fr-30' | 'en-30' | 'fr-15-lettre' | 'fr-15-plume' | 'en-15-letter' | 'en-15-quill';
+
+/* ⚠️ Typé `Record<VersionId, Version>` et pas `as const` : une version calée sur la
+   voix s'écrit ici en objet (par `_outils/malettre_son.py`), et `as const` en ferait
+   un type figé que le montage ne saurait plus lire comme un `Plan`. */
+export const VERSIONS: Record<VersionId, Version> = {
 	'fr-30': TRENTE('fr'),
 	'en-30': TRENTE('en'),
 	'fr-15-lettre': LETTRE15('fr'),
 	'fr-15-plume': PLUME15('fr'),
 	'en-15-letter': LETTRE15('en'),
 	'en-15-quill': PLUME15('en'),
-} as const satisfies Record<string, Version>;
-
-export type VersionId = keyof typeof VERSIONS;
+};

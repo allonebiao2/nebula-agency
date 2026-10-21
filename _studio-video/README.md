@@ -439,10 +439,16 @@ qu'on ouvre à l'heure dite**. Sept plans, sept gestes de cet objet :
    `en/creer.html` (390 px, ×3) dans `public/malettre/<langue>/`, et écrit
    `src/malettre/captures.ts` (taille de la fiche, centre de chaque puce cochée :
    c'est là que le doigt tombe). À relancer si le constructeur change.
-2. ⏳ **Quand les six MP3 sont posés** dans `_partage/ma lettre/voix/` : on les
-   transcrit au mot (Whisper, comme `nebula30_son.py`), on nettoie la voix vers
-   `public/malettre/`, et on réécrit `minutage.ts` : chaque plan commence sur sa
-   phrase, ses `temps` tombent sur leur mot, `voix` passe du `null` au fichier.
+2. ⏳ **Quand les MP3 sont posés** dans `_partage/ma lettre/voix/` :
+   `python _outils/malettre_son.py`. Il transcrit chaque prise au mot (Whisper
+   large-v3-turbo, sans indice), la rapproche du texte de `VOIX.md` (lu dans le
+   fichier), nettoie la voix vers `public/malettre/voix-<version>.wav` et réécrit la
+   ligne de la version dans `minutage.ts` : chaque phrase ouvre son plan, les mots-clés
+   (prénoms, « plume », « cire », les occasions) deviennent ses `temps`. Si la voix va
+   plus vite que l'image (une lettre qui s'ouvre doit se lire : `MINIMUM`), la prise est
+   coupée dans le souffle avant la phrase suivante, qui attend. Une coupe de 15 s qui
+   déborde est **refusée** (il faut une prise plus rapide). Les versions sans MP3 gardent
+   leur minutage provisoire. `--essai` vérifie tout sans audio.
    **Aucune scène n'est à toucher** : un plan étire ses gestes sur la durée reçue.
 3. `npm run rendu:malettre`, à UN onglet, pas pendant un calcul lourd.
 
