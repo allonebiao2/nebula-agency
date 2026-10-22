@@ -1,0 +1,53 @@
+{
+  "_lisez-moi": "Les ouvertures de MA LETTRE À… : une par occasion (rites/<id>.js). « matieres » : les matcaps de Blender qu'il emporte (« cire » = la cire de l'habillage). « occasions » : celles qui l'ont pour ouverture. Une occasion absente prend « cachet ». Seule source : la construction (_rites.py), le constructeur et le serveur la lisent.",
+  "cachet": {
+    "nom": {
+      "fr": "Le cachet",
+      "en": "The seal"
+    },
+    "matieres": [
+      "cire"
+    ],
+    "occasions": [
+      "autre"
+    ]
+  },
+  "perles": {
+    "nom": {
+      "fr": "Le collier de perles",
+      "en": "The pearl necklace"
+    },
+    "matieres": [
+      "cire",
+      "perle",
+      "or"
+    ],
+    "occasions": [
+      "mariage"
+    ]
+  },
+  "portes": {
+    "nom": {
+      "fr": "Les portes brodées",
+      "en": "The embroidered doors"
+    },
+    "matieres": [
+      "cire"
+    ],
+    "occasions": [
+      "valentin"
+    ]
+  },
+  "bougie": {
+    "nom": {
+      "fr": "La bougie",
+      "en": "The candle"
+    },
+    "matieres": [
+      "cire"
+    ],
+    "occasions": [
+      "anniv"
+    ]
+  }
+}

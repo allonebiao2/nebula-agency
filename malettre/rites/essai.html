@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Banc d'essai des ouvertures</title>
+<!--
+  MA LETTRE À… · le banc d'essai des ouvertures (local seulement, jamais publié).
+    ?rite=cachet&cire=bordeaux&papier=creme&sceau=initiale&pour=Afi&de=Koffi&jouer=1
+  Sans `jouer`, la page ne bouge pas : figer(t, ti) peint une image à l'instant t (secondes depuis le geste,
+  négatif = avant), et les contrôles la photographient. Avec `jouer=1`, l'ouverture se joue au toucher.
+-->
+<style>
+  html,body{margin:0;height:100%;background:#141019;overflow:hidden;font-family:system-ui,sans-serif}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+  #cadre{position:fixed;left:50%;top:44%;width:min(78vw,340px);aspect-ratio:1.62;translate:-50% -50%;outline:1px dashed rgba(255,255,255,.0);pointer-events:none}
+  #info{position:fixed;left:8px;bottom:8px;color:#f4ede0;font-size:12px;opacity:.6}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="cadre"></div>
+<div id="info"></div>
+<script src="moteur.js"></script>
+<script src="atelier.js"></script>
+<script>
+"use strict";
+var q = new URLSearchParams(location.search), nom = q.get("rite") || "cachet";
+var MATIERES = {};
+["cire-bordeaux", "cire-or", "cire-nuit", "cire-sapin", "cire-rose", "or", "or-brosse", "argent", "perle", "velours-bordeaux", "velours-nuit", "papier"]
+  .forEach(function (m) { MATIERES[m] = "matieres/" + m + ".png"; });
+window.__pret = false;
+fetch(nom + ".js").then(function (r) { return r.text(); }).then(function (src) {
+  var rite = (0, eval)(src);
+  var r = document.getElementById("cadre").getBoundingClientRect();
+  var D = { pour: q.get("pour") || "Afi", de: q.get("de") || "Koffi", EN: q.get("langue") === "en",
+    HAB: { cire: q.get("cire") || "bordeaux", papier: q.get("papier") || "creme", sceau: q.get("sceau") || "initiale" },
+    cadre: { x: r.left + r.width / 2, y: r.top + r.height / 2, l: r.width } };
+  var cv = document.getElementById("scene");
+  if (q.get("jouer")) {
+    var j = Theatre.jouer(cv, rite, D, { fin: function () { document.getElementById("info").textContent = "révélé"; }, abandon: function (e) { document.getElementById("info").textContent = "abandon " + e; } });
+    addEventListener("click", function () { j.ouvrir(); });
+    window.__pret = true;
+    return;
+  }
+  var S = Theatre(cv, { garder: true, kmax: 1 });
+  rite.monter(S, D);
+  window.figer = function (t, ti) { rite.rendre(S, t, ti == null ? 3 : ti); return cv.toDataURL("image/png"); };
+  (function attendre() { if (!S.pret) return setTimeout(attendre, 30); window.__pret = true; })();
+}).catch(function (e) { document.getElementById("info").textContent = "erreur " + e; window.__erreur = String(e); });
+</script>
+</body>
+</html>

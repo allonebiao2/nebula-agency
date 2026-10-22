@@ -128,3 +128,6 @@ malettre/faire-part/_couples/
 # MA LETTRE A... : la musique (Pixabay) part avec le site, jamais dans ce depot PUBLIC
 # (la licence interdit de redistribuer le fichier seul). Source : _partage/, outil : malettre/_son.py
 malettre/son/*.mp3
+
+# MA LETTRE À… · les planches et lettres d'essai des ouvertures (refaites par _voir.py, _lettre_essai.py, _demo.py)
+malettre/rites/_planches/
