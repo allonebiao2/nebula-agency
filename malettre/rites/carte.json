@@ -202,6 +202,34 @@
       },
       "matieres": [],
       "grande": true
+    },
+    "pli": {
+      "nom": {
+        "fr": "La lettre pliée",
+        "en": "The folded letter"
+      },
+      "mecanique": "pli",
+      "theme": {
+        "motif": "lin"
+      },
+      "matieres": [
+        "cire"
+      ],
+      "grande": false
+    },
+    "pli-noyer": {
+      "nom": {
+        "fr": "La lettre pliée sur la table",
+        "en": "The folded letter on the table"
+      },
+      "mecanique": "pli",
+      "theme": {
+        "motif": "noyer"
+      },
+      "matieres": [
+        "cire"
+      ],
+      "grande": false
     }
   },
   "occasions": {
@@ -235,10 +263,12 @@
       "cachet"
     ],
     "pardon": [
+      "pli",
       "lanterne",
       "cachet"
     ],
     "rupture": [
+      "pli",
       "cachet",
       "lanterne"
     ],
@@ -275,6 +305,7 @@
     ],
     "amitie": [
       "cachet",
+      "pli-noyer",
       "portes-deco",
       "rideau-theatre",
       "feu-fete"
@@ -286,6 +317,7 @@
       "cachet"
     ],
     "brouille": [
+      "pli",
       "cachet",
       "lanterne"
     ],
@@ -325,10 +357,12 @@
     ],
     "courage": [
       "lanterne",
+      "pli-noyer",
       "cachet"
     ],
     "guerison": [
       "lanterne",
+      "pli-noyer",
       "cachet"
     ],
     "travail": [
@@ -344,6 +378,7 @@
       "cachet"
     ],
     "merci": [
+      "pli-noyer",
       "cachet",
       "lanterne",
       "portes-dentelle"
@@ -362,7 +397,8 @@
       "portes-deco",
       "rideau-theatre",
       "feu-fete",
-      "lanterne"
+      "lanterne",
+      "pli-noyer"
     ]
   }
 }

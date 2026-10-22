@@ -157,6 +157,36 @@ def lanterne(self):
 Banc.lanterne = lanterne
 
 
+def pli(self):
+    """La lettre pliée : le toucher qui ouvre décolle le cachet et déplie le 1er rabat ; chaque toucher en déplie un autre."""
+    lire = "(() => { const r = window.__rite || (window.RITE && RITE.rite); return { n: r.ouv.length }; })()"
+    pg = self.page()
+    pg.evaluate("__ouvrir()"); pg.wait_for_timeout(900)
+    e1 = pg.evaluate(lire)
+    pg.mouse.click(195, 420); pg.wait_for_timeout(600)
+    e2 = pg.evaluate(lire)
+    pg.mouse.click(195, 420); pg.wait_for_timeout(600); pg.mouse.click(195, 420); pg.wait_for_timeout(300)
+    e4 = pg.evaluate(lire); pg.close()
+    self.note("le toucher qui ouvre déplie le 1er rabat", e1["n"] == 1, e1)
+    self.note("un toucher déplie le 2e", e2["n"] == 2, e2)
+    self.note("deux touchers de plus : les quatre rabats", e4["n"] == 4, e4)
+    pg = self.page()
+    pg.evaluate("__ouvrir()"); pg.wait_for_timeout(900)
+    pg.evaluate("""(() => { const c = document.getElementById('scene'), o = { clientX: 195, clientY: 420, pointerId: 1, bubbles: true };
+      for (let i = 0; i < 3; i++) { c.dispatchEvent(new PointerEvent('pointerdown', o)); c.dispatchEvent(new PointerEvent('pointerup', o)); } })()""")
+    e = pg.evaluate(lire); pg.close()
+    self.note("trois touchers collés ne déplient qu'un rabat", e["n"] == 2, e)
+    pg = self.page(self.lettre, crochet=True)
+    pg.click("#btn-ouvrir"); pg.wait_for_timeout(900)
+    for _ in range(3):
+        pg.mouse.click(195, 300); pg.wait_for_timeout(600)
+    e = pg.evaluate(lire); pg.close()
+    self.note("vraie lettre : le bouton, puis trois touchers", e["n"] == 4, e)
+
+
+Banc.pli = pli
+
+
 def main():
     rite = sys.argv[1] if len(sys.argv) > 1 else "portes-dentelle"
     banc, demo = servir(ICI), servir(ICI / "_planches" / "demo")
@@ -171,6 +201,8 @@ def main():
             b.feu()
         elif meca == "lanterne":
             b.lanterne()
+        elif meca == "pli":
+            b.pli()
         elif meca == "battants":
             b.portes()
         else:
