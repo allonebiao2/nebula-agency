@@ -3033,4 +3033,21 @@ deux webhooks SasPay = deux secrets, alors que les secrets Supabase valent pour 
   50 Ko de script dépasse la longueur d'une commande sous Windows : passer par un fichier.
 - Hors écran en WebGL 1, la profondeur simple est à 16 bits : deux feuilles à 2 mm s'y battent. `DEPTH_STENCIL` et un
   plan proche reculé.
+## 2026-10-22 · Un contrôle d'ouverture doit prouver le GESTE, pas l'ouverture (MA LETTRE À…, les ouvertures à geste)
+- Le contrôle disait « ouverte, portes devant la lettre » : les portes s'étaient ouvertes TOUTES SEULES (le repli
+  automatique), le navigateur de contrôle (SwiftShader) mettant une demi-seconde par image, le geste arrivait trop tard.
+  Une fonctionnalité qui a un repli automatique se teste repli COUPÉ : si ça s'ouvre, c'est le doigt.
+- Sur SwiftShader, une mesure de temps « après le clic » est fausse de plusieurs secondes : le clic lui-même attend la
+  fin d'images très lentes. Ne jamais conclure d'un horodatage pris par le contrôle ; lire l'état de la page.
+- Un glissé n'est pas un clic : quelqu'un qui veut « écarter les portes » pose le doigt et glisse tout de suite, et rien
+  ne s'ouvrait. Le premier geste naturel doit marcher, pas seulement le geste prévu.
+- Une courbe de couleur en S écrite pour [0, 1] REPLIE ce qui dépasse 1 : avec le halo, le rouge d'une lanterne
+  allumée retombait et la teinte glissait vers le vert. Borner avant toute courbe.
+- La lumière se MULTIPLIE : papier chaud × lumière chaude × ambiance chaude = brun. Un papier clair veut une lumière
+  presque blanche ; mesurer le pixel, refaire le calcul à la main, il tombe juste.
+- Un tirage au hasard conditionnel dans une boucle de particules décale toutes les suivantes d'une image à l'autre (elles
+  sautent) : tout ce qui varie dans le temps se calcule sur le temps, jamais sur un tirage de plus.
+- Une grandeur intégrée image par image avec un pas borné ralentit sur un appareil lent : la calculer sur le temps réel
+  (instant où le doigt se pose, instant où il se lève).
+- Un reflet est sous la surface : une eau opaque le cache par la profondeur ; le peindre par-dessus.
 

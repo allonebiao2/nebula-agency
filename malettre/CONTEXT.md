@@ -433,24 +433,22 @@ Le film YouTube de Ma lettre à… : **16:9, 1920×1080 à 60 i/s, 56,3 s**, com
 **Le chantier suivant (demande de Mongazi, 2026-10-22)** : une animation d'ouverture PROPRE à chaque occasion, tirée
 des onze vidéos de référence (`_partage/ma lettre/*.mp4`) et de ce qu'elles inspirent, au plus haut niveau.
 
-## 🎭 LES OUVERTURES EN 3D, UNE PAR OCCASION (2026-10-22, en cours)
+## 🎭 LES OUVERTURES EN 3D (2026-10-22, vagues 1 et 2, rien de déployé)
 
-Demande de Mongazi : « chaque événement doit avoir son animation spéciale », « immersives et en 3D », inspirées des
-onze vidéos de `_partage/ma lettre/`, avec Blender et Remotion. Le plan des 28 et l'état : **`malettre/RITES.md`**.
+Demande de Mongazi : une ouverture propre à chaque événement, immersive et en 3D, puis « au moins 3 à 5 par
+événement », « l'écran entier comme une porte », « le texte qui s'écrit lentement », « faire durer » (« Les deux » :
+plusieurs au choix, chacune qui dure). **L'état complet, le catalogue et l'architecture : `malettre/RITES.md`.**
 
-- **Fait (vague 1, commit `6feea09`, rien de déployé)** : le théâtre WebGL de la lettre (`rites/moteur.js`, aucune
-  bibliothèque), l'atelier (`rites/atelier.js`), le branchement dans le seuil (`rites/branchement.js`, retour à
-  l'ouverture d'avant au moindre souci), quatre ouvertures (`cachet`, `perles` pour le mariage, `portes` pour la
-  Saint-Valentin, `bougie` pour l'anniversaire), douze matières rendues dans Blender (`rites/_matieres_blender.py`),
-  la construction `python malettre/_rites.py` (→ `rites.js` et `_shared/rites.ts`, fonction `poserRite`), le marqueur
-  `MALETTRE_RITE` dans `lettre.html` (61 323 octets, `_qc.py` 284 verts).
-- **Retour de Mongazi** : « pixelisé », « pas fluide », « Sega au lieu de PS5 » → **moteur « cinéma »** en cours
-  (rendu hors écran sur-échantillonné, FXAA, halo, profondeur de champ, vignetage, grain, papier qui se courbe,
-  textures en 1024, 60 images par seconde avec baisse automatique de qualité).
-- **Prix (Mongazi)** : l'ouverture de l'occasion incluse dans toutes les offres ; en choisir une autre : les simples
-  incluses, les « grandes » à +1 000 F, calculé au serveur.
-- **Regarder** : `python malettre/rites/_voir.py <rite>` (planche à huit instants), `_lettre_essai.py <rite>` (dans une
-  vraie lettre), `_demo.py` (les quatre sur http://localhost:8765/).
+- **18 ouvertures, 9 mécaniques** (cachet, perles, petit cabinet, bougie, portes plein écran, rideau, feu d'artifice,
+  lanternes, lettre pliée), **au moins trois par occasion** (`rites/carte.json`, la première est la sienne). Après
+  chacune, **la lettre s'écrit** (`rites/ecriture.js`).
+- **Prix (Mongazi)** : l'ouverture de l'occasion incluse partout ; une autre : les simples incluses, les « grandes » à
+  +1 000 F, calculé au serveur.
+- **Voir** : `python malettre/rites/_demo.py` → http://localhost:8765/ (14 vraies lettres) · `_voir.py <ouverture>` ·
+  `_geste_essai.py <ouverture>` (le geste vérifié, l'automatique repoussé) · `_ecriture_essai.py`.
+- **Reste** : le choix dans le constructeur et son prix, `poserRite` dans `malettre-lettre` (l'ouverture validée contre
+  l'occasion), la caisse, les contrôles, la publication (feu vert de Mongazi), les films Remotion. ⏳ Plus tard : la
+  capture d'écran de l'aperçu.
 - Récit : `_memoire/conversations/2026-10-22-malettre-ouvertures-3d.md`.
 
 ## Reprendre ici (2026-10-21, avant la mise en ligne)

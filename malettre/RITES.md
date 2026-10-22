@@ -12,46 +12,57 @@ Une lettre digitale, c'est une enveloppe cachetée qu'on ouvre à l'heure dite. 
 jamais d'un catalogue d'effets : si une ouverture pourrait servir à une autre occasion sans rien changer, elle est à
 refaire. Les deuils de couple et d'amitié restent sobres : la sobriété y est la forme du respect.
 
-## Où on en est (2026-10-22, vague 1)
+## Où on en est (2026-10-22, soir · vague 2)
 
-**Le théâtre existe et tourne dans la vraie lettre.** Un moteur 3D WebGL écrit pour la lettre, sans bibliothèque
-(`rites/moteur.js`), un atelier d'objets partagés (`rites/atelier.js` : la table, l'enveloppe aux couleurs de
-l'habillage, le cachet de cire au sceau en relief et ses éclats PLEINS, les pluies en 3D, les sons), le branchement
-dans le seuil (`rites/branchement.js`), et quatre ouvertures :
+**18 ouvertures, 9 mécaniques, chacune des 28 occasions en a au moins trois.** Rien n'est déployé. Le catalogue vit dans
+**`rites/carte.json`** (seule source) : des OUVERTURES (une mécanique + un thème) et, pour chaque occasion, ses
+ouvertures dans l'ordre (la première est la sienne, incluse dans toutes les offres).
 
-| Rite | Occasion | Ce qui se passe |
-|---|---|---|
-| `cachet` | toutes les autres, en attendant la leur | la cire s'allume, casse en trois éclats et étincelles, le rabat doublé de damas se lève, la carte sort, la caméra plonge |
-| `perles` | Mariage | le collier de perles et de grains d'or se dénoue, les perles roulent sur la table, les quatre rabats s'ouvrent un à un |
-| `portes` | Saint-Valentin | le cœur de cire à l'initiale bat deux fois et se fend, les portes brodées s'ouvrent sur une lueur rose et des pétales |
-| `bougie` | Anniversaire | « Souffler la bougie » : la flamme (vraie lumière) se couche et meurt, la fumée, le noir, puis les confettis |
+| Mécanique | Le geste | Ce qu'on voit | Ouvertures (thèmes) |
+|---|---|---|---|
+| `cachet` | toucher | la cire s'allume, casse en trois éclats, le rabat se lève, la carte sort | cachet |
+| `perles` | toucher | le collier se dénoue, les perles roulent, les quatre rabats s'ouvrent | perles |
+| `portes` | toucher | le cœur de cire se fend, le petit cabinet brodé s'ouvre | portes-brodees |
+| `bougie` | « souffler » | la flamme se couche, le noir, la fête | bougie |
+| `battants` | toucher, puis écarter du doigt | deux battants plein écran s'ouvrent VERS SOI sur la vraie lettre | portes-dentelle, portes-velours, moucharabieh, portes-deco |
+| `rideau` | les trois coups | le rideau s'ouvre à l'italienne, la salle applaudit | rideau-theatre, rideau-soie, rideau-minuit |
+| `feu` | toucher le ciel | les fusées vont au doigt, le bouquet final écrit le prénom | feu-fete, feu-or, feu-coeur |
+| `lanterne` | garder le doigt dessus | elle s'allume, s'envole, des dizaines d'autres montent | lanterne, lanterne-lune |
+| `pli` | un toucher par rabat | la lettre pliée se déplie, le papier devient la lettre | pli, pli-noyer |
 
-- **Les matières viennent de Blender** (Cycles, CPU) : `rites/_matieres_blender.py` rend douze « matcaps » (les cinq
-  cires du produit, l'or poli et brossé, l'argent, la perle à la nacre irisée, deux velours, le papier) sous la lumière
-  d'une chambre le soir (« interior », Poly Haven, CC0, fournie avec Blender). La lettre lit la lumière dedans : un vrai
-  rendu pour le prix d'une texture de 128 px.
-- **Construire** : `python malettre/_rites.py` (après toute retouche) écrit `malettre/rites.js` (constructeur) et
-  `supabase/functions/_shared/rites.ts` (serveur), avec la même fonction `poserRite(html, id, cire)`. Le moteur minifié
-  pèse 26 Ko (environ 9 Ko compressé), un rite 2 à 6 Ko, chaque matière environ 5 Ko.
-- **Regarder** : `python malettre/rites/_voir.py <rite>` (une planche à huit instants, le temps est une donnée),
-  `python malettre/rites/_lettre_essai.py <rite>` (dans une vraie lettre), `python malettre/rites/_demo.py` (les
-  quatre lettres sur http://localhost:8765/).
-- **Toujours une lettre qui s'ouvre** : sans WebGL, en mouvement réduit, dans l'aperçu du constructeur ou à la moindre
-  erreur, la lettre reprend l'ouverture d'avant (`RITE` vaut `null`). Avant l'heure, la cire dort ; à l'heure, elle
-  s'allume. Au repos, 30 images par seconde au plus, rien quand la page est cachée.
-- ⏳ **Pas encore branché** : le constructeur (choisir son ouverture), le serveur (`poserRite` dans `malettre-lettre`),
-  la caisse (le prix d'une ouverture premium), et les 24 autres occasions.
+- **Après chaque ouverture, la lettre S'ÉCRIT** (`rites/ecriture.js`) : titre, texte à la plume, photos, jours,
+  signature, puis la pluie en final. Un toucher accélère, deux écrivent tout.
+- **Les ouvertures plein écran** (`plein: true`) sont une FENÊTRE : la scène est transparente là où elle ne dessine
+  rien, et passe devant la page au moment où la lettre apparaît.
+- **Chaque geste a son repli automatique** (personne n'est bloqué devant une porte fermée), et sa phrase d'aide.
+- **Sobriété** : excuse, rupture et brouille n'ont ni feu ni rideau (la lettre pliée, la lanterne, le cachet).
 
-### Le retour de Mongazi sur la vague 1, et le prix
+### Le retour de Mongazi, et le prix
 
-- « Plus spectaculaire », et surtout : « la qualité et le rendu doivent être meilleurs, actuellement c'est pixelisé,
-  ça doit être FLUIDE aussi ; on dirait la qualité des jeux de la console Sega au lieu de la PS5, avec plus de détail ».
-  → le moteur « cinéma » (rendu hors écran, FXAA, halo, profondeur de champ, papier qui se courbe, textures en 1024,
-  60 images par seconde, baisse automatique de qualité par paliers). En cours.
-- **Le prix, tranché** : l'ouverture de son occasion est incluse dans TOUTES les offres (même La Carte) ; en choisir
-  une autre : les simples incluses, les « grandes » à +1 000 F. Le prix se calcule au serveur.
+- Vague 1 : « plus spectaculaire », « pixelisé », « Sega au lieu de PS5 » → le moteur « cinéma » (rendu hors écran
+  sur-échantillonné, FXAA, halo, profondeur de champ, papier qui se courbe, 60 images par seconde).
+- Puis : « j'aime mieux » ; au moins 3 à 5 par événement ; l'écran entier comme une porte ; le texte qui s'écrit ;
+  « faire durer », « ultra interactif ». Choix : **« Les deux »** (plusieurs au choix, chacune qui dure).
+- **Le prix, tranché** : l'ouverture de son occasion est incluse dans TOUTES les offres (même La Carte) ; en choisir une
+  autre : les simples incluses (`grande: false`), les « grandes » à +1 000 F. Le prix se calcule au serveur.
 
-## Les 28 ouvertures
+## L'architecture
+
+- `rites/moteur.js` (le théâtre WebGL 1, aucune bibliothèque), `atelier.js` (objets et sons partagés), `ecriture.js`
+  (la lettre qui s'écrit), `branchement.js` (la pose dans le seuil, le mode plein écran, le doigt, le repli) : le
+  COMMUN, présent dans chaque lettre (48,9 Ko minifié, plafond 52 000). Chaque mécanique dans `rites/<mecanique>.js`
+  (plafond 24 000), avec ses sons propres.
+- Le gabarit (`lettre.html`) porte le marqueur `/*MALETTRE_RITE*/null/*FIN_MALETTRE_RITE*/`. **`poserRite(html, id,
+  cire, occasion)`** (le même dans `rites.js` pour le constructeur et `_shared/rites.ts` pour le serveur) y pose le
+  commun, la mécanique, ses matières et `THEME` (le thème de l'ouverture + l'emblème de l'occasion, lu dans
+  `creer.html`). ⛔ L'ouverture vient de NOS fichiers ; inconnue, c'est « cachet ». Le serveur devra vérifier qu'elle
+  appartient à l'occasion.
+- Construire : `python malettre/_rites.py`. Regarder : `rites/_voir.py <ouverture>` (planche), `_demo.py` (de vraies
+  lettres sur http://localhost:8765/), `_geste_essai.py <ouverture>` (le geste vérifié), `_ecriture_essai.py`.
+- Règles de la lettre, inchangées : aucun appel réseau, mouvement réduit (la lettre de toujours), Web Audio, vibration ;
+  sans WebGL ou à la moindre erreur, l'ouverture d'avant, puis l'écriture.
+
+## Les 28 ouvertures (le plan d'origine, toujours la source d'inspiration)
 
 | Occasion | Le fermoir | Le geste, ce qu'on voit | Tiré de |
 |---|---|---|---|
@@ -84,21 +95,11 @@ dans le seuil (`rites/branchement.js`), et quatre ouvertures :
 | Une invitation | la télé rétro | elle s'allume, la neige, puis « Ça te dit ? » | 8ab65a27 (télé) |
 | Autre occasion | le cachet | le cachet casse en trois, le rabat se lève, la carte sort (l'ouverture d'aujourd'hui) | c83bac02 |
 
-## L'architecture
-
-- Chaque rite vit dans `malettre/rites/<id>.js` (et son CSS dedans) : `{seuil(env), ouvrir(fin), duree, pluie}`.
-- Le gabarit (`lettre.html`) porte un marqueur `/*MALETTRE_RITE*/…/*FIN_MALETTRE_RITE*/`. Le constructeur (aperçu) et
-  le serveur (lettre envoyée) y posent **le seul rite de l'occasion**. Le gabarit seul reste sous 60 Ko ; chaque
-  lettre ne porte que son rite (comme la plume ne reçoit que le savoir-faire de l'occasion).
-- ⛔ Le rite vient de NOS fichiers, jamais du navigateur : le serveur choisit par l'identifiant d'occasion, sur une
-  liste blanche, comme il choisit le prix. `D.occasion` est le nom affiché : il faut un champ `rite` (l'identifiant).
-- Une lettre d'avant ce champ, ou un rite inconnu : l'ouverture d'aujourd'hui.
-- Règles de la lettre, inchangées : aucune bibliothèque, aucun appel réseau, `prefers-reduced-motion` (la lettre
-  s'ouvre sans mouvement), le son en Web Audio, la vibration, un rite ≤ 6 Ko.
-
 ## Les vagues
 
-1. L'infrastructure (marqueur, constructeur, serveur, contrôles) et six rites : Anniversaire, Saint-Valentin, Demande
-   en mariage, Mariage, Fête des mères, Soirée entre potes. Montrés à Mongazi.
-2. Les vingt-deux autres.
-3. Remotion : chaque ouverture filmée en clip court pour la vitrine (le casier des occasions) et les statuts.
+1. ✅ Le théâtre, quatre ouvertures, le moteur « cinéma ».
+2. ✅ La lettre qui s'écrit, les portes plein écran, le rideau, le feu d'artifice, les lanternes, la lettre pliée :
+   18 ouvertures, trois au moins par occasion.
+3. Le choix dans le constructeur (et son prix), le serveur, la caisse, les contrôles ; puis la publication.
+4. D'autres mécaniques du plan d'origine (le ticket à gratter, l'écrin, le ruban du cadeau, l'œuf, le monogramme…).
+5. Remotion : chaque ouverture filmée en clip court pour la vitrine et les statuts.

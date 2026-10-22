@@ -7,6 +7,21 @@
 
 ---
 
+## 0 tricies. LE 2026-10-22 (nuit) · MA LETTRE À… : 18 OUVERTURES, TROIS AU MOINS PAR OCCASION, LA LETTRE QUI S'ÉCRIT
+
+- **Fait (commits `05fb31a` à `dc0f8e6`, rien de déployé)** : la lettre qui s'écrit après l'ouverture ; les portes plein
+  écran (dentelle, velours, moucharabieh, Art déco) qu'on écarte du doigt sur la vraie lettre ; le rideau des trois
+  coups ; le feu d'artifice qui écrit le prénom ; les lanternes qu'on allume en gardant le doigt ; la lettre pliée.
+  18 ouvertures, chacune des 28 occasions en a au moins trois (`malettre/rites/carte.json`).
+- **Voir** : `python malettre/rites/_demo.py` puis http://localhost:8765/ (au téléphone, même Wi-Fi :
+  http://192.168.100.203:8765/).
+- **Par quoi commencer** : le choix de l'ouverture dans le constructeur (avec son prix : l'ouverture de l'occasion
+  incluse, les « grandes » à +1 000 F), `poserRite(html, id, cire, occasion)` dans `malettre-lettre` avec l'ouverture
+  validée contre l'occasion, la caisse, les contrôles ; puis la publication avec le feu vert de Mongazi ; puis les
+  films Remotion des ouvertures.
+- ⏳ Mongazi : essayer la démonstration au téléphone et dire ce qu'il garde ; la capture d'écran de l'aperçu (plus tard).
+- État et architecture : `malettre/RITES.md`. Récit : `_memoire/conversations/2026-10-22-malettre-ouvertures-3d.md`.
+
 ## 0 duovicies. LE 2026-10-22 (soir) · MA LETTRE À… : LES OUVERTURES EN 3D, LE MOTEUR « CINÉMA » EN COURS
 
 - **Fait (commit `6feea09`, rien de déployé)** : un théâtre WebGL écrit pour la lettre (`malettre/rites/`), quatre

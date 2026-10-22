@@ -314,9 +314,11 @@
   Three.js, voix et musiques de Mongazi) est RENDU : `_studio-video/out/MaLettreA-Minuit-pile-YouTube.mp4`.
   ⛔ Pas publiable tant que la plume est coupée (il la vend). Les six compositions `malettre-*` du 21 finissent
   désormais sur « Dès 1 000 F », voix à enregistrer. Accueil : `_accueil_src.html` → `python
-  malettre/_build_accueil.py` (jamais `index.html`). **En cours : une ouverture 3D par occasion** (`malettre/RITES.md`,
-  `malettre/rites/`, `python malettre/_rites.py`) : quatre faites, moteur « cinéma » en cours (Mongazi : « Sega au lieu
-  de PS5 »), l'ouverture de l'occasion incluse partout et les « grandes » à +1 000 F (décidé) ; rien de déployé.
+  malettre/_build_accueil.py` (jamais `index.html`). **Les ouvertures 3D** (`malettre/RITES.md`, `malettre/rites/`, `python malettre/_rites.py`) :
+  18 ouvertures, 9 mécaniques (portes plein écran, rideau, feu d'artifice, lanternes, lettre pliée…), trois au
+  moins par occasion (`rites/carte.json`), puis la lettre S'ÉCRIT ; démonstration `python malettre/rites/_demo.py` ;
+  l'ouverture de l'occasion incluse partout, les « grandes » à +1 000 F ; reste le constructeur, le serveur, la
+  caisse ; rien de déployé.
 - **Contrôles, tous verts avant toute publication, UN PAR UN** (à plusieurs, ou Chrome ouvert, le PC manque de
   mémoire et un faux échec ressemble à un défaut) : `_qc.py` (284) · `node --experimental-strip-types
   malettre/_qc_caisse.mjs` (382) · `_qc_accueil.py` (322, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).

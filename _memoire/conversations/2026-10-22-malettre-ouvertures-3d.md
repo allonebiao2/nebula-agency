@@ -93,3 +93,65 @@ dans `malettre/RITES.md` (28 ouvertures).
 3. Les 24 autres ouvertures (`RITES.md`), le choix dans le constructeur, le prix au serveur et à la caisse, le
    branchement de `poserRite` dans `malettre-lettre`, les contrôles, puis la publication (avec le feu vert de Mongazi).
 4. Remotion : filmer chaque ouverture (le même code) pour la vitrine et les statuts.
+
+## La suite, le même soir : « au moins 3 à 5 par événement », l'écran entier comme une porte, le texte qui s'écrit
+
+Après la démonstration du moteur « cinéma », Mongazi : « j'aime mieux ». Puis : au moins 3 à 5 animations
+différentes pour chaque événement, adaptées à l'événement ; « comme dans une ou deux vidéos, l'écran entier du
+téléphone doit s'ouvrir comme une porte en 3D, de façon immersive » ; « le texte aussi doit être animé et venir
+s'écrire lentement » ; « faire durer » (c'est l'expérience qui impressionne celle qui reçoit) ; « ultra interactif,
+encore plus d'effet wow ». À la question « plusieurs ouvertures au choix, ou une seule qui dure ? » : **« Les deux »**.
+
+### Ce qui est construit (commits `05fb31a` à `dc0f8e6`, rien de déployé)
+
+- **La lettre qui s'écrit** (`rites/ecriture.js`, `05fb31a`) : après l'ouverture (3D, ou celle d'avant sans WebGL), la
+  lettre s'écrit dans l'ordre de la page ; le titre lettre à lettre, l'encre couleur de cire qui sèche couleur d'encre,
+  le texte au rythme d'une main, une plume d'or qui suit et gratte, la page qui défile ; puis la phrase à gratter, les
+  photos une à une, les jours qui roulent, la formule, le nom, le trait, la pluie de l'habillage en final. Un toucher
+  accélère, un second écrit tout ; relue, quatre fois plus vite ; 40 s de texte au plus (70 s pour une lettre fleuve).
+- **Six mécaniques plein écran ou à geste**, chacune habillée de thèmes (`rites/carte.json`) :
+  - **les portes** (`battants.js`) : deux battants gaufrés couvrent l'écran, un cachet les tient ; on touche, on les
+    écarte du doigt, elles s'ouvrent vers soi SUR LA VRAIE LETTRE ; dentelle, velours capitonné, moucharabieh éclairé
+    par une lanterne, Art déco ;
+  - **le rideau** (`rideau.js`) : « les trois coups » du brigadier, le rideau s'ouvre à l'italienne, la salle
+    applaudit ; théâtre, soie, minuit ;
+  - **le feu d'artifice** (`feu.js`) : on touche le ciel, une fusée part vers le doigt ; le bouquet final ÉCRIT LE
+    PRÉNOM en étincelles (dans un cœur pour l'amour) ; fête, or, cœur ;
+  - **les lanternes** (`lanterne.js`) : garder le doigt sur la lanterne, elle s'allume et s'envole, des dizaines
+    d'autres montent de la rive ; papier, sous la lune (Ramadan, Tabaski) ;
+  - **la lettre pliée** (`pli.js`) : le cachet se décolle, un toucher par rabat, la feuille devient la lettre ; lin,
+    noyer ;
+  - et les quatre d'avant (cachet, perles, petit cabinet brodé, bougie).
+- **18 ouvertures, chacune des 28 occasions en a au moins trois** (la première est la sienne). Sobriété gardée : excuse,
+  rupture et brouille n'ont ni feu ni rideau.
+- **Le moteur** : fenêtre transparente (les portes s'ouvrent sur la page), feuille d'or (masque de métal), reflet de la
+  lumière ponctuelle qui se déplace, étoffe qui bouge (`S.maj`), rites qui décident eux-mêmes (`revele(t)`, `fini(t)`),
+  le doigt passé au rite (`toucher`), une phrase d'aide que le rite change en route (`dire`, `taire`).
+- **Les sons propres d'un rite vivent dans son fichier** : une lettre au cachet n'emporte pas les fusées (le commun
+  redescend à 48,9 Ko).
+- **Le banc du geste** (`rites/_geste_essai.py`) vérifie le GESTE de chaque mécanique (portes, rideau, feu, lanterne,
+  pli), sur le banc et dans une vraie lettre ; la démonstration (`_demo.py`) sert quatorze vraies lettres, toutes vertes.
+
+### Pièges de la soirée (et leur parade)
+
+- ⛔ **Le contrôle disait « ouverte, portes devant la lettre » alors que les portes s'étaient ouvertes SEULES** (le
+  repli automatique de 6,5 s) : SwiftShader met une demi-seconde par image, le geste arrivait après. Parade : un banc
+  qui repousse l'automatique (`auto=99`, `window.__malettreAuto`) ; si ça s'ouvre, c'est le doigt.
+- ⛔ **Glisser avant d'avoir touché le cachet ne faisait rien** (un glissé n'est pas un clic) : plus de 24 px avant le
+  cachet comptent pour le toucher, et le même doigt prend les battants.
+- ⛔ **La courbe de couleur repliait le rouge au-delà de 1** (la lanterne allumée virait au VERT) : bornée avant.
+- Papier chaud × lumière chaude × ambiance chaude = brun : la lumière se multiplie, un papier clair veut une lumière
+  presque blanche.
+- Un tirage au hasard CONDITIONNEL dans une boucle de particules décale toutes les suivantes d'une image à l'autre.
+- Une chaleur intégrée image par image (pas borné à 0,05 s) ralentit sur un téléphone lent : la calculer sur le temps
+  réel du doigt.
+- Un reflet est SOUS l'eau : l'eau opaque le cachait par la profondeur.
+
+### Ce qui reste
+
+1. Le choix de l'ouverture dans le constructeur (avec son prix), `poserRite` dans `malettre-lettre`, la validation au
+   serveur (l'ouverture doit appartenir à l'occasion), le prix des « grandes » à la caisse, les contrôles.
+2. La publication, avec le feu vert de Mongazi.
+3. Les films Remotion des ouvertures (le même code) pour la vitrine.
+4. ⏳ La capture d'écran de l'aperçu (plus tard).
+
