@@ -134,6 +134,29 @@ def feu(self):
 Banc.feu = feu
 
 
+def lanterne(self):
+    """La lanterne : garder le doigt dessus la remplit de chaleur (en temps réel) ; lâchée trop tôt, elle retombe."""
+    lire = "(() => { const r = window.__rite || (window.RITE && RITE.rite); return { envol: r.envol, ch: +(r.chaleur || 0).toFixed(2) }; })()"
+    pg = self.page()
+    pg.evaluate("__ouvrir()"); pg.wait_for_timeout(300)
+    pg.mouse.move(195, 600); pg.mouse.down(); pg.wait_for_timeout(2300); pg.mouse.up(); pg.wait_for_timeout(300)
+    e = pg.evaluate(lire); pg.close()
+    self.note("garder le doigt 2,3 s : elle s'envole", e["envol"] is not None, e)
+    pg = self.page()
+    pg.evaluate("__ouvrir()"); pg.wait_for_timeout(300)
+    pg.mouse.move(195, 600); pg.mouse.down(); pg.wait_for_timeout(500); pg.mouse.up(); pg.wait_for_timeout(900)
+    e = pg.evaluate(lire); pg.close()
+    self.note("lâchée après 0,5 s : elle ne s'envole pas, sa chaleur redescend", e["envol"] is None and e["ch"] < 0.31, e)
+    pg = self.page(self.lettre, crochet=True)
+    pg.click("#btn-ouvrir"); pg.wait_for_timeout(400)
+    pg.mouse.move(195, 420); pg.mouse.down(); pg.wait_for_timeout(2300); pg.mouse.up(); pg.wait_for_timeout(300)
+    e = pg.evaluate(lire); pg.close()
+    self.note("vraie lettre : le bouton, puis le doigt gardé sur la lanterne", e["envol"] is not None, e)
+
+
+Banc.lanterne = lanterne
+
+
 def main():
     rite = sys.argv[1] if len(sys.argv) > 1 else "portes-dentelle"
     banc, demo = servir(ICI), servir(ICI / "_planches" / "demo")
@@ -146,6 +169,8 @@ def main():
             b.rideau()
         elif meca == "feu":
             b.feu()
+        elif meca == "lanterne":
+            b.lanterne()
         elif meca == "battants":
             b.portes()
         else:

@@ -264,7 +264,9 @@ var Theatre = (function () {
     "c+=texture2D(u_halo,v_uv).rgb*u_bloom;float A=mix(1.,a,u_alpha);" +
     "vec2 v=v_uv-.5;c*=1.-u_vign*dot(v,v)*1.7*A;" +
     /* une courbe en S douce, les noirs vers l'encre de nuit, les hautes lumières un rien dorées */
-    "c=mix(c,c*c*(3.-2.*c),.22);c=c*vec3(1.02,1.,.97)+vec3(.012,.008,.018)*(1.-c)*A;" +
+    /* ⚠️ la courbe ne vaut qu'entre 0 et 1 : au-delà (une lanterne, un bouquet, avec leur halo) elle REPLIE le rouge
+       (à 1,5 elle rend 0) et la teinte glisse vers le vert ; on borne d'abord */
+    "c=min(c,vec3(1.));c=mix(c,c*c*(3.-2.*c),.22);c=c*vec3(1.02,1.,.97)+vec3(.012,.008,.018)*(1.-c)*A;" +
     "c+=(fract(sin(dot(v_uv*(1.+u_t),vec2(12.9898,78.233)))*43758.5453)-.5)*u_grain*A;" +
     /* en fenêtre (`transparent`), la page se voit là où il n'y a rien ; la lumière d'un halo la voile à peine
        (une couleur prémultipliée ne dépasse jamais son alpha) */

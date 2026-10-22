@@ -178,6 +178,30 @@
       },
       "matieres": [],
       "grande": true
+    },
+    "lanterne": {
+      "nom": {
+        "fr": "La lanterne",
+        "en": "The lantern"
+      },
+      "mecanique": "lanterne",
+      "theme": {
+        "motif": "papier"
+      },
+      "matieres": [],
+      "grande": true
+    },
+    "lanterne-lune": {
+      "nom": {
+        "fr": "La lanterne sous la lune",
+        "en": "The lantern under the moon"
+      },
+      "mecanique": "lanterne",
+      "theme": {
+        "motif": "croissant"
+      },
+      "matieres": [],
+      "grande": true
     }
   },
   "occasions": {
@@ -211,10 +235,12 @@
       "cachet"
     ],
     "pardon": [
+      "lanterne",
       "cachet"
     ],
     "rupture": [
-      "cachet"
+      "cachet",
+      "lanterne"
     ],
     "anniv": [
       "bougie",
@@ -260,7 +286,8 @@
       "cachet"
     ],
     "brouille": [
-      "cachet"
+      "cachet",
+      "lanterne"
     ],
     "noel": [
       "cachet",
@@ -272,18 +299,22 @@
       "feu-or",
       "portes-deco",
       "rideau-minuit",
+      "lanterne",
       "cachet"
     ],
     "tabaski": [
       "moucharabieh",
+      "lanterne-lune",
       "cachet"
     ],
     "ramadan": [
+      "lanterne-lune",
       "moucharabieh",
       "cachet"
     ],
     "paques": [
       "cachet",
+      "lanterne",
       "portes-dentelle"
     ],
     "reussite": [
@@ -293,9 +324,11 @@
       "cachet"
     ],
     "courage": [
+      "lanterne",
       "cachet"
     ],
     "guerison": [
+      "lanterne",
       "cachet"
     ],
     "travail": [
@@ -312,6 +345,7 @@
     ],
     "merci": [
       "cachet",
+      "lanterne",
       "portes-dentelle"
     ],
     "rdv": [
@@ -327,7 +361,8 @@
       "portes-velours",
       "portes-deco",
       "rideau-theatre",
-      "feu-fete"
+      "feu-fete",
+      "lanterne"
     ]
   }
 }
