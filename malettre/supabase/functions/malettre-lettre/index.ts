@@ -1,5 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { GABARIT } from '../_shared/gabarit.ts'
+import { poserRite } from '../_shared/rites.ts'
 import { JETON_FORME, entetes, langueDe, poser, verdict, type Langue } from '../_shared/lettre.ts'
 
 /*
@@ -175,7 +176,10 @@ Deno.serve(async (req: Request) => {
   }
 
   /* ⛔ La lettre est REBÂTIE ici, à partir du gabarit et des données. Rien de
-     ce qui est servi n'a été écrit par un navigateur. */
-  const html = poser(GABARIT, l.donnees)
+     ce qui est servi n'a été écrit par un navigateur.
+     Puis son ouverture (`rites.ts`) : l'identifiant a été vérifié contre l'occasion à la commande ; une lettre d'avant
+     ce champ, ou un identifiant inconnu, reçoit le cachet. */
+  const dn = l.donnees ?? {}
+  const html = poserRite(poser(GABARIT, dn), String(dn.rite ?? ''), String(dn.habillage?.cire ?? 'bordeaux'), String(dn.motif ?? ''))
   return new Response(req.method === 'HEAD' ? null : html, { status: 200, headers: entetes() })
 })

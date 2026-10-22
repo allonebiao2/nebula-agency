@@ -446,9 +446,16 @@ plusieurs au choix, chacune qui dure). **L'état complet, le catalogue et l'arch
   +1 000 F, calculé au serveur.
 - **Voir** : `python malettre/rites/_demo.py` → http://localhost:8765/ (14 vraies lettres) · `_voir.py <ouverture>` ·
   `_geste_essai.py <ouverture>` (le geste vérifié, l'automatique repoussé) · `_ecriture_essai.py`.
-- **Reste** : le choix dans le constructeur et son prix, `poserRite` dans `malettre-lettre` (l'ouverture validée contre
-  l'occasion), la caisse, les contrôles, la publication (feu vert de Mongazi), les films Remotion. ⏳ Plus tard : la
-  capture d'écran de l'aperçu.
+- **Le choix et la caisse sont branchés (pas déployés)** : dans le constructeur, un bloc « L'ouverture » propose les
+  ouvertures de l'occasion (la sienne d'abord, « Incluse » ; une « grande » d'ailleurs, « + 1 000 F »), et « Voir » la
+  joue sur une lettre d'EXEMPLE (le prénom, l'habillage, pas les mots de l'acheteur). Le constructeur lit un catalogue
+  léger (`ouvertures.js`, 6 Ko) ; le moteur entier (`rites.js`) ne se charge qu'au premier « Voir ». À la caisse,
+  `lireOuverture(occ, id)` (dans `_shared/lettre.ts`) refuse une ouverture qui n'est pas celle de l'occasion (on garde la
+  sienne), compte +1 000 F pour une « grande » d'ailleurs, et range `rite` et `motif` dans la lettre ; `malettre-lettre`
+  la sert avec `poserRite` ; le reçu nomme une ouverture payée. Contrôles : caisse 418, langues 52, lettre 284, vitrine et faire-part à relancer (le système les a arrêtés faute de mémoire ; avant la reconstruction de l'accueil : 320 sur 322 et 82 sur 83, leurs échecs venant de l'accueil périmé).
+- **Reste** : la publication (feu vert de Mongazi : redéployer `malettre-commande` et `malettre-lettre`, puis le site),
+  les ouvertures dans les six lettres d'exemple de la vitrine, les films Remotion. ⏳ Plus tard : la capture d'écran de
+  l'aperçu.
 - Récit : `_memoire/conversations/2026-10-22-malettre-ouvertures-3d.md`.
 
 ## Reprendre ici (2026-10-21, avant la mise en ligne)
@@ -765,6 +772,7 @@ les vidéos, n'est pas encore faite).
   proche **avant** de le vendre, et c'est la condition d'ouverture de la ligne.
 <!-- FIN HISTOIRE -->
 
+<!-- HISTOIRE DU NOM -->
 ## Le bloc de `CLAUDE.md` tel qu'il était le 2026-10-22, avant sa réécriture
 
 Recopié intégralement avant d'être remplacé par un résumé à jour (règle de `CLAUDE.md`).
@@ -817,3 +825,4 @@ Recopié intégralement avant d'être remplacé par un résumé à jour (règle 
   ElevenLabs de la pub** (`_studio-video/src/malettre/VOIX.md`) · faire-part pour novembre · critères d'arrêt :
   le 1er décembre, ou huit semaines après la mise en ligne (16 décembre).
 - **Tout le détail** (le récit LE PLI recopié intégralement) : `malettre/CONTEXT.md`.
+<!-- FIN HISTOIRE -->

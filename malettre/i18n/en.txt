@@ -478,6 +478,13 @@ FR: "L'aperçu a besoin d'un serveur. Lance <code>python -m http.server</code> "
 EN: "The preview needs a server. Run <code>python -m http.server</code> " +
 FR: "dans le dossier malettre/.</p>";
 EN: "in the malettre/ folder.</p>";
+# L'ouverture (2026-10-22) : les noms et les phrases viennent du catalogue (ouvertures.js) dans les deux langues.
+FR: <label id="o-t">L'ouverture</label>
+EN: <label id="o-t">The opening</label>
+FR: Ce que fera la personne pour ouvrir ta lettre. La première est celle de l'occasion, toujours incluse.
+EN: What they will do to open your letter. The first one belongs to the occasion and is always included.
+FR: var MOTS_OUV = { incluse: "Incluse", voir: "Voir", fermer: "Fermer", note: "Ton ouverture ({o}) : {p} s'ajoutent, déjà comptés ci-dessus.", exemple: "Ici, ta lettre s'écrira mot à mot, sous les yeux de {p}." };
+EN: var MOTS_OUV = { incluse: "Included", voir: "Preview", fermer: "Close", note: "Your opening ({o}): {p} added, already counted above.", exemple: "Here your letter will write itself, word by word, before the eyes of {p}." };
 
 == paiement.html
 FR: <html lang="fr">

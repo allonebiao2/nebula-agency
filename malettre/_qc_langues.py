@@ -57,7 +57,9 @@ CLES = {"prénom", "pour",
         # les identifiants des offres (posés par le build dans les données de la page)
         "carte", "mot", "lettre", "coffret",
         # le mode « qui écrit » (« moi » ou « plume ») est un identifiant, comme une offre (2026-10-22)
-        "moi"}
+        "moi",
+        # l'ouverture de repli du constructeur : un identifiant du catalogue `ouvertures.js` (2026-10-22), jamais affiché
+        "cachet"}
 
 
 def francais(t):

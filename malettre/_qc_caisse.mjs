@@ -325,9 +325,10 @@ const serv = lire('supabase/functions/malettre-lettre/index.ts')
 /* ⚠️ CONTRÔLE RETOURNÉ (2026-10-16). Il exigeait « p_prix: palier.prix » :
    c'était vrai tant que le palier faisait tout le prix. Avec la plume, le prix
    est `prixTotal(palier, plume)`, calculé par `lireCommande` et rendu dans
-   `lu.prix`. La règle, elle, ne bouge pas : il vient du barème, jamais du corps. */
+   `lu.prix`. La règle, elle, ne bouge pas : il vient du barème, jamais du corps. (2026-10-22 : l'ouverture s'y ajoute,
+   toujours calculée par `lireCommande`.) */
 dit(!/p_prix:\s*(d|Number)/.test(cmd) && /p_prix: prix,/.test(cmd)
-    && /const \{ lettre, palier, prix, plume \} = lu/.test(cmd),
+    && /const \{ lettre, palier, prix, plume, ouverture \} = lu/.test(cmd),
     'le dépôt écrit le prix du barème (plume comprise), pas celui du corps')
 dit(/montant: prix,/.test(cmd) && /p_montant: prix,/.test(cmd),
     'la session de paiement attend ce même prix, plume comprise')
@@ -614,7 +615,7 @@ dit(M.nomOffre(M.palier('lettre'), true, 'en') === 'The Letter + the Quill', 'le
 dit(M.nomOffre(M.palier('lettre'), true, 'fr') === 'La Lettre + la plume', 'le reçu français ne change pas')
 const cmdTs = lire('supabase/functions/malettre-commande/index.ts')
 dit(/lettre\.langue === 'en' \? '\/en' : ''\}\/merci\.html/.test(cmdTs), 'un acheteur anglais revient sur la page anglaise')
-dit(/nomOffre\(palier, plume, lettre\.langue\)/.test(cmdTs), 'le nom de l’offre est donné dans la langue de la lettre')
+dit(/nomOffre\(palier, plume, lettre\.langue, ouverture\)/.test(cmdTs), 'le nom de l’offre est donné dans la langue de la lettre (avec son ouverture)')
 const lettreTs = lire('supabase/functions/malettre-lettre/index.ts')
 dit(/langueDe\(l\.donnees\.langue\)/.test(lettreTs) && !/page\('[A-ZÀ-Ü]/.test(lettreTs),
     'les pages d’une lettre (expirée, retirée…) passent par la table des deux langues')
@@ -860,6 +861,71 @@ const idsT = Object.keys(S.RETOUCHES).sort()
 dit(JSON.stringify(boutons(lire('creer.html'))) === JSON.stringify(idsT), 'les boutons de retouche du constructeur sont exactement ceux de la plume', boutons(lire('creer.html')).join(','))
 dit(JSON.stringify(boutons(lire('en/creer.html'))) === JSON.stringify(idsT), 'et ceux de la page anglaise aussi')
 dit(/cinq versions/.test(lire('creer.html')), 'le constructeur dit « cinq versions », comme la plume')
+}
+
+/* ═══ 13 · l'ouverture (2026-10-22) ════════════════════════════════════════
+   L'ouverture de l'occasion est incluse dans toutes les offres ; une autre de SA liste : une « simple » incluse, une
+   « grande » à +1 000 F (Mongazi). ⛔ Le prix se calcule à la caisse ; le constructeur en affiche une copie. */
+{
+console.log('\n== L’ouverture')
+const R = await charger('supabase/functions/_shared/rites.ts')
+const D = R.RITES_DONNEES
+dit(M.OUVERTURE.prix === 1000, 'une « grande » ouverture choisie hors de son occasion coûte 1 000 F')
+const blocO = /var OUVERTURE = \{prix:(\d+)\};/.exec(lire('creer.html'))
+dit(!!blocO && Number(blocO[1]) === M.OUVERTURE.prix, 'le constructeur affiche le prix de la caisse', blocO && blocO[1])
+const occR = Object.keys(D.occasions)
+dit(ids.length === occR.length && ids.every((i) => occR.includes(i)),
+    'chaque occasion du constructeur a ses ouvertures, et la carte n’en invente aucune',
+    `sans ouvertures : ${ids.filter((i) => !occR.includes(i))} · inconnues : ${occR.filter((i) => !ids.includes(i))}`)
+dit(occR.every((o) => D.occasions[o].length >= 3), 'chaque occasion a au moins trois ouvertures',
+    occR.filter((o) => D.occasions[o].length < 3).join(','))
+dit(occR.every((o) => D.occasions[o].every((x) => D.ouvertures[x])), 'chaque ouverture proposée existe')
+dit(Object.values(D.ouvertures).every((x) => D.mecaniques[x.mecanique]), 'chaque ouverture a sa mécanique construite')
+dit(['pardon', 'rupture', 'brouille'].every((o) => D.occasions[o].every((x) => !/^(feu|rideau)/.test(x))),
+    'ni feu d’artifice ni rideau pour une excuse ou une rupture')
+const a = M.lireOuverture('anniv', D.occasions.anniv[0]), b = M.lireOuverture('anniv', 'feu-fete'), c = M.lireOuverture('merci', 'cachet')
+dit(a.id === D.occasions.anniv[0] && a.prix === 0, 'l’ouverture de l’occasion est incluse')
+dit(b.id === 'feu-fete' && b.prix === 1000 && D.ouvertures['feu-fete'].grande, 'une « grande » d’une autre occasion coûte 1 000 F')
+dit(c.id === 'cachet' && c.prix === 0 && !D.ouvertures.cachet.grande, 'une « simple » reste incluse')
+const e = M.lireOuverture('pardon', 'feu-fete')
+dit(e.id === D.occasions.pardon[0] && e.prix === 0, 'une ouverture qui n’est pas proposée pour l’occasion est remplacée par la sienne, sans frais')
+for (const x of ['constructor', '__proto__', 'toString', 'hasOwnProperty', ''])
+  dit(M.lireOuverture(x, 'feu-fete').id === 'cachet' && M.lireOuverture(x, 'feu-fete').occ === '', `une occasion « ${x} » ne trouve rien d’Object`)
+const base = { palier: 'lettre', lettre: ['Bonjour'] }
+const k1 = M.lireCommande({ ...base, occ: 'anniv', ouverture: 'feu-fete' })
+const k2 = M.lireCommande({ ...base, occ: 'anniv', ouverture: D.occasions.anniv[0] })
+const k3 = M.lireCommande({ ...base, occ: 'anniv', ouverture: 'feu-fete', prix: 0, supplement: 0, ouvertureprix: 0 })
+const k4 = M.lireCommande({ ...base })
+dit(k1.ok && k1.prix === 6000 && k1.lettre.rite === 'feu-fete' && k1.lettre.motif === 'anniv',
+    'la commande compte l’ouverture : La Lettre et une « grande », 6 000 F', k1.ok && `${k1.prix} ${k1.lettre.rite}`)
+dit(k2.ok && k2.prix === 5000 && k2.lettre.rite === D.occasions.anniv[0], 'celle de l’occasion ne change rien : 5 000 F')
+dit(k3.ok && k3.prix === 6000, 'un prix envoyé par le navigateur n’est jamais lu')
+dit(k4.ok && k4.lettre.rite === 'cachet' && k4.lettre.motif === '' && k4.prix === 5000, 'une commande sans occasion ni ouverture reçoit le cachet')
+dit(M.prixTotal(M.palier('carte'), true, M.lireOuverture('anniv', 'feu-fete').prix) === 2500, 'La Carte, la plume et une « grande » : 2 500 F')
+dit(M.nomOffre(M.palier('lettre'), false, 'fr', k1.ouverture) === 'La Lettre + ' + D.ouvertures['feu-fete'].nom.fr, 'le reçu nomme une ouverture payée')
+dit(M.nomOffre(M.palier('lettre'), true, 'en', k1.ouverture) === 'The Letter + the Quill + ' + D.ouvertures['feu-fete'].nom.en, 'en anglais aussi')
+dit(M.nomOffre(M.palier('lettre'), false, 'fr', k2.ouverture) === 'La Lettre', 'et ne nomme pas une ouverture incluse')
+/* la pose : la lettre servie porte son ouverture, et rien qui casse son script */
+const html = R.poserRite(M.poser(G.GABARIT, k1.lettre), k1.lettre.rite, 'bordeaux', k1.lettre.motif)
+const pose = html.slice(html.indexOf('/*MALETTRE_RITE*/'), html.indexOf('/*FIN_MALETTRE_RITE*/'))
+dit(!html.includes('/*MALETTRE_RITE*/null/*FIN_MALETTRE_RITE*/') && pose.includes('var THEME=') && pose.includes(D.mecaniques.feu),
+    'la lettre servie porte son ouverture (sa mécanique et son thème)')
+dit(!/<\/script|<!--|\u2028|\u2029/.test(pose), 'l’ouverture posée ne contient rien qui casse le script')
+dit(pose.includes(D.emblemes.anniv), 'le cachet porte l’emblème de l’occasion')
+dit(R.poserRite(M.poser(G.GABARIT, k1.lettre), 'inconnue', 'x', 'y').includes(D.mecaniques.cachet), 'une ouverture inconnue pose le cachet')
+dit(/poserRite\(poser\(GABARIT, dn\), String\(dn\.rite/.test(lire('supabase/functions/malettre-lettre/index.ts')), 'la fonction de la lettre pose son ouverture')
+/* le constructeur lit les MÊMES données que la caisse (produites par la même construction) */
+const cat = lire('ouvertures.js'), O = JSON.parse(cat.slice(cat.indexOf('{'), cat.lastIndexOf('}') + 1))
+dit(JSON.stringify(O.occasions) === JSON.stringify(D.occasions), 'le catalogue du constructeur a les mêmes ouvertures par occasion que la caisse')
+dit(Object.keys(D.ouvertures).every((x) => O.ouvertures[x] && O.ouvertures[x].grande === D.ouvertures[x].grande),
+    'et les mêmes « grandes »')
+dit(Object.values(O.ouvertures).every((x) => x.phrase && x.phrase.fr && x.phrase.en && x.nom.fr && x.nom.en), 'chaque ouverture a son nom et sa phrase, en français et en anglais')
+const creerO = lire('creer.html'), creerEn = lire('en/creer.html')
+dit(/occ: E\.occasion, ouverture: ouvertureChoisie\(\)/.test(creerO), 'le constructeur envoie l’occasion et l’ouverture, jamais un prix')
+dit(/function total\(p\)\{ return p\.prix \+ \(E\.plume \? PLUME\.prix : 0\) \+ prixOuverture\(\); \}/.test(creerO), 'le total affiché compte l’ouverture')
+dit(/<script src="\/ouvertures\.js"><\/script>/.test(creerO) && /<script src="\/ouvertures\.js"><\/script>/.test(creerEn),
+    'les deux constructeurs chargent le catalogue par un chemin absolu (la page anglaise vit dans /en/)')
+dit(/"ouvertures\.js", "rites\.js"/.test(lire('_dist.py')), 'le site publie le catalogue et les ouvertures')
 }
 
 /* ═══ le compte ═══════════════════════════════════════════════════════════ */

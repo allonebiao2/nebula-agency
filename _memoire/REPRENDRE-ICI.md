@@ -15,10 +15,13 @@
   18 ouvertures, chacune des 28 occasions en a au moins trois (`malettre/rites/carte.json`).
 - **Voir** : `python malettre/rites/_demo.py` puis http://localhost:8765/ (au téléphone, même Wi-Fi :
   http://192.168.100.203:8765/).
-- **Par quoi commencer** : le choix de l'ouverture dans le constructeur (avec son prix : l'ouverture de l'occasion
-  incluse, les « grandes » à +1 000 F), `poserRite(html, id, cire, occasion)` dans `malettre-lettre` avec l'ouverture
-  validée contre l'occasion, la caisse, les contrôles ; puis la publication avec le feu vert de Mongazi ; puis les
-  films Remotion des ouvertures.
+- **Branché, pas déployé** : le choix de l'ouverture dans le constructeur (« Incluse » / « + 1 000 F », « Voir » sur
+  une lettre d'exemple), le prix et la vérification à la caisse (`lireOuverture`), la lettre servie avec son ouverture.
+  Contrôles : caisse 418, langues 52, lettre 284, vitrine et faire-part à relancer (le système les a arrêtés faute de mémoire ; avant la reconstruction de l'accueil : 320 sur 322 et 82 sur 83, leurs échecs venant de l'accueil périmé).
+- **Par quoi commencer** : la publication, AVEC le feu vert de Mongazi : `malettre-commande` et `malettre-lettre`
+  (`npx -y supabase@2 functions deploy <nom> --project-ref xukduhqqfzogisoimhyo --use-api`, `--no-verify-jwt` pour
+  `-lettre`), puis `python malettre/_dist.py` et `wrangler pages deploy malettre/_dist --project-name malettre --branch
+  main`, vérifier par le corps. Ensuite : les ouvertures dans les lettres d'exemple de la vitrine, les films Remotion.
 - ⏳ Mongazi : essayer la démonstration au téléphone et dire ce qu'il garde ; la capture d'écran de l'aperçu (plus tard).
 - État et architecture : `malettre/RITES.md`. Récit : `_memoire/conversations/2026-10-22-malettre-ouvertures-3d.md`.
 

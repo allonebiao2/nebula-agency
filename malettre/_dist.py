@@ -35,7 +35,10 @@ PAGES = ["index.html", "creer.html", "lettre.html", "paiement.html", "merci.html
          # ce qu'un agent lit sans rendre la page (vague 3) : fabriqué par _build_accueil.py
          "llms.txt",
          # le faire-part d'exemple (vague 4) : fabriqué par _faire_part.py
-         "faire-part/exemple.html", "faire-part/exemple-en.html"]
+         "faire-part/exemple.html", "faire-part/exemple-en.html",
+         # les ouvertures (2026-10-22) : fabriqués par _rites.py ; le catalogue léger pour le choix et son prix, les
+         # ouvertures entières (le moteur et les mécaniques) chargées seulement pour « Voir »
+         "ouvertures.js", "rites.js"]
 SOURCES_ACCUEIL = ["_accueil_src.html", "exemples.json", "exemples.en.json", "creer.html", "lettre.html",
                    "_build_accueil.py", "i18n/en.txt", "faire-part/offre.json"]
 

@@ -49,10 +49,10 @@ Deno.serve(async (req: Request) => {
 
   const lu = lireCommande(d)
   if (!lu.ok) return repondre({ ok: false, erreur: lu.erreur }, 400)
-  const { lettre, palier, prix, plume } = lu
+  const { lettre, palier, prix, plume, ouverture } = lu
   /* Le nom de l'offre tel que l'acheteur le lira sur la page de paiement et
      sur son reçu. */
-  const offre = nomOffre(palier, plume, lettre.langue)
+  const offre = nomOffre(palier, plume, lettre.langue, ouverture)
 
   /* Le WhatsApp de l'ACHETEUR : c'est là qu'on lui rend SON lien. On ne
      demande jamais celui de la destinataire, on ne lui écrit pas. */

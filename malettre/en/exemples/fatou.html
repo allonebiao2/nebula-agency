@@ -15,19 +15,16 @@
 
   Regles de la maison respectees ici :
   - aucune bibliotheque, aucun appel reseau, aucune image externe ;
-  - AUCUNE police telechargee : la pile est systeme, choisie et assumee.
-    Iowan Old Style (Apple) et Palatino (Windows) sont de vraies faces de
-    correspondance, plus chaudes que Georgia, et deja sur la machine. Une
-    lettre doit s'ouvrir dans un taxi : on ne fait pas attendre un cadeau
-    derriere un fichier de 40 Ko. Ne PAS rajouter Google Fonts ici ;
+  - AUCUNE police telechargee : Iowan Old Style et Palatino, deja sur la
+    machine (une lettre s'ouvre dans un taxi). Ne PAS rajouter Google Fonts ;
   - une animation signature DIFFERENTE par section, toutes tirees du metier ;
   - jamais #000 ni #fff en fond : une encre, un papier ;
   - prefers-reduced-motion honore partout ;
   - noindex : une lettre est privee, elle n'a rien a faire dans un moteur.
 
-  Les donnees sont injectees a la place de MALETTRE_DONNEES par le constructeur
-  (creer.html) ou par le serveur. Le gabarit ne va JAMAIS chercher un fichier :
-  photos et sons sont des donnees, ou ne sont pas.
+  Le constructeur ou le serveur posent les donnees (MALETTRE_DONNEES) et
+  l'ouverture de l'occasion (MALETTRE_RITE, `rites/`). Rien n'est cherche sur
+  le reseau : photos, sons, matieres sont des donnees, ou ne sont pas.
 -->
 <style>
 :root{
@@ -609,6 +606,8 @@ var HAB = (function(h){
 ["cire-" + HAB.cire, "sceau-" + HAB.sceau, "papier-" + HAB.papier].forEach(function(c){
   document.documentElement.classList.add(c);
 });
+/* L'ouverture de l'occasion, en 3D (`rites/`), ou null : celle d'avant. */
+var RITE = /*MALETTRE_RITE*/null/*FIN_MALETTRE_RITE*/;
 if (EN) {
   document.documentElement.lang = "en";
   $(".pour").firstChild.nodeValue = L.pour;
@@ -1014,16 +1013,10 @@ var ouvert = false;
 function ouvrir(){
   if (ouvert || verrouille()) { return; }
   ouvert = true;
-  var env = $("#env");
-  env.classList.add("brise");
   /* La main sent la cire céder (Android ; ailleurs, l'appel ne fait rien).
      Jamais en mouvement réduit : c'est aussi un mouvement. */
   if (!doux && navigator.vibrate) { try { navigator.vibrate([16, 40, 24]); } catch (e) {} }
-  sonOuverture();
-  /* ⚠️ 1 150 ms : le cachet casse, le rabat se lève, la carte sort, puis la
-     lettre se déplie. Les contrôles attendent 1 400 ms : ne pas allonger. */
-  var attendre = doux ? 0 : 1150;
-  setTimeout(function(){
+  var suite = function(){
     $("#seuil").classList.add("parti");
     var m = $("#lettre");
     m.classList.add("ouverte");
@@ -1036,7 +1029,13 @@ function ouvrir(){
     setTimeout(rouler, doux ? 0 : 900);
     /* La feuille vient de se déplier : la pluie tombe dessus. */
     setTimeout(function(){ pleuvoir(HAB.pluie); }, 450);
-  }, attendre);
+  };
+  if (RITE && RITE.ouvrir(suite)) { return; }
+  $("#env").classList.add("brise");
+  sonOuverture();
+  /* ⚠️ 1 150 ms : le cachet casse, le rabat se lève, la carte sort, puis la
+     lettre se déplie. Les contrôles attendent 1 400 ms : ne pas allonger. */
+  setTimeout(suite, doux ? 0 : 1150);
 }
 
 /* ── Le code secret. ── */

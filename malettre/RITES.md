@@ -36,6 +36,13 @@ ouvertures dans l'ordre (la première est la sienne, incluse dans toutes les off
   rien, et passe devant la page au moment où la lettre apparaît.
 - **Chaque geste a son repli automatique** (personne n'est bloqué devant une porte fermée), et sa phrase d'aide.
 - **Sobriété** : excuse, rupture et brouille n'ont ni feu ni rideau (la lettre pliée, la lanterne, le cachet).
+- **Le choix et la caisse sont branchés (pas déployés)** : dans le constructeur, un bloc « L'ouverture » propose les
+  ouvertures de l'occasion (la sienne d'abord, « Incluse » ; une « grande » d'ailleurs, « + 1 000 F »), et « Voir » la
+  joue sur une lettre d'EXEMPLE (le prénom, l'habillage, pas les mots de l'acheteur). Le constructeur lit un catalogue
+  léger (`ouvertures.js`, 6 Ko) ; le moteur entier (`rites.js`) ne se charge qu'au premier « Voir ». À la caisse,
+  `lireOuverture(occ, id)` (dans `_shared/lettre.ts`) refuse une ouverture qui n'est pas celle de l'occasion (on garde la
+  sienne), compte +1 000 F pour une « grande » d'ailleurs, et range `rite` et `motif` dans la lettre ; `malettre-lettre`
+  la sert avec `poserRite` ; le reçu nomme une ouverture payée. Contrôles : caisse 418, langues 52, lettre 284, vitrine et faire-part à relancer (le système les a arrêtés faute de mémoire ; avant la reconstruction de l'accueil : 320 sur 322 et 82 sur 83, leurs échecs venant de l'accueil périmé).
 
 ### Le retour de Mongazi, et le prix
 
@@ -100,6 +107,7 @@ ouvertures dans l'ordre (la première est la sienne, incluse dans toutes les off
 1. ✅ Le théâtre, quatre ouvertures, le moteur « cinéma ».
 2. ✅ La lettre qui s'écrit, les portes plein écran, le rideau, le feu d'artifice, les lanternes, la lettre pliée :
    18 ouvertures, trois au moins par occasion.
-3. Le choix dans le constructeur (et son prix), le serveur, la caisse, les contrôles ; puis la publication.
+3. ✅ Le choix dans le constructeur (et son prix), le serveur, la caisse, les contrôles. Reste : la publication, avec
+   le feu vert de Mongazi (les fonctions `malettre-commande` et `malettre-lettre`, puis le site).
 4. D'autres mécaniques du plan d'origine (le ticket à gratter, l'écrin, le ruban du cadeau, l'œuf, le monogramme…).
 5. Remotion : chaque ouverture filmée en clip court pour la vitrine et les statuts.

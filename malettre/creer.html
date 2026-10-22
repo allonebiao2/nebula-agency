@@ -161,6 +161,27 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
 .pastille[aria-checked="true"]{border-color:var(--or);background:rgba(201,162,39,.16)}
 .pastille .rond{width:22px;height:22px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(244,237,224,.25)}
 .pastille.sans-rond{padding-left:14px}
+/* ── L'ouverture (2026-10-22) : ce que fera la personne pour ouvrir la lettre ── */
+.ouvertures{display:grid;gap:8px;margin-top:4px}
+.ouv-ligne{display:flex;gap:8px;align-items:stretch}
+.ouv{flex:1;min-width:0;display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--ligne);border-radius:14px;
+  padding:12px 14px;text-align:left;min-height:44px;transition:border-color .15s,background .15s}
+.ouv[aria-checked="true"]{border-color:var(--or);background:rgba(201,162,39,.12)}
+.ouv .ouv-t{flex:1;min-width:0}
+.ouv b{display:block;font-size:14.5px}
+.ouv .ouv-t span{display:block;font-size:12.5px;color:var(--gris-clair);margin-top:2px;line-height:1.4}
+.ouv .ouv-p{font-weight:800;font-size:13px;color:var(--or);white-space:nowrap;padding-top:1px}
+.ouv-voir{flex:none;border:1.5px solid var(--ligne);border-radius:14px;padding:0 14px;font-size:13px;font-weight:700;min-width:64px;min-height:44px}
+.ouv-voir:hover,.ouv-voir:focus-visible{border-color:var(--or)}
+/* « Voir » : l'ouverture jouée sur une lettre d'exemple, dans un cadre de téléphone (plein écran au téléphone) */
+.voile-ouv{position:fixed;inset:0;z-index:60;background:rgba(10,8,14,.86);display:flex;align-items:center;justify-content:center;padding:16px}
+.voile-ouv[hidden]{display:none}
+.cadre-ouv{position:relative;width:min(420px,100%);height:min(860px,100%);border-radius:22px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(244,237,224,.12);background:#141019}
+.cadre-ouv iframe{width:100%;height:100%;border:0;display:block}
+.fermer-ouv{position:absolute;top:10px;left:10px;z-index:2;background:rgba(20,16,25,.84);color:#f4ede0;border-radius:999px;
+  padding:9px 16px;font-size:13px;font-weight:700;min-height:40px}
+@media (max-width:520px){.voile-ouv{padding:0}.cadre-ouv{width:100%;height:100%;border-radius:0}}
 /* Le numéro : l'indicatif, puis le numéro. */
 .num{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:8px}
 .case{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;margin-top:12px;min-height:44px;cursor:pointer}
@@ -387,6 +408,15 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
         <p class="indice">Elles sont réduites et rangées dans la lettre elle-même. Rien n'est envoyé tant que tu n'as pas commandé.</p>
       </div>
 
+      <!-- L'OUVERTURE (2026-10-22) : ce que fera la personne pour ouvrir la lettre (rites/carte.json). La
+           première est celle de l'occasion, incluse dans toutes les offres ; une autre « grande » coûte 1 000 F.
+           ⛔ La caisse recalcule (`lireOuverture`). -->
+      <div class="groupe habille" id="g-ouverture">
+        <label id="o-t">L'ouverture</label>
+        <p class="indice">Ce que fera la personne pour ouvrir ta lettre. La première est celle de l'occasion, toujours incluse.</p>
+        <div class="ouvertures" id="liste-ouvertures" role="radiogroup" aria-labelledby="o-t"></div>
+      </div>
+
       <!-- L'HABILLAGE (2026-10-16) : réservé aux offres payantes, sans changer
            les prix. On essaie tout librement ; l'aperçu suit ; le choix de
            l'offre dit honnêtement ce qui part. -->
@@ -448,6 +478,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
       <p class="compte-plume" id="photos-note" hidden></p>
       <p class="compte-plume" id="habillage-note" hidden></p>
       <p class="compte-plume" id="code-note" hidden></p>
+      <p class="compte-plume" id="ouverture-note" hidden></p>
       <p class="compte-plume" id="plume-note" hidden>La plume a écrit ta lettre : <b>500 F</b> s'ajoutent à l'offre que tu choisis, déjà comptés ci-dessus.</p>
       <div class="actions">
         <button class="sec" data-vers="e-lettre">Retour</button>
@@ -524,6 +555,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
   </aside>
 </div>
 
+<script src="/ouvertures.js"></script>
 <script>
 "use strict";
 
@@ -850,6 +882,10 @@ var MAX_PHOTOS = Math.max.apply(null, PALIERS.map(function(p){ return p.photos; 
    ⛔ Le meme prix vit dans `_shared/lettre.ts` (`PLUME`), et un controle
    compare les deux. Ici, il ne fait que s'AFFICHER : la caisse recalcule. */
 var PLUME = {prix:500};
+/* L'ouverture : une « grande » choisie hors de son occasion. ⛔ La copie AFFICHÉE du prix de `lettre.ts`
+   (OUVERTURE) : la caisse recalcule, un contrôle compare les deux. */
+var OUVERTURE = {prix:1000};
+var MOTS_OUV = { incluse: "Incluse", voir: "Voir", fermer: "Fermer", note: "Ton ouverture ({o}) : {p} s'ajoutent, déjà comptés ci-dessus.", exemple: "Ici, ta lettre s'écrira mot à mot, sous les yeux de {p}." };
 /* ══════════════════════════════════════════════════════════════════════
    LA CAISSE. C'est la fonction de bord qui depose la lettre, en fixe le
    prix (⛔ jamais ce fichier : il s'edite dans la console en trois
@@ -893,6 +929,8 @@ var E = {
   wa:"", indicatif:"229", repondre:false,
   /* L'habillage : essayé librement, gardé dans le brouillon. */
   habillage:{cire:"bordeaux", sceau:"initiale", papier:"creme", pluie:"aucune"}, gratter:"",
+  /* L'ouverture choisie (vide : celle de l'occasion). */
+  ouverture:"",
   /* La plume. `mode` : qui ecrit. `plume` : le texte vient-il d'elle (c'est
      ce qui se paie, pas le mode). `plumeAvant` : sa derniere lettre, gardee
      quand on repart d'une page blanche, pour pouvoir revenir en arriere.
@@ -967,7 +1005,21 @@ function palierDe(id){
   return PALIERS.filter(function(p){ return p.id === id; })[0] || PALIERS[2];
 }
 /* Ce que la commande coute, tel qu'on l'AFFICHE. La caisse le recalcule. */
-function total(p){ return p.prix + (E.plume ? PLUME.prix : 0); }
+function total(p){ return p.prix + (E.plume ? PLUME.prix : 0) + prixOuverture(); }
+
+/* ── L'ouverture : la liste de l'occasion, celle qui est choisie, ce qu'elle coûte ── */
+function ouverturesDe(occ){
+  var o = window.OUVERTURES && OUVERTURES.occasions;
+  return o && Object.prototype.hasOwnProperty.call(o, occ) ? o[occ] : ["cachet"];
+}
+function ouvertureChoisie(){
+  var l = ouverturesDe(E.occasion);
+  return l.indexOf(E.ouverture) >= 0 ? E.ouverture : l[0];
+}
+function prixOuverture(){
+  var l = ouverturesDe(E.occasion), id = ouvertureChoisie(), o = window.OUVERTURES && OUVERTURES.ouvertures[id];
+  return id !== l[0] && o && o.grande ? OUVERTURE.prix : 0;
+}
 
 function donnees(){
   /* ⚠️ On cherchait l'occasion par sa POSITION (OCCASIONS[1], qui etait
@@ -1054,7 +1106,9 @@ function commande(){
     langue: LANGUE,
     /* ⛔ Des choix, jamais un droit : la caisse décide si l'offre les porte. */
     habillage: E.habillage, gratter: E.gratter || "",
-    indicatif: E.indicatif, repondre: !!E.repondre
+    indicatif: E.indicatif, repondre: !!E.repondre,
+    /* L'ouverture : un choix, jamais un prix (la caisse vérifie qu'elle est bien celle de l'occasion). */
+    occ: E.occasion, ouverture: ouvertureChoisie()
   };
 }
 
@@ -1121,7 +1175,9 @@ function prochain(mmjj){
 }
 
 function choisirOccasion(o){
+  if (E.occasion !== o.id) { E.ouverture = ""; }
   E.occasion = o.id;
+  peindreOuvertures();
   if (!E.titre || parDefaut("titre", E.titre)) { E.titre = o.titre; $("#f-titre").value = o.titre; }
   if (!E.formule || parDefaut("formule", E.formule)) { E.formule = o.formule; $("#f-formule").value = o.formule; }
   /* Noel s'ouvre le 25 a minuit : on le propose, sans jamais ecraser une date
@@ -1382,6 +1438,86 @@ $("#btn-remettre").addEventListener("click", function(){
   });
 });
 
+/* ── L'ouverture : la liste de l'occasion ; « Voir » la joue sur une lettre d'exemple ── */
+function peindreOuvertures(){
+  var bac = $("#liste-ouvertures");
+  if (!bac || !window.OUVERTURES) { if ($("#g-ouverture")) { $("#g-ouverture").hidden = true; } return; }
+  bac.textContent = "";
+  var l = ouverturesDe(E.occasion), choisie = ouvertureChoisie(), langue = LANGUE === "en" ? "en" : "fr";
+  l.forEach(function(id, k){
+    var o = OUVERTURES.ouvertures[id];
+    if (!o) { return; }
+    var ligne = document.createElement("div"); ligne.className = "ouv-ligne";
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "ouv"; b.setAttribute("role", "radio"); b.dataset.id = id;
+    b.setAttribute("aria-checked", id === choisie ? "true" : "false");
+    var t = document.createElement("span"); t.className = "ouv-t";
+    var n = document.createElement("b"); n.textContent = o.nom[langue];
+    var ph = document.createElement("span"); ph.textContent = o.phrase[langue];
+    t.appendChild(n); t.appendChild(ph);
+    var px = document.createElement("span"); px.className = "ouv-p";
+    px.textContent = k === 0 || !o.grande ? MOTS_OUV.incluse : "+ " + fmt(OUVERTURE.prix);
+    b.appendChild(t); b.appendChild(px);
+    b.addEventListener("click", function(){
+      E.ouverture = id;
+      peindreOuvertures(); peindrePaliers(); garder();
+    });
+    var v = document.createElement("button");
+    v.type = "button"; v.className = "ouv-voir"; v.textContent = MOTS_OUV.voir;
+    v.setAttribute("aria-label", MOTS_OUV.voir + " : " + o.nom[langue]);
+    v.addEventListener("click", function(){ voirOuverture(id, v); });
+    ligne.appendChild(b); ligne.appendChild(v);
+    bac.appendChild(ligne);
+  });
+}
+/* Le moteur des ouvertures n'est chargé qu'au premier « Voir » (il pèse ce que pèse une lettre entière). */
+var chargeRites = null;
+function rites(fait){
+  if (window.poserRite) { fait(); return; }
+  if (!chargeRites) {
+    chargeRites = [];
+    var sc = document.createElement("script"); sc.src = "/rites.js";
+    sc.onload = function(){ var f = chargeRites; chargeRites = null; f.forEach(function(x){ x(); }); };
+    sc.onerror = function(){ chargeRites = null; };
+    document.head.appendChild(sc);
+  }
+  chargeRites.push(fait);
+}
+/* L'ouverture jouée sur une lettre d'EXEMPLE : le nom de la personne, l'habillage choisi, mais pas les mots de
+   l'acheteur (une capture de l'aperçu ne doit jamais valoir la lettre). */
+var voileOuv = null, retourOuv = null;
+function voirOuverture(id, depuis){
+  if (!GABARIT) { return; }
+  retourOuv = depuis || null;
+  rites(function(){
+    var d = donnees();
+    delete d.apercu;
+    d.lettre = [MOTS_OUV.exemple.replace("{p}", d.pour)];
+    d.photos = []; d.ouvre = ""; d.code = ""; d.gratter = ""; d.repondre = ""; d.depuis = "";
+    var html = poserRite(batir(d), id, d.habillage.cire, E.occasion);
+    if (!voileOuv) {
+      voileOuv = document.createElement("div"); voileOuv.className = "voile-ouv"; voileOuv.hidden = true;
+      voileOuv.setAttribute("role", "dialog"); voileOuv.setAttribute("aria-modal", "true");
+      var c = document.createElement("div"); c.className = "cadre-ouv";
+      var f = document.createElement("iframe"); f.setAttribute("sandbox", "allow-scripts"); f.title = MOTS_OUV.voir;
+      var x = document.createElement("button"); x.type = "button"; x.className = "fermer-ouv"; x.textContent = MOTS_OUV.fermer;
+      x.addEventListener("click", fermerOuverture);
+      voileOuv.addEventListener("click", function(e){ if (e.target === voileOuv) { fermerOuverture(); } });
+      c.appendChild(f); c.appendChild(x); voileOuv.appendChild(c); document.body.appendChild(voileOuv);
+    }
+    voileOuv.querySelector("iframe").srcdoc = html;
+    voileOuv.hidden = false;
+    voileOuv.querySelector(".fermer-ouv").focus();
+  });
+}
+function fermerOuverture(){
+  if (!voileOuv || voileOuv.hidden) { return; }
+  voileOuv.hidden = true;
+  voileOuv.querySelector("iframe").srcdoc = "";
+  if (retourOuv) { retourOuv.focus(); }
+}
+addEventListener("keydown", function(e){ if (e.key === "Escape") { fermerOuverture(); } });
+
 /* ── L'habillage : des pastilles, l'aperçu suit. ── */
 function habillageUtilise(){
   return Object.keys(SANS_HABILLAGE).some(function(g){ return E.habillage[g] !== SANS_HABILLAGE[g]; })
@@ -1449,6 +1585,8 @@ PALIERS.forEach(function(p){
   $("#liste-paliers").appendChild(b);
 });
 
+peindreOuvertures();
+
 /* Les prix de chaque offre, plume comprise : on l'ecrit sur la carte, pas en
    petit dessous. (Depuis le 2026-10-22, aucune offre n'est gratuite.) */
 function peindrePaliers(){
@@ -1473,6 +1611,13 @@ function peindrePaliers(){
     var vetue = PALIERS.filter(function(p){ return p.habillage; })[0];
     $("#habillage-note").textContent = "Ton habillage (cire, papier, phrase à gratter) demande "
       + vetue.nom + " (" + fmt(vetue.prix) + ") : avec " + pal.nom + ", ta lettre partira sans lui.";
+  }
+  /* Une ouverture qui se paie : on le DIT, avec son nom. */
+  var po = prixOuverture();
+  $("#ouverture-note").hidden = !po;
+  if (po) {
+    var oo = OUVERTURES.ouvertures[ouvertureChoisie()];
+    $("#ouverture-note").textContent = MOTS_OUV.note.replace("{o}", oo.nom[LANGUE === "en" ? "en" : "fr"]).replace("{p}", fmt(po));
   }
   /* Le code secret avec une offre qui ne le porte pas : on le DIT aussi. */
   var sansCode = !pal.code && !!E.code;

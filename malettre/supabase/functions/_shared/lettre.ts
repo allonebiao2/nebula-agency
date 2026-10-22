@@ -21,6 +21,8 @@
   anonyme, et parfait pour une page qui imite une banque.
 */
 
+import { RITES_DONNEES } from './rites.ts'
+
 /* ── Le barème ──────────────────────────────────────────────────────────── */
 
 export type Palier = {
@@ -61,10 +63,14 @@ export type Langue = typeof LANGUES[number]
 export const langueDe = (v: unknown): Langue => (v === 'en' ? 'en' : 'fr')
 export const SITE_LETTRES = 'https://malettre.nebula-agency.online'
 export const accueilDe = (l: Langue) => SITE_LETTRES + (l === 'en' ? '/en/' : '')
-/* Le nom d'une commande tel que l'acheteur le lira (paiement, reçu). */
-export function nomOffre(p: Palier, plume: boolean, l: Langue): string {
-  const n = l === 'en' ? p.en : p.nom
-  return plume ? (l === 'en' ? `${n} + the Quill` : `${n} + la plume`) : n
+/* Le nom d'une commande tel que l'acheteur le lira (paiement, reçu). Une ouverture PAYÉE s'y lit : le montant
+   s'explique de lui-même. */
+export function nomOffre(p: Palier, plume: boolean, l: Langue, ouv?: Ouverture): string {
+  let n = l === 'en' ? p.en : p.nom
+  if (plume) n = l === 'en' ? `${n} + the Quill` : `${n} + la plume`
+  const o = ouv && ouv.prix > 0 ? RITES_DONNEES.ouvertures[ouv.id] : null
+  if (o) n += ' + ' + (l === 'en' ? o.nom.en : o.nom.fr)
+  return n
 }
 
 /* ── L'habillage (2026-10-16) ───────────────────────────────────────────────
@@ -126,10 +132,30 @@ export function palier(id: unknown): Palier | null {
 */
 export const PLUME = { prix: 500 }
 
+/* ── L'ouverture (2026-10-22) ──────────────────────────────────────────────
+   Chaque occasion a ses ouvertures (`malettre/rites/carte.json`, construites dans `rites.ts` par `_rites.py`) ; la
+   PREMIÈRE est la sienne, incluse dans toutes les offres, même La Carte. En choisir une autre de SA liste : une
+   « simple » reste incluse, une « grande » coûte +1 000 F (décision de Mongazi du 2026-10-22).
+   ⛔ Une ouverture qui n'est pas dans la liste de l'occasion (un navigateur bricolé) est remplacée, sans erreur, par
+   celle de l'occasion : on ne vend jamais ce que l'occasion ne propose pas. ⛔ Le prix se calcule ICI ; le constructeur
+   lit les mêmes données (`ouvertures.js`, produit par la même construction) et un contrôle les compare.
+   ⚠️ `hasOwnProperty` : une occasion nommée « constructor » ou « __proto__ » trouverait sinon une fonction d'Object. */
+export const OUVERTURE = { prix: 1000 }
+export type Ouverture = { id: string; occ: string; prix: number }
+export function lireOuverture(occ: unknown, id: unknown): Ouverture {
+  const o = String(occ ?? '')
+  const connue = Object.prototype.hasOwnProperty.call(RITES_DONNEES.occasions, o)
+  const liste: string[] = connue ? RITES_DONNEES.occasions[o] : ['cachet']
+  const s = String(id ?? '')
+  const choisie = liste.includes(s) ? s : liste[0]
+  const grande = !!RITES_DONNEES.ouvertures[choisie]?.grande
+  return { id: choisie, occ: connue ? o : '', prix: choisie !== liste[0] && grande ? OUVERTURE.prix : 0 }
+}
+
 /* Le prix d'une commande. Le navigateur dit s'il a pris la plume (un oui ou
-   un non), jamais combien elle coûte. */
-export function prixTotal(p: Palier, plume: boolean): number {
-  return p.prix + (plume ? PLUME.prix : 0)
+   un non) et quelle ouverture il veut, jamais combien elles coûtent. */
+export function prixTotal(p: Palier, plume: boolean, ouverture = 0): number {
+  return p.prix + (plume ? PLUME.prix : 0) + ouverture
 }
 
 /* ── L'adresse ──────────────────────────────────────────────────────────── */
@@ -298,6 +324,9 @@ export type Lettre = {
   gratter: string
   /* Le numéro de l'acheteur pour « Lui répondre », ou rien. */
   repondre: string
+  /* L'ouverture (`rites/carte.json`) et l'occasion (son identifiant : l'emblème de son cachet en vient). */
+  rite: string
+  motif: string
 }
 
 /* Un mot d'acheteur n'a pas de raison de faire dix mille signes, et une lettre
@@ -314,7 +343,7 @@ export const BORNES = {
 const texte = (v: unknown, max = BORNES.texte) => String(v ?? '').slice(0, max).trim()
 
 export type Refus = { ok: false; erreur: string }
-export type Accord = { ok: true; lettre: Lettre; palier: Palier; plume: boolean; prix: number }
+export type Accord = { ok: true; lettre: Lettre; palier: Palier; plume: boolean; ouverture: Ouverture; prix: number }
 
 /*
   ⛔ TOUT CE QUI ARRIVE EST HOSTILE JUSQU'À PREUVE DU CONTRAIRE, y compris ce
@@ -349,6 +378,7 @@ export function lireCommande(d: any): Accord | Refus {
 
   const code = String(d?.code ?? '').replace(/\D/g, '').slice(0, 4)
   const langue = langueDe(d?.langue)
+  const ouverture = lireOuverture(d?.occ, d?.ouverture)
 
   const lettre: Lettre = {
     occasion: texte(d?.occasion),
@@ -373,6 +403,8 @@ export function lireCommande(d: any): Accord | Refus {
     habillage: lireHabillage(d?.habillage, p.habillage),
     gratter: p.habillage ? texte(d?.gratter, 80) : '',
     repondre: numeroReponse(d),
+    rite: ouverture.id,
+    motif: ouverture.occ,
   }
 
   /* ⛔ Et JAMAIS le drapeau d'aperçu : le seuil EST le produit, une lettre
@@ -384,5 +416,5 @@ export function lireCommande(d: any): Accord | Refus {
   /* ⚠️ Seul un vrai « true » vaut la plume : une chaîne « false » ou « 0 »
      envoyée par un navigateur bricolé ne doit rien coûter, ni rien offrir. */
   const plume = d?.plume === true
-  return { ok: true, lettre, palier: p, plume, prix: prixTotal(p, plume) }
+  return { ok: true, lettre, palier: p, plume, ouverture, prix: prixTotal(p, plume, ouverture.prix) }
 }

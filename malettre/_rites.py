@@ -34,6 +34,7 @@ RITES = ICI / "rites"
 ESBUILD = ICI.parent / "_studio-video" / "node_modules" / "esbuild"
 SORTIE_JS = ICI / "rites.js"
 SORTIE_TS = ICI / "supabase" / "functions" / "_shared" / "rites.ts"
+SORTIE_CAT = ICI / "ouvertures.js"
 PLAFOND_RITE = 24_000      # octets minifiés d'un rite seul
 PLAFOND_COMMUN = 52_000    # le moteur « cinéma », l'atelier, l'écriture, le branchement (~43 Ko, ~14 Ko compressés à l'envoi)
 INTERDITS = ["</script", "<!--", " ", " "]
@@ -148,7 +149,15 @@ def main():
         "export " + poser.replace("function poserRite(html, id, cire, occasion)", "function poserRite(html: string, id: string, cire: string, occasion: string): string")
         .replace("m = {}, theme = {}, k;", "m: Record<string, string> = {}, theme: Record<string, unknown> = {}, k: string;")
         .replace("function (n) {", "function (n: string) {") + "\n", encoding="utf-8")
-    print("✓ %s (%d Ko) · %s" % (SORTIE_JS.relative_to(ICI.parent), SORTIE_JS.stat().st_size // 1024, SORTIE_TS.relative_to(ICI.parent)))
+    # Le catalogue LÉGER du constructeur : les noms, les phrases, les « grandes », les ouvertures de chaque occasion.
+    # ⛔ Aucun prix ici : il vit dans `_shared/lettre.ts` (et sa copie affichée dans `creer.html`, comparée par la caisse).
+    cat = {"ouvertures": {i: {"nom": o["nom"], "phrase": o.get("phrase", o["nom"]), "grande": bool(o.get("grande"))}
+                          for i, o in ouvertures.items()}, "occasions": occasions}
+    SORTIE_CAT.write_text(
+        "/* MA LETTRE À… · le catalogue des ouvertures, pour le constructeur. ⛔ FICHIER GÉNÉRÉ : python malettre/_rites.py */\n"
+        "var OUVERTURES = " + json.dumps(cat, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
+    print("✓ %s (%d Ko) · %s · %s (%d o)" % (SORTIE_JS.relative_to(ICI.parent), SORTIE_JS.stat().st_size // 1024, SORTIE_TS.relative_to(ICI.parent),
+                                        SORTIE_CAT.relative_to(ICI.parent), SORTIE_CAT.stat().st_size))
 
 
 if __name__ == "__main__":

@@ -10,7 +10,11 @@
       "matieres": [
         "cire"
       ],
-      "grande": false
+      "grande": false,
+      "phrase": {
+        "fr": "La cire casse en trois éclats, le rabat se lève, la carte sort.",
+        "en": "The wax breaks in three, the flap lifts, the card slides out."
+      }
     },
     "perles": {
       "nom": {
@@ -23,7 +27,11 @@
         "perle",
         "or"
       ],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Le collier de perles se dénoue, les quatre rabats s'ouvrent un à un.",
+        "en": "The pearl necklace comes undone, the four flaps open one by one."
+      }
     },
     "portes-brodees": {
       "nom": {
@@ -34,7 +42,11 @@
       "matieres": [
         "cire"
       ],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Un cœur de cire se fend, un petit cabinet brodé s'ouvre sur des pétales.",
+        "en": "A wax heart splits, a little embroidered cabinet opens onto petals."
+      }
     },
     "bougie": {
       "nom": {
@@ -45,7 +57,11 @@
       "matieres": [
         "cire"
       ],
-      "grande": false
+      "grande": false,
+      "phrase": {
+        "fr": "On souffle la bougie : le noir, puis la fête.",
+        "en": "Blow out the candle: darkness, then the party."
+      }
     },
     "portes-dentelle": {
       "nom": {
@@ -60,7 +76,11 @@
         "cire",
         "or"
       ],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Deux portes de dentelle couvrent l'écran : on les écarte du doigt.",
+        "en": "Two lace doors fill the screen: part them with a finger."
+      }
     },
     "portes-velours": {
       "nom": {
@@ -75,7 +95,11 @@
         "cire",
         "or"
       ],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Deux portes de velours aux cœurs d'or, qu'on écarte du doigt.",
+        "en": "Two velvet doors with golden hearts, parted with a finger."
+      }
     },
     "moucharabieh": {
       "nom": {
@@ -90,7 +114,11 @@
         "cire",
         "or"
       ],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Un moucharabieh qu'une lanterne éclaire par derrière, qu'on ouvre du doigt.",
+        "en": "A mashrabiya lit by a lantern behind it, opened with a finger."
+      }
     },
     "portes-deco": {
       "nom": {
@@ -105,7 +133,11 @@
         "cire",
         "or"
       ],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Deux portes noir et or, Art déco, qu'on écarte du doigt.",
+        "en": "Black and gold Art Deco doors, parted with a finger."
+      }
     },
     "rideau-theatre": {
       "nom": {
@@ -117,7 +149,11 @@
         "motif": "rouge"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "On frappe les trois coups, le rideau se lève, la salle applaudit.",
+        "en": "Knock three times, the curtain rises, the room applauds."
+      }
     },
     "rideau-soie": {
       "nom": {
@@ -129,7 +165,11 @@
         "motif": "ivoire"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Les trois coups, puis un rideau de soie qui s'ouvre.",
+        "en": "Three knocks, then a silk curtain opens."
+      }
     },
     "rideau-minuit": {
       "nom": {
@@ -141,7 +181,11 @@
         "motif": "nuit"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Les trois coups, puis un rideau de velours de minuit.",
+        "en": "Three knocks, then a midnight velvet curtain."
+      }
     },
     "feu-fete": {
       "nom": {
@@ -153,7 +197,11 @@
         "motif": "fete"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "On touche le ciel, les fusées partent, le bouquet final écrit son prénom.",
+        "en": "Touch the sky, rockets fly, the finale writes their name."
+      }
     },
     "feu-or": {
       "nom": {
@@ -165,7 +213,11 @@
         "motif": "or"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Un feu d'artifice d'or qui écrit son prénom dans le ciel.",
+        "en": "Golden fireworks that write their name in the sky."
+      }
     },
     "feu-coeur": {
       "nom": {
@@ -177,7 +229,11 @@
         "motif": "amour"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Un feu d'artifice qui dessine un cœur autour de son prénom.",
+        "en": "Fireworks that draw a heart around their name."
+      }
     },
     "lanterne": {
       "nom": {
@@ -189,7 +245,11 @@
         "motif": "papier"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "On garde le doigt sur une lanterne : elle s'allume et s'envole.",
+        "en": "Hold a lantern: it lights up and flies away."
+      }
     },
     "lanterne-lune": {
       "nom": {
@@ -201,7 +261,11 @@
         "motif": "croissant"
       },
       "matieres": [],
-      "grande": true
+      "grande": true,
+      "phrase": {
+        "fr": "Une lanterne d'or qui s'envole sous le croissant de lune.",
+        "en": "A golden lantern rising under the crescent moon."
+      }
     },
     "pli": {
       "nom": {
@@ -215,7 +279,11 @@
       "matieres": [
         "cire"
       ],
-      "grande": false
+      "grande": false,
+      "phrase": {
+        "fr": "Une lettre pliée qu'on déplie, rabat par rabat.",
+        "en": "A folded letter, unfolded flap by flap."
+      }
     },
     "pli-noyer": {
       "nom": {
@@ -229,7 +297,11 @@
       "matieres": [
         "cire"
       ],
-      "grande": false
+      "grande": false,
+      "phrase": {
+        "fr": "La lettre pliée, posée sur une table de bois.",
+        "en": "The folded letter, resting on a wooden table."
+      }
     }
   },
   "occasions": {

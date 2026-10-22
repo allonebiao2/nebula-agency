@@ -155,3 +155,20 @@ encore plus d'effet wow ». À la question « plusieurs ouvertures au choix, ou 
 3. Les films Remotion des ouvertures (le même code) pour la vitrine.
 4. ⏳ La capture d'écran de l'aperçu (plus tard).
 
+### Le branchement (le même soir, pas déployé)
+
+**Le choix et la caisse sont branchés (pas déployés)** : dans le constructeur, un bloc « L'ouverture » propose les
+ouvertures de l'occasion (la sienne d'abord, « Incluse » ; une « grande » d'ailleurs, « + 1 000 F »), et « Voir » la
+joue sur une lettre d'EXEMPLE (le prénom, l'habillage, pas les mots de l'acheteur). Le constructeur lit un catalogue
+léger (`ouvertures.js`, 6 Ko) ; le moteur entier (`rites.js`) ne se charge qu'au premier « Voir ». À la caisse,
+`lireOuverture(occ, id)` (dans `_shared/lettre.ts`) refuse une ouverture qui n'est pas celle de l'occasion (on garde la
+sienne), compte +1 000 F pour une « grande » d'ailleurs, et range `rite` et `motif` dans la lettre ; `malettre-lettre`
+la sert avec `poserRite` ; le reçu nomme une ouverture payée. Contrôles : caisse 418, langues 52, lettre 284, vitrine et faire-part à relancer (le système les a arrêtés faute de mémoire ; avant la reconstruction de l'accueil : 320 sur 322 et 82 sur 83, leurs échecs venant de l'accueil périmé).
+
+- Corrigé en passant : une archive du bloc de `CLAUDE.md` (recopiée dans `CONTEXT.md` le 22 au matin) citait « LE
+  PLI » hors des balises d'histoire ; le contrôle de la caisse le signalait depuis. Balisée.
+- La page d'accueil et ses six lettres d'exemple reconstruites (`_build_accueil.py`) : elles portent le marqueur de
+  l'ouverture, vide (l'ouverture d'avant). Les y poser est la suite naturelle (la vitrine les fait ouvrir).
+- ⚠️ Un heredoc bash a avalé la barre oblique inverse d'un script Python (`\\n` devenu un vrai retour à la ligne) :
+  écrire ces scripts avec l'outil d'écriture, jamais par le shell.
+
