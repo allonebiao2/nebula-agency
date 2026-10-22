@@ -3,7 +3,7 @@
 
     python malettre/_rites.py
 
-Lit `rites/carte.json` (la seule liste des ouvertures), `rites/moteur.js`, `atelier.js`, `branchement.js` et
+Lit `rites/carte.json` (la seule liste des ouvertures), `rites/moteur.js`, `atelier.js`, `ecriture.js`, `branchement.js` et
 `rites/<id>.js`, réduit les matières de Blender (`rites/matieres/*.png`, 256 px) en WebP de 128 px, minifie le code
 par esbuild (celui du studio vidéo, déjà sur le disque), puis écrit :
 
@@ -33,7 +33,7 @@ ESBUILD = ICI.parent / "_studio-video" / "node_modules" / "esbuild"
 SORTIE_JS = ICI / "rites.js"
 SORTIE_TS = ICI / "supabase" / "functions" / "_shared" / "rites.ts"
 PLAFOND_RITE = 24_000      # octets minifiés d'un rite seul
-PLAFOND_COMMUN = 44_000    # le moteur « cinéma », l'atelier, le branchement (36 Ko, environ 12 Ko compressés à l'envoi)
+PLAFOND_COMMUN = 52_000    # le moteur « cinéma », l'atelier, l'écriture, le branchement (~43 Ko, ~14 Ko compressés à l'envoi)
 INTERDITS = ["</script", "<!--", " ", " "]
 
 
@@ -70,7 +70,7 @@ def main():
     ids = [k for k in carte if not k.startswith("_")]
     if "cachet" not in ids:
         sys.exit("⛔ « cachet » doit exister : c'est l'ouverture de toute occasion qui n'a pas la sienne")
-    commun = minifier("\n".join((RITES / f).read_text(encoding="utf-8") for f in ("moteur.js", "atelier.js", "branchement.js")))
+    commun = minifier("\n".join((RITES / f).read_text(encoding="utf-8") for f in ("moteur.js", "atelier.js", "ecriture.js", "branchement.js")))
     if len(commun.encode("utf-8")) > PLAFOND_COMMUN:
         sys.exit("⛔ le moteur pèse %d octets (plafond %d)" % (len(commun.encode()), PLAFOND_COMMUN))
     rites, besoin = {}, set()

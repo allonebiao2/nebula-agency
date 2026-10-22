@@ -28,7 +28,7 @@ from _injecter import poser  # noqa: E402
 SORTIE = ICI / "_planches"
 
 
-def lettre(rite, cire, papier, sceau, pluie, verrou, occasion="Anniversaire", titre="Joyeux anniversaire"):
+def lettre(rite, cire, papier, sceau, pluie, verrou, occasion="Anniversaire", titre="Joyeux anniversaire", plus=None):
     d = {
         "occasion": occasion, "pour": "Afi", "de": "Koffi", "titre": titre, "code": "",
         "lettre": ["Je ne sais pas écrire les belles phrases, alors je vais écrire les vraies.",
@@ -40,6 +40,7 @@ def lettre(rite, cire, papier, sceau, pluie, verrou, occasion="Anniversaire", ti
         "habillage": {"cire": cire, "sceau": sceau, "papier": papier, "pluie": pluie},
         "gratter": "", "repondre": "", "rite": rite,
     }
+    d.update(plus or {})
     html = poser(d)
     # ⚠️ Par un fichier : `node -e` avec les 50 Ko de rites.js dépasse la longueur d'une commande sous Windows.
     SORTIE.mkdir(exist_ok=True)

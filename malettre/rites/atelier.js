@@ -368,6 +368,15 @@ var Atelier = (function () {
       f.type = "bandpass"; f.Q.value = 1.2; f.frequency.setValueAtTime(de, t); f.frequency.exponentialRampToValueAtTime(a, t + duree);
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(force || 0.2, t + duree * 0.25); g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
       b.connect(f); f.connect(g); g.connect(SON.sortie); b.start(t);
+    },
+    /* la plume qui gratte le papier : un souffle très bref et très aigu, jamais deux fois le même */
+    plume: function () {
+      var ctx = Son.ctx(); if (!ctx || typeof bruit !== "function") return;
+      var t = ctx.currentTime, d = 0.028 + Math.random() * 0.03, b = bruit(ctx, d), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      f.type = "bandpass"; f.Q.value = 2.2; f.frequency.setValueAtTime(3000 + Math.random() * 2800, t);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.02 + Math.random() * 0.025, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      b.connect(f); f.connect(g); g.connect(SON.sortie); b.start(t);
     }
   };
 
