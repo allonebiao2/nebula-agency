@@ -381,6 +381,31 @@ var Atelier = (function () {
         o.connect(g); g.connect(SON.sortie); o.start(t); o.stop(t + d + 0.05);
       });
     },
+    /* un coup du brigadier sur le plancher : un choc sourd, du bois et de la poussière */
+    coup: function (quand) {
+      var ctx = Son.ctx(); if (!ctx || typeof bruit !== "function") return;
+      var t = ctx.currentTime + (quand || 0), o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.22);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.6, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+      o.connect(g); g.connect(SON.sortie); o.start(t); o.stop(t + 0.35);
+      var b = bruit(ctx, 0.08), f = ctx.createBiquadFilter(), g2 = ctx.createGain();
+      f.type = "lowpass"; f.frequency.value = 700;
+      g2.gain.setValueAtTime(0.5, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+      b.connect(f); f.connect(g2); g2.connect(SON.sortie); b.start(t);
+    },
+    /* une salle qui applaudit : des centaines de claquements brefs, chacun sa hauteur, qui montent puis s'éteignent */
+    applaudir: function (quand, duree, force) {
+      var ctx = Son.ctx(); if (!ctx || typeof bruit !== "function") return;
+      var t0 = ctx.currentTime + (quand || 0), d = duree || 3, n = Math.round(d * 70), b = bruit(ctx, 0.03);
+      var buf = b.buffer;
+      for (var i = 0; i < n; i++) {
+        var k = i / n, t = t0 + Math.pow(k, 0.85) * d + Math.random() * 0.02, env = Math.min(1, k * 6) * Math.pow(1 - k, 1.4);
+        var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+        s.buffer = buf; f.type = "bandpass"; f.Q.value = 1.6; f.frequency.value = 900 + Math.random() * 2200;
+        g.gain.setValueAtTime((force || 0.12) * env * (0.4 + Math.random() * 0.6), t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.025 + Math.random() * 0.02);
+        s.connect(f); f.connect(g); g.connect(SON.sortie); s.start(t); s.stop(t + 0.05);
+      }
+    },
     /* la plume qui gratte le papier : un souffle très bref et très aigu, jamais deux fois le même */
     plume: function () {
       var ctx = Son.ctx(); if (!ctx || typeof bruit !== "function") return;

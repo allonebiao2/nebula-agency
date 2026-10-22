@@ -31,6 +31,8 @@ EXEMPLES = {
     "portes-dentelle": ("demande", "Demande en mariage", "Veux-tu m'épouser ?", "or", "initiale", "creme", "etoiles"),
     "moucharabieh": ("tabaski", "Tabaski", "Bonne fête de Tabaski", "or", "initiale", "creme", "etoiles"),
     "portes-deco": ("nouvelan", "Nouvel an", "Bonne année", "or", "initiale", "nuit", "confettis"),
+    "rideau-theatre": ("reussite", "Réussite", "Félicitations !", "bordeaux", "initiale", "creme", "confettis"),
+    "rideau-soie": ("naissance", "Naissance", "Bienvenue au monde", "or", "initiale", "coton", "etoiles"),
     "perles": ("mariage", "Mariage", "Tous mes vœux de bonheur", "or", "couronne", "creme", "etoiles"),
     "bougie": ("anniv", "Anniversaire", "Joyeux anniversaire", "bordeaux", "initiale", "creme", "confettis"),
     "cachet": ("autre", "Une lettre pour toi", "Une lettre pour toi", "bordeaux", "initiale", "kraft", "etoiles"),
@@ -57,7 +59,8 @@ a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;paddi
 color:#f4ede0;background:#1d1826;box-shadow:inset 0 0 0 1px rgba(244,237,224,.12)}
 a b{font-weight:400;font-size:22px}a i{font-style:normal;font-family:system-ui,sans-serif;font-size:13px;color:#e0c266}
 a:hover{background:#262033}</style></head><body>
-<h1>Les ouvertures</h1><p>Une vraie lettre par ouverture. Touche le cachet (ou le bouton) ; les portes, écarte-les du doigt.
+<h1>Les ouvertures</h1><p>Une vraie lettre par ouverture. Touche le cachet (ou le bouton) ; les portes, écarte-les du doigt ;
+le rideau, frappe les trois coups.
 Pour rejouer, reviens ici puis rouvre la lettre.</p>
 <nav>""" + "".join(liens) + """</nav>
 <script>/* chaque essai est une première lecture (une lettre relue s'écrit quatre fois plus vite) */
@@ -101,7 +104,7 @@ def controler(port):
                 for k in range(1, 9):
                     pg.mouse.move(195 + k * 14, 560, steps=2)
                 pg.mouse.up()
-                geste = " · écartées du doigt"
+                geste = " · geste au doigt"
             t0 = time.time()
             ouverte = devant = False
             while time.time() - t0 < 12:
@@ -123,7 +126,7 @@ def controler(port):
                 print("   pose %s · ouverte %s · écrit %s · devant %s · erreurs %s" % (pose, ouverte, ecrit, devant, erreurs[:3]))
             ok = ok and bon
             print("%s %-16s théâtre %s · bouton « %s »%s · ouverte en %.1f s%s%s" % ("✓" if bon else "✗", rite, "posé" if pose else "ABSENT",
-                  bouton, geste, time.time() - t0, " · portes devant la lettre" if devant else "",
+                  bouton, geste, time.time() - t0, " · la scène passe devant la lettre" if devant else "",
                   (" · " + "; ".join(erreurs[:2])) if erreurs else ""))
             pg.close()
         nav.close()

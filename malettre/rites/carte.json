@@ -2,86 +2,279 @@
   "_lisez-moi": "Les ouvertures de MA LETTRE À… Seule source : la construction (_rites.py) la lit, le constructeur et le serveur lisent ce qu'elle produit. « ouvertures » : chacune joue une MÉCANIQUE (rites/<mecanique>.js) habillée d'un THÈME ; « matieres » : les matcaps de Blender qu'elle emporte (« cire » = la cire de l'habillage) ; « grande » : coûte +1 000 F quand on la choisit pour une occasion qui n'est pas la sienne. « occasions » : pour chaque occasion du constructeur, ses ouvertures, la PREMIÈRE est la sienne (incluse dans toutes les offres) ; une occasion absente n'a que « cachet ».",
   "ouvertures": {
     "cachet": {
-      "nom": { "fr": "Le cachet", "en": "The seal" },
+      "nom": {
+        "fr": "Le cachet",
+        "en": "The seal"
+      },
       "mecanique": "cachet",
-      "matieres": ["cire"],
+      "matieres": [
+        "cire"
+      ],
       "grande": false
     },
     "perles": {
-      "nom": { "fr": "Le collier de perles", "en": "The pearl necklace" },
+      "nom": {
+        "fr": "Le collier de perles",
+        "en": "The pearl necklace"
+      },
       "mecanique": "perles",
-      "matieres": ["cire", "perle", "or"],
+      "matieres": [
+        "cire",
+        "perle",
+        "or"
+      ],
       "grande": true
     },
     "portes-brodees": {
-      "nom": { "fr": "Le petit cabinet brodé", "en": "The embroidered cabinet" },
+      "nom": {
+        "fr": "Le petit cabinet brodé",
+        "en": "The embroidered cabinet"
+      },
       "mecanique": "portes",
-      "matieres": ["cire"],
+      "matieres": [
+        "cire"
+      ],
       "grande": true
     },
     "bougie": {
-      "nom": { "fr": "La bougie", "en": "The candle" },
+      "nom": {
+        "fr": "La bougie",
+        "en": "The candle"
+      },
       "mecanique": "bougie",
-      "matieres": ["cire"],
+      "matieres": [
+        "cire"
+      ],
       "grande": false
     },
     "portes-dentelle": {
-      "nom": { "fr": "Les portes de dentelle", "en": "The lace doors" },
+      "nom": {
+        "fr": "Les portes de dentelle",
+        "en": "The lace doors"
+      },
       "mecanique": "battants",
-      "theme": { "motif": "dentelle" },
-      "matieres": ["cire", "or"],
+      "theme": {
+        "motif": "dentelle"
+      },
+      "matieres": [
+        "cire",
+        "or"
+      ],
       "grande": true
     },
     "portes-velours": {
-      "nom": { "fr": "Les portes de velours", "en": "The velvet doors" },
+      "nom": {
+        "fr": "Les portes de velours",
+        "en": "The velvet doors"
+      },
       "mecanique": "battants",
-      "theme": { "motif": "coeurs" },
-      "matieres": ["cire", "or"],
+      "theme": {
+        "motif": "coeurs"
+      },
+      "matieres": [
+        "cire",
+        "or"
+      ],
       "grande": true
     },
     "moucharabieh": {
-      "nom": { "fr": "Le moucharabieh", "en": "The mashrabiya" },
+      "nom": {
+        "fr": "Le moucharabieh",
+        "en": "The mashrabiya"
+      },
       "mecanique": "battants",
-      "theme": { "motif": "moucharabieh" },
-      "matieres": ["cire", "or"],
+      "theme": {
+        "motif": "moucharabieh"
+      },
+      "matieres": [
+        "cire",
+        "or"
+      ],
       "grande": true
     },
     "portes-deco": {
-      "nom": { "fr": "Les portes Art déco", "en": "The Art Deco doors" },
+      "nom": {
+        "fr": "Les portes Art déco",
+        "en": "The Art Deco doors"
+      },
       "mecanique": "battants",
-      "theme": { "motif": "deco" },
-      "matieres": ["cire", "or"],
+      "theme": {
+        "motif": "deco"
+      },
+      "matieres": [
+        "cire",
+        "or"
+      ],
+      "grande": true
+    },
+    "rideau-theatre": {
+      "nom": {
+        "fr": "Le rideau de théâtre",
+        "en": "The theatre curtain"
+      },
+      "mecanique": "rideau",
+      "theme": {
+        "motif": "rouge"
+      },
+      "matieres": [],
+      "grande": true
+    },
+    "rideau-soie": {
+      "nom": {
+        "fr": "Le rideau de soie",
+        "en": "The silk curtain"
+      },
+      "mecanique": "rideau",
+      "theme": {
+        "motif": "ivoire"
+      },
+      "matieres": [],
+      "grande": true
+    },
+    "rideau-minuit": {
+      "nom": {
+        "fr": "Le rideau de minuit",
+        "en": "The midnight curtain"
+      },
+      "mecanique": "rideau",
+      "theme": {
+        "motif": "nuit"
+      },
+      "matieres": [],
       "grande": true
     }
   },
   "occasions": {
-    "couple": ["portes-velours", "cachet"],
-    "mois": ["portes-velours", "cachet"],
-    "valentin": ["portes-velours", "portes-brodees", "portes-dentelle", "cachet"],
-    "nous": ["portes-dentelle", "portes-velours", "cachet"],
-    "demande": ["portes-dentelle", "portes-velours", "cachet"],
-    "pardon": ["cachet"],
-    "rupture": ["cachet"],
-    "anniv": ["bougie", "portes-deco", "cachet"],
-    "maman": ["portes-dentelle", "cachet"],
-    "papa": ["cachet", "portes-deco"],
-    "naissance": ["cachet", "portes-dentelle"],
-    "mariage": ["perles", "portes-dentelle", "portes-velours", "cachet"],
-    "amitie": ["cachet", "portes-deco"],
-    "potes": ["portes-deco", "cachet"],
-    "brouille": ["cachet"],
-    "noel": ["cachet", "portes-velours"],
-    "nouvelan": ["portes-deco", "cachet"],
-    "tabaski": ["moucharabieh", "cachet"],
-    "ramadan": ["moucharabieh", "cachet"],
-    "paques": ["cachet", "portes-dentelle"],
-    "reussite": ["portes-deco", "cachet"],
-    "courage": ["cachet"],
-    "guerison": ["cachet"],
-    "travail": ["portes-deco", "cachet"],
-    "retraite": ["portes-deco", "cachet"],
-    "merci": ["cachet", "portes-dentelle"],
-    "rdv": ["portes-deco", "portes-velours", "cachet"],
-    "autre": ["cachet", "portes-dentelle", "portes-velours", "portes-deco"]
+    "couple": [
+      "portes-velours",
+      "cachet"
+    ],
+    "mois": [
+      "portes-velours",
+      "cachet"
+    ],
+    "valentin": [
+      "portes-velours",
+      "portes-brodees",
+      "portes-dentelle",
+      "cachet"
+    ],
+    "nous": [
+      "portes-dentelle",
+      "portes-velours",
+      "cachet"
+    ],
+    "demande": [
+      "portes-dentelle",
+      "portes-velours",
+      "cachet"
+    ],
+    "pardon": [
+      "cachet"
+    ],
+    "rupture": [
+      "cachet"
+    ],
+    "anniv": [
+      "bougie",
+      "rideau-theatre",
+      "portes-deco",
+      "cachet"
+    ],
+    "maman": [
+      "portes-dentelle",
+      "rideau-soie",
+      "cachet"
+    ],
+    "papa": [
+      "cachet",
+      "portes-deco",
+      "rideau-theatre"
+    ],
+    "naissance": [
+      "rideau-soie",
+      "cachet",
+      "portes-dentelle"
+    ],
+    "mariage": [
+      "perles",
+      "portes-dentelle",
+      "rideau-soie",
+      "portes-velours",
+      "cachet"
+    ],
+    "amitie": [
+      "cachet",
+      "portes-deco",
+      "rideau-theatre"
+    ],
+    "potes": [
+      "portes-deco",
+      "rideau-theatre",
+      "cachet"
+    ],
+    "brouille": [
+      "cachet"
+    ],
+    "noel": [
+      "cachet",
+      "portes-velours",
+      "rideau-minuit"
+    ],
+    "nouvelan": [
+      "portes-deco",
+      "rideau-minuit",
+      "cachet"
+    ],
+    "tabaski": [
+      "moucharabieh",
+      "cachet"
+    ],
+    "ramadan": [
+      "moucharabieh",
+      "cachet"
+    ],
+    "paques": [
+      "cachet",
+      "portes-dentelle"
+    ],
+    "reussite": [
+      "rideau-theatre",
+      "portes-deco",
+      "cachet"
+    ],
+    "courage": [
+      "cachet"
+    ],
+    "guerison": [
+      "cachet"
+    ],
+    "travail": [
+      "portes-deco",
+      "rideau-theatre",
+      "cachet"
+    ],
+    "retraite": [
+      "rideau-theatre",
+      "portes-deco",
+      "cachet"
+    ],
+    "merci": [
+      "cachet",
+      "portes-dentelle"
+    ],
+    "rdv": [
+      "portes-deco",
+      "rideau-minuit",
+      "portes-velours",
+      "cachet"
+    ],
+    "autre": [
+      "cachet",
+      "portes-dentelle",
+      "portes-velours",
+      "portes-deco",
+      "rideau-theatre"
+    ]
   }
 }

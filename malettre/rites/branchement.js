@@ -99,12 +99,16 @@ function Branchement(rite) {
       indice.className = "rite-indice"; indice.setAttribute("aria-hidden", "true");
       indice.textContent = rite.indice[EN ? "en" : "fr"];
       document.body.appendChild(indice);
+      /* le rite peut changer sa phrase en route (« Encore un ») ou la faire taire */
+      rite.dire = function (m) { if (revele) return; indice.textContent = m[EN ? "en" : "fr"]; indice.classList.add("vu"); };
+      rite.taire = function () { indice.classList.remove("vu"); };
     }
     var envoi = function (type) {
       return function (ev) {
         var t = type === "bouge" ? (ev.buttons || ev.pointerType === "touch" ? "glisse" : "survol") : type;
-        jeu.toucher({ type: t, x: ev.clientX, y: ev.clientY, id: ev.pointerId });
+        /* la phrase s'efface au doigt AVANT que le rite le reçoive : il peut en dire une autre (« Encore un ») */
         if (t === "bas" && lance && indice) indice.classList.remove("vu");
+        jeu.toucher({ type: t, x: ev.clientX, y: ev.clientY, id: ev.pointerId });
       };
     };
     var x0 = null;

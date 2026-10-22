@@ -348,6 +348,12 @@ var Theatre = (function () {
       return m;
     };
 
+    /* une étoffe qui bouge (le rideau) : ses positions et ses normales changent à chaque image, dans les mêmes tampons */
+    S.maj = function (m, p, n) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, m.b[0]); gl.bufferData(gl.ARRAY_BUFFER, p, gl.DYNAMIC_DRAW);
+      if (n) { gl.bindBuffer(gl.ARRAY_BUFFER, m.b[1]); gl.bufferData(gl.ARRAY_BUFFER, n, gl.DYNAMIC_DRAW); }
+    };
+
     /* ── les images hors écran : la scène, et les quarts pour le halo et le flou ── */
     function cible(w, h, profondeur) {
       var t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
