@@ -30,8 +30,8 @@ export type Version = {
 	duree: number;
 	/** `public/malettre/<fichier>` une fois la voix posée, sinon null. */
 	voix: string | null;
-	/** La fin de la coupe B dit le prix de la plume ; les autres disent « gratuite ». */
-	fin: 'gratuite' | 'plume';
+	/** La fin de la coupe B dit le prix de la plume ; les autres disent le prix d'entrée (« Dès 1 000 F »). */
+	fin: 'prix' | 'plume';
 	plans: Plan[];
 };
 
@@ -39,7 +39,7 @@ const TRENTE = (langue: Langue): Version => ({
 	langue,
 	duree: 30,
 	voix: null,
-	fin: 'gratuite',
+	fin: 'prix',
 	plans: [
 		/* « Ma lettre à… papa. À Afi. À maman. » : un instant par prénom. */
 		{id: 'accroche', debut: 0, fin: 3.4, temps: [1.0, 1.9, 2.7]},
@@ -60,7 +60,7 @@ const LETTRE15 = (langue: Langue): Version => ({
 	langue,
 	duree: 15,
 	voix: null,
-	fin: 'gratuite',
+	fin: 'prix',
 	plans: [
 		{id: 'accroche', debut: 0, fin: 3.4, temps: [1.0, 1.9, 2.7]},
 		{id: 'scellee', debut: 3.4, fin: 7.2},

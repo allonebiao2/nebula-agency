@@ -1,0 +1,438 @@
+{
+ "duree": 56.345,
+ "minuit": 14.03,
+ "debutNarratrice": 21.69,
+ "lignes": [
+  {
+   "id": "k1",
+   "voix": "koffi",
+   "texte": "Dans trois secondes…",
+   "debut": 0.45,
+   "fin": 1.49
+  },
+  {
+   "id": "k2",
+   "voix": "koffi",
+   "texte": "ma mère va pleurer.",
+   "debut": 1.87,
+   "fin": 2.81
+  },
+  {
+   "id": "k3",
+   "voix": "koffi",
+   "texte": "Elle a soixante ans ce soir.",
+   "debut": 3.36,
+   "fin": 4.72
+  },
+  {
+   "id": "k4",
+   "voix": "koffi",
+   "texte": "Moi…",
+   "debut": 4.94,
+   "fin": 6.1
+  },
+  {
+   "id": "k5",
+   "voix": "koffi",
+   "texte": "je suis à Paris.",
+   "debut": 6.2,
+   "fin": 6.98
+  },
+  {
+   "id": "k6",
+   "voix": "koffi",
+   "texte": "Alors je lui ai écrit une lettre…",
+   "debut": 7.36,
+   "fin": 8.98
+  },
+  {
+   "id": "k7",
+   "voix": "koffi",
+   "texte": "qui ne s'ouvre qu'à minuit pile.",
+   "debut": 9.24,
+   "fin": 10.98
+  },
+  {
+   "id": "k8",
+   "voix": "koffi",
+   "texte": "Maman…",
+   "debut": 17.18,
+   "fin": 17.72
+  },
+  {
+   "id": "k9",
+   "voix": "koffi",
+   "texte": "tu me réveillais à cinq heures… pour réviser le bac…",
+   "debut": 18.0,
+   "fin": 21.14
+  },
+  {
+   "id": "a1",
+   "voix": "alimata",
+   "texte": "Ça, c'est Ma lettre à…",
+   "debut": 21.69,
+   "fin": 23.335
+  },
+  {
+   "id": "a2",
+   "voix": "alimata",
+   "texte": "Une lettre scellée…",
+   "debut": 23.535,
+   "fin": 24.563
+  },
+  {
+   "id": "a3",
+   "voix": "alimata",
+   "texte": "qui s'ouvre à l'heure que tu choisis.",
+   "debut": 24.643,
+   "fin": 26.101
+  },
+  {
+   "id": "a4",
+   "voix": "alimata",
+   "texte": "Et avant l'heure ?",
+   "debut": 26.301,
+   "fin": 27.123
+  },
+  {
+   "id": "a5",
+   "voix": "alimata",
+   "texte": "Impossible de l'ouvrir. Même en insistant.",
+   "debut": 27.203,
+   "fin": 29.801
+  },
+  {
+   "id": "a6",
+   "voix": "alimata",
+   "texte": "Tu l'écris…",
+   "debut": 30.001,
+   "fin": 30.693
+  },
+  {
+   "id": "a7",
+   "voix": "alimata",
+   "texte": "ou la plume l'écrit avec toi, à partir de tes souvenirs.",
+   "debut": 30.773,
+   "fin": 33.409
+  },
+  {
+   "id": "a8",
+   "voix": "alimata",
+   "texte": "La cire, le sceau, le papier, ta photo…",
+   "debut": 33.609,
+   "fin": 36.88
+  },
+  {
+   "id": "a9",
+   "voix": "alimata",
+   "texte": "et une pluie d'étoiles à l'ouverture.",
+   "debut": 36.96,
+   "fin": 38.773
+  },
+  {
+   "id": "a10",
+   "voix": "alimata",
+   "texte": "Pour la Saint-Valentin…",
+   "debut": 38.973,
+   "fin": 39.982
+  },
+  {
+   "id": "a11",
+   "voix": "alimata",
+   "texte": "à minuit pile,",
+   "debut": 40.062,
+   "fin": 40.922
+  },
+  {
+   "id": "a12",
+   "voix": "alimata",
+   "texte": "avant tout le monde.",
+   "debut": 41.002,
+   "fin": 41.6
+  },
+  {
+   "id": "a13",
+   "voix": "alimata",
+   "texte": "Pour t'excuser…",
+   "debut": 41.8,
+   "fin": 42.641
+  },
+  {
+   "id": "a14",
+   "voix": "alimata",
+   "texte": "sans qu'on te raccroche au nez.",
+   "debut": 42.721,
+   "fin": 44.385
+  },
+  {
+   "id": "a15",
+   "voix": "alimata",
+   "texte": "Pour une demande…",
+   "debut": 44.585,
+   "fin": 45.37
+  },
+  {
+   "id": "a16",
+   "voix": "alimata",
+   "texte": "quand la voix tremble.",
+   "debut": 45.45,
+   "fin": 46.384
+  },
+  {
+   "id": "a17",
+   "voix": "alimata",
+   "texte": "Ou la soirée entre potes : l'heure, le lieu…",
+   "debut": 46.584,
+   "fin": 48.939
+  },
+  {
+   "id": "a18",
+   "voix": "alimata",
+   "texte": "et qui ramène les boissons.",
+   "debut": 49.019,
+   "fin": 50.72
+  },
+  {
+   "id": "a19",
+   "voix": "alimata",
+   "texte": "Ma lettre à…",
+   "debut": 51.12,
+   "fin": 52.074
+  },
+  {
+   "id": "a20",
+   "voix": "alimata",
+   "texte": "Dès mille francs.",
+   "debut": 52.154,
+   "fin": 52.92
+  },
+  {
+   "id": "a21",
+   "voix": "alimata",
+   "texte": "Tape un prénom :",
+   "debut": 53.12,
+   "fin": 53.811
+  },
+  {
+   "id": "a22",
+   "voix": "alimata",
+   "texte": "ta lettre commence.",
+   "debut": 53.891,
+   "fin": 54.845
+  }
+ ],
+ "tempsAfro": [
+  20.442,
+  21.066,
+  21.691,
+  22.315,
+  22.939,
+  23.564,
+  24.188,
+  24.812,
+  25.437,
+  26.061,
+  26.685,
+  27.31,
+  27.934,
+  28.559,
+  29.183,
+  29.807,
+  30.432,
+  31.056,
+  31.68,
+  32.305,
+  32.929,
+  33.553,
+  34.178,
+  34.802,
+  35.426,
+  36.051,
+  36.675,
+  37.299,
+  37.924,
+  38.548,
+  39.172,
+  39.797,
+  40.421,
+  41.046,
+  41.67,
+  42.294,
+  42.919,
+  43.543,
+  44.167,
+  44.792,
+  45.416,
+  46.04,
+  46.665,
+  47.289,
+  47.913,
+  48.538,
+  49.162,
+  49.786,
+  50.411,
+  51.035,
+  51.659,
+  52.284,
+  52.908,
+  53.533,
+  54.157,
+  54.781,
+  55.406,
+  56.03
+ ],
+ "mesuresAfro": [
+  21.69,
+  24.187,
+  26.685,
+  29.182,
+  31.68,
+  34.177,
+  36.674,
+  39.172,
+  41.669,
+  44.167,
+  46.664,
+  49.161,
+  51.659,
+  54.156
+ ],
+ "bruitages": [
+  {
+   "son": "notif",
+   "t": 0.22
+  },
+  {
+   "son": "tic",
+   "t": 0.2
+  },
+  {
+   "son": "pluie",
+   "t": 2.86
+  },
+  {
+   "son": "plume",
+   "t": 7.26
+  },
+  {
+   "son": "tampon",
+   "t": 9.39
+  },
+  {
+   "son": "souffle",
+   "t": 10.78
+  },
+  {
+   "son": "tic",
+   "t": 11.03
+  },
+  {
+   "son": "coeur",
+   "t": 11.15
+  },
+  {
+   "son": "tac",
+   "t": 12.03
+  },
+  {
+   "son": "coeur",
+   "t": 12.15
+  },
+  {
+   "son": "tic",
+   "t": 13.03
+  },
+  {
+   "son": "coeur",
+   "t": 13.15
+  },
+  {
+   "son": "embrase",
+   "t": 14.03
+  },
+  {
+   "son": "souffle",
+   "t": 14.48
+  },
+  {
+   "son": "clic",
+   "t": 14.93
+  },
+  {
+   "son": "eclat",
+   "t": 15.03
+  },
+  {
+   "son": "etoiles",
+   "t": 15.08
+  },
+  {
+   "son": "papier",
+   "t": 16.23
+  },
+  {
+   "son": "papier",
+   "t": 17.18
+  },
+  {
+   "son": "tin",
+   "t": 21.74
+  },
+  {
+   "son": "swish",
+   "t": 23.335
+  },
+  {
+   "son": "insiste",
+   "t": 28.403
+  },
+  {
+   "son": "plume",
+   "t": 30.773
+  },
+  {
+   "son": "clic",
+   "t": 33.609
+  },
+  {
+   "son": "clic",
+   "t": 34.159
+  },
+  {
+   "son": "clic",
+   "t": 34.759
+  },
+  {
+   "son": "clic",
+   "t": 35.459
+  },
+  {
+   "son": "etoiles",
+   "t": 37.46
+  },
+  {
+   "son": "swish",
+   "t": 38.823
+  },
+  {
+   "son": "occupe",
+   "t": 43.735
+  },
+  {
+   "son": "emballe",
+   "t": 45.35
+  },
+  {
+   "son": "pop",
+   "t": 49.119
+  },
+  {
+   "son": "tin",
+   "t": 51.14
+  },
+  {
+   "son": "frappe",
+   "t": 53.711
+  }
+ ]
+}

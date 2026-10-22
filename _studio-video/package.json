@@ -14,18 +14,26 @@
     "rendu:dimanche": "node _outils/rendu_morceaux.mjs dimanche-plan",
     "rendu:nebula30": "node _outils/rendu_morceaux.mjs nebula-30s 300 1 && python _outils/nebula30_master.py && python _outils/nebula30_verifier.py",
     "rendu:grain35": "node _outils/rendu_morceaux.mjs grain-35s 300 1 && python _outils/grain35_master.py && python _outils/grain35_verifier.py",
-    "rendu:malettre": "for %v in (fr-30 en-30 fr-15-lettre fr-15-plume en-15-letter en-15-quill) do remotion render src/index.ts malettre-%v out/malettre-%v.mp4 --concurrency=1"
+    "rendu:malettre": "for %v in (fr-30 en-30 fr-15-lettre fr-15-plume en-15-letter en-15-quill) do remotion render src/index.ts malettre-%v out/malettre-%v.mp4 --concurrency=1",
+    "rendu:minuit": "node _outils/rendu_morceaux.mjs malettre-minuit 300 1 public/malettre-minuit/mix.wav && python _outils/malettre_minuit_verifier.py"
   },
   "dependencies": {
+    "@react-three/fiber": "9.8.2",
     "@remotion/cli": "4.0.512",
+    "@remotion/effects": "4.0.512",
     "@remotion/google-fonts": "4.0.512",
+    "@remotion/media": "4.0.512",
+    "@remotion/three": "4.0.512",
+    "@remotion/transitions": "4.0.512",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "remotion": "4.0.512"
+    "remotion": "4.0.512",
+    "three": "0.180.0"
   },
   "devDependencies": {
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
+    "@types/three": "0.180.0",
     "typescript": "7.0.2"
   }
 }

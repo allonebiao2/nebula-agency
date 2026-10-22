@@ -14,6 +14,10 @@
 > celui qui reçoit : jamais « elle », pour ne pas réserver le produit à un
 > seul public.
 
+> ⚠️ **2026-10-22 : plus rien n'est gratuit en ligne.** La grille commence à
+> La Carte, 1 000 F : « Gratuite pour commencer » est devenu « Dès mille francs »
+> partout (voix, écran, annonces). N'enregistre pas l'ancienne phrase.
+
 > ✅ **Les images sont prêtes (2026-10-21)** : les six versions sont dans le studio
 > (`npm run studio`, dossier `malettre-pub`), calées provisoirement sur ce tableau.
 > Il ne manque que ta voix : dès que les MP3 sont posés, je cale l'image dessus et
@@ -43,7 +47,7 @@
 | 0:12-0:17 | Tu envoies le lien. Le cachet attend : minuit, un anniversaire, le grand jour. | Le lien sur WhatsApp · le cachet qui dort · 23:59:57 |
 | 0:17-0:23 | À l'heure dite, la cire s'allume. On brise le cachet, et on lit. | La cire s'allume, le cachet casse, la carte sort, la lettre se déplie |
 | 0:23-0:27 | Un anniversaire, une demande, un pardon, une fête. | Quatre enveloppes, quatre occasions |
-| 0:27-0:30 | Ma lettre à… Gratuite pour commencer. | La marque, « by NEBULA Agency », l'adresse |
+| 0:27-0:30 | Ma lettre à… Dès mille francs. | La marque, « by NEBULA Agency », l'adresse |
 
 **Texte à coller**
 
@@ -54,7 +58,7 @@ Tu l'écris avec tes mots. Ou la plume l'écrit avec toi, à partir de tes souve
 Tu envoies le lien. Le cachet attend : minuit, un anniversaire, le grand jour.
 À l'heure dite, la cire s'allume. On brise le cachet, et on lit.
 Un anniversaire, une demande, un pardon, une fête.
-Ma lettre à… Gratuite pour commencer.
+Ma lettre à… Dès mille francs.
 ```
 
 ## 2 · English, 30 s: “every occasion”
@@ -67,7 +71,7 @@ Ma lettre à… Gratuite pour commencer.
 | 0:12-0:17 | Send the link. The seal waits: midnight, a birthday, the big day. | The link on WhatsApp · the sleeping seal · 23:59:57 |
 | 0:17-0:23 | At the chosen hour, the wax lights up. They break the seal, and read. | The wax lights up, the seal breaks, the letter unfolds |
 | 0:23-0:27 | A birthday, a proposal, an apology, a celebration. | Four envelopes, four occasions |
-| 0:27-0:30 | Ma lettre à… Free to start. | The brand, “by NEBULA Agency”, the address |
+| 0:27-0:30 | Ma lettre à… From a thousand francs. | The brand, “by NEBULA Agency”, the address |
 
 **Text to paste**
 
@@ -78,7 +82,7 @@ Write it in your own words. Or let the Quill write it with you, from your memori
 Send the link. The seal waits: midnight, a birthday, the big day.
 At the chosen hour, the wax lights up. They break the seal, and read.
 A birthday, a proposal, an apology, a celebration.
-Ma lettre à… Free to start.
+Ma lettre à… From a thousand francs.
 ```
 
 ## 3 · Les statuts WhatsApp : deux coupes de 15 s
@@ -93,7 +97,7 @@ pas quoi écrire »).
 Ma lettre à… papa. À Afi. À maman.
 Une lettre qui reste scellée jusqu'à l'heure que tu choisis.
 À l'heure dite, la cire s'allume, et on lit.
-Ma lettre à… Gratuite pour commencer.
+Ma lettre à… Dès mille francs.
 ```
 
 **B · La plume (FR)**
@@ -111,7 +115,7 @@ Ma lettre à… La plume, cinq cents francs de plus.
 My letter to… Dad. To Afi. To Mum.
 A letter that stays sealed until the moment you choose.
 At the chosen hour, the wax lights up, and they read.
-Ma lettre à… Free to start.
+Ma lettre à… From a thousand francs.
 ```
 
 **B · The Quill (EN)**
@@ -123,8 +127,12 @@ And the letter stays sealed until the moment you choose.
 Ma lettre à… The Quill, five hundred francs extra.
 ```
 
-⚠️ « Cinq cents francs de plus » : la plume s'ajoute à l'offre (avec l'offre
-gratuite, la lettre coûte 500 F). La voix ne dit jamais « 500 F » seul.
+⚠️ « Cinq cents francs de plus » : la plume s'ajoute à l'offre (avec La Carte,
+la lettre coûte 1 500 F). La voix ne dit jamais « 500 F » seul.
+⛔ **La coupe B ne se publie pas tant que la plume est coupée en ligne**
+(`PLUME_OUVERTE` dans `malettre/creer.html`, depuis le 2026-10-22) : elle vend une
+chose qu'on ne peut pas acheter. Elle attend le chantier « la plume écrit après
+le paiement ».
 
 ---
 
@@ -138,7 +146,7 @@ plume), **l'émotion d'ouvrir**. Comptes de caractères vérifiés par script.
 
 | Angle | FR | EN |
 |---|---|---|
-| L'heure | Une lettre qui ne s'ouvre qu'à l'heure que tu choisis. Gratuite pour commencer. | A letter that only opens at the time you choose. Free to start. |
+| L'heure | Une lettre qui ne s'ouvre qu'à l'heure que tu choisis. Dès 1 000 F. | A letter that only opens at the time you choose. From 1,000 F. |
 | Le prénom | Ma lettre à… papa, maman, Afi. Écris la tienne, elle attendra son heure. | My letter to… Dad, Mum, Afi. Write yours, it will wait for its hour. |
 | La plume | Tu ne sais pas quoi écrire ? La plume l'écrit avec toi. Tu relis, tu signes. | Don't know what to write? The Quill writes it with you. You reread, you sign. |
 
@@ -148,7 +156,7 @@ plume), **l'émotion d'ouvrir**. Comptes de caractères vérifiés par script.
 |---|---|---|
 | Texte principal (les 125 premiers signes comptent) | Une lettre scellée qui ne s'ouvre qu'à l'heure que tu choisis : minuit pile, son anniversaire, le grand jour. Tu l'écris, ou la plume l'écrit avec toi. | A sealed letter that only opens at the time you choose: midnight, their birthday, the big day. You write it, or the Quill writes it with you. |
 | Titre (40) | Ma lettre à… Elle s'ouvre à l'heure dite | Ma lettre à… It opens on time |
-| Description (30) | Gratuite pour commencer | Free to start |
+| Description (30) | Dès 1 000 F | From 1,000 F |
 
 ### YouTube Shorts (titre)
 

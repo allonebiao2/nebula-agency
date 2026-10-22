@@ -2,6 +2,8 @@
 //
 //   node _outils/rendu_morceaux.mjs dimanche-plan
 //   node _outils/rendu_morceaux.mjs nebula-30s 150 1   (morceaux de 150 images, UN onglet)
+//   node _outils/rendu_morceaux.mjs malettre-minuit 300 1 public/malettre-minuit/mix.wav
+//      (un WAV déjà masterisé : posé tel quel, au lieu de faire rendre le son par Remotion)
 //
 // Pourquoi : le 2026-09-27, le rendu d'un seul tenant du plan du dimanche
 // (6 391 images) a vu Chrome tomber à l'image 2 562, faute de mémoire (8 Go,
@@ -21,11 +23,13 @@
 import {bundle} from '@remotion/bundler';
 import {renderMedia, selectComposition} from '@remotion/renderer';
 import {execFileSync} from 'node:child_process';
-import {existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, writeFileSync} from 'node:fs';
+import {copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, writeFileSync} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-const [, , id, taille = '640', onglets = '2'] = process.argv;
+// Le 4e argument (facultatif) : un WAV déjà masterisé. Rendre le son par Remotion évalue chaque image, 3D
+// comprise : plus de cinq minutes pour le film de MA LETTRE À…, pour un son qu'on remplaçait ensuite.
+const [, , id, taille = '640', onglets = '2', sonFourni] = process.argv;
 const ici = path.resolve(import.meta.dirname, '..');
 const dossier = path.join(ici, 'out', 'morceaux', id);
 const final = path.join(ici, 'out', `${id}.mp4`);
@@ -113,7 +117,10 @@ for (const [k, [a, b]] of bornes.entries()) {
 
 // Le son, d'un seul tenant.
 const son = path.join(dossier, 'son.wav');
-if (!existsSync(son)) {
+if (sonFourni) {
+	copyFileSync(path.resolve(ici, sonFourni), son);
+	dire(`Le son : ${sonFourni}, posé tel quel`);
+} else if (!existsSync(son)) {
 	const debut = Date.now();
 	dire('Le son…');
 	await renderMedia({...COMMUN, serveUrl, composition, codec: 'wav', concurrency: 2, outputLocation: son + '.part.wav'});

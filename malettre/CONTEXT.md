@@ -406,9 +406,32 @@ trace de la caisse : une commande vide au palier `carte` répond « lettre vide 
   ⏳ **À revérifier**, et à essayer au téléphone en données mobiles : si la route reste coupée, les visiteurs de
   ce fournisseur ne voient pas le site.
 
-**La suite** : la vidéo émotionnelle avec un effet « wow » (demande de Mongazi du 22 : « mettra ma lettre en avant
-et donnera envie d'acheter »). ⚠️ La pub montée le 21 finit sur « Gratuite pour commencer » : faux depuis le 22.
-Puis le chantier « la plume écrit APRÈS le paiement », qui permet de la rouvrir.
+**La suite** : la vidéo émotionnelle avec un effet « wow » (faite le même jour, section suivante). Puis le chantier
+« la plume écrit APRÈS le paiement », qui permet de la rouvrir.
+
+## 🎬 LA VIDÉO « MINUIT PILE, POUR MAMAN » (2026-10-22, vague 5)
+
+Le film YouTube de Ma lettre à… : **16:9, 1920×1080 à 60 i/s, 56,3 s**, composition `malettre-minuit` dans
+`_studio-video/`. Livrable : **`_studio-video/out/MaLettreA-Minuit-pile-YouTube.mp4`** (hors git, comme toute vidéo).
+
+- **L'histoire** : Koffi, à Paris, écrit à sa mère pour ses 60 ans à Cotonou ; la lettre ne s'ouvre qu'à minuit pile.
+  Puis la vente, dite par une autre voix (Koffi est un personnage, pas un client) : l'heure choisie, l'impossible à
+  ouvrir, la plume, l'habillage, la Saint-Valentin, les excuses, la demande, la soirée entre potes, « Dès mille
+  francs. Tape un prénom : ta lettre commence. »
+- **La lettre lue est une vraie lettre de la plume** (« Un bol de bouillie à 5 heures »), relue, aucun fait ajouté.
+- **Les voix et les musiques sont celles de Mongazi** (ElevenLabs v4 ; Pixabay : piano de nastelbom, afrobeat de
+  sonican). Master −14 LUFS, crête vraie −1,4 dBTP, la voix devant.
+- **La 3D est en Three.js dans Remotion** : Blender essayé, EEVEE plante sur ce PC et Cycles met 417 s par image.
+- ⚠️ **56 s, pas 40 à 45** : la parole seule fait 41 s. Raccourcir = réécrire le script (`VOIX.md` du film).
+- ⛔ **Pas publiable tant que la plume est coupée en ligne** : le film dit « ou la plume l'écrit avec toi ». Ou bien
+  enregistrer la variante sans la plume (`_studio-video/src/malettre-minuit/VOIX.md`).
+- La pub du 21 (`malettre-pub/`) ne dit plus « Gratuite pour commencer » mais « Dès mille francs » (écran, script,
+  annonces) ; ses coupes de la plume attendent que la plume rouvre.
+- Détail et commandes : `_studio-video/README.md` § « Minuit pile » ; récit :
+  `_memoire/conversations/2026-10-22-malettre-video-minuit.md`.
+
+**Le chantier suivant (demande de Mongazi, 2026-10-22)** : une animation d'ouverture PROPRE à chaque occasion, tirée
+des onze vidéos de référence (`_partage/ma lettre/*.mp4`) et de ce qu'elles inspirent, au plus haut niveau.
 
 ## Reprendre ici (2026-10-21, avant la mise en ligne)
 
@@ -530,9 +553,9 @@ les vidéos, n'est pas encore faite).
 - **Filmer 10 secondes de vraie matière** (une main qui ferme une enveloppe,
   un cachet qu'on brise) : sert la page ET la vidéo publicitaire.
 - Les 5 réponses déjà en attente (bloc archivé ci-dessous).
-- **La vidéo publicitaire** (vague 5) : **les images sont faites** (2026-10-21) ;
-  **les six MP3 ElevenLabs sont à déposer** dans `_partage/ma lettre/voix/` (textes dans
-  `_studio-video/src/malettre/VOIX.md`).
+- **La vidéo publicitaire** (vague 5) : le film YouTube **« Minuit pile, pour maman »** est rendu (2026-10-22,
+  `_studio-video/out/MaLettreA-Minuit-pile-YouTube.mp4`) : **le regarder**. ⛔ Il attend que la plume rouvre (ou la
+  variante sans la plume). Les six coupes de la pub du 21 attendent leurs MP3 (`_studio-video/src/malettre/VOIX.md`).
 - **Trancher les critères d'arrêt** : garder la date du 1er décembre, ou « huit semaines
   après la mise en ligne » (section ci-dessus). La mise en ligne étant le 21 octobre, la
   seconde lecture tombe le **16 décembre 2026**.

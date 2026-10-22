@@ -28,6 +28,7 @@ Et la démonstration d'un produit de la maison :
 | `lepli-demo` | **LE PLI · la lettre digitale**, six plans | 30 s |
 | `lepli-plans/` | Les six plans, chacun réglable seul | |
 | `malettre-pub/` | **MA LETTRE À… · la pub** : `fr-30`, `en-30`, et les deux coupes de 15 s des statuts (`fr-15-lettre`, `fr-15-plume`, `en-15-letter`, `en-15-quill`) | 30 s / 15 s |
+| `malettre-minuit` | **MA LETTRE À… · « Minuit pile, pour maman »** : le film YouTube, 16:9, 60 i/s, en 3D (Three.js) | 56 s |
 
 Le rythme est celui du document : la question tient **1,5 s**, la réponse
 **1 s**, la carte finale **3 s**, et la coupe est **sèche** (aucune transition,
@@ -111,6 +112,7 @@ npm run rendu:dimanche  # le plan du dimanche, par morceaux (~1 h 30, garde-éve
 npm run rendu:nebula30  # la vidéo de marque NEBULA, par morceaux, puis le mastering du son
 npm run rendu:grain35   # la pub Grain d'Esthétique, par morceaux, mastering, vérification
 npm run rendu:malettre  # MA LETTRE À… : les six versions, UN onglet (⛔ pas avant la voix et le site)
+npm run rendu:minuit    # MA LETTRE À… · « Minuit pile » : par morceaux (UN onglet), puis la vérification
 npm run verifier        # contrôle TypeScript, sans rien rendre
 ```
 
@@ -430,7 +432,7 @@ qu'on ouvre à l'heure dite**. Sept plans, sept gestes de cet objet :
 | L'attente | le lien nu dans une bulle, puis l'enveloppe et le compte à rebours du produit |
 | L'ouverture | la cire s'allume, le cachet casse en trois éclats, la feuille se déplie, l'encre sèche |
 | Les occasions | quatre cachets pressés, quatre noms exacts du constructeur |
-| La marque | le cachet se reforme (le favicon), « Gratuite pour commencer » ou « La plume : 500 F de plus », l'adresse |
+| La marque | le cachet se reforme (le favicon), « Dès 1 000 F » ou « La plume : 500 F de plus », l'adresse |
 | La page blanche (coupe B) | une feuille vide où le curseur clignote |
 
 ### La chaîne, dans l'ordre
@@ -466,4 +468,141 @@ a le bon alphabet et n'ouvre rien.
 
 L'adresse `malettre.nebula-agency.online` doit répondre, et la caisse être branchée :
 la fin de la vidéo promet les deux. La licence Remotion : on livre le MP4.
+⛔ **Les coupes de la plume (`fr-15-plume`, `en-15-quill`) attendent que la plume
+rouvre en ligne** (coupée le 2026-10-22). Et plus rien n'est gratuit : la fin dit
+« Dès 1 000 F » (La Carte), jamais « Gratuite pour commencer ».
 
+---
+
+## MA LETTRE À… · « Minuit pile, pour maman » (`malettre-minuit`, 2026-10-22)
+
+> Une lettre digitale, c'est **une enveloppe cachetée qu'on ouvre à l'heure dite**.
+> L'objet du film : **le cachet de cire**. Il se presse à Paris, file dans la nuit
+> le long du méridien, dort sur un téléphone à Cotonou, s'embrase à minuit, éclate
+> en trois morceaux, puis retombe sur le papier : c'est la marque.
+
+Le film YouTube : **16:9, 1920×1080 à 60 i/s, 56,3 s**. Mongazi voulait 40 à 45 s ;
+**la parole seule en fait 41**, et minuit garde ses trois secondes sans voix. On ne
+le raccourcit qu'en réécrivant le script (`src/malettre-minuit/VOIX.md`).
+
+Deux voix, deux musiques : **Koffi** raconte sur le piano (l'histoire), **Alimata**
+vend sur l'afrobeat. Koffi est un personnage, pas un client : la vente est dite par
+une autre voix, il n'y a pas de faux témoignage.
+
+| Temps | Voix | Image (une signature par plan) |
+|---|---|---|
+| 0 → 3,3 s | Koffi : « Dans trois secondes… ma mère va pleurer. » | la chambre de Cotonou dans le noir, le téléphone s'allume, 23:59:57, le temps se fige |
+| 3,2 → 7,3 s | « Elle a soixante ans ce soir. Moi… je suis à Paris. » | la table de Koffi, la pluie, la bougie ; le méridien d'or qui descend |
+| 7,2 → 9,4 s | « Alors je lui ai écrit une lettre… » | la plume, la bougie ; le titre de la vraie lettre s'écrit à la main |
+| 9,2 → 11 s | « …qui ne s'ouvre qu'à minuit pile. » | le sceau pressé dans la cire (la fumée), puis le cachet en relief, en 3D |
+| 11 → 12 s | (le piano) | l'envol : Paris → Cotonou, 4 720 km, la lettre file dans la nuit |
+| 11,8 → 14 s | (tic, tac, le cœur) | retour au téléphone ; 3, 2, 1 ; le piano s'étouffe |
+| 14 → 17,2 s | (aucune voix) | **MINUIT** : la cire s'embrase, la lumière jaillit, les bandes du cinéma s'ouvrent, le cachet éclate en trois, la carte sort |
+| 17,1 → 21,7 s | « Maman… tu me réveillais à cinq heures… pour réviser le bac… » | la lettre : l'encre sèche, la phrase lue est au point |
+| 21,7 → 23,5 s | Alimata : « Ça, c'est Ma lettre à… » | le cachet de la marque tombe sur le papier, sur le premier temps de l'afrobeat |
+| 23,5 → 26,3 s | « Une lettre scellée… qui s'ouvre à l'heure que TU choisis. » | le cadran : minuit, 7 h 30, 20 h, posés sur les temps |
+| 26,3 → 30 s | « Et avant l'heure ? Impossible de l'ouvrir. Même en insistant. » | trois tapotements, le téléphone secoue, le cadenas : « Pas avant l'heure. » |
+| 30 → 33,6 s | « Tu l'écris… ou la plume l'écrit avec toi… » | la fiche, les puces qui se cochent, puis l'écriture |
+| 33,6 → 39 s | « La cire, le sceau, le papier, ta photo… et une pluie d'étoiles… » | l'enveloppe 3D change d'habit à chaque clic, la photo glisse dedans, les trois pluies du produit |
+| 39 → 41,8 s | « Pour la Saint-Valentin… à minuit pile, avant tout le monde. » | 23:59 → 00:00, la lettre arrive la première, les autres messages derrière |
+| 41,8 → 44,6 s | « Pour t'excuser… sans qu'on te raccroche au nez. » | l'appel coupé ; la lettre, elle, ne raccroche pas : « Pardon. » |
+| 44,6 → 46,6 s | « Pour une demande… quand la voix tremble. » | les alliances en 3D ; « Veux-tu m'épouser ? » tremble, puis se pose |
+| 46,6 → 51 s | « Ou la soirée entre potes : l'heure, le lieu… et qui ramène les boissons. » | la carte kraft, l'heure et le lieu cochés, le tampon « Toi. » ; les 28 occasions défilent au loin |
+| 51 → 56,3 s | « Ma lettre à… Dès mille francs. Tape un prénom : ta lettre commence. » | le cachet de la marque, « Dès 1 000 F », « maman » tapé dans le champ de la vitrine, l'adresse |
+
+### La chaîne, dans l'ordre
+
+```bash
+python _outils/malettre_minuit_preparer.py   # fonds, marque, grain, 20 bruitages synthétisés → public/malettre-minuit/
+python _outils/malettre_minuit_son.py        # voix découpées et posées, musiques, mix, master → mix.wav + minutage.json
+node _outils/planches.mjs malettre-minuit 2.4 14.35 22.5 45.9   # REGARDER avant de rendre
+npm run rendu:minuit                         # l'image par morceaux (UN onglet, ~20 min), le master posé tel quel, la vérification
+python _outils/malettre_minuit_ecouter.py    # Whisper (~6 min) : chaque phrase est la bonne, et s'entend dans le film
+```
+
+La vidéo à publier : **`out/MaLettreA-Minuit-pile-YouTube.mp4`** (H.264 + AAC 320 kb/s).
+⚠️ Pas `malettre-minuit.mp4` : c'est l'image seule, que la vérification lit.
+
+Entrées hors dépôt (`public/` est ignoré) : les deux voix de Mongazi
+(`_partage/voix de koffi tony.mp3`, `_partage/voix de alimata.mp3`, ElevenLabs v4,
+balises d'intonation), les deux musiques **Pixabay** (« Emotional piano » de
+nastelbom, n° 598096 ; « Afrobeat music loop, positive vibes » de sonican,
+n° 481253 : garder le lien des pages, c'est la preuve de licence), les fonds de la
+vitrine (`_partage/ma lettre/fonds/<zone>-paysage.png`) et le cachet du site
+(`malettre/logo/cachet.svg`).
+
+### La 3D
+
+**Three.js dans Remotion** (`@remotion/three`, `@react-three/fiber`, `three`
+0.180.0, versions figées) : le cachet en relief (une géométrie, pas une image), ses
+trois éclats, l'enveloppe (poche, carte, rabat à doublure damassée), les alliances,
+le halo, les étincelles. Environ **0,4 s par image** sur ce PC.
+
+⛔ **Blender ne sert pas ici** (essayé le 2026-10-22, Blender 4.5.15 portable dans
+`D:\outils\`) : EEVEE plante sur la carte Intel HD 5500 (« Out of resource error »,
+`EXCEPTION_ACCESS_VIOLATION`), et Cycles sur le processeur met **417 s par image**,
+soit 16 jours pour ce film. ⚠️ `HtmlInCanvas` de Remotion exige Chrome 149 :
+indisponible avec le Chrome de la 4.0.512.
+
+### Ce qui n'est pas inventé
+
+- **La lettre lue est une vraie lettre de la plume** (« Un bol de bouillie à
+  5 heures »), écrite à partir d'une fiche inventée puis relue : aucun fait ajouté.
+- Chaque promesse existe dans le produit : l'heure choisie, le cachet qui refuse de
+  s'ouvrir avant, la plume, la cire, le sceau, le papier, la photo, les trois pluies,
+  **les 28 occasions** (leurs noms exacts), le compte à rebours, « C'est l'heure. »,
+  « Briser le cachet », le prix d'entrée (La Carte, 1 000 F) et l'adresse.
+- Les couleurs, cires, papiers et sceaux sont ceux de `malettre/lettre.html`.
+- Les fonds sont des **ambiances** générées par Mongazi pour la vitrine : jamais une
+  vraie lettre, un vrai client, ni le produit lui-même.
+
+### Le son
+
+- `malettre_minuit_son.py` est **la seule vérité** du temps : il découpe les deux
+  prises à leurs silences (31 phrases : 9 de Koffi, 22 d'Alimata), les pose, et
+  écrit `minutage.json`. **Chaque plan lit ses phrases dans ce fichier** : l'image suit
+  la voix, jamais l'inverse. Une prise qui n'a pas le bon nombre de phrases est
+  **refusée**, et `malettre_minuit_ecouter.py` vérifie par l'oreille (Whisper, sans
+  indice) que le n-ième morceau dit bien la n-ième phrase.
+- ⚠️ Alimata est accélérée de 7 % (`atempo`), Koffi jamais (l'intime). On découpe
+  **l'original**, puis on convertit les temps : accélérée, la pause entre « Ma lettre
+  à… » et « Dès mille francs » passait sous le seuil et les deux phrases se collaient.
+- Chaque phrase est nivelée (±6 dB) : les murmures de Koffi passaient sous le piano.
+- Le piano **s'étouffe** pendant l'attente (passe-bas) et **se rouvre d'un coup** à
+  minuit : le « wow » s'entend. Le premier temps fort de l'afrobeat (96,1 BPM) tombe
+  sur « Ça, c'est Ma lettre à… ».
+- Sous chaque phrase, la musique se retire de 12 dB (l'afrobeat est dense) et les
+  bruitages de 7 dB, sauf les coups voulus de minuit.
+- Master : **−14 LUFS, crête vraie −1,4 dBTP**, la voix devant (pire écart +1,6 LU).
+  La vérification **remesure après l'AAC** et baisse le gain si la crête dépasse.
+
+### Les pièges rencontrés
+
+- ⛔ **`useCurrentFrame()` compte depuis le début de la `<Sequence>`**, pas du film.
+  Les textes recevaient des secondes de la voix (le temps du film) : « Elle a 60 ans
+  ce soir » arrivait 3 s trop tard. `useT()` rend le temps du film partout (le
+  contexte `Decalage`, posé par chaque plan).
+- ⚠️ Des lanternes posées en grille régulière font un motif : elles sont dispersées
+  par `random()` (déterministe), sur les côtés ; la colonne du milieu reste à la marque.
+- ⚠️ Le ffmpeg de Remotion n'écrit ni `f32le` sur la sortie standard, ni le filtre
+  `fps` : tout passe par des WAV.
+- ⛔ **`lightLeak({hueShift})` tourne à l'envers de l'intuition** (la matrice du shader est
+  écrite en colonnes) : `335`, voulu « un peu vers le rouge », rendait minuit **vert-jaune**
+  (74°). Mesuré : `20` donne l'ambre (34°) et le corail (10°) de la cire. Vu sur la planche
+  tirée du MP4, invisible dans le code.
+- ⛔ **Des éclats faits en triant les triangles d'une coque** sont creux et ont des bords en
+  dents de peigne : vus de près au moment du « wow », ils ont été refaits en morceaux pleins
+  (`ExtrudeGeometry` biseautée, le sceau en bosselage). Et l'ombre des morceaux qui volent
+  haut faisait des taches grises : elle s'efface pendant le vol (`shadow-intensity`).
+- ⛔ **`-shortest` de ffmpeg coupe à peu près** : la vidéo livrée avait perdu ses 4 dernières
+  images avec une durée affichée juste. La vérification compte les images une à une.
+- ⚠️ Rendre le son par Remotion évalue chaque image, 3D comprise (plus de cinq minutes ici) :
+  `rendu_morceaux.mjs` accepte un WAV déjà masterisé en 4e argument et le pose tel quel.
+
+### ⛔ Avant de publier
+
+- **La plume est coupée en ligne** (2026-10-22) : la phrase « ou la plume l'écrit avec
+  toi » vend une chose qu'on ne peut pas acheter. Attendre que la plume rouvre, ou
+  enregistrer la variante sans la plume (`VOIX.md`).
+- La licence Remotion : **on livre le MP4, jamais le projet**.
+- ⏳ La version anglaise attend ses deux voix (`VOIX.md`, partie anglaise).

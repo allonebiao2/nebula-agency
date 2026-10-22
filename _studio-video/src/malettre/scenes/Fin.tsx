@@ -21,7 +21,7 @@ const RETOURS = [
 	{x: -60, y: -420, r: 18},
 ];
 
-export const Fin: React.FC<{t: number; fin: 'gratuite' | 'plume'; langue: Langue}> = ({t, fin, langue}) => {
+export const Fin: React.FC<{t: number; fin: 'prix' | 'plume'; langue: Langue}> = ({t, fin, langue}) => {
 	const E = ECRAN[langue];
 	const c = CIRES.bordeaux;
 	const soude = p(t, 0.05, 0.6);
@@ -71,7 +71,7 @@ export const Fin: React.FC<{t: number; fin: 'gratuite' | 'plume'; langue: Langue
 				{E.marque}
 			</Encre>
 			<Encre t={t} a={0.85} style={{position: 'absolute', top: 1070, width: '100%', fontFamily: SANS, fontSize: 52, fontWeight: 600, color: C.orDoux, textAlign: 'center'}}>
-				{fin === 'plume' ? E.plumePrix : E.gratuite}
+				{fin === 'plume' ? E.plumePrix : E.prix}
 			</Encre>
 			<Encre t={t} a={1.05} style={{position: 'absolute', top: 1250, width: '100%', fontFamily: SANS, fontSize: 46, color: C.papier, textAlign: 'center', letterSpacing: '0.01em'}}>
 				{ADRESSE}

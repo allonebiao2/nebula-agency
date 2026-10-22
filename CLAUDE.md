@@ -309,10 +309,13 @@
   plume (+500 F) est COUPÉE en ligne** (`PLUME_OUVERTE`, note `#plume-coupee`) jusqu'à ce qu'elle écrive APRÈS le
   paiement : le chantier suivant. Détail : `malettre/CONTEXT.md` § « LES PRIX » et « LE 22 OCTOBRE ».
 - **Six vagues, FR et EN partout** (`i18n/en.txt`, `_traduire.py`) : langues, lettre 3D, habillage payant,
-  vitrine, faire-part ✅ (⛔ fiches des couples dans `faire-part/_couples/`, JAMAIS dans git) ; **la pub** 🟡
-  (six compositions `malettre-*` dans `_studio-video/`, qui finissent sur « Gratuite pour commencer », FAUX depuis
-  le 22 ; Mongazi veut maintenant **une vidéo émotionnelle, avec un effet wow**). Accueil : `_accueil_src.html`
-  → `python malettre/_build_accueil.py` (jamais `index.html`).
+  vitrine, faire-part ✅ (⛔ fiches des couples dans `faire-part/_couples/`, JAMAIS dans git) ; **la pub** 🟡 :
+  le film YouTube **« Minuit pile, pour maman »** (`malettre-minuit` dans `_studio-video/`, 16:9, 60 i/s, 56 s, 3D
+  Three.js, voix et musiques de Mongazi) est RENDU : `_studio-video/out/MaLettreA-Minuit-pile-YouTube.mp4`.
+  ⛔ Pas publiable tant que la plume est coupée (il la vend). Les six compositions `malettre-*` du 21 finissent
+  désormais sur « Dès 1 000 F », voix à enregistrer. Accueil : `_accueil_src.html` → `python
+  malettre/_build_accueil.py` (jamais `index.html`). **Chantier suivant (demande de Mongazi) : une animation
+  d'ouverture PROPRE à chaque occasion, tirée des onze vidéos de `_partage/ma lettre/`.**
 - **Contrôles, tous verts avant toute publication, UN PAR UN** (à plusieurs, ou Chrome ouvert, le PC manque de
   mémoire et un faux échec ressemble à un défaut) : `_qc.py` (284) · `node --experimental-strip-types
   malettre/_qc_caisse.mjs` (382) · `_qc_accueil.py` (322, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
@@ -336,7 +339,8 @@
 - ⚠️ **Le 22, la box de Cotonou n'atteignait plus `188.114.96.3` ni `.97.3`**, les adresses que Cloudflare donne à
   ce domaine (PISTE est sur d'autres). Vérifier par `curl --resolve malettre.nebula-agency.online:443:172.67.129.33`.
 - ⏳ **Ce qui attend Mongazi** : **le premier franc** (1 000 F, La Carte) · la commission SasPay, qui relit le deuil
-  · acheter `malettre.app` ou non · faire lire les exemples · la voix de la vidéo · faire-part pour novembre ·
+  · acheter `malettre.app` ou non · faire lire les exemples · regarder le film, et les voix anglaises s'il veut la
+  version EN · faire-part pour novembre ·
   critères d'arrêt : le 1er décembre, ou huit semaines après la mise en ligne (16 décembre).
 - **Tout le détail** (le récit LE PLI recopié intégralement) : `malettre/CONTEXT.md`.
 

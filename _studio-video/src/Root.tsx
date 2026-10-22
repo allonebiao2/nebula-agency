@@ -19,6 +19,8 @@ import {Grain35} from './grain35/Grain35';
 import {FPS as MALETTRE_FPS, HAUTEUR as MALETTRE_H, LARGEUR as MALETTRE_L} from './malettre/donnees';
 import {VERSIONS as MALETTRE_VERSIONS, type VersionId as MalettreVersion} from './malettre/minutage';
 import {Pub as MalettrePub} from './malettre/Pub';
+import {MinuitFilm} from './malettre-minuit/Minuit';
+import {DUREE as MINUIT_DUREE, FPS as MINUIT_FPS, HAUTEUR as MINUIT_H, LARGEUR as MINUIT_L} from './malettre-minuit/donnees';
 
 /** TikTok : vertical plein cadre, 1080x1920. */
 const LARGEUR = 1080;
@@ -132,6 +134,9 @@ export const Racine: React.FC = () => (
 				height={LEPLI_H}
 			/>
 		</Folder>
+
+		{/* MA LETTRE À… · « Minuit pile, pour maman » : 16:9 pour YouTube, 60 i/s, posé sur les voix de Mongazi. */}
+		<Composition id="malettre-minuit" component={MinuitFilm} durationInFrames={Math.round(MINUIT_DUREE * MINUIT_FPS)} fps={MINUIT_FPS} width={MINUIT_L} height={MINUIT_H} />
 
 		{/* MA LETTRE À… · la pub : 30 s et deux coupes de 15 s, en français et en
 		    anglais. Une composition par MP3 de `src/malettre/VOIX.md`. */}

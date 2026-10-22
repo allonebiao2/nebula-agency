@@ -3004,4 +3004,20 @@ deux webhooks SasPay = deux secrets, alors que les secrets Supabase valent pour 
 - Un contrôle qui échoue faute de mémoire ressemble à un défaut (Chrome ouvert, 1,5 Go libres : quatre faux échecs).
   Suites UNE PAR UNE, navigateur fermé.
 - Un son de synthèse se MESURE avant d'être écouté : la première version du clic de verre était coupée à −35 dB.
-
+## 2026-10-22 · Un film calé sur une voix compte en temps ABSOLU, et la 3D de ce PC passe par Three.js (MA LETTRE À…)
+- Dans Remotion, `useCurrentFrame()` compte depuis le début de la `<Sequence>`, pas du film. Les plans lisaient les
+  instants de la voix (`minutage.json`, temps du film) : « Elle a 60 ans ce soir » arrivait 3 s trop tard. Chaque
+  plan déclare sa seconde de départ (un contexte), et un seul crochet rend le temps du film partout (`useT()`).
+- Découper une voix à ses silences se fait sur l'ORIGINAL, puis on convertit les temps : accélérée de 7 %, une pause
+  de 0,26 s passait sous le seuil et deux phrases se collaient. Et le n-ième morceau n'est la n-ième phrase que si
+  on l'a ÉCOUTÉ (Whisper, sans indice) : un compte juste ne prouve pas un ordre juste.
+- La 3D d'une vidéo sur ce PC : Three.js dans Remotion (`@remotion/three`), environ 0,4 s par image. Blender ne
+  passe pas : EEVEE plante sur l'Intel HD 5500, Cycles sur le processeur met 417 s par image (16 jours pour 56 s).
+  Mesurer une image AVANT de bâtir une chaîne autour d'un outil.
+- Une durée demandée (« 40 à 45 s ») se vérifie contre la parole : les voix seules faisaient 41 s. Le dire, et
+  proposer de couper le script, plutôt que d'accélérer une voix jusqu'à la rendre pressée.
+- Une décision de prix se propage jusqu'aux scripts de voix pas encore enregistrés : la pub du 21 finissait sur
+  « Gratuite pour commencer », faux depuis le matin du 22. Chercher la phrase dans TOUT ce qui sera dit ou affiché.
+- Regarder le MP4 LIVRÉ, image par image au moment fort, pas seulement les planches de la composition : la teinte du
+  `lightLeak` inversée (minuit vert-jaune), les éclats creux en dents de peigne et les 4 images perdues par
+  `-shortest` ne se voyaient que dans le fichier. Et une teinte se CALCULE avant d'être choisie.

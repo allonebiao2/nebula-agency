@@ -7,6 +7,18 @@
 
 ---
 
+## 0 unvicies. LE 2026-10-22 (après-midi) · LE FILM « MINUIT PILE, POUR MAMAN » EST RENDU ; LA SUITE EST UNE OUVERTURE PAR OCCASION
+
+- **Rendu et vérifié** : `_studio-video/out/MaLettreA-Minuit-pile-YouTube.mp4` (16:9, 60 i/s, 56,3 s, 3 381 images,
+  −14 LUFS, crête −1,46 dBTP, synchro 0 ms), 3D en Three.js, voix et musiques de Mongazi. ⛔ Pas publiable tant que
+  la plume est coupée (il la vend). La pub du 21 dit désormais « Dès mille francs ».
+- **Par quoi commencer** : **le chantier des ouvertures par occasion** (demande de Mongazi : « chaque événement doit
+  avoir son animation spéciale », à partir des onze vidéos de `_partage/ma lettre/`, « magistrales »). Notes de départ
+  dans le récit du jour. Puis **la plume qui écrit après le paiement**.
+- ⏳ Mongazi : regarder le film ; la version anglaise (deux voix) s'il la veut ; le premier franc (1 000 F) ; écouter
+  le verre au téléphone ; revérifier le domaine depuis la box.
+- Récit : `_memoire/conversations/2026-10-22-malettre-video-minuit.md`.
+
 ## 0 vicies. LE 2026-10-22 · MA LETTRE À… SANS GRATUITÉ, LE CLIC DE VERRE ; LA SUITE EST LA VIDÉO
 
 - **En ligne et vérifié** : La Carte 1 000 F (plus rien de gratuit), Le Mot 2 000, La Lettre 5 000 (10 photos), Le

@@ -43,20 +43,20 @@ DEPART = 0.3  # la voix part à 0,3 s : le premier mot n'est pas coupé par l'ou
 # L'ordre des blocs « Texte à coller » dans VOIX.md, et ce que chaque version en fait.
 # plan : (id, numéro de la phrase qui l'ouvre, mots-clés dont le début devient un `temps`)
 VERSIONS = {
-    "fr-30": {"bloc": 0, "langue": "fr", "duree": 30, "fin": "gratuite", "plans": [
+    "fr-30": {"bloc": 0, "langue": "fr", "duree": 30, "fin": "prix", "plans": [
         ("accroche", 0, ["papa", "afi", "maman"]), ("scellee", 1, []), ("plume", 2, ["plume"]),
         ("attente", 3, ["cachet"]), ("ouverture", 4, ["cire", "brise"]),
         ("occasions", 5, ["anniversaire", "demande", "pardon", "fete"]), ("marque", 6, [])]},
-    "en-30": {"bloc": 1, "langue": "en", "duree": 30, "fin": "gratuite", "plans": [
+    "en-30": {"bloc": 1, "langue": "en", "duree": 30, "fin": "prix", "plans": [
         ("accroche", 0, ["dad", "afi", "mum"]), ("scellee", 1, []), ("plume", 2, ["quill"]),
         ("attente", 3, ["seal"]), ("ouverture", 4, ["wax", "break"]),
         ("occasions", 5, ["birthday", "proposal", "apology", "celebration"]), ("marque", 6, [])]},
-    "fr-15-lettre": {"bloc": 2, "langue": "fr", "duree": 15, "fin": "gratuite", "plans": [
+    "fr-15-lettre": {"bloc": 2, "langue": "fr", "duree": 15, "fin": "prix", "plans": [
         ("accroche", 0, ["papa", "afi", "maman"]), ("scellee", 1, []), ("ouverture", 2, ["cire", "lit"]),
         ("marque", 3, [])]},
     "fr-15-plume": {"bloc": 3, "langue": "fr", "duree": 15, "fin": "plume", "plans": [
         ("pageBlanche", 0, []), ("plume", 1, []), ("scellee", 2, []), ("marque", 3, [])]},
-    "en-15-letter": {"bloc": 4, "langue": "en", "duree": 15, "fin": "gratuite", "plans": [
+    "en-15-letter": {"bloc": 4, "langue": "en", "duree": 15, "fin": "prix", "plans": [
         ("accroche", 0, ["dad", "afi", "mum"]), ("scellee", 1, []), ("ouverture", 2, ["wax", "read"]),
         ("marque", 3, [])]},
     "en-15-quill": {"bloc": 5, "langue": "en", "duree": 15, "fin": "plume", "plans": [
