@@ -7,6 +7,22 @@
 
 ---
 
+## 0 duovicies. LE 2026-10-22 (soir) · MA LETTRE À… : LES OUVERTURES EN 3D, LE MOTEUR « CINÉMA » EN COURS
+
+- **Fait (commit `6feea09`, rien de déployé)** : un théâtre WebGL écrit pour la lettre (`malettre/rites/`), quatre
+  ouvertures (le cachet, le collier de perles, les portes brodées, la bougie), douze matières rendues dans Blender, la
+  construction `python malettre/_rites.py`, le marqueur dans la lettre (contrôle 284 vert). Démonstration :
+  `python malettre/rites/_demo.py` puis http://localhost:8765/.
+- **En cours** : le moteur « cinéma » (Mongazi : « pixelisé », « pas fluide », « Sega au lieu de PS5 »). Écrit et
+  photographié ; à corriger : le halo trop fort (la carte crème brûle), la profondeur 16 bits hors écran (passer à
+  `DEPTH_STENCIL`, reculer le plan proche). Puis « plus spectaculaire » (caméra, lumière, particules).
+- **Décidé** : l'ouverture de l'occasion incluse partout, les « grandes » à +1 000 F (au serveur).
+- **Ensuite** : les 24 autres ouvertures (`malettre/RITES.md`), le choix dans le constructeur, le prix au serveur et à
+  la caisse, `poserRite` dans `malettre-lettre`, les contrôles, la publication avec le feu vert de Mongazi, puis les
+  films Remotion des ouvertures.
+- ⏳ **Plus tard** : la capture d'écran de l'aperçu (on peut photographier la lettre sans payer).
+- Récit : `_memoire/conversations/2026-10-22-malettre-ouvertures-3d.md`.
+
 ## 0 unvicies. LE 2026-10-22 (après-midi) · LE FILM « MINUIT PILE, POUR MAMAN » EST RENDU ; LA SUITE EST UNE OUVERTURE PAR OCCASION
 
 - **Rendu et vérifié** : `_studio-video/out/MaLettreA-Minuit-pile-YouTube.mp4` (16:9, 60 i/s, 56,3 s, 3 381 images,

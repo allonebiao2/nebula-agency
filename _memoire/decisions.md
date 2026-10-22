@@ -947,3 +947,14 @@ MD5, 53 plats balisés, fichier absent → 404).
   versionnée (`faire-part/publies.txt`), et `_dist.py` refuse de publier si une page manque.
 - **Le compte du faire-part vise l'heure du lieu** (date + heure + fuseau), pas celle du téléphone.
 - **Les invités répondent au WhatsApp des mariés** (prénom, nombre, date pré-écrits), jamais à NEBULA.
+
+## 2026-10-22 · MA LETTRE À… : une ouverture en 3D par occasion, et son prix (Mongazi)
+
+- **Chaque occasion a SON ouverture**, en vraie 3D, inspirée des onze vidéos de `_partage/ma lettre/` (Mongazi :
+  « chaque événement doit avoir son animation spéciale », « immersives et en 3D », « qualité PS5, fluide »). Le plan
+  des 28 : `malettre/RITES.md`.
+- **Le prix : « Incluse + grandes à +1 000 F »**. L'ouverture de l'occasion est incluse dans TOUTES les offres, même
+  La Carte. On peut en choisir une autre : les simples sont incluses, les « grandes » (perles, portes, bougie…) coûtent
+  +1 000 F. Le prix se calcule au serveur, jamais dans le navigateur.
+- **À traiter plus tard** : la capture d'écran de l'aperçu dans le constructeur (on peut photographier la lettre et
+  l'envoyer sans payer). Rien de tranché.

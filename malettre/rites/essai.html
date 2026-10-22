@@ -44,9 +44,9 @@ fetch(nom + ".js").then(function (r) { return r.text(); }).then(function (src) {
     window.__pret = true;
     return;
   }
-  var S = Theatre(cv, { garder: true, kmax: 1 });
+  var S = Theatre(cv, { garder: true, kmax: Number(q.get("k") || 2) });
   rite.monter(S, D);
-  window.figer = function (t, ti) { rite.rendre(S, t, ti == null ? 3 : ti); return cv.toDataURL("image/png"); };
+  window.figer = function (t, ti) { rite.rendre(S, t, ti == null ? 3 : ti); S.composer(ti == null ? 3 : ti); return cv.toDataURL("image/png"); };
   (function attendre() { if (!S.pret) return setTimeout(attendre, 30); window.__pret = true; })();
 }).catch(function (e) { document.getElementById("info").textContent = "erreur " + e; window.__erreur = String(e); });
 </script>

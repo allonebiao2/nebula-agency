@@ -3021,3 +3021,16 @@ deux webhooks SasPay = deux secrets, alors que les secrets Supabase valent pour 
 - Regarder le MP4 LIVRÉ, image par image au moment fort, pas seulement les planches de la composition : la teinte du
   `lightLeak` inversée (minuit vert-jaune), les éclats creux en dents de peigne et les 4 images perdues par
   `-shortest` ne se voyaient que dans le fichier. Et une teinte se CALCULE avant d'être choisie.
+## 2026-10-22 · Une 3D de navigateur se juge à sa FINITION, pas à sa géométrie (MA LETTRE À…, les ouvertures)
+- Premier essai des ouvertures en WebGL : Mongazi, « pixelisé », « pas fluide », « Sega au lieu de PS5 ». La scène
+  était juste ; manquaient la finition d'une console : rendu hors écran sur-échantillonné puis lissé (FXAA), halo,
+  profondeur de champ, vignetage, grain, textures à la taille où on les VOIT (la carte finit plein écran : 1024 px), et
+  60 images par seconde (un repos bridé à 30 se voit). Montrer la finition, pas seulement le mouvement.
+- La lumière d'une matière se calcule UNE fois dans Blender (une sphère, une « matcap ») et se lit en temps réel : la
+  cire, l'or, la perle ont un vrai rendu pour le prix d'une texture. Sur un PC où EEVEE plante et où Cycles met des
+  minutes par image, Blender sert à ça, pas à l'animation.
+- Un minifieur efface une expression seule (code mort) : l'affecter, puis retirer l'affectation. Et `node -e` avec
+  50 Ko de script dépasse la longueur d'une commande sous Windows : passer par un fichier.
+- Hors écran en WebGL 1, la profondeur simple est à 16 bits : deux feuilles à 2 mm s'y battent. `DEPTH_STENCIL` et un
+  plan proche reculé.
+

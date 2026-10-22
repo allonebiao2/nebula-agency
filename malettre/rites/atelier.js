@@ -39,13 +39,14 @@ var Atelier = (function () {
   /* ── Les textures dessinées ── */
   function papier(S, p, graine) {
     var P = PAPIERS[p] || PAPIERS.creme, h = C.hasard(graine || 7);
-    return S.toile(512, 512, function (g) {
-      var d = g.createLinearGradient(0, 0, 512, 512); d.addColorStop(0, P.a); d.addColorStop(1, P.b);
-      g.fillStyle = d; g.fillRect(0, 0, 512, 512);
-      for (var i = 0; i < 2200; i++) {
-        g.strokeStyle = "rgba(" + P.fibre + "," + (0.02 + h() * 0.05).toFixed(3) + ")";
-        g.lineWidth = 0.5 + h(); var x = h() * 512, y = h() * 512, l = 3 + h() * 14, a = h() * Math.PI;
-        g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+    /* 1024 px : de près (la caméra plonge sur la carte), une texture de 512 se voyait en escaliers */
+    return S.toile(1024, 1024, function (g) {
+      var d = g.createLinearGradient(0, 0, 1024, 1024); d.addColorStop(0, P.a); d.addColorStop(1, P.b);
+      g.fillStyle = d; g.fillRect(0, 0, 1024, 1024);
+      for (var i = 0; i < 7000; i++) {
+        g.strokeStyle = "rgba(" + P.fibre + "," + (0.015 + h() * 0.045).toFixed(3) + ")";
+        g.lineWidth = 0.4 + h() * 0.9; var x = h() * 1024, y = h() * 1024, l = 3 + h() * 16, a = h() * Math.PI;
+        g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a + 0.4) * l * 0.5, y + Math.sin(a + 0.4) * l * 0.5, x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
       }
     }, true);
   }
@@ -66,15 +67,19 @@ var Atelier = (function () {
   /* La carte dans l'enveloppe : « Ma lettre à » et le prénom, à l'encre de la cire. */
   function carte(S, D, p, cire) {
     var P = PAPIERS[p] || PAPIERS.creme, c = CIRES[cire] || CIRES.bordeaux;
-    return S.toile(512, 512, function (g) {
-      var d = g.createLinearGradient(0, 0, 0, 512); d.addColorStop(0, p === "nuit" ? "#3a3146" : "#fbf7ef"); d.addColorStop(1, P.a);
-      g.fillStyle = d; g.fillRect(0, 0, 512, 512);
+    /* 1024 px : la carte finit plein écran, ses mots doivent rester nets */
+    return S.toile(1024, 1024, function (g) {
+      var d = g.createLinearGradient(0, 0, 0, 1024); d.addColorStop(0, p === "nuit" ? "#3a3146" : "#fbf7ef"); d.addColorStop(1, P.a);
+      g.fillStyle = d; g.fillRect(0, 0, 1024, 1024);
       g.textAlign = "center"; g.fillStyle = P.encre;
-      g.font = "34px " + SERIF; g.fillText(D.EN ? "My letter to" : "Ma lettre à", 256, 150);
-      g.fillStyle = p === "nuit" ? c.lumiere : c.cire; g.font = "italic 64px " + SERIF;
-      var nom = String(D.pour || (D.EN ? "you" : "toi")).slice(0, 18);
-      while (g.measureText(nom).width > 440) { g.font = "italic " + (parseInt(g.font.split(" ")[1], 10) - 4) + "px " + SERIF; }
-      g.fillText(nom, 256, 232);
+      g.font = "68px " + SERIF; g.fillText(D.EN ? "My letter to" : "Ma lettre à", 512, 300);
+      g.fillStyle = p === "nuit" ? c.lumiere : c.cire;
+      var taille = 128, nom = String(D.pour || (D.EN ? "you" : "toi")).slice(0, 18);
+      g.font = "italic " + taille + "px " + SERIF;
+      while (g.measureText(nom).width > 880 && taille > 40) { taille -= 6; g.font = "italic " + taille + "px " + SERIF; }
+      g.fillText(nom, 512, 464);
+      /* un filet d'or sous le prénom */
+      g.strokeStyle = "rgba(201,162,39,.7)"; g.lineWidth = 3; g.beginPath(); g.moveTo(452, 520); g.lineTo(572, 520); g.stroke();
     });
   }
   /* Le sceau en hauteur (blanc = relief) : l'anneau, le pointillé, puis le dessin ou l'initiale. */
@@ -133,8 +138,9 @@ var Atelier = (function () {
        triangulé depuis son centre recouvrait l'échancrure) */
     var pocheG = S.maillage(G.extrusion([[-L / 2, z0], [0, zv], [0, -z0], [-L / 2, -z0]], 0.004, 0));
     var pocheD = S.maillage(G.extrusion([[0, zv], [L / 2, z0], [L / 2, -z0], [0, -z0]], 0.004, 0));
-    /* le rabat : un triangle pendu à l'arête du haut, dessiné à l'origine de sa charnière */
-    var rabatD = S.maillage(G.extrusion([[-L / 2, 0], [L / 2, 0], [0, zr - z0]], 0.003, 0));
+    /* le rabat : une FEUILLE pendue à l'arête du haut, en bandes, que le nuanceur plie et enroule ; deux faces
+       décalées d'un rien (le papier dehors, la doublure dedans) : la face tournée vers la caméra gagne */
+    var rabatDehors = S.maillage(G.feuille(L, zr - z0, 16, null, 0.0012)), rabatDedans = S.maillage(G.feuille(L, zr - z0, 16, null, -0.0012));
     var teinteP = rvb(P.a), teinteDos = rvb(P.dos);
     return {
       L: L, H: H, z0: z0, zr: zr, cire: cire, papier: pap,
@@ -148,11 +154,12 @@ var Atelier = (function () {
         S.dessiner(pocheG, { mode: "papier", tex: texP, teinte: teinteP, rep: [1.4, 0.9] }, M.mul(base, M.trans(0, 0.006, 0)));
         S.dessiner(pocheD, { mode: "papier", tex: texP, teinte: teinteP, rep: [1.4, 0.9] }, M.mul(base, M.trans(0, 0.006, 0)));
         /* le rabat tourne autour de son arête ; passé la verticale, on voit sa doublure */
-        /* ouvert, le rabat se couche à plat derrière l'enveloppe (sous la carte qui sort, jamais dessus) */
-        var a = -ouvre * Math.PI;
-        var m = M.chaine(base, M.trans(0, 0.012, z0), M.rx(a));
-        var dessous = ouvre > 0.5;
-        S.dessiner(rabatD, dessous ? { mode: "papier", tex: texD, rep: [3, 3] } : { mode: "papier", tex: texP, teinte: teinteP, rep: [1.4, 0.9] }, m);
+        /* le rabat se soulève en s'enroulant (la courbure culmine à mi-course), puis se couche à plat derrière
+           l'enveloppe, sous la carte qui sort */
+        var pli = [ouvre * Math.PI, Math.sin(Math.PI * ouvre) * 1.6];
+        var m = M.chaine(base, M.trans(0, 0.012, z0));
+        S.dessiner(rabatDehors, { mode: "papier", tex: texP, teinte: teinteP, rep: [1.4, 0.9], pli: pli, spec: [0.1, 22] }, m);
+        S.dessiner(rabatDedans, { mode: "papier", tex: texD, rep: [3, 3], pli: pli, spec: [0.18, 30] }, m);
       }
     };
   }

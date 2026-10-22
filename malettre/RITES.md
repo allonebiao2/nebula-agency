@@ -42,6 +42,15 @@ dans le seuil (`rites/branchement.js`), et quatre ouvertures :
 - ⏳ **Pas encore branché** : le constructeur (choisir son ouverture), le serveur (`poserRite` dans `malettre-lettre`),
   la caisse (le prix d'une ouverture premium), et les 24 autres occasions.
 
+### Le retour de Mongazi sur la vague 1, et le prix
+
+- « Plus spectaculaire », et surtout : « la qualité et le rendu doivent être meilleurs, actuellement c'est pixelisé,
+  ça doit être FLUIDE aussi ; on dirait la qualité des jeux de la console Sega au lieu de la PS5, avec plus de détail ».
+  → le moteur « cinéma » (rendu hors écran, FXAA, halo, profondeur de champ, papier qui se courbe, textures en 1024,
+  60 images par seconde, baisse automatique de qualité par paliers). En cours.
+- **Le prix, tranché** : l'ouverture de son occasion est incluse dans TOUTES les offres (même La Carte) ; en choisir
+  une autre : les simples incluses, les « grandes » à +1 000 F. Le prix se calcule au serveur.
+
 ## Les 28 ouvertures
 
 | Occasion | Le fermoir | Le geste, ce qu'on voit | Tiré de |
