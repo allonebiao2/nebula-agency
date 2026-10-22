@@ -8,7 +8,6 @@ Sert `malettre/rites/` en local, ouvre `essai.html` dans Chromium, peint chaque 
 une donnée : aucune attente, aucune image ratée) et assemble une planche dans `rites/_planches/<rite>.png`.
 """
 import argparse
-import base64
 import functools
 import http.server
 import io
@@ -57,8 +56,9 @@ def main():
         if pg.evaluate("window.__erreur"):
             sys.exit("⛔ " + pg.evaluate("window.__erreur"))
         for t in a.t:
-            url = pg.evaluate(f"figer({t}, 3)")
-            images.append((t, Image.open(io.BytesIO(base64.b64decode(url.split(",")[1]))).convert("RGB")))
+            pg.evaluate(f"figer({t}, 3)")
+            # la page, pas le canvas seul : une ouverture plein écran est une fenêtre, on la juge sur ce qu'elle découvre
+            images.append((t, Image.open(io.BytesIO(pg.screenshot())).convert("RGB")))
         nav.close()
     srv.shutdown()
     if erreurs:

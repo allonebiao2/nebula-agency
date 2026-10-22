@@ -369,6 +369,18 @@ var Atelier = (function () {
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(force || 0.2, t + duree * 0.25); g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
       b.connect(f); f.connect(g); g.connect(SON.sortie); b.start(t);
     },
+    /* la lumière qui entre : un accord tenu, lent à venir, lent à partir (sinus purs, rien de synthétique à l'oreille) */
+    accord: function (quand, notes, duree, force) {
+      var ctx = Son.ctx(); if (!ctx) return;
+      var t = ctx.currentTime + (quand || 0), d = duree || 3;
+      notes.forEach(function (f, i) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = "sine"; o.frequency.setValueAtTime(f, t); o.detune.setValueAtTime((i % 2 ? 4 : -4), t);
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime((force || 0.05) / (1 + i * 0.35), t + d * 0.3);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g); g.connect(SON.sortie); o.start(t); o.stop(t + d + 0.05);
+      });
+    },
     /* la plume qui gratte le papier : un souffle très bref et très aigu, jamais deux fois le même */
     plume: function () {
       var ctx = Son.ctx(); if (!ctx || typeof bruit !== "function") return;

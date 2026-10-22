@@ -28,7 +28,7 @@ from _injecter import poser  # noqa: E402
 SORTIE = ICI / "_planches"
 
 
-def lettre(rite, cire, papier, sceau, pluie, verrou, occasion="Anniversaire", titre="Joyeux anniversaire", plus=None):
+def lettre(rite, cire, papier, sceau, pluie, verrou, occasion="Anniversaire", titre="Joyeux anniversaire", plus=None, occ="anniv"):
     d = {
         "occasion": occasion, "pour": "Afi", "de": "Koffi", "titre": titre, "code": "",
         "lettre": ["Je ne sais pas écrire les belles phrases, alors je vais écrire les vraies.",
@@ -46,9 +46,9 @@ def lettre(rite, cire, papier, sceau, pluie, verrou, occasion="Anniversaire", ti
     SORTIE.mkdir(exist_ok=True)
     poseur = SORTIE / "_poser.js"
     poseur.write_text("const fs=require('fs');eval(fs.readFileSync(process.argv[2],'utf8'));let s='';"
-                      "process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>process.stdout.write(poserRite(s,process.argv[3],process.argv[4])));",
+                      "process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>process.stdout.write(poserRite(s,process.argv[3],process.argv[4],process.argv[5])));",
                       encoding="utf-8")
-    r = subprocess.run(["node", str(poseur), str(ICI.parent / "rites.js"), rite, cire], input=html.encode("utf-8"),
+    r = subprocess.run(["node", str(poseur), str(ICI.parent / "rites.js"), rite, cire, occ], input=html.encode("utf-8"),
                        capture_output=True, check=True)
     return r.stdout.decode("utf-8")
 

@@ -7,18 +7,26 @@
 <title>Banc d'essai des ouvertures</title>
 <!--
   MA LETTRE À… · le banc d'essai des ouvertures (local seulement, jamais publié).
-    ?rite=cachet&cire=bordeaux&papier=creme&sceau=initiale&pour=Afi&de=Koffi&jouer=1
+    ?rite=portes-dentelle&cire=bordeaux&papier=creme&sceau=initiale&pour=Afi&de=Koffi&occasion=mariage&jouer=1
+  `rite` : une ouverture de `carte.json` (sa mécanique et son thème), ou une mécanique nue (`cachet`).
   Sans `jouer`, la page ne bouge pas : figer(t, ti) peint une image à l'instant t (secondes depuis le geste,
-  négatif = avant), et les contrôles la photographient. Avec `jouer=1`, l'ouverture se joue au toucher.
+  négatif = avant), et les contrôles la photographient ; le geste est joué une fois, au premier t positif ; une
+  ouverture à geste s'ouvre seule au bout de `auto` secondes (1 par défaut ici). Avec `jouer=1`, on la joue au doigt.
 -->
 <style>
   html,body{margin:0;height:100%;background:#141019;overflow:hidden;font-family:system-ui,sans-serif}
-  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
-  #cadre{position:fixed;left:50%;top:44%;width:min(78vw,340px);aspect-ratio:1.62;translate:-50% -50%;outline:1px dashed rgba(255,255,255,.0);pointer-events:none}
-  #info{position:fixed;left:8px;bottom:8px;color:#f4ede0;font-size:12px;opacity:.6}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  #cadre{position:fixed;left:50%;top:44%;width:min(78vw,340px);aspect-ratio:1.62;translate:-50% -50%;pointer-events:none}
+  #info{position:fixed;left:8px;bottom:8px;color:#f4ede0;font-size:12px;opacity:.6;pointer-events:none}
+  /* derrière une ouverture plein écran : une lettre (la vraie est la page de la lettre) */
+  #page{position:fixed;inset:0;display:none;background:#141019}
+  #page i{position:absolute;left:8%;right:8%;top:6%;bottom:-10%;background:linear-gradient(178deg,#f4ede0,#e7dcc6);border-radius:4px}
+  #page b{position:absolute;left:14%;right:14%;height:8px;border-radius:4px;background:rgba(36,29,43,.16)}
 </style>
 </head>
 <body>
+<div id="page"><i></i><b style="top:16%;left:30%;right:30%;height:22px;background:rgba(140,47,57,.5)"></b><b style="top:26%"></b>
+<b style="top:30%"></b><b style="top:34%;right:30%"></b><b style="top:41%"></b><b style="top:45%"></b><b style="top:49%;right:40%"></b></div>
 <canvas id="scene"></canvas>
 <div id="cadre"></div>
 <div id="info"></div>
@@ -26,27 +34,52 @@
 <script src="atelier.js"></script>
 <script>
 "use strict";
-var q = new URLSearchParams(location.search), nom = q.get("rite") || "cachet";
-var MATIERES = {};
+var q = new URLSearchParams(location.search), demande = q.get("rite") || "cachet";
+var MATIERES = {}, THEME = {};
 ["cire-bordeaux", "cire-or", "cire-nuit", "cire-sapin", "cire-rose", "or", "or-brosse", "argent", "perle", "velours-bordeaux", "velours-nuit", "papier"]
   .forEach(function (m) { MATIERES[m] = "matieres/" + m + ".png"; });
 window.__pret = false;
-fetch(nom + ".js").then(function (r) { return r.text(); }).then(function (src) {
+function texte(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error(u + " " + r.status); return r.text(); }); }
+texte("carte.json").then(function (c) {
+  var carte = JSON.parse(c), o = carte.ouvertures[demande], meca = o ? o.mecanique : demande;
+  THEME = Object.assign({ ouverture: demande }, o && o.theme || {});
+  return texte(meca + ".js");
+}).then(function (src) {
   var rite = (0, eval)(src);
   var r = document.getElementById("cadre").getBoundingClientRect();
   var D = { pour: q.get("pour") || "Afi", de: q.get("de") || "Koffi", EN: q.get("langue") === "en",
     HAB: { cire: q.get("cire") || "bordeaux", papier: q.get("papier") || "creme", sceau: q.get("sceau") || "initiale" },
     cadre: { x: r.left + r.width / 2, y: r.top + r.height / 2, l: r.width } };
-  var cv = document.getElementById("scene");
+  var cv = document.getElementById("scene"), info = document.getElementById("info");
+  window.__rite = rite;
   if (q.get("jouer")) {
-    var j = Theatre.jouer(cv, rite, D, { fin: function () { document.getElementById("info").textContent = "révélé"; }, abandon: function (e) { document.getElementById("info").textContent = "abandon " + e; } });
-    addEventListener("click", function () { j.ouvrir(); });
+    if (q.get("auto") != null) D.auto = Number(q.get("auto"));
+    var j = Theatre.jouer(cv, rite, D, { fin: function () { info.textContent = "révélé"; }, fini: function () { info.textContent = "fini"; },
+      abandon: function (e) { info.textContent = "abandon " + e; } });
+    var lance = false;
+    ["pointerdown", "pointermove", "pointerup"].forEach(function (n) {
+      cv.addEventListener(n, function (ev) {
+        var t = n === "pointerdown" ? "bas" : n === "pointerup" ? "haut" : (ev.buttons ? "glisse" : "survol");
+        j.toucher({ type: t, x: ev.clientX, y: ev.clientY, id: ev.pointerId });
+      });
+    });
+    cv.addEventListener("click", function () { if (!lance) { lance = true; j.ouvrir(); } });
+    window.__ouvrir = function () { if (!lance) { lance = true; j.ouvrir(); } };
     window.__pret = true;
     return;
   }
-  var S = Theatre(cv, { garder: true, kmax: Number(q.get("k") || 2) });
+  D.auto = q.get("auto") == null ? 1 : Number(q.get("auto"));
+  var page = document.getElementById("page"), montree = false;
+  var S = Theatre(cv, { garder: true, kmax: Number(q.get("k") || 2), transparent: !!rite.plein });
   rite.monter(S, D);
-  window.figer = function (t, ti) { rite.rendre(S, t, ti == null ? 3 : ti); S.composer(ti == null ? 3 : ti); return cv.toDataURL("image/png"); };
+  var geste = false;
+  window.figer = function (t, ti) {
+    if (t >= 0 && !geste) { geste = true; rite.geste && rite.geste(S); }
+    rite.rendre(S, t, ti == null ? 3 : ti); S.composer(ti == null ? 3 : ti);
+    if (rite.plein && !montree && typeof rite.revele === "function" && rite.revele(t)) { montree = true; page.style.display = "block"; }
+    return cv.toDataURL("image/png");
+  };
+  window.toucher = function (e) { e.ti = e.ti || 3; rite.toucher && rite.toucher(S, e); };
   (function attendre() { if (!S.pret) return setTimeout(attendre, 30); window.__pret = true; })();
 }).catch(function (e) { document.getElementById("info").textContent = "erreur " + e; window.__erreur = String(e); });
 </script>

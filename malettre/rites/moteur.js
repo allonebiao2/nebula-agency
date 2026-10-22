@@ -203,7 +203,7 @@ var Theatre = (function () {
     "vec4 w=u_m*vec4(p,1.);v_w=w.xyz;v_e=(u_v*w).xyz;v_n=u_vn*n;v_uv=a_uv;gl_Position=u_pv*w;}";
   function FS(derive) {
     return (derive ? "#extension GL_OES_standard_derivatives : enable\n" : "") +
-      "precision mediump float;uniform float u_mode,u_bump,u_brume,u_coupe;uniform sampler2D u_tex,u_haut;uniform vec4 u_teinte;" +
+      "precision mediump float;uniform float u_mode,u_bump,u_brume,u_coupe,u_metal;uniform sampler2D u_tex,u_haut;uniform vec4 u_teinte;" +
       "uniform vec3 u_emis,u_lum,u_lumc,u_lp,u_lpc,u_amb,u_rim;uniform vec2 u_rep,u_spec;varying vec3 v_n,v_e,v_w;varying vec2 v_uv;" +
       (derive ?
         "vec3 relief(vec3 n){vec3 dx=dFdx(v_e),dy=dFdy(v_e);float h=texture2D(u_haut,v_uv*u_rep).r;" +
@@ -213,11 +213,16 @@ var Theatre = (function () {
       /* 0 · matcap : la sphère de Blender, lue par le reflet (tient compte de la perspective) */
       "if(u_mode<.5){vec3 r=reflect(e,n);float m=2.8284*sqrt(r.z+1.001);" +
       "c=vec4(texture2D(u_tex,r.xy/m*.96+.5).rgb*u_teinte.rgb,u_teinte.a);}" +
-      /* 1 · papier : la clé enveloppante, la lumière ponctuelle, et le reflet doux qui glisse sur la feuille */
+      /* 1 · papier : la clé enveloppante, la lumière ponctuelle, et le reflet doux qui glisse sur la feuille ;
+         là où la hauteur porte du vert (`u_metal`), c'est une feuille d'or : sombre de face, éclatante sous le reflet */
       "else if(u_mode<1.5){vec4 a=texture2D(u_tex,v_uv*u_rep)*u_teinte;float w=max((dot(n,u_lum)+.3)/1.3,0.);" +
       "vec3 d=u_lp-v_w;float l2=dot(d,d);float pl=max(dot(n,normalize(d)),0.)/(1.+l2*.7);" +
-      "float sp=pow(max(dot(n,normalize(u_lum-e)),0.),u_spec.y)*u_spec.x;" +
-      "c=vec4(a.rgb*(u_amb+u_lumc*w+u_lpc*pl)+sp*u_lumc,a.a);}" +
+      "float mt=u_metal*texture2D(u_haut,v_uv*u_rep).g,hv=max(dot(n,normalize(u_lum-e)),0.);" +
+      "float sp=pow(hv,mix(u_spec.y,70.,mt))*mix(u_spec.x,2.4,mt)+mt*pow(hv,6.)*.35;" +
+      "vec3 df=a.rgb*(u_amb+u_lumc*w+u_lpc*pl);" +
+      "float hp=max(dot(n,normalize(normalize(d)-e)),0.),spp=pow(hp,mix(u_spec.y,70.,mt))*mix(u_spec.x,2.4,mt)*2./(1.+l2*.7);" +
+      "c=vec4(mix(df,df*.7+a.rgb*u_lpc*pl*.9,mt)+sp*mix(u_lumc,a.rgb*u_lumc*1.7,mt)+spp*u_lpc*mix(vec3(1.),a.rgb*1.7,mt)" +
+      "+mt*a.rgb*pow(1.-abs(dot(n,e)),2.)*.35,a.a);}" +
       "else{c=texture2D(u_tex,v_uv*u_rep)*u_teinte;}" +
       /* le liseré : une lumière froide qui dessine les bords contre la lumière chaude (le regard du cinéma) */
       "if(c.a<u_coupe)discard;c.rgb+=u_emis+u_rim*pow(1.-abs(dot(n,e)),3.)*c.a;c.rgb=mix(c.rgb,vec3(.031,.024,.043),u_brume*clamp(-v_e.z*.06-.2,0.,1.));" +
@@ -232,18 +237,18 @@ var Theatre = (function () {
   var VSQ = "attribute vec2 a_p;varying vec2 v_uv;void main(){v_uv=a_p*.5+.5;gl_Position=vec4(a_p,0.,1.);}";
   /* réduire l'image au quart (4 lectures), et ne garder que ce qui brille pour le halo */
   var FS_RED = "precision mediump float;uniform sampler2D u_tex;uniform vec2 u_px;uniform float u_seuil;varying vec2 v_uv;" +
-    "void main(){vec3 c=(texture2D(u_tex,v_uv+u_px*vec2(-1.,-1.)).rgb+texture2D(u_tex,v_uv+u_px*vec2(1.,-1.)).rgb+" +
-    "texture2D(u_tex,v_uv+u_px*vec2(-1.,1.)).rgb+texture2D(u_tex,v_uv+u_px*vec2(1.,1.)).rgb)*.25;" +
-    "if(u_seuil>0.){float l=max(c.r,max(c.g,c.b));c*=smoothstep(u_seuil,u_seuil+.25,l);}gl_FragColor=vec4(c,1.);}";
+    "void main(){vec4 c=(texture2D(u_tex,v_uv+u_px*vec2(-1.,-1.))+texture2D(u_tex,v_uv+u_px*vec2(1.,-1.))+" +
+    "texture2D(u_tex,v_uv+u_px*vec2(-1.,1.))+texture2D(u_tex,v_uv+u_px*vec2(1.,1.)))*.25;" +
+    "if(u_seuil>0.){float l=max(c.r,max(c.g,c.b));c.rgb*=smoothstep(u_seuil,u_seuil+.25,l);}gl_FragColor=c;}";
   /* un flou gaussien séparable, 9 points en 5 lectures (filtrage linéaire) */
   var FS_FLOU = "precision mediump float;uniform sampler2D u_tex;uniform vec2 u_dir;varying vec2 v_uv;" +
-    "void main(){vec3 c=texture2D(u_tex,v_uv).rgb*.227027;" +
-    "c+=(texture2D(u_tex,v_uv+u_dir*1.384615).rgb+texture2D(u_tex,v_uv-u_dir*1.384615).rgb)*.316216;" +
-    "c+=(texture2D(u_tex,v_uv+u_dir*3.230769).rgb+texture2D(u_tex,v_uv-u_dir*3.230769).rgb)*.070270;" +
-    "gl_FragColor=vec4(c,1.);}";
+    "void main(){vec4 c=texture2D(u_tex,v_uv)*.227027;" +
+    "c+=(texture2D(u_tex,v_uv+u_dir*1.384615)+texture2D(u_tex,v_uv-u_dir*1.384615))*.316216;" +
+    "c+=(texture2D(u_tex,v_uv+u_dir*3.230769)+texture2D(u_tex,v_uv-u_dir*3.230769))*.070270;" +
+    "gl_FragColor=c;}";
   /* l'image finale : lissage FXAA, profondeur de champ, halo, vignetage, courbe de couleur, grain */
   var FS_FIN = "precision mediump float;uniform sampler2D u_scene,u_halo,u_flou;uniform vec2 u_px;" +
-    "uniform float u_bloom,u_dof,u_foyer,u_largeur,u_vign,u_grain,u_t;varying vec2 v_uv;" +
+    "uniform float u_bloom,u_dof,u_foyer,u_largeur,u_vign,u_grain,u_t,u_alpha;varying vec2 v_uv;" +
     "vec3 fxaa(vec2 uv){vec3 l3=vec3(.299,.587,.114);" +
     "vec3 nw=texture2D(u_scene,uv+vec2(-1.,-1.)*u_px).rgb,ne=texture2D(u_scene,uv+vec2(1.,-1.)*u_px).rgb," +
     "sw=texture2D(u_scene,uv+vec2(-1.,1.)*u_px).rgb,se=texture2D(u_scene,uv+vec2(1.,1.)*u_px).rgb,m=texture2D(u_scene,uv).rgb;" +
@@ -254,23 +259,25 @@ var Theatre = (function () {
     "vec3 p=.5*(texture2D(u_scene,uv-dir*.1667).rgb+texture2D(u_scene,uv+dir*.1667).rgb);" +
     "vec3 q=p*.5+.25*(texture2D(u_scene,uv-dir*.5).rgb+texture2D(u_scene,uv+dir*.5).rgb);" +
     "float lq=dot(q,l3);return (lq<lo||lq>hi)?p:q;}" +
-    "void main(){vec3 c=fxaa(v_uv);" +
-    "float k=smoothstep(u_largeur,u_largeur+.3,abs(v_uv.y-u_foyer))*u_dof;c=mix(c,texture2D(u_flou,v_uv).rgb,k);" +
-    "c+=texture2D(u_halo,v_uv).rgb*u_bloom;" +
-    "vec2 v=v_uv-.5;c*=1.-u_vign*dot(v,v)*1.7;" +
+    "void main(){vec3 c=fxaa(v_uv);float a=texture2D(u_scene,v_uv).a;" +
+    "float k=smoothstep(u_largeur,u_largeur+.3,abs(v_uv.y-u_foyer))*u_dof;vec4 fl=texture2D(u_flou,v_uv);c=mix(c,fl.rgb,k);a=mix(a,fl.a,k);" +
+    "c+=texture2D(u_halo,v_uv).rgb*u_bloom;float A=mix(1.,a,u_alpha);" +
+    "vec2 v=v_uv-.5;c*=1.-u_vign*dot(v,v)*1.7*A;" +
     /* une courbe en S douce, les noirs vers l'encre de nuit, les hautes lumières un rien dorées */
-    "c=mix(c,c*c*(3.-2.*c),.22);c=c*vec3(1.02,1.,.97)+vec3(.012,.008,.018)*(1.-c);" +
-    "c+=(fract(sin(dot(v_uv*(1.+u_t),vec2(12.9898,78.233)))*43758.5453)-.5)*u_grain;" +
-    "gl_FragColor=vec4(c,1.);}";
+    "c=mix(c,c*c*(3.-2.*c),.22);c=c*vec3(1.02,1.,.97)+vec3(.012,.008,.018)*(1.-c)*A;" +
+    "c+=(fract(sin(dot(v_uv*(1.+u_t),vec2(12.9898,78.233)))*43758.5453)-.5)*u_grain*A;" +
+    /* en fenêtre (`transparent`), la page se voit là où il n'y a rien ; la lumière d'un halo la voile à peine
+       (une couleur prémultipliée ne dépasse jamais son alpha) */
+    "c=max(c,0.);float ao=mix(1.,clamp(max(a,max(c.r,max(c.g,c.b))),0.,1.),u_alpha);gl_FragColor=vec4(min(c,vec3(ao)),ao);}";
 
   function Theatre(canvas, options) {
     var o = options || {};
-    var gl = canvas.getContext("webgl", { antialias: true, alpha: false, premultipliedAlpha: true, preserveDrawingBuffer: !!o.garder }) ||
-      canvas.getContext("experimental-webgl");
+    var gl = canvas.getContext("webgl", { antialias: true, alpha: !!o.transparent, premultipliedAlpha: true, preserveDrawingBuffer: !!o.garder }) ||
+      canvas.getContext("experimental-webgl", { alpha: !!o.transparent });
     if (!gl) return null;
     var derive = !!gl.getExtension("OES_standard_derivatives");
     var aniso = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
-    var S = { gl: gl, M: M, C: C, G: G, k: 1, W: 1, H: 1, pret: true, attente: 0,
+    var S = { gl: gl, M: M, C: C, G: G, k: 1, W: 1, H: 1, pret: true, attente: 0, transparent: !!o.transparent,
       /* la qualité : 2 = cinéma (sur-échantillonnage, halo, flou), 1 = sans flou ni sur-échantillonnage, 0 = image directe */
       qualite: o.qualite == null ? 2 : o.qualite,
       post: { bloom: 0.6, seuil: 0.86, dof: 0.8, foyer: 0.5, largeur: 0.12, vign: 0.42, grain: 0.02 } };
@@ -409,11 +416,13 @@ var Theatre = (function () {
     S.effacer = function () {
       if (FB.scene) { gl.bindFramebuffer(gl.FRAMEBUFFER, FB.scene.f); gl.viewport(0, 0, FB.scene.w, FB.scene.h); }
       else { gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, canvas.width, canvas.height); }
-      gl.clearColor(0.07, 0.055, 0.09, 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      if (S.transparent) gl.clearColor(0, 0, 0, 0); else gl.clearColor(0.07, 0.055, 0.09, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.disable(gl.CULL_FACE);
     };
 
-    /* matiere : {mode: "matcap"|"papier"|"plat", tex, teinte, haut, bump, rep, emis, coupe, spec:[force, dureté], pli:[angle, courbure]} */
+    /* matiere : {mode: "matcap"|"papier"|"plat", tex, teinte, haut, bump, rep, emis, coupe, spec:[force, dureté], pli:[angle, courbure],
+       metal (0 → 1 : le vert de `haut` devient une feuille d'or)} */
     S.dessiner = function (mesh, mat, m) {
       var P = P1, u = P.u;
       gl.useProgram(P.p);
@@ -430,7 +439,7 @@ var Theatre = (function () {
       var rep = mat.rep || [1, 1]; gl.uniform2f(u.u_rep, rep[0], rep[1]);
       var sp = mat.spec || (mat.mode === "papier" ? [0.07, 18] : [0, 1]); gl.uniform2f(u.u_spec, sp[0], sp[1]);
       gl.uniform1f(u.u_bump, derive && mat.haut ? (mat.bump || 1) : 0);
-      gl.uniform1f(u.u_coupe, mat.coupe || 0);
+      gl.uniform1f(u.u_coupe, mat.coupe || 0); gl.uniform1f(u.u_metal, mat.haut ? mat.metal || 0 : 0);
       var pl = mat.pli; gl.uniform3f(u.u_pli, pl ? pl[0] : 0, pl ? pl[1] || 0 : 0, pl ? 1 : 0);
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, mat.tex || blanc); gl.uniform1i(u.u_tex, 0);
       gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, mat.haut || blanc); gl.uniform1i(u.u_haut, 1);
@@ -524,7 +533,7 @@ var Theatre = (function () {
       gl.uniform2f(Z.u.u_px, 1 / sw, 1 / sh);
       gl.uniform1f(Z.u.u_bloom, p.bloom); gl.uniform1f(Z.u.u_dof, S.qualite >= 2 ? p.dof : 0); gl.uniform1f(Z.u.u_foyer, p.foyer);
       gl.uniform1f(Z.u.u_largeur, p.largeur); gl.uniform1f(Z.u.u_vign, p.vign); gl.uniform1f(Z.u.u_grain, p.grain);
-      gl.uniform1f(Z.u.u_t, (temps || 0) % 7);
+      gl.uniform1f(Z.u.u_t, (temps || 0) % 7); gl.uniform1f(Z.u.u_alpha, S.transparent ? 1 : 0);
       passe(Z, null, canvas.width, canvas.height);
     };
     /* baisser la qualité d'un palier (appelé par `jouer` quand l'appareil peine) */
@@ -533,13 +542,16 @@ var Theatre = (function () {
   }
 
   /* ═══ La mise en scène : le théâtre joue un rite dans un canvas, puis rend la main.
-     jouer(canvas, rite, D, {fin, abandon}) → {ouvrir(), arreter()}
+     jouer(canvas, rite, D, {fin, abandon, fini}) → {ouvrir(), arreter(), fini(), toucher(e)}
      ─ 60 images par seconde, au repos comme pendant l'ouverture ; rien quand la page est cachée ;
      ─ si l'appareil peine (plus de 24 ms par image en moyenne), la qualité baisse d'un palier, deux au plus ;
+     ─ un rite à geste (les portes qu'on écarte) décide lui-même : `revele(t)` vrai → la lettre se montre,
+       `fini(t)` vrai → le théâtre s'arrête ; sinon, `revele` et `duree` sont des secondes ;
+     ─ `plein` : le rite prend tout l'écran, en fenêtre (transparent : on voit la page derrière) ;
      ─ au moindre souci (pas de WebGL, une erreur), abandon() : la lettre s'ouvre comme avant. ═══ */
   function jouer(canvas, rite, D, rappels) {
     var S;
-    try { S = Theatre(canvas, { kmax: rite.kmax || 2 }); } catch (e) { S = null; }
+    try { S = Theatre(canvas, { kmax: rite.kmax || 2, transparent: !!rite.plein }); } catch (e) { S = null; }
     if (!S) { rappels.abandon && rappels.abandon(); return null; }
     try { rite.monter(S, D); } catch (e) { rappels.abandon && rappels.abandon(e); return null; }
     var t0 = 0, tOuvre = -1, fini = false, revele = false, dernier = 0, arret = false, somme = 0, compte = 0, repos = 0;
@@ -556,8 +568,8 @@ var Theatre = (function () {
       if (compte >= 45) { if (somme / compte > 24 && S.alleger()) { /* un palier de moins */ } somme = 0; compte = 0; }
       var t = tOuvre < 0 ? -1 : (now - tOuvre) / 1000, ti = (now - t0) / 1000;
       try { rite.rendre(S, t, ti); S.composer(ti); } catch (e) { arret = true; rappels.abandon && rappels.abandon(e); return; }
-      if (tOuvre >= 0 && !revele && t >= (rite.revele || rite.duree)) { revele = true; rappels.fin && rappels.fin(); }
-      if (tOuvre >= 0 && t >= rite.duree + 0.6) { arret = true; fini = true; }
+      if (tOuvre >= 0 && !revele && (typeof rite.revele === "function" ? rite.revele(t) : t >= (rite.revele || rite.duree))) { revele = true; rappels.fin && rappels.fin(); }
+      if (tOuvre >= 0 && (typeof rite.fini === "function" ? rite.fini(t) : t >= rite.duree + 0.6)) { arret = true; fini = true; rappels.fini && rappels.fini(); }
     }
     requestAnimationFrame(image);
     addEventListener("resize", function () { S.taille(); });
@@ -565,7 +577,14 @@ var Theatre = (function () {
       S: S,
       ouvrir: function () { if (tOuvre < 0) { tOuvre = performance.now(); rite.geste && rite.geste(S); } },
       arreter: function () { arret = true; },
-      fini: function () { return fini; }
+      fini: function () { return fini; },
+      /* le doigt : {type: "survol"|"bas"|"glisse"|"haut", x, y} en px de la page ; le rite le reçoit avec ses horloges */
+      toucher: function (e) {
+        if (arret || !rite.toucher) return;
+        var now = performance.now();
+        e.ti = t0 ? (now - t0) / 1000 : 0; e.t = tOuvre < 0 ? -1 : (now - tOuvre) / 1000;
+        try { rite.toucher(S, e); } catch (x) { /* un geste mal compris ne casse jamais la lettre */ }
+      }
     };
   }
 
