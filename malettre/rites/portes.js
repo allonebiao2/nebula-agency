@@ -12,7 +12,8 @@
     A.matieres(S, MATIERES);
     this.D = D;
     var hab = D.HAB || {}, pap = hab.papier || "creme", P = A.PAPIERS[pap] || A.PAPIERS.creme;
-    this.table = A.Table(S, "#231a24");
+    this.table = A.Table(S, "#26161f");
+    this.bokeh = A.Bokeh(S, 10, 61, [[1, 0.6, 0.7], [1, 0.8, 0.85], [1, 0.72, 0.5]]);
     this.texC = A.carte(S, D, pap, hab.cire || "rose");
     this.texInt = A.papier(S, pap, 21);
     var W = 1.9, H = 1.25;
@@ -104,14 +105,18 @@
     var rose = t < 0 ? 0 : C.p(o, 0.45, 1.2);
     var leve = C.doux(C.p(o, 1.45, 2.45)), plonge = C.doux(C.p(o, 1.55, 2.85));
 
+    /* la caméra : le cœur bat, elle s'approche ; les portes s'ouvrent, elle plonge ENTRE elles vers la lumière */
     var champ = 30, d0 = S.distance(2.12, cad.l, champ), d1 = S.distance(1.5, S.W * 0.98, champ);
-    var el = C.mix(55 + Math.sin(ti * 0.4) * 1.4, 89, plonge) * Math.PI / 180, az = Math.sin(ti * 0.3) * 0.05 * (1 - plonge);
-    var cible = [0, C.mix(0, 0.3, leve), 0.02], d = C.mix(d0, d1, plonge);
+    var approche = t < 0 ? 0 : C.sort(C.p(o, 0, 0.3)) * 0.12 * (1 - C.p(o, 0.4, 0.9));
+    var entre = t < 0 ? 0 : C.doux(C.p(o, 0.45, 1.6));
+    var el = C.mix(55 + Math.sin(ti * 0.4) * 1.4 - approche * 12 + entre * 14, 89, plonge) * Math.PI / 180, az = Math.sin(ti * 0.3) * 0.05 * (1 - plonge);
+    var cible = [0, C.mix(0, 0.3, leve), 0.02], d = C.mix(d0 * (1 - approche - entre * 0.22), d1, plonge);
     S.camera([Math.sin(az) * d * Math.cos(el), cible[1] + d * Math.sin(el), cible[2] + Math.cos(az) * d * Math.cos(el)], cible, champ,
       C.mix(cad.x, S.W / 2, plonge), C.mix(cad.y, S.H / 2, plonge));
+    S.post.dof = C.mix(0.85, 0.3, plonge); S.post.bloom = 0.6 + rose * 0.15 * (1 - leve);
     var fl = 1 + 0.05 * Math.sin(ti * 7.7);
     S.lumiere({ lum: [-0.4, 0.86, 0.45], lumc: [0.86, 0.78, 0.76], amb: [0.13, 0.1, 0.13],
-      lp: [0, 0.5, 0], lpc: [0.6 * fl + rose * 1.4, 0.45 * fl + rose * 0.6, 0.45 * fl + rose * 0.75], brume: 0.6 });
+      lp: [0, 0.5, 0], lpc: [0.6 * fl + rose * 0.7, 0.45 * fl + rose * 0.3, 0.45 * fl + rose * 0.38], brume: 0.6 });
 
     S.effacer();
     this.table.dessiner();
@@ -134,7 +139,8 @@
     });
     /* la lueur rose de l'intérieur, l'éclair de la fêlure, puis les pétales qui s'envolent et retombent */
     var L = [];
-    if (rose > 0) L.push({ p: [0, 0.25, 0], s: 2.6 * rose, c: [1, 0.55, 0.65, 0.45 * rose * (1 - plonge * 0.6)] });
+    /* la lueur rose de l'intérieur : elle doit laisser lire la carte (à 0,45, elle brûlait le prénom) */
+    if (rose > 0) L.push({ p: [0, 0.32, -0.15], s: 2.2 * rose, c: [1, 0.5, 0.62, 0.2 * rose * (1 - leve * 0.8)] });
     var flash = t < 0 ? 0 : Math.max(0, 1 - Math.abs(o - 0.3) / 0.16);
     if (flash > 0) L.push({ p: [0, 0.12, 0], s: 0.9 + flash * 1.2, c: [1, 0.8, 0.85, flash * 0.8] });
     S.lutins(L, S.rond, true);
@@ -149,6 +155,7 @@
       });
       S.lutins(Q, this.texPetale, false);
     }
+    this.bokeh.dessiner(ti, 1 - plonge * 0.7);
   },
   geste: function () {
     var Son = Atelier.Son;

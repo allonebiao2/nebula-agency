@@ -109,20 +109,85 @@ var Atelier = (function () {
     });
   }
 
-  /* ── La table : un grand drap sombre, et une flaque de lumière chaude sur l'enveloppe. ── */
+  /* ── La table : un noyer sombre et verni. Ses lames, son fil, ses nœuds ; le vernis prend la lumière de la bougie,
+     et la profondeur de champ la perd dans le flou au loin. `teinte` : la couleur de fond (un drap, si on la donne). ── */
   function Table(S, teinte) {
-    var tex = S.toile(256, 256, function (g) {
-      g.fillStyle = teinte || "#1d1826"; g.fillRect(0, 0, 256, 256);
-      var h = C.hasard(3);
-      for (var i = 0; i < 900; i++) { g.fillStyle = "rgba(255,255,255," + (h() * 0.035).toFixed(3) + ")"; g.fillRect(h() * 256, h() * 256, 1, 2 + h() * 3); }
-      for (var j = 0; j < 256; j += 3) { g.fillStyle = "rgba(0,0,0,.07)"; g.fillRect(0, j, 256, 1); }
+    var h = C.hasard(3);
+    var tex = S.toile(1024, 1024, function (g) {
+      if (teinte) {
+        g.fillStyle = teinte; g.fillRect(0, 0, 1024, 1024);
+        for (var i0 = 0; i0 < 5000; i0++) { g.fillStyle = "rgba(255,255,255," + (h() * 0.03).toFixed(3) + ")"; g.fillRect(h() * 1024, h() * 1024, 1, 2 + h() * 4); }
+        for (var j0 = 0; j0 < 1024; j0 += 3) { g.fillStyle = "rgba(0,0,0,.06)"; g.fillRect(0, j0, 1024, 1); }
+        return;
+      }
+      for (var l = 0; l < 8; l++) {
+        var x0 = l * 128, ton = 0.82 + h() * 0.3;
+        g.fillStyle = "rgb(" + Math.round(40 * ton) + "," + Math.round(27 * ton) + "," + Math.round(21 * ton) + ")";
+        g.fillRect(x0, 0, 128, 1024);
+        /* le fil du bois : des veines qui ondulent le long de la lame */
+        for (var v = 0; v < 46; v++) {
+          var bx = x0 + h() * 128, amp = 2 + h() * 7, fr = 0.004 + h() * 0.01, ph = h() * 6.3, clair = h() < 0.5;
+          g.strokeStyle = clair ? "rgba(120,80,55," + (0.05 + h() * 0.1).toFixed(3) + ")" : "rgba(10,6,4," + (0.1 + h() * 0.18).toFixed(3) + ")";
+          g.lineWidth = 0.6 + h() * 1.8;
+          g.beginPath();
+          for (var y = 0; y <= 1024; y += 16) { var xx = bx + Math.sin(y * fr + ph) * amp; if (!y) g.moveTo(xx, y); else g.lineTo(xx, y); }
+          g.stroke();
+        }
+        /* un nœud de temps en temps */
+        if (h() < 0.5) {
+          var ny = h() * 1024, nx = x0 + 30 + h() * 68;
+          for (var k = 7; k > 0; k--) { g.strokeStyle = "rgba(12,7,5," + (0.08 + k * 0.03).toFixed(3) + ")"; g.lineWidth = 1.2; g.beginPath(); g.ellipse(nx, ny, k * 2.2, k * 5, 0, 0, Math.PI * 2); g.stroke(); }
+        }
+        /* le joint entre deux lames */
+        g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(x0, 0, 2, 1024);
+      }
     }, true);
     var mesh = S.maillage(G.plan(30, 30, 1, 1));
     return {
       dessiner: function () {
-        S.dessiner(mesh, { mode: "papier", tex: tex, rep: [9, 9] }, M.trans(0, -0.002, 0));
+        S.dessiner(mesh, { mode: "papier", tex: tex, rep: [3, 3], spec: teinte ? [0.02, 8] : [0.22, 55], rim: [0, 0, 0] }, M.trans(0, -0.002, 0));
       }
     };
+  }
+
+  /* ── Le bokeh : des lumières hors de la mise au point, tout près de l'objectif (le regard d'un film). ── */
+  function Bokeh(S, n, graine, couleurs) {
+    var h = C.hasard(graine || 9), B = [], cols = couleurs || [[1, 0.78, 0.5], [1, 0.62, 0.42], [1, 0.9, 0.72]];
+    /* discrets : petits, peu nombreux, plutôt en haut et sur les côtés (gros et nombreux, ils faisaient des ovales
+       qui gênaient la lecture de la scène) */
+    for (var i = 0; i < (n || 10); i++) {
+      var cote = i % 2 ? 1 : -1;
+      B.push({ x: cote * (0.35 + h() * 0.85), y: 0.2 + h() * 1.3, d: 2.4 + h() * 2.6, s: 0.07 + h() * 0.13, ph: h() * 6.3, v: 0.05 + h() * 0.08, c: cols[i % cols.length], a: 0.035 + h() * 0.05 });
+    }
+    var tex = S.toile(64, 64, function (g) {
+      var r = g.createRadialGradient(32, 32, 0, 32, 32, 31);
+      r.addColorStop(0, "rgba(255,255,255,.55)"); r.addColorStop(0.78, "rgba(255,255,255,.7)"); r.addColorStop(0.9, "rgba(255,255,255,.9)"); r.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = r; g.beginPath(); g.arc(32, 32, 31, 0, Math.PI * 2); g.fill();
+    });
+    return {
+      dessiner: function (ti, force) {
+        if (!S.oeil || force <= 0) return;
+        var V = S.V, dx = [V[0], V[4], V[8]], dy = [V[1], V[5], V[9]], dz = [-V[2], -V[6], -V[10]], o = S.oeil, L = [];
+        B.forEach(function (b) {
+          var x = b.x + Math.sin(ti * b.v + b.ph) * 0.25, y = b.y + Math.cos(ti * b.v * 0.8 + b.ph) * 0.2;
+          L.push({ p: [o[0] + dz[0] * b.d + dx[0] * x + dy[0] * y, o[1] + dz[1] * b.d + dx[1] * x + dy[1] * y, o[2] + dz[2] * b.d + dx[2] * x + dy[2] * y],
+            s: b.s, c: [b.c[0], b.c[1], b.c[2], b.a * force * (0.7 + 0.3 * Math.sin(ti * 0.9 + b.ph))] });
+        });
+        S.lutins(L, tex, true);
+      }
+    };
+  }
+
+  /* Un triangle de papier, sommets donnés (x, y, z) : sa normale est la sienne (un rabat légèrement soulevé prend la
+     lumière autrement que son voisin, et le pli se voit). */
+  function triangle(S, pts, L, H) {
+    var a = pts[0], b = pts[1], c = pts[2];
+    var e1 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], e2 = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    var n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]], l = Math.hypot(n[0], n[1], n[2]) || 1;
+    n = [n[0] / l, n[1] / l, n[2] / l]; if (n[1] < 0) n = [-n[0], -n[1], -n[2]];
+    var g = { p: [], n: [], uv: [], i: [0, 1, 2] };
+    pts.forEach(function (q) { g.p.push(q[0], q[1], q[2]); g.n.push(n[0], n[1], n[2]); g.uv.push(0.5 + q[0] / L, 0.5 + q[2] / H); });
+    return S.maillage(g);
   }
 
   /* ── L'enveloppe ── l : largeur, h : hauteur ; pointe : où descend le V du rabat (part de la hauteur). */
@@ -134,10 +199,13 @@ var Atelier = (function () {
     var z0 = -H / 2, zv = z0 + H * 0.54, zr = z0 + H * pointe;
     var dos = S.maillage(G.plan(L, H, 1, 1));
     var carteM = S.maillage(G.plan(L * 0.86, H * 0.84, 1, 1));
-    /* la poche : tout le rectangle sauf l'échancrure en V du haut, en deux moitiés convexes (un polygone creux
-       triangulé depuis son centre recouvrait l'échancrure) */
-    var pocheG = S.maillage(G.extrusion([[-L / 2, z0], [0, zv], [0, -z0], [-L / 2, -z0]], 0.004, 0));
-    var pocheD = S.maillage(G.extrusion([[0, zv], [L / 2, z0], [L / 2, -z0], [0, -z0]], 0.004, 0));
+    /* la poche : trois vrais rabats (deux côtés, puis le bas par-dessus), chacun soulevé d'un rien à sa pointe :
+       chacun prend la lumière à sa façon, et les plis se voient */
+    var poche = [
+      triangle(S, [[-L / 2, 0.003, z0], [-L / 2, 0.003, -z0], [-0.03, 0.0068, zv + 0.03]], L, H),
+      triangle(S, [[L / 2, 0.003, z0], [0.03, 0.0068, zv + 0.03], [L / 2, 0.003, -z0]], L, H),
+      triangle(S, [[-L / 2, 0.0078, -z0], [L / 2, 0.0078, -z0], [0, 0.0098, zv - 0.07]], L, H)
+    ];
     /* le rabat : une FEUILLE pendue à l'arête du haut, en bandes, que le nuanceur plie et enroule ; deux faces
        décalées d'un rien (le papier dehors, la doublure dedans) : la face tournée vers la caméra gagne */
     var rabatDehors = S.maillage(G.feuille(L, zr - z0, 16, null, 0.0012)), rabatDedans = S.maillage(G.feuille(L, zr - z0, 16, null, -0.0012));
@@ -151,8 +219,7 @@ var Atelier = (function () {
         /* la carte glisse vers le haut et se soulève (elle passe DEVANT le rabat ouvert) */
         var cz = C.mix(0.02, -H * 0.86, C.sort(sort)), cy = 0.004 + C.sort(sort) * 0.16;
         S.dessiner(carteM, { mode: "papier", tex: texC, teinte: [1, 1, 1, 1] }, M.chaine(base, M.trans(0, cy, cz)));
-        S.dessiner(pocheG, { mode: "papier", tex: texP, teinte: teinteP, rep: [1.4, 0.9] }, M.mul(base, M.trans(0, 0.006, 0)));
-        S.dessiner(pocheD, { mode: "papier", tex: texP, teinte: teinteP, rep: [1.4, 0.9] }, M.mul(base, M.trans(0, 0.006, 0)));
+        poche.forEach(function (pm) { S.dessiner(pm, { mode: "papier", tex: texP, teinte: teinteP, rep: [1.4, 0.9], spec: [0.08, 20] }, base); });
         /* le rabat tourne autour de son arête ; passé la verticale, on voit sa doublure */
         /* le rabat se soulève en s'enroulant (la courbure culmine à mi-course), puis se couche à plat derrière
            l'enveloppe, sous la carte qui sort */
@@ -311,6 +378,6 @@ var Atelier = (function () {
     return S.matcaps;
   }
 
-  return { matieres: matieres, doublure: doublure, carte: carte, rvb: rvb, CIRES: CIRES, PAPIERS: PAPIERS, SCEAUX: SCEAUX, SERIF: SERIF, Table: Table, Enveloppe: Enveloppe,
+  return { matieres: matieres, doublure: doublure, carte: carte, Bokeh: Bokeh, triangle: triangle, rvb: rvb, CIRES: CIRES, PAPIERS: PAPIERS, SCEAUX: SCEAUX, SERIF: SERIF, Table: Table, Enveloppe: Enveloppe,
     Cachet: Cachet, Pluie: Pluie, Son: Son, hauteurSceau: hauteurSceau, papier: papier };
 })();

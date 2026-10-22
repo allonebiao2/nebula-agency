@@ -204,7 +204,7 @@ var Theatre = (function () {
   function FS(derive) {
     return (derive ? "#extension GL_OES_standard_derivatives : enable\n" : "") +
       "precision mediump float;uniform float u_mode,u_bump,u_brume,u_coupe;uniform sampler2D u_tex,u_haut;uniform vec4 u_teinte;" +
-      "uniform vec3 u_emis,u_lum,u_lumc,u_lp,u_lpc,u_amb;uniform vec2 u_rep,u_spec;varying vec3 v_n,v_e,v_w;varying vec2 v_uv;" +
+      "uniform vec3 u_emis,u_lum,u_lumc,u_lp,u_lpc,u_amb,u_rim;uniform vec2 u_rep,u_spec;varying vec3 v_n,v_e,v_w;varying vec2 v_uv;" +
       (derive ?
         "vec3 relief(vec3 n){vec3 dx=dFdx(v_e),dy=dFdy(v_e);float h=texture2D(u_haut,v_uv*u_rep).r;" +
         "float hx=dFdx(h),hy=dFdy(h);vec3 r1=cross(dy,n),r2=cross(n,dx);float d=dot(dx,r1);" +
@@ -219,7 +219,8 @@ var Theatre = (function () {
       "float sp=pow(max(dot(n,normalize(u_lum-e)),0.),u_spec.y)*u_spec.x;" +
       "c=vec4(a.rgb*(u_amb+u_lumc*w+u_lpc*pl)+sp*u_lumc,a.a);}" +
       "else{c=texture2D(u_tex,v_uv*u_rep)*u_teinte;}" +
-      "if(c.a<u_coupe)discard;c.rgb+=u_emis;c.rgb=mix(c.rgb,vec3(.031,.024,.043),u_brume*clamp(-v_e.z*.06-.2,0.,1.));" +
+      /* le liseré : une lumière froide qui dessine les bords contre la lumière chaude (le regard du cinéma) */
+      "if(c.a<u_coupe)discard;c.rgb+=u_emis+u_rim*pow(1.-abs(dot(n,e)),3.)*c.a;c.rgb=mix(c.rgb,vec3(.031,.024,.043),u_brume*clamp(-v_e.z*.06-.2,0.,1.));" +
       "gl_FragColor=vec4(c.rgb*c.a,c.a);}";
   }
   var VS2 = "attribute vec3 a_p;attribute vec2 a_uv;attribute vec4 a_c;uniform mat4 u_pv;varying vec2 v_uv;varying vec4 v_c;" +
@@ -272,7 +273,7 @@ var Theatre = (function () {
     var S = { gl: gl, M: M, C: C, G: G, k: 1, W: 1, H: 1, pret: true, attente: 0,
       /* la qualité : 2 = cinéma (sur-échantillonnage, halo, flou), 1 = sans flou ni sur-échantillonnage, 0 = image directe */
       qualite: o.qualite == null ? 2 : o.qualite,
-      post: { bloom: 0.85, dof: 0.85, foyer: 0.5, largeur: 0.1, vign: 0.42, grain: 0.022 } };
+      post: { bloom: 0.6, seuil: 0.86, dof: 0.8, foyer: 0.5, largeur: 0.12, vign: 0.42, grain: 0.02 } };
 
     function programme(vs, fs) {
       function shader(type, src) {
@@ -350,9 +351,11 @@ var Theatre = (function () {
       gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
       var r = null;
       if (profondeur) {
+        /* ⚠️ DEPTH_STENCIL, pas DEPTH_COMPONENT16 : à 16 bits, deux feuilles à 2 mm se battaient (la doublure du rabat
+           transparaissait au repos) ; le format profondeur + gabarit donne 24 bits partout en WebGL 1 */
         r = gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER, r);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, r);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, r);
       }
       var ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -387,10 +390,10 @@ var Theatre = (function () {
     S.taille();
     S.camera = function (oeil, cible2, champ, ecranX, ecranY) {
       V = M.vise(oeil, cible2, [0, 1, 0]);
-      var P = M.persp((champ || 32) * Math.PI / 180, S.W / S.H, 0.05, 80);
+      var P = M.persp((champ || 32) * Math.PI / 180, S.W / S.H, 0.3, 60);
       if (ecranX != null) { P[8] = -((ecranX / S.W) * 2 - 1); P[9] = -(1 - (ecranY / S.H) * 2); }
       PV = M.mul(P, V);
-      S.V = V; S.PV = PV;
+      S.V = V; S.PV = PV; S.oeil = oeil;
       /* le foyer de la profondeur de champ suit l'objet visé : là où tombe la cible à l'écran */
       if (ecranY != null) S.post.foyer = 1 - ecranY / S.H;
     };
@@ -399,7 +402,7 @@ var Theatre = (function () {
     };
 
     /* ── la lumière ── */
-    var L = { lum: norm([-0.5, 0.8, 0.6]), lumc: [1.0, 0.86, 0.68], amb: [0.16, 0.13, 0.18], lp: [0, 1, 0], lpc: [0, 0, 0], brume: 0 };
+    var L = { lum: norm([-0.5, 0.8, 0.6]), lumc: [1.0, 0.86, 0.68], amb: [0.16, 0.13, 0.18], lp: [0, 1, 0], lpc: [0, 0, 0], brume: 0, rim: [0.12, 0.14, 0.2] };
     S.lumiere = function (o2) { for (var c in o2) L[c] = o2[c]; };
 
     /* ── commencer une image : dans la scène hors écran (ou l'écran, sans post-traitement) ── */
@@ -423,6 +426,7 @@ var Theatre = (function () {
       var em = mat.emis || [0, 0, 0]; gl.uniform3f(u.u_emis, em[0], em[1], em[2]);
       gl.uniform3f(u.u_lum, ln[0], ln[1], ln[2]); gl.uniform3fv(u.u_lumc, L.lumc); gl.uniform3fv(u.u_amb, L.amb);
       gl.uniform3fv(u.u_lp, L.lp); gl.uniform3fv(u.u_lpc, L.lpc); gl.uniform1f(u.u_brume, L.brume);
+      var rim = mat.rim || L.rim; gl.uniform3f(u.u_rim, rim[0], rim[1], rim[2]);
       var rep = mat.rep || [1, 1]; gl.uniform2f(u.u_rep, rep[0], rep[1]);
       var sp = mat.spec || (mat.mode === "papier" ? [0.07, 18] : [0, 1]); gl.uniform2f(u.u_spec, sp[0], sp[1]);
       gl.uniform1f(u.u_bump, derive && mat.haut ? (mat.bump || 1) : 0);
@@ -507,7 +511,7 @@ var Theatre = (function () {
       gl.useProgram(R.p); lireTex(R, "u_tex", 0, FB.scene.t); gl.uniform2f(R.u.u_px, 1.5 / sw, 1.5 / sh); gl.uniform1f(R.u.u_seuil, 0);
       passe(R, FB.f1, q.w, q.h);
       /* 2 · ce qui brille, pour le halo */
-      gl.useProgram(R.p); lireTex(R, "u_tex", 0, FB.scene.t); gl.uniform2f(R.u.u_px, 1.5 / sw, 1.5 / sh); gl.uniform1f(R.u.u_seuil, 0.62);
+      gl.useProgram(R.p); lireTex(R, "u_tex", 0, FB.scene.t); gl.uniform2f(R.u.u_px, 1.5 / sw, 1.5 / sh); gl.uniform1f(R.u.u_seuil, S.post.seuil);
       passe(R, FB.q1, q.w, q.h);
       /* 3 · les flous (deux passes chacun : horizontal, vertical) */
       var flou = function (de, vers, dx, dy) { gl.useProgram(F.p); lireTex(F, "u_tex", 0, de.t); gl.uniform2f(F.u.u_dir, dx / q.w, dy / q.h); passe(F, vers, q.w, q.h); };

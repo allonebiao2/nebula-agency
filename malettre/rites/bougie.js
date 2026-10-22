@@ -14,7 +14,8 @@
     A.matieres(S, MATIERES);
     this.D = D;
     var hab = D.HAB || {}, cire = A.CIRES[hab.cire] || A.CIRES.bordeaux;
-    this.table = A.Table(S, "#221b28");
+    this.table = A.Table(S);
+    this.bokeh = A.Bokeh(S, 10, 77);
     this.env = A.Enveloppe(S, D);
     this.cachet = A.Cachet(S, D);
     /* la bougie : un fût torsadé (crème et couleur de la cire), une mèche */
@@ -49,12 +50,17 @@
     var eclat = t < 0 ? 0 : C.p(o, 0.66, 1.45);
     var ouvre = C.doux(C.p(o, 0.8, 1.55)), sort = C.p(o, 1.35, 2.5), plonge = C.doux(C.p(o, 1.5, 2.85));
 
+    /* la caméra : elle s'approche de la flamme pour souffler, reste dans le noir, puis recule d'un coup dans la fête */
     var champ = 30, d0 = S.distance(2.12, cad.l, champ), d1 = S.distance(1.72, S.W * 0.98, champ);
-    var el = C.mix(50 + Math.sin(ti * 0.42) * 1.4, 89, plonge) * Math.PI / 180, az = Math.sin(ti * 0.31) * 0.05 * (1 - plonge);
+    var souffle = t < 0 ? 0 : C.sort(C.p(o, 0, 0.3)) * (1 - C.sort(C.p(o, 0.6, 1.2)));
+    var fete = t < 0 ? 0 : Math.sin(Math.PI * C.p(o, 0.62, 1.9)) * (1 - plonge);
+    var el = C.mix(50 + Math.sin(ti * 0.42) * 1.4 - souffle * 14, 89, plonge) * Math.PI / 180, az = Math.sin(ti * 0.31) * 0.05 * (1 - plonge) + fete * 0.18;
     var cz = C.mix(0.02, -env.H * 0.86, C.sort(sort));
-    var cible = [0, C.mix(0.05, 0.16, sort), C.mix(0.04, cz, plonge)], d = C.mix(d0, d1, plonge);
+    var cible = [0, C.mix(0.05, 0.16, sort) + souffle * 0.35, C.mix(C.mix(0.04, env.zr - 0.06, souffle), cz, plonge)];
+    var d = C.mix(d0 * (1 - souffle * 0.42 + fete * 0.1), d1, plonge);
     S.camera([cible[0] + Math.sin(az) * d * Math.cos(el), cible[1] + d * Math.sin(el), cible[2] + Math.cos(az) * d * Math.cos(el)], cible, champ,
       C.mix(cad.x, S.W / 2, plonge), C.mix(cad.y, S.H / 2, plonge));
+    S.post.dof = C.mix(0.9, 0.35, plonge); S.post.bloom = 0.75;
 
     /* la mèche, au-dessus du cachet posé sur la pointe du rabat */
     var sz = env.zr - 0.06, base = [0, 0.016 + 0.235 * 0.27, sz], mech = [base[0], base[1] + 0.67, base[2]];
@@ -109,6 +115,7 @@
       });
       S.lutins(Q, S.blanc, false);
     }
+    this.bokeh.dessiner(ti, (t < 0 ? 0.7 : 0.4 + 0.6 * C.p(o, 0.62, 1)) * (1 - plonge * 0.7));
   },
   geste: function () {
     var Son = Atelier.Son;

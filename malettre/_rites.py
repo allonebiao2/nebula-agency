@@ -33,7 +33,7 @@ ESBUILD = ICI.parent / "_studio-video" / "node_modules" / "esbuild"
 SORTIE_JS = ICI / "rites.js"
 SORTIE_TS = ICI / "supabase" / "functions" / "_shared" / "rites.ts"
 PLAFOND_RITE = 24_000      # octets minifiés d'un rite seul
-PLAFOND_COMMUN = 32_000    # le moteur, l'atelier, le branchement (environ 9 Ko une fois compressé à l'envoi)
+PLAFOND_COMMUN = 44_000    # le moteur « cinéma », l'atelier, le branchement (36 Ko, environ 12 Ko compressés à l'envoi)
 INTERDITS = ["</script", "<!--", " ", " "]
 
 

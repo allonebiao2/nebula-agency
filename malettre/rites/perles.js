@@ -12,7 +12,8 @@
     A.matieres(S, MATIERES);
     this.D = D;
     var hab = D.HAB || {}, pap = hab.papier || "creme", P = A.PAPIERS[pap] || A.PAPIERS.creme;
-    this.table = A.Table(S, "#1b1620");
+    this.table = A.Table(S, "#1a1622");
+    this.bokeh = A.Bokeh(S, 10, 43, [[1, 0.95, 0.86], [0.9, 0.92, 1], [1, 0.84, 0.66]]);
     this.texP = A.papier(S, pap, 13); this.texD = A.doublure(S, hab.cire || "bordeaux"); this.texC = A.carte(S, D, pap, hab.cire || "bordeaux");
     this.teinteP = A.rvb(P.a); this.teinteDos = A.rvb(P.dos);
     var W = 1.9, H = 1.25, k = 0.06;
@@ -61,11 +62,17 @@
     var lueur = t < 0 ? (dort ? 0 : 0.1 + 0.06 * Math.sin(ti * 2.2)) : C.p(o, 0, 0.18) * (1 - C.p(o, 0.3, 0.65));
     var leve = C.doux(C.p(o, 1.9, 2.8)), plonge = C.doux(C.p(o, 1.95, 3.05));
 
+    /* la caméra : elle s'approche du cachet au toucher, puis recule en glissant de côté pour suivre les perles qui
+       roulent, tourne pendant que les rabats s'ouvrent, et s'élève sur la carte */
     var champ = 30, d0 = S.distance(2.15, cad.l, champ), d1 = S.distance(1.6, S.W * 0.98, champ);
-    var el = C.mix(54 + Math.sin(ti * 0.4) * 1.5, 89, plonge) * Math.PI / 180, az = Math.sin(ti * 0.3) * 0.06 * (1 - plonge);
-    var cible = [0, C.mix(0, 0.34, leve), C.mix(0.02, 0, plonge)], d = C.mix(d0, d1, plonge);
+    var approche = t < 0 ? 0 : Math.sin(Math.PI * C.p(o, 0, 0.6)) * 0.14;
+    var glisse = t < 0 ? 0 : C.doux(C.p(o, 0.4, 1.6)) * (1 - plonge);
+    var el = C.mix(54 + Math.sin(ti * 0.4) * 1.5 - approche * 16 - glisse * 10, 89, plonge) * Math.PI / 180;
+    var az = Math.sin(ti * 0.3) * 0.06 * (1 - plonge) - glisse * 0.32;
+    var cible = [glisse * 0.25, C.mix(0, 0.34, leve), C.mix(0.02, 0, plonge)], d = C.mix(d0 * (1 - approche + glisse * 0.12), d1, plonge);
     S.camera([cible[0] + Math.sin(az) * d * Math.cos(el), cible[1] + d * Math.sin(el), cible[2] + Math.cos(az) * d * Math.cos(el)], cible, champ,
       C.mix(cad.x, S.W / 2, plonge), C.mix(cad.y, S.H / 2, plonge));
+    S.post.dof = C.mix(0.85, 0.35, plonge); S.post.bloom = 0.62;
     var fl = 1 + 0.06 * Math.sin(ti * 8.3) + 0.03 * Math.sin(ti * 21.1);
     S.lumiere({ lum: [-0.4, 0.86, 0.45], lumc: [0.86, 0.8, 0.74], amb: [0.13, 0.11, 0.15],
       lp: [-1.5, 1.2, 1.1], lpc: [0.8 * fl + lueur * 0.4, 0.68 * fl + lueur * 0.2, 0.52 * fl + lueur * 0.15], brume: 0.6 });
@@ -111,6 +118,7 @@
       L.push({ p: [Math.cos(e.a) * e.v * tt, 0.06 + e.y * tt - 1.3 * tt * tt, Math.sin(e.a) * e.v * tt * 0.8], s: e.s * (2 - tt), c: [1, 0.9, 0.7, 1 - tt] });
     });
     S.lutins(L, S.rond, true);
+    this.bokeh.dessiner(ti, 1 - plonge * 0.7);
   },
   geste: function () {
     var Son = Atelier.Son, p = this.perles || [];
