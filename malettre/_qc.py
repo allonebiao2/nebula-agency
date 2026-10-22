@@ -768,14 +768,14 @@ def main():
             dit("et elle renvoie ecrire une lettre",
                 "creer.html" in (pg.get_attribute("#vide a", "href") or ""))
 
-            # Le palier gratuit garde le pied viral, le palier paye le retire.
+            # La Carte garde la signature en pied, les autres offres la retirent.
             pg.evaluate("localStorage.clear()")
             pg.goto(base)
             pg.wait_for_timeout(900)
             pg.click('.occ[data-id="anniv"]')
             pg.click("#vers-palier")
-            pg.click('.pal[data-id="gratuit"]')
-            dit("palier gratuit : la signature en pied reste",
+            pg.click('.pal[data-id="carte"]')
+            dit("La Carte : la signature en pied reste",
                 attendre(lambda: not pg.frame_locator("#apercu")
                          .locator("#l-pied").evaluate("e=>e.hidden")))
             pg.click('.pal[data-id="coffret"]')
@@ -789,23 +789,16 @@ def main():
             # puis perdue. Le palier gratuit, celui qui porte toute la boucle
             # virale, affichait « Envoie exactement cette somme, au franc
             # pres » au-dessus d'un numero Mobile Money, pour zero franc.
-            pg.click('.pal[data-id="gratuit"]')
+            # ⛔ ZERO GRATUITE (2026-10-22) : La Carte, l'offre d'entree, passe par la caisse a 1 000 F.
+            pg.click('.pal[data-id="carte"]')
             pg.click("#vers-paiement")
             pg.wait_for_timeout(250)
-            dit("offert : aucune somme a envoyer",
-                pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is True)
-            dit("offert : le bouton ne parle pas de paiement",
-                "payé" not in pg.inner_text("#btn-commander"))
-            dit("offert : on demande quand meme ou envoyer le lien",
-                pg.is_visible("#f-wa"))
-            pg.route("**/malettre-commande", lambda r, q: r.fulfill(
-                status=200, content_type="application/json",
-                body=json.dumps({"ok": True, "offert": True,
-                                 "adresse": "https://exemple.invalid/l/" + "e" * 22})))
-            pg.fill("#f-wa", "0197085576")
-            pg.click("#btn-commander")
-            dit("offert : la commande part sans reference",
-                attendre(lambda: pg.eval_on_selector("#e-fini", "e=>e.classList.contains('on')")))
+            dit("La Carte : la caisse s'ouvre",
+                pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is False)
+            dit("La Carte : on paie 1 000 F", "1 000 F" in pg.inner_text("#btn-commander").replace("\u00a0", " "),
+                pg.inner_text("#btn-commander"))
+            dit("aucune offre du constructeur n'est gratuite",
+                pg.evaluate("PALIERS.every(function(p){ return p.prix > 0; })"))
 
             # ⚠️ TEMOIN : un ecran qui serait TOUJOURS nu passerait les quatre
             # controles ci-dessus. On repasse a un palier paye.
@@ -1050,15 +1043,15 @@ def main():
             # ── le prix, plume comprise ──
             pg.click("#vers-palier")
             px = lambda i: pg.inner_text('.pal[data-id="%s"] .px' % i).strip()
-            dit("avec la plume, l'offre gratuite affiche 500 F", px("gratuit") == "500 F", px("gratuit"))
+            dit("avec la plume, La Carte affiche 1 500 F", px("carte").replace("\u00a0", " ") == "1 500 F", px("carte"))
             dit("avec la plume, La Lettre affiche 5 500 F", px("lettre") == "5 500 F", px("lettre"))
             dit("on le dit sous les offres", pg.is_visible("#plume-note"))
-            pg.click('.pal[data-id="gratuit"]')
+            pg.click('.pal[data-id="carte"]')
             pg.click("#vers-paiement")
             pg.wait_for_timeout(250)
-            dit("gratuit + plume : la caisse s'ouvre",
+            dit("La Carte + plume : la caisse s'ouvre",
                 pg.eval_on_selector("#bloc-reglement", "e=>e.hidden") is False)
-            dit("gratuit + plume : on paie 500 F", "500 F" in pg.inner_text("#btn-commander"),
+            dit("La Carte + plume : on paie 1 500 F", "1 500 F" in pg.inner_text("#btn-commander").replace("\u00a0", " "),
                 pg.inner_text("#btn-commander"))
 
             cmds = []
@@ -1099,7 +1092,7 @@ def main():
             dit("page blanche : la plume n'est plus comptee",
                 "plus comptée" in pg.inner_text("#plume-compte-t"), pg.inner_text("#plume-compte-t"))
             pg.click("#vers-palier")
-            dit("page blanche : l'offre gratuite redevient offerte", px("gratuit") == "Offert", px("gratuit"))
+            dit("page blanche : La Carte revient a 1 000 F", px("carte").replace("\u00a0", " ") == "1 000 F", px("carte"))
             pg.click('#e-palier [data-vers="e-lettre"]')
             pg.click("#btn-remettre")
             dit("toute suppression se rattrape : la lettre de la plume revient",
@@ -1159,11 +1152,11 @@ def main():
                 str(pg.eval_on_selector_all(".vign", "n=>n.length")))
             dit("la regle des photos est ecrite a partir du bareme",
                 "20 avec Le Coffret" in pg.inner_text("#photos-regle")
-                and "1 avec l'offre gratuite" in pg.inner_text("#photos-regle"), pg.inner_text("#photos-regle"))
+                and "1 avec La Carte" in pg.inner_text("#photos-regle"), pg.inner_text("#photos-regle"))
             pg.click("#vers-palier")
             pg.click('.pal[data-id="lettre"]')
             dit("trop de photos pour l'offre : on le DIT",
-                pg.is_visible("#photos-note") and "3 premières" in pg.inner_text("#photos-note"),
+                pg.is_visible("#photos-note") and "10 premières" in pg.inner_text("#photos-note"),   # La Lettre : 10 photos (2026-10-22)
                 pg.inner_text("#photos-note") if pg.is_visible("#photos-note") else "cache")
             pg.click('.pal[data-id="coffret"]')
             dit("le Coffret garde les vingt : rien a dire", not pg.is_visible("#photos-note"))
@@ -1385,12 +1378,12 @@ def main():
             dit("habillage : l'apercu suit (cire, papier, sceau, pluie, phrase)",
                 all(x in ap for x in ('"cire":"or"', '"papier":"kraft"', '"sceau":"coeur"', '"pluie":"petales"', '"gratter":"Veux-tu')))
             pg.click("#vers-palier")
-            pg.click('.pal[data-id="gratuit"]')
+            pg.click('.pal[data-id="carte"]')
             pg.wait_for_timeout(500)
             ap = pg.eval_on_selector("#apercu", "e=>e.srcdoc")
-            dit("offre gratuite : l'apercu montre la lettre SANS habillage", '"cire":"bordeaux"' in ap and '"gratter":""' in ap)
+            dit("La Carte : l'apercu montre la lettre SANS habillage", '"cire":"bordeaux"' in ap and '"gratter":""' in ap)
             note = (pg.text_content("#habillage-note") or "").replace("\u00a0", " ")
-            dit("offre gratuite : on DIT que l'habillage demande Le Mot, avec son prix",
+            dit("La Carte : on DIT que l'habillage demande Le Mot, avec son prix",
                 pg.is_visible("#habillage-note") and "Le Mot (2 000 F)" in note, note)
             pg.click('.pal[data-id="lettre"]')
             dit("offre payante : la note disparait", not pg.is_visible("#habillage-note"))

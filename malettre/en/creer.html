@@ -301,6 +301,7 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
           <span>Your words, nothing else</span>
         </button>
       </div>
+      <p class="sous" id="plume-coupee" hidden>The Quill is coming back very soon: it will write your letter once your order is paid.</p>
 
       <!-- LA FICHE. Des choix pour aller vite, deux zones libres pour ce
            qu'aucun choix ne dira. ⛔ Elle n'est gardee nulle part chez nous :
@@ -578,6 +579,56 @@ var Bruits = (function(){
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .003); g.gain.exponentialRampToValueAtTime(.0001, t + duree);
     o.connect(g); g.connect(sortie); o.start(t); o.stop(t + duree + .02);
   }
+  /* LE VERRE (2026-10-22, Mongazi : « un bruit qui fait click, comme si c'était du verre qu'on
+     touchait »). Choisi à l'oreille parmi trois matières (verre fin, verre épais, cristal) : une vitre
+     fine touchée au bout de l'ongle. Synthèse modale : un choc très bref, cinq modes du verre
+     inharmoniques dont les aigus meurent plus vite, deux jumeaux pour le battement, un soupçon de
+     pièce. Un son de plus est tiré à chaque geste, jusqu'à six, puis un au hasard : deux gestes ne
+     sonnent jamais pareil, et rien n'est calculé d'un bloc au premier toucher. */
+  var VERRE = { f: 3150, r: [1, 1.47, 2.09, 2.83, 3.71], tau: [.06, .038, .024, .016, .01], a: [1, .6, .42, .25, .15] };
+  var vitres = { t: [], s: [] };
+  function hasard(x){ return (Math.random() * 2 - 1) * x; }
+  function vitre(survol){
+    var sr = ctx.sampleRate, n = Math.ceil(sr * (survol ? .16 : .32)), d = new Float32Array(n), i;
+    var k = (1 + hasard(.025)) * (survol ? 1.12 : 1), court = survol ? .45 : 1;
+    /* un résonateur à deux pôles rend a·rⁿ·sin(ωn) sans un sinus par échantillon (téléphones modestes) */
+    function mode(f, tau, a){
+      var w = 2 * Math.PI * f / sr, r = Math.exp(-1 / (tau * court * sr)), c = 2 * r * Math.cos(w), r2 = r * r;
+      var y0 = 0, y1 = a * r * Math.sin(w), y;
+      d[1] += y1;
+      for (var j = 2; j < n; j++) { y = c * y1 - r2 * y0; d[j] += y; y0 = y1; y1 = y; }
+    }
+    for (var m = 0; m < 5; m++) {
+      var f = VERRE.f * VERRE.r[m] * k * (1 + hasard(.006));
+      mode(f, VERRE.tau[m], VERRE.a[m]);
+      if (m < 2) { mode(f * (1 + .004 * (m + 1)), VERRE.tau[m] * .9, VERRE.a[m] * .45); }
+    }
+    /* le choc : du bruit dérivé (donc clair), une demi-milliseconde */
+    var tb = sr * .00045 * (1 + hasard(.2)), prec = 0, choc = survol ? .54 : .9;
+    for (i = 0; i < Math.min(n, Math.ceil(tb * 7)); i++) { var x = Math.random() * 2 - 1; d[i] += choc * (x - prec) * Math.exp(-i / tb); prec = x; }
+    /* la pièce (deux reflets proches, plus sourds), l'attaque en 0,3 ms, la fin en 8 ms */
+    var e1 = Math.round(sr * .0071), e2 = Math.round(sr * .0129), m1 = 0, m2 = 0, att = Math.max(1, Math.round(sr * .0003)),
+        fin = Math.round(sr * .008), pic = 0, b = ctx.createBuffer(1, n, sr), o = b.getChannelData(0);
+    for (i = 0; i < n; i++) {
+      m1 += ((i >= e1 ? d[i - e1] : 0) - m1) * .35; m2 += ((i >= e2 ? d[i - e2] : 0) - m2) * .25;
+      var v = d[i] + m1 * .16 + m2 * .1;
+      if (i < att) { v *= .5 - .5 * Math.cos(Math.PI * i / att); }
+      if (i > n - fin) { v *= (n - i) / fin; }
+      o[i] = v; pic = Math.max(pic, Math.abs(v));
+    }
+    var force = (1 + hasard(.15)) / (pic || 1);
+    for (i = 0; i < n; i++) { o[i] *= force; }
+    return b;
+  }
+  function verre(t, survol, vol){
+    var l = survol ? vitres.s : vitres.t;
+    if (l.length < 6) { l.push(vitre(survol)); }
+    var s = ctx.createBufferSource(), g = ctx.createGain();
+    s.buffer = l[Math.floor(Math.random() * l.length)];
+    s.playbackRate.value = 1 + hasard(.015);
+    g.gain.value = vol;
+    s.connect(g); g.connect(sortie); s.start(t);
+  }
   function jouer(fn){
     if (!pret || coupe() || document.hidden) { return; }
     ouvrir();
@@ -585,13 +636,13 @@ var Bruits = (function(){
     try { fn(ctx.currentTime + .005); } catch (e) {}
   }
   return {
-    /* le survol : un ongle sur le papier, à peine (jamais deux en 70 ms) */
+    /* le survol : le même verre, effleuré (jamais deux en 70 ms) */
     tic: function(){
       var m = Date.now(); if (m - dernier < 70) { return; } dernier = m;
-      jouer(function(t){ souffle(t, .028, 4200, 1.6, .06); ton(t, .03, 2400, 1900, .014); });
+      jouer(function(t){ verre(t, true, .06); });
     },
-    /* le toucher : le clic net d'un carton qu'on pose */
-    clic: function(){ jouer(function(t){ souffle(t, .04, 2600, 1.2, .17); ton(t, .05, 1100, 620, .05); }); },
+    /* le toucher : le clic d'une vitre fine sous l'ongle */
+    clic: function(){ jouer(function(t){ verre(t, false, .16); }); },
     /* le cachet qu'on frappe : un coup mat, la cire */
     sceau: function(){ jouer(function(t){ ton(t, .12, 420, 160, .16); ton(t, .16, 170, 70, .2); souffle(t, .05, 1500, .9, .12, "lowpass"); }); },
     /* la lettre qui sort du casier : le papier qui glisse */
@@ -763,9 +814,9 @@ var QUESTIONS = {
 /* Ce qui est coche d'office tant que l'acheteur n'a rien touche. */
 var DEFAUTS = {longueur:"Medium", langue:"Everyday"};
 var PALIERS = [
-  {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,     pied:true,  photos:1, habillage:false, code:false},
+  {id:"carte",   nom:"The Card",    desc:"Online for 7 days, one photo, our signature at the bottom", prix:1000,  pied:true,  photos:1, habillage:false, code:false},
   {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,  pied:false, photos:3, habillage:true,  code:false},
-  {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,  pied:false, photos:3, habillage:true,  code:true},
+  {id:"lettre",  nom:"The Letter",  desc:"One year, ten photos, your secret code",               prix:5000,  pied:false, photos:10, habillage:true,  code:true},
   {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000, pied:false, photos:20, habillage:true,  code:true}
 ];
 /* ⛔ L'HABILLAGE (2026-10-16) : les MÊMES listes que `_shared/lettre.ts`
@@ -1398,8 +1449,8 @@ PALIERS.forEach(function(p){
   $("#liste-paliers").appendChild(b);
 });
 
-/* Les prix de chaque offre, plume comprise. ⚠️ Avec la plume, l'offre
-   « Gratuit » coute 500 F : on l'ecrit sur la carte, pas en petit dessous. */
+/* Les prix de chaque offre, plume comprise : on l'ecrit sur la carte, pas en
+   petit dessous. (Depuis le 2026-10-22, aucune offre n'est gratuite.) */
 function peindrePaliers(){
   $$(".pal").forEach(function(b){
     b.querySelector(".px").textContent = fmt(total(palierDe(b.dataset.id)));
@@ -1421,7 +1472,7 @@ function peindrePaliers(){
   if (nu) {
     var vetue = PALIERS.filter(function(p){ return p.habillage; })[0];
     $("#habillage-note").textContent = "Your finish (wax, paper, line to scratch) needs "
-      + vetue.nom + " (" + fmt(vetue.prix) + "): with the free offer, your letter will go without it.";
+      + vetue.nom + " (" + fmt(vetue.prix) + "): with " + pal.nom + ", your letter will go without it.";
   }
   /* Le code secret avec une offre qui ne le porte pas : on le DIT aussi. */
   var sansCode = !pal.code && !!E.code;
@@ -1651,9 +1702,22 @@ peindreReglement();
 
 var repris = reprendre();
 
+/* ⛔ ZERO GRATUITE (Mongazi, 2026-10-22) : l'essai gratuit de la plume se contournait en changeant de
+   navigateur ou de connexion, et son texte s'affichait en clair (on pouvait le copier sans rien payer).
+   Elle est COUPEE en ligne jusqu'a ce qu'elle n'ecrive qu'APRES le paiement. Ici, APRES la reprise du
+   brouillon : un brouillon reste en mode plume ne la rouvre pas. Sur cette machine (127.0.0.1), les
+   controles la gardent ouverte pour la tester ; « ?enligne » les met dans l'etat du site. */
+var PLUME_OUVERTE = /^(127\.0\.0\.1|localhost)$/.test(location.hostname) && !/[?&]enligne\b/.test(location.search);
+if (!PLUME_OUVERTE) {
+  E.mode = "moi"; E.plume = false;
+  $('.m[data-mode="plume"]').hidden = true;
+  $("#plume-coupee").hidden = false;
+  peindreMode(); peindrePaliers(); garder();
+}
+
 /* La regle des photos, ecrite a partir du bareme (jamais recopiee). */
 $("#photos-regle").textContent = "(" + PALIERS.map(function(p){
-  return p.photos + " with " + (p.id === "gratuit" ? "the free offer" : p.nom);
+  return p.photos + " with " + p.nom;
 }).join(", ") + ")";
 
 /* ── L'adresse preremplit : la page d'accueil envoie ici le prenom tape par

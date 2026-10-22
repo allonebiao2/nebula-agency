@@ -44,8 +44,8 @@ const lire = (p) => lf(fs.readFileSync(path.join(ICI, p), 'utf8'))
 console.log('\n== Le barème')
 
 dit(M.PALIERS.length === 4, 'quatre paliers')
-dit(M.PALIERS[0].prix === 0 && M.PALIERS[0].pied === true,
-    'le palier offert porte le pied viral')
+dit(M.PALIERS[0].id === 'carte' && M.PALIERS[0].prix === 1000 && M.PALIERS[0].pied === true,
+    'La Carte (1 000 F, plus de gratuit depuis le 2026-10-22) porte le pied viral')
 dit(M.PALIERS.slice(1).every((p) => p.pied === false),
     'aucun palier payé ne porte le pied')
 dit(M.palier('coffret')?.prix === 10000, 'le Coffret vaut 10 000 F')
@@ -157,7 +157,7 @@ dit(M.verdict({ etat: 'vivante', expire_le: dans(30), retire_le: dans(-1) }, T) 
 dit(M.verdict({ etat: 'attente', retire_le: dans(-1) }, T) === 'retiree',
     'le retrait passe avant l’état de la commande')
 
-dit(M.expireLe(M.palier('gratuit'), T) === dans(7), 'une lettre offerte vit sept jours')
+dit(M.expireLe(M.palier('carte'), T) === dans(7), 'La Carte vit sept jours')
 dit(M.expireLe(M.palier('lettre'), T) === dans(365), 'une lettre payée vit un an')
 
 /* ═══ 5 · les en-têtes ════════════════════════════════════════════════════ */
@@ -195,7 +195,7 @@ dit(triche.ok && triche.palier.prix === 5000,
     'un prix annoncé par le navigateur est ignoré', String(triche.ok && triche.palier.prix))
 
 /* ⛔ LE PIED VIRAL NON PLUS : sinon il se retire d'un clic dans la console. */
-const sanspied = M.lireCommande({ ...BON, palier: 'gratuit', pied: false })
+const sanspied = M.lireCommande({ ...BON, palier: 'carte', pied: false })
 dit(sanspied.ok && sanspied.lettre.pied === true,
     'le pied du palier offert ne se retire pas depuis le navigateur')
 
@@ -221,12 +221,12 @@ dit(!M.lireCommande({ ...BON, photos: [{ src: 'data:image/jpeg;base64,' + 'A'.re
     'une photo trop lourde est refusée')
 
 /* Le palier décide du nombre de photos, pas le navigateur. */
-const trop = M.lireCommande({ ...BON, palier: 'gratuit', photos: Array(5).fill({ src: PIX }) })
+const trop = M.lireCommande({ ...BON, palier: 'carte', photos: Array(5).fill({ src: PIX }) })
 dit(trop.ok && trop.lettre.photos.length === 1, 'le palier offert ne garde qu’une photo')
 
 /* Le palier offert n'a pas de code secret : c'est ce qui le distingue. */
-const gratuit = M.lireCommande({ ...BON, palier: 'gratuit', code: '1234' })
-dit(gratuit.ok && gratuit.lettre.code === '', 'le palier offert n’a pas de code secret')
+const carte = M.lireCommande({ ...BON, palier: 'carte', code: '1234' })
+dit(carte.ok && carte.lettre.code === '', 'La Carte n’a pas de code secret')
 const code = M.lireCommande({ ...BON, code: 'ab12cd34' })
 dit(code.ok && code.lettre.code === '1234', 'un code se ramène à quatre chiffres')
 
@@ -364,15 +364,21 @@ dit(M.PLUME.prix === 500, 'la plume vaut 500 F')
 const blocPlume = /var PLUME = \{prix:(\d+)\};/.exec(creer)
 dit(!!blocPlume && Number(blocPlume[1]) === M.PLUME.prix,
     'la plume dit le même prix des deux côtés', blocPlume ? blocPlume[1] : 'absente du constructeur')
-dit(M.prixTotal(M.palier('gratuit'), true) === 500, 'offre gratuite + plume = 500 F')
+dit(M.prixTotal(M.palier('carte'), true) === 1500, 'La Carte + plume = 1 500 F')
+/* ⛔ Zéro gratuité (Mongazi, 2026-10-22) : aucune offre à 0 F, La Carte à 1 000 F, et aucune commande
+   ne sort sans prix, même sans plume. */
+dit(M.PALIERS.every((p) => p.prix > 0), 'aucune offre n’est gratuite')
+dit(M.palier('carte')?.prix === 1000 && M.palier('gratuit') === null, 'La Carte coûte 1 000 F, l’offre gratuite n’existe plus')
+const carteNue = M.lireCommande({ ...BON, palier: 'carte', plume: false })
+dit(carteNue.ok && carteNue.prix === 1000, 'La Carte sans plume : 1 000 F, donc elle passe par la caisse')
 dit(M.prixTotal(M.palier('lettre'), true) === 5500, 'La Lettre + plume = 5 500 F')
 dit(M.prixTotal(M.palier('lettre'), false) === 5000, 'sans la plume, le palier seul')
 
 const avec = M.lireCommande({ ...BON, plume: true })
 dit(avec.ok && avec.prix === 5500 && avec.plume === true, 'une commande avec la plume coûte 5 500 F')
-const gratuitePlume = M.lireCommande({ ...BON, palier: 'gratuit', plume: true })
-dit(gratuitePlume.ok && gratuitePlume.prix === 500,
-    'offerte + plume : 500 F, donc elle passe par la caisse')
+const cartePlume = M.lireCommande({ ...BON, palier: 'carte', plume: true })
+dit(cartePlume.ok && cartePlume.prix === 1500,
+    'La Carte + plume : 1 500 F')
 /* ⚠️ Seul un vrai « true » vaut la plume. */
 for (const faux of ['true', 1, 'oui', {}, null]) {
   const r = M.lireCommande({ ...BON, plume: faux })
@@ -659,7 +665,7 @@ const droits = Object.fromEntries([...blocPal.matchAll(/\{id:"([a-z]+)"[^}]*habi
 for (const p of M.PALIERS) {
   dit(droits[p.id] === p.habillage, `« ${p.nom} » : le même droit à l’habillage des deux côtés`, `${droits[p.id]} contre ${p.habillage}`)
 }
-dit(M.PALIERS.find((p) => p.id === 'gratuit').habillage === false && M.PALIERS.filter((p) => p.habillage).length === 3,
+dit(M.PALIERS.find((p) => p.id === 'carte').habillage === false && M.PALIERS.filter((p) => p.habillage).length === 3,
     'seules les trois offres payantes portent l’habillage')
 const blocHab = /var HABILLAGE = \{([\s\S]*?)\n\};/.exec(creerFr)[1]
 const gab = G.GABARIT
@@ -676,11 +682,11 @@ const VETUE = { cire: 'or', sceau: 'coeur', papier: 'kraft', pluie: 'petales' }
 const hPaye = M.lireCommande({ ...BON, habillage: VETUE, gratter: 'Veux-tu m’épouser ?' })
 dit(hPaye.ok && JSON.stringify(hPaye.lettre.habillage) === JSON.stringify(VETUE), 'une offre payante garde son habillage')
 dit(hPaye.lettre?.gratter === 'Veux-tu m’épouser ?', 'une offre payante garde sa phrase à gratter')
-const hGratuit = M.lireCommande({ ...BON, palier: 'gratuit', habillage: VETUE, gratter: 'Surprise' })
+const hGratuit = M.lireCommande({ ...BON, palier: 'carte', habillage: VETUE, gratter: 'Surprise' })
 dit(hGratuit.ok && JSON.stringify(hGratuit.lettre.habillage) === JSON.stringify(M.SANS_HABILLAGE),
-    '⛔ une lettre GRATUITE envoyée avec un habillage arrive sans lui')
-dit(hGratuit.lettre?.gratter === '', '⛔ une lettre gratuite perd sa phrase à gratter')
-dit(hGratuit.prix === 0, 'et l’habillage ne change jamais le prix')
+    '⛔ La Carte envoyée avec un habillage arrive sans lui')
+dit(hGratuit.lettre?.gratter === '', '⛔ La Carte perd sa phrase à gratter')
+dit(hGratuit.prix === 1000, 'et l’habillage ne change jamais le prix (La Carte reste à 1 000 F)')
 const bizarre = M.lireCommande({ ...BON, habillage: { cire: 'violet', sceau: '<script>', papier: 42, pluie: null } })
 dit(JSON.stringify(bizarre.lettre?.habillage) === JSON.stringify(M.SANS_HABILLAGE), 'une valeur inconnue retombe sur le défaut')
 dit(JSON.stringify(M.lireCommande({ ...BON, habillage: 'or' }).lettre?.habillage) === JSON.stringify(M.SANS_HABILLAGE),
@@ -715,7 +721,7 @@ for (const p of M.PALIERS) {
   dit(promet === p.code, `« ${p.nom} » : sa description promet le code secret si et seulement s’il le porte`)
 }
 dit(M.lireCommande({ ...BON, palier: 'mot' }).lettre?.code === '', '⛔ Le Mot envoyé avec un code arrive SANS code')
-dit(M.lireCommande({ ...BON, palier: 'gratuit' }).lettre?.code === '', 'la lettre gratuite arrive sans code')
+dit(M.lireCommande({ ...BON, palier: 'carte' }).lettre?.code === '', 'La Carte arrive sans code')
 dit(M.lireCommande({ ...BON, palier: 'lettre' }).lettre?.code === '1234', 'La Lettre garde son code')
 dit(M.lireCommande({ ...BON, palier: 'coffret' }).lettre?.code === '1234', 'Le Coffret garde son code')
 dit(/code: pal\.code \? \(E\.code \|\| ""\) : ""/.test(creerFr), 'le constructeur n’envoie le code qu’avec une offre qui le porte')

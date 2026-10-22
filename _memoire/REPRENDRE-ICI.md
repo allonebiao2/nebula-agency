@@ -1,11 +1,24 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-10-21
+## Point de reprise pour une session terminal · dernière mise à jour 2026-10-22
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
 
 ---
+
+## 0 vicies. LE 2026-10-22 · MA LETTRE À… SANS GRATUITÉ, LE CLIC DE VERRE ; LA SUITE EST LA VIDÉO
+
+- **En ligne et vérifié** : La Carte 1 000 F (plus rien de gratuit), Le Mot 2 000, La Lettre 5 000 (10 photos), Le
+  Coffret 10 000, faire-part 35 000 F ; **la plume coupée en ligne** jusqu'à ce qu'elle écrive après le paiement ;
+  **le clic de verre fin** choisi à l'oreille ; corrigés : les timbres qui se levaient 389 px trop tard au téléphone,
+  la nuit des lettres qui pouvait rester figée. Contrôles 284 · 382 · 322 · 52 · 83.
+- **Trading** : la 0036 est enterrée (Mongazi : « je confirme le 3 »), dépôt privé `2717cdc`.
+- **Par quoi commencer** : **la vidéo émotionnelle avec un effet wow** (demande de Mongazi) ; la pub du 21 finit sur
+  « Gratuite pour commencer », faux depuis le 22. Puis **la plume qui écrit après le paiement** (rouvre la plume).
+- ⏳ Mongazi : le premier franc (1 000 F), écouter le verre au téléphone, la voix de la vidéo, revérifier le domaine
+  depuis la box (`188.114.96.3` injoignable le 22).
+- Récit : `_memoire/conversations/2026-10-22-malettre-zero-gratuite-verre.md`.
 
 ## 0 novodecies. LA NUIT DU 2026-10-21 · LES QUATRE DEMANDES DE MA LETTRE À…, ET LE VERDICT DE LA 0036
 

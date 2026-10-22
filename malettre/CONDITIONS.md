@@ -37,8 +37,8 @@ pays.
 2. **Elle n'est jamais indexée.** La balise `noindex` est dans le gabarit ;
    l'en-tête `X-Robots-Tag` doit l'être côté serveur, parce qu'une balise dans
    la page ne couvre pas une réponse qui n'est pas de l'HTML.
-3. **Elle expire.** Sept jours pour une lettre offerte, un an pour une lettre
-   payée. Ce qui reste en ligne pour toujours finit par se retourner contre
+3. **Elle expire.** Sept jours pour La Carte, un an pour les autres offres
+   (aucune lettre n'est gratuite depuis le 2026-10-22). Ce qui reste en ligne pour toujours finit par se retourner contre
    quelqu'un.
 4. **Elle ne compte personne.** Aucune mesure d'audience sur une lettre : on
    ne regarde pas par-dessus l'épaule de quelqu'un qui lit une lettre.

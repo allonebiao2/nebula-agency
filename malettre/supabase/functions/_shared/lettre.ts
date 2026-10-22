@@ -46,9 +46,9 @@ export type Palier = {
 }
 
 export const PALIERS: Palier[] = [
-  { id: 'gratuit', nom: 'Gratuit',    prix: 0,     pied: true,  jours: 7,   photos: 1,  en: 'Free',         habillage: false, code: false },
+  { id: 'carte',   nom: 'La Carte',   prix: 1000,  pied: true,  jours: 7,   photos: 1,  en: 'The Card',     habillage: false, code: false },
   { id: 'mot',     nom: 'Le Mot',     prix: 2000,  pied: false, jours: 365, photos: 3,  en: 'The Note',     habillage: true,  code: false },
-  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 3,  en: 'The Letter',   habillage: true,  code: true },
+  { id: 'lettre',  nom: 'La Lettre',  prix: 5000,  pied: false, jours: 365, photos: 10, en: 'The Letter',   habillage: true,  code: true },
   { id: 'coffret', nom: 'Le Coffret', prix: 10000, pied: false, jours: 365, photos: 20, en: 'The Keepsake', habillage: true,  code: true },
 ]
 

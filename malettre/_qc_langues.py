@@ -55,7 +55,9 @@ PERMIS = ["« Ma lettre à… »", "Ma lettre à…", "Ma lettre à", "Ma lettre
 # Des clés internes : « prénom » (une clé de MOTS), « pour » (un champ de l'état).
 CLES = {"prénom", "pour",
         # les identifiants des offres (posés par le build dans les données de la page)
-        "gratuit", "mot", "lettre", "coffret"}
+        "carte", "mot", "lettre", "coffret",
+        # le mode « qui écrit » (« moi » ou « plume ») est un identifiant, comme une offre (2026-10-22)
+        "moi"}
 
 
 def francais(t):
@@ -210,11 +212,11 @@ def navigateur(base):
         apercu = pg.eval_on_selector("#apercu", "e => e.srcdoc")
         dit("en : l'aperçu porte la langue de la lettre", '"langue":"en"' in apercu and '"occasion":"Christmas"' in apercu)
         pg.click("#vers-palier")
-        pg.click('.pal[data-id="gratuit"]')
-        dit("en : l'offre gratuite s'appelle « Free » et coûte 500 F avec la plume",
-            "Free" in pg.inner_text('.pal[data-id="gratuit"]') and "500 F" in pg.inner_text('.pal[data-id="gratuit"] .px'))
+        pg.click('.pal[data-id="carte"]')
+        dit("en : La Carte s'appelle « The Card » et coûte 1 500 F avec la plume",
+            "The Card" in pg.inner_text('.pal[data-id="carte"]') and "1 500 F" in pg.inner_text('.pal[data-id="carte"] .px').replace("\u00a0", " "))
         pg.click("#vers-paiement")
-        dit("en : le bouton dit « Pay 500 F »", pg.inner_text("#btn-commander").strip() == "Pay 500 F",
+        dit("en : le bouton dit « Pay 1 500 F »", pg.inner_text("#btn-commander").strip().replace("\u00a0", " ") == "Pay 1 500 F",
             pg.inner_text("#btn-commander"))
         pg.fill("#f-wa", "0197085576")
         pg.click("#btn-commander")

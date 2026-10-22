@@ -15,8 +15,9 @@ excuse, une réussite) par une lettre qui compte, et l'envoyer eux-mêmes par Wh
 MA LETTRE À… vend une lettre digitale scellée : on l'écrit (ou la plume, l'agent, l'écrit avec soi), on choisit
 l'heure, on paie, on envoie le lien ; le cachet dort jusqu'à l'heure du téléphone de qui la reçoit, puis s'allume
 et se brise. Réussir, c'est qu'un visiteur tape un prénom et écrive sa lettre, et que celle qui la reçoit ait
-l'impression d'ouvrir un vrai pli. Prix : offert, 2 000, 5 000, 10 000 F ; la plume +500 F ; faire-part sur
-demande 25 000 F.
+l'impression d'ouvrir un vrai pli. Prix (2026-10-22, zéro gratuité) : La Carte 1 000 F, Le Mot 2 000, La Lettre 5 000, Le Coffret
+10 000 F ; la plume +500 F (coupée en ligne le temps qu'elle écrive après le paiement) ; faire-part sur
+demande 35 000 F.
 
 ## Brand Personality
 

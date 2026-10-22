@@ -43,6 +43,8 @@ FR: <b>La plume l'écrit pour moi</b>
 EN: <b>The Quill writes it for me</b>
 FR: <span>Quelques questions, tu relis, tu corriges · 500 F de plus</span>
 EN: <span>A few questions, you reread, you edit · 500 F extra</span>
+FR: La plume revient très vite : elle écrira ta lettre une fois ta commande réglée.
+EN: The Quill is coming back very soon: it will write your letter once your order is paid.
 FR: <b>Je l'écris moi-même</b>
 EN: <b>I'll write it myself</b>
 FR: <span>Tes mots, rien d'autre</span>
@@ -194,8 +196,8 @@ FR: + ") : avec " + pal.nom + ", ta lettre s'ouvrira sans code.";
 EN: + "): with " + pal.nom + ", your letter will open without a code.";
 FR: $("#habillage-note").textContent = "Ton habillage (cire, papier, phrase à gratter) demande "
 EN: $("#habillage-note").textContent = "Your finish (wax, paper, line to scratch) needs "
-FR: + vetue.nom + " (" + fmt(vetue.prix) + ") : avec l'offre gratuite, ta lettre partira sans lui.";
-EN: + vetue.nom + " (" + fmt(vetue.prix) + "): with the free offer, your letter will go without it.";
+FR: + vetue.nom + " (" + fmt(vetue.prix) + ") : avec " + pal.nom + ", ta lettre partira sans lui.";
+EN: + vetue.nom + " (" + fmt(vetue.prix) + "): with " + pal.nom + ", your letter will go without it.";
 FR: Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b>
 EN: Mobile Money. You leave this page, then come back: <b>your letter is waiting, it's saved.</b>
 FR: Mobile Money ou carte, sur la page de notre encaisseur.
@@ -371,12 +373,12 @@ EN:   "foi":          {q:"A blessing at the end", un:true, choix:["No","Christia
 FR: var DEFAUTS = {longueur:"Moyenne", langue:"De tous les jours"};
 EN: var DEFAUTS = {longueur:"Medium", langue:"Everyday"};
 # ── les offres : les mots seulement, jamais le prix ni les droits ──
-FR:   {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, notre signature en pied", prix:0,
-EN:   {id:"gratuit", nom:"Free",        desc:"Online for 7 days, one photo, our signature at the bottom", prix:0,
+FR:   {id:"carte",   nom:"La Carte",    desc:"7 jours en ligne, une photo, notre signature en pied", prix:1000,
+EN:   {id:"carte",   nom:"The Card",    desc:"Online for 7 days, one photo, our signature at the bottom", prix:1000,
 FR:   {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, trois photos, sans notre signature",   prix:2000,
 EN:   {id:"mot",     nom:"The Note",    desc:"Online for a year, three photos, no signature of ours",   prix:2000,
-FR:   {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",                 prix:5000,
-EN:   {id:"lettre",  nom:"The Letter",  desc:"One year, three photos, your secret code",             prix:5000,
+FR:   {id:"lettre",  nom:"La Lettre",   desc:"Un an, dix photos, ton code secret",                   prix:5000,
+EN:   {id:"lettre",  nom:"The Letter",  desc:"One year, ten photos, your secret code",               prix:5000,
 FR:   {id:"coffret", nom:"Le Coffret",  desc:"Un an, jusqu'à vingt photos, ton code secret",         prix:10000,
 EN:   {id:"coffret", nom:"The Keepsake",  desc:"One year, up to twenty photos, your secret code",    prix:10000,
 # ── les phrases du script ──
@@ -470,8 +472,8 @@ FR: rendre(j.erreur ? ("Ça n'est pas passé : " + j.erreur) : "Ça n'est pas pa
 EN: rendre(j.erreur ? ("That didn't go through: " + j.erreur) : "That didn't go through. Try again in a moment.");
 FR: rendre("Pas de réseau. Ta lettre est gardée, réessaie dans un moment.");
 EN: rendre("No connection. Your letter is saved, try again in a moment.");
-FR: return p.photos + " avec " + (p.id === "gratuit" ? "l'offre gratuite" : p.nom);
-EN: return p.photos + " with " + (p.id === "gratuit" ? "the free offer" : p.nom);
+FR: return p.photos + " avec " + p.nom;
+EN: return p.photos + " with " + p.nom;
 FR: "L'aperçu a besoin d'un serveur. Lance <code>python -m http.server</code> " +
 EN: "The preview needs a server. Run <code>python -m http.server</code> " +
 FR: "dans le dossier malettre/.</p>";
@@ -579,8 +581,8 @@ FR: <html lang="fr">
 EN: <html lang="en">
 FR: <title>Ma lettre à… · une lettre scellée qui s'ouvre à l'heure dite</title>
 EN: <title>Ma lettre à… · a sealed letter that opens at the time you choose</title>
-FR: content="Écris une lettre digitale, scelle-la, envoie le lien. Elle reste fermée jusqu'à l'heure que tu choisis. Tu l'écris, ou la plume l'écrit avec toi. Gratuite pour commencer."
-EN: content="Write a digital letter, seal it, send the link. It stays closed until the time you choose. You write it, or the Quill writes it with you. Free to start."
+FR: content="Écris une lettre digitale, scelle-la, envoie le lien. Elle reste fermée jusqu'à l'heure que tu choisis. Tu l'écris, ou la plume l'écrit avec toi. Dès 1&nbsp;000 F."
+EN: content="Write a digital letter, seal it, send the link. It stays closed until the time you choose. You write it, or the Quill writes it with you. From 1,000 F."
 FR: <link rel="canonical" href="https://malettre.nebula-agency.online/">
 EN: <link rel="canonical" href="https://malettre.nebula-agency.online/en/">
 FR: <meta property="og:locale" content="fr_FR">
@@ -630,8 +632,8 @@ FR: <span aria-hidden="true">Ma lettre à</span>
 EN: <span aria-hidden="true">My letter to</span>
 FR: placeholder="son prénom"
 EN: placeholder="their first name"
-FR: Gratuite pour commencer · <b>la plume dès <!--__PLUME_PRIX__--></b> · Bénin, Togo, Côte d'Ivoire et partout où l'on a un téléphone
-EN: Free to start · <b>the Quill from <!--__PLUME_PRIX__--></b> · Benin, Togo, Côte d'Ivoire and anywhere there's a phone
+FR: <b>Dès <!--__ENTREE_PRIX__--></b> · Bénin, Togo, Côte d'Ivoire et partout où l'on a un téléphone
+EN: <b>From <!--__ENTREE_PRIX__--></b> · Benin, Togo, Côte d'Ivoire and anywhere there's a phone
 FR: <div class="tampon-h">COTONOU<br>MINUIT<br>MA LETTRE</div>
 EN: <div class="tampon-h">COTONOU<br>MIDNIGHT<br>MA LETTRE</div>
 FR: <div class="a1">Ma lettre à</div>
@@ -671,8 +673,8 @@ FR: <h2 class="h2" data-rv>Tu coches.<br><span class="h2-main">Elle écrit.</spa
 EN: <h2 class="h2" data-rv>You tick.<br><span class="h2-main">It writes.</span></h2>
 FR: Quelques questions, un souvenir, tes consignes. La plume écrit une première version ; tu relis, tu changes ce que tu veux. Ce sont tes mots : elle te les prête.
 EN: A few questions, a memory, your instructions. The Quill writes a first version; you reread and change what you like. These are your words: it only lends them to you.
-FR: <span>de plus, seulement si tu l'envoies. Essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.</span>
-EN: <span>extra, only if you send it. Trying costs nothing, and it never makes up a memory for you.</span>
+FR: <span>de plus. Elle écrit une fois ta commande réglée, et n'invente jamais un souvenir à ta place.</span>
+EN: <span>extra. It writes once your order is paid, and it never makes up a memory for you.</span>
 # ── les occasions ──
 FR: <h2 class="h2" data-rv>Un casier pour chaque grand jour.</h2>
 EN: <h2 class="h2" data-rv>A pigeonhole for every big day.</h2>
@@ -724,8 +726,8 @@ FR: <h2 class="h2" data-rv>Mot pour mot,<br><em>rien de plus.</em></h2>
 EN: <h2 class="h2" data-rv>Word for word,<br><em>nothing more.</em></h2>
 FR: <b>Le cachet tient jusqu'à l'heure.</b><p>Il ne se brise pas avant l'heure choisie, et c'est l'heure du téléphone de qui la reçoit : minuit à Abidjan n'est pas minuit à Cotonou.</p>
 EN: <b>The seal holds until the hour.</b><p>It does not break before the chosen time, and that is the time on the receiver's phone: midnight in Abidjan is not midnight in Cotonou.</p>
-FR: <b>Une adresse que personne ne devine.</b><p>Tirée au hasard, jamais indexée, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée.</p>
-EN: <b>An address nobody can guess.</b><p>Drawn at random, never indexed, and it expires: seven days for a free letter, a year for a paid one.</p>
+FR: <b>Une adresse que personne ne devine.</b><p>Tirée au hasard, jamais indexée, et elle expire : sept jours pour La Carte, un an pour les autres offres.</p>
+EN: <b>An address nobody can guess.</b><p>Drawn at random, never indexed, and it expires: seven days for The Card, a year for the other offers.</p>
 FR: <b>On n'écrit jamais à la personne.</b><p>C'est toi qui lui donnes le lien, quand tu veux. Aucune machine ne lui écrit à ta place.</p>
 EN: <b>We never write to the person.</b><p>You give them the link, whenever you like. No machine writes to them in your place.</p>
 FR: <b>Retirée sous 24 heures.</b><p>Si la personne qui la reçoit le demande, la lettre est retirée, sans discussion.</p>
@@ -752,16 +754,16 @@ FR: <summary>Combien coûte une lettre ?</summary>
 EN: <summary>How much does a letter cost?</summary>
 FR: <summary>Comment paie-t-on ?</summary>
 EN: <summary>How do I pay?</summary>
-FR: Par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur, où tu choisis ton réseau. Rien à recopier, aucun code à nous donner. Une lettre gratuite ne passe pas du tout par la caisse : tu l'écris, tu reçois ton lien.
-EN: By Mobile Money or card, on our payment provider's secure page, where you choose your network. Nothing to copy, no code to give us. A free letter never goes through checkout at all: you write it, you get your link.
+FR: Par Mobile Money ou par carte, sur la page sécurisée de notre encaisseur, où tu choisis ton réseau. Rien à recopier, aucun code à nous donner. Dès que le paiement est confirmé, ta lettre est prête, même à trois heures du matin, et son adresse s'affiche : tu l'envoies quand tu veux.
+EN: By Mobile Money or card, on our payment provider's secure page, where you choose your network. Nothing to copy, no code to give us. As soon as the payment is confirmed, your letter is ready, even at three in the morning, and its address appears: you send it whenever you like.
 FR: <summary>Qu'est-ce que la plume ?</summary>
 EN: <summary>What is the Quill?</summary>
-FR: Une aide pour écrire. Tu réponds à quelques questions, tu racontes un souvenir, tu dis comment tu veux ta lettre, et la plume en écrit une première version. Tu relis, tu changes ce que tu veux, tu signes. L'essayer ne coûte rien, et elle n'invente jamais un souvenir à ta place.
-EN: A writing aid. You answer a few questions, share a memory, say how you want your letter, and the Quill writes a first version. You reread it, change what you like, and sign. Trying it costs nothing, and it never makes up a memory for you.
+FR: Une aide pour écrire. Tu réponds à quelques questions, tu racontes un souvenir, tu dis comment tu veux ta lettre, et la plume en écrit une première version. Tu relis, tu changes ce que tu veux, tu signes. Elle écrit une fois ta commande réglée, et n'invente jamais un souvenir à ta place.
+EN: A writing aid. You answer a few questions, share a memory, say how you want your letter, and the Quill writes a first version. You reread it, change what you like, and sign. It writes once your order is paid, and it never makes up a memory for you.
 FR: <summary>Ma lettre est-elle privée ?</summary>
 EN: <summary>Is my letter private?</summary>
-FR: Son adresse est tirée au hasard, jamais indexée par les moteurs de recherche, et elle expire : sept jours pour une lettre offerte, un an pour une lettre payée. Mais qui a le lien peut la lire : c'est un cadeau emballé, pas un coffre-fort. Et si la personne qui la reçoit demande son retrait, elle est retirée sous 24 heures.
-EN: Its address is drawn at random, never indexed by search engines, and it expires: seven days for a free letter, a year for a paid one. But anyone with the link can read it: it is a wrapped gift, not a safe. And if the person who receives it asks for it to be removed, it is removed within 24 hours.
+FR: Son adresse est tirée au hasard, jamais indexée par les moteurs de recherche, et elle expire : sept jours pour La Carte, un an pour les autres offres. Mais qui a le lien peut la lire : c'est un cadeau emballé, pas un coffre-fort. Et si la personne qui la reçoit demande son retrait, elle est retirée sous 24 heures.
+EN: Its address is drawn at random, never indexed by search engines, and it expires: seven days for The Card, a year for the other offers. But anyone with the link can read it: it is a wrapped gift, not a safe. And if the person who receives it asks for it to be removed, it is removed within 24 hours.
 FR: <summary>Pouvez-vous faire notre faire-part de mariage ?</summary>
 EN: <summary>Can you make our wedding invitation?</summary>
 FR: Oui, sur demande, pour <!--__FP_PRIX__-->, fait sur mesure par notre équipe. Il s'ouvre comme une lettre, avec le cachet à vos initiales, le compte à rebours jusqu'au grand jour, le programme, le lieu, la tenue et vos photos. Vos invités vous répondent directement sur votre WhatsApp.

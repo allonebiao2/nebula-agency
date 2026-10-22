@@ -96,14 +96,16 @@ client par défaut aussi (« Client PISTE » sur un reçu MA LETTRE À…).
    le pied se retire d'un clic dans la console, et la boucle de croissance
    avec. **Le code secret n'appartient qu'à La Lettre et au Coffret**
    (2026-10-21) : envoyé avec Le Mot, il est retiré, comme l'habillage d'une
-   lettre gratuite. Le droit `code` vit dans les deux barèmes, comparés.
+   lettre de La Carte. Le droit `code` vit dans les deux barèmes, comparés.
 
 4. ⛔ **Le retrait passe avant tout le reste.** Avant l'état de la commande,
    avant la date, avant le remboursement. Une lettre payée puis retirée reste
    retirée, et le journal le dit.
 
-5. ⛔ **Une lettre offerte ne passe pas par la caisse.** Elle est vivante tout
-   de suite, et on rend son adresse.
+5. ⛔ **Aucune lettre n'est offerte depuis le 2026-10-22** : toutes passent par la caisse,
+   La Carte comprise (1 000 F). Avant, une lettre offerte était vivante tout de suite et on
+   rendait son adresse ; ce chemin reste dans `malettre-commande` (`offert = prix === 0`), mais
+   plus aucun palier ne l'emprunte, et la caisse le contrôle (« aucune offre n'est gratuite »).
 
 6. ⛔ **Le brouillon ne s'efface qu'après une réponse heureuse.** L'acheteur
    quitte la page pour payer : un réseau qui tombe ne doit rien lui coûter de
@@ -133,8 +135,8 @@ client par défaut aussi (« Client PISTE » sur un reçu MA LETTRE À…).
 > - Essayé en ligne : lettre offerte créée, ouverte (photographiée au téléphone), retirée (410) · commande à
 >   5 000 F jusqu'à la session SasPay (5 000 XOF, retour sur `merci.html`, référence = jeton), puis annulée ·
 >   webhook signé 200 et journalisé, signature fausse 401, horodatage vieux 401 · une lettre de la plume.
->   Les lignes d'essai sont effacées. ⏳ **Reste le premier franc réel** (le plus petit : l'offre gratuite +
->   la plume, 500 F).
+>   Les lignes d'essai sont effacées. ⏳ **Reste le premier franc réel** (le plus petit depuis le 2026-10-22 :
+>   La Carte, 1 000 F).
 
 ```bash
 # 0. la base, une seule fois, dans l'éditeur SQL de Supabase

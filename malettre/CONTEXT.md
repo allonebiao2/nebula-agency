@@ -309,17 +309,40 @@ pour l'ouvrir » (« Clique pour l'ouvrir » sur ordinateur) paraît à 2,4 s ; 
 `evaluate` comptent comme un geste) : `_qc_accueil.py` § « la musique au premier contact » remet la règle, touche
 par le protocole et lit sans geste, avec un témoin. Voir `_memoire/lecons.md` (2026-10-22).
 
-## ⏳ LES PRIX, REVUS EN PROFONDEUR (2026-10-22) : PROPOSITION, EN ATTENTE DE MONGAZI
+## ✅ LES PRIX, REVUS EN PROFONDEUR (2026-10-22) : TRANCHÉS PAR MONGAZI, ZÉRO GRATUITÉ
 
 Demande : « réfléchis en profondeur et revois le prix, à la hausse ou à la baisse ». Skills : `pricing-strategy`,
-`marketing-psychology`. Rien n'est changé dans la caisse tant que Mongazi n'a pas dit oui.
+`marketing-psychology`.
+
+- **Ce que Mongazi a tranché** : « je ne voudrais que rien soit gratuit », « EN VRAI ZERO GRATUITé car sa peut se
+  contourner en changeant de navigateur ou de telephone », « l'essai […] censé être à 500 F on met à 1000 F ». Donc :
+  - ⛔ **Plus aucune offre gratuite.** « Gratuit » (0 F) devient **La Carte, 1 000 F** : 7 jours en ligne, une
+    photo, notre signature en pied, ni habillage ni code. C'est elle, le premier franc.
+  - **Le Mot 2 000 F**, inchangé (un an, 3 photos, l'habillage).
+  - **La Lettre 5 000 F** : un an, **10 photos** (au lieu de 3), le code secret.
+  - **Le Coffret 10 000 F** : un an, 20 photos, le code secret.
+  - **Le faire-part 35 000 F** (au lieu de 25 000 F), dans `faire-part/offre.json` et nulle part ailleurs.
+  - **La plume est COUPÉE en ligne** (choix « Coupée ») pendant le chantier « la plume écrit APRÈS paiement » :
+    son essai gratuit se contournait en changeant de navigateur. `PLUME_OUVERTE` dans `creer.html` (ouverte
+    seulement sur `localhost` / `127.0.0.1`, et pas avec `?enligne`), la note `#plume-coupee` dit « La plume
+    revient très vite ». Elle reste à +500 F ; « plume incluse » dans La Lettre et Le Coffret arrive avec ce chantier.
+  - **La vitrine** dit « Dès 1 000 F » (marqueur `<!--__ENTREE_PRIX__-->`, lu dans le constructeur par le build) ;
+    plus aucune réponse ne promet rien de gratuit, et un contrôle lit les zones qui parlent d'argent.
+  - Pas encore fait : **l'équivalent en euros** pour la diaspora.
+- **Les deux grilles** (`creer.html` et `_shared/lettre.ts`) changent ensemble, la caisse les compare. Zéro lettre en
+  base au moment du changement (mesuré le 2026-10-22) : aucune commande « gratuit + plume » n'est restée en route,
+  ce qui comptait parce que `malettre-paiement-recu` relit le palier au paiement et refuse un palier inconnu.
+- ⚠️ **Un contrôle qui échoue faute de mémoire ressemble à un défaut** : quatre échecs « la commande part vers la
+  caisse » avec Chrome ouvert (1,5 Go libres), zéro une fois Chrome fermé (3,2 Go). Lancer les suites UNE PAR UNE.
+
+La proposition d'origine, avant l'arbitrage :
 
 - **Le constat** : aucune lettre, aucun paiement en base au 2026-10-21. Le goulot est la venue des visiteurs, pas le
   prix : baisser n'apporte personne. 2 000 F (environ 3 €) est déjà un prix d'impulsion.
 - **Le défaut de la grille** : La Lettre (5 000 F) = Le Mot (2 000 F) + un code secret. +3 000 F pour quatre
   chiffres : le palier conseillé (présélectionné) ne se défend pas. Et la plume à +500 F sur tout casse les totaux
   ronds (5 500, 10 500 F) dans un pays qui paie en billets de 5 000 et 10 000.
-- **La proposition** : Offert 0 F et Le Mot 2 000 F inchangés ; **La Lettre 5 000 F, plume incluse, 10 photos,
+- **La proposition** (⚠️ remplacée par l'arbitrage ci-dessus) : Offert 0 F et Le Mot 2 000 F inchangés ; **La Lettre 5 000 F, plume incluse, 10 photos,
   code secret** (« notre conseil ») ; **Le Coffret 10 000 F, plume incluse, 20 photos** ; la plume reste à 500 F
   avec Offert et Le Mot (c'est le premier franc) ; **le faire-part passe de 25 000 à 35 000 F** (le marché d'un
   sur-mesure) ; **l'équivalent en euros affiché** pour la diaspora (décidé à l'arrêté 08, jamais fait).
@@ -333,6 +356,59 @@ Demande : « réfléchis en profondeur et revois le prix, à la hausse ou à la 
   `CONDITIONS.md`).
 - **Ce qu'on mesure ensuite** (après 30 à 50 lettres payées) : la part de chaque palier ; si La Lettre reste sous 25 %,
   on revoit son contenu ; si plus de la moitié des Le Mot prennent la plume, on essaie la plume à 1 000 F.
+
+## ✅ LE 22 OCTOBRE : ZÉRO GRATUITÉ EN LIGNE, LE CLIC DE VERRE, DEUX DÉFAUTS TROUVÉS PAR LES CONTRÔLES
+
+**En ligne le 2026-10-22, vérifié par le corps des pages** : la grille sans gratuité (La Carte 1 000 F, Le Mot
+2 000, La Lettre 5 000 et 10 photos, Le Coffret 10 000, faire-part 35 000 F), la plume coupée en ligne avec sa
+note, les quatre fonctions redéployées (`malettre-commande`, `-plume`, `-paiement-recu`, `-lettre`). Preuve sans
+trace de la caisse : une commande vide au palier `carte` répond « lettre vide » (le palier est connu), au palier
+`gratuit` « palier inconnu » ; aucune ligne écrite. Contrôles verts : constructeur **284**, caisse **382**, accueil
+**322**, langues **52**, faire-part **83**.
+
+- **La FAQ « Comment paie-t-on ? »** était tombée à 26 mots en retirant sa phrase sur la lettre gratuite (seuil :
+  30, pour être citée seule). Complétée par ce que le parcours fait vraiment, lu dans `paiement.html` et
+  `merci.html` : la lettre est prête dès la confirmation, même à trois heures du matin, et son adresse s'affiche.
+- **Le clic de verre** (Mongazi : « un bruit qui fait click, comme si c'était du verre qu'on touchait, celui
+  actuel ne fait pas naturel »). Trois matières synthétisées puis écoutées sur une page locale à côté du clic
+  d'avant : verre fin, verre épais, cristal. **Choisi : A, le verre fin** (une vitre fine sous l'ongle). Synthèse
+  modale dans le module de `creer.html` (lu par la vitrine) : un choc d'une demi-milliseconde, cinq modes
+  inharmoniques (3 150 Hz × 1 ; 1,47 ; 2,09 ; 2,83 ; 3,71), les aigus meurent plus vite, deux jumeaux pour le
+  battement, deux reflets de pièce, un tirage différent à chaque geste (hauteur ±2,5 %, force ±15 %), un son de
+  plus fabriqué à chaque geste jusqu'à six. Les résonances sont calculées par une **récurrence à deux pôles**
+  (pas un sinus par échantillon : téléphones modestes). **Mesuré tel qu'il est posé** : 320 ms au toucher,
+  dominante 3,1 kHz ; 160 ms au survol, 3,5 kHz ; chaque son meurt seul sous −53 dB avant le fondu (la
+  première version était coupée vers −35 dB : durée portée à cinq fois la plus longue résonance). Le cachet et
+  le papier qui glisse ne changent pas.
+- ⛔ **Un décor qui est son propre déclencheur se mesurait PENCHÉ.** La feuille de timbres sert à la fois
+  d'objet animé et de déclencheur ScrollTrigger : GSAP mesurait sa boîte transformée (couchée à 58°, descendue de
+  110 px) et la croyait **389 px plus bas**. Au téléphone, on arrivait sur un grand vide à la place des prix.
+  Trouvé par la sonde de contraste, qui photographiait la barre d'achat sous « THE CARD » (2,05:1), un coup sur
+  deux selon l'ordre des mesures. Même défaut sur la feuille de la plume, les billets et la page de la fin.
+  Correction : `depuis(el, part)` compte depuis la place dans la page (`offsetTop` ignore les transformations),
+  et un `ResizeObserver` relance `ScrollTrigger.refresh()` quand la page change de hauteur (une réponse dépliée,
+  une police en retard). Contrôle ajouté : chaque déclencheur qui anime son propre élément commence là où
+  l'élément EST (7 décors, écart ≤ 2 px).
+- ⛔ **La nuit des lettres pouvait rester figée sur sa fin** : `g.to(etat, {p: 1})` partait de la pose déjà
+  peinte ; si GSAP arrivait tard (réseau lent, défilement rapide), l'animation allait de 1 à 1. Désormais
+  `fromTo({p: 0})` avec `immediateRender: false` : ScrollTrigger pose tout de suite la bonne image. Vu en anglais
+  à 1440 px, PC chargé (GSAP arrivé après le défilement).
+- ⚠️ **Un contrôle qui échoue faute de mémoire ressemble à un défaut** : quatre échecs « la commande part vers la
+  caisse » avec Chrome ouvert (1,5 Go libres), zéro après fermeture (3,2 Go). Suites UNE PAR UNE.
+- ⚠️ **En ligne, une erreur JavaScript qui n'est pas à nous** : « Blocked a frame with origin "null" » vient du
+  script de détection des robots que Cloudflare injecte (`/cdn-cgi/challenge-platform/scripts/jsd/main`). Il ne
+  casse rien ; ne pas le poursuivre.
+- ⚠️ **Le 22 octobre, la box de Cotonou n'atteignait plus `188.114.96.3` ni `188.114.97.3`**, les deux adresses
+  Cloudflare que le DNS donne à `malettre.nebula-agency.online` (PISTE et le site de l'agence reçoivent
+  `104.21.2.115` et `172.67.129.33`, joignables). Le site répondait 200 par une autre adresse Cloudflare
+  (`curl --resolve …:443:172.67.129.33`). Les six sous-domaines sont configurés pareil (CNAME proxifié vers
+  `*.pages.dev`) : c'est le choix d'adresses de Cloudflare et la route du fournisseur, rien à corriger chez nous.
+  ⏳ **À revérifier**, et à essayer au téléphone en données mobiles : si la route reste coupée, les visiteurs de
+  ce fournisseur ne voient pas le site.
+
+**La suite** : la vidéo émotionnelle avec un effet « wow » (demande de Mongazi du 22 : « mettra ma lettre en avant
+et donnera envie d'acheter »). ⚠️ La pub montée le 21 finit sur « Gratuite pour commencer » : faux depuis le 22.
+Puis le chantier « la plume écrit APRÈS le paiement », qui permet de la rouvrir.
 
 ## Reprendre ici (2026-10-21, avant la mise en ligne)
 
@@ -642,3 +718,56 @@ les vidéos, n'est pas encore faite).
   sobriété totale, aucun emoji, relecture par quelqu'un qui vient d'enterrer un
   proche **avant** de le vendre, et c'est la condition d'ouverture de la ligne.
 <!-- FIN HISTOIRE -->
+
+## Le bloc de `CLAUDE.md` tel qu'il était le 2026-10-22, avant sa réécriture
+
+Recopié intégralement avant d'être remplacé par un résumé à jour (règle de `CLAUDE.md`).
+
+### MA LETTRE À… · la lettre digitale  *(produit interne, ex-MINUIT, ex-LE PLI · **nom tranché le 2026-10-16**)*
+- **Ce que c'est** : une enveloppe cachetée qu'on ouvre à l'heure dite. L'acheteur écrit (ou **la plume**,
+  l'agent, écrit avec lui : +500 F, gratuite à essayer ; **un savoir-faire par occasion** dans `_shared/savoirs.ts`
+  et des **retouches**, banc d'essai `_banc_plume.mjs`), choisit l'heure, paie, **envoie le lien lui-même** ;
+  le cachet dort jusqu'à l'heure du téléphone de qui la reçoit, puis s'allume. Le nom se finit par un
+  prénom : « Ma lettre à Afi ». Code : **`malettre/`** (ex-`lepli/`, renommé le 2026-10-16, commit `5af692d`).
+- 🟢 **EN LIGNE DEPUIS LE 2026-10-21 : https://malettre.nebula-agency.online** (Pages `malettre`, schéma
+  Supabase `malettre`, 4 fonctions `malettre-*`, webhook SasPay à **son propre secret** `MALETTRE_SECRET_WEBHOOK`,
+  plume branchée). Essayé en ligne puis effacé. ⏳ **Le premier franc réel n'a pas eu lieu.** Détail : `PAIEMENT.md` § 4.
+- **Six vagues** (plan dans `malettre/CONTEXT.md`), **FR et EN partout** (`i18n/en.txt`, `_traduire.py`) :
+  0 les deux langues ✅ · 1 la lettre en 3D, son, vibration ✅ · 2 l'habillage payant (cire, sceau, papier,
+  pluie, phrase à gratter) et « Répondre sur WhatsApp » ✅ · 3 la vitrine ✅ (« Ouvre-la toi-même » : une
+  vraie lettre qu'on rhabille par pastilles, exemples habillés, prochaine grande date calculée, FAQ +
+  `FAQPage` lu dans la page, `llms.txt`, **faire-part sur demande à 25 000 F**, prix dans
+  `malettre/faire-part/offre.json` et nulle part ailleurs) · 4 le faire-part ✅ (`python malettre/_faire_part.py
+  FICHE`, compte à l'heure du LIEU, réponses au WhatsApp des mariés ; ⛔ fiches des couples dans
+  `faire-part/_couples/`, JAMAIS dans git, `_dist.py` refuse si une page publiée manque) · 5 la pub 🟡 (images
+  faites le 2026-10-21, six compositions `malettre-*` dans `_studio-video/`, la voix manque).
+  Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
+- **Contrôles, tous verts avant toute publication** : `_qc.py` (285) · `node --experimental-strip-types
+  malettre/_qc_caisse.mjs` (379) · `_qc_accueil.py` (307, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
+- **Publier** : `python malettre/_dist.py` puis `wrangler pages deploy malettre/_dist --project-name malettre
+  --branch main`. ⛔ Jamais le dossier entier. Une fonction : `npx -y supabase@2 functions deploy <nom>
+  --project-ref xukduhqqfzogisoimhyo --use-api` (pas de CLI installée ; `--no-verify-jwt` pour `-paiement-recu`
+  et `-lettre`). Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes.
+  ⛔ **Supabase sert tout HTML en `text/plain` + `sandbox`** : le relais rend leur type aux pages de NOTRE
+  fonction, sinon la lettre s'affiche en code source. ⚠️ `lettre.html` est à 68 octets de son seuil (61 440).
+- **La vitrine en profondeur (2026-10-21)** : GSAP 3.13 servi d'ici (`vendor/`), chargé APRÈS le premier écran ;
+  **la nuit des lettres** (une enveloppe par occasion réelle) ; fonds d'ambiance par `_fonds.py` (une zone n'en a
+  que si l'image existe, chargés à l'approche, celui du héros après le rideau ET le chargement) qui VIVENT en CSS
+  en attendant les vidéos ; musique par `_son.py` (⛔ le MP3 n'est pas dans le dépôt : licence Pixabay) ; logo par
+  `_logo.py` (le cachet aux trois points). Premier écran < 320 Ko, contrôlé. Récit :
+  `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md`. ✅ **Les quatre demandes de Mongazi, faites
+  la nuit du 21** (Commissioner « flair » et plus aucun surtitre en capitales · bruitages Web Audio, module ET emblèmes
+  LUS dans `creer.html` · verre fumé sans flou sur les fonds animés · occasion `potes`, la plume n'invente jamais le
+  lieu ni l'heure) : `malettre/CONTEXT.md` § « LES QUATRE DEMANDES ». ⛔ **Un décor 3D invisible prenait le doigt
+  partout** (les timbres) : sonde sur page NEUVE dans `_qc_accueil.py`.
+- ⛔ **Pièges qui ont déjà mordu** : `</script>` et U+2028 écrits par un acheteur tuent la page (tout passe
+  par `_injecter.py`, et les échappements se fabriquent par programme : 6 fois arrivés en clair) · on ne
+  stocke JAMAIS le HTML du navigateur, on rebâtit depuis le gabarit · le prix ne vient jamais du navigateur
+  (deux barèmes comparés par un contrôle) · ⛔ NEBULA n'écrit jamais à la destinataire, on ne promet pas le
+  secret, pas de deuil tant qu'il n'est pas relu · au téléphone, un élément trop large **dézoome** la page
+  et `innerWidth` grandit avec lui : comparer à la largeur demandée.
+- ⏳ **Ce qui attend Mongazi** : **le premier franc** (500 F : offre gratuite + plume) · la commission SasPay,
+  qui relit le deuil · acheter `malettre.app` ou non · faire lire les exemples · **les six MP3
+  ElevenLabs de la pub** (`_studio-video/src/malettre/VOIX.md`) · faire-part pour novembre · critères d'arrêt :
+  le 1er décembre, ou huit semaines après la mise en ligne (16 décembre).
+- **Tout le détail** (le récit LE PLI recopié intégralement) : `malettre/CONTEXT.md`.

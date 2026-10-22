@@ -2992,3 +2992,16 @@ deux webhooks SasPay = deux secrets, alors que les secrets Supabase valent pour 
 - Les contrôles ne l'avaient pas vu : Playwright lance Chromium SANS la règle de lecture et ses `evaluate` comptent
   comme un geste. Tester par le protocole (CDP), `userGesture: false`, après avoir vérifié que la page n'est pas activée.
 - Même jour : un décor 3D invisible (les timbres) prenait le doigt sur toute la page ; sonder une page NEUVE.
+## 2026-10-22 · Un décor qui est son propre déclencheur se mesure penché (MA LETTRE À…)
+- La feuille de timbres était À LA FOIS l'objet animé et le déclencheur ScrollTrigger : GSAP mesurait sa boîte
+  TRANSFORMÉE (couchée à 58°, descendue de 110 px) et la croyait 389 px plus bas. Au téléphone, on arrivait sur un
+  grand vide à la place des prix. Compter depuis la place dans la page (`offsetTop` ignore les transformations),
+  ou déclencher par un parent qui ne bouge pas. Et relancer `refresh()` quand la page change de hauteur.
+- `gsap.to()` enregistre son départ à sa première image : partir de « la pose déjà peinte » fige l'animation si
+  GSAP arrive tard (de 1 à 1). Un mouvement lié au défilement part toujours d'une valeur fixe (`fromTo`).
+- Trouvé par une sonde de contraste qui « mentait » un coup sur deux : quand une sonde se trompe au hasard,
+  photographier la mesure fautive avant d'accuser la sonde. Ici, la photo montrait le vrai défaut.
+- Un contrôle qui échoue faute de mémoire ressemble à un défaut (Chrome ouvert, 1,5 Go libres : quatre faux échecs).
+  Suites UNE PAR UNE, navigateur fermé.
+- Un son de synthèse se MESURE avant d'être écouté : la première version du clic de verre était coupée à −35 dB.
+

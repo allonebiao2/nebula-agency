@@ -150,7 +150,7 @@ python malettre/_og.py                # og.jpg et og-en.jpg
 
 ### Le faire-part de mariage, sur demande (vague 4, 2026-10-16)
 
-NEBULA le fait pour le couple, **25 000 F** payés hors de la caisse (prix et
+NEBULA le fait pour le couple, **35 000 F** (25 000 F jusqu'au 2026-10-22) payés hors de la caisse (prix et
 numéro : `faire-part/offre.json`, seule source). Le couple écrit depuis le bouton
 de la vitrine ; on remplit sa fiche ; la page part à une adresse impossible à
 deviner. Les invités répondent sur **le WhatsApp des mariés**, jamais celui de
@@ -276,8 +276,9 @@ tiers. Le gabarit refuse toute source qui ne commence pas par `data:`.
 
 **`noindex`.** Une lettre est privée. Elle n'a rien à faire dans un moteur.
 
-**Le pied viral n'existe qu'au palier gratuit.** C'est la boucle de croissance :
-chaque destinataire est un acheteur possible. Un palier payé le retire.
+**Le pied viral n'existe qu'à La Carte**, l'offre d'entrée à 1 000 F qui a remplacé l'offre
+gratuite le 2026-10-22. C'est la boucle de croissance : chaque destinataire est un acheteur
+possible. Les autres offres le retirent.
 
 ---
 
@@ -295,8 +296,13 @@ appris, ce que tu lui souhaites…) et lui laisse **deux zones libres** : un
 souvenir que vous seuls connaissez, et « comment tu la veux ». Un bouton, et la
 lettre arrive dans les champs, titre et formule de fin compris.
 
+⛔ **Depuis le 2026-10-22, plus rien n'est gratuit** (Mongazi : un essai gratuit « se contourne
+en changeant de navigateur ou de téléphone ») : la plume est **coupée en ligne** jusqu'à ce
+qu'elle écrive APRÈS le paiement (le chantier suivant, `CONTEXT.md` § « LES PRIX »). Ce qui suit
+décrit son fonctionnement d'avant, toujours actif sur le PC (`localhost`).
+
 **Le prix.** **500 F**, une option qui s'ajoute à l'offre choisie, jamais un
-palier : avec l'offre gratuite, la lettre coûte 500 F et passe par la caisse.
+palier : avec La Carte, la lettre coûte 1 500 F.
 ⚠️ **Gratuite à essayer, payante à l'envoi** : l'acheteur lit SA lettre avant
 de payer, c'est là que la vente se fait. D'où un compteur : **trois versions
 par brouillon, douze par adresse et par jour**. Ce qui se paie, c'est le texte

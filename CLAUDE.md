@@ -295,52 +295,49 @@
 - Détail complet : `benin-mon-pays/CONTEXT.md`
 
 ### MA LETTRE À… · la lettre digitale  *(produit interne, ex-MINUIT, ex-LE PLI · **nom tranché le 2026-10-16**)*
-- **Ce que c'est** : une enveloppe cachetée qu'on ouvre à l'heure dite. L'acheteur écrit (ou **la plume**,
-  l'agent, écrit avec lui : +500 F, gratuite à essayer ; **un savoir-faire par occasion** dans `_shared/savoirs.ts`
-  et des **retouches**, banc d'essai `_banc_plume.mjs`), choisit l'heure, paie, **envoie le lien lui-même** ;
-  le cachet dort jusqu'à l'heure du téléphone de qui la reçoit, puis s'allume. Le nom se finit par un
-  prénom : « Ma lettre à Afi ». Code : **`malettre/`** (ex-`lepli/`, renommé le 2026-10-16, commit `5af692d`).
-- 🟢 **EN LIGNE DEPUIS LE 2026-10-21 : https://malettre.nebula-agency.online** (Pages `malettre`, schéma
-  Supabase `malettre`, 4 fonctions `malettre-*`, webhook SasPay à **son propre secret** `MALETTRE_SECRET_WEBHOOK`,
-  plume branchée). Essayé en ligne puis effacé. ⏳ **Le premier franc réel n'a pas eu lieu.** Détail : `PAIEMENT.md` § 4.
-- **Six vagues** (plan dans `malettre/CONTEXT.md`), **FR et EN partout** (`i18n/en.txt`, `_traduire.py`) :
-  0 les deux langues ✅ · 1 la lettre en 3D, son, vibration ✅ · 2 l'habillage payant (cire, sceau, papier,
-  pluie, phrase à gratter) et « Répondre sur WhatsApp » ✅ · 3 la vitrine ✅ (« Ouvre-la toi-même » : une
-  vraie lettre qu'on rhabille par pastilles, exemples habillés, prochaine grande date calculée, FAQ +
-  `FAQPage` lu dans la page, `llms.txt`, **faire-part sur demande à 25 000 F**, prix dans
-  `malettre/faire-part/offre.json` et nulle part ailleurs) · 4 le faire-part ✅ (`python malettre/_faire_part.py
-  FICHE`, compte à l'heure du LIEU, réponses au WhatsApp des mariés ; ⛔ fiches des couples dans
-  `faire-part/_couples/`, JAMAIS dans git, `_dist.py` refuse si une page publiée manque) · 5 la pub 🟡 (images
-  faites le 2026-10-21, six compositions `malettre-*` dans `_studio-video/`, la voix manque).
-  Accueil : source `_accueil_src.html` → `python malettre/_build_accueil.py` (jamais `index.html`).
-- **Contrôles, tous verts avant toute publication** : `_qc.py` (285) · `node --experimental-strip-types
-  malettre/_qc_caisse.mjs` (379) · `_qc_accueil.py` (307, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
+- **Ce que c'est** : une enveloppe cachetée qu'on ouvre à l'heure dite. L'acheteur écrit (ou **la plume**, l'agent,
+  écrit avec lui : un savoir-faire par occasion dans `_shared/savoirs.ts`, des retouches, banc `_banc_plume.mjs`),
+  choisit l'heure, paie, **envoie le lien lui-même** ; le cachet dort jusqu'à l'heure du téléphone de qui la reçoit,
+  puis s'allume. « Ma lettre à Afi ». Code : **`malettre/`** (ex-`lepli/`, renommé le 2026-10-16).
+- 🟢 **EN LIGNE DEPUIS LE 2026-10-21 : https://malettre.nebula-agency.online** (Pages `malettre`, schéma Supabase
+  `malettre`, 4 fonctions `malettre-*`, webhook SasPay à **son propre secret** `MALETTRE_SECRET_WEBHOOK`).
+  ⏳ **Le premier franc réel n'a pas eu lieu.** Détail : `PAIEMENT.md` § 4.
+- ⛔ **ZÉRO GRATUITÉ depuis le 2026-10-22** (Mongazi : un essai gratuit « se contourne en changeant de navigateur
+  ou de téléphone ») : **La Carte 1 000 F** (7 jours, une photo, notre signature) · Le Mot 2 000 · La Lettre 5 000
+  (10 photos, code) · Le Coffret 10 000 · faire-part sur demande **35 000 F** (`faire-part/offre.json`, seule
+  source). Les deux grilles (`creer.html`, `_shared/lettre.ts`) changent ensemble, la caisse les compare. **La
+  plume (+500 F) est COUPÉE en ligne** (`PLUME_OUVERTE`, note `#plume-coupee`) jusqu'à ce qu'elle écrive APRÈS le
+  paiement : le chantier suivant. Détail : `malettre/CONTEXT.md` § « LES PRIX » et « LE 22 OCTOBRE ».
+- **Six vagues, FR et EN partout** (`i18n/en.txt`, `_traduire.py`) : langues, lettre 3D, habillage payant,
+  vitrine, faire-part ✅ (⛔ fiches des couples dans `faire-part/_couples/`, JAMAIS dans git) ; **la pub** 🟡
+  (six compositions `malettre-*` dans `_studio-video/`, qui finissent sur « Gratuite pour commencer », FAUX depuis
+  le 22 ; Mongazi veut maintenant **une vidéo émotionnelle, avec un effet wow**). Accueil : `_accueil_src.html`
+  → `python malettre/_build_accueil.py` (jamais `index.html`).
+- **Contrôles, tous verts avant toute publication, UN PAR UN** (à plusieurs, ou Chrome ouvert, le PC manque de
+  mémoire et un faux échec ressemble à un défaut) : `_qc.py` (284) · `node --experimental-strip-types
+  malettre/_qc_caisse.mjs` (382) · `_qc_accueil.py` (322, FR + EN) · `_qc_langues.py` (52) · `_qc_faire_part.py` (83).
 - **Publier** : `python malettre/_dist.py` puis `wrangler pages deploy malettre/_dist --project-name malettre
   --branch main`. ⛔ Jamais le dossier entier. Une fonction : `npx -y supabase@2 functions deploy <nom>
-  --project-ref xukduhqqfzogisoimhyo --use-api` (pas de CLI installée ; `--no-verify-jwt` pour `-paiement-recu`
-  et `-lettre`). Le relais `_relais.js` (copié en `_dist/_worker.js`) porte `/l/*` et pose les en-têtes.
-  ⛔ **Supabase sert tout HTML en `text/plain` + `sandbox`** : le relais rend leur type aux pages de NOTRE
-  fonction, sinon la lettre s'affiche en code source. ⚠️ `lettre.html` est à 68 octets de son seuil (61 440).
-- **La vitrine en profondeur (2026-10-21)** : GSAP 3.13 servi d'ici (`vendor/`), chargé APRÈS le premier écran ;
-  **la nuit des lettres** (une enveloppe par occasion réelle) ; fonds d'ambiance par `_fonds.py` (une zone n'en a
-  que si l'image existe, chargés à l'approche, celui du héros après le rideau ET le chargement) qui VIVENT en CSS
-  en attendant les vidéos ; musique par `_son.py` (⛔ le MP3 n'est pas dans le dépôt : licence Pixabay) ; logo par
-  `_logo.py` (le cachet aux trois points). Premier écran < 320 Ko, contrôlé. Récit :
-  `_memoire/conversations/2026-10-21-malettre-vitrine-profondeur.md`. ✅ **Les quatre demandes de Mongazi, faites
-  la nuit du 21** (Commissioner « flair » et plus aucun surtitre en capitales · bruitages Web Audio, module ET emblèmes
-  LUS dans `creer.html` · verre fumé sans flou sur les fonds animés · occasion `potes`, la plume n'invente jamais le
-  lieu ni l'heure) : `malettre/CONTEXT.md` § « LES QUATRE DEMANDES ». ⛔ **Un décor 3D invisible prenait le doigt
-  partout** (les timbres) : sonde sur page NEUVE dans `_qc_accueil.py`.
-- ⛔ **Pièges qui ont déjà mordu** : `</script>` et U+2028 écrits par un acheteur tuent la page (tout passe
-  par `_injecter.py`, et les échappements se fabriquent par programme : 6 fois arrivés en clair) · on ne
-  stocke JAMAIS le HTML du navigateur, on rebâtit depuis le gabarit · le prix ne vient jamais du navigateur
-  (deux barèmes comparés par un contrôle) · ⛔ NEBULA n'écrit jamais à la destinataire, on ne promet pas le
-  secret, pas de deuil tant qu'il n'est pas relu · au téléphone, un élément trop large **dézoome** la page
-  et `innerWidth` grandit avec lui : comparer à la largeur demandée.
-- ⏳ **Ce qui attend Mongazi** : **le premier franc** (500 F : offre gratuite + plume) · la commission SasPay,
-  qui relit le deuil · acheter `malettre.app` ou non · faire lire les exemples · **les six MP3
-  ElevenLabs de la pub** (`_studio-video/src/malettre/VOIX.md`) · faire-part pour novembre · critères d'arrêt :
-  le 1er décembre, ou huit semaines après la mise en ligne (16 décembre).
+  --project-ref xukduhqqfzogisoimhyo --use-api`, depuis `malettre/` (`--no-verify-jwt` pour `-paiement-recu` et
+  `-lettre`). Le relais `_relais.js` (`_dist/_worker.js`) porte `/l/*` et pose les en-têtes. ⛔ **Supabase sert
+  tout HTML en `text/plain` + `sandbox`** : le relais rend leur type à NOS pages. ⚠️ `lettre.html` est à 68
+  octets de son seuil (61 440).
+- **La vitrine** : GSAP 3.13 servi d'ici après le premier écran, la nuit des lettres, fonds `_fonds.py`, musique
+  `_son.py` (⛔ MP3 hors dépôt, licence Pixabay), logo `_logo.py`, Commissioner « flair », bruitages Web Audio
+  **lus dans `creer.html`** : depuis le 22, **un clic de verre fin** (synthèse modale, choisi à l'oreille parmi
+  trois matières). Premier écran < 320 Ko.
+- ⛔ **Pièges qui ont déjà mordu** : `</script>` et U+2028 écrits par un acheteur tuent la page (`_injecter.py`) ·
+  on ne stocke JAMAIS le HTML du navigateur · le prix ne vient jamais du navigateur · NEBULA n'écrit jamais à la
+  destinataire, pas de deuil tant qu'il n'est pas relu · au téléphone, un élément trop large **dézoome** · un décor
+  3D invisible prend le doigt (sonde sur page NEUVE) · **un décor qui est son propre déclencheur ScrollTrigger se
+  mesure PENCHÉ** (les timbres se levaient 389 px trop tard : `depuis()` compte par `offsetTop`) · **`to()`
+  depuis la pose déjà peinte fige une animation** (la nuit : `fromTo`) · l'erreur « Blocked a frame with origin
+  null » en ligne vient du script anti-robots de Cloudflare, pas de nous.
+- ⚠️ **Le 22, la box de Cotonou n'atteignait plus `188.114.96.3` ni `.97.3`**, les adresses que Cloudflare donne à
+  ce domaine (PISTE est sur d'autres). Vérifier par `curl --resolve malettre.nebula-agency.online:443:172.67.129.33`.
+- ⏳ **Ce qui attend Mongazi** : **le premier franc** (1 000 F, La Carte) · la commission SasPay, qui relit le deuil
+  · acheter `malettre.app` ou non · faire lire les exemples · la voix de la vidéo · faire-part pour novembre ·
+  critères d'arrêt : le 1er décembre, ou huit semaines après la mise en ligne (16 décembre).
 - **Tout le détail** (le récit LE PLI recopié intégralement) : `malettre/CONTEXT.md`.
 
 ### LE STANDARD — l'agent WhatsApp des clients  *(produit interne, 2026-08-28)*

@@ -47,12 +47,12 @@ SOURCES = [SOURCE, ICI / "creer.html", ICI / "lettre.html", ICI / "_build_accuei
 LANGS = {
     "fr": {"tag": "fr", "index": ICI / "index.html", "prefixe": "", "exemples": ICI / "exemples.json",
            "dossier": "exemples", "inventes": "personnes inventées", "marque": '"occasion":"Exemple · ',
-           "og": "og.jpg", "offert": "Offert", "plume": "La plume", "des": "la plume dès ",
+           "og": "og.jpg", "offert": "Offert", "plume": "La plume", "des": "Dès ",
            "seuil": '"titre":"C\'est l\'heure"', "occ": "Exemple", "fp_mot": "faire-part", "sep": " : ",
            "sources": SOURCES + [ICI / "exemples.json"]},
     "en": {"tag": "en", "index": ICI / "en" / "index.html", "prefixe": "en/", "exemples": ICI / "exemples.en.json",
            "dossier": "en/exemples", "inventes": "invented people", "marque": '"occasion":"Example · ',
-           "og": "og-en.jpg", "offert": "Free", "plume": "The Quill", "des": "the Quill from ",
+           "og": "og-en.jpg", "offert": "Free", "plume": "The Quill", "des": "From ",
            "seuil": '"titre":"It\'s time"', "occ": "Example", "fp_mot": "wedding", "sep": ": ",
            "sources": SOURCES + [ICI / "exemples.en.json", ICI / "i18n" / "en.txt", ICI / "en" / "creer.html"]},
 }
@@ -398,6 +398,16 @@ def profondeur(pg, larg, cat, base):
         ok("%d : GSAP est arrivé après un geste" % larg)
     except Exception:
         ko("%d : GSAP est arrivé après un geste" % larg)
+    # ⛔ UN DÉCOR QUI EST SON PROPRE DÉCLENCHEUR SE MESURAIT PENCHÉ (2026-10-22) : la feuille de timbres,
+    # couchée à 58°, se croyait 389 px plus bas, et au téléphone on arrivait sur un grand vide à la place
+    # des prix. Trouvé par la sonde de contraste, qui photographiait la barre d'achat sous « THE CARD ».
+    # Chaque déclencheur qui anime son propre élément doit commencer là où l'élément EST dans la page.
+    ecarts = pg.evaluate("""() => ScrollTrigger.getAll().filter(t => t.trigger && t.animation && t.animation.targets
+            && t.animation.targets().includes(t.trigger))
+        .map(t => { let e = t.trigger, y = 0; while (e) { y += e.offsetTop; e = e.offsetParent; }
+            return [t.trigger.id || String(t.trigger.className).split(' ')[0], Math.round(t.start - (y - innerHeight))]; })""")
+    dit("%d : un décor qui se déclenche lui-même est mesuré à sa place, pas penché (%d)" % (larg, len(ecarts)),
+        len(ecarts) >= 4 and all(abs(d) <= 2 for _, d in ecarts), ecarts)
     scripts = pg.evaluate("() => performance.getEntriesByType('resource').filter(r => r.initiatorType === 'script').map(r => r.name)")
     dit("%d : aucun script d'une autre origine, GSAP servi d'ici et versionné" % larg,
         all(x.startswith(base) for x in scripts) and any("vendor/gsap.min.js?v=3.13.0" in x for x in scripts)
@@ -735,8 +745,17 @@ def navigateur(base, s):
             attendu = [[p["nom"], fmt(p["prix"])] for p in cat["paliers"]] + [[L["plume"], "+" + fmt(cat["plume"])]]
             dit("%d : les timbres disent les prix du constructeur" % larg,
                 [[plat(a), plat(b)] for a, b in timbres] == attendu, (timbres, attendu))
-            dit("%d : le prix de la plume, partout le même" % larg,
-                plat(pg.inner_text(".pl-prix .px")) == fmt(cat["plume"]) and (L["des"] + fmt(cat["plume"])) in plat(pg.inner_text(".petit")))
+            dit("%d : le prix de la plume et le prix d'entrée, partout les mêmes que dans le constructeur" % larg,
+                plat(pg.inner_text(".pl-prix .px")) == fmt(cat["plume"])
+                and (L["des"] + fmt(cat["paliers"][0]["prix"])) in plat(pg.inner_text(".petit")))
+            # ⛔ Zéro gratuité (Mongazi, 2026-10-22) : aucune offre à 0 F, et le mot « gratuit » ne promet plus rien.
+            # (on lit les zones qui parlent d'argent, pas les lettres d'exemple, qui peuvent dire « je t'ai offert »)
+            visible = plat(pg.evaluate("""() => [...document.querySelectorAll('.petit, .timbres, .pl-prix, .faq, .billets, .payer, .fp-prix')]
+                .map(e => e.textContent).join(' ')""")).lower()
+            dit("%d : aucune offre n'est gratuite, et la page ne promet plus rien de gratuit" % larg,
+                all(p["prix"] > 0 for p in cat["paliers"])
+                and not any(m in visible for m in ("gratuit", "offert", "free to", "costs nothing", "ne coûte rien")),
+                [m for m in ("gratuit", "offert", "free to", "costs nothing", "ne coûte rien") if m in visible])
             occ = pg.evaluate("() => [...document.querySelectorAll('.case')].map(a => new URL(a.href).searchParams.get('occasion'))")
             dit("%d : chaque case du casier mène à une occasion qui existe (%d)" % (larg, len(occ)),
                 len(occ) == len(cat["occasions"]) and set(occ) == set(cat["occasions"]))

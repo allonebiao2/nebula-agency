@@ -56,7 +56,7 @@ LANGUES = {
         "fiche": "La fiche de %s", "souvenir": "Un souvenir que vous seuls connaissez",
         "consignes": "Comment il la veut", "exemple": "%s · exemple", "ecrire": "Écrire", "fam_n": "%d occasions",
         "plume": "La plume", "musique": "Musique", "credit_son": "Musique : %s, sur Pixabay.",
-        "plume_ds": "Elle écrit avec toi. Gratuite à essayer, comptée seulement si tu l'envoies.",
+        "plume_ds": "Elle écrit avec toi, une fois ta commande réglée.",
         "occ": "Exemple · ",
         "mois": ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
                  "septembre", "octobre", "novembre", "décembre"],
@@ -65,9 +65,8 @@ LANGUES = {
         # ⛔ « un an » et « sans notre signature » sont VÉRIFIÉS sur chaque offre
         # payante avant d'être écrits (voir faq_prix) : la phrase ne peut pas mentir.
         "an": "un an", "et": " et ",
-        "faq_prix": "Elle est gratuite pour commencer : %s. Les offres payantes la gardent un an, sans notre "
-                    "signature, avec l'habillage au choix : %s. La plume ajoute %s, seulement si tu envoies la "
-                    "version qu'elle a écrite.",
+        "faq_prix": "%s coûte %s : %s. Les autres offres la gardent un an, sans notre signature, avec "
+                    "l'habillage au choix : %s. La plume ajoute %s, réglés avec ta lettre.",
         "fp_msg": "Bonjour, nous nous marions et nous voudrions un faire-part Ma lettre à…",
         # ⚠️ Clés NEUTRES : elles vivent dans le script de la page anglaise, où le
         # contrôle des langues prenait « avant » et « dans » pour du français oublié.
@@ -92,15 +91,15 @@ LANGUES = {
         "fiche": "%s's form", "souvenir": "A memory only you two know",
         "consignes": "How he wants it", "exemple": "%s · example", "ecrire": "Write", "fam_n": "%d occasions",
         "plume": "The Quill", "musique": "Music", "credit_son": "Music: %s, on Pixabay.",
-        "plume_ds": "It writes with you. Free to try, counted only if you send it.",
+        "plume_ds": "It writes with you, once your order is paid.",
         "occ": "Example · ",
         "mois": ["January", "February", "March", "April", "May", "June", "July", "August",
                  "September", "October", "November", "December"],
         "hab_des": "from %s (%s)", "habille": "+ your choice of finish",
         "hab_l": {"cire": "The wax", "papier": "The paper", "pluie": "When it opens"},
         "an": "year", "et": " and ",
-        "faq_prix": "It is free to start: %s. Paid offers keep it for a year, without our signature, with your "
-                    "choice of finish: %s. The Quill adds %s, only if you send the version it wrote.",
+        "faq_prix": "%s costs %s: %s. The other offers keep it for a year, without our signature, with your "
+                    "choice of finish: %s. The Quill adds %s, paid with your letter.",
         "fp_msg": "Hello, we are getting married and we would like a Ma lettre à… wedding invitation.",
         "bientot": {"a": "Next big date: ", "j0": "it's today", "j1": "it's tomorrow",
                     "jn": "in %d days", "go": "Write it now, it will wait."},
@@ -432,16 +431,17 @@ def faq_prix(paliers, plume, T):
     """La réponse « combien ça coûte », ÉCRITE depuis le catalogue. Elle affirme
     que les offres payantes durent un an, sans signature, avec l'habillage :
     c'est vérifié ici sur chacune, sinon rien n'est écrit."""
-    gratuit, payants = paliers[0], paliers[1:]
-    if gratuit["prix"] != 0 or not payants:
-        sys.exit("⛔ le premier palier n'est plus gratuit : réécrire la réponse du prix")
+    # ⛔ Zéro gratuité depuis le 2026-10-22 : la première offre (La Carte) est payante et porte la signature.
+    entree, payants = paliers[0], paliers[1:]
+    if entree["prix"] <= 0 or not entree["pied"] or not payants:
+        sys.exit("⛔ la première offre n'est plus La Carte payante et signée : réécrire la réponse du prix")
     faux = [p["nom"] for p in payants if p["pied"] or not p["habillage"] or T["an"] not in p["desc"].lower()]
     if faux:
         sys.exit("⛔ la réponse du prix mentirait pour %s : réécrire T['faq_prix']" % ", ".join(faux))
     liste = ["%s (%s)" % (p["nom"], fmt(p["prix"], T)) for p in payants]
     liste = ", ".join(liste[:-1]) + T["et"] + liste[-1] if len(liste) > 1 else liste[0]
-    desc = gratuit["desc"][:1].lower() + gratuit["desc"][1:]
-    return e(T["faq_prix"] % (desc, liste, fmt(plume, T)))
+    desc = entree["desc"][:1].lower() + entree["desc"][1:]
+    return e(T["faq_prix"] % (entree["nom"], fmt(entree["prix"], T), desc, liste, fmt(plume, T)))
 
 
 def plat_html(h):
@@ -564,6 +564,7 @@ def construire(langue, dico, tons, fp):
         s = _traduire.traduire(s, dico["_accueil_src.html"], "_accueil_src.html")
     remplacer = {
         "<!--__PLUME_PRIX__-->": e(fmt(plume, T)),
+        "<!--__ENTREE_PRIX__-->": e(fmt(paliers[0]["prix"], T)),
         "<!--__TEXTE__-->": texte_feuille(T),
         "<!--__EXEMPLES__-->": cartes(exemples, T, tons),
         "<!--__FICHE__-->": fiche,
