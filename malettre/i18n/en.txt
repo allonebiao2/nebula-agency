@@ -611,6 +611,8 @@ FR: <a class="langue" href="en/" hreflang="en" lang="en" title="Read this page i
 EN: <a class="langue" href="../" hreflang="fr" lang="fr" title="Lire cette page en français">FR</a>
 FR: </span>Écrire ma lettre<
 EN: </span>Write my letter<
+FR: <p class="ch-touche"><span class="t-doigt">Touche l'écran pour l'ouvrir</span><span class="t-souris">Clique pour l'ouvrir</span></p>
+EN: <p class="ch-touche"><span class="t-doigt">Tap the screen to open it</span><span class="t-souris">Click to open it</span></p>
 # ── le héros ──
 FR: <p class="lieu-date" id="lieu-date">Cotonou, ce jour</p>
 EN: <p class="lieu-date" id="lieu-date">Cotonou, today</p>

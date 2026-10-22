@@ -121,6 +121,14 @@ button{background:none;border:0;cursor:pointer}
 .js .chargement{position:fixed;inset:0;z-index:100;overflow:hidden;display:grid;place-items:center;align-content:center;gap:0;
   background:radial-gradient(110% 80% at 50% 45%,var(--nuit-2),var(--nuit) 70%);transition:opacity .55s ease .05s,visibility 0s .6s}
 .chargement.parti{opacity:0;visibility:hidden}
+
+.js .chargement{touch-action:none;overscroll-behavior:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+html.rideau,html.rideau body{overflow:hidden}
+.ch-touche{margin-top:30px;min-height:1.6em;font-size:14px;letter-spacing:.06em;color:var(--or);opacity:0;transition:opacity .6s ease}
+.ch-touche .t-souris{display:none}
+@media(hover:hover) and (pointer:fine){.ch-touche .t-doigt{display:none}.ch-touche .t-souris{display:inline}}
+.ch-pret .ch-touche{opacity:1;animation:ch-appel 2.4s ease-in-out .6s infinite}
+@keyframes ch-appel{0%,100%{opacity:1}50%{opacity:.45}}
 .ch-lettre{--L:min(230px,56vw);position:relative;width:var(--L);height:calc(var(--L)*1.18);perspective:900px;
   animation:ch-arrive .6s cubic-bezier(.22,1,.36,1) both}
 @keyframes ch-arrive{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
@@ -901,6 +909,7 @@ html.voile body > :not(#modale) *::after{animation-play-state:paused!important}
     </svg>
   </div>
   <div class="ch-nom"><b>Ma lettre à…</b><span>by NEBULA Agency</span></div>
+  <p class="ch-touche"><span class="t-doigt">Tap the screen to open it</span><span class="t-souris">Click to open it</span></p>
 </div>
 
 <header class="barre a-son">
@@ -1313,16 +1322,21 @@ var Bruits = (function(){
       if (fh) { fh.classList.add("pret"); }
     }, 1500); };
     if (document.readyState === "complete") { allumer(); } else { addEventListener("load", allumer, { once: true }); }
-    setTimeout(function(){ ch.hidden = true; }, 700);
+    document.documentElement.classList.remove("rideau");
+    setTimeout(function(){ ch.hidden = true; }, doux ? 0 : 700);
   }
-  if (doux) { setTimeout(partir, 500); return; }
+  if (doux) { setTimeout(partir, 250); return; }
   setTimeout(function(){
     ch.classList.add("ch-denoue");
     ch.classList.add("ch-ouvre");
   }, 450);
-  setTimeout(partir, 3000);
-  ch.addEventListener("click", partir);
-  setTimeout(partir, 4500);
+  document.documentElement.classList.add("rideau");
+  setTimeout(function(){ ch.classList.add("ch-pret"); }, 2400);
+  function geste(e){ if (window.Bruits && e && e.type !== "wheel") { Bruits.glisse(); } partir(); }
+  ["pointerup", "touchend", "click"].forEach(function(t){ ch.addEventListener(t, geste); });
+  addEventListener("keydown", geste, { once: true });
+  addEventListener("wheel", geste, { once: true, passive: true });
+  setTimeout(partir, 12000);
 })();
 
 var PRENOMS = ["Afi", "Dad", "Zara", "Mum", "Grâce", "you"];

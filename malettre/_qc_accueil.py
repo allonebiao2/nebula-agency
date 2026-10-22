@@ -11,7 +11,7 @@ Ce qu'une suite verte doit prouver ici, et que l'œil ne voit pas :
 - le prénom tapé arrive vraiment dans le constructeur ;
 - chaque exemple ouvre une VRAIE lettre, qui dit qu'elle est un exemple, et
   rien ne ressemble à un avis client (faux témoignage) ;
-- le chargement se retire seul, et n'existe pas sans JavaScript ;
+- le chargement attend le premier contact (qui lance la musique), s'ouvre seul à 12 s, et n'existe pas sans JavaScript ;
 - rien ne déborde, rien ne saute (CLS), aucune cible sous 44 px, et le
   contraste est mesuré sur les PIXELS rendus (le texte d'abord lu, PUIS
   rendu transparent : l'inverse mesurait du vide, leçon Luxury Club) ;
@@ -29,6 +29,7 @@ import pathlib
 import re
 import sys
 import threading
+import time
 import urllib.parse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -497,6 +498,7 @@ def profondeur(pg, larg, cat, base):
     def balayer(temoin):
         p3 = pg.context.new_page()
         p3.goto(pg.url.split("#")[0])
+        p3.locator("#chargement").click()   # la lettre attend le premier contact (2026-10-22)
         p3.wait_for_function("document.getElementById('chargement').hidden", timeout=9000)
         p3.evaluate("() => scrollTo(0, 2)")   # un défilement : GSAP arrive
         p3.wait_for_function("document.documentElement.classList.contains('gsap')", timeout=12000)
@@ -531,6 +533,7 @@ def profondeur(pg, larg, cat, base):
             all(cas["glisse"]) and cas["page"] <= larg, cas)
         p2 = pg.context.new_page()
         p2.goto(base + ("en/" if "/en/" in pg.url else "") + "index.html")
+        p2.locator("#chargement").tap()
         p2.wait_for_function("document.getElementById('chargement').hidden", timeout=9000)
         case = p2.locator(".case").nth(1)
         case.scroll_into_view_if_needed()
@@ -546,6 +549,69 @@ def profondeur(pg, larg, cat, base):
         p2.close()
     else:
         dit("%d : sur ordinateur, le casier reste une grille (aucune étagère qui glisse)" % larg, not any(cas["glisse"]), cas)
+
+
+ESPION_SON = """
+(() => {
+  const jouer = HTMLMediaElement.prototype.play;
+  window.__jeux = [];
+  HTMLMediaElement.prototype.play = function(){
+    const k = { src: String(this.src).split('/').pop() };
+    window.__jeux.push(k);
+    const r = jouer.call(this);
+    r.then(() => { k.ok = true; }, (e) => { k.refus = e.name; });
+    return r;
+  };
+})();
+"""
+ETAT_SON = ("JSON.stringify({active: navigator.userActivation.hasBeenActive, ok: window.__jeux.some(j => j.src.includes('musique') && j.ok),"
+            " rideau: !document.getElementById('chargement').hidden, defile: scrollY})")
+
+
+def musique(base):
+    """⛔ 2026-10-22 : « la musique doit se déclencher au simple toucher ». Les autres contrôles ne PEUVENT
+    pas le voir : Playwright lance Chromium sans la règle de lecture des téléphones, et ses evaluate comptent
+    comme un geste. Ici : la règle remise, on touche par le protocole (CDP), on lit sans geste (userGesture:
+    false). Le premier contact est un GLISSEMENT, celui d'un visiteur qui veut défiler."""
+    print("\n· la musique au premier contact (la règle de lecture d'un vrai téléphone)")
+    if not (ICI / "son" / "musique.mp3").exists():
+        print("  (pas de musique sur le disque : rien à mesurer)")
+        return
+    with sync_playwright() as pw:
+        nav = pw.chromium.launch(ignore_default_args=["--autoplay-policy=no-user-gesture-required"],
+                                 args=["--autoplay-policy=user-gesture-required"])
+        ctx = nav.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        pg = ctx.new_page()
+        pg.add_init_script(ESPION_SON)
+        pg.goto(base + "index.html")
+        cdp = ctx.new_cdp_session(pg)
+
+        def lire():
+            v = cdp.send("Runtime.evaluate", {"expression": ETAT_SON, "userGesture": False, "returnByValue": True})
+            return json.loads(v["result"]["value"])
+
+        def glisser(y0, y1):
+            cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": 200, "y": y0}]})
+            for k in range(1, 11):
+                time.sleep(.016)
+                cdp.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": 200, "y": y0 + (y1 - y0) * k / 10}]})
+            cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+
+        time.sleep(3.5)
+        a = lire()
+        dit("témoin : la page n'est pas activée avant le premier contact (la règle des téléphones est bien là)",
+            a["active"] is False and not a["ok"], a)
+        glisser(650, 320)
+        time.sleep(2)
+        b = lire()
+        dit("le premier contact, un glissement, ouvre la lettre ET lance la musique, sans faire défiler",
+            b["active"] and b["ok"] and not b["rideau"] and b["defile"] == 0, b)
+        # Le filet : sans aucun contact, la lettre s'ouvre seule à 12 s (sans le son : rien ne l'autorise).
+        pg2 = ctx.new_page()
+        pg2.goto(base + "index.html")
+        pg2.wait_for_timeout(13000)
+        dit("sans aucun contact, la lettre s'ouvre seule à 12 s", pg2.evaluate("document.getElementById('chargement').hidden"))
+        nav.close()
 
 
 def navigateur(base, s):
@@ -583,6 +649,7 @@ def navigateur(base, s):
                 if (!e.hadRecentInput) window.__cls += e.value; }).observe({type: 'layout-shift', buffered: true});""")
             poids = []
             pg.on("response", lambda r: poids.append(r))
+            t_ouvert = time.time()
             pg.goto(page, wait_until="domcontentloaded")
             # ⚠️ Lu TOUT DE SUITE : le chargement vit 3 s, et attendre « load »
             # puis peser les réponses (polices comprises) en prenait parfois plus.
@@ -604,11 +671,18 @@ def navigateur(base, s):
             iw = pg.evaluate("() => Math.max(innerWidth, document.documentElement.scrollWidth)")
             dit("%d : la page tient dans l'écran dès l'ouverture (aucun dézoom)" % larg, iw <= larg, iw)
             dit("%d : le chargement couvre la page à l'ouverture" % larg, vu != "none", vu)
+            # La lettre ATTEND le premier contact (2026-10-22, pour que ce contact lance la musique) :
+            # toujours là à 4,6 s, puis un toucher l'ouvre.
+            pg.wait_for_timeout(max(0, int((4.6 - (time.time() - t_ouvert)) * 1000)))
+            dit("%d : la lettre du chargement attend le premier contact (encore là à 4,6 s)" % larg,
+                not pg.evaluate("document.getElementById('chargement').hidden")
+                and pg.evaluate("document.documentElement.classList.contains('rideau')"))
+            pg.locator("#chargement").click()
             try:
-                pg.wait_for_function("document.getElementById('chargement').hidden", timeout=4800)
-                ok("%d : le chargement se retire seul (filet à 4,5 s)" % larg)
+                pg.wait_for_function("document.getElementById('chargement').hidden", timeout=1500)
+                ok("%d : un toucher l'ouvre, et la page défile de nouveau" % larg)
             except Exception:
-                ko("%d : le chargement se retire seul (filet à 4,5 s)" % larg)
+                ko("%d : un toucher l'ouvre, et la page défile de nouveau" % larg)
 
             # Le prénom tapé : le héros le montre, puis le constructeur le reçoit.
             pg.fill("#q-pour", "Sèna")
@@ -761,6 +835,7 @@ def navigateur(base, s):
         ctx = nav.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
         pg = ctx.new_page()
         pg.goto(page, wait_until="load")
+        pg.locator("#chargement").tap()
         pg.wait_for_function("document.getElementById('chargement').hidden", timeout=6000)
         cdp = ctx.new_cdp_session(pg)
         cdp.send("Emulation.setCPUThrottlingRate", {"rate": 4})
@@ -791,6 +866,7 @@ def main():
             print("\n════════ %s ════════" % langue)
             s = statiques()
             navigateur("http://127.0.0.1:%d/" % srv.server_address[1], s)
+        musique("http://127.0.0.1:%d/" % srv.server_address[1])
     finally:
         srv.shutdown()
     print("\n%d contrôles verts, %d en échec" % (len(verts), len(rouges)))

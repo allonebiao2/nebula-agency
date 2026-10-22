@@ -47,6 +47,7 @@ def main():
             pg.goto(base)
             # ⚠️ Le chargement (la lettre nouée) couvre la page ~3 s : sans
             # cette attente, la première capture le photographie par-dessus.
+            pg.locator("#chargement").click()   # la lettre attend le premier contact (2026-10-22)
             pg.wait_for_function("document.getElementById('chargement').hidden", timeout=8000)
             pg.wait_for_timeout(300)
             if SEULE in ("", "scene"):

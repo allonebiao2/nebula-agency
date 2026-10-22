@@ -296,6 +296,19 @@ dépassait ses 320 Ko (321). La source les garde tous. ⚠️ **Pour comprendre 
 `_accueil_src.html`, jamais `index.html`.** Contrôles de la nuit : accueil, langues, constructeur, caisse, faire-part
 (chiffres dans le récit de la nuit).
 
+## 🎵 LA MUSIQUE AU PREMIER CONTACT (2026-10-22)
+
+Mongazi : « la musique doit se déclencher au simple toucher ; même moi, sur une vitrine, je défile d'un seul
+geste ». ⛔ **Aucun navigateur de téléphone ne laisse jouer un son pendant un défilement** (règle de Chrome et de
+Safari, incontournable). D'où **la lettre du chargement qui ATTEND le premier contact** : tant qu'elle est là,
+la page ne défile pas (`touch-action:none`, `html.rideau`), donc le premier geste, même un glissement, est un
+vrai toucher : il ouvre la lettre ET lance la musique (volume 0,15), avec un bruit de papier. « Touche l'écran
+pour l'ouvrir » (« Clique pour l'ouvrir » sur ordinateur) paraît à 2,4 s ; la molette l'ouvre (sans le son) ;
+**filet : elle s'ouvre seule à 12 s**. Mouvement réduit : aucune attente, elle part à 0,25 s.
+⚠️ **Les contrôles ordinaires ne voient pas le son** (Playwright lance Chromium sans la règle de lecture, et ses
+`evaluate` comptent comme un geste) : `_qc_accueil.py` § « la musique au premier contact » remet la règle, touche
+par le protocole et lit sans geste, avec un témoin. Voir `_memoire/lecons.md` (2026-10-22).
+
 ## ⏳ LES PRIX, REVUS EN PROFONDEUR (2026-10-22) : PROPOSITION, EN ATTENTE DE MONGAZI
 
 Demande : « réfléchis en profondeur et revois le prix, à la hausse ou à la baisse ». Skills : `pricing-strategy`,
