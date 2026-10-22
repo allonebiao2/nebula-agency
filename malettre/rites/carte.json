@@ -142,31 +142,72 @@
       },
       "matieres": [],
       "grande": true
+    },
+    "feu-fete": {
+      "nom": {
+        "fr": "Le feu d'artifice",
+        "en": "The fireworks"
+      },
+      "mecanique": "feu",
+      "theme": {
+        "motif": "fete"
+      },
+      "matieres": [],
+      "grande": true
+    },
+    "feu-or": {
+      "nom": {
+        "fr": "Le bouquet d'or",
+        "en": "The golden finale"
+      },
+      "mecanique": "feu",
+      "theme": {
+        "motif": "or"
+      },
+      "matieres": [],
+      "grande": true
+    },
+    "feu-coeur": {
+      "nom": {
+        "fr": "Le feu du cœur",
+        "en": "The fireworks of the heart"
+      },
+      "mecanique": "feu",
+      "theme": {
+        "motif": "amour"
+      },
+      "matieres": [],
+      "grande": true
     }
   },
   "occasions": {
     "couple": [
       "portes-velours",
+      "feu-coeur",
       "cachet"
     ],
     "mois": [
       "portes-velours",
+      "feu-coeur",
       "cachet"
     ],
     "valentin": [
       "portes-velours",
       "portes-brodees",
       "portes-dentelle",
+      "feu-coeur",
       "cachet"
     ],
     "nous": [
       "portes-dentelle",
       "portes-velours",
+      "feu-coeur",
       "cachet"
     ],
     "demande": [
       "portes-dentelle",
       "portes-velours",
+      "feu-coeur",
       "cachet"
     ],
     "pardon": [
@@ -179,6 +220,7 @@
       "bougie",
       "rideau-theatre",
       "portes-deco",
+      "feu-fete",
       "cachet"
     ],
     "maman": [
@@ -194,23 +236,27 @@
     "naissance": [
       "rideau-soie",
       "cachet",
-      "portes-dentelle"
+      "portes-dentelle",
+      "feu-fete"
     ],
     "mariage": [
       "perles",
       "portes-dentelle",
       "rideau-soie",
       "portes-velours",
+      "feu-coeur",
       "cachet"
     ],
     "amitie": [
       "cachet",
       "portes-deco",
-      "rideau-theatre"
+      "rideau-theatre",
+      "feu-fete"
     ],
     "potes": [
       "portes-deco",
       "rideau-theatre",
+      "feu-fete",
       "cachet"
     ],
     "brouille": [
@@ -219,9 +265,11 @@
     "noel": [
       "cachet",
       "portes-velours",
-      "rideau-minuit"
+      "rideau-minuit",
+      "feu-or"
     ],
     "nouvelan": [
+      "feu-or",
       "portes-deco",
       "rideau-minuit",
       "cachet"
@@ -241,6 +289,7 @@
     "reussite": [
       "rideau-theatre",
       "portes-deco",
+      "feu-or",
       "cachet"
     ],
     "courage": [
@@ -252,11 +301,13 @@
     "travail": [
       "portes-deco",
       "rideau-theatre",
+      "feu-or",
       "cachet"
     ],
     "retraite": [
       "rideau-theatre",
       "portes-deco",
+      "feu-or",
       "cachet"
     ],
     "merci": [
@@ -267,6 +318,7 @@
       "portes-deco",
       "rideau-minuit",
       "portes-velours",
+      "feu-coeur",
       "cachet"
     ],
     "autre": [
@@ -274,7 +326,8 @@
       "portes-dentelle",
       "portes-velours",
       "portes-deco",
-      "rideau-theatre"
+      "rideau-theatre",
+      "feu-fete"
     ]
   }
 }

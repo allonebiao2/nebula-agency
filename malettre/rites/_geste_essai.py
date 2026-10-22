@@ -3,6 +3,7 @@
     python malettre/rites/_geste_essai.py                  # portes-dentelle
     python malettre/rites/_geste_essai.py moucharabieh
     python malettre/rites/_geste_essai.py rideau-theatre
+    python malettre/rites/_geste_essai.py feu-fete
 
 Pourquoi ce banc : le 2026-10-22, le contrôle de la démonstration disait « ouverte, portes devant la lettre » alors
 que les portes s'étaient ouvertes TOUTES SEULES (l'ouverture automatique de 6,5 s) : le rendu logiciel du navigateur
@@ -110,6 +111,29 @@ class Banc:
         self.note("vraie lettre : le bouton puis deux touchers lèvent le rideau", e["coups"] == 3 and e["ouvre"], e)
 
 
+def feu(self):
+    """Le feu d'artifice : chaque toucher envoie une fusée VERS le doigt ; la troisième annonce le bouquet final."""
+    lire = "(() => { const r = window.__rite || (window.RITE && RITE.rite); return { n: r.fusees.length, x: r.fusees.map(f => +f.x1.toFixed(2)), finale: r.finale != null }; })()"
+    pg = self.page()
+    pg.evaluate("__ouvrir()"); pg.wait_for_timeout(400)
+    pg.mouse.click(60, 250); pg.wait_for_timeout(400)
+    e2 = pg.evaluate(lire)
+    pg.mouse.click(330, 300); pg.wait_for_timeout(400)
+    e3 = pg.evaluate(lire); pg.close()
+    asp = 390 / 844
+    attendu = round((60 / 390 * 2 - 1) * asp, 2)
+    self.note("un toucher envoie une fusée vers le doigt (x = %.2f)" % attendu, e2["n"] == 2 and abs(e2["x"][1] - attendu) < 0.02, e2)
+    self.note("la troisième fusée annonce le bouquet final", e3["n"] == 3 and e3["finale"], e3)
+    pg = self.page(self.lettre, crochet=True)
+    pg.click("#btn-ouvrir"); pg.wait_for_timeout(500)
+    pg.mouse.click(120, 250); pg.wait_for_timeout(500); pg.mouse.click(280, 280)
+    e = pg.evaluate(lire); pg.close()
+    self.note("vraie lettre : le bouton puis deux touchers sur le ciel", e["n"] == 3 and e["finale"], e)
+
+
+Banc.feu = feu
+
+
 def main():
     rite = sys.argv[1] if len(sys.argv) > 1 else "portes-dentelle"
     banc, demo = servir(ICI), servir(ICI / "_planches" / "demo")
@@ -120,6 +144,8 @@ def main():
         pg = b.page(); meca = pg.evaluate("window.__rite.id"); pg.close()
         if meca == "rideau":
             b.rideau()
+        elif meca == "feu":
+            b.feu()
         elif meca == "battants":
             b.portes()
         else:

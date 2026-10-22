@@ -30,7 +30,9 @@ EXEMPLES = {
     "portes-velours": ("valentin", "Saint-Valentin", "Joyeuse Saint-Valentin", "rose", "coeur", "coton", "petales"),
     "portes-dentelle": ("demande", "Demande en mariage", "Veux-tu m'épouser ?", "or", "initiale", "creme", "etoiles"),
     "moucharabieh": ("tabaski", "Tabaski", "Bonne fête de Tabaski", "or", "initiale", "creme", "etoiles"),
-    "portes-deco": ("nouvelan", "Nouvel an", "Bonne année", "or", "initiale", "nuit", "confettis"),
+    "portes-deco": ("potes", "Soirée entre potes", "Tu es de la fête", "or", "initiale", "nuit", "confettis"),
+    "feu-or": ("nouvelan", "Nouvel an", "Bonne année", "or", "initiale", "nuit", "etoiles"),
+    "feu-coeur": ("couple", "Demande de couple", "Tu veux sortir avec moi ?", "rose", "coeur", "creme", "petales"),
     "rideau-theatre": ("reussite", "Réussite", "Félicitations !", "bordeaux", "initiale", "creme", "confettis"),
     "rideau-soie": ("naissance", "Naissance", "Bienvenue au monde", "or", "initiale", "coton", "etoiles"),
     "perles": ("mariage", "Mariage", "Tous mes vœux de bonheur", "or", "couronne", "creme", "etoiles"),
@@ -60,7 +62,7 @@ color:#f4ede0;background:#1d1826;box-shadow:inset 0 0 0 1px rgba(244,237,224,.12
 a b{font-weight:400;font-size:22px}a i{font-style:normal;font-family:system-ui,sans-serif;font-size:13px;color:#e0c266}
 a:hover{background:#262033}</style></head><body>
 <h1>Les ouvertures</h1><p>Une vraie lettre par ouverture. Touche le cachet (ou le bouton) ; les portes, écarte-les du doigt ;
-le rideau, frappe les trois coups.
+le rideau, frappe les trois coups ; le feu d'artifice, touche le ciel.
 Pour rejouer, reviens ici puis rouvre la lettre.</p>
 <nav>""" + "".join(liens) + """</nav>
 <script>/* chaque essai est une première lecture (une lettre relue s'écrit quatre fois plus vite) */
@@ -107,7 +109,7 @@ def controler(port):
                 geste = " · geste au doigt"
             t0 = time.time()
             ouverte = devant = False
-            while time.time() - t0 < 12:
+            while time.time() - t0 < 25:
                 devant = devant or pg.evaluate("!!window.__devant")
                 if pg.evaluate("document.querySelector('#lettre').classList.contains('ouverte')"):
                     ouverte = True

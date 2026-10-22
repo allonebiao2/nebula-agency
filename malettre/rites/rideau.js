@@ -14,6 +14,35 @@
     nuit: { a: "#22305e", b: "#0e142e", or: "#d8bf78", rim: [0.16, 0.2, 0.42], lum: [0.86, 0.86, 0.95], amb: [0.1, 0.11, 0.17], bravo: true }
   };
   var NX = 64, NY = 38, PLIS = 6, BAS = 0.6;   /* le bas du lambrequin (en y : 1 en haut de l'écran, -1 en bas) */
+  /* ses sons à lui (seule une lettre qui porte ce rite les emporte) : le contexte et les sons partagés viennent de
+     l'atelier, `bruit` et `SON` de la lettre */
+  var SONS = {
+    /* un coup du brigadier sur le plancher : un choc sourd, du bois et de la poussière */
+    coup: function (quand) {
+      var ctx = Atelier.Son.ctx(); if (!ctx || typeof bruit !== "function") return;
+      var t = ctx.currentTime + (quand || 0), o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.22);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.6, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+      o.connect(g); g.connect(SON.sortie); o.start(t); o.stop(t + 0.35);
+      var b = bruit(ctx, 0.08), f = ctx.createBiquadFilter(), g2 = ctx.createGain();
+      f.type = "lowpass"; f.frequency.value = 700;
+      g2.gain.setValueAtTime(0.5, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+      b.connect(f); f.connect(g2); g2.connect(SON.sortie); b.start(t);
+    },
+    /* une salle qui applaudit : des centaines de claquements brefs, chacun sa hauteur, qui montent puis s'éteignent */
+    applaudir: function (quand, duree, force) {
+      var ctx = Atelier.Son.ctx(); if (!ctx || typeof bruit !== "function") return;
+      var t0 = ctx.currentTime + (quand || 0), d = duree || 3, n = Math.round(d * 70), b = bruit(ctx, 0.03);
+      var buf = b.buffer;
+      for (var i = 0; i < n; i++) {
+        var k = i / n, t = t0 + Math.pow(k, 0.85) * d + Math.random() * 0.02, env = Math.min(1, k * 6) * Math.pow(1 - k, 1.4);
+        var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+        s.buffer = buf; f.type = "bandpass"; f.Q.value = 1.6; f.frequency.value = 900 + Math.random() * 2200;
+        g.gain.setValueAtTime((force || 0.12) * env * (0.4 + Math.random() * 0.6), t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.025 + Math.random() * 0.02);
+        s.connect(f); f.connect(g); g.connect(SON.sortie); s.start(t); s.stop(t + 0.05);
+      }
+    }
+  };
 
   /* le velours : un dégradé, des côtes verticales à peine marquées, la frange d'or en bas (feuille d'or dans la hauteur) */
   function velours(S, T, haut, frange) {
@@ -114,14 +143,14 @@
     frapper: function (t) {
       if (this.coups.length >= 3 || (this.coups.length && t - this.coups[this.coups.length - 1] < 0.32)) return;
       this.coups.push(t);
-      Atelier.Son.coup(0);
+      SONS.coup(0);
       if (this.coups.length === 2 && this.dire) this.dire({ fr: "Encore un", en: "One more" });
       if (this.coups.length === 3) {
         if (this.taire) this.taire();
         this.tOuvre = t + 0.75;
         var S = Atelier.Son;
         S.souffle(0.75, 2.4, 180, 700, 0.22); S.accord(0.9, [130.81, 196, 261.63, 392], 3.6, 0.04);
-        if (this.T.bravo) S.applaudir(1.6, 3.4, 0.11);
+        if (this.T.bravo) SONS.applaudir(1.6, 3.4, 0.11);
       }
     },
     geste: function () { this.frapper(0); this.auto = this.D.auto != null ? this.D.auto : 3.4; },
