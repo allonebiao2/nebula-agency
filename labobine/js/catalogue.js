@@ -68,7 +68,7 @@ export function fabriquerVideo(o) {
     if (produit.media) {
       c.ajustement = produit.detoure || cle === 'elegant' ? 'adapter' : 'remplir';
       // une pièce détourée laisse la place, sous elle, à son nom et à son prix
-      if (produit.detoure) { c.echelle = 0.76; c.cy = 0.43; }
+      if (produit.detoure) Object.assign(c, cle === 'promo' ? { echelle: 0.7, cy: 0.5 } : { echelle: 0.76, cy: 0.43 });
       c.mouvement = 'avant';
     }
   }
@@ -120,7 +120,7 @@ export function fabriquerVideo(o) {
       const prix = String(pd.prix || '').trim();
       const sansPhoto = !pd.media;
       if (cle === 'promo') {
-        dessus.texte.push(texte(x.debut, d, sansPhoto ? 'affiche' : 'pastille', pd.nom, sansPhoto ? { cy: 0.42 } : { cy: 0.13 }));
+        dessus.texte.push(texte(x.debut, d, sansPhoto ? 'affiche' : 'pastille', pd.nom, sansPhoto ? { cy: 0.42 } : { cy: 0.09 }));
         if (prix) dessus.texte.push(texte(x.debut, d, 'affiche', prix, { cy: 0.8, taille: prixLong(prix) ? 0.06 : 0.085, couleur: '#ffd23f' }));
       } else if (cle === 'elegant') {
         dessus.texte.push(texte(x.debut, d, 'elegant', pd.nom, { cy: sansPhoto ? 0.46 : 0.84, taille: sansPhoto ? 0.065 : 0.05 }));
