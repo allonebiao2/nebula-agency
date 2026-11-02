@@ -19,3 +19,7 @@
 
 /icons/*
   Cache-Control: public, max-age=86400
+
+/catalogues/*
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex

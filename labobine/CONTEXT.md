@@ -35,13 +35,17 @@ nous**. On ne reprend rien de CapCut (ni code, ni effets, ni modèles, ni musiqu
 | `js/rythme.js` | les temps d'une musique : flux spectral, tempo par autocorrélation, suivi par programmation dynamique (Ellis 2007) |
 | `js/gif.js` | l'encodeur GIF : coupe médiane par image, tramage ordonné fixe, LZW, pixels inchangés transparents |
 | `js/lut.js` | les LUT 3D `.cube` : lecture, application WebGL (atlas de tranches, trilinéaire), repli processeur identique |
+| `js/catalogue.js` | la vidéo tirée d'un catalogue : fabrique un **projet ordinaire** (3 styles), calé sur la musique ; sans DOM, testé dans Node |
+| `js/fabrique.js` | la fenêtre « Vidéo depuis mes produits » (catalogue d'une maison ou photos du commerçant) |
+| `_catalogues.py` | lit les catalogues des maisons **à la source** (lecteurs de LE STANDARD) → `catalogues/<maison>/` (ignoré par git, refait à chaque publication) |
 | `js/inverser.js` | lire une vidéo à l'envers : tranches décodées vers l'avant, réécrites à rebours ; le son retourné aussi |
 | `vendor/mediabunny-1.65.0.min.mjs` | lecture/écriture MP4 et WebM, **MPL-2.0** (licence dans `vendor/`, créditée au pied de l'accueil) |
 
 ## Commandes
 
 ```bash
-node labobine/_qc_modele.mjs  # sans navigateur : modèle, rythme, GIF, LUT (lancé aussi en tête de _qc.py)
+node labobine/_qc_modele.mjs  # sans navigateur : modèle, rythme, GIF, LUT, vidéo de catalogue (lancé aussi en tête de _qc.py)
+python labobine/_catalogues.py # relit les catalogues des maisons (lancé aussi par _dist.py et par _qc.py)
 python labobine/_qc.py        # contrôles Chrome (vagues 1 à 3 et 2 bis ; --sans-ia saute Whisper et MediaPipe quand le PC manque de mémoire) ; tests Node du modèle, du son, des visages et des légendes dans le scratchpad dans un vrai Chrome + examen du MP4 exporté (ffprobe), captures dans %TEMP%/labobine-qc
 python labobine/_dist.py      # prépare labobine/_dist (on ne publie JAMAIS le dossier entier)
 # publier (avec CLOUDFLARE_API_TOKEN de secrets/cloudflare.env) :
@@ -135,6 +139,36 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
    Le code fait **8 chiffres** (l'écran ne cite plus de nombre).
    Équipes : pas encore.
 5. IA générative et modèles : image vers vidéo, avatars, musique IA, modèles, kit de marque.
+
+## La vidéo depuis le catalogue du commerçant (2026-11-02, choisie par Mongazi)
+
+L'angle que CapCut laisse : **partir des produits réels du commerçant** et sortir sa vidéo TikTok en un geste.
+- **Deux portes** : le bouton « Vidéo depuis mes produits » de l'accueil (le commerçant ajoute ses photos, un nom et un
+  prix par produit), ou le **lien d'une maison** : `https://labobine.pages.dev/#catalogue/hillary-m-styl`,
+  `#catalogue/au-braise-dor`. Liens **non listés** (rien ne les annonce dans l'interface), `noindex` dans `_headers`.
+- **Lu à la source, jamais recopié** : `_catalogues.py` passe par les **lecteurs de LE STANDARD**
+  (`whatsapp-agent/lecteurs/`), qui lisent le fichier que le site sert déjà ; les photos sont celles que ce fichier
+  nomme (`img`, champ `photo` ajouté à `Article` le 2026-11-02) ; les couleurs, celles de la feuille de style de la maison ;
+  le numéro, celui de la **fiche** de la maison. Refait à chaque publication par `_dist.py` : un prix changé sur un site suit.
+- ⛔ **Le numéro n'est jamais deviné** : la fiche d'Au Braisé d'Or est vide exprès (deux numéros dans le dépôt), donc
+  le champ Contact reste vide et la vidéo finit sans numéro. Un contrôle le vérifie.
+- **Un prix sur une étiquette ne ment jamais** : `prixCourt` = le prix exact, ou le plus bas précédé de « dès »
+  (deux tailles, fourchette, normal/express), ou « Prix sur demande ». Un prix long passe en pastille, sans être coupé.
+- **Un produit sans photo** devient une carte typographique sur le fond de la maison, jamais une image d'emprunt.
+- **Trois styles** (`MODELES` dans `catalogue.js`) : La vitrine (étiquette de prix, glissements), La promo (prix en
+  grand, éclat PROMO, battement et flash sur le rythme), L'élégante (lettres fines, fondus, lumières floues).
+  Une pièce détourée (Hillary) se pose entière au-dessus de son nom ; une photo pleine remplit l'écran, en zoom lent.
+- **La musique** : son rythme est trouvé sur l'appareil, chaque plan dure 1, 2, 4 ou 8 temps (le plus proche de la
+  durée du style), les textes et les étiquettes suivent les plans **après** le calage, la musique s'arrête avec la
+  vidéo, en fondu. 15 produits au plus.
+- Le résultat est un **projet ordinaire** : tout se retouche dans l'éditeur, l'export garde le filigrane en gratuit.
+- Contrôles : `_qc_modele.mjs` (fabrication) et `_qc.py` (le lien d'Hillary, celui d'Au Braisé d'Or, ses propres
+  photos avec musique, export GIF avec les vraies photos, 390 px). ⚠️ Ils **lisent** les catalogues : on n'y recopie
+  aucun nombre d'articles ni aucun prix.
+- ⚠️ Les photos de plats d'Au Braisé d'Or sont générées par IA : gardées pour ce client seul (Mongazi, 2026-08-20).
+  Pour toute autre maison, la règle reste entière : jamais une image générée présentée comme le catalogue.
+- Ajouter une maison : un lecteur dans LE STANDARD (s'il n'existe pas), puis une entrée dans `MAISONS` de
+  `_catalogues.py` (fiche, dossier des photos, feuille de style et noms de ses deux variables de couleur).
 
 ## Pièges rencontrés
 

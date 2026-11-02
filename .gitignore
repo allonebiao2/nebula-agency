@@ -131,3 +131,6 @@ malettre/son/*.mp3
 
 # MA LETTRE À… · les planches et lettres d'essai des ouvertures (refaites par _voir.py, _lettre_essai.py, _demo.py)
 malettre/rites/_planches/
+
+# LA BOBINE : catalogues régénérés depuis les sources des maisons à chaque publication (labobine/_catalogues.py)
+labobine/catalogues/

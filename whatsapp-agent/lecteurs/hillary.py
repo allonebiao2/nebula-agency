@@ -91,6 +91,7 @@ def charger(racine: Path) -> Catalogue:
             categorie=label,
             description=description.strip(),
             delai=_delai(p),
+            photo=str(p.get("img") or ""),
         ))
 
     return Catalogue(maison="Hillary M. Styl",

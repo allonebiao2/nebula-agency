@@ -1,10 +1,15 @@
 """Prépare labobine/_dist : uniquement ce qui doit être en ligne. On ne publie jamais le dossier entier."""
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 ICI = Path(__file__).resolve().parent
 DIST = ICI / "_dist"
-A_PUBLIER = ["index.html", "404.html", "app.css", "manifest.webmanifest", "_headers", "js", "vendor", "icons"]
+A_PUBLIER = ["index.html", "404.html", "app.css", "manifest.webmanifest", "_headers", "js", "vendor", "icons", "catalogues"]
+
+# les catalogues des maisons se relisent à la source à chaque publication : un prix changé sur un site suit
+subprocess.run([sys.executable, str(ICI / "_catalogues.py")], check=True)
 
 if DIST.exists():
     shutil.rmtree(DIST)

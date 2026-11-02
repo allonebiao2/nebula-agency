@@ -33,6 +33,13 @@
     <h1>Monte tes vidéos, ici, maintenant.</h1>
     <p>Découpe, textes animés, transitions, voix off et export MP4, sur ordinateur comme sur téléphone. Rien à installer : tes fichiers restent sur ton appareil.</p>
   </section>
+  <section class="ac-catalogue">
+    <div>
+      <h2>Tu vends ? Ta vidéo TikTok sort de tes produits.</h2>
+      <p>Choisis tes photos, écris le prix : LA BOBINE monte la vidéo, cale les plans sur ta musique et finit sur ton WhatsApp. Tu la retouches ensuite comme tu veux.</p>
+    </div>
+    <button class="btn primaire" id="btn-catalogue" type="button">Vidéo depuis mes produits</button>
+  </section>
   <section class="ac-projets">
     <h2>Tes projets</h2>
     <div id="liste-projets" class="grille-projets"></div>
@@ -152,6 +159,36 @@
   </form>
 </dialog>
 
+<dialog id="dlg-catalogue" class="dlg large">
+  <div class="cat-tete">
+    <h2 id="cat-titre">Une vidéo depuis tes produits</h2>
+    <p class="doux" id="cat-source"></p>
+  </div>
+  <section class="cat-bloc">
+    <div class="cat-ligne"><h3>Tes produits</h3><span class="tc doux" id="cat-compte"></span></div>
+    <div class="puces" id="cat-categories"></div>
+    <div class="cat-produits" id="cat-produits"></div>
+    <button class="depot petit-depot" id="cat-ajouter" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span><b>Ajouter des photos</b> de tes produits</span></button>
+  </section>
+  <section class="cat-bloc">
+    <h3>Le style</h3>
+    <div class="cat-modeles" id="cat-modeles"></div>
+  </section>
+  <section class="cat-bloc cat-champs">
+    <h3>La fin et le son</h3>
+    <label class="champ plein"><span>Ta maison</span><input type="text" id="cat-maison" maxlength="60" placeholder="Le nom de ta boutique"></label>
+    <label class="champ plein"><span>Phrase d'appel</span><input type="text" id="cat-appel" maxlength="60" value="Commandez sur WhatsApp"></label>
+    <label class="champ plein"><span>Contact</span><input type="text" id="cat-contact" maxlength="40" placeholder="Ton numéro WhatsApp, ou @ton_compte"></label>
+    <div class="champ plein"><span>Musique</span><span class="rangee"><button class="btn petit" id="cat-musique" type="button">Choisir une musique</button><span class="doux" id="cat-musique-nom">Facultatif : les plans se calent sur ses temps.</span></span></div>
+    <div class="champ plein"><span>Format</span><div class="puces" id="cat-formats"></div></div>
+  </section>
+  <p class="avert" id="cat-message" hidden></p>
+  <div class="rangee fin">
+    <button class="btn" id="cat-fermer" type="button">Annuler</button>
+    <button class="btn primaire" id="cat-fabriquer" type="button">Fabriquer la vidéo</button>
+  </div>
+</dialog>
+
 <dialog id="dlg-export" class="dlg">
   <div class="export-reglages" id="export-reglages">
     <h2>Exporter</h2>
@@ -244,6 +281,8 @@
 <input type="file" id="entree-sons" multiple accept="audio/*" hidden>
 <input type="file" id="entree-remplacer" accept="video/*,image/*,audio/*" hidden>
 <input type="file" id="entree-lut" accept=".cube" hidden>
+<input type="file" id="entree-produits" multiple accept="image/*" hidden>
+<input type="file" id="entree-musique" accept="audio/*" hidden>
 
 <script type="module" src="js/app.js"></script>
 </body>

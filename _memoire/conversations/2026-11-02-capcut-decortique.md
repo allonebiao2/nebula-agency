@@ -50,3 +50,13 @@ n8n, le second outil que Mongazi veut créer.
   (`_memoire/apprentissages/2026-11-02-decodeur-video-reserve-images.md`). Six autres rouges venaient des
   contrôles eux-mêmes (clip choisi, bandes noires d'un projet vertical, durée `NaN`, instant de mesure), corrigés.
 - Verdict : `_qc_modele.mjs` 39 verts, `_qc.py --sans-ia` 79 verts. Publié sur labobine.pages.dev.
+
+## Suite : la vidéo depuis le catalogue du commerçant (nuit du 2026-11-02)
+
+- Mongazi, entre la vague 5 (IA générative) et l'angle vertical : « la vidéo depuis le catalogue du commerçant ».
+- Construit : LE STANDARD garde la photo de chaque article (`Article.photo`, 175 contrôles verts) ;
+  `labobine/_catalogues.py` en tire `catalogues/<maison>/` (Hillary 19 pièces, Au Braisé d'Or 53 plats) ;
+  `js/catalogue.js` fabrique un projet ordinaire en 3 styles, calé sur la musique ; `js/fabrique.js` la fenêtre.
+- Décisions prises en route : liens non listés + `noindex` ; numéro lu dans la fiche, jamais deviné (Au Braisé
+  d'Or reste sans numéro) ; prix d'étiquette exact ou « dès » le plus bas ; produit sans photo = carte typographique.
+- Contrôles : `_qc_modele.mjs` 56 verts, `_qc.py --sans-ia` 93 verts. Détail : `labobine/CONTEXT.md`.

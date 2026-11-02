@@ -90,6 +90,9 @@ class Article:
     accompagnements: tuple[str, ...] = ()
     # Délai de fabrication, quand la maison en annonce un (couture, pâtisserie).
     delai: str = ""
+    # La photo telle que le site la nomme (chemin relatif à ses images), vide s'il n'y en a pas.
+    # L'agent ne s'en sert pas ; LA BOBINE en fait des vidéos.
+    photo: str = ""
 
     def texte(self) -> str:
         bouts = [f"- {self.nom} : {self.prix.texte()}"]

@@ -182,5 +182,59 @@ console.log('LUT');
   ok(refus.includes('1D'), 'une LUT 1D est refusée');
 }
 
+console.log('Vidéo depuis un catalogue');
+{
+  const { fabriquerVideo, choisirPas, MAX_PRODUITS, dureeEstimee } = await import('./js/catalogue.js');
+  const img = (id) => ({ id, type: 'image', duree: 0, l: 800, h: 800 });
+  const fond = img('fond');
+  const produits = [
+    { nom: 'Robe de cérémonie', prix: 'dès 100 000 F', media: img('p1'), detoure: true },
+    { nom: 'Ensemble pagne', prix: '45 000 F', media: img('p2'), detoure: false },
+    { nom: 'Tilapia braisé', prix: 'Normal 3 000 F · Grand 6 000 F', media: img('p3'), detoure: false },
+    { nom: 'Création libre', prix: 'Prix sur demande', media: null },
+  ];
+  const tous = (p, genre) => p.pistes.filter((t) => t.genre === genre).flatMap((t) => t.clips);
+  const base = { format: '9:16', maison: 'Hillary M. Styl', produits, fond, couleurs: { accent: '#e6007e', fond: '#0c0c0c' } };
+
+  const v = fabriquerVideo({ ...base, modele: 'vitrine', contact: '+229 51 37 47 93' });
+  const pr = M.principale(v).clips;
+  ok(pr.length === produits.length + 2 && pr[0].media === 'fond' && pr[pr.length - 1].media === 'fond', `vitrine : ouverture, ${produits.length} plans, fin (${pr.length} clips sur la piste principale)`);
+  ok(pr[1].ajustement === 'adapter' && pr[1].echelle < 1 && pr[2].ajustement === 'remplir', 'une pièce détourée se montre entière sur le fond, une photo remplit l\'écran');
+  ok(pr[4].media === 'fond', 'un produit sans photo devient une carte sur le fond, jamais une image d\'emprunt');
+  const etiquettes = tous(v, 'sticker').filter((c) => c.forme === 'prix').map((c) => c.texte);
+  ok(etiquettes.join('|') === 'dès 100 000 F|45 000 F', `les prix courts vont sur l'étiquette, tels quels (${etiquettes.join(' · ')})`);
+  ok(tous(v, 'texte').some((c) => c.texte === 'Normal 3 000 F · Grand 6 000 F' && c.boite === 'pastille'), 'un prix long passe en pastille, sans être raccourci');
+  ok(tous(v, 'texte').some((c) => c.texte === '+229 51 37 47 93'), 'le numéro de la maison finit la vidéo');
+  ok(v.fond.couleur === '#0c0c0c' && v.medias.includes('fond') && v.medias.includes('p1') && !v.medias.includes(null), 'le fond et les couleurs de la maison, tous les médias déclarés');
+  ok(v.couverture === 'p1', 'à l\'accueil, la vignette du projet est le premier produit, pas le fond');
+  const sansNumero = fabriquerVideo({ ...base, modele: 'vitrine', contact: '' });
+  ok(!tous(sansNumero, 'texte').some((c) => /\d{2} \d{2}/.test(c.texte)) && tous(sansNumero, 'texte').some((c) => c.texte === 'Commandez sur WhatsApp'),
+    'sans numéro dans la fiche, aucun numéro n\'apparaît (jamais deviné), la phrase d\'appel reste');
+
+  const promo = fabriquerVideo({ ...base, modele: 'promo' });
+  const eff = tous(promo, 'effet').map((c) => c.effet).sort().join(',');
+  const prP = M.principale(promo).clips;
+  const ef = tous(promo, 'effet')[0];
+  ok(eff === 'battement,flash' && Math.abs(ef.debut - prP[1].debut) < 1e-6 && Math.abs(ef.debut + ef.duree - M.finClip(prP[prP.length - 2])) < 1e-6,
+    'promo : battement et flash couvrent exactement les produits');
+  ok(tous(promo, 'sticker').some((c) => c.forme === 'promo') && prP.slice(1).every((c) => c.transition.type === 'flash'), 'promo : l\'éclat PROMO en ouverture, des flashs entre les plans');
+  const el = fabriquerVideo({ ...base, modele: 'elegant' });
+  ok(tous(el, 'effet').some((c) => c.effet === 'bokeh' && c.debut === 0) && M.principale(el).clips[2].ajustement === 'adapter', 'l\'élégante : lumières douces sur toute la vidéo, photos entières');
+
+  const ry = Array.from({ length: 90 }, (_, i) => 0.25 + i * 0.5);
+  const mu = fabriquerVideo({ ...base, modele: 'vitrine', contact: '+229 51 37 47 93', musique: { media: { id: 'mu', type: 'audio', duree: 60 }, rythme: ry, bpm: 120 } });
+  const prM = M.principale(mu).clips;
+  const surTemps = prM.filter((c) => ry.some((x) => Math.abs(x - M.finClip(c)) < 1e-6)).length;
+  ok(surTemps === prM.length, `avec une musique, chaque plan finit sur un temps (${surTemps} sur ${prM.length})`);
+  const noms = tous(mu, 'texte').filter((c) => produits.some((p) => p.nom === c.texte));
+  ok(noms.length === produits.length && noms.every((t) => prM.some((c) => Math.abs(c.debut - t.debut) < 1e-6 && Math.abs(M.dureeClip(c) - t.duree) < 1e-6)),
+    'après le calage, chaque nom reste collé à son plan (même début, même durée)');
+  const son = tous(mu, 'audio')[0];
+  ok(son && Math.abs(M.finClip(son) - M.finClip(prM[prM.length - 1])) < 1e-6 && son.fonduSortie > 0 && son.rythme === ry, 'la musique s\'arrête avec la vidéo, en fondu, et garde son rythme');
+  ok(choisirPas(ry, 2.5) === 4 && choisirPas(ry, 1) === 2 && choisirPas([0, 0.75, 1.5, 2.25], 2) === 2, 'le pas choisi approche la durée voulue (4 temps pour 2,5 s à 120 BPM)');
+  const trop = fabriquerVideo({ ...base, modele: 'vitrine', produits: Array.from({ length: 30 }, (_, i) => ({ nom: `P${i}`, prix: '1 000 F', media: img(`x${i}`) })) });
+  ok(M.principale(trop).clips.length === MAX_PRODUITS + 2 && dureeEstimee(4, 'vitrine') === 15, `${MAX_PRODUITS} produits au plus par vidéo`);
+}
+
 console.log(`\n${verts} verts, ${echecs.length} rouges`);
 process.exit(echecs.length ? 1 : 0);

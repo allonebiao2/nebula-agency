@@ -15,6 +15,7 @@ import { EFFETS, appliquerEffet } from './effets.js';
 import { detecterRythme } from './rythme.js';
 import { inverserVideo } from './inverser.js';
 import { chargerLut } from './lut.js';
+import { brancherFabrique, ouvrirFabrique, etat as etatFabrique } from './fabrique.js';
 import { OFFRES, estPro } from './offre.js';
 import * as C from './compte.js';
 
@@ -36,6 +37,7 @@ const app = {
   trouver: (id) => (app.p ? M.trouver(app.p, id) : null),
 };
 window.__labobine = app;
+app.fabrique = etatFabrique;
 app.ia = { iaPrete };
 
 // ====================================================================== utilitaires
@@ -389,7 +391,8 @@ async function sauver() {
   if (!p) return;
   p.modifieLe = Date.now();
   const premier = M.principale(p).clips[0];
-  const m = premier && app.medias.get(premier.media);
+  const couverture = p.couverture && M.mediasUtilises(p).has(p.couverture) ? app.medias.get(p.couverture) : null;
+  const m = couverture || (premier && app.medias.get(premier.media));
   p.vignette = m ? m.vignette : null;
   try {
     p.mediasInfo = Object.fromEntries(p.medias.map((id) => app.medias.get(id)).filter(Boolean)
@@ -1413,6 +1416,7 @@ function brancher() {
   $('#btn-retour').addEventListener('click', () => afficherAccueil());
   window.addEventListener('popstate', () => {
     const id = location.hash.slice(1);
+    if (id.startsWith('catalogue/')) { ouvrirFabrique(decodeURIComponent(id.slice(10))); return; }
     if (id && (!app.p || app.p.id !== id)) ouvrir(id, true);
     else if (!id && app.p) afficherAccueil(true);
   });
@@ -1661,7 +1665,9 @@ async function demarrer() {
   chargerPolices();
   S.demanderPersistance();
   brancherCompte();
+  brancherFabrique({ toast, ouvrir, apres: (p) => { app.dernierCatalogue = { id: p.id, ...p.catalogue }; } });
   const retour = location.hash.slice(1);
+  if (retour.startsWith('catalogue/')) { await afficherAccueil(true); await ouvrirFabrique(decodeURIComponent(retour.slice(10))); return; }
   if (retour === 'merci' || retour === 'paiement-annule') { history.replaceState(null, '', location.pathname); retourPaiement(retour); await afficherAccueil(true); return; }
   const id = location.hash.slice(1);
   if (id) await ouvrir(id, true);

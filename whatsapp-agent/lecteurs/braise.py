@@ -77,6 +77,7 @@ def charger(racine: Path) -> Catalogue:
                 description=str(item.get("d", "") or ""),
                 garnitures=tuple(str(g) for g in (item.get("garn") or ())),
                 accompagnements=accompagnements,
+                photo=str(item.get("img") or ""),
             ))
         categories.append(cat)
 
