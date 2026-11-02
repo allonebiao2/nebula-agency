@@ -91,6 +91,16 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
    par e-mail (lien ou code), droits lus côté serveur, parrainage (7 jours chacun au premier paiement), pas d'essai
    gratuit, médias rebranchés par leur nom sur un autre appareil. Contrôle `_qc_caisse.mjs` : 31 verts.
    **Interface cachée (`OUVERT = false`) jusqu'à l'installation : `labobine/INSTALLER-COMPTES.md`, six étapes.**
+   **Installé le 2026-11-02** (« installe le serveur ») : la base (6 tables RLS, 13 fonctions, rien pour `anon`) et
+   les deux fonctions (refus vérifiés sans compte et sans signature), `LABOBINE_SITE` posé. **Reste** : le secret du
+   webhook (Mongazi, SasPay), **la connexion par e-mail** et l'ouverture.
+   ⛔ **Découvert à l'installation : sans SMTP, personne ne peut se connecter.** Le SMTP intégré de Supabase n'écrit
+   qu'aux membres de l'équipe, 2 e-mails par heure (vrai aussi pour l'inscription à Boussole). Remède prêt :
+   `python -I labobine/_installer_connexion.py` (clé Resend d'envoi seule sur `nebula-agency.online`, DKIM + SPF
+   vérifiés ; adresses de retour ; modèles en français avec le code). **Refusé au garde-fou de Claude Code**
+   (configuration partagée avec Boussole) : il faut l'accord explicite de Mongazi.
+   ⚠️ Les confirmations d'e-mail sont activées : un nouveau client reçoit « Confirm signup », pas « Magic Link ».
+   Le code fait **8 chiffres** (l'écran ne cite plus de nombre).
    Équipes : pas encore.
 5. IA générative et modèles : image vers vidéo, avatars, musique IA, modèles, kit de marque.
 
