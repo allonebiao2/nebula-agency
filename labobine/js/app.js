@@ -5,7 +5,10 @@ import * as S from './stock.js';
 import { importer, formeOnde } from './medias.js';
 import { Lecteur } from './lecteur.js';
 import { Frise } from './frise.js';
-import { exporter, dimensionsSortie } from './export.js';
+import { exporter, dimensionsSortie, sonDuClip } from './export.js';
+import { chargerVision, chercherVisages, clesSuiviVisage, iaPrete } from './ia.js';
+import { reduireBruit, versWav, VOLUMES } from './audio.js';
+import { chargerTranscription, versMono16k, transcrire, legendes, MODELES } from './soustitres.js';
 import { FILTRES, dessinerImage } from './rendu.js';
 import { OFFRES, estPro } from './offre.js';
 
@@ -27,6 +30,7 @@ const app = {
   trouver: (id) => (app.p ? M.trouver(app.p, id) : null),
 };
 window.__labobine = app;
+app.ia = { iaPrete };
 
 // ====================================================================== utilitaires
 let minuteurToast = 0;
@@ -144,6 +148,7 @@ async function ouvrir(id, remplacer = false) {
   }
   app.historique = new M.Historique();
   app.selection = null;
+  if (p.pistes.some((t) => t.clips.some((c) => c.detourage))) chargerVision().then(() => app.lecteur.afficher()).catch(() => {});
   $('#accueil').hidden = true;
   $('#editeur').hidden = false;
   if (location.hash !== `#${p.id}`) history[remplacer ? 'replaceState' : 'pushState'](null, '', `#${p.id}`);
@@ -515,6 +520,9 @@ function rendreInspecteur(section) {
     h += groupe('Clip', `<div class="actions-insp">${bouton('basculer', surPrincipale ? 'Passer en superposition' : 'Remettre sur la piste principale')}`
       + `${c.genre === 'video' && surPrincipale ? bouton('figer', "Figer l'image") : ''}${c.genre === 'video' && !c.muet ? bouton('detacher', 'Détacher le son') : ''}`
       + `${bouton('remplacer', 'Remplacer le média')}${presse}</div>`);
+    h += groupe("IA sur l'appareil", coche('detourage', 'Détourer la personne (le décor disparaît)', c.detourage)
+      + `<div class="actions-insp">${c.genre === 'video' ? bouton('suivre-visages', 'Cadrer sur les visages') : ''}${c.genre === 'video' && !c.muet ? bouton('debruiter', 'Réduire le bruit') + bouton('sous-titres', 'Sous-titres automatiques') : ''}</div>`
+      + "<p class=\"note\">Calculé sur ton appareil : rien n'est envoyé. La première fois, le moteur (14 Mo) se télécharge.</p>");
     if (c.genre === 'video') {
       h += groupe('Vitesse', curseur('vitesse', 'Vitesse', c.vitesse, M.VITESSE_MIN, M.VITESSE_MAX, 0.05, 'x')
         + puces('vitesse', c.vitesse, [[0.5, '0,5×'], [1, '1×'], [1.5, '1,5×'], [2, '2×'], [3, '3×']])
@@ -575,7 +583,8 @@ function rendreInspecteur(section) {
   } else {
     $('#titre-inspecteur').textContent = 'Son';
     h += groupe('Son', curseur('volume', 'Volume', c.volume, 0, 2, 0.01, 'pct') + coche('muet', 'Couper ce son', c.muet)
-      + curseur('vitesse', 'Vitesse', c.vitesse, M.VITESSE_MIN, M.VITESSE_MAX, 0.05, 'x') + coche('garderTon', 'Garder le ton de la voix', c.garderTon !== false));
+      + curseur('vitesse', 'Vitesse', c.vitesse, M.VITESSE_MIN, M.VITESSE_MAX, 0.05, 'x') + coche('garderTon', 'Garder le ton de la voix', c.garderTon !== false)
+      + `<div class="actions-insp">${bouton('debruiter', 'Réduire le bruit')}${bouton('sous-titres', 'Sous-titres automatiques')}</div>`);
     h += groupe('Fondus', curseur('fonduEntree', 'Entrée', c.fonduEntree, 0, 5, 0.1, 's') + curseur('fonduSortie', 'Sortie', c.fonduSortie, 0, 5, 0.1, 's'));
   }
   h += groupe('Actions', `<div class="actions-insp">${bouton('diviser', 'Diviser ici')}${bouton('dupliquer', 'Dupliquer')}${bouton('supprimer', 'Supprimer')}</div>`);
@@ -634,6 +643,7 @@ function surChamp(e) {
   else if (k === 'duree') { c.duree = Math.max(M.DUREE_MIN, v); structurel = true; }
   else if (k.includes('.')) poserChemin(c, k, v);
   else reglerAnimable(c, k, v);
+  if (k === 'detourage' && v) chargerVision().then(() => app.lecteur.afficher()).catch(() => toast("Le moteur d'IA n'a pas pu se charger : vérifie ta connexion."));
   const out = el.closest('.champ') && el.closest('.champ').querySelector('output');
   if (out && el.dataset.format) out.textContent = formatValeur(el.dataset.format, v);
   if (structurel || k === 'texte' || k === 'muet' || k === 'volume' || (c && M.estAnime(c, k))) {
@@ -684,6 +694,9 @@ function surBoutonInspecteur(e) {
       Object.assign(c, { police: s.police, poids: s.poids, taille: s.taille, couleur: s.couleur, boite: s.boite, couleurBoite: s.couleurBoite || '#000000', contour: s.contour, couleurContour: s.couleurContour || '#000000', anim: s.anim });
     }); break;
     case 'figer': figerImage(); break;
+    case 'suivre-visages': suivreVisages(); break;
+    case 'debruiter': debruiter(); break;
+    case 'sous-titres': sousTitres(); break;
     case 'detacher': {
       let son = null;
       modifier((p) => { son = M.detacherSon(p, app.selection); });
@@ -742,6 +755,101 @@ async function figerImage() {
   if (img) selectionner(img.id);
   rendreBiblio();
   toast('Image figée : 3 secondes ajoutées');
+}
+
+/** Sous-titres automatiques : le clip sélectionné, sinon toute la piste principale. Tout se passe sur l'appareil. */
+async function sousTitres() {
+  const f = app.selection && M.trouver(app.p, app.selection);
+  const cibles = f && (f.clip.genre === 'video' || f.clip.genre === 'audio')
+    ? [f.clip] : M.principale(app.p).clips.filter((c) => c.genre === 'video' && !c.muet);
+  if (!cibles.length) { toast('Sélectionne une vidéo ou un son où l\'on parle.'); return; }
+  const mode = app.modeSousTitres || 'precis';
+  toast(`Préparation du modèle de transcription (${MODELES[mode].poids}, téléchargé une seule fois)…`, null, null, 600000);
+  try {
+    const asr = await chargerTranscription(mode, (k) => toast(`Téléchargement du modèle… ${Math.round(k * 100)} %`, null, null, 600000));
+    const toutes = [];
+    for (const [i, c] of cibles.entries()) {
+      toast(`Transcription ${i + 1} sur ${cibles.length}…`, null, null, 600000);
+      const ext = await sonDuClip(app.medias.get(c.media), c);
+      if (!ext) continue;
+      const r = await transcrire(asr, await versMono16k(ext.canaux, ext.sr), 'french');
+      toutes.push(...legendes(r.chunks, c.debut, c.vitesse || 1, c.sortie - c.entree));
+    }
+    app.derniersSousTitres = toutes.map((x) => x.texte);
+    if (!toutes.length) { toast('Aucune parole reconnue.'); return; }
+    let premier = null;
+    modifier((p) => {
+      const piste = { id: M.uid('t'), genre: 'texte', clips: [] };
+      for (const l of toutes) {
+        const t = M.clipTexte(l.debut, 'legende', l.texte);
+        t.duree = l.duree;
+        t.anim = 'aucune';
+        piste.clips.push(t);
+      }
+      piste.clips.sort((a, b) => a.debut - b.debut);
+      p.pistes.push(piste);
+      premier = piste.clips[0];
+    });
+    if (premier) selectionner(premier.id);
+    toast(`${toutes.length} sous-titres ajoutés : touche-en un pour corriger un mot`);
+  } catch (e) {
+    app.derniersSousTitres = { erreur: e.message };
+    toast(`Les sous-titres ont échoué : ${e.message}`);
+  }
+}
+
+/** Cherche les visages et pose des images clés sur la position X pour qu'ils restent au centre. */
+async function suivreVisages() {
+  const f = app.selection && M.trouver(app.p, app.selection);
+  if (!f || f.clip.genre !== 'video') return;
+  const c = f.clip;
+  const m = app.medias.get(c.media);
+  toast("Préparation du moteur d'IA…", null, null, 120000);
+  try {
+    const r = await chercherVisages(m, c, (k) => toast(`Recherche des visages… ${Math.round(k * 100)} %`, null, null, 120000));
+    const cles = clesSuiviVisage(c, app.p, m, r.temps, r.centres);
+    app.dernierSuivi = { images: r.centres.length, visages: r.centres.filter((x) => x !== null).length, cles: cles.length };
+    if (!cles.length) { toast('Aucun visage trouvé : le cadre reste tel quel.'); return; }
+    modifier(() => { c.ajustement = 'remplir'; c.cles = c.cles || {}; c.cles.cx = cles; });
+    toast(`Cadre calé sur les visages : ${cles.length} images clés`);
+  } catch (e) {
+    app.dernierSuivi = { erreur: e.message };
+    toast(`Le suivi des visages a échoué : ${e.message}`);
+  }
+}
+
+/** Réduit le bruit de fond d'un clip : le son nettoyé devient un nouveau média, l'original reste intact. */
+async function debruiter() {
+  const f = app.selection && M.trouver(app.p, app.selection);
+  if (!f || (f.clip.genre !== 'video' && f.clip.genre !== 'audio')) return;
+  const c = f.clip;
+  const m = app.medias.get(c.media);
+  toast('Réduction du bruit en cours…', null, null, 120000);
+  try {
+    const ext = await sonDuClip(m, c);
+    if (!ext) { toast("Ce clip n'a pas de son."); return; }
+    const propre = reduireBruit(ext.canaux, 0.6);
+    const nom = `${m.nom.replace(/\.[^.]+$/, '')} (sans bruit).wav`;
+    const nm = await importer(new File([versWav(propre, ext.sr)], nom, { type: 'audio/wav' }));
+    await S.ecrireMedia(nm);
+    app.medias.set(nm.id, nm);
+    app.p.medias.push(nm.id);
+    let son = null;
+    const video = c.genre === 'video';
+    modifier((p) => {
+      if (video) {
+        son = { id: M.uid(), genre: 'audio', media: nm.id, debut: c.debut, entree: 0, sortie: nm.duree, vitesse: c.vitesse || 1, volume: c.volume ?? 1,
+          muet: false, fonduEntree: c.fonduEntree || 0, fonduSortie: c.fonduSortie || 0, garderTon: c.garderTon !== false };
+        c.muet = true;
+        M.poserSurPisteLibre(p, 'audio', son);
+      } else { c.media = nm.id; c.entree = 0; c.sortie = nm.duree; }
+    });
+    if (son) selectionner(son.id);
+    rendreBiblio();
+    toast(video ? 'Bruit réduit : le son nettoyé est sur sa propre piste' : 'Bruit réduit');
+  } catch (e) {
+    toast(`La réduction du bruit a échoué : ${e.message}`);
+  }
 }
 
 /** Forme d'onde d'une vidéo dont on a détaché le son (calculée une fois, gardée avec le média). */
@@ -918,6 +1026,7 @@ function ouvrirExport() {
   const fil = $('#export-filigrane');
   fil.checked = true;
   fil.disabled = !pro;
+  $('#export-volume').innerHTML = VOLUMES.map(([v, t]) => `<option value="${v}"${v === app.p.volumeCible ? ' selected' : ''}>${t}</option>`).join('');
   $('.offre-pro').hidden = pro;
   majInfosExport();
   $('#export-reglages').hidden = false;
@@ -949,7 +1058,7 @@ async function lancerExport() {
     const r = await exporter(app.p, app.medias, {
       court, fps, filigrane, signal: ctrl.signal,
       progres: ({ etape, part }) => {
-        $('#export-etape').textContent = etape === 'son' ? 'Mixage du son…' : etape === 'fin' ? 'Finalisation…' : 'Fabrication des images…';
+        $('#export-etape').textContent = etape === 'son' ? 'Mixage du son…' : etape === 'ia' ? "Chargement du moteur d'IA…" : etape === 'fin' ? 'Finalisation…' : 'Fabrication des images…';
         const total = etape === 'images' ? 0.05 + part * 0.93 : etape === 'son' ? 0.03 : 1;
         $('#export-barre').style.transform = `scaleX(${total})`;
         $('#export-pourcent').textContent = `${Math.round(total * 100)} %`;
@@ -1030,6 +1139,7 @@ function brancher() {
   $('#entree-fichiers').addEventListener('change', async (e) => { await importerFichiers(e.target.files); e.target.value = ''; });
   $('#entree-sons').addEventListener('change', async (e) => { await importerFichiers(e.target.files, { versSon: true }); e.target.value = ''; });
   $('#btn-voix').addEventListener('click', basculerVoix);
+  $('#btn-sous-titres').addEventListener('click', sousTitres);
   $('#entree-remplacer').addEventListener('change', async (e) => { await remplacerMedia(e.target.files[0]); e.target.value = ''; });
   $('#export-couverture').addEventListener('click', couverture);
   $('#biblio').addEventListener('click', (e) => {
@@ -1065,7 +1175,10 @@ function brancher() {
   for (const b of $$('[data-fermer]')) b.addEventListener('click', fermerFeuilles);
   $('.scene').addEventListener('pointerdown', (e) => { if (estMobile() && !e.target.closest('#toile')) fermerFeuilles(); });
 
-  $('#dlg-export').addEventListener('change', (e) => { if (e.target.name === 'qualite') majInfosExport(); });
+  $('#dlg-export').addEventListener('change', (e) => {
+    if (e.target.name === 'qualite') majInfosExport();
+    if (e.target.id === 'export-volume') { app.p.volumeCible = e.target.value; sauverBientot(); }
+  });
   $('#export-lancer').addEventListener('click', lancerExport);
   $('#export-fermer').addEventListener('click', () => $('#dlg-export').close());
   $('#export-retour').addEventListener('click', () => $('#dlg-export').close());

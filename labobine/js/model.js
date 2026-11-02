@@ -39,7 +39,7 @@ export function nouveauProjet(format = '9:16', nom = 'Sans titre') {
     id: uid('p'), nom, format, w: f.w, h: f.h, fps: 30,
     fond: { type: 'couleur', couleur: '#000000' },
     pistes: [{ id: 'principale', genre: 'principale', clips: [] }],
-    medias: [], creeLe: maintenant, modifieLe: maintenant, version: 1,
+    medias: [], volumeCible: '-14', creeLe: maintenant, modifieLe: maintenant, version: 1,
   };
 }
 
@@ -118,7 +118,7 @@ const visuelParDefaut = () => ({
   chroma: { actif: false, couleur: '#00d000', seuil: 0.25, douceur: 0.1 },
   masque: { forme: 'aucun', taille: 0.8, adoucir: 0.15, inverser: false },
   recadrage: { g: 0, d: 0, h: 0, b: 0 },
-  miroirH: false, miroirV: false, fusion: 'source-over',
+  miroirH: false, miroirV: false, fusion: 'source-over', detourage: false,
   animEntree: { type: 'aucune', duree: 0.5 }, animSortie: { type: 'aucune', duree: 0.5 },
   cles: {},
 });
@@ -143,6 +143,7 @@ export function completerClip(c) {
 }
 export function completerProjet(p) {
   p.medias = p.medias || [];
+  p.volumeCible = p.volumeCible || '-14';
   p.fond = p.fond || { type: 'couleur', couleur: '#000000' };
   for (const t of p.pistes) for (const c of t.clips) completerClip(c);
   return p;
@@ -196,7 +197,7 @@ function decalerCles(c, d) {
 /** Réglages qu'on copie d'un clip à un autre du même genre. */
 export const COPIABLES = {
   media: ['ajustement', 'echelle', 'cx', 'cy', 'rotation', 'opacite', 'mouvement', 'fonduEntree', 'fonduSortie', 'reglages', 'filtre',
-    'chroma', 'masque', 'recadrage', 'miroirH', 'miroirV', 'fusion', 'animEntree', 'animSortie', 'volume', 'garderTon', 'cles'],
+    'chroma', 'masque', 'recadrage', 'miroirH', 'miroirV', 'fusion', 'animEntree', 'animSortie', 'volume', 'garderTon', 'cles', 'detourage'],
   texte: ['police', 'poids', 'taille', 'couleur', 'boite', 'couleurBoite', 'contour', 'couleurContour', 'alignement', 'cx', 'cy', 'rotation', 'opacite', 'anim', 'cles'],
 };
 

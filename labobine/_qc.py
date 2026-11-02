@@ -46,6 +46,16 @@ def ff(*args):
 def medias_essai():
     TMP.mkdir(parents=True, exist_ok=True)
     a, b, photo, son, vert = TMP / "a.mp4", TMP / "b.mp4", TMP / "photo.png", TMP / "son.m4a", TMP / "vert.mp4"
+    bruit = TMP / "bruit.wav"
+    parole = TMP / "parole.wav"
+    if not parole.exists():
+        script = ("Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+                  "$s.SelectVoice('Microsoft Hortense Desktop'); $s.Rate = -1; "
+                  f"$s.SetOutputToWaveFile('{parole}'); $s.Speak('Bonjour Cotonou. Bienvenue dans la bobine, le montage vidéo pour tout le monde.'); $s.Dispose()")
+        subprocess.run(["powershell", "-NoProfile", "-Command", script], check=True)
+    if not bruit.exists():
+        ff("-f", "lavfi", "-i", "sine=frequency=500:duration=3", "-f", "lavfi", "-i", "anoisesrc=color=white:amplitude=0.08:duration=3",
+           "-filter_complex", "amix=inputs=2:normalize=0", str(bruit))
     if not vert.exists():
         ff("-f", "lavfi", "-i", "color=c=0x00d000:size=640x360:rate=30:duration=2", "-vf", "drawbox=x=220:y=110:w=200:h=140:color=red@1:t=fill",
            "-c:v", "libx264", "-pix_fmt", "yuv420p", str(vert))
@@ -56,7 +66,7 @@ def medias_essai():
            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", str(b))
         ff("-f", "lavfi", "-i", "color=c=0x3b7ddd:size=800x600:d=1", "-frames:v", "1", str(photo))
         ff("-f", "lavfi", "-i", "sine=frequency=330:duration=4", "-c:a", "aac", str(son))
-    return a, b, photo, son, vert
+    return a, b, photo, son, vert, bruit, parole
 
 
 class Service(SimpleHTTPRequestHandler):
@@ -92,7 +102,7 @@ def nb(etat, genre):
 
 
 def main():
-    a, b, photo, son, vert = medias_essai()
+    a, b, photo, son, vert, bruit, parole = medias_essai()
     srv, url = servir()
     erreurs = []
     with sync_playwright() as pw:
@@ -215,7 +225,56 @@ def main():
         page.evaluate("() => { const a = window.__labobine; a.selectionner(null); a.allerA(0.5); }")
         page.wait_for_timeout(500)
         page.screenshot(path=str(TMP / "vague2-1440.png"))
+
+        print("Vague 3 : IA sur l'appareil")
+        lumi = """() => { const c = document.getElementById('toile'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+          let s = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 13) { s += d[i] + d[i + 1] + d[i + 2]; n += 3; } return s / n; }"""
+        page.evaluate("() => { const a = window.__labobine; const c = a.p.pistes[0].clips[0]; a.selectionner(c.id); a.allerA(0.3); }")
+        page.wait_for_timeout(700)
+        avant = page.evaluate(lumi)
+        page.check('#corps-inspecteur [data-k="detourage"]')
+        page.wait_for_function("() => window.__labobine.ia.iaPrete()", timeout=180000)
+        page.evaluate("() => window.__labobine.allerA(0.3)")
+        page.wait_for_timeout(1200)
+        apres = page.evaluate(lumi)
+        ok(apres < avant * 0.7, f"détourage : le décor sans personne disparaît (luminosité {avant:.0f} puis {apres:.0f})")
+
+        page.evaluate("() => { const a = window.__labobine; const c = a.p.pistes[0].clips.find(x => x.genre === 'video' && !x.muet) || a.p.pistes[0].clips.find(x => x.genre === 'video'); a.selectionner(c.id); }")
+        page.wait_for_timeout(300)
+        page.click('#corps-inspecteur [data-action="suivre-visages"]')
+        page.wait_for_function("() => window.__labobine.dernierSuivi", timeout=180000)
+        suivi = page.evaluate("() => window.__labobine.dernierSuivi")
+        ok("erreur" not in suivi and suivi.get("images", 0) >= 2, f"détecteur de visages : {suivi.get('images')} images analysées, {suivi.get('visages')} visage(s) (la mire n'en a pas)")
+
+        page.click('[data-onglet="son"]')
+        page.evaluate("() => window.__labobine.allerA(0)")
+        page.set_input_files("#entree-sons", [str(bruit)])
+        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'bruit.wav')", timeout=20000)
+        page.evaluate("() => { const a = window.__labobine; const id = [...a.medias.values()].find(m => m.nom === 'bruit.wav').id; const c = a.p.pistes.flatMap(t => t.clips).find(x => x.media === id); a.selectionner(c.id); }")
+        page.wait_for_timeout(300)
+        page.click('#corps-inspecteur [data-action="debruiter"]')
+        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom.includes('(sans bruit)'))", timeout=120000)
+        branche = page.evaluate("() => { const a = window.__labobine; const m = [...a.medias.values()].find(x => x.nom.includes('(sans bruit)')); return a.p.pistes.flatMap(t => t.clips).some(c => c.media === m.id); }")
+        ok(branche, "réduction du bruit : le son nettoyé remplace l'original sur la frise")
+
+        print("Sous-titres automatiques (Whisper dans le navigateur)")
+        page.click('[data-onglet="son"]')
+        page.evaluate("() => window.__labobine.allerA(0)")
+        page.set_input_files("#entree-sons", [str(parole)])
+        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'parole.wav')", timeout=20000)
+        page.evaluate("""() => { const a = window.__labobine; a.modeSousTitres = 'rapide';
+          const id = [...a.medias.values()].find(m => m.nom === 'parole.wav').id;
+          a.selectionner(a.p.pistes.flatMap(t => t.clips).find(x => x.media === id).id); }""")
+        page.wait_for_timeout(300)
+        page.click('#corps-inspecteur [data-action="sous-titres"]')
+        page.wait_for_function("() => window.__labobine.derniersSousTitres", timeout=600000)
+        st = page.evaluate("() => window.__labobine.derniersSousTitres")
+        texte = " ".join(st).lower() if isinstance(st, list) else str(st)
+        ok(isinstance(st, list) and ("bonjour" in texte or "cotonou" in texte), f"sous-titres reconnus : « {texte[:80]} »")
+        n_legendes = page.evaluate("() => window.__labobine.p.pistes.filter(t => t.genre === 'texte').flatMap(t => t.clips).length")
+        ok(isinstance(st, list) and n_legendes >= len(st) + 1, f"{len(st) if isinstance(st, list) else 0} légendes posées sur la frise")
         attendu = etat()["duree"]
+        t_image = page.evaluate("() => window.__labobine.p.pistes[0].clips[1].debut + 0.2")
         n_principale = len(etat()["principale"])
 
         print("Export")
@@ -248,9 +307,14 @@ def main():
             vol = subprocess.run([FFMPEG, "-ss", "0.5", "-t", "1", "-i", str(sortie), "-af", "volumedetect", "-f", "null", "-"], capture_output=True, text=True).stderr
             maxv = next((float(l.split(":")[1].split()[0]) for l in vol.splitlines() if "max_volume" in l), -99)
             ok(maxv > -30, f"le son est audible ({maxv:.1f} dB au plus fort)")
+            import re
+            eb = subprocess.run([FFMPEG, "-nostats", "-i", str(sortie), "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True).stderr
+            mesures = re.findall(r"I:\s+(-?[0-9.]+) LUFS", eb)
+            lufs = float(mesures[-1]) if mesures else -99
+            ok(abs(lufs + 14) < 1.0, f"volume harmonisé, mesuré par FFmpeg : {lufs} LUFS (visé -14)")
             from PIL import Image
             img = TMP / "image-0_5.png"
-            ff("-ss", "0.5", "-i", str(sortie), "-frames:v", "1", str(img))
+            ff("-ss", f"{t_image:.2f}", "-i", str(sortie), "-frames:v", "1", str(img))
             im = Image.open(img).convert("RGB")
             octets = im.resize((36, 64)).tobytes()
             moy = sum(octets) / len(octets)
@@ -295,7 +359,8 @@ def main():
 
         nav.close()
     srv.shutdown()
-    utiles = [x for x in erreurs if "favicon" not in x]
+    # MediaPipe écrit ses informations de démarrage sur le canal des erreurs : on les écarte nommément
+    utiles = [x for x in erreurs if "favicon" not in x and not x.startswith("INFO: Created TensorFlow Lite")]
     ok(not utiles, "aucune erreur dans la console" + ("" if not utiles else " : " + " | ".join(utiles[:5])))
     print(f"\n{verts} verts, {len(rouges)} rouges · captures dans {TMP}")
     sys.exit(1 if rouges else 0)

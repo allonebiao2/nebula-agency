@@ -35,7 +35,7 @@ nous**. On ne reprend rien de CapCut (ni code, ni effets, ni modèles, ni musiqu
 ## Commandes
 
 ```bash
-python labobine/_qc.py        # 42 contrôles dans un vrai Chrome + examen du MP4 exporté (ffprobe), captures dans %TEMP%/labobine-qc
+python labobine/_qc.py        # contrôles Chrome (vagues 1 à 3) ; tests Node du modèle, du son, des visages et des légendes dans le scratchpad dans un vrai Chrome + examen du MP4 exporté (ffprobe), captures dans %TEMP%/labobine-qc
 python labobine/_dist.py      # prépare labobine/_dist (on ne publie JAMAIS le dossier entier)
 # publier (avec CLOUDFLARE_API_TOKEN de secrets/cloudflare.env) :
 wrangler pages project create labobine --production-branch main   # une seule fois
@@ -70,11 +70,34 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
    remplacer le média, copier-coller les réglages, **garder le ton quand on accélère** (WSOLA, écrit ici : 440 Hz
    ralenti ou accéléré ×2 reste à 440 Hz), image de couverture PNG. Reste de la vague 2 : LUT (il faut WebGL),
    stickers, effets plein écran, marqueurs de rythme, inverser, export du son seul et en GIF.
-3. IA de tous les jours : sous-titres automatiques, détourage, voix de synthèse, réduction du bruit, recadrage 9:16.
+3. ✅ **IA de tous les jours** (2026-11-02), **tout sur l'appareil, rien n'est envoyé** :
+   - **Sous-titres automatiques** : Whisper (MIT) via Transformers.js 4.3.2 (Apache 2.0, chargé depuis jsDelivr), modèle
+     `onnx-community/whisper-base` (« précis », ~80 Mo) ou `whisper-tiny` (« rapide », ~40 Mo) téléchargé depuis Hugging
+     Face **une fois** ; WebGPU si présent, sinon WASM. Légendes de 7 mots au plus, réparties au prorata des lettres,
+     sur leur propre piste (`js/soustitres.js`).
+   - **Détourage des personnes** et **cadrage qui suit les visages** : MediaPipe Tasks Vision 1.2.0 (Google, Apache 2.0),
+     **rangé dans `vendor/`** avec ses deux modèles (`selfie_segmenter`, `blaze_face_short_range`) ; le moteur (14 Mo)
+     ne se charge qu'au premier usage (`js/ia.js`). Le cadrage pose des images clés sur la position X et s'arrête au
+     bord de l'image.
+   - **Réduction du bruit** : porte spectrale écrite ici (FFT maison, gains lissés) : -13 dB de souffle, la parole
+     garde son niveau. Le son nettoyé devient un nouveau média WAV, l'original reste intact (`js/audio.js`).
+   - **Volume harmonisé** à l'export : mesure UIT BS.1770 écrite ici (pondération K, portes -70 et -10), cibles -14,
+     -16 et -23 LUFS, crête plafonnée à -0,5 dBFS. Vérifié contre la norme (-3,01 LUFS) et contre FFmpeg (`ebur128`).
+   - ⏳ **Voix de synthèse : reportée à la vague 4.** Elle demande un serveur payant ; sans comptes ni crédits, l'adresse
+     serait ouverte à tous les abus.
 4. L'argent : comptes, nuage, Gratuit / Pro / crédits, paiement Mobile Money, Équipes.
 5. IA générative et modèles : image vers vidéo, avatars, musique IA, modèles, kit de marque.
 
 ## Pièges rencontrés
+
+- **MediaPipe écrit « INFO: Created TensorFlow Lite XNNPACK delegate for CPU. » sur le canal des erreurs** de la
+  console : le QC l'écarte nommément, sans masquer les vraies erreurs.
+- **Débruiteur : le 15e centile de l'énergie d'un bruit vaut 0,16 fois sa moyenne** (loi exponentielle). Sans la
+  correction 1/-ln(0,85), le bruit est sous-estimé six fois et ne baisse que de 5 dB.
+- Un test de détourage sur une mire **sans personne** rend une image noire : c'est le comportement voulu, mesurer
+  l'image exportée sur un clip non détouré.
+- Une commande Bash contenant des apostrophes françaises dans un script Python en ligne casse l'analyse du shell :
+  écrire le script dans un fichier.
 
 - **Dans un test Python, ne jamais nommer une variable `rouges`** (ou `verts`) : elle masque la liste des échecs.
 - Les réglages animés passent TOUS par `reglerAnimable()` (panneau, glisser sur l'aperçu, pincer, molette) : un

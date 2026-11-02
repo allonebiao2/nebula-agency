@@ -4,6 +4,7 @@
 // `obtenir(clip, tempsSource, role)` rend une source { l, h, peindre(ctx, sx, sy, sl, sh, dx, dy, dl, dh) } ou null.
 
 import { dureeClip, finClip, tempsSource, principale, clamp, valeur } from './model.js';
+import { iaPrete, detourerDonnees, chargerVision } from './ia.js';
 
 export const actif = (c, t) => t >= c.debut - 1e-6 && t < finClip(c) - 1e-6;
 const lisse = (k) => k * k * (3 - 2 * k);
@@ -224,9 +225,12 @@ function preparer(img, sx, sy, sl, sh, dl, dh, c, voiles) {
   o.globalAlpha = 1;
   o.clearRect(0, 0, ol, oh);
   img.peindre(o, sx, sy, sl, sh, 0, 0, ol, oh);
-  if (c.chroma && c.chroma.actif) {
+  const chroma = c.chroma && c.chroma.actif;
+  const detoure = c.detourage && iaPrete();
+  if (chroma || detoure) {
     const d = o.getImageData(0, 0, ol, oh);
-    appliquerChroma(d.data, c.chroma);
+    if (detoure) detourerDonnees(d);
+    if (chroma) appliquerChroma(d.data, c.chroma);
     o.putImageData(d, 0, 0);
   }
   for (const [couleur, a] of voiles) {
@@ -271,7 +275,8 @@ function peindreMedia(ctx, img, c, W, H, o, t) {
   if (rot) ctx.rotate((rot * Math.PI) / 180);
   if (c.miroirH || c.miroirV) ctx.scale(c.miroirH ? -1 : 1, c.miroirV ? -1 : 1);
   const voiles = teintes(c);
-  const avance = (c.chroma && c.chroma.actif) || (c.masque && c.masque.forme && c.masque.forme !== 'aucun') || voiles.length;
+  if (c.detourage && !iaPrete()) chargerVision().catch(() => {});
+  const avance = (c.chroma && c.chroma.actif) || (c.detourage && iaPrete()) || (c.masque && c.masque.forme && c.masque.forme !== 'aucun') || voiles.length;
   if (avance) ctx.drawImage(preparer(img, sx, sy, sl, sh, dl, dh, c, voiles), -dl / 2, -dh / 2, dl, dh);
   else img.peindre(ctx, sx, sy, sl, sh, -dl / 2, -dh / 2, dl, dh);
   ctx.restore();

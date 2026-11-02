@@ -4,6 +4,8 @@
 
 import { dureeProjet, dureeClip, trouver } from './model.js';
 import { besoinsA, dessinerImage, nombreImages } from './rendu.js';
+import { gainVers } from './audio.js';
+import { chargerVision } from './ia.js';
 
 let mb = null;
 const chargerMediabunny = async () => mb || (mb = await import('../vendor/mediabunny-1.65.0.min.mjs'));
@@ -120,6 +122,12 @@ async function extraire(m, c, ctx, decodes, prevenir) {
   } finally {
     entree.dispose();
   }
+}
+
+/** Le son d'un clip, de son entrée à sa sortie (pour la réduction du bruit). Rend { canaux, sr } ou null. */
+export async function sonDuClip(m, c) {
+  await chargerMediabunny();
+  return extraire(m, { entree: c.entree, sortie: c.sortie }, new OfflineAudioContext(1, 1, 48000), new Map(), () => {});
 }
 
 /** Mixe tout le son du projet dans un AudioBuffer stéréo 48 kHz. */
@@ -268,11 +276,17 @@ export async function exporter(p, medias, { court = 1080, fps = 30, filigrane = 
   const images = new Map();
   try {
     await sortie.start();
+    if (p.pistes.some((t) => t.clips.some((c) => c.detourage))) { progres({ etape: 'ia', part: 0 }); await chargerVision(); }
 
     let mix = null;
     if (srcA) {
       progres({ etape: 'son', part: 0 });
       mix = await mixerSon(p, medias, duree, signal, prevenir);
+      if (p.volumeCible && p.volumeCible !== 'tel') {
+        const canaux = [mix.getChannelData(0), mix.getChannelData(1)];
+        const g = gainVers(canaux, SR, Number(p.volumeCible));
+        if (g !== 1) for (const c of canaux) for (let i = 0; i < c.length; i += 1) c[i] *= g;
+      }
     }
 
     // le plan : pour chaque clip vidéo, la liste des instants sources dans l'ordre où le moteur les demandera

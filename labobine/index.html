@@ -71,6 +71,8 @@
       <div id="grille-medias" class="grille-medias"></div>
     </div>
     <div class="onglet-corps" data-corps="texte" hidden>
+      <button class="btn" id="btn-sous-titres" type="button">Sous-titres automatiques</button>
+      <p class="aide">Sous-titre le clip sélectionné, ou toute la piste principale. La transcription se fait sur ton appareil.</p>
       <p class="aide">Touche un style : le texte se pose à la tête de lecture.</p>
       <div id="grille-styles" class="grille-styles"></div>
     </div>
@@ -141,6 +143,7 @@
     <h2>Exporter la vidéo</h2>
     <fieldset class="segments" id="export-qualite"><legend>Qualité</legend></fieldset>
     <fieldset class="segments" id="export-cadence"><legend>Images par seconde</legend></fieldset>
+    <label class="champ plein export-volume"><span>Volume</span><select id="export-volume"></select></label>
     <label class="interrupteur"><input type="checkbox" id="export-filigrane" checked disabled><span>Filigrane « LA BOBINE » en bas de l'image</span></label>
     <div class="offre-pro">
       <span class="badge-pro">Pro</span>
