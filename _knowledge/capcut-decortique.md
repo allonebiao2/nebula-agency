@@ -65,10 +65,40 @@ Calque libre : PC seul (lu) · AutoCut : PC + mobile, pas web (aide officielle) 
 (officiel) · crédits IA : PC + web, pas mobile (tiers) · export : PC 8K/ProRes, mobile 4K 60 HDR (lu + App Store)
 · prix différents selon l'appareil, voulu (aide officielle).
 
+## Tout ce qui est payant (relevé du 2026-11-02, 473 libellés « argent » de la version 6.6.1)
+
+**Le verrou est à l'export, pas à l'outil** : en gratuit on pose un élément Pro et on le voit dans l'aperçu ;
+à l'export il faut payer, retirer l'élément ou accepter le filigrane (lu sur le PC + aide officielle
+`capcut.com/help/why-prompted-to-purchase-capcut-pro`).
+
+- **Export** : sans filigrane = Pro · projet contenant un élément Pro = Pro · 4K et 60 i/s = Pro (sur mobile,
+  1080p et plus sur les vidéos longues) · « export illimité » = avantage Pro.
+- **Ressources Pro** : modèles (dont script vers vidéo, certains achetables à l'unité), effets, filtres,
+  transitions, stickers, textes, styles, polices et musiques premium. Musique « commerciale » gratuite mais filtrée.
+- **Outils avec écran de paiement dédié dans la 6.6.1** : légendes automatiques, suppression d'arrière-plan,
+  réduction du bruit, isolation de la voix, amélioration de la qualité, suppression des tics de langage. Aussi
+  Pro : kit de marque, import par QR, partage pour relecture externe, stockage en ligne (0 en gratuit depuis
+  août 2024 ; 100 Go dans la 6.6.1, 1 To aujourd'hui), suivi de mouvement (officiel). Super-résolution : compteur
+  gratuit puis Pro.
+- **IA en crédits, en plus de l'abonnement** : avatars (au temps d'apparition), voix clonée (aux caractères),
+  remplacement de voix (à la seconde), doublage (par usage, 1re fois offerte), traduction vidéo (à la seconde),
+  synchro labiale, agrandissement du cadre, images et vidéos générées, effets / stickers / textes IA, effets
+  sonores et musique IA. Rédacteur IA et « vidéo longue en courtes » : compteur quotidien ou mensuel puis Pro.
+- **Règles des crédits** : Pro 1 200/mois remis à zéro · Standard un quota plus petit · achetés valables 2 ans ·
+  les plus proches de l'expiration partent d'abord · échec = rendus, arrêt en cours = perdus · anciennes
+  « utilisations Pro » converties en crédits · sur ordinateur, on paie sur le web ou le téléphone.
+- **Leviers** : essai 7 jours (carte, renouvellement auto), 3 jours à la 1re connexion, 30 jours sur offres ·
+  parrainage 7 jours chacun par ami, jusqu'à 70 jours, sans carte · 1 à 6 mois avec les PC ASUS · concours
+  hashtag et partage TikTok · Go offerts pour activer la sauvegarde · « plus de 80 fonctionnalités Premium ».
+
 ## Argent
 
-Gratuit (montage, usages IA comptés) · Standard 9,99 $/mois · Pro 19,99 $/mois ou 89,99 $/an (App Store),
-1 200 crédits/mois · Ultra 79 $ (tiers) · Équipes. Leviers : essai 7 jours, parrainage, Pro offert avec les PC ASUS.
+Gratuit · Standard 9,99 $/mois (App Store) · Pro 19,99 $/mois, **179,99 $/an sur le web** et 89,99 $/an sur
+l'App Store, 1 200 crédits/mois · Équipes dès 24,99 $/mois (officiel) · Ultra 79 $ (tiers). ⚠️ Une page officielle
+de septembre 2026 appelle « Standard » la version gratuite : les noms de formules ne sont pas stables.
+
+**Pour LA BOBINE (vague 4)** : même verrou à l'export (filigrane), IA en crédits parce que chaque usage nous coûte,
+paiement Mobile Money, parrainage.
 
 ## Pour NEBULA
 

@@ -51,6 +51,12 @@ header{padding-block:44px 28px;display:grid;gap:18px;border-bottom:1px solid var
 .legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.88rem;color:var(--muted)}
 .tag{display:inline-block;font:500 .68rem/1 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;padding:4px 6px;border-radius:4px;border:1px solid currentColor;vertical-align:1px;white-space:nowrap}
 .tag.pc{color:var(--v)} .tag.off{color:var(--a)} .tag.tiers{color:var(--c)}
+.pay{display:inline-block;font:600 .74rem/1.2 var(--f-body);padding:4px 8px;border-radius:999px;white-space:nowrap;color:var(--bg);background:var(--k)}
+.p-gratuit{--k:var(--a)} .p-compteur{--k:var(--c)} .p-pro{--k:var(--t)} .p-credits{--k:var(--x)} .p-equipes{--k:var(--o)}
+tr.groupe td{background:var(--panel2);font:700 .8rem var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cle{background:var(--panel);border:1px solid var(--play);border-radius:10px;padding:16px 18px;display:grid;gap:6px;max-width:80ch}
+.cle b{font-family:var(--f-disp);font-size:1.05rem}
+.leviers{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 
 section{padding-block:40px 8px;display:grid;gap:18px}
 .sec-head{display:grid;gap:6px}
@@ -340,6 +346,107 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
   </table></div>
 </section>
 
+<section id="payant">
+  <div class="sec-head">
+    <h2>Tout ce qui est payant</h2>
+    <p class="lede">Trois façons de payer s'empilent. L'abonnement débloque les ressources et les outils, les crédits paient l'IA à l'usage, et le forfait Équipes paie le travail à plusieurs. Relevé dans les 473 libellés de ta version qui parlent d'argent, puis confirmé par l'aide officielle.</p>
+  </div>
+  <div class="cle">
+    <b>Le verrou est à l'export, pas à l'outil.</b>
+    <p>En gratuit, on peut poser un effet, un modèle ou un outil Pro et le voir dans l'aperçu. C'est au moment d'exporter que CapCut demande de payer, ou de retirer l'élément, ou d'accepter le filigrane. L'utilisateur a déjà investi du temps dans sa vidéo quand on lui présente la facture. <span class="tag pc">PC</span> <span class="tag off">Officiel</span></p>
+  </div>
+  <div class="legend">
+    <span><span class="pay p-gratuit">Gratuit</span> pour tous</span>
+    <span><span class="pay p-compteur">Compteur</span> quelques usages gratuits, puis payant</span>
+    <span><span class="pay p-pro">Pro</span> abonnement</span>
+    <span><span class="pay p-credits">Crédits</span> payé à chaque usage</span>
+    <span><span class="pay p-equipes">Équipes</span> forfait d'équipe</span>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Fonction</th><th>Comment ça se paie</th><th>Détail</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr class="groupe"><td colspan="4">Export</td></tr>
+      <tr><td>Export sans filigrane</td><td><span class="pay p-pro">Pro</span></td><td>Le gratuit sort avec le filigrane CapCut dès qu'un élément Pro est utilisé ; une suppression gratuite est parfois offerte un temps, à la connexion</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Export d'un projet qui contient un élément Pro</td><td><span class="pay p-pro">Pro</span></td><td>Sinon il faut retirer l'élément ; le logiciel liste ceux qui bloquent</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Export 4K et 60 images/s</td><td><span class="pay p-pro">Pro</span></td><td>Verrouillé sur le web et le bureau ; sur mobile, le 1080p et plus est payant sur les vidéos longues</td><td><span class="tag off">Officiel</span></td></tr>
+      <tr><td>Export illimité</td><td><span class="pay p-pro">Pro</span></td><td>Présenté comme un avantage Pro</td><td><span class="tag pc">PC</span></td></tr>
+
+      <tr class="groupe"><td colspan="4">Ressources</td></tr>
+      <tr><td>Modèles Pro et Premium, dont les modèles « script vers vidéo »</td><td><span class="pay p-pro">Pro</span></td><td>Un modèle Pro ne s'ouvre pas sans abonnement ; certains modèles sont achetables à l'unité</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Effets, filtres, transitions, stickers et textes Pro</td><td><span class="pay p-pro">Pro</span></td><td>Renouvelés chaque semaine ; un aperçu reste possible</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Styles Pro, polices et musiques premium</td><td><span class="pay p-pro">Pro</span></td><td>L'étalonnage ne s'applique pas sur une ressource Pro</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Musique « commerciale »</td><td><span class="pay p-gratuit">Gratuit</span></td><td>Pré-autorisée pour la publicité sur TikTok et CapCut, avec un vérificateur de droits avant publication</td><td><span class="tag pc">PC</span></td></tr>
+
+      <tr class="groupe"><td colspan="4">Outils verrouillés dans ta version (6.6.1)</td></tr>
+      <tr><td>Légendes automatiques</td><td><span class="pay p-pro">Pro</span></td><td>Écran de paiement dédié</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Suppression d'arrière-plan</td><td><span class="pay p-pro">Pro</span></td><td>Écran de paiement dédié</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Réduction du bruit</td><td><span class="pay p-pro">Pro</span></td><td>Écran de paiement dédié</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Isolation de la voix</td><td><span class="pay p-pro">Pro</span></td><td>Écran de paiement dédié</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Amélioration de la qualité (bruit, scintillement, netteté)</td><td><span class="pay p-pro">Pro</span></td><td>Écran de paiement dédié</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Suppression des tics de langage, pauses et répétitions</td><td><span class="pay p-pro">Pro</span></td><td>« En un clic »</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Super-résolution 2K et 4K</td><td><span class="pay p-compteur">Compteur</span> <span class="pay p-pro">Pro</span></td><td>Quelques utilisations et une durée gratuites, puis illimité en Pro</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Suivi de mouvement</td><td><span class="pay p-pro">Pro</span></td><td>Classé parmi les outils IA avancés</td><td><span class="tag off">Officiel</span></td></tr>
+      <tr><td>Correction auto et assortiment des couleurs</td><td><span class="pay p-pro">Pro</span></td><td>Signalé par des utilisateurs</td><td><span class="tag tiers">Tiers</span></td></tr>
+      <tr><td>Kit de marque</td><td><span class="pay p-pro">Pro</span> <span class="pay p-equipes">Équipes</span></td><td>Quelques éléments gratuits, puis Pro ; dans un espace partagé, c'est le propriétaire qui paie</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Import par QR code depuis le téléphone</td><td><span class="pay p-pro">Pro</span></td><td></td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Partage pour relecture</td><td><span class="pay p-pro">Pro</span> <span class="pay p-equipes">Équipes</span></td><td>Pro pour une personne extérieure, Équipes pour les membres d'un espace</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Stockage en ligne</td><td><span class="pay p-pro">Pro</span></td><td>Rien en gratuit depuis août 2024 ; 100 Go en Pro dans ta version, 1 To aujourd'hui</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+
+      <tr class="groupe"><td colspan="4">IA payée en crédits, en plus de l'abonnement</td></tr>
+      <tr><td>Avatars IA</td><td><span class="pay p-pro">Pro</span> <span class="pay p-credits">Crédits</span></td><td>Facturés selon le temps où l'avatar est à l'écran ; remise de bienvenue la première fois</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Voix personnalisée (ta voix clonée)</td><td><span class="pay p-credits">Crédits</span></td><td>Au nombre de caractères lus ; l'écoute est gratuite, le débit tombe à la génération</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Remplacer une voix par ta voix</td><td><span class="pay p-credits">Crédits</span></td><td>À la seconde</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Doublage d'une vidéo</td><td><span class="pay p-credits">Crédits</span></td><td>Par utilisation, gratuit la première fois</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Traduction de la vidéo</td><td><span class="pay p-credits">Crédits</span></td><td>À la seconde</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Synchronisation labiale</td><td><span class="pay p-compteur">Compteur</span> <span class="pay p-credits">Crédits</span></td><td>Utilisations gratuites, puis Pro avec crédits</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Agrandissement du cadre par IA</td><td><span class="pay p-compteur">Compteur</span> <span class="pay p-credits">Crédits</span></td><td>Utilisations gratuites, puis crédits ; arrêter une génération en cours ne rembourse pas</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Images et vidéos générées</td><td><span class="pay p-credits">Crédits</span></td><td>Modèles « Seaweed » et « Image F1.0 Pro » dans ta version ; Seedance 2.5 aujourd'hui (environ 90 crédits pour 10 s en 720p, selon un test)</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span> <span class="tag tiers">Tiers</span></td></tr>
+      <tr><td>Effets IA, stickers IA, textes IA</td><td><span class="pay p-compteur">Compteur</span> <span class="pay p-credits">Crédits</span></td><td>Quelques générations offertes, puis crédits ou achat à l'unité</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Effets sonores IA, musique IA</td><td><span class="pay p-credits">Crédits</span> <span class="pay p-pro">Pro</span></td><td></td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
+      <tr><td>Rédacteur IA</td><td><span class="pay p-compteur">Compteur</span> <span class="pay p-pro">Pro</span></td><td>Quelques usages par jour, puis Pro</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td>Vidéo longue en vidéos courtes</td><td><span class="pay p-compteur">Compteur</span> <span class="pay p-pro">Pro</span></td><td>Minutes gratuites par jour et par mois ; Pro donne un quota mensuel de minutes</td><td><span class="tag pc">PC</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="leviers">
+    <div class="card">
+      <h3>Les règles des crédits</h3>
+      <ul>
+        <li>Pro : 1 200 crédits par mois, remis à zéro chaque mois</li>
+        <li>Standard : un quota mensuel plus petit</li>
+        <li>Crédits achetés : valables 2 ans</li>
+        <li>Ceux qui expirent le plus tôt partent en premier</li>
+        <li>Génération ratée : crédits rendus. Génération arrêtée en cours : crédits perdus</li>
+        <li>Les anciennes « utilisations Pro » ont été converties en crédits</li>
+        <li>Sur ordinateur, on ne paie pas dans le logiciel : sur le web ou sur le téléphone</li>
+      </ul>
+      <p class="muted"><span class="tag pc">PC</span> <span class="tag off">Officiel</span></p>
+    </div>
+    <div class="card">
+      <h3>Comment ils poussent à payer</h3>
+      <ul>
+        <li>Le gratuit voit tout dans l'aperçu ; la facture arrive à l'export</li>
+        <li>Essai de 7 jours (carte demandée, renouvellement automatique), 3 jours à la première connexion, 30 jours sur certaines offres</li>
+        <li>Parrainage : 7 jours de Pro chacun par ami qui installe la version PC, jusqu'à 70 jours, sans carte</li>
+        <li>Pro offert 1 à 6 mois avec les PC ASUS</li>
+        <li>Concours par hashtag et partage sur TikTok, avec Pro et coupons à gagner</li>
+        <li>Quelques Go offerts pour faire activer la sauvegarde en ligne</li>
+        <li>« Plus de 80 fonctionnalités Premium » mis en avant sur le profil</li>
+      </ul>
+      <p class="muted"><span class="tag pc">PC</span> <span class="tag off">Officiel</span></p>
+    </div>
+    <div class="card focus">
+      <h3>Ce que LA BOBINE en retient</h3>
+      <ul>
+        <li>Le même verrou : tout s'essaie, l'export sans filigrane se paie</li>
+        <li>L'IA en crédits, parce que chaque usage nous coûte (WaveSpeed, transcription)</li>
+        <li>Le paiement en Mobile Money, que CapCut n'offre pas</li>
+        <li>Le parrainage, déjà au cœur du réseau de partenaires NEBULA</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <section id="argent">
   <div class="sec-head">
     <h2>Comment CapCut gagne de l'argent</h2>
@@ -348,14 +455,14 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
   <div class="tbl"><table>
     <thead><tr><th>Formule</th><th>Prix</th><th>Ce qu'elle donne</th><th>Source</th></tr></thead>
     <tbody>
-      <tr><td><b>Gratuit</b></td><td class="num">0</td><td>Montage, vitesse, images clés, transitions de base, détourage, modèles. Usages IA comptés (par jour ou par mois)</td><td><span class="tag pc">PC</span> <span class="tag tiers">Tiers</span></td></tr>
+      <tr><td><b>Gratuit</b></td><td class="num">0</td><td>Découpe, montage, quelques effets, filtres et transitions, textes et stickers, musique gratuite, export jusqu'en 8K ; aucun stockage en ligne. Les usages de l'IA sont comptés</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
       <tr><td><b>Standard</b></td><td class="num">9,99 $/mois</td><td>Usage illimité de certaines fonctions, 600 crédits</td><td><span class="tag off">Officiel</span> <span class="tag tiers">Tiers</span></td></tr>
-      <tr><td><b>Pro</b></td><td class="num">19,99 $/mois · 89,99 $/an</td><td>Tout débloqué, sans filigrane, 1 200 crédits/mois ; 100 Go de nuage dans ta version, 1 To annoncé en avril 2026</td><td><span class="tag off">Officiel</span> <span class="tag pc">PC</span> <span class="tag tiers">Tiers</span></td></tr>
+      <tr><td><b>Pro</b></td><td class="num">19,99 $/mois · 179,99 $/an sur le web · 89,99 $/an sur l'App Store</td><td>Tout débloqué, sans filigrane, 1 200 crédits/mois ; 100 Go de nuage dans ta version, 1 To annoncé en avril 2026</td><td><span class="tag off">Officiel</span> <span class="tag pc">PC</span> <span class="tag tiers">Tiers</span></td></tr>
       <tr><td><b>Ultra</b></td><td class="num">79 $</td><td>Pour les gros consommateurs d'IA générative (juin 2026)</td><td><span class="tag tiers">Tiers</span></td></tr>
-      <tr><td><b>Équipes</b></td><td class="num">?</td><td>Espaces partagés, facturation d'équipe</td><td><span class="tag pc">PC</span></td></tr>
+      <tr><td><b>Équipes</b></td><td class="num">dès 24,99 $/mois</td><td>Espaces partagés avec des postes, stockage par espace, relecture entre membres, avantages Pro pour chaque membre</td><td><span class="tag pc">PC</span> <span class="tag off">Officiel</span></td></tr>
     </tbody>
   </table></div>
-  <p class="muted">Leviers de croissance visibles dans l'interface : essai Pro de 7 jours, parrainage par code d'invitation, Pro offert 1 à 6 mois avec les PC ASUS. Ordre de grandeur des crédits : une vidéo Seedance de 10 s en 720p coûte environ 90 crédits <span class="tag tiers">Tiers</span>.</p>
+  <p class="muted">Les prix changent selon le pays, l'appareil et les promotions, et CapCut le revendique. Les noms de formules aussi : sur une page officielle de septembre 2026, « Standard » désigne la version gratuite, alors que l'App Store vend un abonnement Standard à 9,99 $.</p>
 </section>
 
 <section id="nebula">
