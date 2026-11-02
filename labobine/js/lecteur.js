@@ -4,6 +4,7 @@
 import { dureeProjet, tempsSource, clamp, finClip } from './model.js';
 import { besoinsA, dessinerImage, actif, fondus } from './rendu.js';
 import { urlDe, bitmapDe, bitmapPret } from './medias.js';
+import { chargerLut, lutPrete } from './lut.js';
 
 const PORTEE_POOL = 20; // secondes : au-delà, un élément est libéré
 
@@ -31,6 +32,7 @@ export class Lecteur {
     for (const piste of projet.pistes) {
       for (const c of piste.clips) {
         if (c.genre === 'image') { const m = medias.get(c.media); if (m) bitmapDe(m).then(() => this.afficher()); }
+        if (c.lut && c.lut.media && !lutPrete(c.lut.media)) chargerLut(medias.get(c.lut.media)).then(() => this.afficher()).catch(() => {});
       }
     }
   }

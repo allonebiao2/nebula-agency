@@ -1,6 +1,9 @@
 """QC de LA BOBINE : le parcours complet dans un vrai Chrome, puis l'examen du MP4 exporté.
 
     python labobine/_qc.py            (sortie 1 si un contrôle échoue)
+    python labobine/_qc.py --sans-ia  (saute Whisper et MediaPipe : PC à court de mémoire)
+
+Commence par les contrôles sans navigateur (_qc_modele.mjs : modèle, rythme, GIF, LUT).
 
 Fabrique ses propres médias d'essai avec FFmpeg, sert le dossier en local, joue le rôle de l'utilisateur
 (créer, importer, écrire, diviser, annuler, transition, exporter, recharger, téléphone) et range les captures
@@ -20,7 +23,7 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-sys.stdout.reconfigure(encoding="utf-8")
+sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
 ICI = Path(__file__).resolve().parent
 TMP = Path(os.environ.get("TEMP", "/tmp")) / "labobine-qc"
 LIENS = Path.home() / "AppData/Local/Microsoft/WinGet/Links"
@@ -69,6 +72,40 @@ def medias_essai():
     return a, b, photo, son, vert, bruit, parole
 
 
+def medias_vague2bis():
+    """Une piste de clics à 120 BPM (8 s) et une LUT .cube qui inverse les couleurs."""
+    import math
+    import struct
+    import wave
+    clics, lut, fondu = TMP / "clics.wav", TMP / "inverse.cube", TMP / "fondu.mp4"
+    if not fondu.exists():
+        ff("-f", "lavfi", "-i", "color=c=white:size=320x180:rate=30:duration=2", "-vf", "fade=t=in:st=0:d=2",
+           "-c:v", "libx264", "-pix_fmt", "yuv420p", str(fondu))
+    if not clics.exists():
+        sr = 44100
+        x = [0.03 * math.sin(2 * math.pi * 220 * i / sr) for i in range(8 * sr)]
+        t = 0.25
+        while t < 7.9:
+            i0 = int(t * sr)
+            for k in range(int(0.03 * sr)):
+                x[i0 + k] += 0.7 * math.sin(2 * math.pi * 1200 * k / sr) * math.exp(-k / (0.004 * sr)) + 0.5 * math.sin(2 * math.pi * 60 * k / sr) * math.exp(-k / (0.02 * sr))
+            t += 0.5
+        with wave.open(str(clics), "wb") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(sr)
+            w.writeframes(b"".join(struct.pack("<h", int(max(-1, min(1, v)) * 32000)) for v in x))
+    if not lut.exists():
+        n = 17
+        lignes = ['TITLE "Inverse"', f"LUT_3D_SIZE {n}"]
+        for bl in range(n):
+            for g in range(n):
+                for r in range(n):
+                    lignes.append(f"{1 - r / (n - 1):.6f} {1 - g / (n - 1):.6f} {1 - bl / (n - 1):.6f}")
+        lut.write_text("\n".join(lignes) + "\n", encoding="utf-8")
+    return clics, lut, fondu
+
+
 class Service(SimpleHTTPRequestHandler):
     extensions_map = {**SimpleHTTPRequestHandler.extensions_map, ".js": "text/javascript", ".mjs": "text/javascript",
                       ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml"}
@@ -88,7 +125,7 @@ def servir():
 
 
 ETAT = """() => { const a = window.__labobine, p = a.p; if (!p) return null;
-  const fin = c => c.debut + (c.genre === 'texte' ? c.duree : (c.sortie - c.entree) / (c.vitesse || 1));
+  const fin = c => c.debut + (['texte', 'sticker', 'effet'].includes(c.genre) ? c.duree : (c.sortie - c.entree) / (c.vitesse || 1));
   return { pistes: p.pistes.map(t => ({ genre: t.genre, n: t.clips.length })), principale: p.pistes[0].clips.map(c => c.id),
     duree: Math.max(0, ...p.pistes.flatMap(t => t.clips.map(fin))), sel: a.selection,
     textes: p.pistes.filter(t => t.genre === 'texte').flatMap(t => t.clips.map(c => c.texte)) }; }"""
@@ -102,7 +139,12 @@ def nb(etat, genre):
 
 
 def main():
+    print("Contrôles sans navigateur (modèle, rythme, GIF, LUT)")
+    r = subprocess.run(["node", str(ICI / "_qc_modele.mjs")], capture_output=True, text=True, encoding="utf-8")
+    fin = [l for l in r.stdout.strip().splitlines() if "verts" in l]
+    ok(r.returncode == 0, f"_qc_modele.mjs : {fin[-1] if fin else r.stderr.strip()[:200]}")
     a, b, photo, son, vert, bruit, parole = medias_essai()
+    clics, lut, fondu = medias_vague2bis()
     srv, url = servir()
     erreurs = []
     with sync_playwright() as pw:
@@ -226,53 +268,172 @@ def main():
         page.wait_for_timeout(500)
         page.screenshot(path=str(TMP / "vague2-1440.png"))
 
-        print("Vague 3 : IA sur l'appareil")
-        lumi = """() => { const c = document.getElementById('toile'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-          let s = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 13) { s += d[i] + d[i + 1] + d[i + 2]; n += 3; } return s / n; }"""
-        page.evaluate("() => { const a = window.__labobine; const c = a.p.pistes[0].clips[0]; a.selectionner(c.id); a.allerA(0.3); }")
-        page.wait_for_timeout(700)
-        avant = page.evaluate(lumi)
-        page.check('#corps-inspecteur [data-k="detourage"]')
-        page.wait_for_function("() => window.__labobine.ia.iaPrete()", timeout=180000)
-        page.evaluate("() => window.__labobine.allerA(0.3)")
-        page.wait_for_timeout(1200)
-        apres = page.evaluate(lumi)
-        ok(apres < avant * 0.7, f"détourage : le décor sans personne disparaît (luminosité {avant:.0f} puis {apres:.0f})")
+        if "--sans-ia" in sys.argv:
+            print("Vague 3 : sautée (--sans-ia, pour un PC à court de mémoire)")
+        else:
+            print("Vague 3 : IA sur l'appareil")
+            lumi = """() => { const c = document.getElementById('toile'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+              let s = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 13) { s += d[i] + d[i + 1] + d[i + 2]; n += 3; } return s / n; }"""
+            page.evaluate("() => { const a = window.__labobine; const c = a.p.pistes[0].clips[0]; a.selectionner(c.id); a.allerA(0.3); }")
+            page.wait_for_timeout(700)
+            avant = page.evaluate(lumi)
+            page.check('#corps-inspecteur [data-k="detourage"]')
+            page.wait_for_function("() => window.__labobine.ia.iaPrete()", timeout=180000)
+            page.evaluate("() => window.__labobine.allerA(0.3)")
+            page.wait_for_timeout(1200)
+            apres = page.evaluate(lumi)
+            ok(apres < avant * 0.7, f"détourage : le décor sans personne disparaît (luminosité {avant:.0f} puis {apres:.0f})")
 
-        page.evaluate("() => { const a = window.__labobine; const c = a.p.pistes[0].clips.find(x => x.genre === 'video' && !x.muet) || a.p.pistes[0].clips.find(x => x.genre === 'video'); a.selectionner(c.id); }")
-        page.wait_for_timeout(300)
-        page.click('#corps-inspecteur [data-action="suivre-visages"]')
-        page.wait_for_function("() => window.__labobine.dernierSuivi", timeout=180000)
-        suivi = page.evaluate("() => window.__labobine.dernierSuivi")
-        ok("erreur" not in suivi and suivi.get("images", 0) >= 2, f"détecteur de visages : {suivi.get('images')} images analysées, {suivi.get('visages')} visage(s) (la mire n'en a pas)")
+            page.evaluate("() => { const a = window.__labobine; const c = a.p.pistes[0].clips.find(x => x.genre === 'video' && !x.muet) || a.p.pistes[0].clips.find(x => x.genre === 'video'); a.selectionner(c.id); }")
+            page.wait_for_timeout(300)
+            page.click('#corps-inspecteur [data-action="suivre-visages"]')
+            page.wait_for_function("() => window.__labobine.dernierSuivi", timeout=180000)
+            suivi = page.evaluate("() => window.__labobine.dernierSuivi")
+            ok("erreur" not in suivi and suivi.get("images", 0) >= 2, f"détecteur de visages : {suivi.get('images')} images analysées, {suivi.get('visages')} visage(s) (la mire n'en a pas)")
+
+            page.click('[data-onglet="son"]')
+            page.evaluate("() => window.__labobine.allerA(0)")
+            page.set_input_files("#entree-sons", [str(bruit)])
+            page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'bruit.wav')", timeout=20000)
+            page.evaluate("() => { const a = window.__labobine; const id = [...a.medias.values()].find(m => m.nom === 'bruit.wav').id; const c = a.p.pistes.flatMap(t => t.clips).find(x => x.media === id); a.selectionner(c.id); }")
+            page.wait_for_timeout(300)
+            page.click('#corps-inspecteur [data-action="debruiter"]')
+            page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom.includes('(sans bruit)'))", timeout=120000)
+            branche = page.evaluate("() => { const a = window.__labobine; const m = [...a.medias.values()].find(x => x.nom.includes('(sans bruit)')); return a.p.pistes.flatMap(t => t.clips).some(c => c.media === m.id); }")
+            ok(branche, "réduction du bruit : le son nettoyé remplace l'original sur la frise")
+
+            print("Sous-titres automatiques (Whisper dans le navigateur)")
+            page.click('[data-onglet="son"]')
+            page.evaluate("() => window.__labobine.allerA(0)")
+            page.set_input_files("#entree-sons", [str(parole)])
+            page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'parole.wav')", timeout=20000)
+            page.evaluate("""() => { const a = window.__labobine; a.modeSousTitres = 'rapide';
+              const id = [...a.medias.values()].find(m => m.nom === 'parole.wav').id;
+              a.selectionner(a.p.pistes.flatMap(t => t.clips).find(x => x.media === id).id); }""")
+            page.wait_for_timeout(300)
+            page.click('#corps-inspecteur [data-action="sous-titres"]')
+            page.wait_for_function("() => window.__labobine.derniersSousTitres", timeout=600000)
+            st = page.evaluate("() => window.__labobine.derniersSousTitres")
+            texte = " ".join(st).lower() if isinstance(st, list) else str(st)
+            ok(isinstance(st, list) and ("bonjour" in texte or "cotonou" in texte), f"sous-titres reconnus : « {texte[:80]} »")
+            n_legendes = page.evaluate("() => window.__labobine.p.pistes.filter(t => t.genre === 'texte').flatMap(t => t.clips).length")
+            ok(isinstance(st, list) and n_legendes >= len(st) + 1, f"{len(st) if isinstance(st, list) else 0} légendes posées sur la frise")
+        print("Vague 2 bis : LUT, lecture à l'envers, rythme, stickers, effets")
+        page.click('[data-onglet="medias"]')
+        pixel = lambda fx, fy: page.evaluate(f"""() => {{ const c = document.getElementById('toile'); const x = Math.round(c.width * {fx}), y = Math.round(c.height * {fy});
+          const d = c.getContext('2d').getImageData(x - 3, y - 3, 7, 7).data; const m = [0, 0, 0]; for (let i = 0; i < d.length; i += 4) for (let k = 0; k < 3; k++) m[k] += d[i + k] / 49; return m.map(Math.round); }}""")
+        t_photo = page.evaluate("""() => { const a = window.__labobine; const c = a.p.pistes[0].clips.find(x => x.media && a.medias.get(x.media).nom === 'photo.png');
+          a.selectionner(c.id); a.allerA(c.debut + 0.5); return c.debut + 0.5; }""")
+        page.wait_for_timeout(600)
+        avant_lut = pixel(0.3, 0.3)
+        with page.expect_file_chooser() as choix:
+            page.click('#corps-inspecteur [data-action="importer-lut"]')
+        choix.value.set_files(str(lut))
+        page.wait_for_function("() => { const a = window.__labobine; return a.p.pistes[0].clips.some(c => c.lut && c.lut.media); }", timeout=15000)
+        page.evaluate(f"() => window.__labobine.allerA({t_photo})")
+        page.wait_for_timeout(600)
+        apres_lut = pixel(0.3, 0.3)
+        attendu_lut = [255 - v for v in avant_lut]
+        ecart = max(abs(x - y) for x, y in zip(apres_lut, attendu_lut))
+        ok(ecart <= 12, f"LUT .cube appliquée par le moteur : {avant_lut} devient {apres_lut} (attendu {attendu_lut})")
+        ok(page.evaluate("() => document.querySelectorAll('#grille-medias .carte-media').length") == page.evaluate("() => [...window.__labobine.medias.values()].filter(m => m.type === 'video' || m.type === 'image').length"),
+           "la LUT ne se mélange pas aux vidéos et photos de la bibliothèque")
+
+        # une vidéo qui va du noir au blanc : à l'envers, elle doit commencer blanche
+        page.set_input_files("#entree-fichiers", [str(fondu)])
+        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'fondu.mp4')", timeout=20000)
+        page.evaluate("() => window.__labobine.allerA(0)")
+        page.locator("#grille-medias [data-ajouter]").last.click()
+        page.wait_for_timeout(400)
+        info = page.evaluate("""() => { const a = window.__labobine; const c = a.trouver(a.selection).clip;
+          return { id: c.id, debut: c.debut, fin: c.debut + (c.sortie - c.entree) / (c.vitesse || 1), media: c.media, nom: a.medias.get(c.media).nom }; }""")
+        centre = lambda: page.evaluate("""() => { const c = document.getElementById('toile'); const d = c.getContext('2d').getImageData(Math.round(c.width / 2) - 10, Math.round(c.height / 2) - 10, 20, 20).data;
+          let s = 0; for (let i = 0; i < d.length; i += 4) s += d[i] + d[i + 1] + d[i + 2]; return s / 400 / 3; }""")
+        aller = lambda t: (page.evaluate(f"() => window.__labobine.allerA({t})"), page.wait_for_timeout(700))
+        aller(info["debut"] + 0.1)
+        debut_avant = centre()
+        page.click('#corps-inspecteur [data-action="inverser"]')
+        page.wait_for_function("() => window.__labobine.dernierInverse", timeout=180000)
+        inv = page.evaluate("() => window.__labobine.dernierInverse")
+        ok("erreur" not in inv and info["nom"] == "fondu.mp4", "lire à l'envers : la vidéo est refaite" + (f" ({inv})" if "erreur" in inv else f" ({inv['duree']:.2f} s)"))
+        aller(info["debut"] + 0.1)
+        debut_apres = centre()
+        ok(debut_avant < 40 and debut_apres > 200, f"à l'envers, le fondu au blanc commence blanc (début {debut_avant:.0f} puis {debut_apres:.0f})")
+        page.click('#corps-inspecteur [data-action="inverser"]')
+        ok(page.evaluate(f"() => {{ const c = window.__labobine.trouver('{info['id']}').clip; return !c.inverse && c.media === '{info['media']}'; }}"), "« Remettre à l'endroit » rend le média d'origine")
+        page.keyboard.press("Control+z")
+        ok(page.evaluate(f"() => !!window.__labobine.trouver('{info['id']}').clip.inverse"), "et « Annuler » remet la lecture à l'envers")
 
         page.click('[data-onglet="son"]')
         page.evaluate("() => window.__labobine.allerA(0)")
-        page.set_input_files("#entree-sons", [str(bruit)])
-        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'bruit.wav')", timeout=20000)
-        page.evaluate("() => { const a = window.__labobine; const id = [...a.medias.values()].find(m => m.nom === 'bruit.wav').id; const c = a.p.pistes.flatMap(t => t.clips).find(x => x.media === id); a.selectionner(c.id); }")
-        page.wait_for_timeout(300)
-        page.click('#corps-inspecteur [data-action="debruiter"]')
-        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom.includes('(sans bruit)'))", timeout=120000)
-        branche = page.evaluate("() => { const a = window.__labobine; const m = [...a.medias.values()].find(x => x.nom.includes('(sans bruit)')); return a.p.pistes.flatMap(t => t.clips).some(c => c.media === m.id); }")
-        ok(branche, "réduction du bruit : le son nettoyé remplace l'original sur la frise")
-
-        print("Sous-titres automatiques (Whisper dans le navigateur)")
-        page.click('[data-onglet="son"]')
-        page.evaluate("() => window.__labobine.allerA(0)")
-        page.set_input_files("#entree-sons", [str(parole)])
-        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'parole.wav')", timeout=20000)
-        page.evaluate("""() => { const a = window.__labobine; a.modeSousTitres = 'rapide';
-          const id = [...a.medias.values()].find(m => m.nom === 'parole.wav').id;
+        page.set_input_files("#entree-sons", [str(clics)])
+        page.wait_for_function("() => [...window.__labobine.medias.values()].some(m => m.nom === 'clics.wav')", timeout=20000)
+        page.evaluate("""() => { const a = window.__labobine; const id = [...a.medias.values()].find(m => m.nom === 'clics.wav').id;
           a.selectionner(a.p.pistes.flatMap(t => t.clips).find(x => x.media === id).id); }""")
         page.wait_for_timeout(300)
-        page.click('#corps-inspecteur [data-action="sous-titres"]')
-        page.wait_for_function("() => window.__labobine.derniersSousTitres", timeout=600000)
-        st = page.evaluate("() => window.__labobine.derniersSousTitres")
-        texte = " ".join(st).lower() if isinstance(st, list) else str(st)
-        ok(isinstance(st, list) and ("bonjour" in texte or "cotonou" in texte), f"sous-titres reconnus : « {texte[:80]} »")
-        n_legendes = page.evaluate("() => window.__labobine.p.pistes.filter(t => t.genre === 'texte').flatMap(t => t.clips).length")
-        ok(isinstance(st, list) and n_legendes >= len(st) + 1, f"{len(st) if isinstance(st, list) else 0} légendes posées sur la frise")
+        page.click('#corps-inspecteur [data-action="rythme"]')
+        page.wait_for_function("() => window.__labobine.dernierRythme", timeout=60000)
+        ry = page.evaluate("() => window.__labobine.dernierRythme")
+        ok("erreur" not in ry and abs(ry.get("bpm", 0) - 120) < 2 and 14 <= len(ry.get("temps", [])) <= 17, f"rythme trouvé : {ry.get('bpm')} BPM, {len(ry.get('temps', []))} temps (attendu 120 et 16)")
+        ok(page.locator("#pistes .temps-rythme").count() >= 14 and page.locator("#regle .temps").count() >= 14, "les temps s'affichent sur le son et sur la règle")
+        page.click('#corps-inspecteur [data-action="caler"][data-v="2"]')
+        cale = page.evaluate("""() => { const a = window.__labobine; const p = a.p; const fin = c => c.debut + (c.sortie - c.entree) / (c.vitesse || 1);
+          const pts = []; for (const t of p.pistes) for (const c of t.clips) if (c.rythme) for (const x of c.rythme) if (x >= c.entree && x < c.sortie) pts.push(c.debut + (x - c.entree) / (c.vitesse || 1));
+          const photos = p.pistes[0].clips.filter(c => c.genre === 'image'); return { n: photos.length, sur: photos.filter(c => pts.some(x => Math.abs(x - fin(c)) < 1e-3)).length }; }""")
+        ok(cale["n"] >= 1 and cale["sur"] == cale["n"], f"« Caler tous les 2 temps » : {cale['sur']} photo(s) sur {cale['n']} finissent pile sur un temps")
+        page.evaluate("() => { const a = window.__labobine; a.selectionner(null); a.allerA(1.3); }")
+        page.keyboard.press("m")
+        ok(page.evaluate("() => window.__labobine.p.marqueurs.length") == 1 and page.locator("#regle .marqueur").count() == 1, "la touche M pose un marqueur sur la règle")
+        page.keyboard.press("m")
+        ok(page.evaluate("() => window.__labobine.p.marqueurs.length") == 0, "un second M le retire")
+
+        t_deco = page.evaluate("() => { const a = window.__labobine; const c = a.p.pistes[0].clips[0]; a.allerA(c.debut + 0.05); return c.debut + 0.05; }")
+        page.click('[data-onglet="stickers"]')
+        ok(page.locator("#grille-stickers .vignette-outil img[src^='data:image']").count() >= 15, "les vignettes des stickers sont dessinées par le moteur")
+        page.click('#grille-stickers [data-sticker="etoile"]')
+        page.wait_for_selector('#corps-inspecteur [data-forme="etoile"][aria-pressed="true"]')
+        page.evaluate(f"() => window.__labobine.allerA({t_deco + 0.8})")
+        page.wait_for_timeout(600)
+        jaunes_etoile = page.evaluate("""() => { const c = document.getElementById('toile'); const d = c.getContext('2d').getImageData(Math.round(c.width / 2) - 30, Math.round(c.height / 2) - 30, 60, 60).data;
+          let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i] > 200 && d[i + 1] > 170 && d[i + 2] < 120) n++; return n; }""")
+        ok(jaunes_etoile > 1500, f"le sticker étoile est dessiné au centre de l'aperçu ({jaunes_etoile} pixels jaunes)")
+        ok(page.locator("#pistes .clip.g-sticker").count() == 1, "il a sa piste sur la frise")
+        page.click('#corps-inspecteur [data-forme="prix"]')
+        page.fill('#corps-inspecteur input[data-k="texte"]', "2 000 F")
+        ok(page.evaluate("() => { const a = window.__labobine; const c = a.trouver(a.selection).clip; return c.forme === 'prix' && c.texte === '2 000 F'; }"), "le sticker devient une étiquette de prix, au texte modifiable")
+        ok(bool(page.evaluate("() => { const a = window.__labobine; return a.lecteur.cadres[a.selection]; }")), "il a un cadre sur l'aperçu : on peut le glisser et le pincer")
+        page.screenshot(path=str(TMP / "sticker-1440.png"))
+
+        page.evaluate(f"() => window.__labobine.allerA({t_deco + 0.8})")
+        page.wait_for_timeout(500)
+        haut = lambda: page.evaluate("""() => { const c = document.getElementById('toile'); const d = c.getContext('2d').getImageData(0, 0, c.width, Math.max(2, Math.round(c.height * 0.04))).data;
+          let s = 0; for (let i = 0; i < d.length; i += 4) s += d[i] + d[i + 1] + d[i + 2]; return s / (d.length / 4) / 3; }""")
+        coin = lambda: page.evaluate("""() => { const c = document.getElementById('toile'); const d = c.getContext('2d').getImageData(2, Math.round(c.height * 0.2), 20, 20).data;
+          let s = 0; for (let i = 0; i < d.length; i += 4) s += d[i] + d[i + 1] + d[i + 2]; return s / 400 / 3; }""")
+        # un projet vertical garde des bandes noires au-dessus d'une vidéo paysage : un fond gris rend l'effet mesurable
+        page.evaluate(f"() => {{ const a = window.__labobine; a.modifier(p => {{ p.fond.couleur = '#808080'; }}); a.allerA({t_deco + 1.5}); }}")
+        page.wait_for_timeout(600)
+        haut_avant, coin_avant = haut(), coin()
+        # l'effet se pose à 0,85 s ; les bandes cinéma entrent en 0,5 s : on mesure 0,65 s plus loin
+        page.evaluate(f"() => window.__labobine.allerA({t_deco + 0.8})")
+        page.wait_for_timeout(300)
+        page.click('[data-onglet="effets"]')
+        ok(page.locator("#grille-effets .vignette-outil img[src^='data:image']").count() >= 15, "les vignettes des effets sont dessinées par le moteur")
+        page.click('#grille-effets [data-effet="cinema"]')
+        page.evaluate(f"() => window.__labobine.allerA({t_deco + 1.5})")
+        page.wait_for_timeout(600)
+        haut_apres = haut()
+        ok(haut_apres < 2 and haut_avant > 8, f"effet « Bandes cinéma » : le haut de l'image devient noir ({haut_avant:.0f} puis {haut_apres:.0f})")
+        page.click('#corps-inspecteur [data-change-effet="vignettage"]')
+        page.evaluate(f"() => window.__labobine.allerA({t_deco + 1.5})")
+        page.wait_for_timeout(600)
+        coin_apres = coin()
+        ok(coin_apres < coin_avant * 0.75, f"effet « Vignettage » : le bord s'assombrit ({coin_avant:.0f} puis {coin_apres:.0f})")
+        ok(page.evaluate("() => { const a = window.__labobine; const c = a.trouver(a.selection).clip; return c.genre === 'effet' && c.effet === 'vignettage'; }"), "l'effet change sans changer de clip")
+        page.evaluate(f"() => {{ const a = window.__labobine; a.selectionner(null); a.allerA({t_deco + 1.5}); }}")
+        page.wait_for_timeout(500)
+        page.screenshot(path=str(TMP / "vague2bis-1440.png"))
+        page.evaluate("() => window.__labobine.modifier(p => { p.fond.couleur = '#000000'; })")
         attendu = etat()["duree"]
         t_image = page.evaluate("() => window.__labobine.p.pistes[0].clips[1].debut + 0.2")
         n_principale = len(etat()["principale"])
@@ -311,7 +472,11 @@ def main():
             eb = subprocess.run([FFMPEG, "-nostats", "-i", str(sortie), "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True).stderr
             mesures = re.findall(r"I:\s+(-?[0-9.]+) LUFS", eb)
             lufs = float(mesures[-1]) if mesures else -99
-            ok(abs(lufs + 14) < 1.0, f"volume harmonisé, mesuré par FFmpeg : {lufs} LUFS (visé -14)")
+            tout = subprocess.run([FFMPEG, "-i", str(sortie), "-af", "volumedetect", "-f", "null", "-"], capture_output=True, text=True).stderr
+            crete = next((float(l.split(":")[1].split()[0]) for l in tout.splitlines() if "max_volume" in l), -99)
+            # le moteur vise -14 LUFS mais ne pousse jamais la crête au-delà de -0,5 dBFS : un son très « piqué »
+            # (des clics) s'arrête donc plus bas, et c'est voulu
+            ok(abs(lufs + 14) < 1.0 or (lufs < -14 and crete > -1.5), f"volume harmonisé, mesuré par FFmpeg : {lufs} LUFS, crête {crete} dBFS (visé -14, ou crête au plafond de -0,5)")
             from PIL import Image
             img = TMP / "image-0_5.png"
             ff("-ss", f"{t_image:.2f}", "-i", str(sortie), "-frames:v", "1", str(img))
@@ -325,12 +490,58 @@ def main():
             ok(jaunes > 20, f"le filigrane LA BOBINE est en bas à droite ({jaunes} pixels jaunes)")
         page.click("#export-retour" if fini else "#export-fermer")
 
+        print("Export en GIF et en son seul")
+        page.click("#btn-exporter")
+        page.wait_for_selector("#dlg-export[open]")
+        page.click('#export-format label:has(input[value="gif"])')
+        ok(page.is_visible("#export-opt-gif") and page.is_hidden("#export-opt-video"), "choisir « GIF animé » montre ses propres réglages")
+        page.click('#export-taille-gif label:has(input[value="240"])')
+        page.click('#export-cadence-gif label:has(input[value="10"])')
+        page.click("#export-lancer")
+        page.wait_for_function("() => !document.getElementById('export-fini').hidden || !document.getElementById('export-reglages').hidden", timeout=240000)
+        fini_gif = page.is_visible("#export-fini")
+        ok(fini_gif and page.is_visible("#export-gif"), "le GIF se termine et s'affiche" + ("" if fini_gif else f" ; message : {page.inner_text('#export-infos')}"))
+        if fini_gif:
+            from PIL import Image, ImageSequence
+            g = TMP / "export.gif"
+            g.write_bytes(base64.b64decode(page.evaluate(LIRE_BLOB)))
+            im = Image.open(g)
+            n_img = im.n_frames
+            total = sum(f.info.get("duration", 0) for f in ImageSequence.Iterator(im))
+            ok(im.size == (240, 426), f"GIF de 240 × 426 ({im.size[0]} × {im.size[1]})")
+            ok(abs(n_img - attendu * 10) <= 2 and abs(total / 1000 - attendu) < 0.15, f"{n_img} images, {total / 1000:.2f} s (attendu {attendu:.2f} s à 10 i/s)")
+            im.seek(0)
+            premiere = im.convert("RGB")
+            l, h = premiere.size
+            coin_gif = premiere.crop((int(l * 0.55), int(h * 0.9), l, h)).tobytes()
+            jaunes = sum(1 for i in range(0, len(coin_gif), 3) if coin_gif[i] > 190 and coin_gif[i + 1] > 150 and coin_gif[i + 2] < 130)
+            ok(jaunes > 5, f"le filigrane est aussi sur le GIF gratuit ({jaunes} pixels jaunes)")
+            ok(g.stat().st_size < 4 * 1048576, f"le GIF pèse {g.stat().st_size // 1024} Ko")
+        page.click("#export-retour" if fini_gif else "#export-fermer")
+        page.click("#btn-exporter")
+        page.wait_for_selector("#dlg-export[open]")
+        page.click('#export-format label:has(input[value="son"])')
+        ok(page.is_hidden("#export-ligne-filigrane"), "« Son seul » : pas de filigrane à régler")
+        page.click("#export-lancer")
+        page.wait_for_function("() => !document.getElementById('export-fini').hidden || !document.getElementById('export-reglages').hidden", timeout=120000)
+        fini_son = page.is_visible("#export-fini")
+        ok(fini_son and page.is_visible("#export-audio"), "le son seul se termine" + ("" if fini_son else f" ; message : {page.inner_text('#export-infos')}"))
+        if fini_son:
+            a_son = TMP / "export-son.m4a"
+            a_son.write_bytes(base64.b64decode(page.evaluate(LIRE_BLOB)))
+            info_son = json.loads(subprocess.run([FFPROBE, "-v", "error", "-show_entries", "stream=codec_type,codec_name:format=duration", "-of", "json", str(a_son)],
+                                                 capture_output=True, text=True, check=True).stdout)
+            types = [x["codec_type"] for x in info_son["streams"]]
+            ok(types == ["audio"] and info_son["streams"][0]["codec_name"] == "aac", f"fichier M4A, une seule piste son ({types}, {info_son['streams'][0].get('codec_name')})")
+            ok(abs(float(info_son["format"]["duration"]) - attendu) < 0.3, f"durée du son {float(info_son['format']['duration']):.2f} s (attendu {attendu:.2f})")
+        page.click("#export-retour" if fini_son else "#export-fermer")
+
         print("Sauvegarde")
         page.wait_for_timeout(900)
         page.reload()
         page.wait_for_selector("#editeur:not([hidden])")
         page.wait_for_function(f"() => window.__labobine.p && window.__labobine.p.pistes[0].clips.length === {n_principale}", timeout=15000)
-        ok(page.evaluate("() => (window.__labobine.p.pistes[0].clips[0].cles.cx || []).length") == 2, f"après rechargement, le projet rouvre avec ses {n_principale} clips et ses images clés")
+        ok(page.evaluate("() => window.__labobine.p.pistes[0].clips.some(c => ((c.cles || {}).cx || []).length === 2)"), f"après rechargement, le projet rouvre avec ses {n_principale} clips et ses images clés")
         ok("Bonjour Cotonou" in etat()["textes"], "et son texte")
         page.click("#btn-retour")
         page.wait_for_selector(".carte-projet")
@@ -372,11 +583,16 @@ def main():
         deborde = page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth + 1")
         ok(not deborde, "pas de défilement horizontal de la page sur téléphone")
         ok(page.is_visible(".barre-mobile"), "la barre d'outils du bas s'affiche")
+        coupes = page.evaluate("() => [...document.querySelectorAll('.barre-mobile button span')].filter(s => s.scrollWidth > s.parentElement.clientWidth + 1).map(s => s.textContent)")
+        ok(page.locator(".barre-mobile button").count() == 6 and not coupes, "les 6 boutons du bas tiennent sur 390 px" + (f" (coupés : {coupes})" if coupes else ""))
         page.screenshot(path=str(TMP / "editeur-390.png"))
         page.click('.barre-mobile [data-onglet-cible="texte"]')
         page.wait_for_timeout(400)
         ok(page.evaluate("() => document.getElementById('biblio').classList.contains('ouvert')"), "la feuille Texte s'ouvre")
         page.screenshot(path=str(TMP / "editeur-390-texte.png"))
+        page.click('.barre-mobile [data-onglet-cible="stickers"]')
+        page.wait_for_timeout(400)
+        page.screenshot(path=str(TMP / "editeur-390-stickers.png"))
 
         nav.close()
     srv.shutdown()

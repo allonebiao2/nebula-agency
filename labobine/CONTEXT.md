@@ -30,12 +30,19 @@ nous**. On ne reprend rien de CapCut (ni code, ni effets, ni modèles, ni musiqu
 | `js/frise.js` | la frise : tête de lecture fixe au centre, la bande défile ; glisser, rogner, aimanter, pincer pour zoomer |
 | `js/medias.js` · `js/stock.js` | import (durée, vignette, forme d'onde) · IndexedDB : **les fichiers restent sur l'appareil** |
 | `js/offre.js` | Gratuit / Pro. `estPro()` rend **toujours faux** jusqu'à la vague 4 |
+| `js/effets.js` | les 15 effets plein écran ; le « hasard » est un calcul (même image dans l'aperçu et l'export) ; `pulsation()` cale Battement et Flash sur le rythme |
+| `js/stickers.js` | les 17 stickers, dessinés en `Path2D` dans une boîte de 100 × 100 (nets en 4K, rien à télécharger) |
+| `js/rythme.js` | les temps d'une musique : flux spectral, tempo par autocorrélation, suivi par programmation dynamique (Ellis 2007) |
+| `js/gif.js` | l'encodeur GIF : coupe médiane par image, tramage ordonné fixe, LZW, pixels inchangés transparents |
+| `js/lut.js` | les LUT 3D `.cube` : lecture, application WebGL (atlas de tranches, trilinéaire), repli processeur identique |
+| `js/inverser.js` | lire une vidéo à l'envers : tranches décodées vers l'avant, réécrites à rebours ; le son retourné aussi |
 | `vendor/mediabunny-1.65.0.min.mjs` | lecture/écriture MP4 et WebM, **MPL-2.0** (licence dans `vendor/`, créditée au pied de l'accueil) |
 
 ## Commandes
 
 ```bash
-python labobine/_qc.py        # contrôles Chrome (vagues 1 à 3) ; tests Node du modèle, du son, des visages et des légendes dans le scratchpad dans un vrai Chrome + examen du MP4 exporté (ffprobe), captures dans %TEMP%/labobine-qc
+node labobine/_qc_modele.mjs  # sans navigateur : modèle, rythme, GIF, LUT (lancé aussi en tête de _qc.py)
+python labobine/_qc.py        # contrôles Chrome (vagues 1 à 3 et 2 bis ; --sans-ia saute Whisper et MediaPipe quand le PC manque de mémoire) ; tests Node du modèle, du son, des visages et des légendes dans le scratchpad dans un vrai Chrome + examen du MP4 exporté (ffprobe), captures dans %TEMP%/labobine-qc
 python labobine/_dist.py      # prépare labobine/_dist (on ne publie JAMAIS le dossier entier)
 # publier (avec CLOUDFLARE_API_TOKEN de secrets/cloudflare.env) :
 wrangler pages project create labobine --production-branch main   # une seule fois
@@ -52,6 +59,12 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
 - L'export demande les images **dans l'ordre exact** où `besoinsA()` les annonce : toute nouvelle couche visuelle
   doit passer par `besoinsA()` ET par `dessinerImage()`, sinon l'export se désynchronise.
 - `vendor/` porte sa version dans le nom → cache `immutable` sûr ; `js/`, `app.css`, `index.html` en `no-cache`.
+- **Ordre des couches**, le même partout : piste principale, superpositions, **effets**, **stickers**, textes, puis le
+  filigrane (export seulement). Un effet ne voit que ce qui est sous lui.
+- **Un effet ou un sticker ne tire jamais `Math.random()`** : le hasard est `hasard(n)` (un calcul), sinon l'aperçu et
+  l'export ne montreraient pas la même image.
+- Un clip sans fichier (`texte`, `sticker`, `effet`) a une **durée propre** : `M.SANS_MEDIA` / `M.aDureePropre()`.
+  Tout nouveau genre de ce type s'y ajoute, sinon diviser et rogner le traitent comme une vidéo.
 
 ## Les vagues
 
@@ -68,8 +81,25 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
    recadrage, miroirs, 9 modes de fusion, **animations d'entrée et de sortie** (9 chacune), **6 transitions de plus**
    (glissement vers le haut, balayage, rideau, iris, flash blanc, tourbillon), **figer l'image**, **détacher le son**,
    remplacer le média, copier-coller les réglages, **garder le ton quand on accélère** (WSOLA, écrit ici : 440 Hz
-   ralenti ou accéléré ×2 reste à 440 Hz), image de couverture PNG. Reste de la vague 2 : LUT (il faut WebGL),
-   stickers, effets plein écran, marqueurs de rythme, inverser, export du son seul et en GIF.
+   ralenti ou accéléré ×2 reste à 440 Hz), image de couverture PNG.
+   **Vague 2 bis** (2026-11-02, le reste de la vague 2, tout sur l'appareil) :
+   - **15 effets plein écran** sur leur propre piste (Pellicule, Cassette, Décalage RVB, Lueur, Vignettage, Bandes
+     cinéma, Flou, Secousse, Battement, Flash, Lumière chaude, Paillettes, Pluie, Confettis, Lumières floues), appliqués
+     à l'image composée, **sous** les stickers et les textes (qui restent lisibles). Posé sur un clip, l'effet en prend la fin.
+   - **17 stickers dessinés ici**, pensés pour qui vend : flèches, « entourer » et « souligner » tracés à la main,
+     étiquette de prix, PROMO, NOUVEAU, bandeau, bulle, épingle de lieu, validé, étoile, cœur, éclair, étincelle, feu,
+     et l'émoji libre. Texte, couleurs, 6 mouvements en boucle (dont « bat au rythme »), entrée et sortie, images clés.
+   - **Marqueurs de rythme** : « Trouver le rythme » sur un son (tempo exact sur 120, 96 et 140 BPM, temps à 8 ms
+     près), touche **M** pour un marqueur à la main, les clips s'aimantent aux temps, et **« Caler les clips »** fait
+     tomber chaque photo pile sur un temps (1, 2 ou 4 temps par photo ; une vidéo s'arrête sur le dernier temps atteint).
+   - **Lire à l'envers** (vidéo et son), « Remettre à l'endroit » rend l'original, « Annuler » aussi.
+   - **LUT 3D `.cube`** importées (Resolve, Premiere, LUT achetées) : WebGL, intensité réglable, repli processeur.
+   - **Export en GIF animé** (240, 360 ou 480 px, 10 ou 15 i/s, filigrane en gratuit) et **du son seul** (M4A AAC,
+     sinon WAV), par la même boucle d'images exactes que le MP4 (`parcourirImages()` dans `export.js`).
+   - Contrôles : `_qc_modele.mjs` **39 verts** (dans le dépôt, plus dans un dossier temporaire) ; `_qc.py --sans-ia`
+     **79 verts** dans un vrai Chrome (LUT mesurée au pixel, fondu au blanc relu à l'envers, 119,9 BPM sur une piste
+     de clics, GIF relu par PIL, M4A par ffprobe). Le PC n'avait que 1 Go libre : le passage avec Whisper et
+     MediaPipe a été coupé par Claude Code, d'où l'option `--sans-ia` (leur code n'a pas changé).
 3. ✅ **IA de tous les jours** (2026-11-02), **tout sur l'appareil, rien n'est envoyé** :
    - **Sous-titres automatiques** : Whisper (MIT) via Transformers.js 4.3.2 (Apache 2.0, chargé depuis jsDelivr), modèle
      `onnx-community/whisper-base` (« précis », ~80 Mo) ou `whisper-tiny` (« rapide », ~40 Mo) téléchargé depuis Hugging
@@ -116,6 +146,18 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
   l'image exportée sur un clip non détouré.
 - Une commande Bash contenant des apostrophes françaises dans un script Python en ligne casse l'analyse du shell :
   écrire le script dans un fichier.
+
+- **Un sticker entre en « rebond » par défaut : à son premier instant, sa taille vaut zéro.** Un contrôle qui le
+  mesure doit avancer la tête de lecture d'au moins 0,5 s dans le clip.
+- ⛔ **Le décodeur vidéo du navigateur n'a qu'une petite réserve d'images.** Garder une trentaine d'images décodées
+  ouvertes (pour les réécrire à rebours) l'a **bloqué sans erreur** : l'inversion attendait pour toujours (QC du
+  2026-11-02, 180 s). Règle : **recopier chaque image décodée dans une toile à nous, puis la fermer aussitôt** ;
+  ne garder ouvertes que celles que le moteur dessine. `samplesAtTimestamps()` veut des instants croissants et peut
+  rendre la même image pour deux instants voisins : on ne la ferme qu'une fois, quand une autre arrive.
+- **Une LUT de 65 fait un atlas de 4 225 pixels** : au-delà de `MAX_TEXTURE_SIZE` (souvent 4 096 sur téléphone), on
+  passe par le processeur, sans message.
+- Le contrôle de design signale `.regle .marqueur::after` comme « bordure d'accent » : c'est le triangle du drapeau,
+  dessiné par des bordures transparentes. Faux positif.
 
 - **Dans un test Python, ne jamais nommer une variable `rouges`** (ou `verts`) : elle masque la liste des échecs.
 - Les réglages animés passent TOUS par `reglerAnimable()` (panneau, glisser sur l'aperçu, pincer, molette) : un

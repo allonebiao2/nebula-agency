@@ -49,7 +49,7 @@ export async function ramasserMedias() {
   const utilises = new Set();
   for (const p of projets) {
     for (const id of p.medias || []) utilises.add(id);
-    for (const t of p.pistes) for (const c of t.clips) if (c.media) utilises.add(c.media);
+    for (const t of p.pistes) for (const c of t.clips) for (const id of [c.media, c.lut && c.lut.media, c.inverse && c.inverse.media]) if (id) utilises.add(id);
   }
   const medias = await req('medias', 'readonly', (s) => s.getAllKeys());
   for (const id of medias || []) if (!utilises.has(id)) await effacerMedia(id);

@@ -416,8 +416,7 @@
   notre design, nos ressources**. ⛔ Rien de CapCut n'est repris.
 - **Où** : `labobine/` · 🟢 **EN LIGNE https://labobine.pages.dev** (Pages `labobine`, 2026-11-02, export réel vérifié
   en ligne) · ⏳ domaine `labobine.nebula-agency.online` à brancher par Mongazi (Pages → Custom domains).
-- **Vagues 1, 2 et 3 faites** (montage ; images clés, couleur, fond vert, masques ; IA **sur l'appareil** : sous-titres Whisper, détourage et visages MediaPipe, débruiteur et volume LUFS écrits ici) · QC `python labobine/_qc.py` dans un vrai Chrome (vrai Chrome
-  + ffprobe sur le MP4) · publier = `python labobine/_dist.py` puis `wrangler pages deploy labobine/_dist --project-name labobine --branch main`.
+- **Vagues 1, 2 (et 2 bis) et 3 faites** (montage ; images clés, couleur, fond vert, masques ; 15 effets, 17 stickers, rythme et calage, lecture à l'envers, LUT `.cube`, export GIF et son seul ; IA **sur l'appareil** : Whisper, MediaPipe, débruiteur, LUFS) · QC `node labobine/_qc_modele.mjs` puis `python labobine/_qc.py` dans un vrai Chrome (`--sans-ia` si le PC manque de mémoire) · publier = `python labobine/_dist.py` puis `wrangler pages deploy labobine/_dist --project-name labobine --branch main`.
 - **Règles** : le verrou est à l'export (gratuit = filigrane, 720/1080p, 30 i/s ; Pro = sans filigrane, 4K, 60 i/s) ·
   `estPro()` toujours faux jusqu'au paiement Mobile Money (vague 4), aucune porte dérobée · **un seul moteur de dessin**
   pour l'aperçu et l'export · les fichiers restent sur l'appareil (IndexedDB).

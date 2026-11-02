@@ -36,3 +36,17 @@ n8n, le second outil que Mongazi veut créer.
   Par vagues. Décisions de Mongazi : **version web** (PC + téléphone), nom **LA BOBINE**.
 - Vague 1 construite et testée (33 verts). Publication refusée par le garde-fou, en attente de Mongazi.
 - Suite : vague 2 (montage avancé), puis n8n.
+
+## Suite : vagues 2 à 4, puis la vague 2 bis (soir du 2026-11-02)
+
+- Vagues 2, 3 et 4 : voir `labobine/CONTEXT.md` (en ligne ; la caisse attend le secret du webhook SasPay de Mongazi).
+- Mongazi : « on continue la bobine ». La vague 4 attendant une action de sa part, Claude a fini le reste de la
+  vague 2 : 15 effets plein écran, 17 stickers dessinés ici (prix, PROMO, NOUVEAU, bandeau, épingle…), rythme
+  (« Trouver le rythme », touche M, « Caler les clips »), lecture à l'envers, LUT `.cube` par WebGL, export GIF et
+  son seul. Tout calculé sur l'appareil, rien d'envoyé.
+- Le premier QC Chrome a été coupé par Claude Code faute de mémoire (1 Go libre). Mongazi : « oui vasy », puis
+  « fait tout le reste, prends le contrôle du PC ». QC relancé avec `--sans-ia` (nouvelle option).
+- Un vrai défaut trouvé : l'inversion bloquait le décodeur vidéo en gardant trop d'images ouvertes
+  (`_memoire/apprentissages/2026-11-02-decodeur-video-reserve-images.md`). Six autres rouges venaient des
+  contrôles eux-mêmes (clip choisi, bandes noires d'un projet vertical, durée `NaN`, instant de mesure), corrigés.
+- Verdict : `_qc_modele.mjs` 39 verts, `_qc.py --sans-ia` 79 verts. Publié sur labobine.pages.dev.

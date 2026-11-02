@@ -17,6 +17,8 @@
   --c-super: #5b9dff;
   --c-texte: #9a86ff;
   --c-son: #4fc58a;
+  --c-sticker: #ff7fb0;
+  --c-effet: #3cc8c0;
   --f-titre: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
   --f-ui: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
@@ -91,7 +93,7 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 #biblio { grid-area: biblio; border-right: 1px solid var(--trait); }
 #inspecteur { grid-area: insp; border-left: 1px solid var(--trait); }
 .onglets { display: flex; align-items: center; gap: 2px; padding: 8px 8px 0; border-bottom: 1px solid var(--trait); }
-.onglets [role="tab"] { border: 0; background: transparent; padding: 10px 12px; border-radius: 8px 8px 0 0; color: var(--doux); font-weight: 600; border-bottom: 2px solid transparent; }
+.onglets [role="tab"] { border: 0; background: transparent; padding: 10px 8px; font-size: .9rem; border-radius: 8px 8px 0 0; color: var(--doux); font-weight: 600; border-bottom: 2px solid transparent; }
 .onglets [role="tab"][aria-selected="true"] { color: var(--texte); border-bottom-color: var(--lumiere); }
 .titre-panneau { padding: 10px 6px; font-weight: 700; }
 .fermer-feuille { margin-left: auto; display: none; }
@@ -112,6 +114,14 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .carte-media .boutons .ajout { background: var(--lumiere); color: var(--lumiere-texte); }
 .grille-styles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .style-texte { min-height: 76px; border-radius: 10px; border: 1px solid var(--trait); background: #000 linear-gradient(135deg, #2d2620, #15120f); display: grid; place-items: center; padding: 8px; font-size: 1.15rem; line-height: 1.1; text-align: center; }
+/* stickers et effets : des vignettes dessinées par le moteur lui-même */
+.grille-vignettes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.grille-vignettes.petite { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.vignette-outil { display: grid; gap: 4px; padding: 0 0 6px; border-radius: 10px; border: 1px solid var(--trait); background: var(--panneau-2); color: var(--doux); font-size: .72rem; font-weight: 600; text-align: center; overflow: hidden; }
+.vignette-outil img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: #0d0b09; }
+.vignette-outil:hover { border-color: var(--lumiere); color: var(--texte); }
+.vignette-outil[aria-pressed="true"] { border-color: var(--lumiere); color: var(--texte); box-shadow: 0 0 0 1px var(--lumiere); }
+.grille-vignettes.petite .vignette-outil { font-size: .64rem; padding-bottom: 4px; }
 .liste-sons { display: grid; gap: 8px; }
 .ligne-son { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; padding: 10px; border-radius: 10px; background: var(--panneau-2); }
 .ligne-son .nom { font-size: .85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -192,11 +202,19 @@ input[type="color"] { width: 44px; height: 34px; padding: 2px; border-radius: 8p
 .clip.g-image { --k: var(--c-image); }
 .g-superposition .clip { --k: var(--c-super); }
 .clip.g-texte { --k: var(--c-texte); }
+.clip.g-sticker { --k: var(--c-sticker); color: #2a0f1c; }
+.clip.g-effet { --k: var(--c-effet); color: #06221f; }
 .clip.g-audio { --k: #1f3d2d; color: var(--c-son); }
 .clip .film { position: absolute; inset: 0; background-repeat: repeat-x; background-size: auto 100%; opacity: .92; }
 .clip .etiquette { position: absolute; left: 6px; bottom: 4px; max-width: calc(100% - 12px); padding: 0 5px; border-radius: 4px; background: rgba(0,0,0,.6); font: 500 .66rem/1.5 var(--f-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.clip.g-texte .etiquette { position: static; display: block; margin: 0; padding: 0 8px; line-height: 31px; background: none; font: 600 .78rem/31px var(--f-ui); }
+.clip.g-texte .etiquette, .clip.g-sticker .etiquette, .clip.g-effet .etiquette { position: static; display: block; margin: 0; padding: 0 8px; line-height: 31px; background: none; font: 600 .78rem/31px var(--f-ui); }
+.clip.sel.g-texte .etiquette, .clip.sel.g-sticker .etiquette, .clip.sel.g-effet .etiquette { padding: 0 20px; }
 .clip svg.onde { position: absolute; inset: 3px 0; width: 100%; height: calc(100% - 6px); stroke: none; fill: var(--c-son); opacity: .9; }
+.temps-rythme { position: absolute; bottom: 2px; width: 2px; height: 7px; margin-left: -1px; border-radius: 1px; background: #e9fff2; opacity: .75; pointer-events: none; }
+.regle b { pointer-events: none; }
+.regle .marqueur { position: absolute; top: 0; bottom: -1px; width: 2px; margin-left: -1px; height: auto; background: var(--lumiere); }
+.regle .marqueur::after { content: ""; position: absolute; top: 2px; left: 2px; border: 5px solid transparent; border-left: 7px solid var(--lumiere); }
+.regle .temps { position: absolute; bottom: 0; width: 1px; height: 9px; background: var(--c-son); opacity: .8; }
 .losange { position: absolute; top: 4px; width: 9px; height: 9px; margin-left: -4.5px; transform: rotate(45deg); background: var(--lumiere); border: 1px solid var(--lumiere-texte); z-index: 3; cursor: pointer; }
 .clip.sel { border-color: var(--lumiere); box-shadow: 0 0 0 1.5px var(--lumiere); z-index: 3; touch-action: none; }
 .clip.glisse { opacity: .85; z-index: 4; box-shadow: 0 8px 22px rgba(0,0,0,.55); }
@@ -225,7 +243,7 @@ input[type="color"] { width: 44px; height: 34px; padding: 2px; border-radius: 8p
   .panneau.ouvert { transform: none; visibility: visible; transition: transform .26s ease; }
   .fermer-feuille { display: inline-grid; }
   .barre-mobile { grid-area: barre; display: flex; justify-content: space-around; align-items: stretch; background: var(--panneau); border-top: 1px solid var(--trait); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 31; }
-  .barre-mobile button { flex: 1; display: grid; justify-items: center; align-content: center; gap: 2px; border: 0; background: transparent; color: var(--doux); font-size: .72rem; font-weight: 600; }
+  .barre-mobile button { flex: 1; min-width: 0; display: grid; justify-items: center; align-content: center; gap: 2px; border: 0; background: transparent; color: var(--doux); font-size: .66rem; font-weight: 600; }
   .barre-mobile button[aria-expanded="true"] { color: var(--lumiere); }
   .outil span { display: none; }
   .outil { padding: 0 10px; }
@@ -257,7 +275,8 @@ input[type="color"] { width: 44px; height: 34px; padding: 2px; border-radius: 8p
 .offre-pro p { margin: 0; font-size: .88rem; }
 .barre { height: 12px; border-radius: 999px; background: var(--panneau-3); overflow: hidden; margin-top: 18px; }
 .barre-plein { height: 100%; width: 100%; background: var(--lumiere); border-radius: 999px; transform-origin: left center; transform: scaleX(0); transition: transform .2s linear; }
-#export-video { width: 100%; max-height: 46dvh; background: #000; border-radius: 10px; margin-top: 12px; }
+#export-video, #export-gif { display: block; width: 100%; max-height: 46dvh; object-fit: contain; background: #000; border-radius: 10px; margin-top: 12px; }
+#export-audio { width: 100%; margin-top: 12px; }
 .avert { color: var(--lumiere); font-size: .88rem; }
 
 /* ---------- compte ---------- */

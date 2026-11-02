@@ -1,7 +1,7 @@
 // LA BOBINE · le traitement du son, sans bibliothèque : réduction du bruit, volume perçu (LUFS), fichier WAV.
 
 // ---------- FFT complexe, radix 2, en place ----------
-function fft(re, im, inverse) {
+export function fft(re, im, inverse) {
   const n = re.length;
   for (let i = 1, j = 0; i < n; i += 1) {
     let bit = n >> 1;

@@ -3,8 +3,11 @@
 //
 // `obtenir(clip, tempsSource, role)` rend une source { l, h, peindre(ctx, sx, sy, sl, sh, dx, dy, dl, dh) } ou null.
 
-import { dureeClip, finClip, tempsSource, principale, clamp, valeur } from './model.js';
+import { dureeClip, finClip, tempsSource, principale, clamp, valeur, pointsDeRythme } from './model.js';
 import { iaPrete, detourerDonnees, chargerVision } from './ia.js';
+import { appliquerEffet, pulsation } from './effets.js';
+import { STICKERS, boiteDe } from './stickers.js';
+import { lutPrete, appliquerLut } from './lut.js';
 
 export const actif = (c, t) => t >= c.debut - 1e-6 && t < finClip(c) - 1e-6;
 const lisse = (k) => k * k * (3 - 2 * k);
@@ -233,6 +236,9 @@ function preparer(img, sx, sy, sl, sh, dl, dh, c, voiles) {
     if (chroma) appliquerChroma(d.data, c.chroma);
     o.putImageData(d, 0, 0);
   }
+  // la LUT étalonne les couleurs après le détourage, avant les voiles et le masque
+  const lut = c.lut && lutPrete(c.lut.media);
+  if (lut && (c.lut.intensite ?? 1) > 0) appliquerLut(travail, lut, c.lut.intensite ?? 1);
   for (const [couleur, a] of voiles) {
     o.globalCompositeOperation = 'source-atop';
     o.globalAlpha = clamp(a, 0, 1);
@@ -276,7 +282,8 @@ function peindreMedia(ctx, img, c, W, H, o, t) {
   if (c.miroirH || c.miroirV) ctx.scale(c.miroirH ? -1 : 1, c.miroirV ? -1 : 1);
   const voiles = teintes(c);
   if (c.detourage && !iaPrete()) chargerVision().catch(() => {});
-  const avance = (c.chroma && c.chroma.actif) || (c.detourage && iaPrete()) || (c.masque && c.masque.forme && c.masque.forme !== 'aucun') || voiles.length;
+  const avance = (c.chroma && c.chroma.actif) || (c.detourage && iaPrete()) || (c.masque && c.masque.forme && c.masque.forme !== 'aucun') || voiles.length
+    || (c.lut && lutPrete(c.lut.media));
   if (avance) ctx.drawImage(preparer(img, sx, sy, sl, sh, dl, dh, c, voiles), -dl / 2, -dh / 2, dl, dh);
   else img.peindre(ctx, sx, sy, sl, sh, -dl / 2, -dh / 2, dl, dh);
   ctx.restore();
@@ -370,6 +377,44 @@ export function dessinerTexte(ctx, c, t, W, H) {
   return { x: x0, y: y0, l: (bl + pad * 3) * s, h: (bh + pad * 2) * s, rotation: rot };
 }
 
+// ---------- stickers ----------
+function boucleSticker(c, lt, H, t, rythme) {
+  const r = { s: 1, rot: 0, dy: 0, alpha: 1 };
+  switch (c.boucle) {
+    case 'pulse': r.s = 1 + 0.07 * Math.sin(2 * Math.PI * 1.4 * lt); break;
+    case 'balance': r.rot = 9 * Math.sin(2 * Math.PI * 1.1 * lt); break;
+    case 'flotte': r.dy = 0.025 * H * Math.sin(2 * Math.PI * 0.8 * lt); break;
+    case 'tourne': r.rot = 120 * lt; break;
+    case 'clignote': r.alpha = Math.sin(2 * Math.PI * 1.6 * lt) > -0.35 ? 1 : 0.12; break;
+    case 'rythme': r.s = 1 + 0.16 * pulsation(rythme(), t, 8); break;
+    default:
+  }
+  return r;
+}
+
+export function dessinerSticker(ctx, c, t, W, H, rythme = () => []) {
+  const forme = STICKERS[c.forme] || STICKERS.etoile;
+  const lt = t - c.debut;
+  const an = animClip(c, t, W, H);
+  const b = boucleSticker(c, lt, H, t, rythme);
+  const taille = Math.max(4, (valeur(c, 'echelle', t) ?? 0.34) * Math.min(W, H)) * an.zoom * b.s;
+  const x = W * (valeur(c, 'cx', t) ?? 0.5) + an.dx;
+  const y = H * (valeur(c, 'cy', t) ?? 0.5) + an.dy + b.dy;
+  const rot = (valeur(c, 'rotation', t) || 0) + an.rot + b.rot;
+  const alpha = clamp((valeur(c, 'opacite', t) ?? 1) * an.alpha * b.alpha, 0, 1);
+  const [bl, bh] = boiteDe(c.forme);
+  if (alpha > 0) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y);
+    if (rot) ctx.rotate((rot * Math.PI) / 180);
+    ctx.scale(taille / 100, taille / 100);
+    forme.dessiner(ctx, c);
+    ctx.restore();
+  }
+  return { x, y, l: (taille * bl) / 100, h: (taille * bh) / 100, rotation: rot };
+}
+
 /**
  * Compose l'image de l'instant t. Rend la position de chaque clip dessiné (pour le cadre de sélection).
  */
@@ -459,6 +504,17 @@ export function dessinerImage(ctx, p, t, W, H, obtenir, fps = 30) {
       if (!img) continue;
       cadres[c.id] = peindreMedia(ctx, img, c, W, H, { alpha: (valeur(c, 'opacite', t) ?? 1) * fondus(c, t) }, t);
     }
+  }
+  // le rythme n'est calculé que si un effet ou un sticker en a besoin
+  let rythme = null;
+  const lireRythme = () => (rythme || (rythme = pointsDeRythme(p)));
+  for (const piste of p.pistes) {
+    if (piste.genre !== 'effet') continue;
+    for (const c of piste.clips) if (actif(c, t)) appliquerEffet(ctx, c, t, W, H, c.effet === 'battement' || c.effet === 'flash' ? lireRythme() : null);
+  }
+  for (const piste of p.pistes) {
+    if (piste.genre !== 'sticker') continue;
+    for (const c of piste.clips) if (actif(c, t)) cadres[c.id] = dessinerSticker(ctx, c, t, W, H, lireRythme);
   }
   for (const piste of p.pistes) {
     if (piste.genre !== 'texte') continue;

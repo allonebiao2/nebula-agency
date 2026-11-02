@@ -5,11 +5,16 @@ import * as S from './stock.js';
 import { importer, formeOnde } from './medias.js';
 import { Lecteur } from './lecteur.js';
 import { Frise } from './frise.js';
-import { exporter, dimensionsSortie, sonDuClip } from './export.js';
+import { exporter, exporterGif, exporterSon, aDuSon, dimensionsSortie, sonDuClip, TAILLES_GIF, CADENCES_GIF } from './export.js';
 import { chargerVision, chercherVisages, clesSuiviVisage, iaPrete } from './ia.js';
 import { reduireBruit, versWav, VOLUMES } from './audio.js';
 import { chargerTranscription, versMono16k, transcrire, legendes, MODELES } from './soustitres.js';
-import { FILTRES, dessinerImage } from './rendu.js';
+import { FILTRES, dessinerImage, dessinerSticker } from './rendu.js';
+import { STICKERS, AVEC_TEXTE } from './stickers.js';
+import { EFFETS, appliquerEffet } from './effets.js';
+import { detecterRythme } from './rythme.js';
+import { inverserVideo } from './inverser.js';
+import { chargerLut } from './lut.js';
 import { OFFRES, estPro } from './offre.js';
 import * as C from './compte.js';
 
@@ -61,7 +66,59 @@ async function chargerPolices() {
   try {
     await Promise.all([...M.POLICES.map((f) => document.fonts.load(`${f.poids} 40px "${f.nom}"`)), document.fonts.load('800 40px "Bricolage Grotesque"')]);
   } catch { /* hors ligne : le moteur retombe sur la police système */ }
+  fabriquerVignettes();
+  rendreOutils();
   if (app.p) app.lecteur.afficher();
+}
+
+// ====================================================================== vignettes des stickers et des effets
+// Elles sont dessinées par le moteur lui-même : ce qu'on voit dans la bibliothèque est ce qui sortira.
+const vignettes = { stickers: {}, effets: {} };
+app.vignettes = vignettes;
+function sceneEssai(o, W, H) {
+  o.save();
+  o.setTransform(1, 0, 0, 1, 0, 0);
+  o.globalAlpha = 1;
+  o.globalCompositeOperation = 'source-over';
+  const g = o.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#2b4f7a');
+  g.addColorStop(0.62, '#e8a05a');
+  g.addColorStop(1, '#3a2414');
+  o.fillStyle = g;
+  o.fillRect(0, 0, W, H);
+  o.fillStyle = '#ffd23f';
+  o.beginPath(); o.arc(W * 0.66, H * 0.5, W * 0.14, 0, Math.PI * 2); o.fill();
+  o.fillStyle = '#1d140c';
+  o.beginPath(); o.moveTo(0, H); o.lineTo(0, H * 0.7); o.quadraticCurveTo(W * 0.3, H * 0.56, W * 0.55, H * 0.72); o.quadraticCurveTo(W * 0.8, H * 0.86, W, H * 0.7); o.lineTo(W, H); o.fill();
+  o.fillStyle = '#f3ece1';
+  o.fillRect(W * 0.22, H * 0.46, W * 0.06, H * 0.26);
+  o.beginPath(); o.arc(W * 0.25, H * 0.42, W * 0.05, 0, Math.PI * 2); o.fill();
+  o.restore();
+}
+function fabriquerVignettes() {
+  const cv = document.createElement('canvas');
+  cv.width = 120;
+  cv.height = 120;
+  const o = cv.getContext('2d', { willReadFrequently: true });
+  for (const [k, st] of Object.entries(STICKERS)) {
+    o.setTransform(1, 0, 0, 1, 0, 0);
+    o.fillStyle = '#211c17';
+    o.fillRect(0, 0, 120, 120);
+    const c = M.clipSticker(0, k, { couleur: st.couleur, couleur2: st.couleur2, texte: st.texte || '', echelle: 0.78, animEntree: { type: 'aucune', duree: 0.5 } });
+    dessinerSticker(o, c, 0.5, 120, 120);
+    vignettes.stickers[k] = cv.toDataURL('image/png');
+  }
+  for (const k of Object.keys(EFFETS)) {
+    sceneEssai(o, 120, 120);
+    appliquerEffet(o, { effet: k, debut: 0, duree: 3, intensite: 1 }, 1.03, 120, 120, []);
+    vignettes.effets[k] = cv.toDataURL('image/jpeg', 0.82);
+  }
+}
+const tuile = (attr, k, nom, img, presse) => `<button class="vignette-outil" ${attr}="${k}"${presse === undefined ? '' : ` aria-pressed="${presse}"`} type="button"><img src="${img || ''}" alt="">${esc(nom)}</button>`;
+function rendreOutils() {
+  $('#grille-stickers').innerHTML = Object.entries(STICKERS).map(([k, st]) => tuile('data-sticker', k, st.nom, vignettes.stickers[k])).join('');
+  $('#grille-effets').innerHTML = Object.entries(EFFETS).map(([k, e]) => tuile('data-effet', k, e.nom, vignettes.effets[k])).join('');
+  if (app.p && app.selection) { const f = M.trouver(app.p, app.selection); if (f && (f.clip.genre === 'sticker' || f.clip.genre === 'effet')) rendreInspecteur(); }
 }
 
 // ====================================================================== accueil
@@ -411,6 +468,35 @@ function ajouterTexte(style) {
   if (estMobile()) fermerFeuilles();
 }
 
+function ajouterSticker(forme) {
+  const st = STICKERS[forme];
+  if (!st || !app.p) return;
+  const c = M.clipSticker(app.lecteur.t, forme, { couleur: st.couleur, couleur2: st.couleur2, texte: st.texte || '' });
+  modifier((p) => M.poserSurPisteLibre(p, 'sticker', c));
+  selectionner(c.id);
+  if (estMobile()) fermerFeuilles();
+}
+
+function ajouterEffet(effet) {
+  if (!EFFETS[effet] || !app.p) return;
+  const t = app.lecteur.t;
+  const c = M.clipEffet(t, effet);
+  // posé sur un clip de la piste principale, l'effet en prend la fin
+  const sous = M.principale(app.p).clips.find((x) => t >= x.debut - 1e-6 && t < M.finClip(x) - 1e-6);
+  if (sous && M.finClip(sous) - t >= 1) c.duree = M.finClip(sous) - t;
+  modifier((p) => M.poserSurPisteLibre(p, 'effet', c));
+  selectionner(c.id);
+  if (estMobile()) fermerFeuilles();
+}
+
+/** Pose un marqueur de rythme à la tête de lecture, ou retire celui qui s'y trouve. */
+function marqueurIci() {
+  if (!app.p) return;
+  let pose = false;
+  modifier((p) => { pose = M.basculerMarqueur(p, app.lecteur.t); });
+  toast(pose ? 'Marqueur posé : les clips s\'y aimantent' : 'Marqueur retiré', null, null, 2200);
+}
+
 // ====================================================================== voix off
 async function basculerVoix() {
   if (app.enregistreur) { app.enregistreur.stop(); return; }
@@ -465,7 +551,7 @@ async function basculerVoix() {
 function rendreBiblio() {
   if (!app.p) return;
   const medias = app.p.medias.map((id) => app.medias.get(id)).filter(Boolean);
-  const visuels = medias.filter((m) => m.type !== 'audio');
+  const visuels = medias.filter((m) => m.type === 'video' || m.type === 'image');
   $('#grille-medias').innerHTML = visuels.length ? visuels.map((m) => `
     <div class="carte-media">
       <div class="vignette" style="background-image:url('${m.vignette}')"></div>
@@ -498,7 +584,7 @@ function rendreStyles() {
 // ====================================================================== inspecteur
 const FERMES_PAR_DEFAUT = ['Animations', 'Fondus', 'Recadrage', 'Fond vert', 'Masque'];
 app.fermes = new Set(FERMES_PAR_DEFAUT);
-const ANIMABLE = (c, k) => (c.genre === 'texte' ? M.ANIMABLES_TEXTE : M.ANIMABLES_MEDIA).includes(k);
+const ANIMABLE = (c, k) => (c.genre === 'texte' ? M.ANIMABLES_TEXTE : c.genre === 'effet' || c.genre === 'audio' ? [] : M.ANIMABLES_MEDIA).includes(k);
 function etatCle(c, k) {
   const lt = app.lecteur.t - c.debut;
   return M.cleIci(c, k, lt) ? 'ici' : M.estAnime(c, k) ? 'anime' : 'libre';
@@ -514,7 +600,28 @@ const couleur = (k, label, val, palette = PALETTE) => `<div class="champ plein">
 const groupe = (titre, html, id = '') => `<details class="groupe-insp"${id ? ` id="insp-${id}"` : ''}${app.fermes.has(titre) ? '' : ' open'}><summary>${titre}</summary><div class="groupe-corps">${html}</div></details>`;
 const puces = (action, val, options) => `<div class="puces">${options.map(([v, t]) => `<button data-action="${action}" data-v="${v}" aria-pressed="${String(v) === String(val)}">${t}</button>`).join('')}</div>`;
 const bouton = (action, texte) => `<button class="btn petit" data-action="${action}">${texte}</button>`;
-const famille = (c) => (c.genre === 'texte' ? 'texte' : c.genre === 'audio' ? null : 'media');
+const FAMILLES = { texte: 'texte', sticker: 'sticker', effet: 'effet', audio: null };
+const famille = (c) => (c.genre in FAMILLES ? FAMILLES[c.genre] : 'media');
+const CALER = [[1, 'Chaque temps'], [2, 'Tous les 2 temps'], [4, 'Tous les 4 temps']];
+
+function groupeRythme(p) {
+  const pts = M.pointsDeRythme(p);
+  return groupe('Rythme', `<p class="note">${pts.length ? `${pts.length} temps sur la frise.` : 'Aucun temps marqué.'} La touche M (ou « Marqueur ») en pose un à la tête de lecture ; sur un son, « Trouver le rythme » les pose tout seul.</p>`
+    + (pts.length >= 2 ? `<p class="note">Caler la piste principale : chaque photo dure le nombre de temps choisi, chaque vidéo s'arrête sur un temps.</p>${puces('caler', null, CALER)}` : '')
+    + ((p.marqueurs || []).length ? `<div class="actions-insp">${bouton('effacer-marqueurs', 'Effacer les marqueurs')}</div>` : ''));
+}
+
+/** La LUT d'un clip : celle qu'il porte, celles déjà importées dans le projet, ou une nouvelle. */
+function blocLut(c) {
+  const luts = app.p.medias.map((id) => app.medias.get(id)).filter((m) => m && m.type === 'lut');
+  const lut = c.lut && c.lut.media && app.medias.get(c.lut.media);
+  let h = '<p class="note"><b>LUT 3D</b> · l\'étalonnage d\'un logiciel pro, au format .cube.</p>';
+  if (lut) h += `<p class="note">Appliquée : ${esc(lut.nom)}</p>${curseur('lut.intensite', 'Intensité', c.lut.intensite ?? 1, 0, 1, 0.01, 'pct')}`;
+  const autres = luts.filter((m) => !lut || m.id !== lut.id);
+  if (autres.length) h += `<div class="puces">${autres.map((m) => `<button data-action="lut" data-v="${m.id}">${esc(m.nom.replace(/\.cube$/i, ''))}</button>`).join('')}</div>`;
+  h += `<div class="actions-insp">${bouton('importer-lut', 'Importer une LUT (.cube)')}${lut ? bouton('retirer-lut', 'Retirer la LUT') : ''}</div>`;
+  return h;
+}
 
 function rendreInspecteur(section) {
   const corps = $('#corps-inspecteur');
@@ -526,7 +633,8 @@ function rendreInspecteur(section) {
     corps.innerHTML = groupe('Projet', `<label class="champ plein"><span>Nom</span><input type="text" data-k="nom" data-cible="projet" value="${esc(p.nom)}" maxlength="80"></label>`)
       + groupe('Format', `<div class="puces">${Object.entries(M.FORMATS).map(([k, x]) => `<button data-action="format" data-v="${k}" aria-pressed="${k === p.format}">${x.nom} ${k}</button>`).join('')}</div>`)
       + groupe('Fond', choix('fond.type', 'Remplissage', p.fond.type, [['couleur', 'Couleur unie'], ['flou', 'Image floutée']]) + couleur('fond.couleur', 'Couleur', p.fond.couleur))
-      + groupe('Montage', `<p class="note">${M.formatTemps(M.dureeProjet(p))} au total, ${p.pistes.reduce((n, t) => n + t.clips.length, 0)} clip(s). Touche un clip de la frise pour le régler.</p>`);
+      + groupe('Montage', `<p class="note">${M.formatTemps(M.dureeProjet(p))} au total, ${p.pistes.reduce((n, t) => n + t.clips.length, 0)} clip(s). Touche un clip de la frise pour le régler.</p>`)
+      + groupeRythme(p);
     return;
   }
   const c = f.clip;
@@ -539,6 +647,7 @@ function rendreInspecteur(section) {
     $('#titre-inspecteur').textContent = c.genre === 'video' ? 'Vidéo' : 'Photo';
     h += groupe('Clip', `<div class="actions-insp">${bouton('basculer', surPrincipale ? 'Passer en superposition' : 'Remettre sur la piste principale')}`
       + `${c.genre === 'video' && surPrincipale ? bouton('figer', "Figer l'image") : ''}${c.genre === 'video' && !c.muet ? bouton('detacher', 'Détacher le son') : ''}`
+      + `${c.genre === 'video' ? bouton('inverser', c.inverse ? "Remettre à l'endroit" : "Lire à l'envers") : ''}`
       + `${bouton('remplacer', 'Remplacer le média')}${presse}</div>`);
     h += groupe("IA sur l'appareil", coche('detourage', 'Détourer la personne (le décor disparaît)', c.detourage)
       + `<div class="actions-insp">${c.genre === 'video' ? bouton('suivre-visages', 'Cadrer sur les visages') : ''}${c.genre === 'video' && !c.muet ? bouton('debruiter', 'Réduire le bruit') + bouton('sous-titres', 'Sous-titres automatiques') : ''}</div>`
@@ -566,7 +675,8 @@ function rendreInspecteur(section) {
       + curseur('reglages.contraste', 'Contraste', c.reglages.contraste, -1, 1, 0.01, 'pct')
       + curseur('reglages.saturation', 'Saturation', c.reglages.saturation, -1, 1, 0.01, 'pct')
       + curseur('reglages.temperature', 'Température', c.reglages.temperature, -1, 1, 0.01, 'pct')
-      + `<div class="actions-insp">${bouton('reinit-couleur', 'Remettre les couleurs d\'origine')}</div>`);
+      + `<div class="actions-insp">${bouton('reinit-couleur', 'Remettre les couleurs d\'origine')}</div>`
+      + blocLut(c));
     h += groupe('Animations', choix('animEntree.type', 'Entrée', c.animEntree.type, M.ANIMS_CLIP)
       + curseur('animEntree.duree', "Durée d'entrée", c.animEntree.duree, 0.1, 3, 0.05, 's')
       + choix('animSortie.type', 'Sortie', c.animSortie.type, M.ANIMS_CLIP)
@@ -584,6 +694,28 @@ function rendreInspecteur(section) {
     h += groupe('Masque', choix('masque.forme', 'Forme', c.masque.forme, M.MASQUES)
       + curseur('masque.taille', 'Taille', c.masque.taille, 0.05, 1.5, 0.01, 'pct') + curseur('masque.adoucir', 'Adoucir', c.masque.adoucir, 0, 1, 0.01, 'pct')
       + coche('masque.inverser', 'Inverser le masque', c.masque.inverser));
+  } else if (c.genre === 'sticker') {
+    $('#titre-inspecteur').textContent = 'Sticker';
+    h += groupe('Sticker', `<div class="grille-vignettes petite">${Object.entries(STICKERS).map(([k, st]) => tuile('data-forme', k, st.nom, vignettes.stickers[k], k === c.forme)).join('')}</div>`
+      + (AVEC_TEXTE.has(c.forme) ? `<label class="champ plein"><span>${c.forme === 'emoji' ? 'Émoji' : 'Texte'}</span><input type="text" data-k="texte" value="${esc(c.texte)}" maxlength="40"></label>` : '')
+      + couleur('couleur', 'Couleur', c.couleur) + couleur('couleur2', c.forme === 'emoji' ? 'Second ton' : 'Contour et texte', c.couleur2)
+      + (presse ? `<div class="actions-insp">${presse}</div>` : ''));
+    h += groupe('Mouvement', choix('boucle', 'En boucle', c.boucle, M.BOUCLES)
+      + choix('animEntree.type', 'Entrée', c.animEntree.type, M.ANIMS_CLIP) + curseur('animEntree.duree', "Durée d'entrée", c.animEntree.duree, 0.1, 3, 0.05, 's')
+      + choix('animSortie.type', 'Sortie', c.animSortie.type, M.ANIMS_CLIP) + curseur('animSortie.duree', 'Durée de sortie', c.animSortie.duree, 0.1, 3, 0.05, 's')
+      + `<label class="champ"><span>Durée</span><input type="number" data-k="duree" min="0.1" max="600" step="0.1" value="${c.duree.toFixed(1)}"><output>s</output></label>`);
+    h += groupe('Position et taille', curseur('echelle', 'Taille', c.echelle, 0.05, 1.5, 0.01, 'pct', c)
+      + curseur('cx', 'Position X', c.cx, 0, 1, 0.005, 'pct', c) + curseur('cy', 'Position Y', c.cy, 0, 1, 0.005, 'pct', c)
+      + curseur('rotation', 'Rotation', c.rotation || 0, -180, 180, 1, 'deg', c) + curseur('opacite', 'Opacité', c.opacite, 0, 1, 0.01, 'pct', c)
+      + '<p class="note">Sur l\'aperçu : glisse pour déplacer, pince ou molette pour agrandir. Le losange pose une image clé.</p>');
+  } else if (c.genre === 'effet') {
+    $('#titre-inspecteur').textContent = 'Effet';
+    const bat = c.effet === 'battement' || c.effet === 'flash';
+    h += groupe('Effet', `<div class="grille-vignettes petite">${Object.entries(EFFETS).map(([k, e]) => tuile('data-change-effet', k, e.nom, vignettes.effets[k], k === c.effet)).join('')}</div>`
+      + curseur('intensite', 'Intensité', c.intensite ?? 1, 0, 1.5, 0.01, 'pct')
+      + `<label class="champ"><span>Durée</span><input type="number" data-k="duree" min="0.1" max="600" step="0.1" value="${c.duree.toFixed(1)}"><output>s</output></label>`
+      + (bat ? `<p class="note">${M.pointsDeRythme(app.p).length ? 'Il bat sur les temps marqués de la frise.' : 'Aucun rythme marqué : il bat à 120 BPM. Marque le rythme d\'une musique pour qu\'il la suive.'}</p>` : '')
+      + (presse ? `<div class="actions-insp">${presse}</div>` : ''));
   } else if (c.genre === 'texte') {
     $('#titre-inspecteur').textContent = 'Texte';
     h += groupe('Texte', `<textarea data-k="texte" aria-label="Texte" rows="3">${esc(c.texte)}</textarea>`
@@ -606,6 +738,9 @@ function rendreInspecteur(section) {
       + curseur('vitesse', 'Vitesse', c.vitesse, M.VITESSE_MIN, M.VITESSE_MAX, 0.05, 'x') + coche('garderTon', 'Garder le ton de la voix', c.garderTon !== false)
       + `<div class="actions-insp">${bouton('debruiter', 'Réduire le bruit')}${bouton('sous-titres', 'Sous-titres automatiques')}</div>`);
     h += groupe('Fondus', curseur('fonduEntree', 'Entrée', c.fonduEntree, 0, 5, 0.1, 's') + curseur('fonduSortie', 'Sortie', c.fonduSortie, 0, 5, 0.1, 's'));
+    h += groupe('Rythme', Array.isArray(c.rythme)
+      ? `<p class="note">${c.rythme.length} temps trouvés · ${Math.round(c.bpm || 0)} BPM. Les clips s'y aimantent quand tu les glisses.</p><p class="note">Caler la piste principale sur ce rythme :</p>${puces('caler', null, CALER)}<div class="actions-insp">${bouton('effacer-rythme', 'Effacer le rythme')}</div>`
+      : `<div class="actions-insp">${bouton('rythme', 'Trouver le rythme')}</div><p class="note">Les temps de la musique se posent sur la frise, calculés sur ton appareil : les clips s'y aimantent, et chaque photo peut tomber pile sur un temps.</p>`);
   }
   h += groupe('Actions', `<div class="actions-insp">${bouton('diviser', 'Diviser ici')}${bouton('dupliquer', 'Dupliquer')}${bouton('supprimer', 'Supprimer')}</div>`);
   corps.innerHTML = h;
@@ -698,6 +833,21 @@ function surBoutonInspecteur(e) {
     });
     return;
   }
+  const forme = e.target.closest('[data-forme]');
+  if (forme && f && f.clip.genre === 'sticker') {
+    const c = f.clip;
+    const avant = STICKERS[c.forme];
+    const apres = STICKERS[forme.dataset.forme];
+    modifier(() => {
+      if (!c.texte || (avant && c.texte === avant.texte)) c.texte = apres.texte || '';
+      c.forme = forme.dataset.forme;
+      c.couleur = apres.couleur;
+      c.couleur2 = apres.couleur2;
+    });
+    return;
+  }
+  const chEffet = e.target.closest('[data-change-effet]');
+  if (chEffet && f && f.clip.genre === 'effet') { modifier(() => { f.clip.effet = chEffet.dataset.changeEffet; }); return; }
   const b = e.target.closest('[data-action]');
   if (!b || !app.p) return;
   const v = b.dataset.v;
@@ -714,6 +864,23 @@ function surBoutonInspecteur(e) {
       Object.assign(c, { police: s.police, poids: s.poids, taille: s.taille, couleur: s.couleur, boite: s.boite, couleurBoite: s.couleurBoite || '#000000', contour: s.contour, couleurContour: s.couleurContour || '#000000', anim: s.anim });
     }); break;
     case 'figer': figerImage(); break;
+    case 'inverser': inverser(); break;
+    case 'rythme': trouverRythme(); break;
+    case 'effacer-rythme': if (c) { modifier(() => { delete c.rythme; delete c.bpm; }); toast('Rythme effacé', 'Annuler', annuler); } break;
+    case 'effacer-marqueurs': modifier((p) => { p.marqueurs = []; }); toast('Marqueurs effacés', 'Annuler', annuler); break;
+    case 'caler': {
+      let n = 0;
+      modifier((p) => { n = M.calerSurRythme(p, parseInt(v, 10)); });
+      toast(n ? `${n} clip(s) calé(s) sur le rythme` : 'Rien à caler : il faut des photos ou des vidéos sur la piste principale, et des temps marqués.', n ? 'Annuler' : null, annuler);
+      break;
+    }
+    case 'importer-lut': app.aLut = app.selection; $('#entree-lut').click(); break;
+    case 'lut': {
+      const m = app.medias.get(v);
+      if (c && m) chargerLut(m).then(() => modifier(() => { c.lut = { media: m.id, intensite: 1 }; })).catch((err) => toast(err.message));
+      break;
+    }
+    case 'retirer-lut': if (c) modifier(() => { c.lut = { media: null, intensite: 1 }; }); break;
     case 'suivre-visages': suivreVisages(); break;
     case 'debruiter': debruiter(); break;
     case 'sous-titres': sousTitres(); break;
@@ -775,6 +942,79 @@ async function figerImage() {
   if (img) selectionner(img.id);
   rendreBiblio();
   toast('Image figée : 3 secondes ajoutées');
+}
+
+/** Trouve les temps d'une musique (calculé sur l'appareil) et les range sur le clip son, en secondes du fichier. */
+async function trouverRythme() {
+  const f = app.selection && M.trouver(app.p, app.selection);
+  if (!f || f.clip.genre !== 'audio') return;
+  const c = f.clip;
+  const m = app.medias.get(c.media);
+  if (!m) return;
+  toast('Écoute du rythme…', null, null, 120000);
+  await new Promise((ok) => setTimeout(ok, 30));
+  try {
+    const ext = await sonDuClip(m, { entree: 0, sortie: m.duree });
+    const r = ext ? detecterRythme(ext.canaux, ext.sr) : null;
+    app.dernierRythme = r || { erreur: 'aucun rythme' };
+    if (!r) { toast('Pas de rythme lisible dans ce son : pose des marqueurs à la main (touche M).'); return; }
+    modifier(() => { c.rythme = r.temps; c.bpm = r.bpm; });
+    toast(`${r.temps.length} temps trouvés · ${Math.round(r.bpm)} BPM`);
+  } catch (e) {
+    app.dernierRythme = { erreur: e.message };
+    toast(`Le rythme n'a pas pu être trouvé : ${e.message}`);
+  }
+}
+
+/** Lire une vidéo à l'envers : le passage utilisé devient un nouveau média, l'original est gardé pour revenir. */
+async function inverser() {
+  const f = app.selection && M.trouver(app.p, app.selection);
+  if (!f || f.clip.genre !== 'video') return;
+  const c = f.clip;
+  if (c.inverse) {
+    modifier(() => { const inv = c.inverse; c.media = inv.media; c.entree = inv.entree; c.sortie = inv.sortie; delete c.inverse; });
+    toast("La vidéo se lit de nouveau à l'endroit");
+    return;
+  }
+  const m = app.medias.get(c.media);
+  if (!m) return;
+  app.lecteur.pause();
+  toast("Préparation de la lecture à l'envers…", null, null, 600000);
+  try {
+    const fichier = await inverserVideo(m, c.entree, c.sortie, { progres: (k) => toast(`Lecture à l'envers… ${Math.round(k * 100)} %`, null, null, 600000) });
+    const nm = await importer(fichier);
+    await S.ecrireMedia(nm);
+    app.medias.set(nm.id, nm);
+    app.p.medias.push(nm.id);
+    modifier(() => {
+      c.inverse = { media: c.media, entree: c.entree, sortie: c.sortie };
+      c.media = nm.id;
+      c.entree = 0;
+      c.sortie = Math.min(nm.duree, c.inverse.sortie - c.inverse.entree);
+    });
+    rendreBiblio();
+    app.dernierInverse = { ok: true, duree: nm.duree };
+    toast("La vidéo se lit à l'envers");
+  } catch (e) {
+    app.dernierInverse = { erreur: e.message };
+    toast(`La lecture à l'envers a échoué : ${e.message}`);
+  }
+}
+
+async function importerLut(fichier) {
+  const id = app.aLut;
+  app.aLut = null;
+  const f = id && M.trouver(app.p, id);
+  if (!f || !fichier) return;
+  let m;
+  try { m = await importer(fichier); } catch (e) { toast(e.message || 'Ce fichier ne peut pas être lu.'); return; }
+  if (m.type !== 'lut') { toast('Choisis un fichier .cube.'); return; }
+  await S.ecrireMedia(m);
+  app.medias.set(m.id, m);
+  if (!app.p.medias.includes(m.id)) app.p.medias.push(m.id);
+  try { await chargerLut(m); } catch (e) { toast(e.message); return; }
+  modifier(() => { f.clip.lut = { media: m.id, intensite: 1 }; });
+  toast(`LUT « ${m.nom} » appliquée`);
 }
 
 /** Sous-titres automatiques : le clip sélectionné, sinon toute la piste principale. Tout se passe sur l'appareil. */
@@ -901,6 +1141,7 @@ async function remplacerMedia(fichier) {
   modifier(() => {
     const c = f.clip;
     const d = M.dureeClip(c);
+    delete c.inverse;
     c.media = m.id;
     if (m.type === 'image') { c.genre = 'image'; c.entree = 0; c.sortie = d; c.vitesse = 1; }
     else { c.genre = m.type === 'audio' ? 'audio' : 'video'; c.entree = 0; c.sortie = Math.min(m.duree, d * (c.vitesse || 1)); }
@@ -989,7 +1230,7 @@ function ecouterToile() {
   toile.addEventListener('pointercancel', fin);
   toile.addEventListener('wheel', (e) => {
     const f = app.selection && M.trouver(app.p, app.selection);
-    if (!f || f.clip.genre === 'audio') return;
+    if (!f || f.clip.genre === 'audio' || f.clip.genre === 'effet') return;
     e.preventDefault();
     noterUneFois();
     const k = e.deltaY < 0 ? 1.05 : 1 / 1.05;
@@ -1043,24 +1284,48 @@ function ouvrirExport() {
     const permis = (pro ? OFFRES.pro : OFFRES.gratuit).cadences.includes(v);
     return `<label><input type="radio" name="cadence" value="${v}"${v === 30 ? ' checked' : ''}${permis ? '' : ' disabled'}><span>${v}${permis ? '' : ' <span class="badge-pro">Pro</span>'}</span></label>`;
   }).join('');
+  $('#export-taille-gif').innerHTML = '<legend>Taille</legend>' + TAILLES_GIF.map(([v, t]) => `<label><input type="radio" name="taille-gif" value="${v}"${v === 360 ? ' checked' : ''}><span>${t} · ${v} px</span></label>`).join('');
+  $('#export-cadence-gif').innerHTML = '<legend>Images par seconde</legend>' + CADENCES_GIF.map((v) => `<label><input type="radio" name="cadence-gif" value="${v}"${v === 15 ? ' checked' : ''}><span>${v}</span></label>`).join('');
+  const radioSon = $('input[name="format-export"][value="son"]');
+  radioSon.disabled = !aDuSon(app.p);
+  if (radioSon.disabled && radioSon.checked) $('input[name="format-export"][value="video"]').checked = true;
   const fil = $('#export-filigrane');
   fil.checked = true;
   fil.disabled = !pro;
   $('#export-volume').innerHTML = VOLUMES.map(([v, t]) => `<option value="${v}"${v === app.p.volumeCible ? ' selected' : ''}>${t}</option>`).join('');
   $('.offre-pro').hidden = pro;
-  majInfosExport();
+  majFormatExport();
   $('#export-reglages').hidden = false;
   $('#export-progres').hidden = true;
   $('#export-fini').hidden = true;
   $('#dlg-export').showModal();
 }
+const formatExport = () => ($('input[name="format-export"]:checked') || {}).value || 'video';
+function majFormatExport() {
+  const f = formatExport();
+  $('#export-opt-video').hidden = f !== 'video';
+  $('#export-opt-gif').hidden = f !== 'gif';
+  $('#export-ligne-filigrane').hidden = f === 'son';
+  $('.export-volume').hidden = f === 'gif';
+  $('.offre-pro').hidden = estPro() || f === 'son';
+  majInfosExport();
+}
 function majInfosExport() {
+  const f = formatExport();
+  const duree = M.formatTemps(M.dureeProjet(app.p));
+  if (f === 'son') { $('#export-infos').textContent = `${duree} · son seul, M4A (AAC)`; return; }
+  if (f === 'gif') {
+    const { W, H } = dimensionsSortie(app.p, parseInt(($('input[name="taille-gif"]:checked') || {}).value || '360', 10));
+    $('#export-infos').textContent = `${W} × ${H} pixels · ${duree} · GIF animé, sans son${M.dureeProjet(app.p) > 20 ? ' · long pour un GIF : il pèsera lourd' : ''}`;
+    return;
+  }
   const court = parseInt(($('input[name="qualite"]:checked') || {}).value || '1080', 10);
   const { W, H } = dimensionsSortie(app.p, court);
-  $('#export-infos').textContent = `${W} × ${H} pixels · ${M.formatTemps(M.dureeProjet(app.p))} · MP4`;
+  $('#export-infos').textContent = `${W} × ${H} pixels · ${duree} · MP4`;
 }
 
 async function lancerExport() {
+  const format = formatExport();
   const court = parseInt($('input[name="qualite"]:checked').value, 10);
   const fps = parseInt($('input[name="cadence"]:checked').value, 10);
   const filigrane = !estPro() || $('#export-filigrane').checked;
@@ -1075,24 +1340,34 @@ async function lancerExport() {
   const t0 = performance.now();
   try {
     await sauver();
-    const r = await exporter(app.p, app.medias, {
-      court, fps, filigrane, signal: ctrl.signal,
-      progres: ({ etape, part }) => {
-        $('#export-etape').textContent = etape === 'son' ? 'Mixage du son…' : etape === 'ia' ? "Chargement du moteur d'IA…" : etape === 'fin' ? 'Finalisation…' : 'Fabrication des images…';
-        const total = etape === 'images' ? 0.05 + part * 0.93 : etape === 'son' ? 0.03 : 1;
-        $('#export-barre').style.transform = `scaleX(${total})`;
-        $('#export-pourcent').textContent = `${Math.round(total * 100)} %`;
-        if (etape === 'images' && part > 0.03) {
-          const ecoule = (performance.now() - t0) / 1000;
-          const reste = Math.max(0, (ecoule / part) * (1 - part));
-          $('#export-reste').textContent = `Encore environ ${reste < 60 ? `${Math.ceil(reste)} s` : `${Math.ceil(reste / 60)} min`}`;
-        }
-      },
-    });
+    const progres = ({ etape, part }) => {
+      $('#export-etape').textContent = etape === 'son' ? 'Mixage du son…' : etape === 'ia' ? "Chargement du moteur d'IA…" : etape === 'fin' ? 'Finalisation…' : 'Fabrication des images…';
+      const total = etape === 'images' ? 0.05 + part * 0.93 : etape === 'son' ? 0.03 : 1;
+      $('#export-barre').style.transform = `scaleX(${total})`;
+      $('#export-pourcent').textContent = `${Math.round(total * 100)} %`;
+      if (etape === 'images' && part > 0.03) {
+        const ecoule = (performance.now() - t0) / 1000;
+        const reste = Math.max(0, (ecoule / part) * (1 - part));
+        $('#export-reste').textContent = `Encore environ ${reste < 60 ? `${Math.ceil(reste)} s` : `${Math.ceil(reste / 60)} min`}`;
+      }
+    };
+    const r = format === 'gif'
+      ? await exporterGif(app.p, app.medias, { court: parseInt($('input[name="taille-gif"]:checked').value, 10), fps: parseInt($('input[name="cadence-gif"]:checked').value, 10), filigrane, signal: ctrl.signal, progres })
+      : format === 'son'
+        ? await exporterSon(app.p, app.medias, { signal: ctrl.signal, progres })
+        : await exporter(app.p, app.medias, { court, fps, filigrane, signal: ctrl.signal, progres });
     app.dernierExport = r;
     if (app.urlExport) URL.revokeObjectURL(app.urlExport);
     app.urlExport = URL.createObjectURL(r.blob);
-    $('#export-video').src = app.urlExport;
+    const video = $('#export-video');
+    const gif = $('#export-gif');
+    const audio = $('#export-audio');
+    video.hidden = format !== 'video';
+    gif.hidden = format !== 'gif';
+    audio.hidden = format !== 'son';
+    for (const el of [video, gif, audio]) if (el.hidden) el.removeAttribute('src');
+    (format === 'gif' ? gif : format === 'son' ? audio : video).src = app.urlExport;
+    $('#export-titre-fini').textContent = format === 'gif' ? 'Ton GIF est prêt' : format === 'son' ? 'Ton son est prêt' : 'Ta vidéo est prête';
     const nom = `${(app.p.nom || 'video').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w-]+/g, '-').replace(/^-|-$/g, '') || 'video'}.${r.extension}`;
     const lien = $('#export-telecharger');
     lien.href = app.urlExport;
@@ -1103,7 +1378,10 @@ async function lancerExport() {
     partager.onclick = () => navigator.share({ files: [fichier], title: app.p.nom }).catch(() => {});
     const mo = r.blob.size / 1048576;
     const sec = ((performance.now() - t0) / 1000).toFixed(0);
-    $('#export-resume').textContent = `${r.W} × ${r.H} · ${M.formatTemps(r.duree)} · ${mo < 1 ? `${Math.round(mo * 1024)} Ko` : `${nombre(mo)} Mo`} · fabriquée en ${sec} s${filigrane ? ' · avec filigrane' : ''}`;
+    const poids = mo < 1 ? `${Math.round(mo * 1024)} Ko` : `${nombre(mo)} Mo`;
+    $('#export-resume').textContent = format === 'son'
+      ? `${M.formatTemps(r.duree)} · ${r.extension.toUpperCase()} · ${poids} · fabriqué en ${sec} s`
+      : `${r.W} × ${r.H} · ${M.formatTemps(r.duree)} · ${poids} · fabriqué${format === 'gif' ? '' : 'e'} en ${sec} s${filigrane ? ' · avec filigrane' : ''}`;
     const av = $('#export-avert');
     av.hidden = !r.avertissements.length;
     av.textContent = r.avertissements.join(' ');
@@ -1150,6 +1428,7 @@ function brancher() {
   $('#btn-diviser').addEventListener('click', diviserIci);
   $('#btn-supprimer').addEventListener('click', supprimerSelection);
   $('#btn-dupliquer').addEventListener('click', dupliquerSelection);
+  $('#btn-marqueur').addEventListener('click', marqueurIci);
   $('#btn-zoom').addEventListener('click', () => app.frise.zoomer(app.frise.pps * 1.4));
   $('#btn-dezoom').addEventListener('click', () => app.frise.zoomer(app.frise.pps / 1.4));
   $('#btn-lecture').addEventListener('click', () => app.lecteur.basculer());
@@ -1162,13 +1441,18 @@ function brancher() {
   $('#btn-voix').addEventListener('click', basculerVoix);
   $('#btn-sous-titres').addEventListener('click', sousTitres);
   $('#entree-remplacer').addEventListener('change', async (e) => { await remplacerMedia(e.target.files[0]); e.target.value = ''; });
+  $('#entree-lut').addEventListener('change', async (e) => { await importerLut(e.target.files[0]); e.target.value = ''; });
   $('#export-couverture').addEventListener('click', couverture);
   $('#biblio').addEventListener('click', (e) => {
     const a = e.target.closest('[data-ajouter]');
     const s = e.target.closest('[data-superposer]');
     const st = e.target.closest('[data-style]');
+    const sticker = e.target.closest('[data-sticker]');
+    const effet = e.target.closest('[data-effet]');
     const onglet = e.target.closest('[data-onglet]');
-    if (a) ajouterMedia(a.dataset.ajouter, 'principale');
+    if (sticker) ajouterSticker(sticker.dataset.sticker);
+    else if (effet) ajouterEffet(effet.dataset.effet);
+    else if (a) ajouterMedia(a.dataset.ajouter, 'principale');
     else if (s) ajouterMedia(s.dataset.superposer, 'superposer');
     else if (st) ajouterTexte(st.dataset.style);
     else if (onglet) choisirOnglet(onglet.dataset.onglet);
@@ -1197,7 +1481,8 @@ function brancher() {
   $('.scene').addEventListener('pointerdown', (e) => { if (estMobile() && !e.target.closest('#toile')) fermerFeuilles(); });
 
   $('#dlg-export').addEventListener('change', (e) => {
-    if (e.target.name === 'qualite') majInfosExport();
+    if (e.target.name === 'qualite' || e.target.name === 'taille-gif') majInfosExport();
+    if (e.target.name === 'format-export') majFormatExport();
     if (e.target.id === 'export-volume') { app.p.volumeCible = e.target.value; sauverBientot(); }
   });
   $('#export-lancer').addEventListener('click', lancerExport);
@@ -1218,6 +1503,7 @@ function brancher() {
     else if (mod && k === 'd') { e.preventDefault(); dupliquerSelection(); }
     else if (k === 'delete' || k === 'backspace') { e.preventDefault(); supprimerSelection(); }
     else if (k === 's' && !mod) { e.preventDefault(); diviserIci(); }
+    else if (k === 'm' && !mod) { e.preventDefault(); marqueurIci(); }
     else if (k === 'arrowleft' || k === 'arrowright') {
       e.preventDefault();
       const pas = e.shiftKey ? 1 : 1 / app.p.fps;
@@ -1369,6 +1655,8 @@ async function demarrer() {
   });
   app.frise = new Frise(app);
   rendreStyles();
+  fabriquerVignettes();
+  rendreOutils();
   brancher();
   chargerPolices();
   S.demanderPersistance();

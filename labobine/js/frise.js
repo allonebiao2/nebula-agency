@@ -1,11 +1,13 @@
 // LA BOBINE · la frise de montage. La tête de lecture reste au centre ; c'est la bande qui défile,
 // au doigt comme à la molette. Toucher un clip le sélectionne ; un clip sélectionné se déplace et se rogne.
 
-import { dureeClip, finClip, dureeProjet, principale, clamp, formatTemps, deplacerPrincipale, deplacerLibre, rogner, tempsCles } from './model.js';
+import { dureeClip, finClip, dureeProjet, principale, clamp, formatTemps, deplacerPrincipale, deplacerLibre, rogner, tempsCles, pointsDeRythme } from './model.js';
+import { STICKERS } from './stickers.js';
+import { EFFETS } from './effets.js';
 
 const PPS_MIN = 6;
 const PPS_MAX = 400;
-const ORDRE = { texte: 0, superposition: 1, principale: 2, audio: 3 };
+const ORDRE = { texte: 0, sticker: 1, effet: 2, superposition: 3, principale: 4, audio: 5 };
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ICONE_JONCTION = '<svg viewBox="0 0 24 24"><path d="M4 12h6M14 12h6M10 7l4 5-4 5"/></svg>';
 const ICONE_PLUS = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
@@ -68,6 +70,12 @@ export class Frise {
       const chiffre = Math.abs(s - Math.round(s)) < 1e-6 ? `<span style="left:${s * pps}px">${formatTemps(s)}</span>` : '';
       r += `<i style="left:${s * pps}px"></i>${chiffre}`;
     }
+    // les temps du rythme (vert) et les marqueurs posés à la main (drapeau jaune)
+    const marqueurs = new Set((p.marqueurs || []).map((x) => Math.round(x * 1000)));
+    for (const x of pointsDeRythme(p)) {
+      if (!marqueurs.has(Math.round(x * 1000))) r += `<b class="temps" style="left:${x * pps}px"></b>`;
+    }
+    for (const x of p.marqueurs || []) r += `<b class="marqueur" style="left:${x * pps}px" title="Marqueur"></b>`;
     this.regle.innerHTML = r;
 
     const pistes = [...p.pistes].sort((a, b) => ORDRE[a.genre] - ORDRE[b.genre]);
@@ -101,14 +109,23 @@ export class Frise {
         + `<span class="etiquette">${c.genre === 'image' ? 'Photo · ' : ''}${formatTemps(dur)}${v}${muet}</span>`;
     } else if (c.genre === 'texte') {
       corps = `<span class="etiquette">${esc(c.texte.replace(/\n/g, ' '))}</span>`;
+    } else if (c.genre === 'sticker') {
+      const s = STICKERS[c.forme];
+      corps = `<span class="etiquette">${esc(c.texte && c.forme !== 'emoji' ? c.texte : s ? s.nom : 'Sticker')}${c.forme === 'emoji' ? ` ${esc(c.texte)}` : ''}</span>`;
+    } else if (c.genre === 'effet') {
+      corps = `<span class="etiquette">${esc(EFFETS[c.effet] ? EFFETS[c.effet].nom : 'Effet')}</span>`;
     } else if (c.genre === 'audio') {
       const total = m && m.duree ? m.duree : c.sortie;
       corps = ondeSvg(m && m.onde, c.entree / total, c.sortie / total)
         + `<span class="etiquette">${esc(m ? m.nom : 'Son')}</span>`;
+      const v = c.vitesse || 1;
+      for (const tb of c.rythme || []) {
+        if (tb >= c.entree && tb < c.sortie) corps += `<i class="temps-rythme" style="left:${((tb - c.entree) / v) * pps}px"></i>`;
+      }
     }
     for (const tc of tempsCles(c)) if (tc >= 0 && tc <= dur + 1e-6) corps += `<i class="losange" data-cle-t="${tc}" style="left:${tc * pps}px" title="Image clé"></i>`;
     corps += '<span class="poignee g" data-poignee="g"></span><span class="poignee d" data-poignee="d"></span>';
-    return `<div class="clip g-${c.genre}${sel}" data-clip="${c.id}" style="left:${c.debut * pps}px;width:${Math.max(4, dur * pps)}px" role="button" tabindex="-1" aria-label="${c.genre === 'texte' ? 'Texte' : c.genre === 'audio' ? 'Son' : c.genre === 'image' ? 'Photo' : 'Vidéo'}, ${formatTemps(dur)}">${corps}</div>`;
+    return `<div class="clip g-${c.genre}${sel}" data-clip="${c.id}" style="left:${c.debut * pps}px;width:${Math.max(4, dur * pps)}px" role="button" tabindex="-1" aria-label="${{ texte: 'Texte', audio: 'Son', image: 'Photo', sticker: 'Sticker', effet: 'Effet' }[c.genre] || 'Vidéo'}, ${formatTemps(dur)}">${corps}</div>`;
   }
 
   marquerSelection(id) {
@@ -127,7 +144,7 @@ export class Frise {
   _aimanter(clip, debut) {
     const seuil = 9 / this.pps;
     const d = dureeClip(clip);
-    const cibles = [0, this.app.lecteur.t];
+    const cibles = [0, this.app.lecteur.t, ...pointsDeRythme(this.app.p)];
     for (const piste of this.app.p.pistes) for (const c of piste.clips) if (c.id !== clip.id) cibles.push(c.debut, finClip(c));
     let mieux = debut;
     let ecart = seuil;

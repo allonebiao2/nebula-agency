@@ -4,8 +4,10 @@
 
 import { dureeProjet, dureeClip, trouver } from './model.js';
 import { besoinsA, dessinerImage, nombreImages } from './rendu.js';
-import { gainVers } from './audio.js';
+import { gainVers, versWav } from './audio.js';
 import { chargerVision } from './ia.js';
+import { chargerLut } from './lut.js';
+import { EncodeurGif, delais } from './gif.js';
 
 let mb = null;
 const chargerMediabunny = async () => mb || (mb = await import('../vendor/mediabunny-1.65.0.min.mjs'));
@@ -15,6 +17,8 @@ export const QUALITES = [
   { court: 1080, nom: '1080p', note: 'Net, idéal pour TikTok et YouTube' },
 ];
 export const CADENCES = [24, 25, 30, 60];
+export const TAILLES_GIF = [[240, 'Petit'], [360, 'Moyen'], [480, 'Grand']];
+export const CADENCES_GIF = [10, 15];
 
 export function dimensionsSortie(p, court) {
   const r = court / Math.min(p.w, p.h);
@@ -23,7 +27,7 @@ export function dimensionsSortie(p, court) {
 }
 
 const SR = 48000;
-const aDuSon = (p) => p.pistes.some((t) => t.clips.some((c) => (c.genre === 'video' || c.genre === 'audio') && !c.muet && (c.volume ?? 1) > 0));
+export const aDuSon = (p) => p.pistes.some((t) => t.clips.some((c) => (c.genre === 'video' || c.genre === 'audio') && !c.muet && (c.volume ?? 1) > 0));
 
 function annule(signal) {
   if (signal && signal.aborted) throw new DOMException('Export annulé', 'AbortError');
@@ -202,10 +206,6 @@ async function mixerSon(p, medias, duree, signal, prevenir) {
   return ctx.startRendering();
 }
 
-/**
- * Exporte le projet. Rend { blob, type, extension, W, H, duree, avertissements }.
- * `progres({ etape: 'son' | 'images' | 'fin', part })` est appelé au fil de l'eau.
- */
 /** Le filigrane de la version gratuite : la bobine et le nom, en bas à droite, discrets mais lisibles. */
 export function dessinerFiligrane(ctx, W, H) {
   const u = Math.min(W, H) * 0.034;
@@ -239,55 +239,21 @@ export function dessinerFiligrane(ctx, W, H) {
   ctx.restore();
 }
 
-export async function exporter(p, medias, { court = 1080, fps = 30, filigrane = true, signal, progres = () => {} } = {}) {
-  if (filigrane) await document.fonts.load('800 40px "Bricolage Grotesque"').catch(() => {});
-  await chargerMediabunny();
-  const avertissements = [];
-  const prevenir = (m) => avertissements.push(m);
-  const { W, H } = dimensionsSortie(p, court);
-  const duree = dureeProjet(p);
-  if (duree <= 0) throw new Error('Le projet est vide : ajoute au moins un clip.');
-  const N = nombreImages(duree, fps);
-
-  const codecV = await mb.getFirstEncodableVideoCodec(['avc', 'vp9', 'av1', 'vp8'], { width: W, height: H });
-  if (!codecV) throw new Error("Ce navigateur ne sait pas fabriquer de vidéo. Ouvre LA BOBINE dans Chrome ou Edge à jour.");
-  const enMp4 = codecV === 'avc';
-  const codecA = aDuSon(p)
-    ? await mb.getFirstEncodableAudioCodec(enMp4 ? ['aac', 'opus'] : ['opus', 'vorbis'], { numberOfChannels: 2, sampleRate: SR })
-    : null;
-  if (aDuSon(p) && !codecA) prevenir("Ce navigateur ne sait pas encoder le son : la vidéo sortira muette.");
-
-  const cible = new mb.BufferTarget();
-  const sortie = new mb.Output({
-    format: enMp4 ? new mb.Mp4OutputFormat({ fastStart: 'in-memory' }) : new mb.WebMOutputFormat(),
-    target: cible,
-  });
-  const toile = document.createElement('canvas');
-  toile.width = W;
-  toile.height = H;
-  const ctx = toile.getContext('2d', { alpha: false });
-  const srcV = new mb.CanvasSource(toile, { codec: codecV, quality: mb.QUALITY_HIGH, keyFrameInterval: 2 });
-  sortie.addVideoTrack(srcV, { frameRate: fps });
-  const srcA = codecA ? new mb.AudioBufferSource({ codec: codecA, quality: mb.QUALITY_HIGH }) : null;
-  if (srcA) sortie.addAudioTrack(srcA);
-
+/**
+ * Parcourt les images du projet, décodées exactement (pas « à peu près » comme l'aperçu), composées par le moteur
+ * de dessin, filigrane compris, et appelle `chaque(ctx, i, t)` après chacune. Sert au MP4 comme au GIF.
+ */
+async function parcourirImages(p, medias, toile, fps, { filigrane, signal, progres, lecture = false }, chaque) {
+  const W = toile.width;
+  const H = toile.height;
+  const ctx = toile.getContext('2d', lecture ? { willReadFrequently: true } : { alpha: false });
+  const N = nombreImages(dureeProjet(p), fps);
   const entrees = [];
   const lecteurs = new Map();
   const images = new Map();
   try {
-    await sortie.start();
     if (p.pistes.some((t) => t.clips.some((c) => c.detourage))) { progres({ etape: 'ia', part: 0 }); await chargerVision(); }
-
-    let mix = null;
-    if (srcA) {
-      progres({ etape: 'son', part: 0 });
-      mix = await mixerSon(p, medias, duree, signal, prevenir);
-      if (p.volumeCible && p.volumeCible !== 'tel') {
-        const canaux = [mix.getChannelData(0), mix.getChannelData(1)];
-        const g = gainVers(canaux, SR, Number(p.volumeCible));
-        if (g !== 1) for (const c of canaux) for (let i = 0; i < c.length; i += 1) c[i] *= g;
-      }
-    }
+    for (const t of p.pistes) for (const c of t.clips) if (c.lut && c.lut.media) await chargerLut(medias.get(c.lut.media)).catch(() => null);
 
     // le plan : pour chaque clip vidéo, la liste des instants sources dans l'ordre où le moteur les demandera
     const plan = new Map();
@@ -319,21 +285,8 @@ export async function exporter(p, medias, { court = 1080, fps = 30, filigrane = 
         const b = images.get(clip.media);
         return b ? { l: b.width, h: b.height, peindre: (c, sx, sy, sl, sh, x, y, l, h) => c.drawImage(b, sx, sy, sl, sh, x, y, l, h) } : null;
       }
-      const s = lecteurs.get(clip.id) && lecteurs.get(clip.id).courant;
-      return s ? { l: s.displayWidth, h: s.displayHeight, peindre: (c, sx, sy, sl, sh, x, y, l, h) => s.draw(c, sx, sy, sl, sh, x, y, l, h) } : null;
-    };
-
-    let posSon = 0;
-    const verserSon = async (jusqua) => {
-      if (!mix) return;
-      const fin = Math.min(mix.length, Math.ceil(jusqua * SR));
-      while (posSon < fin) {
-        const n = Math.min(SR, mix.length - posSon);
-        const bloc = new AudioBuffer({ length: n, numberOfChannels: 2, sampleRate: SR });
-        for (let canal = 0; canal < 2; canal += 1) bloc.copyToChannel(mix.getChannelData(canal).subarray(posSon, posSon + n), canal);
-        await srcA.add(bloc);
-        posSon += n;
-      }
+      const sp = lecteurs.get(clip.id) && lecteurs.get(clip.id).courant;
+      return sp ? { l: sp.displayWidth, h: sp.displayHeight, peindre: (c, sx, sy, sl, sh, x, y, l, h) => sp.draw(c, sx, sy, sl, sh, x, y, l, h) } : null;
     };
 
     for (let i = 0; i < N; i += 1) {
@@ -350,10 +303,87 @@ export async function exporter(p, medias, { court = 1080, fps = 30, filigrane = 
       }
       dessinerImage(ctx, p, t, W, H, obtenir, fps);
       if (filigrane) dessinerFiligrane(ctx, W, H);
-      await srcV.add(t, 1 / fps);
-      await verserSon(t + 1 / fps);
+      await chaque(ctx, i, t);
       if (i % 3 === 0 || i === N - 1) progres({ etape: 'images', part: (i + 1) / N });
     }
+  } finally {
+    for (const l of lecteurs.values()) {
+      if (l.courant) { try { l.courant.close(); } catch { /* déjà fermée */ } }
+      try { await l.iter.return(); } catch { /* fini */ }
+    }
+    for (const e of entrees) { try { e.dispose(); } catch { /* déjà libérée */ } }
+    for (const b of images.values()) b.close();
+  }
+}
+
+/** Le son mixé du projet, au volume visé. */
+async function sonFinal(p, medias, duree, signal, prevenir) {
+  const mix = await mixerSon(p, medias, duree, signal, prevenir);
+  if (p.volumeCible && p.volumeCible !== 'tel') {
+    const canaux = [mix.getChannelData(0), mix.getChannelData(1)];
+    const g = gainVers(canaux, SR, Number(p.volumeCible));
+    if (g !== 1) for (const c of canaux) for (let i = 0; i < c.length; i += 1) c[i] *= g;
+  }
+  return mix;
+}
+
+/**
+ * Exporte le projet en MP4 (ou WebM). Rend { blob, type, extension, W, H, duree, avertissements }.
+ * `progres({ etape: 'ia' | 'son' | 'images' | 'fin', part })` est appelé au fil de l'eau.
+ */
+export async function exporter(p, medias, { court = 1080, fps = 30, filigrane = true, signal, progres = () => {} } = {}) {
+  if (filigrane) await document.fonts.load('800 40px "Bricolage Grotesque"').catch(() => {});
+  await chargerMediabunny();
+  const avertissements = [];
+  const prevenir = (m) => avertissements.push(m);
+  const { W, H } = dimensionsSortie(p, court);
+  const duree = dureeProjet(p);
+  if (duree <= 0) throw new Error('Le projet est vide : ajoute au moins un clip.');
+
+  const codecV = await mb.getFirstEncodableVideoCodec(['avc', 'vp9', 'av1', 'vp8'], { width: W, height: H });
+  if (!codecV) throw new Error("Ce navigateur ne sait pas fabriquer de vidéo. Ouvre LA BOBINE dans Chrome ou Edge à jour.");
+  const enMp4 = codecV === 'avc';
+  const codecA = aDuSon(p)
+    ? await mb.getFirstEncodableAudioCodec(enMp4 ? ['aac', 'opus'] : ['opus', 'vorbis'], { numberOfChannels: 2, sampleRate: SR })
+    : null;
+  if (aDuSon(p) && !codecA) prevenir("Ce navigateur ne sait pas encoder le son : la vidéo sortira muette.");
+
+  const cible = new mb.BufferTarget();
+  const sortie = new mb.Output({
+    format: enMp4 ? new mb.Mp4OutputFormat({ fastStart: 'in-memory' }) : new mb.WebMOutputFormat(),
+    target: cible,
+  });
+  const toile = document.createElement('canvas');
+  toile.width = W;
+  toile.height = H;
+  const srcV = new mb.CanvasSource(toile, { codec: codecV, quality: mb.QUALITY_HIGH, keyFrameInterval: 2 });
+  sortie.addVideoTrack(srcV, { frameRate: fps });
+  const srcA = codecA ? new mb.AudioBufferSource({ codec: codecA, quality: mb.QUALITY_HIGH }) : null;
+  if (srcA) sortie.addAudioTrack(srcA);
+
+  try {
+    await sortie.start();
+    let mix = null;
+    if (srcA) {
+      progres({ etape: 'son', part: 0 });
+      mix = await sonFinal(p, medias, duree, signal, prevenir);
+    }
+    let posSon = 0;
+    const verserSon = async (jusqua) => {
+      if (!mix) return;
+      const finSon = Math.min(mix.length, Math.ceil(jusqua * SR));
+      while (posSon < finSon) {
+        const n = Math.min(SR, mix.length - posSon);
+        const bloc = new AudioBuffer({ length: n, numberOfChannels: 2, sampleRate: SR });
+        for (let canal = 0; canal < 2; canal += 1) bloc.copyToChannel(mix.getChannelData(canal).subarray(posSon, posSon + n), canal);
+        await srcA.add(bloc);
+        posSon += n;
+      }
+    };
+    await parcourirImages(p, medias, toile, fps, { filigrane, signal, progres }, async (ctx, i, t) => {
+      await srcV.add(t, 1 / fps);
+      await verserSon(t + 1 / fps);
+    });
     await verserSon(Infinity);
     srcV.close();
     if (srcA) srcA.close();
@@ -364,12 +394,56 @@ export async function exporter(p, medias, { court = 1080, fps = 30, filigrane = 
   } catch (e) {
     try { await sortie.cancel(); } catch { /* déjà fermée */ }
     throw e;
-  } finally {
-    for (const l of lecteurs.values()) {
-      if (l.courant) { try { l.courant.close(); } catch { /* déjà fermée */ } }
-      try { await l.iter.return(); } catch { /* fini */ }
-    }
-    for (const e of entrees) { try { e.dispose(); } catch { /* déjà libérée */ } }
-    for (const b of images.values()) b.close();
   }
+}
+
+/** Le GIF animé : même moteur, mêmes images exactes, encodé ici (gif.js). */
+export async function exporterGif(p, medias, { court = 360, fps = 15, filigrane = true, signal, progres = () => {} } = {}) {
+  if (filigrane) await document.fonts.load('800 40px "Bricolage Grotesque"').catch(() => {});
+  await chargerMediabunny();
+  const { W, H } = dimensionsSortie(p, court);
+  const duree = dureeProjet(p);
+  if (duree <= 0) throw new Error('Le projet est vide : ajoute au moins un clip.');
+  const N = nombreImages(duree, fps);
+  const attente = delais(N, fps);
+  const enc = new EncodeurGif(W, H);
+  const toile = document.createElement('canvas');
+  toile.width = W;
+  toile.height = H;
+  await parcourirImages(p, medias, toile, fps, { filigrane, signal, progres, lecture: true }, async (ctx, i) => {
+    enc.ajouter(ctx.getImageData(0, 0, W, H).data, attente[i]);
+    if (i % 3 === 2) await new Promise((ok) => setTimeout(ok, 0)); // l'écran respire pendant l'encodage
+  });
+  progres({ etape: 'fin', part: 1 });
+  const avertissements = duree > 20 ? ['Un GIF de plus de 20 secondes pèse lourd : pour WhatsApp, préfère la vidéo MP4.'] : [];
+  return { blob: enc.finir(), type: 'image/gif', extension: 'gif', W, H, duree, avertissements };
+}
+
+/** Le son seul : le mixage du projet, au volume visé, en M4A (AAC) si le navigateur sait l'encoder, sinon en WAV. */
+export async function exporterSon(p, medias, { signal, progres = () => {} } = {}) {
+  await chargerMediabunny();
+  const duree = dureeProjet(p);
+  if (duree <= 0 || !aDuSon(p)) throw new Error("Ce projet n'a pas de son à exporter.");
+  const avertissements = [];
+  progres({ etape: 'son', part: 0 });
+  const mix = await sonFinal(p, medias, duree, signal, (m) => avertissements.push(m));
+  const canaux = [mix.getChannelData(0), mix.getChannelData(1)];
+  const codec = await mb.getFirstEncodableAudioCodec(['aac'], { numberOfChannels: 2, sampleRate: SR });
+  progres({ etape: 'fin', part: 1 });
+  if (!codec) return { blob: versWav(canaux, SR), type: 'audio/wav', extension: 'wav', duree, avertissements };
+  const cible = new mb.BufferTarget();
+  const sortie = new mb.Output({ format: new mb.Mp4OutputFormat({ fastStart: 'in-memory' }), target: cible });
+  const src = new mb.AudioBufferSource({ codec, quality: mb.QUALITY_HIGH });
+  sortie.addAudioTrack(src);
+  await sortie.start();
+  for (let pos = 0; pos < mix.length; pos += SR) {
+    annule(signal);
+    const n = Math.min(SR, mix.length - pos);
+    const bloc = new AudioBuffer({ length: n, numberOfChannels: 2, sampleRate: SR });
+    for (let c = 0; c < 2; c += 1) bloc.copyToChannel(canaux[c].subarray(pos, pos + n), c);
+    await src.add(bloc);
+  }
+  src.close();
+  await sortie.finalize();
+  return { blob: new Blob([cible.buffer], { type: 'audio/mp4' }), type: 'audio/mp4', extension: 'm4a', duree, avertissements };
 }

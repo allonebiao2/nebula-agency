@@ -28,6 +28,10 @@ export const MOUVEMENTS = [['aucun', 'Aucun'], ['avant', 'Zoom avant lent'], ['a
 
 export const VITESSE_MIN = 0.25, VITESSE_MAX = 4, DUREE_MIN = 0.1, DUREE_PHOTO = 3, DUREE_TEXTE = 3;
 
+/** Les clips qui ne viennent pas d'un fichier : ils ont une durée propre au lieu d'une entrée et d'une sortie. */
+export const SANS_MEDIA = new Set(['texte', 'effet', 'sticker']);
+export const aDureePropre = (c) => SANS_MEDIA.has(c.genre);
+
 export const uid = (p = 'c') => p + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
 export const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const copie = (o) => JSON.parse(JSON.stringify(o));
@@ -39,7 +43,7 @@ export function nouveauProjet(format = '9:16', nom = 'Sans titre') {
     id: uid('p'), nom, format, w: f.w, h: f.h, fps: 30,
     fond: { type: 'couleur', couleur: '#000000' },
     pistes: [{ id: 'principale', genre: 'principale', clips: [] }],
-    medias: [], volumeCible: '-14', creeLe: maintenant, modifieLe: maintenant, version: 1,
+    medias: [], marqueurs: [], volumeCible: '-14', creeLe: maintenant, modifieLe: maintenant, version: 1,
   };
 }
 
@@ -50,7 +54,7 @@ export function changerFormat(p, format) {
 }
 
 // ---------- durées ----------
-export const dureeClip = (c) => (c.genre === 'texte' ? c.duree : (c.sortie - c.entree) / (c.vitesse || 1));
+export const dureeClip = (c) => (SANS_MEDIA.has(c.genre) ? c.duree : (c.sortie - c.entree) / (c.vitesse || 1));
 export const finClip = (c) => c.debut + dureeClip(c);
 export const tempsSource = (c, t) => c.entree + (t - c.debut) * (c.vitesse || 1);
 
@@ -118,6 +122,7 @@ const visuelParDefaut = () => ({
   chroma: { actif: false, couleur: '#00d000', seuil: 0.25, douceur: 0.1 },
   masque: { forme: 'aucun', taille: 0.8, adoucir: 0.15, inverser: false },
   recadrage: { g: 0, d: 0, h: 0, b: 0 },
+  lut: { media: null, intensite: 1 },
   miroirH: false, miroirV: false, fusion: 'source-over', detourage: false,
   animEntree: { type: 'aucune', duree: 0.5 }, animSortie: { type: 'aucune', duree: 0.5 },
   cles: {},
@@ -131,10 +136,18 @@ export const ANIMS_CLIP = [['aucune', 'Aucune'], ['fondu', 'Fondu'], ['zoom-avan
   ['glisse-gauche', 'Glissement à gauche'], ['glisse-droite', 'Glissement à droite'], ['glisse-haut', 'Glissement en haut'],
   ['glisse-bas', 'Glissement en bas'], ['rebond', 'Rebond'], ['tourne', 'Tourne']];
 export const MASQUES = [['aucun', 'Aucun'], ['cercle', 'Cercle'], ['rectangle', 'Rectangle'], ['bande', 'Bande horizontale']];
+export const BOUCLES = [['aucune', 'Aucune'], ['pulse', 'Respire'], ['balance', 'Se balance'], ['flotte', 'Flotte'], ['tourne', 'Tourne'],
+  ['clignote', 'Clignote'], ['rythme', 'Bat au rythme']];
+
+const stickerParDefaut = () => ({
+  cx: 0.5, cy: 0.5, echelle: 0.34, rotation: 0, opacite: 1, boucle: 'aucune', cles: {},
+  animEntree: { type: 'rebond', duree: 0.5 }, animSortie: { type: 'aucune', duree: 0.5 },
+});
 
 /** Complète un clip enregistré par une version plus ancienne : rien ne casse à l'ouverture. */
 export function completerClip(c) {
-  const base = c.genre === 'texte' ? { rotation: 0, cles: {} } : c.genre === 'audio' ? { garderTon: true } : visuelParDefaut();
+  const base = c.genre === 'texte' ? { rotation: 0, cles: {} } : c.genre === 'audio' ? { garderTon: true }
+    : c.genre === 'sticker' ? stickerParDefaut() : c.genre === 'effet' ? { intensite: 1 } : visuelParDefaut();
   for (const [k, v] of Object.entries(base)) {
     if (c[k] === undefined) c[k] = JSON.parse(JSON.stringify(v));
     else if (v && typeof v === 'object' && !Array.isArray(v) && k !== 'cles') c[k] = { ...v, ...c[k] };
@@ -145,6 +158,7 @@ export function completerProjet(p) {
   p.medias = p.medias || [];
   p.volumeCible = p.volumeCible || '-14';
   p.fond = p.fond || { type: 'couleur', couleur: '#000000' };
+  p.marqueurs = Array.isArray(p.marqueurs) ? p.marqueurs : [];
   for (const t of p.pistes) for (const c of t.clips) completerClip(c);
   return p;
 }
@@ -199,6 +213,8 @@ export const COPIABLES = {
   media: ['ajustement', 'echelle', 'cx', 'cy', 'rotation', 'opacite', 'mouvement', 'fonduEntree', 'fonduSortie', 'reglages', 'filtre',
     'chroma', 'masque', 'recadrage', 'miroirH', 'miroirV', 'fusion', 'animEntree', 'animSortie', 'volume', 'garderTon', 'cles', 'detourage'],
   texte: ['police', 'poids', 'taille', 'couleur', 'boite', 'couleurBoite', 'contour', 'couleurContour', 'alignement', 'cx', 'cy', 'rotation', 'opacite', 'anim', 'cles'],
+  sticker: ['couleur', 'couleur2', 'echelle', 'cx', 'cy', 'rotation', 'opacite', 'boucle', 'animEntree', 'animSortie', 'cles'],
+  effet: ['intensite'],
 };
 
 export function clipDepuisMedia(media, debut = 0) {
@@ -233,6 +249,71 @@ export function clipTexte(debut = 0, style = 'titre', texte) {
   };
 }
 
+/** Un sticker : une forme dessinée ici (voir stickers.js), posée comme une superposition. */
+export function clipSticker(debut = 0, forme = 'etoile', reglages = {}) {
+  return { id: uid(), genre: 'sticker', debut, duree: DUREE_TEXTE, forme, couleur: '#ffd23f', couleur2: '#14110e', texte: '',
+    ...stickerParDefaut(), ...reglages };
+}
+
+/** Un effet plein écran : il s'applique à toute l'image (vidéos et superpositions) pendant sa durée. */
+export function clipEffet(debut = 0, effet = 'vignettage') {
+  return { id: uid(), genre: 'effet', debut, duree: DUREE_TEXTE, effet, intensite: 1 };
+}
+
+// ---------- rythme ----------
+/** Les instants (en secondes de montage) où tombe un temps : marqueurs posés à la main et rythmes des sons. */
+export function pointsDeRythme(p) {
+  const pts = [...(p.marqueurs || [])];
+  for (const piste of p.pistes) {
+    if (piste.genre !== 'audio') continue;
+    for (const c of piste.clips) {
+      if (!Array.isArray(c.rythme)) continue;
+      const v = c.vitesse || 1;
+      for (const tb of c.rythme) if (tb >= c.entree - 1e-6 && tb < c.sortie - 1e-6) pts.push(c.debut + (tb - c.entree) / v);
+    }
+  }
+  pts.sort((a, b) => a - b);
+  return pts.filter((x, i) => i === 0 || x - pts[i - 1] > 0.02);
+}
+
+/** Pose ou retire un marqueur à l'instant t (un second appui au même endroit le retire). */
+export function basculerMarqueur(p, t) {
+  p.marqueurs = p.marqueurs || [];
+  const i = p.marqueurs.findIndex((x) => Math.abs(x - t) < 0.05);
+  if (i >= 0) { p.marqueurs.splice(i, 1); return false; }
+  p.marqueurs.push(Math.max(0, t));
+  p.marqueurs.sort((a, b) => a - b);
+  return true;
+}
+
+/**
+ * Cale la piste principale sur le rythme : chaque photo dure `pas` temps, chaque vidéo s'arrête sur le dernier
+ * temps qu'elle atteint. Rend le nombre de clips recalés.
+ */
+export function calerSurRythme(p, pas = 1) {
+  const temps = pointsDeRythme(p);
+  if (temps.length < 2) return 0;
+  const pr = principale(p);
+  const MIN = 0.3;
+  let t = 0;
+  let n = 0;
+  for (const c of pr.clips) {
+    const v = c.vitesse || 1;
+    if (c.genre === 'image') {
+      const suivants = temps.filter((x) => x > t + MIN - 1e-6);
+      const cible = suivants[Math.min(suivants.length, pas) - 1];
+      if (cible !== undefined) { c.sortie = c.entree + (cible - t); n += 1; }
+    } else if (c.genre === 'video') {
+      const finNaturelle = t + dureeClip(c);
+      const avant = temps.filter((x) => x > t + MIN - 1e-6 && x <= finNaturelle + 1e-6);
+      if (avant.length) { c.sortie = c.entree + (avant[avant.length - 1] - t) * v; n += 1; }
+    }
+    t += dureeClip(c);
+  }
+  tasserPrincipale(p);
+  return n;
+}
+
 // ---------- opérations de montage ----------
 /** Insère un média sur la piste principale, juste après le clip sous la tête de lecture. */
 export function insererPrincipale(p, media, t) {
@@ -264,7 +345,7 @@ export function diviser(p, id, t) {
     b.cles[k] = b.cles[k].filter((x) => x.t >= d + PRES_CLE).map((x) => ({ t: x.t - d, v: x.v }));
     b.cles[k].unshift({ t: 0, v });
   }
-  if (c.genre === 'texte') {
+  if (aDureePropre(c)) {
     c.duree = d; b.debut = t; b.duree -= d;
   } else {
     const coupe = c.entree + d * (c.vitesse || 1);
@@ -347,7 +428,7 @@ export function rogner(p, id, cote, dt, dureeMedia) {
   if (!f) return;
   const c = f.clip;
   const v = c.vitesse || 1;
-  if (c.genre === 'texte') {
+  if (aDureePropre(c)) {
     if (cote === 'g') {
       const d = clamp(dt, -c.debut, c.duree - DUREE_MIN);
       c.debut += d; c.duree -= d;
@@ -436,7 +517,7 @@ export function clipSous(p, t) {
 }
 
 /** Les médias encore utilisés par un projet. */
-export const mediasUtilises = (p) => new Set(p.pistes.flatMap((t) => t.clips.map((c) => c.media).filter(Boolean)));
+export const mediasUtilises = (p) => new Set(p.pistes.flatMap((t) => t.clips.flatMap((c) => [c.media, c.lut && c.lut.media, c.inverse && c.inverse.media]).filter(Boolean)));
 
 // ---------- annuler / rétablir ----------
 export class Historique {
@@ -460,7 +541,7 @@ export class Historique {
   get peutRetablir() { return this.apres.length > 0; }
 }
 
-export const etatMontage = (p) => ({ pistes: p.pistes, fond: p.fond, format: p.format, w: p.w, h: p.h });
+export const etatMontage = (p) => ({ pistes: p.pistes, fond: p.fond, format: p.format, w: p.w, h: p.h, marqueurs: p.marqueurs || [] });
 
 export function formatTemps(s, avecImages = false, fps = 30) {
   s = Math.max(0, s || 0);
