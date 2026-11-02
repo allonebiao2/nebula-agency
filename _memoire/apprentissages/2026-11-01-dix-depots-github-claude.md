@@ -143,12 +143,27 @@ Utile pour `_studio-video/` et les vidéos de NEBULA :
 - le **texte à lire surligné en jaune ou encadré en rouge** dans les pages ;
 - une **grille récapitulative** des 10 à la fin, puis une **pilule verte d'appel au commentaire**.
 
-## État chez nous (2026-11-01)
+## Installé sur le PC de Cotonou, la nuit du 1er au 2 novembre 2026 (Mongazi : « installe à 100 % »)
 
-- **Déjà installé** : `frontend-design@claude-plugins-official`. Déjà disponibles autrement : `skill-creator` (skills Anthropic), `code-review` (intégré).
-- **Pas installés** : playground, ralph-loop, Context7, Security Guidance, code-simplifier, HyperFrames, l'audit Cloudflare, gstack, REA, Orca, Ruflo.
-- Le connecteur claude.ai **« HyperFrames by HeyGen »** est présent mais pas authentifié.
-- Node.js v22.14.0 : assez pour HyperFrames (22 minimum).
+Chaque outil a été **lu avant d'être installé** (scripts, hooks, serveurs MCP, empreintes des installateurs).
+
+| Outil | Où | Notes |
+|---|---|---|
+| Audit Cloudflare | `~/.claude/skills/security-audit/` (commit `c1c8a8c`) | téléchargé en quarantaine, validateurs fouillés (seulement `fs`, `path`, `util`) |
+| Context7, playground | plugins `@claude-plugins-official` | Context7 = serveur distant `mcp.context7.com` |
+| HyperFrames | plugin `hyperframes@hyperframes` + `npm i -g hyperframes@0.8.229` | ⚠️ le dépôt fait 515 Mo : il faut `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS=900000`, sinon le clonage meurt à 120 s · les 84 fichiers Git LFS manquants sont des tests internes, aucun skill · **FFmpeg 9.0.2** ajouté par `winget install Gyan.FFmpeg` (exigé pour encoder) · ⚠️ **la commande lit le `.env` du dossier où on la lance** (elle a vu les clés FedaPay et les a ignorées) : la lancer hors de la racine du dépôt · télémétrie coupée (`hyperframes telemetry disable`) |
+| REA | serveur MCP `rea` dans Claude Code, Claude Desktop, Codex, Copilot CLI, VS Code (sauvegardes `*.rea.backup`) + skill `reverse-engineer-anything` | ⚠️ **exige Node ≥ 22.23.4** : sur 22.14 il plante (`zstdDecompress` absent de `node:zlib`) · Node mis à jour par `winget upgrade OpenJS.NodeJS.22` (**un clic UAC de Mongazi**, aucun programme ne peut le faire à sa place) · **Ghidra 12.1.4 + JDK Temurin 21.0.13** portables dans `%LOCALAPPDATA%\Programs` (empreintes vérifiées), `GHIDRA_INSTALL_DIR` et `JAVA_HOME` posés pour l'utilisateur et dans l'enregistrement MCP · ⛔ Ghidra 12.2 exige Java 25, d'où le 12.1.4 |
+| Ruflo | plugins `ruflo-core`, `-swarm`, `-autopilot`, `-federation` **actifs** (choix de Mongazi) + `npm i -g ruflo` v3.71.0 | ⚠️ ses hooks tournent avant **chaque** commande et chaque écriture de fichier, dans tous les projets, envoient de la télémétrie et répondent « allow » ; la CLI globale évite un `npx` à chaque hook. ⛔ **Jamais `ruflo init` dans `nebula-agency`** : il écrirait dans `CLAUDE.md` et `.claude/` d'un dépôt public |
+| OpenCode | `npm i -g opencode-ai@1.19.5` | ⛔ jamais l'abonnement Claude dedans |
+| Orca | `%LOCALAPPDATA%\Programs\orca` (v1.4.245) | installateur signé SignPath Foundation, SHA-512 conforme |
+| VoiceStudio | `%LOCALAPPDATA%\Programs\VoiceStudio` (v0.5.7) + MCP `voicestudio` → `http://127.0.0.1:3900/mcp/` (en-tête `X-OmniVoice-Client-Id: claude-code`) | **fonctionne sans carte graphique** ; installateur **non signé** (SHA-256 conforme à la publication) ; le MCP ne répond que quand l'application est ouverte |
+| ComfyUI | ⏳ **pas fini** : archive portable v0.43.0 (2 Go, SHA-256 conforme) téléchargée, extraction **tuée deux fois faute de mémoire** par Claude Code ; à finir avec `7zr x` (7-Zip 26.05 de `ip7z/7zip`, empreinte vérifiée), puis `comfy-mcp` + `comfy-cli` dans `python_embeded`, puis `run_cpu.bat` | ⚠️ le `.7z` utilise LZMA **et le filtre BCJ2** : le `tar` de Windows refuse le LZMA, `py7zr` refuse le BCJ2 ; seul le vrai 7-Zip passe |
+| gstack | cloné dans `~/.claude/skills/gstack` (v1.92.43) + **Bun 1.4.4** (`winget install Oven-sh.Bun`, sans droits admin) | ⛔ **son `./setup` a été refusé par le classifieur de sécurité de Claude Code** (5 025 lignes, hooks dans les réglages globaux) : c'est Mongazi qui le lance lui-même. Son README demande aussi d'écrire dans `CLAUDE.md` « ne jamais utiliser les outils claude-in-chrome » : **pas fait**. Windows n'a qu'un support « minimal » d'après ses propres notes |
+
+**Ce que l'installation a appris** :
+- Le PC (i5-5300U, 7,9 Go, Intel HD 5500) **ne supporte qu'une installation lourde à la fois** : Claude Code a tué une mise à jour en arrière-plan faute de mémoire.
+- Le classifieur de sécurité de Claude Code refuse de **fermer les applications** de Mongazi et de lancer **un script d'installation qui modifie les réglages globaux** : c'est à Mongazi de le faire, par `! <commande>`.
+- Une fenêtre UAC s'affiche sur un **bureau sécurisé** : seul un humain la valide.
 
 ## Ce qui sert à NEBULA, et dans quel ordre
 
@@ -156,4 +171,4 @@ Utile pour `_studio-video/` et les vidéos de NEBULA :
 2. **HyperFrames**, à **essayer** sur une vidéo courte : licence **Apache 2.0**, alors que Remotion est gratuit seulement jusqu'à 3 employés, interdit de livrer le projet au client et change de licence en 5.0 (voir `[[reference_remotion-licence]]`). **Ne pas migrer** le studio existant avant d'avoir comparé.
 3. **Plugins officiels** : **Context7** (documentation à jour de Next.js, GSAP, Remotion, Supabase) et **playground** (Mongazi règle lui-même un design aux curseurs au lieu de le décrire).
 4. **gstack**, peut-être seulement **`/office-hours`**, pour éprouver une idée de produit vertical. Ses `/qa` et `/review` doublonnent nos QC Playwright.
-5. **Pas sur ce PC** : VoiceStudio et ComfyUI (carte graphique NVIDIA et ~17 Go de modèles, disque déjà juste ; on a WaveSpeed et ElevenLabs), Orca et Ruflo (mémoire, quota, et pour Ruflo, les droits du compte), OpenCode (on a l'abonnement Claude Code), REA (aucun besoin aujourd'hui ; si un jour, uniquement sur des applis qu'on a le droit d'analyser).
+5. **Installés mais à manier avec la machine en tête** : VoiceStudio (marche au processeur, plus lent qu'avec NVIDIA), ComfyUI (processeur seul : lent, petits modèles seulement avec 8 Go ; WaveSpeed reste l'outil des images), Orca et Ruflo (mémoire et quota), OpenCode (on garde l'abonnement Claude Code), REA (uniquement sur des applis qu'on a le droit d'analyser).
