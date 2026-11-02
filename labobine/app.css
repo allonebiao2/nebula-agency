@@ -260,6 +260,28 @@ input[type="color"] { width: 44px; height: 34px; padding: 2px; border-radius: 8p
 #export-video { width: 100%; max-height: 46dvh; background: #000; border-radius: 10px; margin-top: 12px; }
 .avert { color: var(--lumiere); font-size: .88rem; }
 
+/* ---------- compte ---------- */
+.ac-tete .rangee { flex-wrap: nowrap; gap: 8px; }
+.marque span { white-space: nowrap; }
+@media (max-width: 420px) {
+  .ac-tete .btn { min-height: 40px; padding: 0 12px; font-size: .85rem; }
+  .marque { gap: 8px; font-size: 1rem; }
+  .bobine { width: 28px; height: 28px; }
+}
+.petit-compte.pro { color: var(--lumiere); }
+.statut-compte { margin: 14px 0; padding: 12px 14px; border-radius: 12px; background: var(--panneau-2); display: grid; gap: 4px; }
+.statut-compte b { font: 700 1.05rem var(--f-titre); }
+.offres { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.carte-offre { display: grid; gap: 4px; justify-items: start; padding: 14px; border-radius: 12px; border: 1px solid var(--trait); background: var(--encre); text-align: left; }
+.carte-offre:hover { border-color: var(--lumiere); }
+.carte-offre span { font: 800 1.4rem var(--f-titre); color: var(--lumiere); }
+.carte-offre small { color: var(--doux); }
+.parrainage { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--trait); display: grid; gap: 8px; }
+.parrainage p { margin: 0; }
+.parrainage input { flex: 1; min-width: 0; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--trait); background: var(--encre); }
+.badge-nuage { position: absolute; top: 18px; left: 18px; padding: 2px 8px; border-radius: 6px; background: var(--c-super); color: #fff; font: 700 .7rem var(--f-ui); }
+@media (max-width: 520px) { .offres { grid-template-columns: 1fr; } }
+
 /* ---------- toast et dépôt ---------- */
 .toast { position: fixed; left: 50%; bottom: calc(var(--barre-mobile) + 18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px); padding: 10px 12px 10px 16px; border-radius: 12px; background: var(--texte); color: var(--encre); font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
 .toast .btn { background: var(--encre); color: var(--texte); border-color: var(--encre); }

@@ -16,7 +16,9 @@ export const AVANTAGES_PRO = [
   'Crédits mensuels pour les fonctions IA',
 ];
 
-/** Vague 4 : le droit Pro sera vérifié par le serveur après un paiement confirmé, jamais lu dans le navigateur. */
-export const estPro = () => false;
+import { proActif } from './compte.js';
+
+/** Le droit Pro vient du serveur (paiement confirmé par le webhook signé), relu à chaque ouverture. */
+export const estPro = () => proActif();
 
 export const offreCourante = () => (estPro() ? OFFRES.pro : OFFRES.gratuit);

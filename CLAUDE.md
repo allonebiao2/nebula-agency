@@ -421,6 +421,7 @@
 - **Règles** : le verrou est à l'export (gratuit = filigrane, 720/1080p, 30 i/s ; Pro = sans filigrane, 4K, 60 i/s) ·
   `estPro()` toujours faux jusqu'au paiement Mobile Money (vague 4), aucune porte dérobée · **un seul moteur de dessin**
   pour l'aperçu et l'export · les fichiers restent sur l'appareil (IndexedDB).
+- **Vague 4 (comptes, Pro 1 500 F/mois · 12 000 F/an, SasPay, nuage du montage) : code prêt et contrôlé, serveur pas installé, interface cachée (`OUVERT = false`)** · installation en six étapes : `labobine/INSTALLER-COMPTES.md`.
 - Détail, vagues 2 à 5, pièges : `labobine/CONTEXT.md`.
 
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*

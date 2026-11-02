@@ -27,7 +27,7 @@
       <svg class="bobine" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><circle class="trou" cx="20" cy="9.5" r="4.2"/><circle class="trou" cx="30" cy="16.8" r="4.2"/><circle class="trou" cx="26.2" cy="28.5" r="4.2"/><circle class="trou" cx="13.8" cy="28.5" r="4.2"/><circle class="trou" cx="10" cy="16.8" r="4.2"/><circle class="axe" cx="20" cy="20" r="2.4"/></svg>
       <span>LA BOBINE</span>
     </div>
-    <button id="btn-nouveau" class="btn primaire">Nouveau projet</button>
+    <div class="rangee"><button class="btn bouton-compte" data-ouvrir-compte hidden>Se connecter</button><button id="btn-nouveau" class="btn primaire">Nouveau projet</button></div>
   </header>
   <section class="ac-intro">
     <h1>Monte tes vidéos, ici, maintenant.</h1>
@@ -52,6 +52,7 @@
     <div class="ed-actions">
       <button class="icone" id="btn-annuler" aria-label="Annuler" title="Annuler (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button>
       <button class="icone" id="btn-retablir" aria-label="Rétablir" title="Rétablir (Ctrl+Maj+Z)"><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h3"/></svg></button>
+      <button class="icone bouton-compte petit-compte" data-ouvrir-compte hidden aria-label="Mon compte" title="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
       <button class="btn primaire" id="btn-exporter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 20h14"/></svg><span>Exporter</span></button>
     </div>
   </header>
@@ -147,7 +148,7 @@
     <label class="interrupteur"><input type="checkbox" id="export-filigrane" checked disabled><span>Filigrane « LA BOBINE » en bas de l'image</span></label>
     <div class="offre-pro">
       <span class="badge-pro">Pro</span>
-      <p><b>LA BOBINE Pro</b> enlève le filigrane, ouvre la 4K et les 60 images par seconde. Bientôt disponible, payable en Mobile Money.</p>
+      <div><p><b>LA BOBINE Pro</b> enlève le filigrane, ouvre la 4K et les 60 images par seconde.</p><p class="pro-bientot">Bientôt disponible, payable en Mobile Money.</p><button class="btn primaire petit" id="export-pro" type="button" hidden>Passer à Pro · 1 500 F par mois</button></div>
     </div>
     <p class="doux" id="export-infos"></p>
     <button class="btn petit" id="export-couverture" type="button">Télécharger l'image de couverture (PNG)</button>
@@ -174,6 +175,40 @@
       <button class="btn" id="export-partager" hidden>Partager</button>
       <a class="btn primaire" id="export-telecharger" download>Télécharger</a>
     </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-compte" class="dlg">
+  <div data-volet="connexion">
+    <h2>Se connecter</h2>
+    <p class="doux">Un compte garde tes projets dans le nuage et active LA BOBINE Pro. Pas de mot de passe : on t'envoie un lien.</p>
+    <label class="champ plein"><span>E-mail</span><input type="email" id="compte-email" autocomplete="email" placeholder="toi@exemple.com"></label>
+    <p class="avert" id="compte-message" hidden></p>
+    <div class="rangee fin"><button class="btn" data-fermer-compte type="button">Fermer</button><button class="btn primaire" id="compte-envoyer" type="button">Recevoir le lien</button></div>
+  </div>
+  <div data-volet="code" hidden>
+    <h2>Regarde tes e-mails</h2>
+    <p class="doux">Touche le lien reçu sur <b id="compte-email-envoye"></b>, ou tape le code à 6 chiffres s'il y en a un.</p>
+    <label class="champ plein"><span>Code</span><input type="text" id="compte-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label>
+    <p class="avert" id="compte-message-code" hidden></p>
+    <div class="rangee fin"><button class="btn" id="compte-retour" type="button">Changer d'e-mail</button><button class="btn primaire" id="compte-verifier" type="button">Valider le code</button></div>
+  </div>
+  <div data-volet="compte" hidden>
+    <h2>Mon compte</h2>
+    <p class="doux" id="compte-qui"></p>
+    <div class="statut-compte" id="compte-statut"></div>
+    <div class="offres" id="compte-offres">
+      <button class="carte-offre" data-offre="pro-mois" type="button"><b>Pro · 1 mois</b><span>1 500 F</span><small>100 crédits IA</small></button>
+      <button class="carte-offre" data-offre="pro-an" type="button"><b>Pro · 1 an</b><span>12 000 F</span><small>4 mois offerts · 1 200 crédits IA</small></button>
+    </div>
+    <p class="note">Paiement par Mobile Money ou carte (SasPay). Tu reviens ici une fois payé ; Pro s'active dès que le paiement est confirmé.</p>
+    <div class="parrainage">
+      <p><b>Parrainage</b> · ton code : <span class="tc" id="compte-code-parrain">…</span> <button class="btn petit" id="compte-copier" type="button">Copier</button></p>
+      <p class="note">Quand un ami paie pour la première fois avec ton code, vous gagnez chacun 7 jours de Pro.</p>
+      <div class="rangee" id="compte-zone-parrain"><input type="text" id="compte-parrain" placeholder="Code d'un ami" maxlength="12"><button class="btn petit" id="compte-poser-parrain" type="button">Utiliser</button></div>
+    </div>
+    <p class="avert" id="compte-message-compte" hidden></p>
+    <div class="rangee fin"><button class="btn" id="compte-deconnexion" type="button">Se déconnecter</button><button class="btn primaire" data-fermer-compte type="button">Fermer</button></div>
   </div>
 </dialog>
 

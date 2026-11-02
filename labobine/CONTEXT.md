@@ -85,7 +85,13 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
      -16 et -23 LUFS, crête plafonnée à -0,5 dBFS. Vérifié contre la norme (-3,01 LUFS) et contre FFmpeg (`ebur128`).
    - ⏳ **Voix de synthèse : reportée à la vague 4.** Elle demande un serveur payant ; sans comptes ni crédits, l'adresse
      serait ouverte à tous les abus.
-4. L'argent : comptes, nuage, Gratuit / Pro / crédits, paiement Mobile Money, Équipes.
+4. 🟡 **L'argent** (2026-11-02, code prêt, serveur pas encore installé) : décisions de Mongazi : **Pro 1 500 F/mois ·
+   12 000 F/an** (100 et 1 200 crédits IA), schéma `labobine` dans le projet Supabase partagé, nuage = le montage
+   (pas les vidéos), paiement **SasPay** (même chemin que PISTE et MA LETTRE À…, `saspay.ts` identique). Connexion
+   par e-mail (lien ou code), droits lus côté serveur, parrainage (7 jours chacun au premier paiement), pas d'essai
+   gratuit, médias rebranchés par leur nom sur un autre appareil. Contrôle `_qc_caisse.mjs` : 31 verts.
+   **Interface cachée (`OUVERT = false`) jusqu'à l'installation : `labobine/INSTALLER-COMPTES.md`, six étapes.**
+   Équipes : pas encore.
 5. IA générative et modèles : image vers vidéo, avatars, musique IA, modèles, kit de marque.
 
 ## Pièges rencontrés

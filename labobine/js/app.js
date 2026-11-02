@@ -11,6 +11,7 @@ import { reduireBruit, versWav, VOLUMES } from './audio.js';
 import { chargerTranscription, versMono16k, transcrire, legendes, MODELES } from './soustitres.js';
 import { FILTRES, dessinerImage } from './rendu.js';
 import { OFFRES, estPro } from './offre.js';
+import * as C from './compte.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -76,7 +77,11 @@ async function afficherAccueil(remplacer = false) {
 async function rendreProjets() {
   const projets = (await S.lireProjets()).filter((p) => !app.aEffacer.has(p.id));
   const liste = $('#liste-projets');
-  if (!projets.length) {
+  let nuage = [];
+  if (C.OUVERT && C.connecte()) {
+    try { const locaux = new Set(projets.map((p) => p.id)); nuage = ((await C.nuageLister()) || []).filter((x) => !locaux.has(x.id)); } catch { nuage = []; }
+  }
+  if (!projets.length && !nuage.length) {
     liste.innerHTML = '<p class="vide">Aucun projet pour l\'instant. Commence par « Nouveau projet ».</p>';
     return;
   }
@@ -87,6 +92,11 @@ async function rendreProjets() {
       <div class="meta">${esc(p.format)} · ${M.formatTemps(M.dureeProjet(p))} · ${dateCourte(p.modifieLe)}</div>
       <button class="ouvrir" data-action="ouvrir" aria-label="Ouvrir ${esc(p.nom)}"></button>
       <div class="actions"><button data-action="dupliquer">Dupliquer</button><button data-action="supprimer" class="danger">Supprimer</button></div>
+    </article>`).join('') + nuage.map((x) => `
+    <article class="carte-projet" data-id="${esc(x.id)}">
+      <div class="apercu">Dans le nuage</div><span class="badge-nuage">Nuage</span>
+      <div class="nom">${esc(x.nom)}</div><div class="meta">${dateCourte(new Date(x.modifie_le).getTime())}</div>
+      <button class="ouvrir" data-action="ouvrir-nuage" aria-label="Ouvrir ${esc(x.nom)} depuis le nuage"></button>
     </article>`).join('');
 }
 
@@ -116,6 +126,7 @@ async function supprimerProjet(id) {
   const minuteur = setTimeout(async () => {
     if (!app.aEffacer.has(id)) return;
     await S.effacerProjet(id);
+    if (C.OUVERT && C.connecte()) C.nuageSupprimer(id).catch(() => {});
     app.aEffacer.delete(id);
     await S.ramasserMedias();
   }, 6500);
@@ -146,6 +157,7 @@ async function ouvrir(id, remplacer = false) {
     const m = await S.lireMedia(mid);
     if (m) app.medias.set(mid, m);
   }
+  app.manquants = p.medias.filter((id) => !app.medias.has(id));
   app.historique = new M.Historique();
   app.selection = null;
   if (p.pistes.some((t) => t.clips.some((c) => c.detourage))) chargerVision().then(() => app.lecteur.afficher()).catch(() => {});
@@ -164,6 +176,7 @@ async function ouvrir(id, remplacer = false) {
   await app.lecteur.aller(0);
   app.frise.majTemps(0, true);
   majTemps(0);
+  if (app.manquants.length) toast(`${app.manquants.length} média(s) sont restés sur un autre appareil : importe-les ici, ils se rebrancheront tout seuls par leur nom.`, null, null, 9000);
 }
 
 async function quitterEditeur() {
@@ -322,8 +335,11 @@ async function sauver() {
   const m = premier && app.medias.get(premier.media);
   p.vignette = m ? m.vignette : null;
   try {
+    p.mediasInfo = Object.fromEntries(p.medias.map((id) => app.medias.get(id)).filter(Boolean)
+      .map((x) => [x.id, { nom: x.nom, type: x.type, duree: x.duree, l: x.l, h: x.h }]));
     await S.ecrireProjet(p);
     if (app.p === p) $('#etat-sauve').textContent = 'Enregistré';
+    if (C.OUVERT && C.connecte()) versNuage(p);
   } catch {
     $('#etat-sauve').textContent = 'Non enregistré';
     toast("L'enregistrement a échoué : l'espace de ton navigateur est peut-être plein.");
@@ -341,9 +357,13 @@ async function importerFichiers(fichiers, { versSon = false } = {}) {
   for (const f of liste) {
     try {
       const m = await importer(f);
+      // un média resté sur un autre appareil se rebranche par son nom : les clips le retrouvent
+      const info = app.p.mediasInfo || {};
+      const absent = Object.keys(info).find((id) => !app.medias.has(id) && info[id].nom === m.nom && info[id].type === m.type);
+      if (absent) m.id = absent;
       await S.ecrireMedia(m);
       app.medias.set(m.id, m);
-      app.p.medias.push(m.id);
+      if (!app.p.medias.includes(m.id)) app.p.medias.push(m.id);
       ajoutes.push(m);
     } catch (e) {
       toast(e.message && e.message.includes('«') ? e.message : `« ${f.name} » n'a pas pu être lu : ${e.message || 'format inconnu'}.`);
@@ -1108,6 +1128,7 @@ function brancher() {
     if (!b || !carte) return;
     const id = carte.dataset.id;
     if (b.dataset.action === 'ouvrir') ouvrir(id);
+    else if (b.dataset.action === 'ouvrir-nuage') ouvrirNuage(id);
     else if (b.dataset.action === 'supprimer') supprimerProjet(id);
     else if (b.dataset.action === 'dupliquer') dupliquerProjet(id);
   });
@@ -1223,6 +1244,123 @@ function brancher() {
   ecouterToile();
 }
 
+// ====================================================================== compte, Pro, nuage (vague 4)
+let minuteurNuage = 0;
+function versNuage(p) {
+  clearTimeout(minuteurNuage);
+  minuteurNuage = setTimeout(async () => {
+    try { await C.nuageEcrire(p); if (app.p === p) $('#etat-sauve').textContent = 'Enregistré · nuage'; } catch { /* hors ligne : le prochain enregistrement réessaiera */ }
+  }, 2500);
+}
+
+async function ouvrirNuage(id) {
+  try {
+    const p = await C.nuageLire(id);
+    if (!p) { toast("Ce projet n'est plus dans le nuage."); return; }
+    await S.ecrireProjet(p);
+    await ouvrir(id);
+  } catch (e) { toast(`Le nuage ne répond pas : ${e.message}`); }
+}
+
+function majCompte() {
+  for (const b of $$('[data-ouvrir-compte]')) {
+    b.hidden = !C.OUVERT;
+    if (b.classList.contains('petit-compte')) b.classList.toggle('pro', estPro());
+    else b.textContent = C.connecte() ? (estPro() ? 'Mon compte · Pro' : 'Mon compte') : 'Se connecter';
+  }
+  $('#export-pro').hidden = !C.OUVERT || estPro();
+  $('.pro-bientot').hidden = C.OUVERT;
+}
+
+function volet(nom) { for (const v of $$('#dlg-compte [data-volet]')) v.hidden = v.dataset.volet !== nom; }
+function messageCompte(id, texte) { const el = $(id); el.hidden = !texte; el.textContent = texte || ''; }
+
+function rendreCompte() {
+  const d = C.lesDroits();
+  $('#compte-qui').textContent = C.adresse() ? `Connecté avec ${C.adresse()}` : 'Connecté';
+  const pro = estPro();
+  const jusqua = d && d.pro_jusqua ? new Date(d.pro_jusqua).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  $('#compte-statut').innerHTML = pro
+    ? `<b>LA BOBINE Pro</b><span>Actif jusqu'au ${esc(jusqua)} · ${d.credits} crédits IA</span>`
+    : `<b>Formule gratuite</b><span>Export avec filigrane, jusqu'en 1080p et 30 images par seconde.${d ? ` ${d.credits} crédits IA.` : ''}</span>`;
+  $('#compte-code-parrain').textContent = (d && d.code) || '…';
+  $('#compte-zone-parrain').hidden = !!(d && d.parrain);
+}
+
+async function ouvrirCompte() {
+  messageCompte('#compte-message', '');
+  messageCompte('#compte-message-compte', '');
+  if (!C.connecte()) volet('connexion');
+  else { volet('compte'); rendreCompte(); C.chargerDroits().then(rendreCompte).catch((e) => messageCompte('#compte-message-compte', e.message)); }
+  if (!$('#dlg-compte').open) $('#dlg-compte').showModal();
+}
+
+/** Au retour de SasPay : on attend la confirmation du serveur, jamais celle du navigateur. */
+async function retourPaiement(cas) {
+  if (cas === 'paiement-annule') { toast("Paiement annulé : rien n'a été prélevé."); return; }
+  toast('Merci ! On attend la confirmation de SasPay…', null, null, 60000);
+  for (let i = 0; i < 20 && C.connecte(); i += 1) {
+    try { await C.chargerDroits(); } catch { /* on réessaie */ }
+    if (estPro()) { majCompte(); toast('LA BOBINE Pro est active. Bon montage !'); return; }
+    await new Promise((ok) => setTimeout(ok, 3000));
+  }
+  toast("Le paiement n'est pas encore confirmé. Pro s'activera tout seul dès qu'il le sera.", null, null, 9000);
+}
+
+function brancherCompte() {
+  C.lireRetourLien();
+  C.surChangement(majCompte);
+  majCompte();
+  if (C.OUVERT && C.connecte()) C.moi().then(() => C.chargerDroits()).then(majCompte).catch(() => {});
+  for (const b of $$('[data-ouvrir-compte]')) b.addEventListener('click', ouvrirCompte);
+  for (const b of $$('[data-fermer-compte]')) b.addEventListener('click', () => $('#dlg-compte').close());
+  $('#export-pro').addEventListener('click', () => { $('#dlg-export').close(); ouvrirCompte(); });
+  $('#compte-envoyer').addEventListener('click', async () => {
+    const email = $('#compte-email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { messageCompte('#compte-message', "Cette adresse e-mail n'a pas l'air complète."); return; }
+    try {
+      await C.envoyerLien(email);
+      $('#compte-email-envoye').textContent = email;
+      volet('code');
+    } catch (e) { messageCompte('#compte-message', `L'e-mail n'est pas parti : ${e.message}`); }
+  });
+  $('#compte-retour').addEventListener('click', () => volet('connexion'));
+  $('#compte-verifier').addEventListener('click', async () => {
+    try {
+      await C.verifierCode($('#compte-email').value, $('#compte-code').value);
+      await C.chargerDroits();
+      volet('compte');
+      rendreCompte();
+      if (!app.p) rendreProjets();
+    } catch (e) { messageCompte('#compte-message-code', `Code refusé : ${e.message}`); }
+  });
+  $('#compte-offres').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-offre]');
+    if (!b) return;
+    try { if (app.p) await sauver(); await C.payer(b.dataset.offre); }
+    catch (err) { messageCompte('#compte-message-compte', err.message); }
+  });
+  $('#compte-copier').addEventListener('click', () => {
+    const code = $('#compte-code-parrain').textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(code).then(() => toast('Code copié')).catch(() => {});
+  });
+  $('#compte-poser-parrain').addEventListener('click', async () => {
+    try {
+      const r = await C.poserParrain($('#compte-parrain').value);
+      messageCompte('#compte-message-compte', r === 'ok' ? 'Code de parrainage enregistré.' : r);
+      await C.chargerDroits();
+      rendreCompte();
+    } catch (e) { messageCompte('#compte-message-compte', e.message); }
+  });
+  $('#compte-deconnexion').addEventListener('click', async () => {
+    await C.deconnecter();
+    $('#dlg-compte').close();
+    majCompte();
+    if (!app.p) rendreProjets();
+    toast('Déconnecté');
+  });
+}
+
 // ====================================================================== démarrage
 async function demarrer() {
   app.lecteur = new Lecteur($('#toile'), {
@@ -1234,6 +1372,9 @@ async function demarrer() {
   brancher();
   chargerPolices();
   S.demanderPersistance();
+  brancherCompte();
+  const retour = location.hash.slice(1);
+  if (retour === 'merci' || retour === 'paiement-annule') { history.replaceState(null, '', location.pathname); retourPaiement(retour); await afficherAccueil(true); return; }
   const id = location.hash.slice(1);
   if (id) await ouvrir(id, true);
   else await afficherAccueil(true);
