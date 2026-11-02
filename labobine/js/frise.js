@@ -1,7 +1,7 @@
 // LA BOBINE · la frise de montage. La tête de lecture reste au centre ; c'est la bande qui défile,
 // au doigt comme à la molette. Toucher un clip le sélectionne ; un clip sélectionné se déplace et se rogne.
 
-import { dureeClip, finClip, dureeProjet, principale, clamp, formatTemps, deplacerPrincipale, deplacerLibre, rogner } from './model.js';
+import { dureeClip, finClip, dureeProjet, principale, clamp, formatTemps, deplacerPrincipale, deplacerLibre, rogner, tempsCles } from './model.js';
 
 const PPS_MIN = 6;
 const PPS_MAX = 400;
@@ -106,6 +106,7 @@ export class Frise {
       corps = ondeSvg(m && m.onde, c.entree / total, c.sortie / total)
         + `<span class="etiquette">${esc(m ? m.nom : 'Son')}</span>`;
     }
+    for (const tc of tempsCles(c)) if (tc >= 0 && tc <= dur + 1e-6) corps += `<i class="losange" data-cle-t="${tc}" style="left:${tc * pps}px" title="Image clé"></i>`;
     corps += '<span class="poignee g" data-poignee="g"></span><span class="poignee d" data-poignee="d"></span>';
     return `<div class="clip g-${c.genre}${sel}" data-clip="${c.id}" style="left:${c.debut * pps}px;width:${Math.max(4, dur * pps)}px" role="button" tabindex="-1" aria-label="${c.genre === 'texte' ? 'Texte' : c.genre === 'audio' ? 'Son' : c.genre === 'image' ? 'Photo' : 'Vidéo'}, ${formatTemps(dur)}">${corps}</div>`;
   }
@@ -152,6 +153,8 @@ export class Frise {
     });
 
     this.pistes.addEventListener('click', (e) => {
+      const l = e.target.closest('[data-cle-t]');
+      if (l) { const k = app.trouver(l.closest('.clip').dataset.clip); if (k) app.allerA(k.clip.debut + parseFloat(l.dataset.cleT)); return; }
       const j = e.target.closest('[data-jonction]');
       if (j) { app.selectionner(j.dataset.jonction, { section: 'transition' }); return; }
       if (e.target.closest('[data-ajout]')) { app.ouvrirImport(); return; }

@@ -18,7 +18,8 @@ export const POLICES = [
 
 export const TRANSITIONS = [
   ['aucune', 'Aucune'], ['fondu', 'Fondu enchaîné'], ['noir', 'Passage au noir'],
-  ['glisse', 'Glissement'], ['zoom', 'Zoom'],
+  ['glisse', 'Glissement'], ['glisse-haut', 'Glissement vers le haut'], ['zoom', 'Zoom'], ['balayage', 'Balayage'],
+  ['rideau', 'Rideau'], ['iris', 'Iris'], ['flash', 'Flash blanc'], ['tourbillon', 'Tourbillon'],
 ];
 export const ANIMS_TEXTE = [
   ['aucune', 'Aucune'], ['fondu', 'Fondu'], ['monte', 'Montée'], ['pop', 'Rebond'], ['machine', 'Machine à écrire'],
@@ -111,8 +112,93 @@ export function nettoyerPistes(p) {
 const visuelParDefaut = () => ({
   cx: 0.5, cy: 0.5, echelle: 1, rotation: 0, opacite: 1, ajustement: 'adapter',
   fonduEntree: 0, fonduSortie: 0, transition: { type: 'aucune', duree: 0.5 }, mouvement: 'aucun',
-  volume: 1, muet: false,
+  volume: 1, muet: false, garderTon: true,
+  reglages: { luminosite: 0, contraste: 0, saturation: 0, temperature: 0 },
+  filtre: { nom: 'aucun', intensite: 1 },
+  chroma: { actif: false, couleur: '#00d000', seuil: 0.25, douceur: 0.1 },
+  masque: { forme: 'aucun', taille: 0.8, adoucir: 0.15, inverser: false },
+  recadrage: { g: 0, d: 0, h: 0, b: 0 },
+  miroirH: false, miroirV: false, fusion: 'source-over',
+  animEntree: { type: 'aucune', duree: 0.5 }, animSortie: { type: 'aucune', duree: 0.5 },
+  cles: {},
 });
+
+export const ANIMABLES_MEDIA = ['echelle', 'cx', 'cy', 'rotation', 'opacite'];
+export const ANIMABLES_TEXTE = ['taille', 'cx', 'cy', 'rotation', 'opacite'];
+export const FUSIONS = [['source-over', 'Normal'], ['multiply', 'Produit'], ['screen', 'Écran'], ['overlay', 'Incrustation'],
+  ['darken', 'Assombrir'], ['lighten', 'Éclaircir'], ['soft-light', 'Lumière douce'], ['hard-light', 'Lumière crue'], ['difference', 'Différence']];
+export const ANIMS_CLIP = [['aucune', 'Aucune'], ['fondu', 'Fondu'], ['zoom-avant', 'Zoom avant'], ['zoom-arriere', 'Zoom arrière'],
+  ['glisse-gauche', 'Glissement à gauche'], ['glisse-droite', 'Glissement à droite'], ['glisse-haut', 'Glissement en haut'],
+  ['glisse-bas', 'Glissement en bas'], ['rebond', 'Rebond'], ['tourne', 'Tourne']];
+export const MASQUES = [['aucun', 'Aucun'], ['cercle', 'Cercle'], ['rectangle', 'Rectangle'], ['bande', 'Bande horizontale']];
+
+/** Complète un clip enregistré par une version plus ancienne : rien ne casse à l'ouverture. */
+export function completerClip(c) {
+  const base = c.genre === 'texte' ? { rotation: 0, cles: {} } : c.genre === 'audio' ? { garderTon: true } : visuelParDefaut();
+  for (const [k, v] of Object.entries(base)) {
+    if (c[k] === undefined) c[k] = JSON.parse(JSON.stringify(v));
+    else if (v && typeof v === 'object' && !Array.isArray(v) && k !== 'cles') c[k] = { ...v, ...c[k] };
+  }
+  return c;
+}
+export function completerProjet(p) {
+  p.medias = p.medias || [];
+  p.fond = p.fond || { type: 'couleur', couleur: '#000000' };
+  for (const t of p.pistes) for (const c of t.clips) completerClip(c);
+  return p;
+}
+
+// ---------- images clés : temps relatifs au début du clip, en secondes de montage ----------
+const lisse = (k) => k * k * (3 - 2 * k);
+export const PRES_CLE = 1 / 60;
+
+export function valeur(c, k, t) {
+  const cles = c.cles && c.cles[k];
+  if (!cles || !cles.length) return c[k];
+  const lt = t - c.debut;
+  if (lt <= cles[0].t) return cles[0].v;
+  const der = cles[cles.length - 1];
+  if (lt >= der.t) return der.v;
+  for (let i = 1; i < cles.length; i += 1) {
+    if (lt <= cles[i].t) {
+      const a = cles[i - 1];
+      const b = cles[i];
+      return a.v + (b.v - a.v) * lisse((lt - a.t) / Math.max(1e-6, b.t - a.t));
+    }
+  }
+  return der.v;
+}
+export const estAnime = (c, k) => !!(c.cles && c.cles[k] && c.cles[k].length);
+export const cleIci = (c, k, lt) => (c.cles && c.cles[k] || []).find((x) => Math.abs(x.t - lt) < PRES_CLE * 1.5) || null;
+
+export function poserCle(c, k, lt, v) {
+  c.cles = c.cles || {};
+  const liste = c.cles[k] || (c.cles[k] = []);
+  const ex = cleIci(c, k, lt);
+  if (ex) ex.v = v; else liste.push({ t: Math.max(0, lt), v });
+  liste.sort((a, b) => a.t - b.t);
+}
+export function retirerCle(c, k, lt) {
+  if (!c.cles || !c.cles[k]) return;
+  c.cles[k] = c.cles[k].filter((x) => Math.abs(x.t - lt) >= PRES_CLE * 1.5);
+  if (!c.cles[k].length) delete c.cles[k];
+}
+export function tempsCles(c) {
+  const s = new Set();
+  for (const liste of Object.values(c.cles || {})) for (const x of liste) s.add(Math.round(x.t * 1000) / 1000);
+  return [...s].sort((a, b) => a - b);
+}
+/** Décale toutes les clés d'un clip dont le début de contenu a bougé de `d` secondes. */
+function decalerCles(c, d) {
+  for (const liste of Object.values(c.cles || {})) for (const x of liste) x.t -= d;
+}
+
+/** Réglages qu'on copie d'un clip à un autre du même genre. */
+export const COPIABLES = {
+  media: ['ajustement', 'echelle', 'cx', 'cy', 'rotation', 'opacite', 'mouvement', 'fonduEntree', 'fonduSortie', 'reglages', 'filtre',
+    'chroma', 'masque', 'recadrage', 'miroirH', 'miroirV', 'fusion', 'animEntree', 'animSortie', 'volume', 'garderTon', 'cles'],
+  texte: ['police', 'poids', 'taille', 'couleur', 'boite', 'couleurBoite', 'contour', 'couleurContour', 'alignement', 'cx', 'cy', 'rotation', 'opacite', 'anim', 'cles'],
+};
 
 export function clipDepuisMedia(media, debut = 0) {
   if (media.type === 'audio') {
@@ -142,6 +228,7 @@ export function clipTexte(debut = 0, style = 'titre', texte) {
     police: s.police, poids: s.poids, taille: s.taille, couleur: s.couleur,
     boite: s.boite, couleurBoite: s.couleurBoite || '#000000', contour: s.contour, couleurContour: s.couleurContour || '#000000',
     alignement: 'centre', cx: 0.5, cy: style === 'legende' ? 0.82 : 0.5, opacite: 1, anim: s.anim,
+    rotation: 0, cles: {},
   };
 }
 
@@ -169,6 +256,13 @@ export function diviser(p, id, t) {
   if (d < DUREE_MIN || finClip(c) - t < DUREE_MIN) return null;
   const b = copie(c);
   b.id = uid();
+  // les images clés se partagent : chaque moitié garde les siennes, plus la valeur exacte à la coupe
+  for (const k of Object.keys(c.cles || {})) {
+    const v = valeur(c, k, t);
+    c.cles[k] = c.cles[k].filter((x) => x.t <= d - PRES_CLE).concat([{ t: d, v }]);
+    b.cles[k] = b.cles[k].filter((x) => x.t >= d + PRES_CLE).map((x) => ({ t: x.t - d, v: x.v }));
+    b.cles[k].unshift({ t: 0, v });
+  }
   if (c.genre === 'texte') {
     c.duree = d; b.debut = t; b.duree -= d;
   } else {
@@ -256,6 +350,7 @@ export function rogner(p, id, cote, dt, dureeMedia) {
     if (cote === 'g') {
       const d = clamp(dt, -c.debut, c.duree - DUREE_MIN);
       c.debut += d; c.duree -= d;
+      decalerCles(c, d);
     } else {
       c.duree = Math.max(DUREE_MIN, c.duree + dt);
     }
@@ -265,6 +360,7 @@ export function rogner(p, id, cote, dt, dureeMedia) {
       const d = clamp(dt, lim, c.sortie - c.entree - DUREE_MIN);
       if (f.piste.genre !== 'principale') c.debut += d;
       c.sortie -= d;
+      decalerCles(c, d);
     } else {
       c.sortie = Math.max(c.entree + DUREE_MIN, c.sortie + dt);
     }
@@ -277,6 +373,7 @@ export function rogner(p, id, cote, dt, dureeMedia) {
         nouvelleEntree = Math.max(nouvelleEntree, minEntree);
         c.debut += (nouvelleEntree - c.entree) / v;
       }
+      decalerCles(c, (nouvelleEntree - c.entree) / v);
       c.entree = nouvelleEntree;
     } else {
       c.sortie = clamp(c.sortie + dt * v, c.entree + DUREE_MIN * v, max);
@@ -314,6 +411,18 @@ export function basculerSuperposition(p, id) {
     tasserPrincipale(p);
   }
   nettoyerPistes(p);
+}
+
+/** Sépare le son d'une vidéo : un clip son identique se pose sur une piste son, la vidéo devient muette. */
+export function detacherSon(p, id) {
+  const f = trouver(p, id);
+  if (!f || f.clip.genre !== 'video') return null;
+  const c = f.clip;
+  const son = { id: uid(), genre: 'audio', media: c.media, debut: c.debut, entree: c.entree, sortie: c.sortie, vitesse: c.vitesse || 1,
+    volume: c.volume ?? 1, muet: false, fonduEntree: c.fonduEntree || 0, fonduSortie: c.fonduSortie || 0, garderTon: c.garderTon !== false };
+  c.muet = true;
+  poserSurPisteLibre(p, 'audio', son);
+  return son;
 }
 
 /** Le clip à l'instant t sur la piste principale, sinon le premier clip d'une autre piste sous la tête. */

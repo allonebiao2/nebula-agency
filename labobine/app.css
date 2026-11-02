@@ -107,7 +107,7 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .carte-media .vignette { aspect-ratio: 1; background: #000 center / cover no-repeat; }
 .carte-media .duree { position: absolute; top: 6px; left: 6px; padding: 1px 6px; border-radius: 6px; background: rgba(0,0,0,.65); font: 500 .7rem var(--f-mono); }
 .carte-media .nom { padding: 6px 8px 0; font-size: .75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--doux); }
-.carte-media .boutons { display: flex; gap: 4px; padding: 6px; }
+.carte-media .boutons { display: grid; gap: 4px; padding: 6px; }
 .carte-media .boutons button { flex: 1; min-height: 32px; border-radius: 7px; border: 0; background: var(--panneau-2); font-size: .75rem; font-weight: 600; }
 .carte-media .boutons .ajout { background: var(--lumiere); color: var(--lumiere-texte); }
 .grille-styles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -129,9 +129,25 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .en-lecture .lecture .i-pause { display: block; }
 
 /* inspecteur */
-.groupe-insp { display: grid; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--trait); }
+.corps-inspecteur { gap: 0; padding-top: 4px; }
+.groupe-insp { border-bottom: 1px solid var(--trait); }
 .groupe-insp:last-child { border-bottom: 0; }
-.groupe-insp h3 { margin: 0; font: 700 .78rem var(--f-ui); text-transform: uppercase; letter-spacing: .07em; color: var(--doux); }
+.groupe-insp > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 46px; cursor: pointer; font: 700 .95rem var(--f-titre); color: var(--texte); }
+.groupe-insp > summary::-webkit-details-marker { display: none; }
+.groupe-insp > summary::after { content: ""; width: 7px; height: 7px; margin-right: 4px; border-right: 2px solid var(--doux); border-bottom: 2px solid var(--doux); transform: rotate(45deg); transition: transform .15s ease; }
+.groupe-insp[open] > summary::after { transform: rotate(-135deg); }
+.groupe-corps { display: grid; gap: 10px; padding-bottom: 16px; }
+.champ.avec-cle { grid-template-columns: 86px minmax(0, 1fr) 50px 28px; }
+.cle { width: 28px; height: 28px; padding: 0; border: 0; border-radius: 6px; background: transparent; display: grid; place-items: center; }
+.cle:hover { background: var(--panneau-2); }
+.cle::before { content: ""; width: 10px; height: 10px; transform: rotate(45deg); border: 2px solid var(--trait); border-radius: 2px; }
+.cle.anime::before { border-color: var(--lumiere); }
+.cle.ici::before { background: var(--lumiere); border-color: var(--lumiere); }
+.filtres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.filtre { display: grid; gap: 5px; padding: 0; border: 0; background: transparent; font-size: .74rem; color: var(--doux); text-align: center; }
+.filtre .vig { aspect-ratio: 1; border-radius: 8px; background: #000 center / cover no-repeat; outline: 2px solid transparent; outline-offset: -2px; }
+.filtre[aria-pressed="true"] { color: var(--texte); font-weight: 600; }
+.filtre[aria-pressed="true"] .vig { outline-color: var(--lumiere); }
 .champ { display: grid; grid-template-columns: 92px minmax(0, 1fr) 54px; align-items: center; gap: 10px; font-size: .85rem; }
 .champ > span:first-child { color: var(--doux); }
 .champ output { font: 500 .75rem var(--f-mono); text-align: right; color: var(--texte); }
@@ -181,6 +197,7 @@ input[type="color"] { width: 44px; height: 34px; padding: 2px; border-radius: 8p
 .clip .etiquette { position: absolute; left: 6px; bottom: 4px; max-width: calc(100% - 12px); padding: 0 5px; border-radius: 4px; background: rgba(0,0,0,.6); font: 500 .66rem/1.5 var(--f-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .clip.g-texte .etiquette { position: static; display: block; margin: 0; padding: 0 8px; line-height: 31px; background: none; font: 600 .78rem/31px var(--f-ui); }
 .clip svg.onde { position: absolute; inset: 3px 0; width: 100%; height: calc(100% - 6px); stroke: none; fill: var(--c-son); opacity: .9; }
+.losange { position: absolute; top: 4px; width: 9px; height: 9px; margin-left: -4.5px; transform: rotate(45deg); background: var(--lumiere); border: 1px solid var(--lumiere-texte); z-index: 3; cursor: pointer; }
 .clip.sel { border-color: var(--lumiere); box-shadow: 0 0 0 1.5px var(--lumiere); z-index: 3; touch-action: none; }
 .clip.glisse { opacity: .85; z-index: 4; box-shadow: 0 8px 22px rgba(0,0,0,.55); }
 .poignee { position: absolute; top: 0; bottom: 0; width: 16px; background: var(--lumiere); display: none; touch-action: none; cursor: ew-resize; z-index: 2; }
@@ -228,7 +245,7 @@ input[type="color"] { width: 44px; height: 34px; padding: 2px; border-radius: 8p
 .choix-format b { font-size: .95rem; }
 .choix-format small { color: var(--doux); font-size: .72rem; line-height: 1.3; }
 .segments { border: 0; padding: 0; margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.segments legend { width: 100%; margin-bottom: 8px; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--doux); }
+.segments legend { width: 100%; margin-bottom: 8px; font: 700 .95rem var(--f-titre); color: var(--texte); }
 .segments label { position: relative; }
 .segments input { position: absolute; opacity: 0; }
 .segments label > span { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--trait); background: var(--panneau-2); font-weight: 600; font-size: .88rem; cursor: pointer; }

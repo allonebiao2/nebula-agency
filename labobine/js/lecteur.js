@@ -111,7 +111,7 @@ export class Lecteur {
     if (clip.genre === 'image') {
       const b = bitmapPret(m);
       if (!b) { bitmapDe(m).then(() => this.afficher()); return null; }
-      return { l: b.width, h: b.height, peindre: (c, x, y, l, h) => c.drawImage(b, x, y, l, h) };
+      return { l: b.width, h: b.height, peindre: (c, sx, sy, sl, sh, x, y, l, h) => c.drawImage(b, sx, sy, sl, sh, x, y, l, h) };
     }
     if (clip.genre !== 'video') return null;
     const el = this._el(clip);
@@ -119,7 +119,9 @@ export class Lecteur {
     if (role === 'precedent') {
       if (pret && Math.abs(el.currentTime - temps) < 0.15) return sourceVideo(el);
       const s = this.instantanes.get(clip.id);
-      return s ? { l: s._l, h: s._h, peindre: (c, x, y, l, h) => c.drawImage(s, x, y, l, h) } : null;
+      if (!s) return null;
+      const k = s.width / s._l;
+      return { l: s._l, h: s._h, peindre: (c, sx, sy, sl, sh, x, y, l, h) => c.drawImage(s, sx * k, sy * k, sl * k, sh * k, x, y, l, h) };
     }
     if (!pret) return null;
     if (temps > clip.sortie - 0.25 * (clip.vitesse || 1)) this._instantane(clip, el);
@@ -161,6 +163,8 @@ export class Lecteur {
         const voulu = tempsSource(c, t);
         const vitesse = clamp(c.vitesse || 1, 0.25, 4);
         if (el.playbackRate !== vitesse) el.playbackRate = vitesse;
+        const ton = c.garderTon !== false;
+        if (el.preservesPitch !== ton) { el.preservesPitch = ton; el.webkitPreservesPitch = ton; }
         const vol = c.muet ? 0 : clamp((c.volume ?? 1) * fondus(c, t), 0, 1);
         el.volume = vol;
         el.muted = !lecture || vol === 0;
@@ -250,7 +254,7 @@ export class Lecteur {
 }
 
 function sourceVideo(el) {
-  return { l: el.videoWidth, h: el.videoHeight, peindre: (c, x, y, l, h) => c.drawImage(el, x, y, l, h) };
+  return { l: el.videoWidth, h: el.videoHeight, peindre: (c, sx, sy, sl, sh, x, y, l, h) => c.drawImage(el, sx, sy, sl, sh, x, y, l, h) };
 }
 
 function caler(el, temps) {

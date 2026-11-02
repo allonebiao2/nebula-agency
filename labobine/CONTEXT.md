@@ -35,7 +35,7 @@ nous**. On ne reprend rien de CapCut (ni code, ni effets, ni modèles, ni musiqu
 ## Commandes
 
 ```bash
-python labobine/_qc.py        # 33 contrôles dans un vrai Chrome + examen du MP4 exporté (ffprobe), captures dans %TEMP%/labobine-qc
+python labobine/_qc.py        # 42 contrôles dans un vrai Chrome + examen du MP4 exporté (ffprobe), captures dans %TEMP%/labobine-qc
 python labobine/_dist.py      # prépare labobine/_dist (on ne publie JAMAIS le dossier entier)
 # publier (avec CLOUDFLARE_API_TOKEN de secrets/cloudflare.env) :
 wrangler pages project create labobine --production-branch main   # une seule fois
@@ -61,13 +61,26 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
    passage au noir, glissement, zoom), 6 styles de texte et 5 animations, fond uni ou flouté, zoom lent sur photo,
    déplacer et agrandir sur l'aperçu (doigt, pince, molette), voix off au micro, annuler / rétablir, raccourcis
    clavier, sauvegarde automatique, export MP4 avec barre de progression et partage, installable (manifeste).
-2. Montage avancé : images clés, masques, fond vert, filtres et couleur (LUT), stickers, animations d'entrée/sortie
-   des clips, marqueurs de rythme, figer l'image, inverser.
+2. ✅ **Montage avancé** (2026-11-02, en ligne) : **images clés** (taille, position, rotation, opacité ; losanges dans
+   le panneau et sur la frise ; partagées proprement quand on divise), **couleur** (8 filtres maison : Cotonou,
+   Harmattan, Lagune, Nuit, Noir et blanc, Rétro, Éclat, Doux ; luminosité, contraste, saturation, température),
+   **fond vert** (distance en chrominance, seuil et douceur), **masques** (cercle, rectangle, bande, inversables),
+   recadrage, miroirs, 9 modes de fusion, **animations d'entrée et de sortie** (9 chacune), **6 transitions de plus**
+   (glissement vers le haut, balayage, rideau, iris, flash blanc, tourbillon), **figer l'image**, **détacher le son**,
+   remplacer le média, copier-coller les réglages, **garder le ton quand on accélère** (WSOLA, écrit ici : 440 Hz
+   ralenti ou accéléré ×2 reste à 440 Hz), image de couverture PNG. Reste de la vague 2 : LUT (il faut WebGL),
+   stickers, effets plein écran, marqueurs de rythme, inverser, export du son seul et en GIF.
 3. IA de tous les jours : sous-titres automatiques, détourage, voix de synthèse, réduction du bruit, recadrage 9:16.
 4. L'argent : comptes, nuage, Gratuit / Pro / crédits, paiement Mobile Money, Équipes.
 5. IA générative et modèles : image vers vidéo, avatars, musique IA, modèles, kit de marque.
 
 ## Pièges rencontrés
+
+- **Dans un test Python, ne jamais nommer une variable `rouges`** (ou `verts`) : elle masque la liste des échecs.
+- Les réglages animés passent TOUS par `reglerAnimable()` (panneau, glisser sur l'aperçu, pincer, molette) : un
+  chemin qui écrit `c.cx` directement casserait les images clés.
+- REA (2026-11-02, `analyze_web_bundle` sur le site en ligne) : 9 scripts, **aucun appel vers un serveur**. À refaire
+  quand la vague 4 ajoutera les comptes et le paiement : ce sera alors la liste des seules portes de sortie.
 
 - **Le Chromium de Playwright ne lit pas le H.264** : le QC lance `channel="chrome"` (le vrai Chrome installé).
 - `python -I` **ignore `PYTHONIOENCODING`** : écrire les fichiers en UTF-8 soi-même (`open(..., encoding="utf-8")`).

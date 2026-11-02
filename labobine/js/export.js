@@ -27,6 +27,101 @@ function annule(signal) {
   if (signal && signal.aborted) throw new DOMException('Export annulé', 'AbortError');
 }
 
+/**
+ * Change la durée d'un son sans changer son ton (WSOLA) : on recolle des tranches de 40 ms qui se chevauchent,
+ * chacune calée sur l'endroit où elle ressemble le plus à la suite naturelle de la précédente.
+ * facteur = durée voulue / durée d'origine (2 = deux fois plus long).
+ */
+export function etirer(canaux, sr, facteur) {
+  if (Math.abs(facteur - 1) < 1e-3) return canaux;
+  const N = Math.max(256, Math.round(sr * 0.04));
+  const Hs = Math.round(N / 2);
+  const Ha = Hs / facteur;
+  const tol = Math.round(sr * 0.01);
+  const lenIn = canaux[0].length;
+  const lenOut = Math.max(1, Math.round(lenIn * facteur));
+  const sorties = canaux.map(() => new Float32Array(lenOut + N));
+  const poids = new Float32Array(lenOut + N);
+  const fen = new Float32Array(N);
+  for (let i = 0; i < N; i += 1) fen[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (N - 1));
+  const ref = canaux[0];
+  let precedent = -1;
+  for (let posOut = 0, k = 0; posOut < lenOut; posOut += Hs, k += 1) {
+    const vise = Math.round(k * Ha);
+    let debut = vise;
+    if (precedent >= 0 && precedent + Hs + N <= lenIn) {
+      const naturel = precedent + Hs;
+      let mieux = -Infinity;
+      for (let d = -tol; d <= tol; d += 2) {
+        const s = vise + d;
+        if (s < 0 || s + N > lenIn) continue;
+        let c = 0;
+        for (let i = 0; i < N; i += 8) c += ref[naturel + i] * ref[s + i];
+        if (c > mieux) { mieux = c; debut = s; }
+      }
+    }
+    debut = Math.max(0, Math.min(debut, lenIn - 1));
+    const n = Math.min(N, lenIn - debut);
+    for (let ch = 0; ch < canaux.length; ch += 1) {
+      const src = canaux[ch];
+      const dst = sorties[ch];
+      for (let i = 0; i < n; i += 1) dst[posOut + i] += src[debut + i] * fen[i];
+    }
+    for (let i = 0; i < n; i += 1) poids[posOut + i] += fen[i];
+    precedent = debut;
+  }
+  return sorties.map((d) => {
+    const r = new Float32Array(lenOut);
+    for (let i = 0; i < lenOut; i += 1) r[i] = poids[i] > 1e-3 ? d[i] / poids[i] : 0;
+    return r;
+  });
+}
+
+/** Le son d'un clip, de son entrée à sa sortie, en tableaux continus (un par canal). */
+async function extraire(m, c, ctx, decodes, prevenir) {
+  if (m.type === 'audio') {
+    if (!decodes.has(m.id)) decodes.set(m.id, await ctx.decodeAudioData(await m.fichier.arrayBuffer()));
+    const b = decodes.get(m.id);
+    const i0 = Math.max(0, Math.round(c.entree * b.sampleRate));
+    const i1 = Math.min(b.length, Math.round(c.sortie * b.sampleRate));
+    if (i1 <= i0) return null;
+    const canaux = [];
+    for (let k = 0; k < b.numberOfChannels; k += 1) canaux.push(b.getChannelData(k).slice(i0, i1));
+    return { canaux, sr: b.sampleRate };
+  }
+  const entree = new mb.Input({ source: new mb.BlobSource(m.fichier), formats: mb.ALL_FORMATS });
+  try {
+    const piste = await entree.getPrimaryAudioTrack();
+    if (!piste) return null;
+    if (!(await piste.canDecode())) { prevenir(`Le son de « ${m.nom} » n'a pas pu être lu par ce navigateur.`); return null; }
+    const morceaux = [];
+    let sr = 48000;
+    let nc = 1;
+    for await (const wb of new mb.AudioBufferSink(piste).buffers(c.entree, c.sortie)) {
+      sr = wb.buffer.sampleRate;
+      nc = Math.max(nc, wb.buffer.numberOfChannels);
+      const d0 = Math.max(0, Math.round((c.entree - wb.timestamp) * sr));
+      const d1 = Math.min(wb.buffer.length, Math.round((c.sortie - wb.timestamp) * sr));
+      if (d1 > d0) morceaux.push({ buf: wb.buffer, d0, d1 });
+    }
+    const total = morceaux.reduce((n, x) => n + x.d1 - x.d0, 0);
+    if (!total) return null;
+    const canaux = [];
+    for (let ch = 0; ch < nc; ch += 1) {
+      const arr = new Float32Array(total);
+      let pos = 0;
+      for (const x of morceaux) {
+        arr.set(x.buf.getChannelData(Math.min(ch, x.buf.numberOfChannels - 1)).subarray(x.d0, x.d1), pos);
+        pos += x.d1 - x.d0;
+      }
+      canaux.push(arr);
+    }
+    return { canaux, sr };
+  } finally {
+    entree.dispose();
+  }
+}
+
 /** Mixe tout le son du projet dans un AudioBuffer stéréo 48 kHz. */
 async function mixerSon(p, medias, duree, signal, prevenir) {
   const ctx = new OfflineAudioContext(2, Math.max(1, Math.ceil(duree * SR)), SR);
@@ -48,6 +143,19 @@ async function mixerSon(p, medias, duree, signal, prevenir) {
       if (c.fonduSortie > 0) {
         gain.gain.setValueAtTime(vol, Math.max(a, b - c.fonduSortie));
         gain.gain.linearRampToValueAtTime(0, b);
+      }
+
+      if (v !== 1 && c.garderTon !== false) {
+        const ext = await extraire(m, c, ctx, decodes, prevenir);
+        if (!ext) continue;
+        const canaux = etirer(ext.canaux, ext.sr, 1 / v);
+        const buf = ctx.createBuffer(canaux.length, canaux[0].length, ext.sr);
+        canaux.forEach((d, k) => buf.copyToChannel(d, k));
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.connect(gain);
+        src.start(a);
+        continue;
       }
 
       if (m.type === 'audio') {
@@ -195,10 +303,10 @@ export async function exporter(p, medias, { court = 1080, fps = 30, filigrane = 
     const obtenir = (clip) => {
       if (clip.genre === 'image') {
         const b = images.get(clip.media);
-        return b ? { l: b.width, h: b.height, peindre: (c, x, y, l, h) => c.drawImage(b, x, y, l, h) } : null;
+        return b ? { l: b.width, h: b.height, peindre: (c, sx, sy, sl, sh, x, y, l, h) => c.drawImage(b, sx, sy, sl, sh, x, y, l, h) } : null;
       }
       const s = lecteurs.get(clip.id) && lecteurs.get(clip.id).courant;
-      return s ? { l: s.displayWidth, h: s.displayHeight, peindre: (c, x, y, l, h) => s.draw(c, x, y, l, h) } : null;
+      return s ? { l: s.displayWidth, h: s.displayHeight, peindre: (c, sx, sy, sl, sh, x, y, l, h) => s.draw(c, sx, sy, sl, sh, x, y, l, h) } : null;
     };
 
     let posSon = 0;

@@ -2,10 +2,11 @@
 
 import * as M from './model.js';
 import * as S from './stock.js';
-import { importer } from './medias.js';
+import { importer, formeOnde } from './medias.js';
 import { Lecteur } from './lecteur.js';
 import { Frise } from './frise.js';
 import { exporter, dimensionsSortie } from './export.js';
+import { FILTRES, dessinerImage } from './rendu.js';
 import { OFFRES, estPro } from './offre.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -134,7 +135,7 @@ async function dupliquerProjet(id) {
 async function ouvrir(id, remplacer = false) {
   const p = await S.lireProjet(id);
   if (!p) { toast("Ce projet n'existe plus."); await afficherAccueil(true); return; }
-  p.medias = p.medias || [];
+  M.completerProjet(p);
   app.p = p;
   app.medias = new Map();
   for (const mid of p.medias) {
@@ -256,6 +257,7 @@ app.surDefilement = (t) => {
 function majTemps(t) {
   $('#temps').textContent = M.formatTemps(t, true, app.p ? app.p.fps : 30);
   majBoutons();
+  if (app.p) suivreAnimations();
 }
 function majDuree() {
   $('#duree').textContent = M.formatTemps(app.p ? M.dureeProjet(app.p) : 0, true, app.p ? app.p.fps : 30);
@@ -469,12 +471,25 @@ function rendreStyles() {
 }
 
 // ====================================================================== inspecteur
-const curseur = (k, label, val, min, max, pas, format) => `<label class="champ"><span>${label}</span><input type="range" data-k="${k}" min="${min}" max="${max}" step="${pas}" value="${val}" data-format="${format}"><output>${formatValeur(format, val)}</output></label>`;
+const FERMES_PAR_DEFAUT = ['Animations', 'Fondus', 'Recadrage', 'Fond vert', 'Masque'];
+app.fermes = new Set(FERMES_PAR_DEFAUT);
+const ANIMABLE = (c, k) => (c.genre === 'texte' ? M.ANIMABLES_TEXTE : M.ANIMABLES_MEDIA).includes(k);
+function etatCle(c, k) {
+  const lt = app.lecteur.t - c.debut;
+  return M.cleIci(c, k, lt) ? 'ici' : M.estAnime(c, k) ? 'anime' : 'libre';
+}
+const curseur = (k, label, val, min, max, pas, format, c = null) => {
+  const cle = c && ANIMABLE(c, k);
+  const v = cle ? M.valeur(c, k, app.lecteur.t) : val;
+  return `<label class="champ${cle ? ' avec-cle' : ''}"><span>${label}</span><input type="range" data-k="${k}" min="${min}" max="${max}" step="${pas}" value="${v}" data-format="${format}"><output>${formatValeur(format, v)}</output>${cle ? `<button type="button" class="cle ${etatCle(c, k)}" data-cle="${k}" aria-label="Image clé : ${label}" title="Poser ou retirer une image clé ici"></button>` : ''}</label>`;
+};
 const choix = (k, label, val, options) => `<label class="champ plein"><span>${label}</span><select data-k="${k}">${options.map(([v, t]) => `<option value="${v}"${v === val ? ' selected' : ''}>${t}</option>`).join('')}</select></label>`;
 const coche = (k, label, val) => `<label class="interrupteur"><input type="checkbox" data-k="${k}"${val ? ' checked' : ''}><span>${label}</span></label>`;
-const couleur = (k, label, val) => `<div class="champ plein"><span>${label}</span><span class="couleurs"><input type="color" data-k="${k}" value="${val}" aria-label="${label}">${PALETTE.map((c) => `<button class="pastille" data-pastille="${c}" data-pour="${k}" style="background:${c}" aria-label="Couleur ${c}"></button>`).join('')}</span></div>`;
-const groupe = (titre, html, id = '') => `<section class="groupe-insp"${id ? ` id="insp-${id}"` : ''}><h3>${titre}</h3>${html}</section>`;
+const couleur = (k, label, val, palette = PALETTE) => `<div class="champ plein"><span>${label}</span><span class="couleurs"><input type="color" data-k="${k}" value="${val}" aria-label="${label}">${palette.map((c) => `<button class="pastille" data-pastille="${c}" data-pour="${k}" style="background:${c}" aria-label="Couleur ${c}"></button>`).join('')}</span></div>`;
+const groupe = (titre, html, id = '') => `<details class="groupe-insp"${id ? ` id="insp-${id}"` : ''}${app.fermes.has(titre) ? '' : ' open'}><summary>${titre}</summary><div class="groupe-corps">${html}</div></details>`;
 const puces = (action, val, options) => `<div class="puces">${options.map(([v, t]) => `<button data-action="${action}" data-v="${v}" aria-pressed="${String(v) === String(val)}">${t}</button>`).join('')}</div>`;
+const bouton = (action, texte) => `<button class="btn petit" data-action="${action}">${texte}</button>`;
+const famille = (c) => (c.genre === 'texte' ? 'texte' : c.genre === 'audio' ? null : 'media');
 
 function rendreInspecteur(section) {
   const corps = $('#corps-inspecteur');
@@ -491,34 +506,63 @@ function rendreInspecteur(section) {
   }
   const c = f.clip;
   const surPrincipale = f.piste.genre === 'principale';
+  const fam = famille(c);
+  const collable = app.pressePapier && app.pressePapier.fam === fam;
+  const presse = fam ? bouton('copier', 'Copier les réglages') + (collable ? bouton('coller', 'Coller les réglages') : '') : '';
   let h = '';
   if (c.genre === 'video' || c.genre === 'image') {
     $('#titre-inspecteur').textContent = c.genre === 'video' ? 'Vidéo' : 'Photo';
-    h += groupe('Clip', `<div class="actions-insp"><button class="btn petit" data-action="basculer">${surPrincipale ? 'Passer en superposition' : 'Remettre sur la piste principale'}</button></div>`);
+    h += groupe('Clip', `<div class="actions-insp">${bouton('basculer', surPrincipale ? 'Passer en superposition' : 'Remettre sur la piste principale')}`
+      + `${c.genre === 'video' && surPrincipale ? bouton('figer', "Figer l'image") : ''}${c.genre === 'video' && !c.muet ? bouton('detacher', 'Détacher le son') : ''}`
+      + `${bouton('remplacer', 'Remplacer le média')}${presse}</div>`);
     if (c.genre === 'video') {
       h += groupe('Vitesse', curseur('vitesse', 'Vitesse', c.vitesse, M.VITESSE_MIN, M.VITESSE_MAX, 0.05, 'x')
-        + puces('vitesse', c.vitesse, [[0.5, '0,5×'], [1, '1×'], [1.5, '1,5×'], [2, '2×'], [3, '3×']]));
+        + puces('vitesse', c.vitesse, [[0.5, '0,5×'], [1, '1×'], [1.5, '1,5×'], [2, '2×'], [3, '3×']])
+        + coche('garderTon', 'Garder le ton de la voix', c.garderTon !== false));
       h += groupe('Son', curseur('volume', 'Volume', c.volume, 0, 2, 0.01, 'pct') + coche('muet', 'Couper le son de ce clip', c.muet));
     }
-    h += groupe('Image', choix('ajustement', 'Cadrage', c.ajustement, [['adapter', 'Adapter (tout voir)'], ['remplir', "Remplir l'écran"]])
-      + curseur('echelle', 'Taille', c.echelle, 0.1, 3, 0.01, 'pct')
-      + curseur('cx', 'Position X', c.cx, 0, 1, 0.005, 'pct')
-      + curseur('cy', 'Position Y', c.cy, 0, 1, 0.005, 'pct')
-      + curseur('rotation', 'Rotation', c.rotation, -180, 180, 1, 'deg')
-      + curseur('opacite', 'Opacité', c.opacite, 0, 1, 0.01, 'pct')
-      + choix('mouvement', 'Mouvement', c.mouvement, M.MOUVEMENTS)
-      + '<p class="note">Sur l\'aperçu : glisse pour déplacer, pince ou molette pour agrandir.</p>');
+    h += groupe('Position et taille', choix('ajustement', 'Cadrage', c.ajustement, [['adapter', 'Adapter (tout voir)'], ['remplir', "Remplir l'écran"]])
+      + curseur('echelle', 'Taille', c.echelle, 0.1, 3, 0.01, 'pct', c)
+      + curseur('cx', 'Position X', c.cx, 0, 1, 0.005, 'pct', c)
+      + curseur('cy', 'Position Y', c.cy, 0, 1, 0.005, 'pct', c)
+      + curseur('rotation', 'Rotation', c.rotation, -180, 180, 1, 'deg', c)
+      + curseur('opacite', 'Opacité', c.opacite, 0, 1, 0.01, 'pct', c)
+      + coche('miroirH', 'Miroir horizontal', c.miroirH) + coche('miroirV', 'Miroir vertical', c.miroirV)
+      + choix('fusion', 'Fusion', c.fusion, M.FUSIONS)
+      + choix('mouvement', 'Zoom lent', c.mouvement, M.MOUVEMENTS)
+      + '<p class="note">Le losange pose une image clé à la tête de lecture : le réglage s\'anime d\'une clé à l\'autre. Sur l\'aperçu, glisse pour déplacer, pince ou molette pour agrandir.</p>');
+    const vig = (app.medias.get(c.media) || {}).vignette || '';
+    h += groupe('Couleur', `<div class="filtres">${Object.entries(FILTRES).map(([k, x]) => `<button class="filtre" data-action="filtre" data-v="${k}" aria-pressed="${k === c.filtre.nom}"><span class="vig" style="background-image:url('${vig}');filter:${x.css ? x.css(1) : 'none'}"></span><span>${x.nom}</span></button>`).join('')}</div>`
+      + (c.filtre.nom !== 'aucun' ? curseur('filtre.intensite', 'Intensité', c.filtre.intensite, 0, 1, 0.01, 'pct') : '')
+      + curseur('reglages.luminosite', 'Luminosité', c.reglages.luminosite, -1, 1, 0.01, 'pct')
+      + curseur('reglages.contraste', 'Contraste', c.reglages.contraste, -1, 1, 0.01, 'pct')
+      + curseur('reglages.saturation', 'Saturation', c.reglages.saturation, -1, 1, 0.01, 'pct')
+      + curseur('reglages.temperature', 'Température', c.reglages.temperature, -1, 1, 0.01, 'pct')
+      + `<div class="actions-insp">${bouton('reinit-couleur', 'Remettre les couleurs d\'origine')}</div>`);
+    h += groupe('Animations', choix('animEntree.type', 'Entrée', c.animEntree.type, M.ANIMS_CLIP)
+      + curseur('animEntree.duree', "Durée d'entrée", c.animEntree.duree, 0.1, 3, 0.05, 's')
+      + choix('animSortie.type', 'Sortie', c.animSortie.type, M.ANIMS_CLIP)
+      + curseur('animSortie.duree', 'Durée de sortie', c.animSortie.duree, 0.1, 3, 0.05, 's'));
     h += groupe('Fondus', curseur('fonduEntree', 'Entrée', c.fonduEntree, 0, 3, 0.1, 's') + curseur('fonduSortie', 'Sortie', c.fonduSortie, 0, 3, 0.1, 's'));
     if (surPrincipale && f.index > 0) {
       h += groupe('Transition depuis le clip précédent', choix('transition.type', 'Effet', c.transition.type, M.TRANSITIONS)
         + curseur('transition.duree', 'Durée', c.transition.duree, 0.1, 2, 0.05, 's'), 'transition');
     }
+    h += groupe('Recadrage', curseur('recadrage.g', 'Gauche', c.recadrage.g, 0, 0.45, 0.005, 'pct') + curseur('recadrage.d', 'Droite', c.recadrage.d, 0, 0.45, 0.005, 'pct')
+      + curseur('recadrage.h', 'Haut', c.recadrage.h, 0, 0.45, 0.005, 'pct') + curseur('recadrage.b', 'Bas', c.recadrage.b, 0, 0.45, 0.005, 'pct'));
+    h += groupe('Fond vert', coche('chroma.actif', 'Rendre transparente une couleur', c.chroma.actif)
+      + couleur('chroma.couleur', 'Couleur à retirer', c.chroma.couleur, ['#00d000', '#00b140', '#0047bb', '#ffffff', '#000000'])
+      + curseur('chroma.seuil', 'Seuil', c.chroma.seuil, 0, 0.6, 0.005, 'pct') + curseur('chroma.douceur', 'Douceur du bord', c.chroma.douceur, 0, 0.4, 0.005, 'pct'));
+    h += groupe('Masque', choix('masque.forme', 'Forme', c.masque.forme, M.MASQUES)
+      + curseur('masque.taille', 'Taille', c.masque.taille, 0.05, 1.5, 0.01, 'pct') + curseur('masque.adoucir', 'Adoucir', c.masque.adoucir, 0, 1, 0.01, 'pct')
+      + coche('masque.inverser', 'Inverser le masque', c.masque.inverser));
   } else if (c.genre === 'texte') {
     $('#titre-inspecteur').textContent = 'Texte';
     h += groupe('Texte', `<textarea data-k="texte" aria-label="Texte" rows="3">${esc(c.texte)}</textarea>`
-      + `<div class="puces">${Object.entries(M.STYLES_TEXTE).map(([k, s]) => `<button data-action="style" data-v="${k}">${esc(s.nom)}</button>`).join('')}</div>`);
+      + `<div class="puces">${Object.entries(M.STYLES_TEXTE).map(([k, s]) => `<button data-action="style" data-v="${k}">${esc(s.nom)}</button>`).join('')}</div>`
+      + (presse ? `<div class="actions-insp">${presse}</div>` : ''));
     h += groupe('Police', choix('police', 'Police', c.police, M.POLICES.map((x) => [x.nom, x.titre]))
-      + curseur('taille', 'Taille', c.taille, 0.02, 0.2, 0.002, 'pct')
+      + curseur('taille', 'Taille', c.taille, 0.02, 0.2, 0.002, 'pct', c)
       + couleur('couleur', 'Couleur', c.couleur)
       + puces('aligner', c.alignement, [['gauche', 'Gauche'], ['centre', 'Centre'], ['droite', 'Droite']]));
     h += groupe('Habillage', choix('boite', 'Fond', c.boite, [['aucune', 'Aucun'], ['bande', 'Bande sous chaque ligne'], ['pastille', 'Pastille']])
@@ -526,17 +570,49 @@ function rendreInspecteur(section) {
       + coche('contour', 'Contour', c.contour) + couleur('couleurContour', 'Couleur du contour', c.couleurContour));
     h += groupe('Animation', choix('anim', 'Entrée', c.anim, M.ANIMS_TEXTE)
       + `<label class="champ"><span>Durée</span><input type="number" data-k="duree" min="0.1" max="600" step="0.1" value="${c.duree.toFixed(1)}"><output>s</output></label>`);
-    h += groupe('Position', curseur('cx', 'Position X', c.cx, 0, 1, 0.005, 'pct') + curseur('cy', 'Position Y', c.cy, 0, 1, 0.005, 'pct')
-      + curseur('opacite', 'Opacité', c.opacite, 0, 1, 0.01, 'pct'));
+    h += groupe('Position', curseur('cx', 'Position X', c.cx, 0, 1, 0.005, 'pct', c) + curseur('cy', 'Position Y', c.cy, 0, 1, 0.005, 'pct', c)
+      + curseur('rotation', 'Rotation', c.rotation || 0, -180, 180, 1, 'deg', c) + curseur('opacite', 'Opacité', c.opacite, 0, 1, 0.01, 'pct', c));
   } else {
     $('#titre-inspecteur').textContent = 'Son';
     h += groupe('Son', curseur('volume', 'Volume', c.volume, 0, 2, 0.01, 'pct') + coche('muet', 'Couper ce son', c.muet)
-      + curseur('vitesse', 'Vitesse', c.vitesse, M.VITESSE_MIN, M.VITESSE_MAX, 0.05, 'x'));
+      + curseur('vitesse', 'Vitesse', c.vitesse, M.VITESSE_MIN, M.VITESSE_MAX, 0.05, 'x') + coche('garderTon', 'Garder le ton de la voix', c.garderTon !== false));
     h += groupe('Fondus', curseur('fonduEntree', 'Entrée', c.fonduEntree, 0, 5, 0.1, 's') + curseur('fonduSortie', 'Sortie', c.fonduSortie, 0, 5, 0.1, 's'));
   }
-  h += groupe('Actions', `<div class="actions-insp"><button class="btn petit" data-action="diviser">Diviser ici</button><button class="btn petit" data-action="dupliquer">Dupliquer</button><button class="btn petit" data-action="supprimer">Supprimer</button></div>`);
+  h += groupe('Actions', `<div class="actions-insp">${bouton('diviser', 'Diviser ici')}${bouton('dupliquer', 'Dupliquer')}${bouton('supprimer', 'Supprimer')}</div>`);
   corps.innerHTML = h;
-  if (section) { const s = $(`#insp-${section}`); if (s) s.scrollIntoView({ block: 'start' }); }
+  if (section) { const s = $(`#insp-${section}`); if (s) { s.open = true; s.scrollIntoView({ block: 'start' }); } }
+}
+
+/** Pendant la lecture ou quand la tête bouge : les réglages animés suivent l'image. */
+let dernierSuivi = 0;
+function suivreAnimations(force = false) {
+  const f = app.selection && M.trouver(app.p, app.selection);
+  if (!f || !Object.keys(f.clip.cles || {}).length) return;
+  if (!force && performance.now() - dernierSuivi < 120) return;
+  dernierSuivi = performance.now();
+  const c = f.clip;
+  for (const el of $$('#corps-inspecteur input[type="range"][data-k]')) {
+    const k = el.dataset.k;
+    if (!ANIMABLE(c, k) || !M.estAnime(c, k) || document.activeElement === el) continue;
+    const v = M.valeur(c, k, app.lecteur.t);
+    el.value = v;
+    const out = el.parentElement.querySelector('output');
+    if (out) out.textContent = formatValeur(el.dataset.format, v);
+  }
+  for (const b of $$('#corps-inspecteur [data-cle]')) b.className = `cle ${etatCle(c, b.dataset.cle)}`;
+}
+
+function poserChemin(obj, chemin, v) {
+  const parts = chemin.split('.');
+  let o = obj;
+  for (let i = 0; i < parts.length - 1; i += 1) { o[parts[i]] = o[parts[i]] || {}; o = o[parts[i]]; }
+  o[parts[parts.length - 1]] = v;
+}
+
+/** Règle une valeur ; si elle est animée, c'est l'image clé sous la tête de lecture qui change. */
+function reglerAnimable(c, k, v) {
+  if (ANIMABLE(c, k) && M.estAnime(c, k)) M.poserCle(c, k, app.lecteur.t - c.debut, v);
+  else c[k] = v;
 }
 
 function surChamp(e) {
@@ -552,21 +628,21 @@ function surChamp(e) {
   const c = f && f.clip;
   let structurel = false;
   if (k === 'nom') { app.p.nom = String(v).trim() || 'Sans titre'; $('#nom-projet').value = app.p.nom; document.title = `${app.p.nom} · LA BOBINE`; }
-  else if (k === 'fond.type') app.p.fond.type = v;
-  else if (k === 'fond.couleur') app.p.fond.couleur = v;
+  else if (k.startsWith('fond.')) poserChemin(app.p, k, v);
   else if (k === 'vitesse') { M.changerVitesse(app.p, c.id, v); structurel = true; }
-  else if (k === 'transition.type') { c.transition.type = v; structurel = true; }
-  else if (k === 'transition.duree') { c.transition.duree = v; structurel = true; }
+  else if (k === 'transition.type' || k === 'transition.duree') { poserChemin(c, k, v); structurel = true; }
   else if (k === 'duree') { c.duree = Math.max(M.DUREE_MIN, v); structurel = true; }
-  else c[k] = v;
+  else if (k.includes('.')) poserChemin(c, k, v);
+  else reglerAnimable(c, k, v);
   const out = el.closest('.champ') && el.closest('.champ').querySelector('output');
   if (out && el.dataset.format) out.textContent = formatValeur(el.dataset.format, v);
-  if (structurel || k === 'texte' || k === 'muet' || k === 'volume') {
+  if (structurel || k === 'texte' || k === 'muet' || k === 'volume' || (c && M.estAnime(c, k))) {
     M.tasserPrincipale(app.p);
     app.frise.rendre();
     majDuree();
   }
   if (structurel) app.lecteur.aller(app.lecteur.t); else app.lecteur.afficher();
+  if (c && ANIMABLE(c, k)) suivreAnimations(true);
   majBoutons();
   sauverBientot();
 }
@@ -578,24 +654,152 @@ function surBoutonInspecteur(e) {
     if (entree) { app.editionNotee = false; entree.value = pastille.dataset.pastille; entree.dispatchEvent(new Event('input', { bubbles: true })); app.editionNotee = false; }
     return;
   }
+  const cle = e.target.closest('[data-cle]');
+  const f = app.selection && M.trouver(app.p, app.selection);
+  if (cle && f) {
+    e.preventDefault();
+    const c = f.clip;
+    const k = cle.dataset.cle;
+    const lt = app.lecteur.t - c.debut;
+    if (lt < -1e-6 || lt > M.dureeClip(c) + 1e-6) { toast('Place la tête de lecture sur ce clip pour poser une image clé.'); return; }
+    modifier(() => {
+      if (M.cleIci(c, k, lt)) M.retirerCle(c, k, lt);
+      else M.poserCle(c, k, lt, M.valeur(c, k, app.lecteur.t));
+    });
+    return;
+  }
   const b = e.target.closest('[data-action]');
   if (!b || !app.p) return;
-  const f = app.selection && M.trouver(app.p, app.selection);
   const v = b.dataset.v;
+  const c = f && f.clip;
   switch (b.dataset.action) {
     case 'format': modifier((p) => M.changerFormat(p, v)); break;
     case 'basculer': modifier((p) => M.basculerSuperposition(p, app.selection)); selectionner(app.selection); break;
     case 'vitesse': modifier((p) => M.changerVitesse(p, app.selection, parseFloat(v))); break;
-    case 'aligner': if (f) modifier(() => { f.clip.alignement = v; }); break;
-    case 'style': if (f) modifier(() => {
+    case 'aligner': if (c) modifier(() => { c.alignement = v; }); break;
+    case 'filtre': if (c) modifier(() => { c.filtre = { nom: v, intensite: c.filtre.intensite || 1 }; }); break;
+    case 'reinit-couleur': if (c) modifier(() => { c.filtre = { nom: 'aucun', intensite: 1 }; c.reglages = { luminosite: 0, contraste: 0, saturation: 0, temperature: 0 }; }); break;
+    case 'style': if (c) modifier(() => {
       const s = M.STYLES_TEXTE[v];
-      Object.assign(f.clip, { police: s.police, poids: s.poids, taille: s.taille, couleur: s.couleur, boite: s.boite, couleurBoite: s.couleurBoite || '#000000', contour: s.contour, couleurContour: s.couleurContour || '#000000', anim: s.anim });
+      Object.assign(c, { police: s.police, poids: s.poids, taille: s.taille, couleur: s.couleur, boite: s.boite, couleurBoite: s.couleurBoite || '#000000', contour: s.contour, couleurContour: s.couleurContour || '#000000', anim: s.anim });
     }); break;
+    case 'figer': figerImage(); break;
+    case 'detacher': {
+      let son = null;
+      modifier((p) => { son = M.detacherSon(p, app.selection); });
+      if (son) { selectionner(son.id); toast('Son détaché sur sa propre piste'); calculerOnde(son.media); }
+      break;
+    }
+    case 'remplacer': app.aRemplacer = app.selection; $('#entree-remplacer').click(); break;
+    case 'copier': {
+      const fam = famille(c);
+      if (!fam) break;
+      app.pressePapier = { fam, valeurs: JSON.parse(JSON.stringify(Object.fromEntries(M.COPIABLES[fam].map((k) => [k, c[k]])))) };
+      toast('Réglages copiés : sélectionne un autre clip et colle-les');
+      rendreInspecteur();
+      break;
+    }
+    case 'coller': if (c && app.pressePapier) { modifier(() => Object.assign(c, JSON.parse(JSON.stringify(app.pressePapier.valeurs)))); toast('Réglages collés'); } break;
     case 'diviser': diviserIci(); break;
     case 'dupliquer': dupliquerSelection(); break;
     case 'supprimer': supprimerSelection(); break;
     default:
   }
+}
+
+// ====================================================================== actions sur les clips
+async function figerImage() {
+  const f = app.selection && M.trouver(app.p, app.selection);
+  if (!f || f.clip.genre !== 'video' || f.piste.genre !== 'principale') return;
+  const c = f.clip;
+  const t = app.lecteur.t;
+  if (t < c.debut - 1e-6 || t >= M.finClip(c)) { toast('Place la tête de lecture sur la vidéo à figer.'); return; }
+  app.lecteur.pause();
+  await app.lecteur.aller(t);
+  const el = app.lecteur._el(c);
+  if (!el || el.readyState < 2 || !el.videoWidth) { toast("L'image n'est pas encore prête : réessaie dans une seconde."); return; }
+  const cv = document.createElement('canvas');
+  cv.width = el.videoWidth;
+  cv.height = el.videoHeight;
+  cv.getContext('2d').drawImage(el, 0, 0);
+  const blob = await new Promise((ok) => cv.toBlob(ok, 'image/jpeg', 0.92));
+  const m = await importer(new File([blob], `Image figée ${M.formatTemps(t)}.jpg`, { type: 'image/jpeg' }));
+  await S.ecrireMedia(m);
+  app.medias.set(m.id, m);
+  app.p.medias.push(m.id);
+  let img = null;
+  modifier((p) => {
+    const auDebut = t <= c.debut + M.DUREE_MIN;
+    if (!auDebut && t < M.finClip(c) - M.DUREE_MIN) M.diviser(p, c.id, t);
+    img = M.clipDepuisMedia(m, 0);
+    for (const k of ['ajustement', 'echelle', 'cx', 'cy', 'rotation', 'reglages', 'filtre', 'recadrage', 'miroirH', 'miroirV']) img[k] = JSON.parse(JSON.stringify(c[k]));
+    const pr = M.principale(p);
+    const i = pr.clips.findIndex((x) => x.id === c.id);
+    pr.clips.splice(auDebut ? i : i + 1, 0, img);
+    let d = 0;
+    for (const x of pr.clips) { x.debut = d; d += M.dureeClip(x); }
+  });
+  if (img) selectionner(img.id);
+  rendreBiblio();
+  toast('Image figée : 3 secondes ajoutées');
+}
+
+/** Forme d'onde d'une vidéo dont on a détaché le son (calculée une fois, gardée avec le média). */
+async function calculerOnde(id) {
+  const m = app.medias.get(id);
+  if (!m || m.onde || m.taille > 300 * 1048576) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await ctx.decodeAudioData(await m.fichier.arrayBuffer());
+    ctx.close();
+    m.onde = formeOnde(buf);
+    await S.ecrireMedia(m);
+    app.frise.rendre();
+  } catch { /* pas de forme d'onde : la piste reste unie */ }
+}
+
+async function remplacerMedia(fichier) {
+  const id = app.aRemplacer;
+  app.aRemplacer = null;
+  const f = id && M.trouver(app.p, id);
+  if (!f || !fichier) return;
+  let m;
+  try { m = await importer(fichier); } catch (e) { toast(e.message || 'Ce fichier ne peut pas être lu.'); return; }
+  const sonPourSon = (f.clip.genre === 'audio') === (m.type === 'audio');
+  if (!sonPourSon) { toast(f.clip.genre === 'audio' ? 'Remplace un son par un autre son.' : 'Remplace une image par une vidéo ou une photo.'); return; }
+  await S.ecrireMedia(m);
+  app.medias.set(m.id, m);
+  app.p.medias.push(m.id);
+  modifier(() => {
+    const c = f.clip;
+    const d = M.dureeClip(c);
+    c.media = m.id;
+    if (m.type === 'image') { c.genre = 'image'; c.entree = 0; c.sortie = d; c.vitesse = 1; }
+    else { c.genre = m.type === 'audio' ? 'audio' : 'video'; c.entree = 0; c.sortie = Math.min(m.duree, d * (c.vitesse || 1)); }
+  });
+  rendreBiblio();
+  toast('Média remplacé');
+}
+
+/** L'image de la tête de lecture, en pleine définition, pour la miniature YouTube ou TikTok. */
+async function couverture() {
+  if (!app.p) return;
+  const { W, H } = dimensionsSortie(app.p, 1080);
+  const cv = document.createElement('canvas');
+  cv.width = W;
+  cv.height = H;
+  await app.lecteur.aller(app.lecteur.t);
+  dessinerImage(cv.getContext('2d'), app.p, app.lecteur.tVisible(), W, H, app.lecteur._obtenir, app.p.fps);
+  const blob = await new Promise((ok) => cv.toBlob(ok, 'image/png'));
+  app.derniereCouverture = blob;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(app.p.nom || 'video').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w-]+/g, '-')}-couverture.png`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  toast('Image de couverture téléchargée');
 }
 
 // ====================================================================== aperçu : déplacer et agrandir au doigt
@@ -621,10 +825,12 @@ function ecouterToile() {
       if (!id) id = ids.find((k) => dansCadre(app.lecteur.cadres[k], fx, fy)) || null;
       if (id !== app.selection) selectionner(id);
       const f = id && M.trouver(app.p, id);
-      geste = f ? { clip: f.clip, fx, fy, cx: f.clip.cx, cy: f.clip.cy, note: false } : null;
+      const t0 = app.lecteur.t;
+      geste = f ? { clip: f.clip, fx, fy, cx: M.valeur(f.clip, 'cx', t0), cy: M.valeur(f.clip, 'cy', t0), note: false } : null;
     } else if (pointeurs.size === 2 && geste) {
       const [a, b] = [...pointeurs.values()];
-      geste.pince = { d: Math.hypot(a.x - b.x, a.y - b.y), echelle: geste.clip.genre === 'texte' ? geste.clip.taille : (geste.clip.echelle ?? 1) };
+      const kk = geste.clip.genre === 'texte' ? 'taille' : 'echelle';
+      geste.pince = { d: Math.hypot(a.x - b.x, a.y - b.y), echelle: M.valeur(geste.clip, kk, app.lecteur.t) ?? 1 };
     }
   });
   toile.addEventListener('pointermove', (e) => {
@@ -635,12 +841,12 @@ function ecouterToile() {
     if (geste.pince && pointeurs.size === 2) {
       const [a, b] = [...pointeurs.values()];
       const r = Math.hypot(a.x - b.x, a.y - b.y) / geste.pince.d;
-      if (c.genre === 'texte') c.taille = M.clamp(geste.pince.echelle * r, 0.02, 0.3);
-      else c.echelle = M.clamp(geste.pince.echelle * r, 0.05, 5);
+      if (c.genre === 'texte') reglerAnimable(c, 'taille', M.clamp(geste.pince.echelle * r, 0.02, 0.3));
+      else reglerAnimable(c, 'echelle', M.clamp(geste.pince.echelle * r, 0.05, 5));
     } else if (pointeurs.size === 1) {
       const { fx, fy } = app.lecteur.fraction(e);
-      c.cx = M.clamp(geste.cx + fx - geste.fx, -0.5, 1.5);
-      c.cy = M.clamp(geste.cy + fy - geste.fy, -0.5, 1.5);
+      reglerAnimable(c, 'cx', M.clamp(geste.cx + fx - geste.fx, -0.5, 1.5));
+      reglerAnimable(c, 'cy', M.clamp(geste.cy + fy - geste.fy, -0.5, 1.5));
     }
     app.lecteur.afficher();
   });
@@ -659,8 +865,9 @@ function ecouterToile() {
     e.preventDefault();
     noterUneFois();
     const k = e.deltaY < 0 ? 1.05 : 1 / 1.05;
-    if (f.clip.genre === 'texte') f.clip.taille = M.clamp(f.clip.taille * k, 0.02, 0.3);
-    else f.clip.echelle = M.clamp((f.clip.echelle ?? 1) * k, 0.05, 5);
+    const t0 = app.lecteur.t;
+    if (f.clip.genre === 'texte') reglerAnimable(f.clip, 'taille', M.clamp(M.valeur(f.clip, 'taille', t0) * k, 0.02, 0.3));
+    else reglerAnimable(f.clip, 'echelle', M.clamp((M.valeur(f.clip, 'echelle', t0) ?? 1) * k, 0.05, 5));
     app.lecteur.afficher();
     clearTimeout(app.minuteurMolette);
     app.minuteurMolette = setTimeout(() => { rendreInspecteur(); sauverBientot(); app.editionNotee = false; }, 300);
@@ -823,6 +1030,8 @@ function brancher() {
   $('#entree-fichiers').addEventListener('change', async (e) => { await importerFichiers(e.target.files); e.target.value = ''; });
   $('#entree-sons').addEventListener('change', async (e) => { await importerFichiers(e.target.files, { versSon: true }); e.target.value = ''; });
   $('#btn-voix').addEventListener('click', basculerVoix);
+  $('#entree-remplacer').addEventListener('change', async (e) => { await remplacerMedia(e.target.files[0]); e.target.value = ''; });
+  $('#export-couverture').addEventListener('click', couverture);
   $('#biblio').addEventListener('click', (e) => {
     const a = e.target.closest('[data-ajouter]');
     const s = e.target.closest('[data-superposer]');
@@ -840,6 +1049,12 @@ function brancher() {
   corps.addEventListener('input', surChamp);
   corps.addEventListener('change', (e) => { surChamp(e); app.editionNotee = false; });
   corps.addEventListener('click', surBoutonInspecteur);
+  corps.addEventListener('toggle', (e) => {
+    const d = e.target;
+    if (!d.matches || !d.matches('details.groupe-insp')) return;
+    const titre = d.querySelector('summary').textContent;
+    if (d.open) app.fermes.delete(titre); else app.fermes.add(titre);
+  }, true);
 
   for (const b of $$('.barre-mobile [data-feuille]')) {
     b.addEventListener('click', () => {

@@ -416,7 +416,7 @@
   notre design, nos ressources**. ⛔ Rien de CapCut n'est repris.
 - **Où** : `labobine/` · 🟢 **EN LIGNE https://labobine.pages.dev** (Pages `labobine`, 2026-11-02, export réel vérifié
   en ligne) · ⏳ domaine `labobine.nebula-agency.online` à brancher par Mongazi (Pages → Custom domains).
-- **Vague 1 faite** (cœur du montage, export MP4 avec filigrane) · QC `python labobine/_qc.py` **33 verts** (vrai Chrome
+- **Vagues 1 et 2 faites** (cœur du montage ; images clés, couleur, fond vert, masques, animations, figer, détacher le son, ton gardé) · QC `python labobine/_qc.py` **42 verts** (vrai Chrome
   + ffprobe sur le MP4) · publier = `python labobine/_dist.py` puis `wrangler pages deploy labobine/_dist --project-name labobine --branch main`.
 - **Règles** : le verrou est à l'export (gratuit = filigrane, 720/1080p, 30 i/s ; Pro = sans filigrane, 4K, 60 i/s) ·
   `estPro()` toujours faux jusqu'au paiement Mobile Money (vague 4), aucune porte dérobée · **un seul moteur de dessin**
