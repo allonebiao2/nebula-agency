@@ -410,6 +410,19 @@
 - Détail : `whatsapp-agent/README.md` et
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
+### LA BOBINE · l'éditeur vidéo  *(produit interne, 2026-11-02)*
+- **Ce que c'est** : le montage vidéo dans le navigateur, PC et téléphone. Mongazi veut « exactement CapCut, renommé » :
+  on vise ses **familles de fonctions** et son **modèle payant** (`_knowledge/capcut-decortique.md`), avec **notre code,
+  notre design, nos ressources**. ⛔ Rien de CapCut n'est repris.
+- **Où** : `labobine/` · adresse prévue `labobine.nebula-agency.online` (Pages `labobine`). ⏳ **Pas en ligne** : la
+  publication a été refusée par le garde-fou de Claude Code, elle attend l'accord de Mongazi.
+- **Vague 1 faite** (cœur du montage, export MP4 avec filigrane) · QC `python labobine/_qc.py` **33 verts** (vrai Chrome
+  + ffprobe sur le MP4) · publier = `python labobine/_dist.py` puis `wrangler pages deploy labobine/_dist --project-name labobine --branch main`.
+- **Règles** : le verrou est à l'export (gratuit = filigrane, 720/1080p, 30 i/s ; Pro = sans filigrane, 4K, 60 i/s) ·
+  `estPro()` toujours faux jusqu'au paiement Mobile Money (vague 4), aucune porte dérobée · **un seul moteur de dessin**
+  pour l'aperçu et l'export · les fichiers restent sur l'appareil (IndexedDB).
+- Détail, vagues 2 à 5, pièges : `labobine/CONTEXT.md`.
+
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
 - 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé
   « à part » par Mongazi). **Lire son `CLAUDE.md` et `00 Accueil/REPRENDRE-ICI.md` en arrivant.**

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LA BOBINE · le montage vidéo dans ton navigateur</title>
+<meta name="description" content="LA BOBINE monte tes vidéos dans le navigateur, sur ordinateur comme sur téléphone : découpe, textes animés, transitions, voix off, export MP4. Tes fichiers restent sur ton appareil.">
+<meta name="theme-color" content="#14110e">
+<link rel="canonical" href="https://labobine.nebula-agency.online/">
+<meta property="og:title" content="LA BOBINE">
+<meta property="og:description" content="Le montage vidéo dans ton navigateur. Rien à installer, tes fichiers restent chez toi.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@700&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@500&family=Playfair+Display:wght@700&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- ============ ACCUEIL ============ -->
+<main id="accueil" class="vue">
+  <header class="ac-tete">
+    <div class="marque" aria-label="LA BOBINE">
+      <svg class="bobine" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><circle class="trou" cx="20" cy="9.5" r="4.2"/><circle class="trou" cx="30" cy="16.8" r="4.2"/><circle class="trou" cx="26.2" cy="28.5" r="4.2"/><circle class="trou" cx="13.8" cy="28.5" r="4.2"/><circle class="trou" cx="10" cy="16.8" r="4.2"/><circle class="axe" cx="20" cy="20" r="2.4"/></svg>
+      <span>LA BOBINE</span>
+    </div>
+    <button id="btn-nouveau" class="btn primaire">Nouveau projet</button>
+  </header>
+  <section class="ac-intro">
+    <h1>Monte tes vidéos, ici, maintenant.</h1>
+    <p>Découpe, textes animés, transitions, voix off et export MP4, sur ordinateur comme sur téléphone. Rien à installer : tes fichiers restent sur ton appareil.</p>
+  </section>
+  <section class="ac-projets">
+    <h2>Tes projets</h2>
+    <div id="liste-projets" class="grille-projets"></div>
+  </section>
+  <footer class="ac-pied">
+    <p>LA BOBINE est un produit de <a href="https://www.nebula-agency.online" rel="noopener">NEBULA Agency</a>, Cotonou.</p>
+    <p class="doux">Encodage vidéo : <a href="vendor/LICENSE-mediabunny.txt">Mediabunny</a> (MPL-2.0).</p>
+  </footer>
+</main>
+
+<!-- ============ ÉDITEUR ============ -->
+<div id="editeur" class="vue" hidden>
+  <header class="ed-tete">
+    <button class="icone" id="btn-retour" aria-label="Retour aux projets" title="Retour aux projets"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <input id="nom-projet" class="nom-projet" aria-label="Nom du projet" maxlength="80">
+    <span id="etat-sauve" class="etat-sauve" aria-live="polite"></span>
+    <div class="ed-actions">
+      <button class="icone" id="btn-annuler" aria-label="Annuler" title="Annuler (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button>
+      <button class="icone" id="btn-retablir" aria-label="Rétablir" title="Rétablir (Ctrl+Maj+Z)"><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h3"/></svg></button>
+      <button class="btn primaire" id="btn-exporter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 20h14"/></svg><span>Exporter</span></button>
+    </div>
+  </header>
+
+  <aside id="biblio" class="panneau" aria-label="Bibliothèque">
+    <div class="onglets" role="tablist">
+      <button role="tab" data-onglet="medias" aria-selected="true">Médias</button>
+      <button role="tab" data-onglet="texte">Texte</button>
+      <button role="tab" data-onglet="son">Son</button>
+      <button class="icone fermer-feuille" data-fermer="biblio" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="onglet-corps" data-corps="medias">
+      <button class="depot" id="btn-importer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span><b>Importer</b> vidéos, photos ou sons<br><small>ou glisse-les ici</small></span>
+      </button>
+      <div id="grille-medias" class="grille-medias"></div>
+    </div>
+    <div class="onglet-corps" data-corps="texte" hidden>
+      <p class="aide">Touche un style : le texte se pose à la tête de lecture.</p>
+      <div id="grille-styles" class="grille-styles"></div>
+    </div>
+    <div class="onglet-corps" data-corps="son" hidden>
+      <div class="rangee">
+        <button class="btn" id="btn-importer-son">Importer un son</button>
+        <button class="btn rouge" id="btn-voix"><span class="point"></span><span id="voix-libelle">Voix off</span></button>
+      </div>
+      <div id="liste-sons" class="liste-sons"></div>
+    </div>
+  </aside>
+
+  <section class="scene" aria-label="Aperçu">
+    <div class="cadre-toile" id="cadre-toile"><canvas id="toile"></canvas></div>
+    <div class="transport">
+      <span id="temps" class="tc">00:00.00</span>
+      <button class="lecture" id="btn-lecture" aria-label="Lecture" title="Lecture (Espace)"><svg class="i-jouer" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+      <span id="duree" class="tc doux">00:00.00</span>
+    </div>
+  </section>
+
+  <aside id="inspecteur" class="panneau" aria-label="Réglages">
+    <div class="onglets"><span class="titre-panneau" id="titre-inspecteur">Projet</span>
+      <button class="icone fermer-feuille" data-fermer="inspecteur" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div id="corps-inspecteur" class="corps-inspecteur"></div>
+  </aside>
+
+  <section id="frise" class="frise" aria-label="Montage">
+    <div class="frise-outils">
+      <button class="outil" id="btn-diviser" title="Diviser à la tête de lecture (S)"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="M8.5 8.5L20 18M8.5 15.5L20 6"/></svg><span>Diviser</span></button>
+      <button class="outil" id="btn-dupliquer" title="Dupliquer (Ctrl+D)"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3"/></svg><span>Dupliquer</span></button>
+      <button class="outil danger" id="btn-supprimer" title="Supprimer (Suppr)"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><span>Supprimer</span></button>
+      <span class="espace"></span>
+      <button class="icone" id="btn-dezoom" aria-label="Dézoomer la frise" title="Dézoomer (−)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M8 11h6M16 16l4 4"/></svg></button>
+      <button class="icone" id="btn-zoom" aria-label="Zoomer la frise" title="Zoomer (+)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M8 11h6M11 8v6M16 16l4 4"/></svg></button>
+    </div>
+    <div class="frise-zone" id="frise-zone">
+      <div class="frise-defile" id="frise-defile">
+        <div class="frise-contenu" id="frise-contenu">
+          <div class="regle" id="regle"></div>
+          <div class="pistes" id="pistes"></div>
+        </div>
+      </div>
+      <div class="tete-lecture" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <nav class="barre-mobile" aria-label="Outils">
+    <button data-feuille="biblio" data-onglet-cible="medias"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg><span>Médias</span></button>
+    <button data-feuille="biblio" data-onglet-cible="texte"><svg viewBox="0 0 24 24"><path d="M5 6h14M12 6v13"/></svg><span>Texte</span></button>
+    <button data-feuille="biblio" data-onglet-cible="son"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg><span>Son</span></button>
+    <button data-feuille="inspecteur"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Réglages</span></button>
+  </nav>
+</div>
+
+<!-- ============ DIALOGUES ============ -->
+<dialog id="dlg-format" class="dlg">
+  <form method="dialog">
+    <h2>Quel format ?</h2>
+    <p class="doux">Tu pourras le changer à tout moment dans les réglages du projet.</p>
+    <div id="choix-formats" class="choix-formats"></div>
+    <div class="rangee fin"><button class="btn" value="annuler">Annuler</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlg-export" class="dlg">
+  <div class="export-reglages" id="export-reglages">
+    <h2>Exporter la vidéo</h2>
+    <fieldset class="segments" id="export-qualite"><legend>Qualité</legend></fieldset>
+    <fieldset class="segments" id="export-cadence"><legend>Images par seconde</legend></fieldset>
+    <label class="interrupteur"><input type="checkbox" id="export-filigrane" checked disabled><span>Filigrane « LA BOBINE » en bas de l'image</span></label>
+    <div class="offre-pro">
+      <span class="badge-pro">Pro</span>
+      <p><b>LA BOBINE Pro</b> enlève le filigrane, ouvre la 4K et les 60 images par seconde. Bientôt disponible, payable en Mobile Money.</p>
+    </div>
+    <p class="doux" id="export-infos"></p>
+    <div class="rangee fin">
+      <button class="btn" id="export-fermer">Fermer</button>
+      <button class="btn primaire" id="export-lancer">Exporter</button>
+    </div>
+  </div>
+  <div class="export-progres" id="export-progres" hidden>
+    <h2 id="export-etape">Préparation…</h2>
+    <div class="barre"><div class="barre-plein" id="export-barre"></div></div>
+    <p class="tc" id="export-pourcent">0 %</p>
+    <p class="doux" id="export-reste"></p>
+    <p class="doux">Garde cet onglet ouvert : la vidéo se fabrique sur ton appareil.</p>
+    <div class="rangee fin"><button class="btn" id="export-annuler">Annuler</button></div>
+  </div>
+  <div class="export-fini" id="export-fini" hidden>
+    <h2>Ta vidéo est prête</h2>
+    <video id="export-video" controls playsinline></video>
+    <p class="doux" id="export-resume"></p>
+    <p class="avert" id="export-avert" hidden></p>
+    <div class="rangee fin">
+      <button class="btn" id="export-retour">Fermer</button>
+      <button class="btn" id="export-partager" hidden>Partager</button>
+      <a class="btn primaire" id="export-telecharger" download>Télécharger</a>
+    </div>
+  </div>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toast-texte"></span><button id="toast-action" class="btn petit" hidden></button></div>
+<div id="depot-global" class="depot-global" hidden><p>Lâche tes fichiers pour les importer</p></div>
+<input type="file" id="entree-fichiers" multiple accept="video/*,image/*,audio/*" hidden>
+<input type="file" id="entree-sons" multiple accept="audio/*" hidden>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

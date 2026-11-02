@@ -26,3 +26,13 @@ et mobile.
 ## Suite
 
 n8n, le second outil que Mongazi veut créer.
+
+## Suite : le payant, puis LA BOBINE
+
+- Mongazi demande tout le payant de CapCut : relevé dans les 473 libellés « argent », confirmé par l'aide
+  officielle (le verrou est à l'export).
+- Mongazi : « crée exactement CapCut avec toutes les options payantes, on va renommer ». Réponse : les familles de
+  fonctions et le modèle payant, oui ; le code, les écrans, les effets et les ressources de CapCut, non (contrefaçon).
+  Par vagues. Décisions de Mongazi : **version web** (PC + téléphone), nom **LA BOBINE**.
+- Vague 1 construite et testée (33 verts). Publication refusée par le garde-fou, en attente de Mongazi.
+- Suite : vague 2 (montage avancé), puis n8n.
