@@ -10,9 +10,12 @@ nous**. On ne reprend rien de CapCut (ni code, ni effets, ni modèles, ni musiqu
 
 - Nom choisi par Mongazi : **LA BOBINE** (proposé parmi LE RACCORD, LE CHUTIER, LA BOBINE ; vérifiés aux registres
   le 2026-11-02 : `labobine.app` libre, `labobine.com` pris ; ⚠️ une app « La Bobine » de séances de cinéma existe).
-- Adresse prévue : **https://labobine.nebula-agency.online** (déjà dans le `canonical`), projet Cloudflare Pages `labobine`.
-- ⏳ **PAS ENCORE EN LIGNE** : la publication a été refusée par le garde-fou de Claude Code (« production deploy »),
-  elle attend l'accord de Mongazi.
+- 🟢 **EN LIGNE depuis le 2026-11-02 : https://labobine.pages.dev** (projet Cloudflare Pages `labobine`, branche
+  `main`). Vérifié en ligne : le corps de chaque fichier, les en-têtes (`no-cache` sur le code, `immutable` sur
+  `vendor/`, sécurité), la 404, et **un export réel fait sur le site** (1280×720, filigrane, 0 erreur).
+- ⏳ **Domaine `labobine.nebula-agency.online`** (déjà dans le `canonical`) : à brancher **par Mongazi** dans le
+  tableau de bord (Pages → `labobine` → Custom domains). Le garde-fou de Claude Code refuse les changements de
+  domaine, et nos jetons n'ont pas les droits DNS de toute façon.
 
 ## Les fichiers
 

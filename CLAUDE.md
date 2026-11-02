@@ -414,8 +414,8 @@
 - **Ce que c'est** : le montage vidéo dans le navigateur, PC et téléphone. Mongazi veut « exactement CapCut, renommé » :
   on vise ses **familles de fonctions** et son **modèle payant** (`_knowledge/capcut-decortique.md`), avec **notre code,
   notre design, nos ressources**. ⛔ Rien de CapCut n'est repris.
-- **Où** : `labobine/` · adresse prévue `labobine.nebula-agency.online` (Pages `labobine`). ⏳ **Pas en ligne** : la
-  publication a été refusée par le garde-fou de Claude Code, elle attend l'accord de Mongazi.
+- **Où** : `labobine/` · 🟢 **EN LIGNE https://labobine.pages.dev** (Pages `labobine`, 2026-11-02, export réel vérifié
+  en ligne) · ⏳ domaine `labobine.nebula-agency.online` à brancher par Mongazi (Pages → Custom domains).
 - **Vague 1 faite** (cœur du montage, export MP4 avec filigrane) · QC `python labobine/_qc.py` **33 verts** (vrai Chrome
   + ffprobe sur le MP4) · publier = `python labobine/_dist.py` puis `wrangler pages deploy labobine/_dist --project-name labobine --branch main`.
 - **Règles** : le verrou est à l'export (gratuit = filigrane, 720/1080p, 30 i/s ; Pro = sans filigrane, 4K, 60 i/s) ·
