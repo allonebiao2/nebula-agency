@@ -421,7 +421,7 @@
 - **Règles** : le verrou est à l'export (gratuit = filigrane, 720/1080p, 30 i/s ; Pro = sans filigrane, 4K, 60 i/s) ·
   `estPro()` toujours faux jusqu'au paiement Mobile Money (vague 4), aucune porte dérobée · **un seul moteur de dessin**
   pour l'aperçu et l'export · les fichiers restent sur l'appareil (IndexedDB).
-- **Vague 4 (comptes, Pro 1 500 F/mois · 12 000 F/an, SasPay, nuage du montage) : base et fonctions INSTALLÉES le 2026-11-02, interface encore cachée (`OUVERT = false`)** · reste : secret du webhook SasPay (Mongazi), ⛔ **SMTP de connexion** (sans lui Supabase n'écrit qu'à l'équipe, 2 e-mails/h, Boussole comprise : `labobine/_installer_connexion.py`, accord de Mongazi), ouverture · `labobine/INSTALLER-COMPTES.md`.
+- **Vague 4 (comptes, Pro 1 500 F/mois · 12 000 F/an, SasPay, nuage du montage) : base et fonctions INSTALLÉES le 2026-11-02, interface encore cachée (`OUVERT = false`)** · reste : secret du webhook SasPay (Mongazi), ouverture · ✅ **les e-mails de connexion du projet partagé partent par Resend** depuis le 2026-11-02 (`connexion@nebula-agency.online`, en français avec le code de 8 chiffres ; avant, Supabase n'écrivait qu'à l'équipe, Boussole comprise) · `labobine/INSTALLER-COMPTES.md`.
 - Détail, vagues 2 à 5, pièges : `labobine/CONTEXT.md`.
 
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*

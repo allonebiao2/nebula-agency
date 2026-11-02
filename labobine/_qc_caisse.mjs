@@ -67,7 +67,7 @@ ok(/labobine_payer\(text, integer, integer\)\s+to service_role/.test(sql), 'paye
 console.log('Le navigateur');
 const compte = lire('js', 'compte.js');
 const offre = lire('js', 'offre.js');
-ok(/export const OUVERT = false \|\|/.test(compte), "l'interface des comptes est fermée tant que le serveur n'est pas installé");
+ok(/export const OUVERT = (false|true) \|\| \(typeof window/.test(compte), "l'interrupteur des comptes est un simple booléen écrit dans le code (il n'ouvre aucun droit)");
 ok(compte.includes('sb_publishable_') && !compte.includes('service_role') && !compte.includes('sb_secret_'), 'seule la clé publique est dans la page');
 ok(offre.includes('estPro = () => proActif()') && !offre.includes('localStorage'), 'Pro ne se lit que dans les droits rendus par le serveur');
 

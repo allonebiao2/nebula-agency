@@ -99,6 +99,8 @@ wrangler pages deploy labobine/_dist --project-name labobine --branch main
    `python -I labobine/_installer_connexion.py` (clé Resend d'envoi seule sur `nebula-agency.online`, DKIM + SPF
    vérifiés ; adresses de retour ; modèles en français avec le code). **Refusé au garde-fou de Claude Code**
    (configuration partagée avec Boussole) : il faut l'accord explicite de Mongazi.
+   ✅ **Appliqué le 2026-11-02** sur son accord : e-mails par Resend (`connexion@nebula-agency.online`, « NEBULA
+   Agency »), 60 par heure, retours LA BOBINE ajoutés à celui de Boussole ; essai : **delivered**.
    ⚠️ Les confirmations d'e-mail sont activées : un nouveau client reçoit « Confirm signup », pas « Magic Link ».
    Le code fait **8 chiffres** (l'écran ne cite plus de nombre).
    Équipes : pas encore.

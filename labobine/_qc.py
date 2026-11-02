@@ -344,7 +344,10 @@ def main():
 
 
         print("Vague 4 : le compte (sans serveur, sans e-mail envoyé)")
-        ok(page.locator("[data-ouvrir-compte]:visible").count() == 0, "interrupteur fermé : aucun bouton de compte n'apparaît")
+        if "export const OUVERT = true" in (ICI / "js" / "compte.js").read_text(encoding="utf-8"):
+            print("  (interrupteur OUVERT dans le code : les comptes sont visibles pour tout le monde)")
+        else:
+            ok(page.locator("[data-ouvrir-compte]:visible").count() == 0, "interrupteur fermé : aucun bouton de compte n'apparaît")
         comptes = ctx.new_page()
         comptes.add_init_script("window.__labobineComptes = true")
         comptes.on("pageerror", lambda e: erreurs.append(str(e)))
