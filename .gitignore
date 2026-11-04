@@ -134,3 +134,6 @@ malettre/rites/_planches/
 
 # LA BOBINE : catalogues régénérés depuis les sources des maisons à chaque publication (labobine/_catalogues.py)
 labobine/catalogues/
+
+# moteur binaire du skill Impeccable (20 Mo, réinstallé par `npx impeccable update`) : jamais dans le dépôt public
+**/impeccable/scripts/bin/
