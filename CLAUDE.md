@@ -521,15 +521,13 @@
   Cette règle vaut partout, y compris dans une conversation tenue ici.
 - **Le périmètre de RECHERCHE s'est élargi** le 2026-09-30, sur décision de
   Mongazi : 28 paires, le S&P 500 et le NAS100. **Aucun ordre réel.**
-- ⚠️ **Une 2e démo tourne depuis le 2026-10-05**, compte DÉMO : la tâche « NEBULA VWAP demo », **chaque heure à
-  la minute 1**, lit l'or et ne trade que sur signal ; elle referme MT5 si elle l'a ouvert. Pour l'arrêter :
-  `schtasks /Delete /TN "NEBULA VWAP demo" /F`.
-- ⚠️ **Une démo tourne sur ce PC, sur compte DÉMO seulement** : la tâche Windows
-  « NEBULA ORB demo », du lundi au vendredi à 14 h 00 (Bénin), **ouvre MT5**
-  (environ 1,7 Go de mémoire) et tourne jusqu'à environ 21 h 00. Pour l'arrêter :
-  `schtasks /Delete /TN "NEBULA ORB demo" /F`. Le 1er octobre, elle n'a pas tradé parce que le bouton
-  **Algo Trading** de MT5 était éteint. La configuration a été corrigée ; **Mongazi doit vérifier que
-  le bouton est vert**.
+- ⛔ **LE TRIO EST COUPÉ le 2026-11-04** (Mongazi : « plus de TRIO, ce sera juste pour la nouvelle Triple EMA ») :
+  les tâches « NEBULA VWAP demo », « NEBULA PIEGE demo », « NEBULA ORB demo », « NEBULA reprise » et « NEBULA CARNET
+  battement » sont **supprimées**, aucune position n'était ouverte. **Plus aucune démo ne tourne sur ce PC.** Le code
+  reste dans `trading/live/` (dépôt privé). ⚠️ **Mongazi trade à la main sur le même compte démo** (ses ordres sont
+  dans l'historique MT5, magic 0). Le compte sert désormais à **sa méthode 0037 « Triple EMA (TES) »** (EMA 5/13/50
+  en M5) : détecteur écrit, ses 11 trades retrouvés, **10 planches à valider une à une**, rien de calculé ; ses alertes
+  viendront sur une **application installable sur son iPhone** (pas Telegram), après les 10 planches.
 - ⏳ **Trois décisions attendent Mongazi** (`_cerveau/DECISIONS.md`) : le seuil
   des séries perdantes, qui fait passer le critère réel de 50 % à **66,2 %** ·
   la date et le chiffre d'arrêt du projet · le plafond mensuel de dépense.
