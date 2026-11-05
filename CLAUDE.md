@@ -414,7 +414,7 @@
 ### NEBULA VOIX · les agents vocaux qui appellent  *(produit interne, lancé le 2026-11-04)*
 - **Ce que c'est** : des agents vocaux IA qui décrochent et appellent au Bénin, puis en Afrique, pour prendre des rendez-vous et vendre. Le service est revendu aux structures qui cherchent des téléconseillers. L'objectif de Mongazi : « l'agence n°1 des appels au Bénin ».
 - **Où** :
-  - le code est dans le dépôt **PRIVÉ** `C:\Users\USER\nebula-voix`, qui n'a pas encore de remote : Mongazi doit créer `allonebiao2/nebula-voix` en privé ;
+  - le code est dans le dépôt **PRIVÉ** `allonebiao2/nebula-voix` (sur le disque `C:\Users\USER\nebula-voix`), créé et poussé le 2026-11-05 ;
   - **le plan** est dans `nebula-voix/docs/PLAN.md` ;
   - la recherche et la grille des 85 fonctions sont dans `_documents/nebula-agency/voix/`.
 - **Prototype « Awa »** (`coeur/standardiste.py`, LiveKit Agents 1.8.10, Claude Sonnet 5.5, Deepgram Nova-3 et Aura-2 Agathe) : il lit la carte RÉELLE par les lecteurs de LE STANDARD, passe chaque phrase au garde-fou des prix avant la voix, annonce l'IA, inscrit l'opposition au registre et écrit les numéros en +229 01. Essayé à la voix le 2026-11-05. LiveKit Cloud est branché, et l'essai se fait sur agents-playground.livekit.io.

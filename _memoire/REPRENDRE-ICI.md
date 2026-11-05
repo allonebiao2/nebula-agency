@@ -13,12 +13,11 @@
   - la recherche, la grille des 85 fonctions et l'analyse de Dograh ;
   - le prototype Awa : la carte réelle, le garde-fou des prix, l'opposition, +229 01, Deepgram, Claude ;
   - LiveKit Cloud branché.
-- **Le plan** : `C:\Users\USER\nebula-voix\docs\PLAN.md`, le dépôt PRIVÉ local, qui n'a pas encore de remote. Lire aussi la mémoire `project_agent-vocal-numeros-benin`.
+- **Le plan** : `C:\Users\USER\nebula-voix\docs\PLAN.md`, dans le dépôt PRIVÉ `allonebiao2/nebula-voix` (créé par Mongazi et poussé le 2026-11-05 au soir). Lire aussi la mémoire `project_agent-vocal-numeros-benin`.
 - **Par quoi commencer** :
-  1. relancer la vague 2a de rétro-ingénierie, coupée par la limite d'usage ;
+  1. la vague 2a de rétro-ingénierie, relancée le 2026-11-05 au soir (4 agents : console, téléphonie, naturel, voix ouvertes ; rapports `nebula-voix/docs/vague2a-*.md`, puis `PROGRESSION.md`) ;
   2. son essai dans le playground LiveKit ;
-  3. le dépôt GitHub privé à créer ;
-  4. la console de réglage et le banc d'essai.
+  3. la console de réglage et le banc d'essai.
 - **Côté trading, toujours en attente** : la clôture du 04 (le test de la notification insistante, l'analyse de la série 2).
 
 ---
