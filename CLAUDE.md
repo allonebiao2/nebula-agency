@@ -411,6 +411,21 @@
 - Détail : `whatsapp-agent/README.md` et
   `_memoire/conversations/2026-08-28-standard-whatsapp.md`
 
+### NEBULA VOIX · les agents vocaux qui appellent  *(produit interne, lancé le 2026-11-04)*
+- **Ce que c'est** : des agents vocaux IA qui décrochent et appellent au Bénin, puis en Afrique, pour prendre des rendez-vous et vendre. Le service est revendu aux structures qui cherchent des téléconseillers. L'objectif de Mongazi : « l'agence n°1 des appels au Bénin ».
+- **Où** :
+  - le code est dans le dépôt **PRIVÉ** `C:\Users\USER\nebula-voix`, qui n'a pas encore de remote : Mongazi doit créer `allonebiao2/nebula-voix` en privé ;
+  - **le plan** est dans `nebula-voix/docs/PLAN.md` ;
+  - la recherche et la grille des 85 fonctions sont dans `_documents/nebula-agency/voix/`.
+- **Prototype « Awa »** (`coeur/standardiste.py`, LiveKit Agents 1.8.10, Claude Sonnet 5.5, Deepgram Nova-3 et Aura-2 Agathe) : il lit la carte RÉELLE par les lecteurs de LE STANDARD, passe chaque phrase au garde-fou des prix avant la voix, annonce l'IA, inscrit l'opposition au registre et écrit les numéros en +229 01. Essayé à la voix le 2026-11-05. LiveKit Cloud est branché, et l'essai se fait sur agents-playground.livekit.io.
+- ⛔ **La loi d'abord** :
+  - aucun appel automatisé à un particulier sans accord préalable prouvé (Code du numérique, art. 245 et 332) ;
+  - autorisation de l'APDP pour envoyer la voix à l'étranger (art. 391) ;
+  - SIM box interdite (art. 248).
+- **Clés** : `secrets/deepgram.env`, `livekit.env`, `cloudflare.env` (CLOUDFLARE_AI_TOKEN). Toutes ont été rangées depuis le presse-papier de Mongazi, sans être affichées.
+- **Pour le produit**, le clonage de voix passe par Chatterbox (MIT). VoiceStudio/OmniVoice est sous CC-BY-NC : réservé à STELLA, assistant personnel et dernière vague.
+- Détail : mémoire `project_agent-vocal-numeros-benin`, et `_memoire/conversations/2026-11-05-nebula-voix.md`.
+
 ### LA BOBINE · l'éditeur vidéo  *(produit interne, 2026-11-02)*
 - **Ce que c'est** : le montage vidéo dans le navigateur, PC et téléphone. Mongazi veut « exactement CapCut, renommé » :
   on vise ses **familles de fonctions** et son **modèle payant** (`_knowledge/capcut-decortique.md`), avec **notre code,
