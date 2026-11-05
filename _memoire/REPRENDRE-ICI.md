@@ -7,6 +7,22 @@
 
 ---
 
+## 0 quadragies. LE 2026-11-05 · NEBULA VOIX LANCÉ, AWA PARLE
+
+- **Fait** :
+  - la recherche, la grille des 85 fonctions et l'analyse de Dograh ;
+  - le prototype Awa : la carte réelle, le garde-fou des prix, l'opposition, +229 01, Deepgram, Claude ;
+  - LiveKit Cloud branché.
+- **Le plan** : `C:\Users\USER\nebula-voix\docs\PLAN.md`, le dépôt PRIVÉ local, qui n'a pas encore de remote. Lire aussi la mémoire `project_agent-vocal-numeros-benin`.
+- **Par quoi commencer** :
+  1. relancer la vague 2a de rétro-ingénierie, coupée par la limite d'usage ;
+  2. son essai dans le playground LiveKit ;
+  3. le dépôt GitHub privé à créer ;
+  4. la console de réglage et le banc d'essai.
+- **Côté trading, toujours en attente** : la clôture du 04 (le test de la notification insistante, l'analyse de la série 2).
+
+---
+
 ## 0 tricies. LE 2026-10-22 (nuit) · MA LETTRE À… : 18 OUVERTURES, TROIS AU MOINS PAR OCCASION, LA LETTRE QUI S'ÉCRIT
 
 - **Fait (commits `05fb31a` à `dc0f8e6`, rien de déployé)** : la lettre qui s'écrit après l'ouverture ; les portes plein
