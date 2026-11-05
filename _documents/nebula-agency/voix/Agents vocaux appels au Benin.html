@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr-FR" xml:lang="fr-FR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>NEBULA VOIX</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+<style>
+@page { size: A4; margin: 16mm 14mm 18mm; }
+body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5pt; line-height: 1.5; color: #1a1a24; max-width: none; }
+h1 { font-size: 21pt; color: #2b1a5c; border-bottom: 3px solid #7b3fe4; padding-bottom: 6px; margin-top: 0; }
+h2 { font-size: 15pt; color: #2b1a5c; margin-top: 22px; border-bottom: 1px solid #ddd6f3; padding-bottom: 3px; page-break-after: avoid; }
+h3 { font-size: 12pt; color: #4a2a9a; margin-top: 16px; page-break-after: avoid; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 14px; font-size: 8.8pt; page-break-inside: auto; }
+th { background: #2b1a5c; color: #fff; text-align: left; padding: 5px 6px; }
+td { border-bottom: 1px solid #e3e0ee; padding: 4px 6px; vertical-align: top; }
+tr:nth-child(even) td { background: #f7f5fc; }
+tr { page-break-inside: avoid; }
+code { background: #f1eefa; padding: 0 3px; border-radius: 3px; font-size: 9pt; }
+a { color: #5a2fc2; text-decoration: none; word-break: break-word; }
+blockquote { border-left: 4px solid #7b3fe4; margin: 10px 0; padding: 4px 12px; background: #f7f5fc; }
+#TOC { background: #f7f5fc; padding: 8px 16px; border-radius: 8px; margin-bottom: 18px; }
+#TOC ul { margin: 2px 0; }
+</style></head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#construire-lagent-vocal-béninois-consentement-dabord"
+id="toc-construire-lagent-vocal-béninois-consentement-dabord">Construire
+l’agent vocal béninois, consentement d’abord</a>
+<ul>
+<li><a
+href="#la-loi-béninoise-interdit-lautomate-dappel-sans-accord-prouvé"
+id="toc-la-loi-béninoise-interdit-lautomate-dappel-sans-accord-prouvé">La
+loi béninoise interdit l’automate d’appel sans accord prouvé</a></li>
+<li><a
+href="#terminer-un-appel-au-bénin-coûte-quarante-fois-plus-que-whatsapp"
+id="toc-terminer-un-appel-au-bénin-coûte-quarante-fois-plus-que-whatsapp">Terminer
+un appel au Bénin coûte quarante fois plus que WhatsApp</a></li>
+<li><a
+href="#les-plateformes-se-valent-à-trois-centimes-près-pas-leur-caisse"
+id="toc-les-plateformes-se-valent-à-trois-centimes-près-pas-leur-caisse">Les
+plateformes se valent à trois centimes près, pas leur caisse</a></li>
+<li><a
+href="#dograh-couvre-trois-quarts-du-besoin-la-couche-agence-reste-à-écrire"
+id="toc-dograh-couvre-trois-quarts-du-besoin-la-couche-agence-reste-à-écrire">Dograh
+couvre trois quarts du besoin, la couche agence reste à écrire</a></li>
+<li><a
+href="#aucune-voix-du-marché-na-laccent-de-cotonou-sauf-à-le-cloner"
+id="toc-aucune-voix-du-marché-na-laccent-de-cotonou-sauf-à-le-cloner">Aucune
+voix du marché n’a l’accent de Cotonou, sauf à le cloner</a></li>
+<li><a
+href="#le-marché-paie-60-à-150-fcfa-la-minute-moins-quun-appel-twilio"
+id="toc-le-marché-paie-60-à-150-fcfa-la-minute-moins-quun-appel-twilio">Le
+marché paie 60 à 150 FCFA la minute, moins qu’un appel Twilio</a></li>
+<li><a
+href="#payer-en-mobile-money-une-carte-momo-à-tester-trois-portes-sans-carte"
+id="toc-payer-en-mobile-money-une-carte-momo-à-tester-trois-portes-sans-carte">Payer
+en Mobile Money : une carte MoMo à tester, trois portes sans
+carte</a></li>
+<li><a
+href="#démarrer-par-lentrant-et-le-rappel-consenti-puis-négocier-une-ligne-locale"
+id="toc-démarrer-par-lentrant-et-le-rappel-consenti-puis-négocier-une-ligne-locale">Démarrer
+par l’entrant et le rappel consenti, puis négocier une ligne
+locale</a></li>
+<li><a href="#conclusion" id="toc-conclusion">Conclusion</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="construire-lagent-vocal-béninois-consentement-dabord">Construire
+l’agent vocal béninois, consentement d’abord</h1>
+<p>NEBULA peut construire et posséder ses agents vocaux sans carte
+bancaire, mais l’offre viable au Bénin n’est pas un robot qui démarche à
+froid : c’est un standard qui décroche 24 h/24, rappelle ceux qui l’ont
+demandé et relance les clients existants de ses clients. La loi le
+décide avant la technique : le Code du numérique punit de 6 à 12 mois de
+prison et de 500 000 à 2 000 000 FCFA la prospection « au moyen d’un
+automate d’appel » sans consentement préalable d’une personne physique
+(art. 245), fait peser la preuve du consentement sur celui qui appelle
+(art. 332), traite le commerçant joint sur son mobile comme un
+particulier, et soumet à autorisation préalable de l’APDP tout envoi de
+la voix vers un serveur étranger (art. 391). Le prix le confirme : la
+minute d’IA coûte 0,05 à 0,15 $ chez toutes les plateformes, mais
+terminer un appel sur un mobile béninois depuis un opérateur
+international en coûte 0,48 à 0,65 $, à cause d’un plancher
+réglementaire de 90 FCFA HT par minute, alors que WhatsApp Business
+Calling coûte environ 0,0103 $ la minute côté Meta, sur permission de
+l’utilisateur ; or le seul tarif public trouvé dans la région vend
+l’agent vocal 60 à 150 FCFA la minute, moins que le seul transport d’un
+appel Twilio. Le paiement, enfin, n’est pas un mur : aucune plateforme
+n’accepte le Mobile Money, mais LiveKit Cloud (offre Build), Deepgram
+(200 $ de crédit) et Bland (offre Start) démarrent sans carte, Telnyx
+prend PayPal et Bitcoin, et la carte virtuelle MoMo Mastercard de MTN
+reste à tester fournisseur par fournisseur. La voie recommandée tient en
+quatre temps : un prototype gratuit sur LiveKit, un dossier APDP déposé
+avant le premier appel réel, un agent entrant sur un numéro +229 à 27 $
+par mois, puis des rappels consentis par WhatsApp et par Dograh,
+plateforme open source sous licence BSD-2 qui couvre environ 75 % du
+besoin selon notre grille, la couche agence (multi-clients, facturation
+en FCFA, registre des consentements, liste d’opposition) restant à
+écrire. Le premier contrat à décrocher n’est pas celui d’une plateforme
+d’IA mais celui d’une ligne locale chez MTN, Moov ou Celtiis : sans
+elle, l’appel sortant classique ne sera jamais rentable.</p>
+<p><em>Conventions. Sauf mention contraire, chaque page citée a été
+relue le 4 novembre 2026 ; les dates propres à une source (date d’un
+tarif, d’une publication, d’une décision) figurent dans le texte. « À
+vérifier » signale un fait non confirmé par une source primaire. Les
+conversions utilisent la parité fixe 1 € = 655,957 FCFA et, pour le
+dollar, un taux indicatif de 600 FCFA (à vérifier au jour du calcul).
+Les pourcentages attribués aux dépôts GitHub sont des estimations tirées
+de leur documentation, pas des chiffres publiés. Ce rapport lit des
+textes de loi ; il ne remplace pas l’avis d’un avocat inscrit au barreau
+du Bénin.</em></p>
+<h2
+id="la-loi-béninoise-interdit-lautomate-dappel-sans-accord-prouvé">La
+loi béninoise interdit l’automate d’appel sans accord prouvé</h2>
+<p>Le Code du numérique (loi n° 2017-20, promulguée le 20 avril 2018) a
+été lu dans son texte intégral promulgué et comparé mot à mot, pour les
+articles cités ici, à la version votée le 13 juin 2017 (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG, loi 2017-20</a>
+; <a
+href="https://database.cyberpolicyportal.org/api/files/1663679910216euq2m15qn6f.pdf">texte
+voté en 2017, Cyber Policy Portal</a>). La loi n° 2020-35 du 6 janvier
+2021 ne modifie que les articles 121, 125 et 464, sans toucher à la
+prospection (<a href="https://sgg.gouv.bj/doc/loi-2020-35/">SGG, loi
+2020-35</a>). Une seconde révision figurait au programme de la 2e
+session ordinaire 2025 de l’Assemblée nationale, mais son adoption n’a
+pas pu être confirmée au 4 novembre 2026 (à vérifier) (<a
+href="https://www.banouto.bj/politique/article/20251029-assemblee-nationale-du-benin-liste-des-projets-et-propositions-de-lois-pour-la-2e-session-ordinaire-2025">Banouto,
+29 octobre 2025</a>).</p>
+<h3
+id="le-consentement-préalable-est-la-règle-le-client-existant-la-seule-exception">Le
+consentement préalable est la règle, le client existant la seule
+exception</h3>
+<p>L’article 332 interdit « la prospection directe au moyen de systèmes
+automatisés de communications électroniques » utilisant les données d’un
+utilisateur « qui n’a pas préalablement exprimé son consentement » ; ce
+consentement doit être une manifestation de volonté « libre, spécifique
+et informée », <strong>« l’absence de réponse ne peut pas être
+considérée comme un consentement »</strong>, et <strong>la charge de la
+preuve incombe à la personne à l’origine de la prospection</strong> (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG, loi 2017-20,
+art. 332</a>). L’article 245 ajoute une incrimination propre : la
+prospection « au moyen d’un automate d’appel » utilisant les coordonnées
+d’une personne physique sans consentement préalable est punie de
+<strong>6 à 12 mois d’emprisonnement et de 500 000 à 2 000 000
+FCFA</strong>, ou de l’une des deux peines (idem). La prospection est
+définie largement, comme « tout envoi de message destiné à promouvoir,
+directement ou indirectement, des biens, des services ou l’image » d’un
+vendeur (art. 1er), de sorte qu’un appel de simple notoriété est visé
+(<a
+href="https://database.cyberpolicyportal.org/api/files/1663679910216euq2m15qn6f.pdf">texte
+de 2017</a>). L’article 400 répète l’interdiction dans le livre consacré
+aux données personnelles, ce qui la place aussi sous la compétence de
+l’APDP, et l’article 390 impose de pouvoir démontrer le consentement et
+de le rendre « aussi simple » à retirer qu’à donner (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). Le texte
+ne prévoit pas d’« intérêt légitime » comme base autonome de traitement
+(art. 389), la porte qu’on emprunte ailleurs pour justifier un
+démarchage (idem).</p>
+<p>La seule exception, celle du client existant (art. 333), exige trois
+conditions cumulées : coordonnées recueillies auprès de la personne lors
+d’une vente ou d’une prestation, prospection limitée aux produits ou
+services <strong>analogues du même fournisseur</strong>, et possibilité
+de s’opposer sans frais au moment de la collecte et à chaque message (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). Une agence
+qui appelle pour une maison ne peut donc s’en prévaloir que pour les
+propres clients de cette maison, jamais pour un prospect froid (lecture
+de la recherche juridique, à faire confirmer). S’y ajoutent des
+obligations « dans tous les cas » : indiquer un moyen gratuit de faire
+cesser les appels, ne pas dissimuler l’identité de la maison pour le
+compte de laquelle on appelle ni « masquer toute information permettant
+d’identifier l’origine du message » (art. 336), rendre la publicité
+identifiable « dès sa réception » avec son expéditeur et son
+bénéficiaire (art. 330), accuser réception d’une opposition « sans délai
+» et tenir la liste à jour (art. 334) (idem ; <a
+href="https://database.cyberpolicyportal.org/api/files/1663679910216euq2m15qn6f.pdf">texte
+de 2017</a>). Les exceptions s’interprètent plus strictement pour les
+enfants, les personnes âgées, malades ou vulnérables (art. 335), et les
+peines de l’article 337 sont alors doublées ; les fichiers constitués
+avant la loi sont présumés refusés faute de consentement exprès obtenu
+dans l’année (art. 643) (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). Enfin,
+l’article 332 vise aussi les « réseaux, services et/ou terminaux de
+communications électroniques », formule qui couvre littéralement un
+appel passé par un humain : faire passer l’IA pour un téléconseiller ne
+contournerait rien (interprétation large, à faire confirmer par un
+avocat).</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Qui décroche</th>
+<th>Appel automatisé permis ?</th>
+<th>Condition</th>
+<th>Articles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Particulier sans consentement préalable</td>
+<td>Non</td>
+<td>Aucune</td>
+<td>245, 332, 400</td>
+</tr>
+<tr>
+<td>Particulier qui a consenti (formulaire, WhatsApp, appel
+antérieur)</td>
+<td>Oui</td>
+<td>Consentement libre, spécifique, informé, prouvé et retirable ;
+opposition offerte à chaque appel</td>
+<td>332, 334, 336, 390</td>
+</tr>
+<tr>
+<td>Client existant de la maison, pour des produits analogues</td>
+<td>Oui</td>
+<td>Coordonnées recueillies lors d’une vente ; opposition offerte à la
+collecte et à chaque appel</td>
+<td>333</td>
+</tr>
+<tr>
+<td>Commerçant en nom propre ou dirigeant joint sur son mobile</td>
+<td>Non sans consentement</td>
+<td>Traité comme une personne physique (inférence)</td>
+<td>1er, 245, 332</td>
+</tr>
+<tr>
+<td>Standard ou numéro générique d’une société</td>
+<td>Oui</td>
+<td>Coordonnées « impersonnelles » (notion non définie, à vérifier) ;
+identification et opposition restent dues</td>
+<td>333 in fine, 334, 336</td>
+</tr>
+<tr>
+<td>Contact issu d’une liste achetée ou collectée en ligne</td>
+<td>Non par automate</td>
+<td>Sauf preuve d’un consentement spécifique à ce moyen et à ce
+bénéficiaire ; informer de la source</td>
+<td>383, 416, 440, 460</td>
+</tr>
+<tr>
+<td>Personne qui appelle elle-même la maison</td>
+<td>Oui (pas une prospection sortante, inférence)</td>
+<td>Information sur l’enregistrement et le traitement</td>
+<td>12, 389, 415</td>
+</tr>
+</tbody>
+</table>
+<p>Sources du tableau : <a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG, loi 2017-20</a>
+; <a
+href="https://database.cyberpolicyportal.org/api/files/1663679910216euq2m15qn6f.pdf">texte
+de 2017</a>.</p>
+<h3 id="en-b2b-seul-un-numéro-impersonnel-échappe-au-consentement">En
+B2B, seul un numéro impersonnel échappe au consentement</h3>
+<p>L’article 333 in fine autorise la prospection « sans le consentement
+préalable du destinataire personne morale si les coordonnées
+électroniques utilisées à cette fin sont impersonnelles », et l’article
+245 ne réprime que l’usage des coordonnées d’une personne physique (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). Or la
+donnée personnelle couvre toute information relative à une personne
+identifiable, « y compris le son et l’image » (art. 1er) (<a
+href="https://database.cyberpolicyportal.org/api/files/1663679910216euq2m15qn6f.pdf">texte
+de 2017</a>). Dans un tissu économique où la plupart des petites
+entreprises sont tenues en nom propre et jointes sur le mobile du
+patron, le « B2B sans consentement » se réduit en pratique aux standards
+de sociétés et aux numéros génériques, et les fichiers de dirigeants
+enrichis deviennent les plus exposés (inférence). La notion de
+coordonnées impersonnelles n’est définie nulle part et aucune position
+de l’APDP n’a été trouvée : à faire trancher par un avocat.</p>
+<p>Une liste achetée ou collectée sur internet n’apporte pas ce
+consentement. La collecte doit être licite, loyale et transparente (art.
+383) ; une personne dont les données n’ont pas été recueillies auprès
+d’elle doit être informée au plus tard sous 30 jours ou lors de la
+première communication, <strong>source des données comprise</strong>
+(art. 416) ; la collecte déloyale est un « manquement grave » (art.
+453), et celui qui utilise en connaissance de cause des données
+collectées frauduleusement est puni « comme s’il était l’auteur du
+traitement frauduleux » (art. 460-3) (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>).
+Conséquence interne directe : un carnet de prospects PISTE ne vaut pas
+consentement à recevoir un appel automatisé ; il peut au mieux servir à
+un premier contact humain qui recueille ce consentement, sous la réserve
+de l’interprétation large de l’article 332.</p>
+<h3
+id="chaque-envoi-de-voix-vers-un-serveur-étranger-exige-laval-de-lapdp">Chaque
+envoi de voix vers un serveur étranger exige l’aval de l’APDP</h3>
+<p>Tout traitement doit être <strong>déclaré à l’APDP avant sa mise en
+œuvre</strong> (art. 405), sauf dispense ou désignation d’un délégué qui
+tient un registre (art. 408) ; la prospection ne figure pas parmi les
+dispenses de l’article 410 (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). L’article
+407 impose en outre une <strong>autorisation préalable</strong> dans
+trois cas qui touchent directement un agent vocal : les données
+biométriques (407-3), « le transfert de données à caractère personnel
+envisagé à destination d’un État tiers » (407-6), et les traitements
+automatisés susceptibles d’exclure une personne d’un droit ou d’un
+contrat (407-7) (idem). L’APDP se prononce sous <strong>60 jours,
+prorogeables une fois de 30 jours ; à défaut, la réponse est réputée
+favorable</strong>, et la demande peut être faite par voie électronique
+(art. 412 et 413) (idem). Le portail <a
+href="https://service.apdp.bj/">service.apdp.bj</a> n’a pas pu être lu
+sans JavaScript : procédure et frais sont à vérifier. Un traitement
+nouveau, automatisé et à grande échelle qui « évalue » les
+interlocuteurs (qualification, notation) appelle très probablement une
+analyse d’impact (art. 428), et une activité non occasionnelle impose un
+registre, y compris au sous-traitant (art. 435) (idem, inférence pour
+l’analyse d’impact). Le Livre V s’applique même quand le traitement a
+lieu hors du Bénin, dès lors qu’il sert une activité exercée sur le
+territoire (art. 381) (idem).</p>
+<p>Le transfert pèse le plus sur l’architecture. L’article 391 ne permet
+un transfert que vers un État que l’APDP juge d’un « niveau de
+protection équivalent » et exige une autorisation <strong>avant tout
+transfert effectif</strong> ; l’article 392 ouvre des exceptions vers un
+pays non équivalent, dont <strong>le consentement exprès de la personne
+au transfert</strong> et la nécessité contractuelle (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). Transférer
+sans satisfaire ces exigences est puni de <strong>6 mois à 10 ans et de
+10 à 50 millions de FCFA</strong> (art. 460-8 et 461) (idem). Aucune
+source consultée n’indique que l’APDP ait reconnu les États-Unis comme
+équivalents : le chemin praticable semble être l’autorisation au cas par
+cas, adossée au consentement exprès au transfert recueilli en même temps
+que le consentement à l’appel (à faire confirmer par un avocat, comme la
+valeur de clauses contractuelles de type européen, dont le Code ne parle
+pas). L’Acte additionnel CEDEAO du 16 février 2010 pose déjà l’exigence
+d’un niveau de protection adéquat et d’une information préalable de
+l’autorité (art. 36), et interdit dans tout l’espace la prospection sans
+consentement préalable (art. 34) (<a
+href="https://ictpolicyafrica.org/en/document/z69cbq7b51">Acte
+additionnel A/SA.1/01/10, ICT Policy Africa</a>) ; le Bénin a en outre
+voté le 23 janvier 2024 la ratification de la Convention de Malabo (<a
+href="https://www.wearetech.africa/fr/fils/actualites/gestion-publique/le-benin-ratifie-la-convention-de-malabo-sur-la-cybersecurite">WeAreTech
+Africa</a>). Pour s’étendre au Togo ou à la Côte d’Ivoire, la règle de
+fond sera donc la même, mais les formalités resteront nationales : un
+pays, un dossier.</p>
+<h3
+id="enregistrer-cloner-une-voix-se-présenter-comme-une-machine">Enregistrer,
+cloner une voix, se présenter comme une machine</h3>
+<p>La voix est une donnée personnelle (art. 1er). L’article 12 interdit
+à toute personne autre que l’émetteur ou le destinataire d’écouter ou de
+stocker une communication sans consentement, et l’article 508 exclut
+l’infraction d’interception lorsqu’une partie a consenti (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). L’agent,
+partie à la conversation, peut donc enregistrer, mais le Livre V exige
+une base légale (en pratique le consentement, art. 389), une information
+préalable complète qui mentionne aussi la décision automatisée et les
+transferts (art. 415), et une durée de conservation déclarée, la
+conserver au-delà étant une infraction (art. 460-13) (idem). Cloner la
+voix d’une personne réelle suppose son consentement explicite, et si
+l’empreinte sert à identifier quelqu’un, le régime biométrique
+s’applique (art. 394 et 407-3) (idem).</p>
+<p>Aucune loi béninoise ni aucun acte de la CEDEAO n’oblige
+expressément, au 4 novembre 2026, à dire qu’on parle à une IA. La
+Stratégie nationale d’IA et de mégadonnées, adoptée le 18 janvier 2023
+pour 2023-2027, n’est pas contraignante (<a
+href="https://cio-mag.com/ia-et-megadonnees-le-benin-se-dote-dune-strategie-nationale/">CIO
+Mag, 19 janvier 2023</a>), et le Parlement de la CEDEAO s’est contenté
+d’appeler à un acte communautaire en juillet 2025 (<a
+href="https://fr.allafrica.com/stories/202507080108.html">AllAfrica, 8
+juillet 2025</a>). Mais un agent qui se fait passer pour un humain peut
+difficilement démontrer une collecte « loyale » et « transparente »
+(art. 383) ou un consentement « informé » recueilli pendant l’appel
+(art. 332 et 390) (inférence). Les fournisseurs, eux, l’imposent déjà :
+ElevenLabs exige d’informer l’utilisateur qu’il parle à une IA juste
+avant l’échange, de recueillir les consentements légaux et d’en
+<strong>conserver une preuve écrite</strong> (<a
+href="https://elevenlabs.io/docs/agents-platform/legal/disclosure-requirement">ElevenLabs,
+exigence de divulgation</a> ; <a
+href="https://elevenlabs.io/agents-terms">ElevenLabs Agents,
+conditions</a>). Une phrase d’ouverture couvre l’ensemble des
+obligations des articles 330, 336 et 415 : « Bonjour, ici l’assistant
+automatique de la maison X ; cet appel peut être enregistré ; dites STOP
+pour ne plus être appelé » (rédaction proposée par la recherche, à faire
+valider). Un agent qui refuserait seul un crédit ou un service selon les
+réponses toucherait l’article 401 et appellerait une reprise par un
+humain (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>).</p>
+<h3 id="larcep-nintervient-que-si-nebula-vend-de-la-téléphonie">L’ARCEP
+n’intervient que si NEBULA vend de la téléphonie</h3>
+<p>Le Code connaît trois régimes : la <strong>licence</strong> pour
+exploiter un réseau ouvert au public (art. 46, réservée aux sociétés de
+droit béninois par l’art. 48), l’<strong>autorisation</strong> pour
+fournir des services de communications électroniques au public (art. 52,
+décision sous un mois prorogeable, art. 54), et l’<strong>entrée libre
+sur simple déclaration</strong> pour tout le reste, avec récépissé le
+jour du dépôt (art. 55 et 57) ; les réseaux internes et privés n’exigent
+rien (<a
+href="https://database.cyberpolicyportal.org/api/files/1663679910216euq2m15qn6f.pdf">texte
+de 2017</a>). Une décision ARCEP de 2015 soumet à déclaration une liste
+de services à valeur ajoutée qui inclut l’« audiotex » et la messagerie
+vocale, sans mentionner les centres d’appels ; prise sous la loi n°
+2014-14, abrogée en 2018, son maintien en vigueur est à vérifier (<a
+href="https://arcep.bj/wp-content/uploads/2019/05/DEC2015-189-portant-fixation-de-la-liste-des-SVA.pdf">ARCEP,
+décision SVA 2015</a>). Trois modèles en découlent, tous à faire
+confirmer par l’ARCEP ou un avocat : l’agence qui appelle pour ses
+clients avec des lignes achetées à un opérateur licencié vend un service
+de marketing, l’opérateur portant licence et numéros ; la plateforme qui
+vend à des tiers la capacité d’appeler (minutes, numéros, agent en
+libre-service) fournit une transmission de sons au public et relève de
+l’autorisation ou au minimum de la déclaration ; le montage bricolé
+(passerelle GSM, faux numéro béninois affiché depuis un trunk étranger)
+tombe sous l’article 336 et potentiellement sous l’article 259 (usage
+d’un bloc de numéros sans autorisation) (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>, inférences
+de la recherche). Pour revendre sans titre télécom, NEBULA a intérêt à
+vendre <strong>des appels réalisés pour le compte du client</strong>,
+jamais des minutes.</p>
+<h3 id="le-client-est-responsable-mais-lagence-nest-pas-à-labri">Le
+client est responsable, mais l’agence n’est pas à l’abri</h3>
+<p>Quand l’agence appelle les contacts du client sur ses instructions,
+elle est <strong>sous-traitante</strong> et le client
+<strong>responsable du traitement</strong> ; quand elle fournit la liste
+et choisit les cibles, elle devient responsable ou coresponsable (art.
+1er, art. 388) (<a
+href="https://database.cyberpolicyportal.org/api/files/1663679910216euq2m15qn6f.pdf">texte
+de 2017</a> ; <a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). Un contrat
+écrit est obligatoire, avec garanties suffisantes, mesures de sécurité
+et action sur seule instruction (art. 386), et la sécurité incombe aussi
+au sous-traitant (art. 426) (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). Le
+responsable paie les amendes de son sous-traitant (art. 461), mais
+l’article 332 vise « la personne à l’origine de la prospection » sans
+distinguer : l’agence qui compose elle-même des numéros sans
+consentement reste pénalement exposée (idem, inférence). Si l’agent
+conclut une vente pendant l’appel, la loi n° 2007-21 sur la protection
+du consommateur impose <strong>un droit de renonciation d’au plus 30
+jours</strong> pour la vente à distance et le démarchage (art. 5) et
+interdit d’exiger un acompte pendant ce délai (art. 6), ce qui heurte
+l’idée d’encaisser un Mobile Money à la fin de l’appel (interprétation à
+faire confirmer, l’OCR du texte étant dégradé) (<a
+href="https://faolex.fao.org/docs/pdf/ben80571.pdf">FAOLEX, loi
+2007-21</a>).</p>
+<h3 id="les-sanctions-visent-aussi-le-dirigeant">Les sanctions visent
+aussi le dirigeant</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Fait</th>
+<th>Article</th>
+<th>Peine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prospection par automate d’appel sans consentement d’une personne
+physique</td>
+<td>245</td>
+<td>6 à 12 mois et 500 000 à 2 000 000 FCFA (ou l’une des deux), plus
+dommages et intérêts</td>
+</tr>
+<tr>
+<td>Prospection non autorisée ou défaut d’information</td>
+<td>337</td>
+<td>30 jours à 6 mois et 50 000 à 500 000 FCFA, doublés pour enfants,
+personnes âgées, malades, vulnérables</td>
+</tr>
+<tr>
+<td>Traitement sans formalités, transfert non autorisé, défaut
+d’information, conservation excessive</td>
+<td>460, 461</td>
+<td>6 mois à 10 ans et 10 à 50 millions de FCFA ; 5 à 50 millions par
+simple négligence ; interdiction de gérer un traitement jusqu’à 2
+ans</td>
+</tr>
+<tr>
+<td>Sanction administrative de l’APDP</td>
+<td>455</td>
+<td>jusqu’à 50 millions de FCFA, puis 100 millions ou 5 % du chiffre
+d’affaires en récidive sous 5 ans ; injonction de cesser</td>
+</tr>
+<tr>
+<td>Dissimulation de trafic international en trafic national (SIM
+box)</td>
+<td>248</td>
+<td>3 à 5 ans et 500 à 800 millions de FCFA</td>
+</tr>
+<tr>
+<td>Réseau ou service sans licence, sans autorisation, sans
+déclaration</td>
+<td>258, 260, 261</td>
+<td>1 à 5 ans et 50 à 100 M ; 6 à 12 mois et 5 à 10 M ; 1 à 6 mois et
+100 000 à 500 000 FCFA</td>
+</tr>
+<tr>
+<td>Usage d’un bloc de numéros sans autorisation</td>
+<td>259</td>
+<td>6 à 24 mois et 10 à 50 millions de FCFA</td>
+</tr>
+</tbody>
+</table>
+<p>Source : <a href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG,
+loi 2017-20, texte promulgué</a>. Aucune sanction publiée de l’APDP pour
+prospection téléphonique ni aucune jurisprudence sur les articles 245 et
+337 n’ont été trouvées, et le texte ne fixe ni horaires d’appel ni liste
+nationale d’opposition (à vérifier). L’ARCEP, elle, sanctionne
+réellement : <strong>3,351 milliards de FCFA contre MTN et 1,506
+milliard contre Moov</strong> en 2025, pour la couverture et la qualité
+de service (<a
+href="https://lanouvelletribune.info/2026/08/telephonie-mobile-services-numeriques-comment-larcep-veille-sur-les-consommateurs-beninois/">La
+Nouvelle Tribune, août 2026</a>).</p>
+<h2
+id="terminer-un-appel-au-bénin-coûte-quarante-fois-plus-que-whatsapp">Terminer
+un appel au Bénin coûte quarante fois plus que WhatsApp</h2>
+<h3 id="le-plancher-de-90-fcfa-fixe-le-prix-de-toute-route-légale">Le
+plancher de 90 FCFA fixe le prix de toute route légale</h3>
+<p>Depuis la décision <strong>DEC2013-024</strong>, la taxe minimum de
+terminaison d’un appel international entrant au Bénin est fixée à
+<strong>0,13721 € HT la minute, soit 90 FCFA HT</strong> (82 FCFA en
+2011) ; aucune décision plus récente n’a été trouvée, son maintien en
+novembre 2026 est donc à vérifier (<a
+href="https://arcep.bj/wp-content/uploads/2019/05/DEC2013-024-fixant-la-taxe-minimum-de-terminaison-dappel.pdf">ARCEP
+Bénin, DEC2013-024</a>). À titre de comparaison, la décision DEC2016-013
+plafonnait l’interconnexion <strong>nationale</strong> de mobile à
+mobile à <strong>10 FCFA HT la minute</strong> (2016, à vérifier pour
+2026) (<a
+href="https://arcep.bj/wp-content/uploads/2019/05/DEC2016-013-portant-fixation-des-plafonds-des-tarifs-interconnexion-voix-et-SMS.pdf">ARCEP
+Bénin, DEC2016-013</a>). Ce rapport de 1 à 9 entre trafic international
+et trafic national explique à la fois le prix des opérateurs
+internationaux et l’appât de la fraude.</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Route vers un mobile béninois</th>
+<th>Prix sortant par minute</th>
+<th>Entrant</th>
+<th>Numéro +229</th>
+<th>Source et date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Twilio, voix classique</td>
+<td>0,6064 $ (mobile), 0,6526 $ (fixe)</td>
+<td>0,1767 $/min sur numéro mobile (lecture de la grille à
+vérifier)</td>
+<td>27 $/mois, mobile seulement, adresse au Bénin</td>
+<td><a href="https://www.twilio.com/en-us/voice/pricing/bj">Twilio,
+tarifs Bénin, « à jour d’août 2026 »</a></td>
+</tr>
+<tr>
+<td>Plivo, API Voice</td>
+<td>0,5887 $ (MTN, Moov, « BELL »), 0,4858 $ (« Libercom »)</td>
+<td>non pris en charge</td>
+<td>n.c.</td>
+<td><a href="https://www.plivo.com/voice/pricing/bj/">Plivo,
+Bénin</a></td>
+</tr>
+<tr>
+<td>Plivo, SIP trunking (Zentrunk)</td>
+<td>0,5857 $ et 0,4828 $</td>
+<td>non pris en charge</td>
+<td>n.c.</td>
+<td><a href="https://www.plivo.com/sip-trunking/pricing/bj/">Plivo, SIP
+Bénin</a></td>
+</tr>
+<tr>
+<td>Autocalls.ai (agent IA)</td>
+<td>0,525 $ + minute d’IA de 0,09 à 0,20 $</td>
+<td>0,129 $/min</td>
+<td>40 $/mois, « sans adresse »</td>
+<td><a href="https://autocalls.ai/country/benin">Autocalls.ai, page
+Bénin, non datée</a></td>
+</tr>
+<tr>
+<td>Quo</td>
+<td>0,68 $</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td><a href="https://www.quo.com/rate/benin">Quo</a>, extrait de
+recherche, à vérifier</td>
+</tr>
+<tr>
+<td>Vonage</td>
+<td>case Bénin vide ; défaut 0,40 €/min hors catégories, prix recalculés
+toutes les 4 h</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td><a
+href="https://www.vonage.com/communications-apis/voice/pricing/">Vonage</a></td>
+</tr>
+<tr>
+<td>Telnyx</td>
+<td>non publié</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td><a href="https://telnyx.com/pricing/call-control/bj">Telnyx</a></td>
+</tr>
+<tr>
+<td>WhatsApp Business Calling via Twilio</td>
+<td>0,0103 $ (Meta) + 0,005 $ (Twilio)</td>
+<td>0 $ (Meta) + 0,005 $ (Twilio)</td>
+<td>numéro WhatsApp d’entreprise</td>
+<td><a
+href="https://www.twilio.com/en-us/whatsapp/twilio-pricing">Twilio,
+WhatsApp, « current as of September 2026 »</a></td>
+</tr>
+</tbody>
+</table>
+<p>Une campagne de 1 000 appels de 2 minutes coûterait donc environ 1
+000 à 1 300 $ de téléphonie seule par la voie classique (calcul de la
+recherche à partir de ces grilles). Les étiquettes de Plivo (« BELL », «
+Libercom ») datent d’avant 2022 et ignorent Celtiis, devenu deuxième
+opérateur en volume : un appel vers un numéro Celtiis tombe probablement
+dans un groupe générique, à tester avant de chiffrer un client
+(inférence). La moindre route qui termine sur un mobile béninois
+nettement sous 0,15 € la minute, sans présentation du numéro garantie,
+doit être lue comme une route grise : les routes de gros « non-CLI » le
+sont souvent (<a
+href="https://voyced.eu/clients/knowledgebase/272/Cli-versus-non-CLi.html">Voyced,
+CLI ou non-CLI</a>), et l’acheter peut valoir « participation » au sens
+de l’article 248 (inférence). Aucune offre publique de trunk SIP n’a été
+trouvée chez MTN Bénin, Moov Africa Bénin ou Celtiis Business, la
+sous-marque entreprises de la SBIN lancée commercialement le 21 octobre
+2022 (<a
+href="https://beninwebtv.bj/celtiis-benin-lancement-des-activites-mobile-et-mobile-money-du-1er-operateur-global/">Bénin
+Web TV, lancement de Celtiis</a>) ; Celtiis a confié la facturation et
+le gros (wholesale) de son trafic voix à Oculeus (<a
+href="https://www.newsite.developingtelecoms.com/ar/tech/operations/revenue-billing/celtiis-streamlines-its-wholesale-business-in-benin-with-oculeus">Developing
+Telecoms, Celtiis et Oculeus</a>). Le prix d’une ligne d’entreprise se
+négocie donc au téléphone, et c’est la pièce qui manque à tous les
+calculs.</p>
+<h3 id="un-numéro-229-se-loue-27-par-mois-avec-une-adresse-béninoise">Un
+numéro +229 se loue 27 $ par mois avec une adresse béninoise</h3>
+<p>Twilio vend des numéros <strong>mobiles</strong> béninois au préfixe
+« +229016 », à des particuliers ou entreprises qui prouvent une
+<strong>adresse au Bénin</strong> par extrait du registre de commerce,
+facture, avis d’imposition, quittance de loyer ou titre foncier ; la
+page ne dit pas si une société étrangère est acceptée (<a
+href="https://www.twilio.com/en-us/guidelines/bj/regulatory">Twilio,
+conditions réglementaires Bénin</a>). La portabilité n’est pas
+disponible (<a
+href="https://www.twilio.com/en-us/guidelines/bj/sms">Twilio, consignes
+SMS Bénin</a>). Point concret pour le taux de décroché : la présentation
+du numéro en <strong>sortant national est « Local (Non-guaranteed)
+»</strong>, et les appels d’urgence ne passent pas (<a
+href="https://www.twilio.com/en-us/guidelines/bj/benin--voice-guidelines---twilio">Twilio,
+consignes voix Bénin</a>) ; un Béninois qui voit un numéro inconnu ou
+masqué décroche moins (inférence). Autocalls.ai annonce des numéros
+béninois « sans adresse » à 40 $ par mois, ce qui contredit la règle
+affichée par Twilio et relève d’une conformité qu’on ne peut pas auditer
+: un numéro coupé du jour au lendemain casse l’agent (<a
+href="https://autocalls.ai/country/benin">Autocalls.ai</a>). Pour
+NEBULA, établie à Cotonou, le numéro Twilio est la voie la plus rapide
+pour être joignable sur un +229, à condition de disposer d’un extrait
+RCCM ou d’une facture à son adresse (à vérifier).</p>
+<p>Le plan de numérotation est passé à 10 chiffres le <strong>30
+novembre 2024 à minuit</strong>, par ajout du préfixe
+<strong>01</strong> devant l’ancien numéro, quel que soit l’opérateur
+(<a
+href="https://www.afrique-sur7.fr/benin-les-numeros-de-telephone-passe-a-10-chiffres-des-le-30-novembre">Afrique
+Sur 7</a>) ; la presse béninoise donne le 1er janvier 2025 comme date à
+partir de laquelle seul le nouveau format est valide (<a
+href="https://lanouvelletribune.info/2024/12/numerotation-a-10-chiffres-au-benin-quelques-desagrements-observes/">La
+Nouvelle Tribune, décembre 2024</a>). Une demande de fusion de cal.com
+étiquetée en janvier 2026 attribue le refus de numéros béninois valides
+à une bibliothèque de validation non mise à jour (<a
+href="https://github.com/calcom/cal.com/pull/26465">GitHub, cal.com PR
+26465</a>). L’agent doit donc normaliser tout numéro en E.164
+<code>+22901XXXXXXXX</code> avant de composer, et l’opérateur se lit
+désormais aux deux chiffres qui suivent le 01 (anciens préfixes MTN 42,
+46, 50 à 59, 61-62, 66-67, 69, 90-91, 96-97 ; Moov 45, 60, 63 à 65, 68,
+94-95, 98-99 ; Celtiis 40-41, 43-44, 47, selon une page non mise à jour)
+(<a
+href="https://en.wikipedia.org/wiki/Telephone_numbers_in_Benin">Wikipedia,
+numéros au Bénin</a>).</p>
+<h3
+id="whatsapp-business-calling-est-ouvert-au-bénin-sur-permission-seulement">WhatsApp
+Business Calling est ouvert au Bénin, sur permission seulement</h3>
+<p>Les appels initiés par l’entreprise sont disponibles partout où
+fonctionne l’API Cloud, <strong>sauf aux États-Unis, au Canada, en
+Égypte, au Vietnam et au Nigeria</strong> : le Bénin n’est pas exclu (<a
+href="https://developers.facebook.com/documentation/business-messaging/whatsapp/calling">Meta,
+Calling API</a>), ni chez Twilio, Infobip ou 360dialog dont les listes
+d’exclusion sont plus longues (<a
+href="https://www.infobip.com/docs/whatsapp/whatsapp-business-calling/business-initiated-calling">Infobip,
+appels initiés par l’entreprise</a>). Trois conditions pèsent : un
+palier de messagerie d’au moins <strong>2 000 destinataires uniques par
+jour</strong> (hors bac à sable) ; la <strong>permission
+explicite</strong> de chaque utilisateur, temporaire (7 jours, soit 168
+heures) ou permanente, que l’entreprise ne contrôle pas et que
+l’utilisateur peut retirer à tout moment ; des demandes limitées à
+<strong>une par 24 heures et deux par 7 jours</strong>, avec révocation
+automatique après <strong>4 appels sortants consécutifs sans
+réponse</strong> (<a
+href="https://developers.facebook.com/documentation/business-messaging/whatsapp/calling/user-call-permissions">Meta,
+permissions d’appel</a>). La permission s’obtient par un message de
+demande (libre dans une fenêtre de conversation ouverte, modèle payant
+hors fenêtre), par le rappel automatique quand l’utilisateur appelle
+lui-même l’entreprise, ou par le profil d’entreprise (idem). Le plafond
+de volume est formulé de deux façons (100 appels connectés par 24 heures
+sur la page des permissions, 100 par jour et par utilisateur depuis le
+19 décembre 2025 dans le journal des modifications) : à vérifier (<a
+href="https://developers.facebook.com/documentation/business-messaging/whatsapp/calling">Meta,
+Calling API</a>).</p>
+<p>Côté prix, <strong>« tous les appels initiés par l’utilisateur sont
+gratuits »</strong> ; les appels sortants sont facturés par impulsions
+de 6 secondes selon l’indicatif de l’appelé, grilles en vigueur depuis
+le 1er avril 2026, et les demandes de permission sont facturées comme
+des messages (<a
+href="https://developers.facebook.com/documentation/business-messaging/whatsapp/calling/pricing">Meta,
+tarifs Calling API</a>). Le Bénin relève de la zone « Rest of Africa »
+(<a href="https://developers.facebook.com/docs/whatsapp/pricing">Meta,
+tarifs WhatsApp</a>), facturée <strong>0,01030 $ la minute en sortant et
+0 $ en entrant</strong> côté Meta selon Twilio, qui ajoute 0,005 $ (<a
+href="https://www.twilio.com/en-us/whatsapp/twilio-pricing">Twilio,
+septembre 2026</a>) ; la grille officielle de Meta n’a pas pu être lue
+directement (à vérifier). Techniquement, un agent s’y branche par Graph
+API et webhooks avec média WebRTC, ou en <strong>SIP sur TLS</strong>,
+codec OPUS, G.711 accepté depuis le 23 mars 2026 (<a
+href="https://developers.facebook.com/documentation/business-messaging/whatsapp/calling">Meta,
+Calling API</a>) ; un outil tiers relie déjà un numéro WhatsApp Business
+à un agent Retell (<a
+href="https://pypi.org/project/wavoice/0.4.0/">PyPI, wavoice 0.4.0</a>).
+Ce canal épouse exactement la loi béninoise : la permission vient de
+l’utilisateur, ce qui en fait l’outil idéal du rappel consenti et jamais
+un outil de prospection à froid (inférence). Pour LE STANDARD, qui passe
+aujourd’hui par Whapi (WhatsApp non officiel), la voix exigera l’API
+Cloud officielle, chez Meta ou chez un partenaire (inférence de la
+recherche).</p>
+<h3 id="des-lignes-sont-en-2g-lappel-classique-reste-indispensable">43 %
+des lignes sont en 2G : l’appel classique reste indispensable</h3>
+<p>Au 31 mars 2026, le Bénin comptait <strong>19 009 981 abonnements
+mobiles actifs</strong> (MTN 7 337 108, Celtiis 6 376 335, Moov 5 296
+538), dont <strong>8 180 794 en 2G</strong>, 3 250 052 en 3G et 7 579
+135 en 4G ; Celtiis a gagné environ 2,2 millions d’abonnés en un an (<a
+href="https://arcep.bj/wp-content/uploads/2026/05/Observatoire-Téléphonie-Mobile-T1_2026.pdf">ARCEP
+Bénin, Observatoire T1 2026</a>). Un agent qui ne parlerait que WhatsApp
+exclurait donc une large part des clients des commerçants, surtout hors
+de Cotonou et Porto-Novo (inférence). Une fois arrivé sur le réseau,
+l’appel aboutit : le 1er septembre 2026, l’ARCEP mesurait un taux de
+réussite de <strong>99,37 % chez MTN, 99,54 % chez Moov et 98,93 % chez
+Celtiis</strong>, ce dernier juste sous le seuil réglementaire de 99 %
+(<a
+href="https://beninwebtv.bj/benin-celtiis-passe-sous-le-seuil-de-99-sur-les-appels-le-1er-septembre/">Bénin
+Web TV, 11 septembre 2026</a>). La couverture 3G et 4G reste le point
+faible, avec 4,8 milliards de FCFA d’amendes infligées à MTN et Moov en
+février 2025 (<a
+href="https://www.osiris.sn/couverture-reseau-mtn-et-moov-africa-ecopent-de-7-6-millions-d-amendes-au-benin.html">OSIRIS,
+5 février 2025</a>) : un appel WhatsApp doit pouvoir basculer vers un
+rappel classique. L’internet mobile avait été coupé environ 24 heures
+lors des législatives du 28 avril 2019 (<a
+href="https://cio-mag.com/legislatives-au-benin-24h-de-restriction-dacces-a-internet-ce-dimanche-28-avril/">CIO
+Mag</a>) ; aucune coupure n’a été signalée pour la présidentielle du 12
+avril 2026 dans les sources trouvées (<a
+href="https://africacenter.org/fr/spotlight/fr-elections-2026/benin/">Africa
+Center</a>).</p>
+<h3
+id="la-passerelle-gsm-est-un-délit-puni-jusquà-800-millions-de-fcfa">La
+passerelle GSM est un délit puni jusqu’à 800 millions de FCFA</h3>
+<p>Une passerelle chargée de cartes SIM MTN, Moov ou Celtiis ferait
+tomber le coût au prix d’un appel local, et c’est précisément ce que le
+législateur vise. L’article 248 punit de <strong>3 à 5 ans
+d’emprisonnement et de 500 à 800 millions de FCFA</strong> quiconque «
+dissimule, ou participe, sous une forme ou une autre, à la dissimulation
+de trafic international entrant ou sortant en trafic national » ; s’y
+ajoutent l’utilisation frauduleuse d’un réseau (art. 246, 1 à 5 ans), la
+transmission sans formalités avec <strong>confiscation et destruction du
+matériel</strong> à la requête de l’ARCEP (art. 249) et l’exploitation
+sans licence (art. 258) (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG, loi
+2017-20</a>). Le décret sur l’identification des utilisateurs publié par
+l’ARCEP en 2020 impose aux opérateurs de journaliser les vérifications
+d’identité et de garder les données 5 ans (<a
+href="https://arcep.bj/wp-content/uploads/2020/07/D%C3%A9cret-conditions-identification-utilisateurs-services-communications-%C3%A9lectroniques.pdf">ARCEP,
+décret identification</a>), et le procureur spécial de la CRIET a menacé
+de poursuites, le 17 juin 2019, la vente de SIM préenregistrées au nom
+d’un tiers (<a
+href="https://www.ecofinagency.com/telecom/1906-40191-benin-government-warns-against-sale-of-pre-registered-sim-cards">Ecofin</a>).
+Au Congo voisin, l’ARPCE a démantelé en juin 2026 un réseau SIM box
+repéré par une anomalie de trafic, pour un préjudice estimé à 136
+millions de FCFA (<a
+href="https://lejournalducongo.com/17/06/2026/larpce-demantele-un-reseau-de-fraude-a-la-simbox-ougandaise-entre-brazzaville-et-pointe-noire/">Le
+Journal du Congo, 17 juin 2026</a>). Un agent hébergé hors du Bénin
+(Anthropic, Twilio, ElevenLabs) qui sortirait par une passerelle à
+Cotonou transformerait du trafic né à l’étranger en appel national :
+c’est l’infraction de l’article 248, et il ne faut pas le faire. Un
+serveur installé au Bénin qui piloterait des SIM au nom de la société
+pour ses propres appels reste une zone grise (articles 249, conditions
+des opérateurs, identification), à faire valider par écrit par l’ARCEP
+avant tout essai (inférence de la recherche).</p>
+<h2
+id="les-plateformes-se-valent-à-trois-centimes-près-pas-leur-caisse">Les
+plateformes se valent à trois centimes près, pas leur caisse</h2>
+<p>Hors téléphonie, la minute d’IA coûte entre 0,05 et 0,15 $ presque
+partout. Le tableau croise ce prix avec ce qui compte depuis Cotonou :
+démarrer sans carte, payer autrement qu’en carte, lancer des campagnes,
+joindre le +229.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th>Plateforme</th>
+<th>IA par minute, hors téléphonie</th>
+<th>Démarrer sans carte</th>
+<th>Paiement relevé</th>
+<th>Campagnes natives</th>
+<th>Accès au +229</th>
+<th>Latence médiane*</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vapi</td>
+<td>0,05 $ d’hébergement + fournisseurs au coût, soit 82 à 129 $ pour 1
+000 min</td>
+<td>crédit de 5 $ (page de prix) ou 10 crédits (doc), contradictoire ;
+carte exigée pour recharger</td>
+<td>carte</td>
+<td>CSV jusqu’à 10 000 contacts, fenêtres d’appel, planification à 7
+jours ; 4, 10 ou 30 appels simultanés</td>
+<td>numéro Twilio importé ou trunk SIP ; liste blanche interne
+signalée</td>
+<td>1 558 ms</td>
+</tr>
+<tr>
+<td>Retell</td>
+<td>0,07 à 0,31 $ (moteur 0,055 $ + LLM + voix)</td>
+<td>crédit de 10 $</td>
+<td>carte (une prépayée refusée, témoignage isolé)</td>
+<td>appels en lot à +0,005 $ par numérotation ; 20 appels simultanés
+inclus</td>
+<td>Bénin hors de la liste gérée ; trunk SIP gratuit côté Retell,
+réglage <code>outbound_allowed_countries</code></td>
+<td>1 740 ms</td>
+</tr>
+<tr>
+<td>Bland</td>
+<td>0,14 $ tout compris (Start), 0,12 $ (Build à 299 $/mois)</td>
+<td>oui, « No card is required » (Start)</td>
+<td>n.c.</td>
+<td>Start 100 appels/jour, Build 2 000/jour</td>
+<td>compte Twilio ou trunk SIP de tout opérateur</td>
+<td>1 520 ms</td>
+</tr>
+<tr>
+<td>ElevenLabs Agents</td>
+<td>0,08 $ au-delà du forfait, LLM en plus au coût</td>
+<td>Free : 15 min</td>
+<td>carte, Apple Pay, Google Pay</td>
+<td>lots CSV/XLS planifiés avec fuseau horaire</td>
+<td>Twilio natif ou trunk SIP</td>
+<td>1 424 ms</td>
+</tr>
+<tr>
+<td>Deepgram Voice Agent</td>
+<td>0,075 $ (Standard), 0,050 $ avec LLM et voix apportés</td>
+<td>200 $ de crédit sans expiration, sans carte</td>
+<td>carte en Growth</td>
+<td>non</td>
+<td>aucune téléphonie, opérateur à ajouter</td>
+<td>n.c.</td>
+</tr>
+<tr>
+<td>Telnyx AI Assistants</td>
+<td>environ 0,06 $ (moteur 0,05 $ + LLM)</td>
+<td>non, carte enregistrée</td>
+<td>carte, <strong>PayPal, Bitcoin, USDC</strong></td>
+<td>n.c.</td>
+<td>opérateur lui-même ; destinations sortantes limitées pour les
+comptes neufs</td>
+<td>1 296 ms</td>
+</tr>
+<tr>
+<td>Ultravox</td>
+<td>0,05 $ après 30 min gratuites</td>
+<td>30 min (carte non précisée)</td>
+<td>n.c.</td>
+<td>planificateur réservé au Pro (100 $/mois) ; 5 appels simultanés à
+l’usage</td>
+<td>téléphonie apportée : Twilio, Telnyx, Plivo, SIP</td>
+<td>n.c.</td>
+</tr>
+<tr>
+<td>OpenAI Realtime</td>
+<td>au jeton : 0,06 à 0,11 $ (gpt-realtime-2.1), 0,02 à 0,05 $
+(mini)</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td>non</td>
+<td>trunk SIP Twilio Elastic</td>
+<td>n.c.</td>
+</tr>
+<tr>
+<td>Cartesia Line</td>
+<td>0,06 $ + numéro 0,014 $ + LLM</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td>n.c.</td>
+</tr>
+<tr>
+<td>Synthflow</td>
+<td>sur devis, contrat annuel</td>
+<td>ni essai ni gratuit</td>
+<td>n.c.</td>
+<td>concurrence sur mesure</td>
+<td>n.c.</td>
+<td>n.c.</td>
+</tr>
+</tbody>
+</table>
+<p>Sources : <a href="https://vapi.ai/pricing">Vapi, tarifs</a>, <a
+href="https://docs.vapi.ai/quickstart/billing">Vapi, FAQ
+facturation</a>, <a
+href="https://docs.vapi.ai/billing/manage-billing-and-credits">Vapi,
+gérer la facturation</a>, <a
+href="https://docs.vapi.ai/outbound-campaigns/overview">Vapi,
+campagnes</a>, <a
+href="https://support.vapi.ai/t/33250796/urgent-spain-esp-blocked-by-vapi-s-internal-country-whitelis">Vapi,
+liste blanche</a> ; <a href="https://www.retellai.com/pricing">Retell,
+tarifs</a>, <a
+href="https://docs.retellai.com/deploy/international-call">Retell,
+appels internationaux</a>, <a
+href="https://community.retellai.com/t/urgent-unable-to-purchase-credits-invoices-are-being-automatically-voided/3623">Retell,
+carte prépayée refusée</a> ; <a
+href="https://www.bland.ai/pricing">Bland, tarifs</a> ; <a
+href="https://elevenlabs.io/pricing/agents">ElevenLabs Agents,
+tarifs</a>, <a
+href="https://elevenlabs.io/docs/agents-platform/phone-numbers/batch-calls">ElevenLabs,
+appels en lot</a> ; <a href="https://deepgram.com/pricing">Deepgram,
+tarifs</a> ; <a
+href="https://telnyx.com/pricing/conversational-ai">Telnyx, tarifs IA
+vocale</a>, <a
+href="https://developers.telnyx.com/docs/account-setup/levels-and-capabilities/paid.md">Telnyx,
+compte payant</a>, <a
+href="https://telnyx.com/release-notes/bitcoin-payments-now-accepted">Telnyx,
+Bitcoin</a>, <a
+href="https://telnyx.com/.well-known/agent-skills/telnyx-x402-payment/SKILL.md">Telnyx,
+USDC x402</a> ; <a href="https://www.ultravox.ai/pricing">Ultravox,
+tarifs</a>, <a
+href="https://docs.ultravox.ai/telephony/overview">Ultravox,
+téléphonie</a> ; <a
+href="https://www.forasoft.com/blog/article/pipecat-vs-livekit-agents">Forasoft,
+14 octobre 2026</a> et <a
+href="https://www.twilio.com/en-us/blog/developers/tutorials/product/openai-realtime-api-elastic-sip-trunking">Twilio,
+OpenAI par SIP</a> ; <a
+href="https://docs.cartesia.ai/pricing">Cartesia, tarifs</a> ; <a
+href="https://synthflow.ai/pricing">Synthflow, tarifs</a>. *Latence :
+médiane du temps avant la première réponse audible, mesurée par
+Openbenchmarks sur de vrais appels passés depuis Plivo jusqu’au 1er août
+2026, page financée par Telnyx qui y arrive premier (<a
+href="https://telnyx.com/resources/voice-ai-agents-compared-latency">Telnyx,
+latence comparée</a>).</p>
+<p>Le premier enseignement est arithmétique. Ajoutée aux 0,61 $ de
+Twilio vers un mobile béninois, la minute revient à <strong>0,69 à 0,75
+$ selon la plateforme, soit environ 410 à 450 FCFA, dont près de 85 % de
+téléphonie</strong> (calcul de la recherche à partir des grilles
+ci-dessus). Le choix de la plateforme d’IA ne change la facture que de
+deux ou trois centimes : seul le transporteur la change d’ordre de
+grandeur. Le deuxième tient à l’accès : <strong>aucune plateforme ne
+liste le Bénin dans ses numéros gérés</strong>, la liste internationale
+de Retell ne contient aucun pays d’Afrique de l’Ouest (<a
+href="https://docs.retellai.com/deploy/international-call">Retell,
+appels internationaux</a>), les numéros gratuits de Vapi ne passent pas
+d’appels internationaux (<a
+href="https://support.vapi.ai/t/18774020/vapi-numbers-not-working-internationnaly">Vapi,
+support</a>), et même en trunk apporté, des listes blanches de pays ont
+bloqué des utilisateurs de Retell (<a
+href="https://community.retellai.com/t/please-enable-outbound-calling-to-turkey-90-uae-971-and-tunisia-216/3536">Retell,
+pays bloqués</a>) et de Vapi. Il faut obtenir par écrit l’ouverture du
++229 avant de bâtir une offre (à vérifier auprès de chaque support).</p>
+<p>Les mesures de latence se contredisent selon qui les finance : Cekura
+(29 septembre 2026) place ElevenLabs à 1,27 s et Vapi à 3,08 s, Tested
+Media (mars 2026, configurations optimisées) met Retell à 680 ms et Vapi
+à 720 ms en médiane (<a
+href="https://telnyx.com/resources/voice-ai-agents-compared-latency">Telnyx,
+latence comparée</a>). Depuis Cotonou, avec des serveurs majoritairement
+aux États-Unis, il faut s’attendre à <strong>1,5 à 2,5 s</strong> de
+silence perçu (inférence non mesurée), d’où l’intérêt des régions
+européennes, que Deepgram cite (concurrence jusqu’à 45 en Europe) (<a
+href="https://deepgram.com/pricing">Deepgram, tarifs</a>).</p>
+<p>Pour le modèle d’agence, la marque blanche en libre-service a presque
+disparu. Synthflow, qui la documentait avec refacturation Stripe (<a
+href="https://docs.synthflow.ai/docs/new-agency-whitelabel-overview">Synthflow,
+marque blanche</a>), ne vend plus qu’en contrat Enterprise annuel depuis
+le 24 juin 2026, à partir de 30 000 $ par an selon un traqueur tiers (à
+vérifier) (<a
+href="https://www.usagepricing.com/blueprint/activity/synthflow-2026-06-24-enterprise-only-shift">UsagePricing</a>).
+Vapi propose des « organisations » séparées (2 à 10, puis 20 $ par
+organisation et par mois) (<a href="https://vapi.ai/pricing">Vapi,
+tarifs</a>) ; Retell n’a ni marque blanche ni sous-comptes selon une
+revue tierce (<a
+href="https://ainora.lt/md/white-label-ai-voice-alternatives/retell.md">AInora</a>)
+; les surcouches d’agence comme VoiceAIWrapper (79 à 499 $ par mois pour
+5 à 20 comptes clients) facturent par Stripe (<a
+href="https://voiceaiwrapper.featurebase.app/en/help/articles/4894336-product-demo-white-label-your-brand-and-bill-your-clients">VoiceAIWrapper</a>),
+dont la disponibilité pour une entité béninoise n’a pas été vérifiée.
+Quatre acteurs sont à écarter : Synthflow (prix), <strong>Air AI,
+poursuivi par la FTC le 25 août 2025</strong> pour allégations
+trompeuses (<a
+href="https://www.dlapiper.com/en-fr/insights/publications/2025/08/ftcs-latest-ai-washing-case">DLA
+Piper</a>), PlayAI, racheté par Meta en juillet 2025 (<a
+href="https://www.verdict.co.uk/meta-playai-acquisition/">Verdict</a>),
+et Hume, dont l’intégration Twilio est entrante seulement (<a
+href="https://dev.hume.ai/docs/empathic-voice-interface-evi/phone-calling">Hume,
+appels</a>) et dont la page de prix a été retirée en octobre 2026 (<a
+href="https://www.usagepricing.com/blueprint/activity/hume-ai-2026-10-15-pricing-page-removed">UsagePricing</a>).
+Le classement pratique pour NEBULA en découle : Deepgram pour un
+prototype gratuit si l’on code l’orchestration, Telnyx si le paiement
+est le verrou (seul acteur réunissant IA, opérateur et paiement non
+carte, français et +229 restant à prouver), Vapi ou Retell comme moteur
+avec un tableau de bord maison facturé en Mobile Money, ElevenLabs si la
+voix prime.</p>
+<h2
+id="dograh-couvre-trois-quarts-du-besoin-la-couche-agence-reste-à-écrire">Dograh
+couvre trois quarts du besoin, la couche agence reste à écrire</h2>
+<h3
+id="deux-cadres-solides-et-un-standard-téléphonique-pour-les-relier">Deux
+cadres solides et un standard téléphonique pour les relier</h3>
+<p>L’architecture de référence est un pipeline en cascade,
+reconnaissance puis modèle de langage puis synthèse, en flux continu,
+avec détection de fin de tour, réduction de bruit et trunk SIP ; la
+cible publique est <strong>800 ms de bouche à oreille</strong> (<a
+href="https://ai.engineer/talks/pipecat-cloud-enterprise-voice-agents-built-on-open-source">AI
+Engineer, Pipecat Cloud</a>), et le cadre n’ajoute que « quelques
+dizaines de millisecondes » : « c’est le choix du modèle qui fixe le
+chiffre » (<a
+href="https://www.forasoft.com/blog/article/pipecat-vs-livekit-agents">Forasoft,
+14 octobre 2026</a>). Les pièges propres au téléphone sont connus :
+passage du μ-law 8 kHz au PCM 16 kHz, interruption de l’agent par
+l’appelant, fin de tour, détection du répondeur, seuils plus patients
+pour les appelants âgés (<a
+href="https://dev.to/dograh/the-open-source-voice-ai-stack-every-developer-should-know-in-2026-4363">DEV,
+Dograh, mars 2026</a>).</p>
+<p><strong>LiveKit Agents</strong> (Apache-2.0, 15 086 étoiles, version
+1.8.10 du 29 octobre 2026) gère trunks SIP entrants et sortants, DTMF,
+transfert à froid et transfert assisté avec résumé, et classe un appel
+sortant en humain, répondeur, serveur vocal ou indéterminé grâce à une
+détection de répondeur intégrée depuis la version 1.5.9 (<a
+href="https://github.com/livekit/agents">GitHub, livekit/agents</a> ; <a
+href="https://docs.livekit.io/telephony/">LiveKit, téléphonie</a> ; <a
+href="https://docs.livekit.io/telephony/features/answering-machine-detection/">LiveKit,
+détection de répondeur</a>). Son détecteur de fin de tour <strong>prend
+en charge le français</strong> parmi 14 langues (<a
+href="https://docs.livekit.io/agents/build/turns/turn-detector/">LiveKit,
+turn detector</a>). Limite décisive pour le Bénin : <strong>SIP REGISTER
+n’est pas pris en charge</strong> (<a
+href="https://docs.livekit.io/telephony/">LiveKit, téléphonie</a>) ; si
+un opérateur local ne fournit qu’un compte SIP à enregistrement, il
+faudra intercaler Asterisk ou FreeSWITCH (inférence). LiveKit Cloud
+propose une offre <strong>Build gratuite, sans carte bancaire</strong> :
+1 000 minutes d’agent par mois, 5 sessions simultanées, 2,50 $ de
+crédits d’inférence, un numéro américain gratuit avec 50 minutes
+entrantes et 1 000 minutes de SIP apporté ; l’offre Ship coûte 50 $ par
+mois, et LiveKit estime un appel téléphonique complet à 0,0479 $ la
+minute (<a href="https://livekit.com/pricing">LiveKit, tarifs</a>). Son
+connecteur WhatsApp n’existe qu’en LiveKit Cloud (<a
+href="https://docs.livekit.io/telephony/connectors/whatsapp.md">LiveKit,
+WhatsApp</a>).</p>
+<p><strong>Pipecat</strong> (BSD-2, 17 056 étoiles, version 1.15.0 du 29
+octobre 2026) assemble 24 moteurs de reconnaissance, 26 modèles de
+langage dont Anthropic et Groq, et 35 voix dont ElevenLabs et Cartesia,
+avec des sérialiseurs téléphoniques Twilio, Telnyx, Plivo, Exotel et
+Vonage et un transport WhatsApp (<a
+href="https://github.com/pipecat-ai/pipecat">GitHub, pipecat</a>). Il
+évolue vite et casse : la 1.15.0 change le mode par défaut des
+stratégies de fin de tour (<a
+href="https://api.github.com/repos/pipecat-ai/pipecat/releases?per_page=3">API
+GitHub, versions de Pipecat</a>), il faudra figer la version. Son modèle
+de fin de tour Smart Turn v3 est libre (BSD-2) et tourne en 12 ms sur un
+processeur moderne (<a
+href="https://www.daily.co/blog/announcing-smart-turn-v3-with-cpu-inference-in-just-12ms/">Daily,
+Smart Turn v3</a>), la présence du français parmi ses 23 langues restant
+à confirmer. Côté standard téléphonique, <strong>Asterisk</strong> est
+très actif (versions candidates 24.0.0-rc4 et suivantes publiées le 29
+octobre 2026) et relie un agent par AudioSocket, ARI ExternalMedia ou
+chan_websocket (<a
+href="https://api.github.com/repos/asterisk/asterisk/releases?per_page=4">API
+GitHub, versions d’Asterisk</a> ; <a
+href="https://dev.to/tahiralmas/audiosocket-or-chanwebsocket-picking-the-media-path-for-an-asterisk-ai-voice-agent-3bge">DEV,
+AudioSocket ou chan_websocket</a>) ; un bogue non confirmé signale
+qu’avec chan_websocket la voix de l’appelant n’atteint pas l’IA alors
+qu’AudioSocket fonctionne (<a
+href="https://github.com/orgs/dograh-hq/discussions/307">Dograh,
+discussion 307</a>). <strong>FreeSWITCH</strong> 1.11.3 (28 août 2026) a
+apporté des correctifs de sécurité critiques (<a
+href="https://api.github.com/repos/signalwire/freeswitch/releases?per_page=2">API
+GitHub, versions de FreeSWITCH</a>). Leurs licences (GPLv2 et MPL 1.1)
+n’ont pas été revérifiées (à vérifier). <strong>Jambonz</strong>,
+plateforme SIP complète dont le code est sous MIT, <strong>exige
+désormais une clé de licence payante en auto-hébergement</strong> (essai
+de 30 jours limité à 10 sessions, prix non publiés) (<a
+href="https://docs.jambonz.org/self-hosting/licensing">jambonz,
+licence</a>).</p>
+<h3 id="quinze-dépôts-notés-contre-lobjectif">Quinze dépôts notés contre
+l’objectif</h3>
+<p>La note de chaque dépôt vient d’une grille de 15 critères pondérés
+sur 100, construite à partir de l’objectif de NEBULA : téléphonie SIP
+entrante et sortante vers un trunk local (12 points), pipeline temps
+réel en français (10), campagnes avec relances, plages horaires et
+concurrence (10), outils agenda et CRM (8), tableau de bord et
+constructeur sans code (8), multi-clients (8), marque blanche et licence
+qui permet la revente (8), enregistrements et analyse (7), facturation à
+la minute (7), détection de répondeur (5), transfert vers un humain (5),
+serveurs sans GPU (4), liste d’opposition (3), appels WhatsApp (3),
+maturité (2). Métadonnées relevées par l’API publique de GitHub le 4
+novembre 2026 ; les notes sont des estimations sur documentation, sans
+déploiement.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Dépôt</th>
+<th>Licence</th>
+<th>Étoiles, dernière version</th>
+<th>Part de l’objectif</th>
+<th>Points forts</th>
+<th>Ce qui manque</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a
+href="https://github.com/dograh-hq/dograh">dograh-hq/dograh</a></td>
+<td>BSD-2</td>
+<td>6 025 ; v1.51.0 du 2026-11-04</td>
+<td><strong>≈ 75 %</strong> (70 à 78)</td>
+<td>constructeur visuel, campagnes, répondeur, transfert, QA, coût par
+appel, Asterisk ARI, WhatsApp entrant</td>
+<td>console d’agence multi-clients non prouvée, facturation déléguée à
+Paygent, liste d’opposition seulement via VICIdial, pas d’agenda natif,
+WhatsApp sortant</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/jambonz/jambonz-feature-server">jambonz</a></td>
+<td>MIT, mais clé payante</td>
+<td>104</td>
+<td>≈ 61 %</td>
+<td>SIP complet, répondeur, transferts avec brief, SIPREC</td>
+<td>licence par session en auto-hébergement, pas de campagnes</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/allgpt-co/QuickVoice">allgpt-co/QuickVoice</a></td>
+<td>MIT</td>
+<td>494 ; <strong>aucune version stable</strong></td>
+<td>≈ 59 % (sur déclaration)</td>
+<td>console multi-organisations, campagnes par lots, portefeuille
+prépayé, sur LiveKit</td>
+<td>facturation Stripe, dépendances AWS Bedrock et Pinecone,
+identifiants par défaut, code jeune</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/rapidaai/voice-ai">rapidaai/voice-ai</a></td>
+<td>GPL-2.0 <strong>modifiée</strong></td>
+<td>752 ; v3.0.0 du 2026-07-08</td>
+<td>≈ 58 %</td>
+<td>organisations, projets isolés, rôles ; trunk SIP générique,
+Asterisk</td>
+<td>marque Rapida obligatoire dans l’interface, pas de campagnes ni de
+répondeur documentés, WhatsApp en texte, 16 Go de RAM</td>
+</tr>
+<tr>
+<td><a href="https://github.com/unpod-ai/unpod">unpod-ai/unpod</a></td>
+<td>MIT</td>
+<td>87 ; aucune version</td>
+<td>≈ 45 à 55 % (sur déclaration)</td>
+<td>voix, WhatsApp, multi-tenant annoncés</td>
+<td>non vérifié, mot de passe administrateur par défaut publié</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/fonoster/fonoster">fonoster/fonoster</a></td>
+<td>MIT</td>
+<td>8 162 ; v0.47.2 du 2026-10-31</td>
+<td>≈ 52 %</td>
+<td>multi-tenant, rôles, agent « Autopilot »</td>
+<td>ruptures annoncées, contributions en pause, pas de campagnes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/livekit/agents">livekit/agents</a> + <a
+href="https://github.com/livekit/sip">livekit/sip</a></td>
+<td>Apache-2.0</td>
+<td>15 086 et 493 ; 1.8.10 du 2026-10-29</td>
+<td>≈ 50 %</td>
+<td>meilleur cœur temps réel, répondeur fin, transfert assisté</td>
+<td>numéroteur, tableau de bord, multi-clients, facturation ; pas de SIP
+REGISTER</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/pipecat-ai/pipecat">pipecat-ai/pipecat</a></td>
+<td>BSD-2</td>
+<td>17 056 ; v1.15.0 du 2026-10-29</td>
+<td>≈ 45 %</td>
+<td>le plus de fournisseurs, répondeur, WhatsApp entrant</td>
+<td>toute la couche produit ; changements cassants</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/rasonyang/ai-native-callcenter">rasonyang/ai-native-callcenter</a></td>
+<td>Apache-2.0</td>
+<td>527 ; v0.7.1 du 2026-10-28</td>
+<td>≈ 35 %</td>
+<td>entrant et files d’humains sur FreeSWITCH</td>
+<td>rien en sortant, parole-à-parole seulement</td>
+</tr>
+<tr>
+<td><a href="https://github.com/bolna-ai/bolna">bolna-ai/bolna</a></td>
+<td>MIT</td>
+<td>816 ; 0.11.26 du 2026-11-04</td>
+<td>≈ 33 %</td>
+<td>orchestration</td>
+<td>tableau de bord et API hébergées fermés, cherche des
+mainteneurs</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/PatterAI/Patter">PatterAI/Patter</a></td>
+<td>MIT</td>
+<td>1 082 ; v0.7.0 du 2026-06-30</td>
+<td>≈ 30 %</td>
+<td>SDK Twilio, Telnyx, Plivo, garde-fous</td>
+<td>ce n’est qu’un SDK</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/VoiceBlender/voiceblender">VoiceBlender/voiceblender</a></td>
+<td>MIT</td>
+<td>137 ; v0.16.0 du 2026-11-03</td>
+<td>≈ 30 %</td>
+<td><strong>seul à faire l’appel WhatsApp sortant</strong>, répondeur
+avec détection du bip</td>
+<td>brique média, pas une plateforme</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/TEN-framework/ten-framework">TEN-framework/ten-framework</a></td>
+<td>Apache-2.0 <strong>+ conditions Agora</strong></td>
+<td>11 219 ; 0.11.75 du 2026-11-03</td>
+<td>≈ 28 %</td>
+<td>orchestration active</td>
+<td>licence interdisant de bâtir pour des tiers</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/vocodedev/vocode-core">vocodedev/vocode-core</a></td>
+<td>MIT</td>
+<td>3 808 ; dernier push 2024-11-15</td>
+<td>≈ 25 %</td>
+<td>historique</td>
+<td>abandonné</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/fixie-ai/ultravox">fixie-ai/ultravox</a>, <a
+href="https://github.com/openai/openai-realtime-agents">openai-realtime-agents</a></td>
+<td>MIT</td>
+<td>4 582 ; 7 017</td>
+<td>≈ 10 à 12 %</td>
+<td>modèle ou démonstrations</td>
+<td>pas des plateformes</td>
+</tr>
+</tbody>
+</table>
+<p>Dograh mérite le détail, puisqu’il domine. Ses campagnes importent un
+CSV, plafonnent la concurrence, respectent des <strong>plages horaires
+par jour avec fuseau horaire</strong>, relancent les contacts « pas de
+réponse, occupé ou répondeur » selon un nombre de tentatives et un
+intervalle réglables, et se mettent en pause d’elles-mêmes si le taux
+d’échec dépasse 50 % sur 120 secondes (<a
+href="https://docs.dograh.com/core-concepts/campaigns.md">Dograh,
+campagnes</a>). Il expose l’usage et le coût de chaque appel par API et
+webhook, délègue la facturation des clients à Paygent, un service tiers
+pensé pour les revendeurs (<a
+href="https://docs.dograh.com/llms.txt">Dograh, documentation</a> ; <a
+href="https://docs.dograh.com/integrations/paygent.md">Dograh,
+Paygent</a>), et ne reçoit que les appels WhatsApp
+<strong>entrants</strong> (<a
+href="https://docs.dograh.com/integrations/telephony/whatsapp.md">Dograh,
+WhatsApp</a>). Son moteur est <strong>un fork de Pipecat</strong> inclus
+en sous-module (<a
+href="https://github.com/dograh-hq/dograh/blob/main/.gitmodules">Dograh,
+.gitmodules</a>). Il demande au minimum <strong>8 Go de RAM et 4
+vCPU</strong> (<a
+href="https://docs.dograh.com/deployment/docker.md">Dograh, Docker</a>),
+donc un serveur dédié et non le PC de Cotonou. Sa télémétrie est active
+par défaut et son démarrage rapide ouvre un tunnel public
+<code>trycloudflare.com</code> avec inscription ouverte, deux réglages à
+couper avant tout usage réel (<a
+href="https://github.com/dograh-hq/dograh">README Dograh</a>). La
+société derrière, Zansat Technologies, vend aussi une offre cloud : un
+modèle « open core » reste possible, rien de fermé n’a été constaté
+(idem).</p>
+<h3 id="trois-licences-piègent-une-agence-qui-revend">Trois licences
+piègent une agence qui revend</h3>
+<p>Les licences permissives (BSD-2 de Dograh et Pipecat, MIT de
+QuickVoice, Fonoster, VoiceBlender et Patter, Apache-2.0 de LiveKit)
+autorisent la revente, l’hébergement en service et la marque blanche, à
+la seule condition de conserver les mentions de copyright, et le fichier
+NOTICE pour Apache (<a href="https://github.com/dograh-hq/dograh">README
+Dograh</a> ; <a
+href="https://github.com/allgpt-co/QuickVoice/blob/main/LICENSE">licence
+QuickVoice</a>) ; rien n’oblige à afficher le nom du projet dans
+l’interface (lecture des textes, pas un avis juridique). Trois
+exceptions comptent. <strong>Rapida</strong> impose de garder visibles
+le nom et le logo Rapida dans toute l’interface, réserve la marque
+blanche à une licence commerciale au prix non public, et prévient que «
+les futurs termes peuvent changer » (<a
+href="https://github.com/rapidaai/voice-ai/blob/main/LICENSE.md">licence
+Rapida</a>). <strong>TEN</strong> interdit de le déployer d’une manière
+qui « permet à un tiers de développer ou déployer des applications », ce
+qui décrit exactement une agence qui loue des agents à plusieurs clients
+(<a
+href="https://github.com/TEN-framework/ten-framework/blob/main/LICENSE">licence
+TEN</a>). <strong>Jambonz</strong> est légal mais payant par session (<a
+href="https://docs.jambonz.org/self-hosting/overview/licensing.md">jambonz,
+licence</a>). Les dépôts sous AGPL-3.0 (par exemple AIReceptionist)
+obligeraient à publier ses modifications dès l’hébergement en service,
+et un dépôt sans licence comme active-call ne donne aucun droit d’usage
+(<a
+href="https://github.com/kirklandsig/AIReceptionist">AIReceptionist</a>
+; <a
+href="https://github.com/miuda-ai/active-call">active-call</a>).</p>
+<h3 id="assembler-trois-dépôts-mène-à-85-ou-90-jamais-à-100">Assembler
+trois dépôts mène à 85 ou 90 %, jamais à 100 %</h3>
+<p>La combinaison la plus courte réunit <strong>Dograh</strong> (la
+plateforme), <strong>Asterisk</strong> par ARI, que Dograh prend déjà en
+charge, comme pont vers un trunk SIP local, et
+<strong>VoiceBlender</strong> pour l’appel WhatsApp sortant que Dograh
+ne fait pas ; Lampline (Apache-2.0), un appelant IA qui note l’appel
+(bruit, accents, interruptions, latence), peut servir de banc d’essai
+avant chaque mise en production (<a
+href="https://github.com/VoiceBlender/voiceblender">README
+VoiceBlender</a> ; <a href="https://github.com/C4rohan/Lampline">README
+Lampline</a>). Elle approche <strong>85 à 90 % après
+développement</strong> (estimation). L’alternative tout permissive,
+LiveKit (serveur, SIP, Agents) et QuickVoice, atteindrait environ 80 %,
+au prix d’un code jeune sans version stable et d’une facturation Stripe
+à remplacer. Aucune combinaison ne livre la couche agence, qu’il faut
+écrire dans tous les cas : un super-administrateur NEBULA qui crée et
+suspend des organisations clientes avec quotas, numéros et agents ; une
+marque blanche par client ; une <strong>facturation à la minute en
+FCFA</strong> avec portefeuille prépayé encaissé en Mobile Money et
+coupure à solde nul ; une <strong>liste d’opposition native et un
+registre des consentements</strong> par client et global ; des
+connecteurs Google Agenda ou Cal.com ; l’exploitation 24 h/24
+(supervision, sauvegardes, suivi de mises à jour quasi quotidiennes). Le
+garde-fou des prix de LE STANDARD, qui relit chaque réponse avant envoi,
+devient plus délicat à l’oral puisque le texte part en synthèse au fil
+de l’eau : il faudra relire phrase par phrase avant la voix (inférence
+de la recherche).</p>
+<h2
+id="aucune-voix-du-marché-na-laccent-de-cotonou-sauf-à-le-cloner">Aucune
+voix du marché n’a l’accent de Cotonou, sauf à le cloner</h2>
+<h3
+id="synthèse-elevenlabs-seul-offre-des-voix-africaines-francophones">Synthèse
+: ElevenLabs seul offre des voix africaines francophones</h3>
+<p>Aucun grand fournisseur n’a de variante « français d’Afrique » :
+Azure ne propose que <code>fr-FR</code>, <code>fr-CA</code>,
+<code>fr-BE</code> et <code>fr-CH</code>, en reconnaissance comme en
+synthèse (<a
+href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=stt">Microsoft
+Learn, langues prises en charge</a>). La seule voie concrète passe par
+<strong>ElevenLabs</strong>, dont la bibliothèque communautaire compte
+des voix françaises étiquetées « African » : <strong>Alimata</strong>
+(femme, « Professional and Welcoming »), <strong>Amadou</strong> et
+<strong>Ali Alioum</strong> (hommes), sans indication du pays d’origine
+de l’accent (<a
+href="https://www.famulor.io/voices/elevenlabs/languages/fr">Famulor,
+voix ElevenLabs en français</a>). Mongazi a déjà produit deux fichiers
+avec Alimata, les 2 et 3 octobre 2026, dont le nom indique un clone
+professionnel et le modèle v4
+(<code>_partage/ElevenLabs_2026-10-02T14_55_16_Alimata - Professional and Welcoming_pvc_sp108_s50_sb75_v4.mp3</code>,
+dossier local du dépôt). Pour la voix d’un tiers, la règle est stricte :
+un clone professionnel ne peut être fait <strong>que de sa propre
+voix</strong>, « même avec son consentement » ; le chemin prévu est
+qu’un comédien béninois crée et vérifie son clone sur son propre compte,
+puis le partage en privé par un lien (<a
+href="https://help.elevenlabs.io/hc/en-us/articles/36842751624209-Can-I-create-a-Professional-Voice-Clone-of-someone-else-s-voice">ElevenLabs,
+clone d’une autre personne</a>). Le plan Free ne donne ni licence
+commerciale ni clonage ; Starter (6 $ par mois) ouvre l’usage commercial
+et le clone instantané, Creator (22 $) le clone professionnel (<a
+href="https://elevenlabs.io/pricing">ElevenLabs, tarifs</a>). Dès qu’un
+client réel entend la voix, Starter est donc le minimum honnête
+(inférence).</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Moteur</th>
+<th>Prix</th>
+<th>Latence</th>
+<th>Français et accent</th>
+<th>Clonage</th>
+<th>Gratuit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ElevenLabs Flash / v4 Turbo</td>
+<td>0,04 $ / 1 000 caractères</td>
+<td>~75 et ~100 ms annoncés, non mesurés</td>
+<td>voix « African » en bibliothèque</td>
+<td>instantané dès Starter, professionnel dès Creator, sa propre voix
+seulement</td>
+<td>10 000 crédits/mois, non commercial</td>
+</tr>
+<tr>
+<td>ElevenLabs v3 / v4 / Multilingual v2</td>
+<td>0,08 $ / 1 000 caractères</td>
+<td>v3 mesuré à 588 ms</td>
+<td>idem</td>
+<td>idem</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>Cartesia Sonic 3.5 / 3.6</td>
+<td>750 à 800 crédits par minute ; Pro à 5 $ pour 100 000 crédits</td>
+<td>mesurés à 250 et 341 ms</td>
+<td>français, aucune voix africaine trouvée</td>
+<td>instantané dès 5 $ (règles de consentement non lues)</td>
+<td>20 000 crédits/mois, environ 25 min</td>
+</tr>
+<tr>
+<td>Deepgram Aura-2 / Flux TTS</td>
+<td>0,030 $ / 1 000 caractères ; Flux 0,045 $ depuis le 13 septembre
+2026</td>
+<td>n.c.</td>
+<td>français depuis décembre 2025</td>
+<td>n.c.</td>
+<td>200 $ de crédit</td>
+</tr>
+<tr>
+<td>Google Chirp 3 HD</td>
+<td>30 $ / million de caractères</td>
+<td>n.c.</td>
+<td>français</td>
+<td>voix sur mesure à 60 $ / million</td>
+<td>1 million de caractères/mois</td>
+</tr>
+<tr>
+<td>Azure (MAI-Voice-2, Dragon HD)</td>
+<td>dès 22 $ / million de caractères</td>
+<td>Dragon HD Omni mesuré à 485 ms</td>
+<td>quatre variantes, aucune africaine</td>
+<td>n.c.</td>
+<td>n.c.</td>
+</tr>
+<tr>
+<td>OpenAI gpt-4o-mini-tts</td>
+<td>12 $ / million de jetons audio</td>
+<td>mesuré à 812 ms</td>
+<td>voix non africaines</td>
+<td>aucun clonage public</td>
+<td>aucun</td>
+</tr>
+<tr>
+<td>Kokoro 82M (ouvert)</td>
+<td>gratuit, à héberger</td>
+<td>n.c.</td>
+<td>une seule voix française, notée B- par son auteur</td>
+<td>non</td>
+<td>Apache 2.0, commercial permis</td>
+</tr>
+<tr>
+<td>XTTS-v2, OmniVoice, MMS-TTS-fon (ouverts)</td>
+<td>gratuits</td>
+<td>n.c.</td>
+<td>OmniVoice 600 langues, MMS en fon</td>
+<td>oui pour XTTS et OmniVoice</td>
+<td><strong>usage non commercial</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Sources : <a href="https://elevenlabs.io/pricing/api">ElevenLabs,
+tarifs API</a> ; <a
+href="https://www.digitalapplied.com/blog/best-text-to-speech-models-september-2026-ranked-priced">Digital
+Applied, 24 septembre 2026</a> (mesures de latence Voice Arena, P50 au
+premier son, anglais américain) ; <a
+href="https://cartesia.ai/pricing">Cartesia, tarifs</a> ; <a
+href="https://deepgram.com/blog/aura-2-now-speaks-dutch-french-german-italian-japanese">Deepgram,
+Aura-2 en français</a> ; <a
+href="https://developers.deepgram.com/docs/tts-models-languages-overview">Deepgram,
+modèles TTS</a> ; <a
+href="https://cloud.google.com/text-to-speech/pricing?hl=fr">Google
+Cloud, tarifs TTS</a> ; <a
+href="https://developers.openai.com/api/docs/pricing">OpenAI, tarifs</a>
+; <a href="https://replicate.com/jaaari/kokoro-82m/readme">Kokoro</a> ;
+<a
+href="https://huggingface.co/Borcherding/XTTS-v2_CarliG/blob/418d3f6406d97c9c4d1ff2767be43db54e380643/LICENSE.txt">licence
+XTTS-v2</a> ; <a
+href="https://huggingface.co/erenyeager-1/OmniVoice">OmniVoice</a> ; <a
+href="https://huggingface.co/facebook/mms-tts-fon/commits/main">MMS-TTS-fon</a>.</p>
+<p>Dans le classement à l’aveugle d’Artificial Analysis lu fin septembre
+2026, Eleven v4 (1 319 Elo), Cartesia Sonic 3.6 (1 279) et Google Gemini
+Flash TTS (1 265) sont à égalité statistique en tête, mais
+<strong>aucune donnée propre au français n’est publiée</strong> (<a
+href="https://www.digitalapplied.com/blog/best-text-to-speech-models-september-2026-ranked-priced">Digital
+Applied</a>). Les avis sur l’accent africain d’ElevenLabs divergent,
+entre un rendu jugé correct (<a
+href="https://kolonell.com/fr/blog/voice-cloning-elevenlabs-production-podcast-2026">Kolonell</a>)
+et un français d’Afrique subsaharienne « souvent décevant » (<a
+href="https://www.lafabriquedunet.fr/logiciels/alternatives/alternative-elevenlabs">La
+Fabrique du Net</a>). Un accent ouest-africain générique n’est pas un
+accent béninois, et une voix parisienne parfaite peut sonner « centre
+d’appels en France » : seul un test d’écoute à Cotonou tranche
+(inférence). Aucun modèle ouvert n’est à la fois commercial et bon en
+français, ce qui les cantonne au prototype.</p>
+<h3
+id="reconnaissance-aucun-banc-dessai-ne-couvre-le-français-béninois-au-téléphone">Reconnaissance
+: aucun banc d’essai ne couvre le français béninois au téléphone</h3>
+<p>La seule donnée publique est le corpus <strong>African Accented
+French</strong>, environ 22 heures enregistrées notamment à Yaoundé (<a
+href="https://catalogue.yorvoice.york.ac.uk/catalogue/EP7ICVY5">YorVoice,
+Université de York</a>), avec des locuteurs du Cameroun, du Tchad, du
+Congo, du Gabon et du Niger, <strong>sans le Bénin</strong> (<a
+href="https://docs.lelapa.ai/transcribe/model/african-french.md">Lelapa
+AI, modèle français africain</a>). Des Whisper affinés y annoncent
+<strong>4,20 % d’erreurs de mots</strong> (large-v3) et 4,56 % (medium),
+chiffres optimistes puisque ce corpus fait partie de leur entraînement
+(<a
+href="https://huggingface.co/bofenghuang/whisper-medium-french">Hugging
+Face, whisper-medium-french</a> ; <a
+href="https://huggingface.co/MEscriva/gilbert-fr-source/commit/4a515d2c06e2977bce8cdaee4c99b38beab78381">carte
+large-v3 french</a>) ; Lelapa annonce 5,87 % en 16 kHz, hors temps réel
+(<a
+href="https://docs.lelapa.ai/transcribe/model/african-french.md">Lelapa
+AI</a>). Une étude présentée à ICASSP 2023 montre que l’affinage sur un
+mélange d’accents réduit <strong>jusqu’à 25 % (en relatif)</strong> les
+erreurs sur l’accent africain sans dégrader le français standard (<a
+href="https://arxiv.org/pdf/2303.07924v1.pdf">arXiv 2303.07924</a>) :
+l’accent se travaille, mais avec des données qu’il faut constituer.</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Moteur</th>
+<th>Français</th>
+<th>Prix</th>
+<th>Latence annoncée</th>
+<th>Gratuit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deepgram Nova-3</td>
+<td><code>fr</code> et <code>fr-CA</code></td>
+<td>0,0077 $/min (source secondaire)</td>
+<td>sous 300 ms (secondaire)</td>
+<td>200 $ de crédit</td>
+</tr>
+<tr>
+<td>Deepgram Flux</td>
+<td>seulement <code>flux-general-multi</code>, dont <code>fr</code></td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>ElevenLabs Scribe v2 Realtime</td>
+<td>oui</td>
+<td>0,39 $/h ; mots-clés imposés +0,08 $/h</td>
+<td>~150 ms</td>
+<td>crédits du plan Free (à vérifier)</td>
+</tr>
+<tr>
+<td>OpenAI transcription temps réel</td>
+<td>oui</td>
+<td>0,017 $/min (gpt-4o-transcribe différé à 0,006 $)</td>
+<td>n.c.</td>
+<td>aucun</td>
+</tr>
+<tr>
+<td>AssemblyAI Universal-Streaming Multilingual</td>
+<td>oui</td>
+<td>0,15 $/h, facturé à la durée de session</td>
+<td>n.c.</td>
+<td>50 $ sans carte (source de 2025, à vérifier)</td>
+</tr>
+<tr>
+<td>Gladia Solaria</td>
+<td>point fort annoncé, audio 8 kHz accentué</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td>n.c.</td>
+</tr>
+<tr>
+<td>Azure Speech</td>
+<td>quatre variantes, aucune africaine</td>
+<td>n.c.</td>
+<td>n.c.</td>
+<td>n.c.</td>
+</tr>
+</tbody>
+</table>
+<p>Sources : <a
+href="https://developers.deepgram.com/docs/models-languages-overview">Deepgram,
+modèles et langues</a> ; <a
+href="https://tech-insider.org/?p=23163">Tech Insider, septembre
+2026</a> ; <a href="https://elevenlabs.io/pricing/api">ElevenLabs,
+tarifs API</a> ; <a
+href="https://developers.openai.com/api/docs/pricing">OpenAI, tarifs</a>
+; <a href="https://www.assemblyai.com/pricing.md">AssemblyAI, tarifs</a>
+; <a
+href="https://dev.to/gladia-io/introducing-solaria-3-the-most-accurate-speech-to-text-model-for-european-languages-1b86">Gladia,
+Solaria-3</a> ; <a
+href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=stt">Microsoft
+Learn</a>.</p>
+<p>Au téléphone à Cotonou (8 kHz, bruit de rue, noms de quartiers et de
+plats, mots fon glissés dans la phrase), il faut s’attendre à bien pire
+que les chiffres publiés, sans pouvoir dire de combien. Deux décisions
+s’imposent : imposer un vocabulaire (Haie-Vive, Agla, Fidjrossè, plats,
+prénoms), qui coûte 0,08 $ de l’heure chez Scribe, et <strong>constituer
+son propre jeu de test</strong> d’appels réels enregistrés avec
+consentement pour comparer Deepgram Nova-3, Scribe v2 Realtime et
+Gladia, avec OpenAI en témoin (inférences de la recherche).</p>
+<h3 id="la-latence-se-gagne-sur-le-modèle-de-voix-et-la-géographie">La
+latence se gagne sur le modèle de voix et la géographie</h3>
+<p>Les mesures indépendantes sont plus lentes que les promesses :
+Cartesia Sonic 3.5 au premier son en 250 ms, ElevenLabs v3 en 588 ms,
+OpenAI gpt-4o-mini-tts en 812 ms, tandis qu’ElevenLabs Flash et v4 Turbo
+n’ont pas été mesurés (<a
+href="https://www.digitalapplied.com/blog/best-text-to-speech-models-september-2026-ranked-priced">Digital
+Applied</a>). Les fichiers Alimata de Mongazi sont en v4 standard, dont
+la latence n’est pas publiée : il faudra rejouer la même voix en Flash
+ou v4 Turbo et vérifier que l’accent survit au modèle rapide
+(inférence). Placer le pont téléphonique en Europe, près des
+fournisseurs, limiterait les traversées longues à une seule, hypothèse à
+mesurer depuis Cotonou. Le parole-à-parole d’OpenAI évite deux sauts
+réseau mais n’offre ni voix africaine ni clonage, et l’agent y entend et
+parle dans le même modèle, ce qui affaiblit le garde-fou des prix ; une
+chaîne reconnaissance, Claude, synthèse le garde intact (inférence).</p>
+<h3 id="langlais-est-acquis-le-fon-reste-non-commercial">L’anglais est
+acquis, le fon reste non commercial</h3>
+<p>Tous les moteurs cités couvrent l’anglais, et les classements
+eux-mêmes sont faits en anglais américain (<a
+href="https://www.digitalapplied.com/blog/best-text-to-speech-models-september-2026-ranked-priced">Digital
+Applied</a>). Une voix ElevenLabs garde son accent d’une langue à
+l’autre (<a
+href="https://elevenlabs.io/fr/blog/voice-library">ElevenLabs,
+bibliothèque de voix</a>) : une voix africaine francophone parlera un
+anglais à accent africain, atout possible face à des Nigérians ou des
+Ghanéens (à tester). En fon, la seule synthèse trouvée,
+<code>facebook/mms-tts-fon</code>, est sous licence non commerciale (<a
+href="https://huggingface.co/facebook/mms-tts-fon/commits/main">Hugging
+Face</a>), et une agence de Dakar n’annonce que <strong>10 à 30 % de
+résolution des appels en langues locales</strong> (<a
+href="https://kolonell.com/fr/blog/agent-vocal-ia-standard-telephonique-pme-abidjan-2026">Kolonell,
+2026</a>) : tout appel en fon doit basculer vers un humain. En juin
+2025, l’IIDiA et l’ASIN ont lancé à Cotonou un laboratoire dont le
+premier projet est une IA vocale en fon (<a
+href="https://iaecho.fr/le-benin-cree-la-premiere-ia-vocale-en-langue-fon/">IA
+Echo</a>), et l’initiative « J’aime ma langue » collecte une base vocale
+nationale en fon, goun, yoruba, mina, dendi et bariba (<a
+href="https://www.iidia.org/benin-launches-i-love-my-language-a-citizen-innovation-for-a-digital-future-that-speaks-our-languages/">IIDiA</a>)
+: deux partenaires naturels à surveiller.</p>
+<h2
+id="le-marché-paie-60-à-150-fcfa-la-minute-moins-quun-appel-twilio">Le
+marché paie 60 à 150 FCFA la minute, moins qu’un appel Twilio</h2>
+<h3 id="le-vrai-concurrent-est-le-salarié-pas-une-ia">Le vrai concurrent
+est le salarié, pas une IA</h3>
+<p>Aucune grille de prix publique n’existe au Bénin. Le seul chiffrage
+récent vient de Kolonell, agence de Dakar, qui publie le 6 octobre 2026
+un devis type pour un standard de PME à Abidjan : <strong>3 à 7 millions
+de FCFA de mise en place, puis 60 à 150 FCFA par minute
+traitée</strong>, plus 40 000 à 80 000 FCFA par mois de ligne SIP et de
+numéro ; un standardiste y coûte 200 000 à 300 000 FCFA par mois hors
+charges, et le cas chiffré aboutit à 5 millions de mise en place puis
+900 000 FCFA par mois (<a
+href="https://kolonell.com/fr/blog/agent-vocal-ia-standard-telephonique-pme-abidjan-2026">Kolonell,
+agent vocal pour PME à Abidjan</a>). Le même vendeur estime, sans mesure
+publiée, que l’agent règle seul <strong>80 à 90 % des prises de
+rendez-vous</strong>, 90 à 95 % des questions d’horaires, d’adresse et
+de tarifs, mais 0 % des urgences, transférées aussitôt (idem). Au Bénin,
+une annonce de téléconseillère expérimentée à Abomey-Calavi et Cotonou
+affiche <strong>150 000 à 200 000 FCFA par mois</strong> (date non
+visible, à vérifier) (<a
+href="https://www.emploibenin.com/offre-emploi-benin/teleconseillere-experimentee-hf-abomey-calavi-406397">EmploiBénin</a>),
+le SMIG est de 52 000 FCFA depuis le 1er janvier 2023 et les cotisations
+patronales représentent environ 15,4 % du brut (<a
+href="https://www.openshores.co/blog/benin/cotonou/salaires-a-cotonou">OpenShores,
+13 avril 2026</a>). Le prix de référence mental d’un acheteur béninois
+est donc un poste à 200 000 à 300 000 FCFA par mois, charges et ligne
+comprises (inférence). Un ancien repère régional situe l’heure de
+téléconseiller externalisé à environ 12 € en Afrique de l’Ouest (article
+non daté, à vérifier) (<a
+href="https://www.osiris.sn/vers-la-mort-des-centres-d-appel-delocalises-en-afrique.html">Osiris</a>),
+soit environ 131 FCFA la minute de poste : <strong>la minute d’IA est
+déjà au prix de la minute humaine</strong>, et son avantage tient à la
+disponibilité 24 h/24 et à l’absence de recrutement, pas au prix
+unitaire (calcul de la recherche).</p>
+<h3 id="une-place-libre-pour-un-agent-vocal-en-français-béninois">Une
+place libre pour un agent vocal en français béninois</h3>
+<p>Le marché humain compte une demi-douzaine de centres à Cotonou et
+Abomey-Calavi, surtout tournés vers l’export francophone. CallConnect
+revendique plus de 200 agents, 440 postes et la prise de rendez-vous, et
+affiche déjà « IA, chatbot et automatisation » dans son menu (<a
+href="https://www.callconnect-benin.com/en/locations/benin-cotonou/">CallConnect
+Bénin</a>) ; AdKontact se dit leader, avec le recouvrement et des
+clients en télécoms, banque, assurance et e-commerce (<a
+href="https://www.adkontact.com/call-center-benin/">AdKontact</a>) ;
+NOGALI, OSSPO et Hello Services (24 h/24) complètent le paysage (<a
+href="https://nogali-call.com/a-propos-de-nous/">NOGALI</a> ; <a
+href="https://www.goafricaonline.com/bj/emploi/job-20990-teleconseiller-experimente-hf-abomey-calavi">Hello
+Services</a>). La demande de téléconseillers est visible : MTN Bénin en
+recrutait un le 19 décembre 2025 (<a
+href="https://www.goafricaonline.com/bj/emploi/job-20994-teleconseiller-cotonou">GoAfrica</a>),
+Eureka Energie cherchait des télévendeurs en avril 2026 (<a
+href="https://www.goafricaonline.com/bj/emploi/job-20696-recrutement-de-televendeurs">GoAfrica</a>),
+Concentrix des conseillers en télévente en novembre 2025 (<a
+href="https://www.goafricaonline.com/bj/emploi/job-13385-conseillers-client-televente">GoAfrica</a>).
+Côté IA, la seule offre « Bénin » visible, celle d’OnDial, contient des
+blocs non remplis (« Insert verified uptime SLA metric ») et ressemble à
+une page générée automatiquement (<a
+href="https://www.ondial.ai/countries/benin">OnDial, Bénin</a>) ;
+Andakia et Indigenius travaillent le yoruba ou le wolof, pas le fon (<a
+href="https://www.andakia.tech/">Andakia</a> ; <a
+href="https://indigenius.ai/">Indigenius</a>). Sur Fiverr, des
+indépendants vendent la construction d’agents sur Vapi ou Retell (<a
+href="https://fr.fiverr.com/arnob_bhowmick/build-custom-ai-voice-calling-agent-using-vapi-or-retell-ai">Fiverr</a>)
+: la brique technique est banalisée, la différence se fera sur la voix,
+la langue, la conformité et la référence locale. La place d’un agent
+vocal en français béninois, avec une vraie référence locale, semble
+libre au 4 novembre 2026 (constat d’absence de résultats, pas preuve
+d’absence). Les centres existants, surtout CallConnect, sont autant des
+revendeurs possibles que des concurrents.</p>
+<h3
+id="léconomie-par-canal-tranche-entre-entrant-whatsapp-et-sortant">L’économie
+par canal tranche entre entrant, WhatsApp et sortant</h3>
+<p>Le tableau rapproche le coût de revient d’une minute, téléphonie plus
+IA hébergée à 0,05 à 0,15 $, du seul prix public régional de 60 à 150
+FCFA (calcul de l’auteur, 1 $ ≈ 600 FCFA, à vérifier).</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Canal</th>
+<th>Téléphonie par minute</th>
+<th>Coût total par minute</th>
+<th>Face à 60-150 FCFA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sortant classique via Twilio vers un mobile</td>
+<td>0,6064 $</td>
+<td>0,66 à 0,76 $, soit <strong>≈ 390 à 455 FCFA</strong></td>
+<td>3 à 7 fois trop cher</td>
+</tr>
+<tr>
+<td>Sortant classique via Plivo (SIP)</td>
+<td>0,5857 $</td>
+<td>0,64 à 0,74 $, soit ≈ 380 à 440 FCFA</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>Entrant sur numéro mobile +229 Twilio</td>
+<td>0,1767 $ (à vérifier) + 27 $/mois</td>
+<td>0,23 à 0,33 $, soit <strong>≈ 135 à 195 FCFA</strong></td>
+<td>au sommet de la fourchette</td>
+</tr>
+<tr>
+<td>WhatsApp sortant sur permission (via Twilio)</td>
+<td>0,0153 $</td>
+<td>0,07 à 0,17 $, soit <strong>≈ 40 à 100 FCFA</strong></td>
+<td>rentable</td>
+</tr>
+<tr>
+<td>WhatsApp entrant (via Twilio)</td>
+<td>0,005 $</td>
+<td>0,06 à 0,16 $, soit ≈ 35 à 95 FCFA</td>
+<td>rentable</td>
+</tr>
+<tr>
+<td>Ligne locale négociée (MTN, Moov, Celtiis)</td>
+<td>inconnue ; plafond d’interconnexion de 10 FCFA HT en 2016</td>
+<td>à négocier</td>
+<td>probablement rentable (hypothèse)</td>
+</tr>
+</tbody>
+</table>
+<p>Sources des tarifs : <a
+href="https://www.twilio.com/en-us/voice/pricing/bj">Twilio, voix
+Bénin</a> ; <a
+href="https://www.plivo.com/sip-trunking/pricing/bj/">Plivo, SIP
+Bénin</a> ; <a
+href="https://www.twilio.com/en-us/whatsapp/twilio-pricing">Twilio,
+WhatsApp</a> ; <a
+href="https://arcep.bj/wp-content/uploads/2019/05/DEC2016-013-portant-fixation-des-plafonds-des-tarifs-interconnexion-voix-et-SMS.pdf">ARCEP,
+DEC2016-013</a> ; prix du marché : <a
+href="https://kolonell.com/fr/blog/agent-vocal-ia-standard-telephonique-pme-abidjan-2026">Kolonell</a>.</p>
+<p>Le constat est net : l’appel sortant classique acheté à un opérateur
+international coûte trois à sept fois le prix que le marché accepte,
+alors que Kolonell bâtit son offre sur des renvois d’appel depuis les
+opérateurs locaux et des lignes SIP locales (<a
+href="https://kolonell.com/fr/blog/agent-vocal-ia-standard-telephonique-pme-abidjan-2026">Kolonell</a>).
+L’entrant tient au sommet de la fourchette, WhatsApp laisse une marge
+confortable, et une orchestration auto-hébergée (0,02 à 0,05 $ la minute
+selon <a href="https://livekit.com/pricing">LiveKit</a> et <a
+href="https://www.forasoft.com/blog/article/pipecat-vs-livekit-agents">Forasoft</a>)
+en dégagerait davantage. Trois modèles de prix se défendent pour un
+acheteur local : mise en place plus minutes, à la manière de Kolonell
+mais avec un ticket d’entrée bien plus bas que 3 à 7 millions, montant
+probablement hors de portée d’un premier achat béninois (hypothèse non
+sourcée) ; forfait mensuel par campagne comparé au salaire d’un poste ;
+prix au résultat, par rendez-vous pris, ancré sur la valeur d’une
+consultation en clinique, estimée à 15 000 à 30 000 FCFA par le même
+vendeur (idem). Le prix au résultat est le plus simple à vendre à un
+commerçant méfiant, mais aucune source ne donne de tarif local par
+rendez-vous.</p>
+<h2
+id="payer-en-mobile-money-une-carte-momo-à-tester-trois-portes-sans-carte">Payer
+en Mobile Money : une carte MoMo à tester, trois portes sans carte</h2>
+<p>Aucune plateforme ne mentionne le Mobile Money. Trois offres
+démarrent pourtant sans carte : <strong>LiveKit Cloud Build</strong> (<a
+href="https://livekit.com/pricing">LiveKit, tarifs</a>),
+<strong>Deepgram</strong>, dont la page officielle annonce 200 $ de
+crédit sans expiration et sans carte en paiement à l’usage, des sources
+secondaires le contestant (<a
+href="https://deepgram.com/pricing">Deepgram, tarifs</a>), et
+<strong>Bland Start</strong> (<a
+href="https://www.bland.ai/pricing">Bland, tarifs</a>). De quoi
+construire et mesurer un prototype complet, mais pas appeler un mobile
+béninois : la terminaison téléphonique est toujours payante. Pour payer
+ensuite, quatre chemins existent, aucun garanti.</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Moyen</th>
+<th>Frais et plafonds connus</th>
+<th>Ce qu’il paie</th>
+<th>Risque</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Carte virtuelle MoMo Mastercard (MTN, avec Orabank)</td>
+<td><strong>non publiés</strong> ; création par <code>*880#</code> ou
+l’application ; identification complète exigée</td>
+<td>tout fournisseur qui accepte Mastercard</td>
+<td>prépayée, refus possibles ; CGU rangées sous « 2025/12 » (à
+vérifier)</td>
+<td><a href="https://www.mtn.bj/carte-virtuelle-momo/">MTN Bénin</a>, <a
+href="https://www.mtn.bj/cgu-carte-virtuelle-momo/">CGU</a>, <a
+href="https://www.orabank.net/fr/filiale/benin/actualites/votre-carte-virtuelle-momo-mastercard-desormais-accessible-sur">Orabank</a></td>
+</tr>
+<tr>
+<td>Visa Prépayée Liberté (Orabank)</td>
+<td>10 000 FCFA (entreprises) ou 7 700 FCFA ; rechargement 1,5 % TTC,
+minimum 1 500 FCFA</td>
+<td>idem</td>
+<td>recharge par Mobile Money non confirmée</td>
+<td><a
+href="https://www.orabank.net/fr/filiale/benin/entreprises-institutionnels/offres/nos-cartes-bancaires/carte-visa-prepayee-liberte">Orabank</a></td>
+</tr>
+<tr>
+<td>Visa prépayée UBA + MoMo Express</td>
+<td>paiements en ligne jusqu’à 2 000 000 FCFA par 24 h ; transfert MoMo
+Express jusqu’à 2 000 000 FCFA</td>
+<td>idem</td>
+<td>pages de plus de deux ans</td>
+<td><a
+href="https://www.ubabenin.com/personal-banking/cards/prepaid-cards/">UBA
+Bénin</a>, <a href="https://www.ubabenin.com/help/faq/">FAQ</a></td>
+</tr>
+<tr>
+<td>PayPal, Bitcoin, USDC</td>
+<td>Telnyx : Bitcoin depuis le 25 septembre 2023, dépôts plafonnés à 1
+000 $, non remboursables ; OpenRouter : USDC, environ 5 % de frais,
+minimum 5 $ (tiers)</td>
+<td>Telnyx (PayPal, Bitcoin, USDC), Twilio (PayPal), OpenRouter pour les
+modèles de langage</td>
+<td>ouverture d’un PayPal béninois capable de payer non vérifiée ;
+règles de change BCEAO à vérifier</td>
+<td><a
+href="https://telnyx.com/release-notes/bitcoin-payments-now-accepted">Telnyx</a>,
+<a
+href="https://support.twilio.com/hc/en-us/articles/223183368-Can-I-Use-PayPal-to-Pay-Twilio">Twilio,
+PayPal</a>, <a href="https://openrouter.ai/support">OpenRouter</a>, <a
+href="https://teamorouter.com/blogs/openrouter-crypto-payment-usdc-usdt">TeamoRouter</a></td>
+</tr>
+</tbody>
+</table>
+<p>La carte MoMo est la première à tester : native, rechargeable depuis
+le portefeuille qui porte environ 55 % des transactions de Mobile Money
+au Bénin (Moov 35 %, Celtiis Cash 10 %, pour 9 millions de comptes
+actifs, selon une source commerciale de juin 2026) (<a
+href="https://kolonell.com/en/blog/online-payment-benin-mtn-momo-moov-money-2026">Kolonell,
+paiement au Bénin</a>), et couverte par l’accord MTN-Mastercard de
+février 2024 sur 13 marchés dont le Bénin (<a
+href="https://www.connectingafrica.com/mobile-money/mastercard-mtn-group-launch-virtual-momo-card-for-13-african-markets">Connecting
+Africa</a>). Mais elle est prépayée, et le refus des prépayées est
+documenté : Twilio SendGrid les refuse explicitement (<a
+href="https://support.twilio.com/hc/en-us/articles/47687323803675-Can-you-pay-yearly-up-front-on-SendGrid">Twilio
+SendGrid</a>), le support de Retell en a refusé une selon un témoignage
+isolé (<a
+href="https://community.retellai.com/t/urgent-unable-to-purchase-credits-invoices-are-being-automatically-voided/3623">Retell,
+forum</a>), et OpenAI prévient que les paiements échouent quand une
+partie se trouve hors des régions prises en charge (<a
+href="https://help.openai.com/fr-fr/articles/7242622-pourquoi-le-renouvellement-de-mon-abonnement-chatgpt-plus-ou-chatgpt-pro-a-t-il-%C3%A9chou%C3%A9-">OpenAI,
+aide</a>). Twilio, en paiement à l’usage, exige une carte de crédit avec
+recharge automatique ou PayPal (<a
+href="https://support.twilio.com/hc/en-us/articles/49507358452635-About-Payment-Types">Twilio,
+moyens de paiement</a>). L’expérience de Chipper Cash ajoute un risque
+de révocation : la carte est retirée après des refus répétés pour solde
+insuffisant, parce que chaque refus est facturé à l’émetteur (<a
+href="https://support.chippercash.com/en/articles/7322870-why-was-my-chipper-card-deactivated-revoked-and-what-do-i-do-next">Chipper,
+support</a>), et plusieurs fintechs ont coupé leurs cartes virtuelles
+(<a
+href="https://monierate.com/blog/payday-wirepay-eversend-and-others-disabled-their-virtual-card">Monierate</a>).
+La règle pratique : tester chaque fournisseur avec 5 $ avant d’en
+dépendre, garder un solde suffisant pour les débits automatiques, et
+considérer le soupçon de refus chez Twilio ou OpenAI comme une
+inférence, pas un fait établi pour la carte MoMo. Wave et Djamo ont des
+cartes en Côte d’Ivoire et au Sénégal (Wave Sénégal depuis le 23 janvier
+2026), aucune n’est confirmée au Bénin (<a
+href="https://www.financialafrik.com/2026/01/24/senegal-wave-lance-une-carte-virtuelle-avec-visa-et-ecobank/">Financial
+Afrik</a> ; <a
+href="https://www.djamo.com/en-ci/visa-card">Djamo</a>).</p>
+<p>Pour encaisser les clients, en revanche, le terrain est connu :
+NEBULA encaisse déjà en Mobile Money par SasPay et FedaPay sur PISTE et
+MA LETTRE À… (CLAUDE.md du dépôt), et les agrégateurs béninois facturent
+environ 1,5 à 2,5 % (CinetPay 1,8 à 2,2 %, PayDunya 1,5 à 2 %, Hub2 2 à
+2,5 %, selon une source commerciale de 2026) (<a
+href="https://kolonell.com/en/blog/online-payment-benin-mtn-momo-moov-money-2026">Kolonell</a>).
+C’est ce qu’aucune surcouche d’agence fondée sur Stripe ne sait faire,
+et la vraie raison d’écrire sa propre facturation.</p>
+<h2
+id="démarrer-par-lentrant-et-le-rappel-consenti-puis-négocier-une-ligne-locale">Démarrer
+par l’entrant et le rappel consenti, puis négocier une ligne locale</h2>
+<h3 id="larchitecture-cible">L’architecture cible</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Couche</th>
+<th>Au démarrage, sans carte</th>
+<th>Cible de production</th>
+<th>Pourquoi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Orchestration</td>
+<td>LiveKit Agents sur LiveKit Cloud Build (1 000 min, 5 sessions)</td>
+<td>Dograh auto-hébergé sur un serveur de 8 Go et 4 vCPU, ou LiveKit +
+couche maison</td>
+<td>campagnes, répondeur, relances et QA prêts ; code possédé sous
+licence permissive</td>
+</tr>
+<tr>
+<td>Reconnaissance</td>
+<td>Deepgram Nova-3 <code>fr</code> sur les 200 $</td>
+<td>le gagnant du banc d’essai de Cotonou, avec vocabulaire imposé</td>
+<td>aucun benchmark béninois n’existe</td>
+</tr>
+<tr>
+<td>Modèle de langage</td>
+<td>Groq llama-3.3-70b, déjà dans la pile NEBULA</td>
+<td>Claude (Haiku pour la vitesse, Sonnet pour la vente), garde-fou des
+prix relu phrase par phrase</td>
+<td>règle de LE STANDARD</td>
+</tr>
+<tr>
+<td>Voix</td>
+<td>Deepgram Aura-2 ou Flux <code>fr</code></td>
+<td>ElevenLabs Flash ou v4 Turbo, voix Alimata ou clone d’un comédien
+béninois sur son propre compte</td>
+<td>crédibilité, latence</td>
+</tr>
+<tr>
+<td>Entrant</td>
+<td>navigateur ou numéro américain gratuit de LiveKit</td>
+<td>numéro mobile +229 Twilio (27 $/mois), puis ligne locale</td>
+<td>être joignable au Bénin</td>
+</tr>
+<tr>
+<td>WhatsApp</td>
+<td>non branché</td>
+<td>API Cloud officielle (Meta ou partenaire) : appels entrants gratuits
+côté Meta, rappels sur permission</td>
+<td>0,0103 $ la minute, consentement natif</td>
+</tr>
+<tr>
+<td>Sortant classique</td>
+<td>aucun</td>
+<td>trunk local MTN, Moov ou Celtiis via Asterisk ; Twilio ou Plivo
+seulement pour de petits volumes</td>
+<td>coût</td>
+</tr>
+<tr>
+<td>Conformité</td>
+<td>registre des consentements et liste d’opposition dès le
+prototype</td>
+<td>idem + dossier APDP, contrats de sous-traitance, phrase
+d’ouverture</td>
+<td>art. 332 à 336, 386, 391, 405</td>
+</tr>
+<tr>
+<td>Facturation</td>
+<td>sans objet</td>
+<td>portefeuille prépayé en FCFA encaissé par SasPay ou FedaPay, coupure
+à solde nul</td>
+<td>Mobile Money</td>
+</tr>
+</tbody>
+</table>
+<p>Sources des briques : <a href="https://livekit.com/pricing">LiveKit,
+tarifs</a> ; <a
+href="https://docs.dograh.com/deployment/docker.md">Dograh, Docker</a> ;
+<a href="https://deepgram.com/pricing">Deepgram, tarifs</a> ; <a
+href="https://www.retellai.com/pricing">Retell, tarifs</a> (coût d’un
+modèle par minute : Claude 4.5 Haiku 0,025 $, Claude 5 Sonnet 0,064 $,
+Gemini 3.0 Flash 0,016 $) ; <a
+href="https://elevenlabs.io/pricing/api">ElevenLabs, tarifs API</a> ; <a
+href="https://www.twilio.com/en-us/voice/pricing/bj">Twilio, voix
+Bénin</a> ; <a
+href="https://developers.facebook.com/documentation/business-messaging/whatsapp/calling/pricing">Meta,
+tarifs Calling API</a>. L’agent, le serveur média et la terminaison SIP
+gagneraient à vivre dans la même région, probablement l’Europe,
+hypothèse à mesurer et non fait sourcé. Le plus petit serveur Hetzner
+coûte 5,99 € par mois (<a href="https://www.hetzner.com/cloud/">Hetzner
+Cloud</a>), mais la taille exigée par Dograh coûte davantage et le moyen
+de paiement de l’hébergeur reste à vérifier.</p>
+<h3 id="la-feuille-de-route-en-quatre-phases">La feuille de route en
+quatre phases</h3>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Quand</th>
+<th>Ce qui est livré</th>
+<th>Coût indicatif</th>
+<th>Condition pour passer à la suite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 · Le dossier et le banc d’essai</td>
+<td>semaines 1 à 4</td>
+<td>consultation d’un avocat béninois ; déclaration APDP et demande
+d’autorisation de transfert ; prototype en navigateur sur LiveKit ; jeu
+de 50 appels réels de Cotonou enregistrés avec consentement ; test de la
+carte MoMo avec 5 $ chez Twilio, ElevenLabs et OpenRouter ; demande
+écrite d’ouverture du +229 aux supports</td>
+<td>proche de 0 $ en plateforme ; honoraires à vérifier</td>
+<td>latence mesurée depuis Cotonou ; taux d’erreur mesuré par moteur ;
+un moyen de paiement accepté par un opérateur téléphonique</td>
+</tr>
+<tr>
+<td>1 · Le standard qui décroche</td>
+<td>mois 2 et 3</td>
+<td>numéro +229 ; agent entrant 24 h/24 pour un ou deux clients pilotes
+qui prennent des rendez-vous ; transfert vers un humain ; journal des
+appels</td>
+<td>27 $/mois + 0,23 à 0,33 $ la minute, soit environ 85 000 à 115 000
+FCFA pour 500 minutes (calcul de l’auteur)</td>
+<td>part des rendez-vous pris sans humain ; réponse de l’APDP ou silence
+de 60 jours (+30)</td>
+</tr>
+<tr>
+<td>2 · Le rappel consenti</td>
+<td>mois 3 à 6</td>
+<td>formulaires et messages de consentement horodatés ; permissions
+WhatsApp ; campagnes Dograh vers les clients existants des maisons (art.
+333) et les personnes inscrites ; liste d’opposition ; facturation en
+FCFA</td>
+<td>serveur + minutes, surtout WhatsApp</td>
+<td>autorisation de transfert acquise ; contrat type responsable et
+sous-traitant signé</td>
+</tr>
+<tr>
+<td>3 · La ligne locale et la revente</td>
+<td>mois 6 à 12</td>
+<td>trunk négocié avec MTN, Moov ou Celtiis Business ; qualification
+ARCEP du modèle ; offre aux banques, microfinances, cliniques,
+e-commerce, énergie, et aux centres d’appels comme revendeurs</td>
+<td>à négocier</td>
+<td>marge positive par minute sur chaque canal</td>
+</tr>
+</tbody>
+</table>
+<p>La phase 0 respecte la règle maison des outils gratuits sans carte et
+ne fait courir aucun risque légal : aucune personne n’est appelée sans
+l’avoir accepté. La phase 1 commence par l’entrant parce que c’est le
+seul usage qui ne pose aucune question de consentement à la prospection
+et que son économie tient (environ 135 à 195 FCFA la minute contre une
+fourchette de marché de 60 à 150 FCFA, à corriger par une orchestration
+auto-hébergée) ; l’institut de beauté et la clinique de la clientèle
+actuelle de NEBULA (Grain d’Esthétique, Luxury Skin Clinic, selon le
+CLAUDE.md du dépôt) sont des pilotes naturels, sous réserve de leur
+accord. L’appel entrant se prête au 24 h/24 sans réserve ; pour le
+sortant, même consenti, le Code ne fixe aucun horaire (à vérifier), mais
+le guide d’ElevenLabs pour les États-Unis retient 8 h à 21 h heure
+locale (<a
+href="https://elevenlabs.io/docs/agents-platform/legal/tcpa">ElevenLabs,
+TCPA</a>), une fenêtre de bon sens à s’imposer. La phase 2 n’appelle que
+des personnes qui l’ont demandé ou des clients existants des maisons, et
+chaque consentement porte son horodatage, son canal, le texte présenté,
+la finalité et la maison bénéficiaire, puisque la preuve pèse sur celui
+qui appelle (art. 332 al. 4 et 390) (<a
+href="https://sgg.gouv.bj/doc/loi-2017-20/download">SGG</a>). La phase 3
+transforme le service en produit revendu, en restant sur le modèle «
+appels réalisés pour le compte du client » pour ne pas tomber dans la
+fourniture de téléphonie au public. Critère d’arrêt proposé : si aucune
+ligne locale n’est obtenue à la fin de la phase 3, renoncer au sortant
+classique et garder l’entrant et WhatsApp.</p>
+<h3 id="ce-qui-doit-être-tranché-avant-le-premier-appel-réel">Ce qui
+doit être tranché avant le premier appel réel</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Question</th>
+<th>Qui tranche</th>
+<th>Pourquoi cela bloque</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L’article 332 vise-t-il aussi les appels humains ?</td>
+<td>avocat</td>
+<td>conditionne tout premier contact destiné à recueillir un
+consentement</td>
+</tr>
+<tr>
+<td>Que sont des « coordonnées impersonnelles » ? Un commerçant en nom
+propre en relève-t-il ?</td>
+<td>avocat, APDP</td>
+<td>délimite le seul B2B possible sans consentement</td>
+</tr>
+<tr>
+<td>Comment transférer légalement la voix vers des fournisseurs
+américains (autorisation, consentement exprès, clauses) ?</td>
+<td>APDP, avocat</td>
+<td>concerne chaque maillon cloud de la chaîne</td>
+</tr>
+<tr>
+<td>Le modèle relève-t-il d’une autorisation (art. 52), d’une
+déclaration (art. 55) ou d’aucun titre ?</td>
+<td>ARCEP</td>
+<td>sanctions des articles 258 à 261</td>
+</tr>
+<tr>
+<td>Une révision du Code du numérique a-t-elle été adoptée en 2025 ou
+2026 ?</td>
+<td>avocat, SGG</td>
+<td>articles 245, 332 à 337 et Livre V</td>
+</tr>
+<tr>
+<td>Prix, conditions et tolérance aux appels automatisés d’un trunk MTN,
+Moov ou Celtiis</td>
+<td>opérateurs</td>
+<td>seule voie rentable vers les mobiles</td>
+</tr>
+<tr>
+<td>Le +229 est-il ouvert en sortant chez Vapi, Retell, Telnyx ?</td>
+<td>supports</td>
+<td>listes blanches de pays</td>
+</tr>
+<tr>
+<td>La carte MoMo est-elle acceptée par Twilio, ElevenLabs, OpenRouter
+?</td>
+<td>test à 5 $</td>
+<td>toute dépense au-delà des offres gratuites</td>
+</tr>
+<tr>
+<td>Peut-on encaisser pendant l’appel malgré l’article 6 de la loi
+2007-21 ?</td>
+<td>avocat</td>
+<td>vente pendant l’appel</td>
+</tr>
+<tr>
+<td>Comment atteindre le palier WhatsApp de 2 000 destinataires par
+jour, et un numéro mutualisé NEBULA est-il admis par Meta ?</td>
+<td>Meta ou partenaire</td>
+<td>rappels WhatsApp</td>
+</tr>
+</tbody>
+</table>
+<h2 id="conclusion">Conclusion</h2>
+<p>La loi béninoise ne freine pas ce projet, elle en fixe la nature : en
+faisant du consentement préalable et prouvé la condition de tout appel
+automatisé, elle transforme le registre des consentements en actif
+principal. Ce que NEBULA peut revendre durablement n’est pas une
+capacité de composer des numéros, que des indépendants assemblent sur
+Fiverr, mais des audiences qui ont dit oui, une voix que les Béninois
+reconnaissent comme la leur et un jeu de test d’appels de Cotonou que
+personne ne possède, puisque le seul corpus de français africain
+disponible ne contient pas le Bénin. WhatsApp Business Calling, dont la
+permission est exactement le consentement que la loi exige, et l’appel
+entrant, qui n’en demande aucun, sont les deux canaux où loi et économie
+convergent.</p>
+<p>L’autre renversement est économique : la question « quelle plateforme
+d’IA choisir » pèse deux ou trois centimes par minute, quand le choix du
+transporteur en pèse soixante. Tant qu’un opérateur béninois n’aura pas
+vendu une ligne d’entreprise à NEBULA, l’appel sortant classique coûtera
+plusieurs fois ce que le marché accepte de payer, et la tentation de la
+passerelle GSM restera une infraction punie jusqu’à 800 millions de
+FCFA. La priorité commerciale des prochains mois n’est donc pas
+technique : c’est un rendez-vous avec les services entreprises de MTN,
+Moov et Celtiis, et un dossier déposé à l’APDP, avant même le premier
+agent en production.</p>
+</body>
+</html>
