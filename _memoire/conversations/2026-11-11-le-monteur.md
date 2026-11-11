@@ -39,9 +39,27 @@ n'a pas pu être créé automatiquement (refusé par le garde-fou de Claude Code
   Corrigé : chaque segment a un nombre exact d'images et d'échantillons (`aresample=async=1:first_pts=0`).
 - Le relecteur attrapera ce que le banc ne mesure pas : une image générée de tasse à deux anses en est l'exemple.
 
+## Le premier film sans rush (même jour, relancé à la demande de Mongazi)
+
+La pub TikTok de 30 s pour MA LETTRE À… est allée au bout : banc **16/16**, relecteur **6,0/10** au premier tour, avec
+des défauts justes (adresse hors cadre, sous-titres sur un visage, fausse interface, autre femme dans la boucle, prix
+trop petit). Au second tour, **le crédit de l'API Anthropic était épuisé**. Corrigé dans le moteur, sans appel payant :
+
+- **Le script fait foi** : Deepgram avait entendu 15 mots faux dans la voix de synthèse (« un cachet d'or » pour
+  « dort », « Salut. » pour « Puis il s'allume… »). Les sous-titres reprennent le texte du script, posé à l'heure
+  qu'a entendue Deepgram.
+- **Un texte se mesure** avec sa police avant d'être posé (libass : taille 96 = corps de 63 px, mesuré au pixel).
+  L'adresse se coupe « malettre. » / « nebula-agency.online », jamais après un tiret ; une adresse dictée s'écrit
+  comme une adresse ; un sous-titre qui répète le texte affiché est retiré ; le prix est plus grand.
+- **Les sous-titres évitent les visages** détectés, et gardent la même place pendant tout un plan.
+- **La même personne revient avec la même image** (`reprend_scene`) : un générateur ne la refait jamais à l'identique.
+- **Un appel payé ne se perd plus** : la relecture est gardée hors du dossier de rendu, et une panne d'API livre
+  quand même la vidéo et son rapport.
+
 ## Ce qui attend Mongazi
 
-1. Créer le dépôt GitHub **privé** `nebula-montage`.
-2. Choisir le nom du produit.
-3. Une clé **Pexels** gratuite (vraies vidéos libres de droits au lieu d'images générées).
-4. Un vrai rush et une demande pour un essai.
+1. **Recharger le crédit de l'API Anthropic** (le relecteur et le scénariste en dépendent).
+2. Créer le dépôt GitHub **privé** `nebula-montage`.
+3. Choisir le nom du produit.
+4. Une clé **Pexels** gratuite (vraies vidéos libres de droits au lieu d'images générées).
+5. Un vrai rush et une demande pour un essai.
