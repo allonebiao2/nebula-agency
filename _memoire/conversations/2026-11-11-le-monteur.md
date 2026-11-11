@@ -59,7 +59,7 @@ trop petit). Au second tour, **le crédit de l'API Anthropic était épuisé**. 
 ## Ce qui attend Mongazi
 
 1. **Recharger le crédit de l'API Anthropic** (le relecteur et le scénariste en dépendent).
-2. Créer le dépôt GitHub **privé** `nebula-montage`.
+2. ✅ Dépôt GitHub **privé** `nebula-montage` créé par Mongazi, code poussé.
 3. Choisir le nom du produit.
 4. Une clé **Pexels** gratuite (vraies vidéos libres de droits au lieu d'images générées).
 5. Un vrai rush et une demande pour un essai.
