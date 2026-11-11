@@ -150,7 +150,13 @@ gratuite ; le secours est passé seul sur `gemini-3.8-flash`.
 3. Répondre au relecteur : « 1 000 F » en francs CFA ? que couvrent les « 7 jours » ? de vraies captures de MA LETTRE À… ?
    le logo et la typographie officiels ?
 4. En option, sa voix sur le texte de la pub (environ 30 s).
-5. Dire oui ou non à l'installation de `gh` (rendus sur GitHub Actions).
+5. ✅ `gh` accepté (« gh tu vas l'installer après ») : à installer à la reprise.
 6. Plus tard : une clé **Pexels**, le nom du produit, un vrai rush de client.
 
 La suite exacte : `C:/Users/USER/nebula-montage/REPRENDRE-ICI.md`.
+
+## La pause (2026-11-12, 0 h 40)
+
+⏸️ **EN PAUSE depuis le 2026-11-12, 0 h 40, à la demande de Mongazi** (« mets tout en pause, on reprendra la prochaine fois »). La relecture par Gemini avait été lancée puis arrêtée pendant la fabrication : rien n'a été jugé, la vidéo livrée la veille est intacte. **Décidé : installer `gh`** (Mongazi : « gh tu vas l'installer après »).
+
+**À la reprise, dans cet ordre** : 1. relancer la relecture par Gemini (`MONTEUR_RAPIDE=1 MONTEUR_MOTEUR=gemini python monter.py essais/malettre-pub`, Chrome et VS Code fermés) ; 2. installer `gh` (`winget install --id GitHub.cli -e`), Mongazi tape `! gh auth login`, ranger les clés en secrets du dépôt (`gh secret set`, sans affichage), écrire `.github/workflows/rendu.yml` ; 3. la phase 1.

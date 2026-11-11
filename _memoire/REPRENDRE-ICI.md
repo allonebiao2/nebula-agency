@@ -25,12 +25,14 @@
   3. le concept et le story-board, avec 3 validations de Mongazi en premium ;
   4. l'appli.
   Cible réaliste : 500 à 1 500 € en automatique ; 10 000 € seulement avec un humain qui dirige.
+- ⏸️ **EN PAUSE depuis le 2026-11-12, 0 h 40, à la demande de Mongazi** (« mets tout en pause, on reprendra la prochaine fois »). La relecture par Gemini avait été lancée puis arrêtée pendant la fabrication : rien n'a été jugé, la vidéo livrée la veille est intacte. **Décidé : installer `gh`** (Mongazi : « gh tu vas l'installer après »).
 - **Par quoi commencer** :
   1. ✅ Clé Gemini rangée (`secrets/gemini.env`, nouveau format `AQ.…`) et premier appel réussi sur
      `gemini-3.8-flash`. Prochain essai : la relecture de la pub par Gemini,
      `MONTEUR_RAPIDE=1 MONTEUR_MOTEUR=gemini python monter.py essais/malettre-pub` (rendu + relecture, environ 15 min,
      PC libéré avant).
-  2. Proposer d'installer `gh` pour les rendus sur GitHub Actions (pas encore accepté).
+  2. Installer `gh` (accepté par Mongazi) pour les rendus sur GitHub Actions : `winget install --id GitHub.cli -e`,
+     puis Mongazi tape `! gh auth login`, puis `gh secret set` sans afficher les clés.
   3. Lancer la phase 1.
 - ⏳ **Crédit de l'API Anthropic épuisé** depuis le 2026-11-11 : à recharger. En attendant, Gemini prend le relais seul.
 

@@ -460,7 +460,7 @@
   3. concept et story-board, avec 3 validations humaines en premium ;
   4. l'appli.
   Le calcul GPU pour les clients sera payant.
-- ⏳ crédit de l'API Anthropic épuisé (Gemini prend le relais : clé rangée, éprouvée sur `gemini-3.8-flash`) · `gh` pour les rendus sur GitHub Actions (non accepté).
+- ⏳ crédit de l'API Anthropic épuisé (Gemini prend le relais : clé rangée, éprouvée sur `gemini-3.8-flash`) · `gh` accepté, à installer à la reprise · ⏸️ **en pause depuis le 2026-11-12** (Mongazi).
 
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
 - 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé
