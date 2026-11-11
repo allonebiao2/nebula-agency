@@ -163,6 +163,31 @@ Relevés le 2026-11-11 (étoiles · licence · dernière activité).
 ⚠️ Les **poids** d'un modèle ont parfois une licence différente du code : LTX-Video est en Apache pour le code,
 mais ses modèles sont gratuits seulement sous 10 millions de dollars de chiffre d'affaires. Vérifier à chaque fois.
 
+### Les briques pour passer d'un diaporama à une vraie pub (relevé du 2026-11-11 au soir)
+
+Après le premier film sans rush (un diaporama d'images fixes, estimé 50 à 150 €), huit travaux ont été listés.
+Pour chacun : 56 dépôts relevés par l'API GitHub (licence du **code**) et 51 modèles par l'API Hugging Face
+(licence des **poids**), puis le texte des licences floues lu.
+
+| Travail | Brique retenue | Code · poids | ⛔ ou ⚠️ à écarter |
+|---|---|---|---|
+| 1. Vraie vidéo par scène | **Wan 2.2** (I2V-A14B, TI2V-5B, 18 552 ★) · Mochi · Open-Sora 2 · MAGI-1 · VACE | Apache · Apache | ⚠️ LTX-2 (licence communautaire à seuil) · HunyuanVideo 1.5 et FramePack (licence Tencent) · SkyReels-V2 (licence Skywork) |
+| 2. Un personnage constant | **Qwen-Image-Edit-2509** · FLUX.2 klein (déjà utilisé, Workers AI) · Phantom, Stand-In (vidéo d'une personne de référence, sur Wan) · UNO, USO, OmniGen2 | Apache · Apache | ⛔ InfiniteYou (poids CC-BY-NC) · ⚠️ PuLID, InstantID (dépendent d'insightface, non commercial) |
+| 3. Le vrai produit | rien à générer : captures réelles (NEBULA REC, Playwright), photos du client, film 3D | | |
+| 4. Une vraie voix | **Chatterbox Multilingual V3** (MIT, clonage, français) · **Kyutai TTS en_fr** (CC-BY 4.0, fait pour le français) · CosyVoice 3 (Apache, français, émotion sur consigne) · Zonos (Apache, français, Linux et carte NVIDIA) | libres | ⚠️ Kokoro : une seule voix française, moins de 11 h d'entraînement · IndexTTS-2 (licence bilibili) · Higgs Audio 2 (licence Boson, calquée sur Llama 3) |
+| 5. Le son | Musique : **ACE-Step**, YuE (Apache) · tempo : **Beat This!** (MIT) · stems : Demucs (MIT, archivé) · bruitages : ThinkSound (poids Apache) | libres | ⛔ MMAudio (poids CC-BY-NC) · ⚠️ ThinkSound : dépôt sans licence déclarée · ⚠️ Stable Audio Open (gratuit sous un seuil de chiffre d'affaires) |
+| 6. Habillage animé | **HyperFrames** (Apache, déjà là) · Motion Canvas, Revideo, Manim (MIT) | libres | |
+| 7. Concept et story-board | **ViMax** (HKUDS, MIT, 12 901 ★ : de l'idée au film, story-board, personnages cohérents) · VideoClaw, ex-FilmAgent (MIT) · StoryDiffusion (Apache) | libres | ⛔ MovieAgent (aucune licence) |
+| 8. Relecteur | VBench (Apache, qualité des vidéos générées) · VMAF (BSD + brevet) · **TalkNet-ASD**, Light-ASD (MIT, qui parle) | libres | ⛔ DOVER (S-Lab : non commercial) |
+| Avatar qui parle | **InfiniteTalk**, OmniAvatar, FantasyTalking, Wan2.2-S2V (Apache) · MuseTalk (MIT) · LatentSync 1.5 (OpenRAIL++ : commercial permis, usages interdits listés) | libres | |
+| Restauration, 4K | **SeedVR2** 3B et 7B (Apache), en plus de Real-ESRGAN | libres | |
+
+⚠️ **Libre ne veut pas dire gratuit à faire tourner.** Wan 2.2 TI2V-5B demande une carte graphique de **24 Go**
+(RTX 4090) et le 14B en demande 80. Le PC de Cotonou n'en a pas. Trois voies : Colab ou Kaggle gratuits pour
+essayer (lents, quotas), un GPU loué à l'heure pour l'appli (vague 6, souvent avec carte bancaire), ou payer au
+clip la version hébergée du même modèle libre (WaveSpeed héberge Wan). Le gain du libre : aucune licence à payer,
+aucun enfermement chez un fournisseur, et le droit de vendre ce qu'on produit.
+
 ## Ce qui fait une vidéo « à 10 000 euros »
 
 Aucun dépôt ne promet ça. Ce qui s'en approche, relevé dans les règles de video-shotcraft (tirées de retours
