@@ -20,11 +20,10 @@
 | **NEBULA REC** : premier vrai usage par Mongazi (raccourci sur le Bureau), dire ce qui manque | 🙋 | `conversations/2026-11-11-nebula-rec.md` |
 | **VIDÉO HD** : premier passage sur Colab (cocher ESSAI_10_SECONDES), mesurer le temps par minute de vidéo, vérifier NVENC et `zscale` | 🙋 puis 🤖 | `conversations/2026-11-11-video-hd.md` |
 | **MuseHub** se lance encore au démarrage : Windows exige les droits administrateur. Gestionnaire des tâches → Démarrage → MuseHub → Désactiver | 🙋 | `journal/2026-11-11-journal.md` |
-| **`C:\Users\USER\.vhd`** (environ 1 Go, essais de VIDÉO HD) : suppression tuée faute de mémoire, à finir | 🤖 sur feu vert | même journal |
 | **Icecream Screen Recorder** encore installé (démarrage coupé) : le désinstaller, maintenant que NEBULA REC le remplace ? | 🙋 | |
 | **Fichiers non suivis du dépôt PUBLIC**, pas poussés exprès : `_partage/` (vidéos et scripts `.pine` de trading, voix ElevenLabs, captures), `.claude-flow/`, `.swarm/`, `.codex/hooks.json`. Décider : dépôt privé, rangement ou suppression | 🙋 | |
 | **Méthode de trading de Mongazi** dans `_archives/partage-2026-09-29/` : seulement sur ce disque, à mettre dans le dépôt privé `nebula-trader` (au 2026-09) | 🙋 accord | `RESTE-A-FAIRE.md` |
-| **Mémoire vive du PC** : Chrome (2 Go) et VS Code (1 Go) la saturent ; une seule tâche lourde à la fois | info | mémoire `project_disque-pc` |
+| **Mémoire vive du PC** : Chrome (3,2 Go avant nettoyage) et VS Code la saturent ; une seule tâche lourde à la fois. **22 profils Chrome** : en supprimer les inutiles allégerait encore | 🙋 | mémoire `project_disque-pc` |
 
 ---
 
