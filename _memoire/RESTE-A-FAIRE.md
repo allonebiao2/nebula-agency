@@ -1,5 +1,8 @@
 # Ce qui reste à faire
 
+> ⚠️ **Depuis le 2026-11-11, la liste vivante est [`EN-INSTANCE.md`](EN-INSTANCE.md)** : une ligne par point
+> à reprendre ou projet en instance. Ce fichier garde le détail des chantiers jusqu'en septembre 2026.
+
 > **Ce fichier ne contient QUE ce qui n'est pas fait.** Ce que Mongazi a
 > demandé est dans `DEMANDES-MONGAZI.md`. Quand une ligne est faite, on la
 > retire d'ici et on la marque là-bas.

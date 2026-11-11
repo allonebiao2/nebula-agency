@@ -693,6 +693,11 @@ sur les autres sites s'ils subissent la même panne.
 **Lire `_memoire/REPRENDRE-ICI.md` en premier.** Il dit où on en est, ce qui bloque,
 et par quoi commencer. Mis à jour à chaque fin de session importante.
 
+**Tout ce qui attend tient dans `_memoire/EN-INSTANCE.md`** (Mongazi, 2026-11-11) : points à
+reprendre, améliorations possibles par outil, projets en instance, vagues futures. Une ligne par
+point avec son renvoi. ⚡ Toute session qui laisse quelque chose en suspens **l'y ajoute avant de
+finir**, et retire ce qu'elle a terminé.
+
 ## Force de vente & partenaires (chantier 2026-07-30/31)
 - **Source de vérité des prix et des règles : `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`.**
   En cas de différence avec un autre fichier, c'est lui qui a raison.
