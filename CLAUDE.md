@@ -440,6 +440,28 @@
 - **Vague 4 (comptes, Pro 1 500 F/mois · 12 000 F/an, SasPay, nuage du montage) : base et fonctions INSTALLÉES le 2026-11-02, interface encore cachée (`OUVERT = false`)** · reste : secret du webhook SasPay (Mongazi), ouverture · ✅ **les e-mails de connexion du projet partagé partent par Resend** depuis le 2026-11-02 (`connexion@nebula-agency.online`, en français avec le code de 8 chiffres ; avant, Supabase n'écrivait qu'à l'équipe, Boussole comprise) · `labobine/INSTALLER-COMPTES.md`.
 - Détail, vagues 2 à 5, pièges : `labobine/CONTEXT.md`.
 
+### LE MONTEUR · l'agent de montage vidéo  *(produit interne, 2026-11-11, nom provisoire)*
+- **Ce que c'est** : l'agent IA qui monte **tout type de vidéo**, à partir de rushes ou **sans rush** (juste une
+  demande), pour une appli vendue en abonnement. Objectif de Mongazi : « des vidéos qui valent 10 000 € minimum ».
+- 🔴 **Il vit HORS de ce dépôt** : dépôt **PRIVÉ** `allonebiao2/nebula-montage` (`C:\Users\USER\nebula-montage`).
+  **Lire son `REPRENDRE-ICI.md` en arrivant**, puis `PLAN.md`. Les rushes et rendus de clients ne vont jamais dans git.
+- **La chaîne** :
+  - lecture : Deepgram mot à mot, plans, visages ;
+  - réalisateur Claude Opus 5.5 (plan JSON validé par le code), ou scénariste sans rush (voix Aura-2, images FLUX.2) ;
+  - fabrication ffmpeg exacte à l'image, puis banc de 16 mesures ;
+  - relecteur Claude qui juge sur planches et corrige.
+  **Gemini en secours** si Claude est indisponible. `python _qc.py` (60 contrôles), `python monter.py <projet>`.
+- ⛔ **Licences** : aucun code AGPL (OpenMontage, YOLO) ; vérifier les **poids** d'un modèle, pas seulement son code
+  (InfiniteYou et MMAudio sont non commerciaux). Recherche : `_knowledge/montage-ia-decortique.md`.
+- **Où on en est** : la pub sans rush de MA LETTRE À… est propre (banc 16/16) mais vaut 50 à 150 € (un diaporama).
+  Plan en 4 phases :
+  1. pub v2 : vrais plans du produit, une héroïne, rythme, titres animés ;
+  2. images animées par Wan 2.2 ;
+  3. concept et story-board, avec 3 validations humaines en premium ;
+  4. l'appli.
+  Le calcul GPU pour les clients sera payant.
+- ⏳ crédit de l'API Anthropic épuisé (Gemini prend le relais : clé rangée, éprouvée sur `gemini-3.8-flash`) · `gh` pour les rendus sur GitHub Actions (non accepté).
+
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
 - 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé
   « à part » par Mongazi). **Lire son `CLAUDE.md` et `00 Accueil/REPRENDRE-ICI.md` en arrivant.**

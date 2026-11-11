@@ -56,10 +56,101 @@ trop petit). Au second tour, **le crédit de l'API Anthropic était épuisé**. 
 - **Un appel payé ne se perd plus** : la relecture est gardée hors du dossier de rendu, et une panne d'API livre
   quand même la vidéo et son rapport.
 
+## Sans Claude, et OpenMontage (même soir)
+
+- Mongazi : « sans le Claude d'Anthropic ça ne peut pas fonctionner ? » La lecture, la fabrication, le son, le banc et
+  un montage simple (`--sans-ia`) tournent sans modèle. Le scénariste, le réalisateur et le relecteur en ont besoin.
+  Comparé : Claude (0,50 à 1 $ par vidéo, carte bancaire), Gemini (gratuit sous quota, sans carte, voit les images),
+  Groq (gratuit, ne voit pas bien les images).
+- « OpenMontage est-il plus apte ? » Non : il n'a **aucun orchestrateur en code**, l'assistant de code conduit chaque
+  étape. Il dépend donc **plus** de Claude que nous, demande l'accord humain à chaque étape, et ne se vend pas (AGPL).
+  Il est plus large aujourd'hui (animation, avatars, 60 fournisseurs) : utilisable en studio interne.
+- Mongazi : « branche Gemini en secours ». Fait (`monteur/ia.py`, commit `4167a61`). Claude d'abord ; Gemini prend
+  le relais si Claude est indisponible (crédit, clé, quota, réseau, panne), jamais pour contourner un refus. Google
+  a une nouvelle API (`/v1beta/interactions`) et dit `generateContent` « legacy mais entièrement prise en charge » :
+  c'est elle qu'on utilise. Le modèle est choisi à l'exécution dans la liste de la clé (les noms changent :
+  `gemini-4-carbon`, `gemini-3.6-flash`…). Aucun appel réel encore : il faut la clé.
+- « Pourra-t-on atteindre l'étendue d'OpenMontage ? » Oui : elle vient de services branchés. Animation (HyperFrames),
+  démo d'écran (NEBULA REC), vidéo générée (Wan, Kling par WaveSpeed), avatar (InfiniteTalk, HeyGen), voix et musique.
+  La vraie limite est le budget de génération.
+
+## Le verdict de Mongazi, et la réponse franche
+
+- Mongazi : « ça ne vaut pas un travail de 500 dollars même, tu jugerais ça combien ? » Réponse : **50 à 150 €**,
+  le niveau d'une vidéo « sans visage » Fiverr ou InVideo. Sept raisons :
+  1. un diaporama d'images fixes ;
+  2. le produit n'apparaît jamais ;
+  3. aucun personnage suivi ;
+  4. une voix synthétique ;
+  5. un son générique ;
+  6. du texte posé ;
+  7. un concept plat.
+- Huit travaux, par ordre d'impact :
+  1. une vraie vidéo à chaque scène ;
+  2. une seule héroïne ;
+  3. le vrai produit ;
+  4. une vraie voix ;
+  5. un son pensé pour l'histoire ;
+  6. un habillage animé ;
+  7. une étape de concept et de story-board ;
+  8. un relecteur à 8,5/10 minimum.
+- Dit franchement : avec les travaux 1 à 6, une pub vaut **500 à 1 500 €**. **10 000 €**, c'est un tournage ou un
+  studio de création : atteignable en offre premium avec un humain qui dirige, pas en automatique pour chaque demande.
+- « Ma présence demandera quoi concrètement ? » En premium seulement, trois validations depuis le téléphone :
+  le concept parmi 3 (5 min), le story-board de 8 à 12 vignettes (10 min, avant toute génération chère), puis la
+  version finale (5 à 10 min, deux retours au plus). 20 à 30 minutes par vidéo. L'offre standard tourne sans lui.
+
+## La recherche sur GitHub pour les autres vagues
+
+56 dépôts relevés par l'API GitHub, 51 modèles par l'API Hugging Face, licences floues lues. Tableau complet dans
+`_knowledge/montage-ia-decortique.md` (« Les briques pour passer d'un diaporama à une vraie pub »).
+
+- Retenus (code et poids libres) :
+  - vidéo : Wan 2.2 ;
+  - personnage : Qwen-Image-Edit, FLUX.2 klein, Phantom ;
+  - voix française : Chatterbox V3, Kyutai TTS en_fr, CosyVoice 3 ;
+  - son : ACE-Step, Beat This!, ThinkSound ;
+  - habillage : HyperFrames ;
+  - concept : ViMax ;
+  - relecteur : VBench, TalkNet ;
+  - avatar : InfiniteTalk ;
+  - restauration : SeedVR2.
+- Écartés :
+  - ⛔ InfiniteYou et MMAudio (poids non commerciaux), DOVER (S-Lab), MovieAgent (aucune licence) ;
+  - ⚠️ PuLID et InstantID (insightface), LTX-2, HunyuanVideo, Stable Audio Open ;
+  - ⚠️ Kokoro : une seule voix française.
+- Libre ne veut pas dire gratuit à faire tourner : Wan 2.2 5B veut une carte de 24 Go, le PC n'en a pas.
+
+## Le calcul gratuit hors du PC
+
+- Kaggle : environ 30 h de GPU par semaine, sans carte mais avec vérification par téléphone. ⛔ Ses conditions disent
+  usage interne, personnel, **non commercial**.
+- Colab : prévu pour l'usage interactif.
+- Lightning AI : 5 crédits sans carte.
+- Cloudflare Workers AI : 10 000 neurones par jour, usage commercial permis.
+- **GitHub Actions** : processeurs, 2 000 min par mois en privé, usage commercial permis.
+- Décidé :
+  - les GPU gratuits servent à la **recherche** (essayer Wan 2.2) ;
+  - les **rendus** iront sur GitHub Actions ;
+  - le calcul pour les **clients** sera payant, dans le prix de l'abonnement.
+- Mongazi a créé le dépôt privé `nebula-montage` (23 h 48) ; le code est poussé (`923134a`), vérifié privé (404).
+
+## La clé Gemini (2026-11-12, 0 h 20)
+
+Mongazi l'a créée et copiée. Rangée depuis le presse-papier dans `secrets/gemini.env` (`GEMINI_API_KEY=`), jamais
+affichée, ignorée par git. ⚠️ **Nouveau format de clé Google : `AQ.` suivi de 50 caractères, avec des points**
+(l'ancien commençait par `AIza`) : un contrôle de forme trop strict l'avait d'abord refusée. Premier vrai appel
+réussi : réponse JSON conforme au schéma. `gemini-4-carbon` et `gemini-4-argon` ne sont pas ouverts à une clé
+gratuite ; le secours est passé seul sur `gemini-3.8-flash`.
+
 ## Ce qui attend Mongazi
 
-1. **Recharger le crédit de l'API Anthropic** (le relecteur et le scénariste en dépendent).
+1. ✅ Clé Gemini rangée et éprouvée. Le crédit Anthropic reste à recharger pour retrouver Claude.
 2. ✅ Dépôt GitHub **privé** `nebula-montage` créé par Mongazi, code poussé.
-3. Choisir le nom du produit.
-4. Une clé **Pexels** gratuite (vraies vidéos libres de droits au lieu d'images générées).
-5. Un vrai rush et une demande pour un essai.
+3. Répondre au relecteur : « 1 000 F » en francs CFA ? que couvrent les « 7 jours » ? de vraies captures de MA LETTRE À… ?
+   le logo et la typographie officiels ?
+4. En option, sa voix sur le texte de la pub (environ 30 s).
+5. Dire oui ou non à l'installation de `gh` (rendus sur GitHub Actions).
+6. Plus tard : une clé **Pexels**, le nom du produit, un vrai rush de client.
+
+La suite exacte : `C:/Users/USER/nebula-montage/REPRENDRE-ICI.md`.

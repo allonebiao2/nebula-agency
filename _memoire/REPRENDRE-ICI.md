@@ -1,9 +1,38 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-10-22
+## Point de reprise pour une session terminal · dernière mise à jour 2026-11-12
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 unquadragies. LES 2026-11-11 ET 12 · LE MONTEUR, L'AGENT DE MONTAGE VIDÉO
+
+- **Le produit** : l'agent qui monte tout type de vidéo, avec ou sans rush, en appli (option B choisie par Mongazi).
+  Code dans le dépôt **PRIVÉ** `allonebiao2/nebula-montage` (`C:\Users\USER\nebula-montage`).
+  ⚡ **Sa page de reprise détaillée : `C:\Users\USER\nebula-montage\REPRENDRE-ICI.md`, à lire en premier.**
+- **Fait** :
+  - le montage avec rushes, testé sur une interview NASA ;
+  - le montage sans rush, testé sur une pub TikTok de MA LETTRE À… (banc 16/16) ;
+  - le relecteur (6,0/10 au premier tour) et 11 défauts corrigés dans le moteur ;
+  - Gemini branché en secours de Claude ;
+  - 60 contrôles, et 56 dépôts libres vérifiés (code ET poids) dans `_knowledge/montage-ia-decortique.md`.
+- **Le verdict qui oriente tout** : Mongazi juge la pub « pas même 500 dollars » ; j'ai répondu 50 à 150 € (un
+  diaporama). Le plan en 4 phases est fixé :
+  1. la pub v2 : vrais plans du produit, une seule héroïne, coupes sur le temps, titres animés ;
+  2. les images animées (Wan 2.2) ;
+  3. le concept et le story-board, avec 3 validations de Mongazi en premium ;
+  4. l'appli.
+  Cible réaliste : 500 à 1 500 € en automatique ; 10 000 € seulement avec un humain qui dirige.
+- **Par quoi commencer** :
+  1. ✅ Clé Gemini rangée (`secrets/gemini.env`, nouveau format `AQ.…`) et premier appel réussi sur
+     `gemini-3.8-flash`. Prochain essai : la relecture de la pub par Gemini,
+     `MONTEUR_RAPIDE=1 MONTEUR_MOTEUR=gemini python monter.py essais/malettre-pub` (rendu + relecture, environ 15 min,
+     PC libéré avant).
+  2. Proposer d'installer `gh` pour les rendus sur GitHub Actions (pas encore accepté).
+  3. Lancer la phase 1.
+- ⏳ **Crédit de l'API Anthropic épuisé** depuis le 2026-11-11 : à recharger. En attendant, Gemini prend le relais seul.
 
 ---
 
