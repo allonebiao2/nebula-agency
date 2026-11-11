@@ -24,7 +24,7 @@
 | **Fichiers non suivis du dépôt PUBLIC**, pas poussés exprès : `_partage/` (vidéos et scripts `.pine` de trading, voix ElevenLabs, captures), `.claude-flow/`, `.swarm/`, `.codex/hooks.json`. Décider : dépôt privé, rangement ou suppression | 🙋 | |
 | **Méthode de trading de Mongazi** dans `_archives/partage-2026-09-29/` : seulement sur ce disque, à mettre dans le dépôt privé `nebula-trader` (au 2026-09) | 🙋 accord | `RESTE-A-FAIRE.md` |
 | **Mémoire vive du PC** : Chrome (3,2 Go avant nettoyage) et VS Code la saturent ; une seule tâche lourde à la fois. **22 profils Chrome** : en supprimer les inutiles allégerait encore | 🙋 | mémoire `project_disque-pc` |
-| **L'AGENT DE MONTAGE** (lancé le 2026-11-11) : recherche faite, rien de construit. Trancher : **A** agence augmentée (NEBULA monte avec OpenMontage ou video-use, tout de suite) ou **B** produit en libre-service (nos briques MIT/Apache, dans LA BOBINE ou à part) ; son nom ; où il tourne et où dorment les rushes. ⛔ OpenMontage est en AGPL : jamais dans un produit en libre-service. Premier geste : un vrai rush + un brief pour un essai | 🙋 | `_knowledge/montage-ia-decortique.md` |
+| **LE MONTEUR** (nom provisoire), l'agent de montage : Mongazi a choisi **B** (l'appli), objectif « tout type de vidéo, avec ou sans rush, 10 000 € minimum ». Vague 1 faite et testée dans le projet **privé** `C:\Users\USER\nebula-montage`. 🙋 **créer le dépôt GitHub privé `nebula-montage`** (la création automatique a été bloquée), choisir le nom, envoyer un vrai rush + un brief. 🤖 vagues 2 à 6 (`PLAN.md` du projet) | 🙋 puis 🤖 | `_knowledge/montage-ia-decortique.md`, mémoire `project_agent-montage` |
 
 ---
 
