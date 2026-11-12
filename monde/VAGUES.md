@@ -87,6 +87,11 @@ Décisions de Mongazi, le même jour :
   documentaliste depuis le livré, puis le livré aligné sur ses règles (tailles, cibles de 40 px,
   couleurs et arrondis sur l'échelle, anneau au sol fixe, Manrope retirée). Détecteur propre, QC 48/48
   aux deux formats, captures regardées. **Suivant : le point 3, la commande en étapes.**
+- ✅ **POINT 3 FAIT (2026-11-12, nuit) : la commande en trois étapes** (votre pièce, la livraison, vous) :
+  un écran court à la fois, une barre de progression, le total visible en bas à chaque étape, WhatsApp
+  seulement à la fin, « Retour » et l'action côte à côte ; on ne quitte pas la livraison sans pays ni
+  ville ; l'astérisque ne marque que l'obligatoire. QC 52/52 (4 contrôles des étapes ajoutés),
+  captures regardées (`_vues/tel-05a-etape1`, `tel-05b-etape2`, `tel-05-cadran`).
 - 🔨 **Blender** : décor exporté (`monde/_outils/exporter_decor.py`, 116 objets, 3 lampes) ; cuisson à écrire.
 - 🔍 **« ce que nous construisons, quelqu'un l'a-t-il déjà fait au Bénin ? »** (2026-11-12, recherche web) :
   **rien trouvé d'équivalent au Bénin** (ce qui ne prouve pas que rien n'existe hors des moteurs de recherche).

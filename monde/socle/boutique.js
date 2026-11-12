@@ -242,33 +242,36 @@ export function creerBoutique({ calque, donnees, son, cleStockage = 'monde:panie
     cadran.innerHTML = `
       <div class="cadran-cadre">
         <header><h2>Votre commande</h2><button type="button" class="x" aria-label="Fermer"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+        <div class="cd-etapes"><div class="cd-etapes-barre"><i></i></div><p class="cd-etape-nom" aria-live="polite"></p></div>
         <div class="cd-defile">
-          <section><h3>Vos pièces</h3>${panier.map(l => { const p = pieceDe(l.id), v = prixLigne(l); return `<div class="cd-ligne"><span>${esc(p.nom)}<small>${esc(libDelaiLigne(l))}</small></span><b>${v == null ? 'sur devis' : fcfa(v)}</b></div>`; }).join('')}</section>
-          ${lignesMesures ? `<section><h3>Vos mesures</h3>${lignesMesures}</section>` : ''}
-          <section><h3>Livraison</h3>
+          <section data-etape="1"><h3>Vos pièces</h3>${panier.map(l => { const p = pieceDe(l.id), v = prixLigne(l); return `<div class="cd-ligne"><span>${esc(p.nom)}<small>${esc(libDelaiLigne(l))}</small></span><b>${v == null ? 'sur devis' : fcfa(v)}</b></div>`; }).join('')}</section>
+          ${lignesMesures ? `<section data-etape="1"><h3>Vos mesures</h3>${lignesMesures}</section>` : ''}
+          <section data-etape="2"><h3>Livraison</h3>
             <div class="cd-choix cd-mode"><label><input type="radio" name="mode" value="retrait" ${cmd.mode === 'retrait' ? 'checked' : ''}> Retrait à l'atelier · gratuit</label>
             <label><input type="radio" name="mode" value="expedition" ${cmd.mode === 'expedition' ? 'checked' : ''}> Expédition</label></div>
             <p class="cd-aide cd-retrait" ${cmd.mode === 'retrait' ? '' : 'hidden'}>${esc(D.atelier.adresse)}</p>
             <div class="cd-exp" ${cmd.mode === 'expedition' ? '' : 'hidden'}>
               <label>Pays <select data-c="pays"><option value="">Choisir</option>${D.pays.map(p => `<option value="${p.id}" ${cmd.pays && cmd.pays.id === p.id ? 'selected' : ''}>${esc(p.nom)}${p.frais != null ? ' · ' + fcfa(p.frais) : ' · à confirmer'}</option>`).join('')}</select></label>
-              <label><span>Ville de livraison <i>obligatoire</i></span><input data-c="ville" value="${esc(cmd.ville)}" placeholder="Abomey-Calavi"></label>
+              <label><span>Ville de livraison <i class="requis">obligatoire</i></span><input data-c="ville" value="${esc(cmd.ville)}" placeholder="Abomey-Calavi"></label>
               <label>Quartier ou point de repère<input data-c="repere" value="${esc(cmd.repere)}" placeholder="derrière la pharmacie"></label>
             </div></section>
-          <section><h3>Vous</h3>
+          <section data-etape="3"><h3>Vous</h3>
             <div class="cd-grille">
-              <label><span>Prénom <i>obligatoire</i></span><input data-c="prenom" autocomplete="given-name" value="${esc(cmd.prenom)}"></label>
-              <label><span>Nom <i>obligatoire</i></span><input data-c="nom" autocomplete="family-name" value="${esc(cmd.nom)}"></label>
-              <label><span>Téléphone <i>obligatoire</i></span><input data-c="tel" type="tel" autocomplete="tel" value="${esc(cmd.tel)}" placeholder="01 00 00 00 00"></label>
-              <label><span>Lieu de résidence <i>obligatoire</i></span><input data-c="residence" value="${esc(cmd.residence)}" placeholder="Cotonou, Fidjrossè"><button type="button" class="puce cd-meme" hidden></button></label>
-              <label>Email <i>facultatif</i><input data-c="mail" type="email" autocomplete="email" value="${esc(cmd.mail)}"></label>
-              <label class="large">Une précision ? <i>facultatif</i><textarea data-c="note" rows="2">${esc(cmd.note)}</textarea></label>
+              <label><span>Prénom <i class="requis">obligatoire</i></span><input data-c="prenom" autocomplete="given-name" value="${esc(cmd.prenom)}"></label>
+              <label><span>Nom <i class="requis">obligatoire</i></span><input data-c="nom" autocomplete="family-name" value="${esc(cmd.nom)}"></label>
+              <label><span>Téléphone <i class="requis">obligatoire</i></span><input data-c="tel" type="tel" autocomplete="tel" value="${esc(cmd.tel)}" placeholder="01 00 00 00 00"></label>
+              <label><span>Lieu de résidence <i class="requis">obligatoire</i></span><input data-c="residence" value="${esc(cmd.residence)}" placeholder="Cotonou, Fidjrossè"><button type="button" class="puce cd-meme" hidden></button></label>
+              <label><span>Email <i class="option">facultatif</i></span><input data-c="mail" type="email" autocomplete="email" value="${esc(cmd.mail)}"></label>
+              <label class="large"><span>Une précision ? <i class="option">facultatif</i></span><textarea data-c="note" rows="2">${esc(cmd.note)}</textarea></label>
             </div></section>
         </div>
         <footer>
           <div class="cd-recap"></div>
           <p class="cd-promesse">Rien n'est payé ici. Hillary vous écrit dès que la commande est validée, puis vous écrit ou vous appelle dès que la tenue est prête. Règlement par Mobile Money.</p>
           <p class="cd-encore" aria-live="polite"></p>
-          <div class="cd-actions"><a class="bt bt-plein cd-envoyer" target="_blank" rel="noopener">Confirmer sur WhatsApp</a><div class="cd-qr" hidden></div></div>
+          <p class="cd-alerte" aria-live="polite"></p>
+          <div class="cd-boutons"><div class="cd-pas"><button type="button" class="bt bt-ligne cd-retour">Retour</button><button type="button" class="bt bt-plein cd-suivant">Continuer</button></div>
+          <div class="cd-actions"><a class="bt bt-plein cd-envoyer" target="_blank" rel="noopener">Confirmer sur WhatsApp</a><div class="cd-qr" hidden></div></div></div>
         </footer>
       </div>`;
     cadran.classList.add('ouvert'); document.body.classList.add('en-cadran');
@@ -311,6 +314,34 @@ export function creerBoutique({ calque, donnees, son, cleStockage = 'monde:panie
       son && son.valider(); boutique.surEnvoi.forEach(f => f());
     });
     maj();
+    /* LA COMMANDE EN TROIS ÉTAPES (Mongazi, 2026-11-12, point 3) : votre pièce, la livraison, vous.
+       Un écran court à la fois ; le total reste visible en bas ; WhatsApp n'apparaît qu'à la fin. */
+    const NOMS_ETAPES = ['Votre pièce', 'La livraison', 'Vous'];
+    let etape = 1;
+    function allerEtape(n) {
+      etape = Math.max(1, Math.min(3, n));
+      $('.cadran-cadre').dataset.etape = etape;
+      $$('section[data-etape]').forEach(sec => { sec.hidden = +sec.dataset.etape !== etape; });
+      $('.cd-etape-nom').textContent = `Étape ${etape} sur 3 · ${NOMS_ETAPES[etape - 1]}`;
+      $('.cd-etapes-barre i').style.width = Math.round(etape / 3 * 100) + '%';
+      $('.cd-retour').hidden = etape === 1;
+      $('.cd-suivant').hidden = etape === 3;
+      $('.cd-actions').hidden = etape !== 3;
+      $('.cd-promesse').hidden = etape !== 3;
+      $('.cd-encore').hidden = etape !== 3;
+      $('.cd-alerte').textContent = '';
+      $('.cd-defile').scrollTop = 0;
+    }
+    $('.cd-suivant').addEventListener('click', () => {
+      /* on ne quitte pas la livraison sans le pays et la ville, si l'on se fait expédier */
+      if (etape === 2 && cmd.mode === 'expedition' && (!cmd.pays || !String(cmd.ville || '').trim())) {
+        $('.cd-alerte').textContent = 'Choisissez le pays et la ville de livraison pour continuer.';
+        return;
+      }
+      allerEtape(etape + 1);
+    });
+    $('.cd-retour').addEventListener('click', () => allerEtape(etape - 1));
+    allerEtape(1);
   }
   function fermerCadran() { cadran.classList.remove('ouvert'); document.body.classList.remove('en-cadran'); }
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && cadran.classList.contains('ouvert')) fermerCadran(); });

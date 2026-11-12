@@ -300,3 +300,28 @@ body:has(#ouverture:not(.partie)) :is(.hud, .bt-sac, .bt-carnet, .repere, .point
 
 /* la commande : ses libellés de récapitulatif sur l'échelle (label-sm) */
 .cd-recap span, .cd-mes legend { font-size: .74rem; }
+
+/* =========================================================================
+   POINT 3 : LA COMMANDE EN TROIS ÉTAPES (2026-11-12) : votre pièce, la livraison, vous
+   ========================================================================= */
+.cadran [hidden] { display: none !important; }
+.cd-etapes { padding: 10px 18px 2px; }
+.cd-etapes-barre { height: 3px; border-radius: 4px; background: rgba(255, 255, 255, .12); overflow: hidden; }
+.cd-etapes-barre i { display: block; height: 100%; width: 33%; background: var(--marque); transition: width .35s cubic-bezier(.2, .8, .2, 1); }
+.cd-etape-nom { margin: 8px 0 0; color: var(--texte-doux); font: 600 .74rem var(--police-libelle); letter-spacing: .01em; }
+.cd-pas { display: flex; gap: 8px; margin-top: 8px; }
+.cd-pas .cd-suivant { flex: 1; }
+.cd-alerte { margin: 4px 0 0; color: #ff8cc6; font-size: .84rem; }
+.cd-alerte:empty { display: none; }
+@media (prefers-reduced-motion: reduce) { .cd-etapes-barre i { transition: none; } }
+/* l'astérisque ne marque que les champs obligatoires ; « facultatif » reste écrit, discret */
+.cadran label i { font-size: .74rem; font-style: normal; color: var(--texte-doux); margin-left: .3em; }
+.cadran label i::after { content: none; }
+.cadran label i.requis { font-size: 0; margin-left: 0; }
+.cadran label i.requis::after { content: '*'; font-size: .84rem; color: #ff8cc6; margin-left: .2em; }
+/* « Retour » et l'action de l'étape côte à côte ; le titre de section ne répète pas celui de l'étape */
+.cd-boutons { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.cd-boutons .cd-pas { margin-top: 0; }
+.cd-boutons .cd-pas:has(.cd-suivant:not([hidden])) { flex: 1; }
+.cd-boutons .cd-actions { flex: 1; }
+.cadran section[data-etape="2"] > h3, .cadran section[data-etape="3"] > h3 { display: none; }

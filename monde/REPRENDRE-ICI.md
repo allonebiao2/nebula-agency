@@ -23,7 +23,7 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
 > **ÉTAT DU 2026-11-12, 23 h** : interface en verre **relue par Impeccable (verdict « ship »)** et documentée
 > (`monde/DESIGN.md` ; le détecteur Impeccable le fait respecter). Salon tamisé (murs expresso, coupole
 > ambrée, un faisceau par création), musique Pixabay (hors dépôt, `lieux/hillary-m-styl/musique/`),
-> Blender 5.3 installé (`D:\Blender\blender.exe`). **Prochaine action : la commande en 3 étapes (point 3).**
+> Blender 5.3 installé (`D:\Blender\blender.exe`). Commande en 3 étapes faite (point 3, QC 52/52). **Restent de la liste « interface à 100 % » : l'essai sur le vrai téléphone de Mongazi (point 1), la main animée de la première fois (point 2), les animations soignées (point 4).**
 >
 > **ÉTAT DU 2026-11-12, 20 h** (le plus récent, à lire d'abord) :
 > - ✅ Afi est en 3D et animée dans le salon (`socle/habiller.js`). Les FBX vivent dans `lieux/hillary-m-styl/personnages/afi/`, ignorés par git (licence Mixamo).

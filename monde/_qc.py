@@ -137,7 +137,13 @@ def main():
         # 4 · le cadran et le message WhatsApp
         ok(pg.evaluate("document.querySelector('.cd-envoyer').classList.contains('inactif')"), "on ne peut pas envoyer sans les champs obligatoires")
         ok("prénom" in pg.evaluate("document.querySelector('.cd-encore').textContent"), "le cadran dit ce qui manque")
+        # la commande se fait en trois étapes (point 3) : on avance comme une cliente
+        ok(pg.evaluate("document.querySelector('.cd-etape-nom').textContent").startswith("Étape 1 sur 3"), "la commande commence à l'étape 1 sur 3")
+        ok(pg.evaluate("document.querySelector('.cd-actions').hidden"), "WhatsApp n'apparaît pas avant la dernière étape")
+        pg.click(".cd-suivant"); time.sleep(0.3)
         pg.check("input[name=mode][value=retrait]")
+        pg.click(".cd-suivant"); time.sleep(0.3)
+        ok(pg.evaluate("document.querySelector('.cd-etape-nom').textContent").startswith("Étape 3 sur 3"), "Continuer mène jusqu'à l'étape « Vous »")
         for k, v in {"prenom": "Awa", "nom": "Essai", "tel": "0100000000", "residence": "Cotonou"}.items():
             pg.fill(f"[data-c={k}]", v)
         time.sleep(0.3)
@@ -153,7 +159,10 @@ def main():
             ok(champ in msg, f"le message contient « {champ} »")
         shot("05-cadran")
         # en expédition vers la France
+        pg.click(".cd-retour"); time.sleep(0.3)
         pg.check("input[name=mode][value=expedition]")
+        pg.click(".cd-suivant"); time.sleep(0.3)
+        ok(pg.evaluate("document.querySelector('.cd-etape-nom').textContent").startswith("Étape 2 sur 3") and bool(pg.evaluate("document.querySelector('.cd-alerte').textContent")), "on ne quitte pas la livraison sans pays ni ville")
         pg.select_option("[data-c=pays]", "fr"); pg.fill("[data-c=ville]", "Paris"); time.sleep(0.3)
         msg = urllib.parse.unquote((pg.evaluate("document.querySelector('.cd-envoyer').getAttribute('href')") or "").split("text=", 1)[-1])
         fr = next(x for x in D["pays"] if x["id"] == "fr")
