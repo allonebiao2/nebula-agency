@@ -53,3 +53,34 @@ Mongazi génère les personnages en 3D de son côté. Pour qu'ils entrent dans l
 - **Le déposer** dans `_partage\immersive  store 3D\personnages\<prénom>\` (hors de GitHub).
 - ⚠️ Pas de visage d'une personne réelle sans son accord écrit : Sènami et sa mère sont inventées ;
   Hillary seulement avec ses photos et son accord.
+
+## Animer les images générées (image → vidéo), pour des références de mouvement
+
+> Demandé par Mongazi le 2026-11-13. À coller dans l'outil image → vidéo, AVEC l'image du personnage.
+> Chaque vidéo doit pouvoir servir de **capture de mouvement** : corps entier visible du début à la fin,
+> caméra fixe, un seul personnage, fond gris uni, 5 à 8 s, sans coupure ni zoom.
+
+**Début commun à coller avant chaque action :**
+
+```
+Animate this exact character, keep her face, skin tone, body, hair and clothes identical. Full body always visible from head to feet, static locked-off camera at chest height, no zoom, no camera movement, no cuts, plain light grey studio background, soft even lighting, realistic natural human motion, real-time speed, 6 seconds. Action:
+```
+
+**Les actions (les mêmes pour Sènami et Maman Sènami, chacune dans son caractère) :**
+
+| Fichier | Action à ajouter après « Action: » |
+|---|---|
+| `attendre` | `she stands relaxed, breathing calmly, shifts her weight slightly from one foot to the other, small natural hand movements, looks around the room with curiosity.` |
+| `marcher` | `she walks slowly and elegantly forward toward the camera for four steps, natural arm swing, then stops.` |
+| `parler` | `she talks warmly to someone in front of her, expressive natural hand gestures at chest height, head nods and small smiles, mouth moving as if speaking.` |
+| `ecouter` | `she listens attentively to someone in front of her, nods twice, small smile, hands relaxed in front of her.` |
+| `saluer` | `she smiles and waves hello with her right hand, friendly and warm, then lowers her hand.` |
+| `regarder-robe` | `she looks closely at a dress on a mannequin to her left, tilts her head, touches her chin, admiring it.` |
+
+**Une action propre à chacune :**
+
+- **Sènami (TikTok)** : `she raises her phone in her right hand and films herself, smiling and talking to the phone camera, turns slightly to show the room behind her.`
+- **Maman Sènami (le wax)** : `she gently takes the edge of a wax fabric between her fingers, feels its texture, nods with approval like an expert.`
+
+⚠️ Exiger « full body always visible » et « static camera » : une vidéo qui recadre ou coupe les pieds ne
+sert pas à la capture. Déposer les vidéos dans `_partage\immersive  store 3D\personnages\<prénom>\videos\`.
