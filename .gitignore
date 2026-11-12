@@ -150,3 +150,6 @@ _partage/**/hillary/
 _partage/**/Hillary/
 monde/lieux/*/prive/
 monde/lieux/*/personnages/*-mixamo.zip
+
+# LE MONDE : animations Mixamo (licence : usage dans le projet, pas de redistribution en fichiers isolés ; le dépôt est public)
+monde/lieux/*/personnages/*/*.fbx

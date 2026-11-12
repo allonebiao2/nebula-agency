@@ -11,6 +11,7 @@ import { Reflector } from 'three/addons/objects/Reflector.js';
 import { creerCiel, COTONOU } from '../../socle/ciel.js';
 import { creerGraphe, creerDeplacement } from '../../socle/deplacement.js';
 import { creerPersonnage, capVersRotation } from '../../socle/personnages.js';
+import { habiller } from '../../socle/habiller.js';
 import { creerPnj } from '../../socle/pnj.js';
 import { creerDialogue } from '../../socle/dialogue.js';
 import { creerBoutique, fcfa, libDelai } from '../../socle/boutique.js';
@@ -749,6 +750,13 @@ async function embellir() {
   document.body.classList.add('embelli');
 }
 setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', e)), params.has('direct') ? 200 : 2500);
+
+/* AFI, LE PREMIER VRAI PERSONNAGE (TRELLIS.2 puis Mixamo, 2026-11-12) : son corps et ses
+   sept animations arrivent après l'ouverture ; d'ici là, et si le chargement échoue, sa
+   silhouette tient sa place. Sènami et Maman Sènami suivront le même chemin. */
+setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', prefixe: 'afi', taille: 1.71 })
+  .then(() => { const v = visiteuses.find(x => x.id === 'afi'); if (v) v.gouts.assis = 0; })   /* pas encore d'animation assise */
+  .catch(e => console.warn('Afi reste en silhouette', e)), params.has('direct') ? 600 : 3200);
 
 /* LA SIGNATURE DES ENSEIGNES PEINTES : une plaque touchée se balance sur son crochet,
    une fois, puis se repose. On anime la propriété `rotate`, qui s'ajoute au `transform`

@@ -211,7 +211,7 @@ export function creerPersonnage(d) {
   }
 
   return {
-    nom: d.nom, racine, tete, hitbox, st,
+    nom: d.nom, racine, corps, tete, hitbox, st,
     set vitesse(v) { st.vitesse = v; },
     geste(nom) { st.geste = POSES[nom] ? nom : 'repos'; },
     assis(v) { st.assis = v; },
