@@ -20,6 +20,15 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
 
 ## 2 · La prochaine action exacte
 
+> **ÉTAT DU 2026-11-13, 0 h 30 : ON SUIT `monde/AUDIT-JEU-VIDEO.md` VAGUE PAR VAGUE** (Mongazi : « une à la
+> fois, et ne passe pas à une autre tant que celle-ci n'est pas à 100 % »).
+> - ✅ Vague 1, l'ouverture cinéma : faite et filmée de nuit et de jour.
+> - 🔨 **Vague 2, des personnages qui vivent.** Afi est faite (13 animations, variantes, départ et arrêt, regard cou + tête ; `socle/habiller.js`, `perso.animation()` pour les contrôles). **Reste à faire** :
+>   1. Sènami (21 ans) et Maman Sènami (47 ans) : images par `personnages/CONSIGNES.md` (Cloudflare, quota remis à 0 h UTC) → regarder l'âge → TRELLIS.2 (`_outils/en_3d.py … --detourer-ici`) → `glb_vers_obj.py` → Mixamo (repères, puis 8 animations : attendre AVEC la peau, puis marcher en Female Walk sur place, parler, parler-2, hocher, attendre-2, demarrer, arreter) → `habiller()` avec `prefixe: 'senami'` / `'maman'`, tailles 1,64 et 1,62.
+>   2. 🙋 Hillary : il faut ses photos et son accord écrit. Bloqué sans Mongazi.
+>   ⚠️ Pas de clignement possible sur un modèle TRELLIS : il n'a ni yeux séparés ni visage riggé. Il faudrait un visage à blend shapes (MPFB2/MakeHuman), noté pour plus tard.
+> - Ensuite : la vague 3 (mise en scène des conversations), la 4 (compression pour la 3G), la 5 (lumière cuite dans Blender) ; la 6 et la 7 attendent les planches des robes, la vidéo de rue et l'accord d'Hillary.
+>
 > **ÉTAT DU 2026-11-12, 23 h** : interface en verre **relue par Impeccable (verdict « ship »)** et documentée
 > (`monde/DESIGN.md` ; le détecteur Impeccable le fait respecter). Salon tamisé (murs expresso, coupole
 > ambrée, un faisceau par création), musique Pixabay (hors dépôt, `lieux/hillary-m-styl/musique/`),
