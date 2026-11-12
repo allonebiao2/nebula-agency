@@ -156,3 +156,6 @@ monde/lieux/*/personnages/*/*.fbx
 
 # LE MONDE : la cuisson de la lumière (fichiers lourds, refaits par monde/_outils/exporter_decor.py et cuire.py)
 monde/_cuisson/
+
+# LE MONDE : musique Pixabay (licence : usage dans le projet, pas de redistribution du morceau seul ; le dépôt est public)
+monde/lieux/*/musique/

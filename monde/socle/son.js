@@ -11,6 +11,13 @@ const BANQUE = { pas: 5, tissu: 4, sac: 2, choix: 2, clic: 1, ouvrir: 1, valider
 export function creerSon({ base = '../../socle/sons/' } = {}) {
   let ctx = null, maitre = null, bruitBuf = null, rue = null, pluie = null, clim = null, coupe = false, dirEcoute = null, dehors = false;
   let machine = null;
+  let musiqueEl = null, musiqueFiltre = null, musiqueGain = null, musiqueVolume = 0.3;
+  function reglerMusique(fondu = 0.8) {
+    if (!musiqueGain) return;
+    const t = ctx.currentTime;
+    musiqueGain.gain.setTargetAtTime(dehors ? musiqueVolume * 0.35 : musiqueVolume, t, fondu / 3);
+    musiqueFiltre.frequency.setTargetAtTime(dehors ? 650 : 18000, t, 0.25);
+  }
   const bruts = {}, tampons = {};
   /* on télécharge tout de suite (116 Ko), on décode au premier geste */
   for (const [nom, n] of Object.entries(BANQUE)) {
@@ -103,7 +110,21 @@ export function creerSon({ base = '../../socle/sons/' } = {}) {
     pasDe(pos) { jouer('pas', { pos, vol: 0.22 }); },
     tissu(pos) { jouer('tissu', { pos, vol: 0.55 }); },
     cintre(pos) { jouer('cintre', { pos, vol: 0.35 }); },
-    sortir(v) { dehors = v; },
+    sortir(v) { dehors = v; reglerMusique(); },
+    /* LA MUSIQUE DU LIEU (Mongazi, 2026-11-12 : « une musique libre de droit… jouée à l'intérieur
+       du salon, qui sera tamisé ») : en boucle, douce, lue en flux (rien n'est décodé en mémoire),
+       ÉTOUFFÉE derrière la vitre quand on est dehors, coupée avec les autres sons. Elle ne se
+       charge qu'au premier geste (aucune donnée dépensée avant d'entrer). */
+    musique(url, volume = 0.3) {
+      if (!ctx || musiqueEl) return;
+      musiqueEl = new Audio(); musiqueEl.src = url; musiqueEl.loop = true; musiqueEl.preload = 'auto';
+      const src = ctx.createMediaElementSource(musiqueEl);
+      musiqueFiltre = ctx.createBiquadFilter(); musiqueFiltre.type = 'lowpass';
+      musiqueGain = ctx.createGain(); musiqueGain.gain.value = 0; musiqueVolume = volume;
+      src.connect(musiqueFiltre); musiqueFiltre.connect(musiqueGain); musiqueGain.connect(maitre);
+      musiqueEl.play().catch(() => { /* réessayé au prochain geste */ addEventListener('pointerdown', () => musiqueEl.play().catch(() => {}), { once: true }); });
+      reglerMusique(2.5);
+    },
     /* la machine à coudre de l'atelier, placée dans l'espace : on l'entend en s'approchant */
     machineACoudre(pos) {
       if (!ctx || machine) return;

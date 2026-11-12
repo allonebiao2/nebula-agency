@@ -748,6 +748,9 @@ function carteDeTitre() {
 }
 function entrer() {
   son.demarrer();
+  /* le jazz lounge du salon (Pixabay, AtlasAudio, « Lounge ») : il commence dès « Entrer ».
+     ⚠️ Appelé DANS le geste (pas dans un délai) : sur iPhone, la lecture n'est permise que là. */
+  son.musique('musique/salon-lounge.mp3', 0.3);
   setTimeout(carteDeTitre, 900);
   setTimeout(() => son.machineACoudre(new THREE.Vector3(plan.atelier.table.x, 0.9, plan.atelier.table.z)), 1500);
   ouverture.classList.add('partie');

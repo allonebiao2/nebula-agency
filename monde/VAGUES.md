@@ -72,6 +72,14 @@ Décisions de Mongazi, le même jour :
   ligne, un seul « Partir » à la fois ; arrivée dehors face au caisson lumineux du logo. QC 48/48,
   captures regardées (`_vues/tel-00-arrivee`, `tel-03-dialogue`, `tel-04-fiche`, `tel-07-afi`).
 - ✅ **le rendu cinéma** en qualité haute (GTAO, étalonnage, SMAA) : `_vues/ordi-00-cinema.png`.
+- ✅ **« ça doit être tamisé et ultra stylé… les lumières exceptionnelles et luxueuses »** (2026-11-12) →
+  murs taupe expresso, plafond brun nuit, coupole en halo ambré, un faisceau chaud par création ;
+  vérifié sur captures (`_vues/tel-00-interieur.png`, `ordi-00-cinema.png`)
+- ✅ **« télécharge une musique libre de droit sur Pixabay, jouée à l'intérieur du salon »** (2026-11-12) →
+  « Lounge » d'AtlasAudio (jazz lounge, 2 min 35, licence Pixabay : usage libre, pas de redistribution
+  du morceau seul, donc **hors du dépôt public**, `lieux/hillary-m-styl/musique/` ignoré) ; compressé à
+  1,8 Mo, niveau égalisé ; part dès « Entrer », douce dedans, étouffée derrière la vitre dehors, coupée
+  avec les autres sons. 🙋 **à écouter sur un vrai téléphone** (un navigateur de test ne prouve pas le son)
 - 🔨 **Blender** : décor exporté (`monde/_outils/exporter_decor.py`, 116 objets, 3 lampes) ; cuisson à écrire.
 - 🔍 **« ce que nous construisons, quelqu'un l'a-t-il déjà fait au Bénin ? »** (2026-11-12, recherche web) :
   **rien trouvé d'équivalent au Bénin** (ce qui ne prouve pas que rien n'existe hors des moteurs de recherche).
