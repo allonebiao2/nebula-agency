@@ -62,6 +62,7 @@ D'après `CLAUDE.md` et la mémoire de Claude au 2026-11-11 : l'état exact est 
 
 | Projet | Où il en est | Ce qui le débloque | Renvoi |
 |---|---|---|---|
+| **LE MONDE** (salon 3D d'Hillary, nom provisoire) | analysé le 2026-11-12, rien de construit | 🙋 les 4 réponses (moteur, PNJ, visiteurs, mesures) puis la liste de `monde/A-APPORTER.md` ; recharger WaveSpeed (≈ 35 $) | `monde/VISION.md` |
 | **NEBULA VOIX** | lancé le 2026-11-05, prototype « Awa » essayé à la voix | la suite du plan ; ⛔ aucun appel à un particulier sans accord préalable prouvé | `nebula-voix/docs/PLAN.md` (dépôt privé) |
 | **MA LETTRE À…** | en ligne ; la plume est coupée ; le film n'est pas publiable tant qu'elle l'est ; ouvertures 3D sans constructeur, serveur ni caisse | 🙋 **le premier franc** (La Carte, 1 000 F) ; critères d'arrêt 1er ou 16 décembre | `malettre/CONTEXT.md` |
 | **PISTE** | encaisse et livre tout seul | 🙋 **le premier paiement réel** n'a jamais eu lieu | `piste/PAIEMENT.md` |

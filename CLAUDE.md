@@ -426,6 +426,13 @@
 - **Pour le produit**, le clonage de voix passe par Chatterbox (MIT). VoiceStudio/OmniVoice est sous CC-BY-NC : réservé à STELLA, assistant personnel et dernière vague.
 - Détail : mémoire `project_agent-vocal-numeros-benin`, et `_memoire/conversations/2026-11-05-nebula-voix.md`.
 
+### LE MONDE · les lieux en 3D  *(produit interne, nom provisoire, 2026-11-12)*
+- **Ce que c'est** : des commerces visitables en 3D à la première personne, dans le navigateur, chacun avec son lien ; à terme une ville calquée sur Cotonou (un loyer plus tard). **Premier lieu : le salon de couture d'HILLARY M. STYL** (Hillary au comptoir, trois visiteuses PNJ, achat jusqu'à WhatsApp, jour/nuit et pluie réels de Cotonou). Deuxième : Grain d'Esthétique.
+- **Où** : `monde/` · **`VISION.md`** (l'analyse et les décisions) · `A-APPORTER.md` (ce que Mongazi fournit) · **`DEROULEMENT.md`** (le carnet du futur skill `nebula-lieu-3d` : chaque étape y entre au moment où elle est faite).
+- **Décidé le 2026-11-12** : Three.js dans le navigateur (lumière précalculée dans Blender via Colab) ; Unreal installé « pour la création » (lanceur posé, moteur à installer sur `D:` par Mongazi ; ⚠️ ce PC a 8 Go et une Intel HD 5500) ; PNJ écrits d'abord ; mesures au choix du client.
+- ⛔ **Le catalogue est LU dans `PIECES`, jamais recopié** · ⛔ **les PNJ sont des visiteurs, pas de fausses clientes satisfaites** · ⛔ **aucun visage réel sans accord écrit** (Hillary) ; les femmes qui portent ses pièces sur les photos ne sont jamais reconstruites, les pièces vont sur des mannequins, **validées une à une par Hillary**.
+- ⏳ Rien de construit : vague 1 (maquette jouable) au feu vert de Mongazi ; WaveSpeed à recharger (environ 40 $).
+
 ### LA BOBINE · l'éditeur vidéo  *(produit interne, 2026-11-02)*
 - **Ce que c'est** : le montage vidéo dans le navigateur, PC et téléphone. Mongazi veut « exactement CapCut, renommé » :
   on vise ses **familles de fonctions** et son **modèle payant** (`_knowledge/capcut-decortique.md`), avec **notre code,

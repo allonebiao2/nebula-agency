@@ -7,6 +7,8 @@
 > Créé le 2026-07-31 · moteur de mesures refait (v2) · direction artistique « LE FIL » (v3, 2026-08-01)
 > · **V4 « LA COUPE » en ligne, avec ses 4 vraies créations (2026-08-05/06)**.
 
+> 🎮 **2026-11-12 · LE SALON 3D (projet LE MONDE)** : un salon de couture virtuel visitable à la première personne, premier lieu d'un monde calqué sur Cotonou. Analysé, rien de construit. Tout est dans **`monde/`** (`VISION.md`, `A-APPORTER.md`). Il **lit** `PIECES` (jamais de copie) et reprend les règles de commande de ce site.
+
 ---
 
 ## 1. Identité
