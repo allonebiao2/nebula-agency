@@ -80,7 +80,7 @@
 - ✅ « le principal c'est Hillary, je veux qu'elle soit reconnaissable » → consignes B1 à B4 refaites : fidélité stricte (pas de peau éclaircie), pose prête à animer, expressions, **ses gestes filmés**
 - ⏳ « les prompts tu vas les modifier ? on doit créer les personnages pour que tu les modélises en 3D et les rendes vivants à 100 % » → consignes refaites pour un squelette d'animation + **vidéos de ses vrais gestes** (capture de mouvement)
 - ⏳ squelette, animations (Mixamo et capture), lèvres synchronisées sur la voix (Rhubarb), voix (la sienne si elle accepte, sinon Chatterbox)
-- 🔨 « je ne veux pas de Lego, je veux de vrais personnages 3D » + **« voie gratuite »** (2026-11-12) → `_outils/en_3d.py` (TRELLIS.2, MIT, Hugging Face) écrit et éprouvé jusqu'au détourage ; 🙋 **compte Hugging Face gratuit + jeton** (le quota sans compte est épuisé) ; 🙋 **compte Adobe pour Mixamo** (squelette et animations)
+- 🔨 « je ne veux pas de Lego, je veux de vrais personnages 3D » + **« voie gratuite »** (2026-11-12) → jeton Hugging Face rangé (compte « mongazi », lecture seule) · ✅ **Afi en vraie 3D** (`personnages/afi.glb`, TRELLIS.2, cohérente sous 4 angles, pose prête pour Mixamo ; 1 m et 115 000 triangles : à mettre à 1,71 m et à alléger) · ⏳ Sènami et Maman : **le compte gratuit limite le NOMBRE de calculs par jour** → demain, en 2 calculs par personnage (détourage fait sur le PC) · ✅ `_outils/glb_vers_obj.py` → `afi-mixamo.zip` · 🙋 **Mixamo** : se connecter (compte Adobe), puis squelette et animations
 - 💤 « IA plus tard » : Hillary qui répond librement (avec le garde-fou des prix de LE STANDARD)
 
 ## Vague 4 · Ses robes en 3D sur mannequins ⏳
