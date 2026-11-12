@@ -20,8 +20,18 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
 
 ## 2 · La prochaine action exacte
 
-1. **Vérifier que Chrome est relié** (`tabs_context_mcp`). Si oui : sur **mixamo.com**
-   (Mongazi connecté), *Upload Character* → `monde\lieux\hillary-m-styl\personnages\afi-mixamo.zip`
+0. **EN TOUT PREMIER, relancer les tâches de fond** que Mongazi voyait tourner « en bas »
+   avant son `/clear` (il a demandé qu'on s'en souvienne) :
+   - **le serveur du salon** (indispensable) : `python monde/_servir.py --sans-construire`
+     en tâche de fond → `http://localhost:8765/` et, au téléphone, `http://192.168.100.203:8765/` ;
+   - **le poids de ce qui remplit `C:`** (diagnostic) : `du -sh "/c/Program Files/Epic Games" /c/ProgramData/Epic /c/Users/USER/AppData/Local/Temp` (lent, en tâche de fond) ;
+   - **le journal d'installation d'Epic** (diagnostic) : `grep -aiE "BuildPatch|LogInstall|UE_5\.8|Insufficient|Disk|Error" /c/Users/USER/AppData/Local/EpicGamesLauncher/Saved/Logs/EpicGamesLauncher.log | grep -viE "EOSAuth|Verify access" | tail -30`
+     (on y avait vu l'alerte **DP-06** ; Unreal 5.8 est sur `C:\Program Files\Epic Games\UE_5.8`, `C:` à 12,8 Go libres).
+1. **Chrome** : il a été relié le 2026-11-12 par la commande **`/chrome`** (« Browser 1 »).
+   Si `tabs_context_mcp` répond « not connected », demander à Mongazi de retaper `/chrome`.
+   ⚠️ **Dans ce Chrome, Mongazi N'ÉTAIT PAS connecté à Mixamo** (la page affichait « Log in ») :
+   lui demander de cliquer sur **Log in** et de se connecter lui-même (⛔ ne jamais taper son mot
+   de passe). Ensuite, sur **mixamo.com**, *Upload Character* → `monde\lieux\hillary-m-styl\personnages\afi-mixamo.zip`
    (régénérable : `python monde/_outils/glb_vers_obj.py monde/lieux/hillary-m-styl/personnages/afi.glb`)
    → 5 repères (menton, poignets, coudes, genoux, aine) → *Skeleton LOD : Standard* →
    animations **Breathing Idle, Walking, Talking, Waving, Head Nod Yes, Thinking, Looking Around**
