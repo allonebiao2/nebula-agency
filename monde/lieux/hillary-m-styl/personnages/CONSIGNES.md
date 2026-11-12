@@ -39,3 +39,17 @@ Full body front view of a 47-year-old Beninese woman who looks her age and no ol
 ```
 
 Commande : `python scripts/image_cf.py "<consigne>" --modele flux-2-dev --largeur 1024 --hauteur 1024 --sortie <fichier>.jpg`
+
+## Générer les personnages en 3D soi-même (Mongazi, 2026-11-13)
+
+Mongazi génère les personnages en 3D de son côté. Pour qu'ils entrent dans le salon sans retouche :
+
+- **Une image d'entrée** : la consigne ci-dessus (vue de face en pied, pose A, fond gris uni, rien dans
+  les mains). Regarder l'âge AVANT de lancer la 3D.
+- **Le modèle 3D attendu** : un seul maillage, **pose A ou T**, debout, pieds au sol ; **20 000 à
+  40 000 triangles** ; une texture de **2048 px** au plus ; format **GLB** (ou FBX).
+- **Le squelette** : sur Mixamo, comme Afi (menton, poignets, coudes, genoux, aine ; squelette
+  standard). Ou bien me laisser le modèle : je fais Mixamo.
+- **Le déposer** dans `_partage\immersive  store 3D\personnages\<prénom>\` (hors de GitHub).
+- ⚠️ Pas de visage d'une personne réelle sans son accord écrit : Sènami et sa mère sont inventées ;
+  Hillary seulement avec ses photos et son accord.
