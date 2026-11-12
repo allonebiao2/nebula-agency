@@ -85,6 +85,15 @@
 
 ---
 
+## Avancement
+
+- ✅ **Vague 1 · l'ouverture cinéma (2026-11-13)** : travelling de la rue au trottoir (7,5 s, il attend
+  que le salon soit chargé), immeuble au-dessus de la boutique avec fenêtres aux rideaux éclairés le soir,
+  ciel jour et nuit avec la lueur de la ville, façade anthracite, enseigne en lettres lumineuses (le logo
+  détouré dans la page), filet de lumière sous le linteau, portes vitrées qui coulissent, musique qui
+  monte, projecteurs qui s'allument un à un, Afi qui attend 5 s puis s'arrête à 1,60 m, carte de titre
+  au-dessus des sous-titres, point de porte masqué quand on la franchit. QC 52/52, filmé de nuit et de jour.
+
 ## L'ordre conseillé (effet sur la vente et le « wow », à coût maîtrisé)
 
 1. **L'ouverture cinéma et la chorégraphie de lumière** (S) : le premier « wow », sans rien attendre de personne.

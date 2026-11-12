@@ -47,6 +47,8 @@ const M = { sol: MATIERES.sol(), platre: MATIERES.platre(), laque: MATIERES.laqu
    plafond brun nuit, pour que la lumière chaude DESSINE la pièce au lieu de rebondir partout ; les
    présentoirs laqués restent clairs, les tissus et les robes ressortent. */
 const MUR_TAMISE = 0x4b3d37;
+/* la façade : anthracite satiné, comme les boutiques de luxe le soir (audit jeu vidéo, vague 1) */
+M.facade = new THREE.MeshStandardMaterial({ color: 0x1d1a19, roughness: 0.38, metalness: 0.15 });
 M.platre.color.set(MUR_TAMISE);
 
 let aCharger = 0, charges = 0;
@@ -94,20 +96,33 @@ for (const m of murs) {
 const fz = plan.facade.z;
 const fac = plan.facade;
 for (const [x1, x2] of [[-LX, fac.porte.x1], [fac.porte.x2, LX]]) {
-  poser(boite(x2 - x1, fac.allege, 0.22, M.laque), (x1 + x2) / 2, fac.allege / 2, fz + 0.11);
+  poser(boite(x2 - x1, fac.allege, 0.22, M.facade), (x1 + x2) / 2, fac.allege / 2, fz + 0.11);
 }
-poser(boite(LX * 2, H - fac.linteau, 0.22, M.laque), 0, (H + fac.linteau) / 2, fz + 0.11);
-poser(boite(fac.porte.x2 - fac.porte.x1, fac.linteau - fac.porte.haut, 0.22, M.laque), 0, (fac.linteau + fac.porte.haut) / 2, fz + 0.11);
-for (const x of [-LX + 0.2, fac.vitrines[0].x2 + 0.2, fac.vitrines[1].x1 - 0.2, LX - 0.2]) poser(boite(0.4, fac.linteau - fac.allege, 0.22, M.laque), x, (fac.linteau + fac.allege) / 2, fz + 0.11);
+poser(boite(LX * 2, H - fac.linteau, 0.22, M.facade), 0, (H + fac.linteau) / 2, fz + 0.11);
+poser(boite(fac.porte.x2 - fac.porte.x1, fac.linteau - fac.porte.haut, 0.22, M.facade), 0, (fac.linteau + fac.porte.haut) / 2, fz + 0.11);
+for (const x of [-LX + 0.2, fac.vitrines[0].x2 + 0.2, fac.vitrines[1].x1 - 0.2, LX - 0.2]) poser(boite(0.4, fac.linteau - fac.allege, 0.22, M.facade), x, (fac.linteau + fac.allege) / 2, fz + 0.11);
 for (const v of fac.vitrines) {
   poser(new THREE.Mesh(new THREE.PlaneGeometry(v.x2 - v.x1, fac.linteau - fac.allege), M.verre), (v.x1 + v.x2) / 2, (fac.linteau + fac.allege) / 2, fz, Math.PI);
   for (let x = v.x1 + 2; x < v.x2 - 0.5; x += 2) poser(boite(0.04, fac.linteau - fac.allege, 0.06, M.laiton), x, (fac.linteau + fac.allege) / 2, fz);
   poser(boite(v.x2 - v.x1, 0.04, 0.06, M.laiton), (v.x1 + v.x2) / 2, fac.allege + 0.02, fz);
 }
-for (const s of [-1, 1]) {   /* la porte : deux vantaux, poignées de laiton */
+const vantaux = [];
+for (const s of [-1, 1]) {   /* la porte : deux vantaux coulissants, poignées de laiton */
   const w = (fac.porte.x2 - fac.porte.x1) / 2;
-  poser(new THREE.Mesh(new THREE.PlaneGeometry(w - 0.04, fac.porte.haut - 0.04), M.verre), s * w / 2, fac.porte.haut / 2, fz + 0.02, Math.PI);
-  poser(boite(0.03, 0.9, 0.03, M.laiton), s * 0.12, 1.15, fz - 0.04);
+  const verre = poser(new THREE.Mesh(new THREE.PlaneGeometry(w - 0.04, fac.porte.haut - 0.04), M.verre), s * w / 2, fac.porte.haut / 2, fz + 0.02, Math.PI);
+  const poignee = poser(boite(0.03, 0.9, 0.03, M.laiton), s * 0.12, 1.15, fz - 0.04);
+  vantaux.push({ s, w, verre, poignee, x0: verre.position.x, xp: poignee.position.x });
+}
+/* les portes vitrées coulissent dans le mur, en 0,9 s, quand on entre */
+let portesOuvertes = false;
+function ouvrirPortes() {
+  if (portesOuvertes) return; portesOuvertes = true;
+  let t = 0;
+  const fin = moteur.chaqueImage((dt) => {
+    t = Math.min(1, t + dt / 0.9); const e = 1 - Math.pow(1 - t, 3);
+    for (const v of vantaux) { v.verre.position.x = v.x0 + v.s * v.w * 0.92 * e; v.poignee.position.x = v.xp + v.s * v.w * 0.92 * e; }
+    if (t >= 1) fin();
+  });
 }
 poser(boite(fac.porte.x2 - fac.porte.x1, 0.05, 0.08, M.laiton), 0, fac.porte.haut, fz);
 
@@ -115,16 +130,72 @@ poser(boite(fac.porte.x2 - fac.porte.x1, 0.05, 0.08, M.laiton), 0, fac.porte.hau
    commence dehors, avec l'enseigne d'Hillary ») : un caisson lumineux blanc, son VRAI logo au
    centre, comme les enseignes des boutiques de Cotonou. Elle s'allume aussi la nuit. */
 {
-  const hEns = Math.min(0.56, H - fac.linteau - 0.04), yEns = (H + fac.linteau) / 2, zEns = fz + 0.3;
-  const lumiere = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.55, roughness: 0.4 });
-  poser(boite(2.9, hEns + 0.06, 0.14, M.laque), 0, yEns, zEns - 0.02);
-  poser(new THREE.Mesh(new THREE.PlaneGeometry(2.8, hEns), lumiere), 0, yEns, zEns + 0.055);
-  new THREE.TextureLoader().load('img/logo.png', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
-    const l = hEns * 0.94, logo = new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.55, roughness: 0.4 });
-    poser(new THREE.Mesh(new THREE.PlaneGeometry(l * (620 / 343), l), logo), 0, yEns, zEns + 0.06);
+  /* posée sur le bandeau de l'immeuble, au-dessus du linteau : lisible depuis la rue */
+  const hEns = 0.9, yEns = H + 0.75, zEns = fz + 0.3;
+  poser(boite(LX * 2 + 0.4, 1.7, 0.3, M.facade), 0, H + 0.85, fz + 0.12);   /* le bandeau */
+  poser(new THREE.Mesh(new THREE.BoxGeometry(LX * 2 - 0.6, 0.025, 0.04), new THREE.MeshBasicMaterial({ color: 0xffd2a0, toneMapped: false })), 0, fac.linteau - 0.04, fz + 0.24);   /* le filet de lumière sous le linteau */
+  poser(boite(3.4, hEns + 0.08, 0.14, M.facade), 0, yEns, zEns - 0.02);
+
+  const imgLogo = new Image();
+  imgLogo.onload = () => {
+    /* lettres lumineuses sur bandeau sombre : le fond blanc du logo s'efface, son noir devient crème */
+    const c = document.createElement('canvas'); c.width = imgLogo.naturalWidth; c.height = imgLogo.naturalHeight;
+    const g = c.getContext('2d'); g.drawImage(imgLogo, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height), px = d.data;
+    for (let i = 0; i < px.length; i += 4) {
+      const r = px[i], v = px[i + 1], b = px[i + 2], mx = Math.max(r, v, b), mn = Math.min(r, v, b), sat = mx - mn;
+      if (sat < 40 && mn > 200) px[i + 3] = Math.round(255 * Math.max(0, (255 - mn) / 55));          /* le blanc s'efface en douceur */
+      else if (sat < 40 && mx < 110) { px[i] = 246; px[i + 1] = 243; px[i + 2] = 238; }                 /* le noir devient crème */
+    }
+    g.putImageData(d, 0, 0);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    const l = hEns * 0.94, logo = new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false });
+    poser(new THREE.Mesh(new THREE.PlaneGeometry(l * (c.width / c.height), l), logo), 0, yEns, zEns + 0.06);
+  };
+  imgLogo.src = 'img/logo.png';
+}
+
+/* L'IMMEUBLE AU-DESSUS DE LA BOUTIQUE (audit jeu vidéo, vague 1) : sans lui, la façade s'arrêtait
+   net à 4,20 m, une boîte posée dans le vide. Deux étages d'enduit sombre, des fenêtres dont
+   certaines s'allument le soir, une corniche. */
+const fenetresImmeuble = [];
+/* l'enduit de l'immeuble : de jour il prend le soleil (le tamisage de l'intérieur ne doit pas assombrir la rue) */
+const enduitImmeuble = new THREE.MeshStandardMaterial({ color: 0x5a4f49, roughness: 0.92, emissive: 0x000000 });
+/* une fenêtre éclairée : lueur chaude plus forte en bas, un rideau tiré d'un côté, des croisillons */
+function texFenetre(h) {
+  return texteCanvas(128, 192, (g, W, Hh) => {
+    const gr = g.createLinearGradient(0, 0, 0, Hh); gr.addColorStop(0, '#5a3a1e'); gr.addColorStop(0.55, '#c98a4a'); gr.addColorStop(1, '#f2c48a');
+    g.fillStyle = gr; g.fillRect(0, 0, W, Hh);
+    const cote = h < 0.5 ? 0 : W * 0.55; g.fillStyle = 'rgba(40,22,12,.55)'; g.fillRect(cote, 0, W * 0.45, Hh);
+    for (let x = cote + 6; x < cote + W * 0.45; x += 9) { g.fillStyle = 'rgba(20,10,6,.25)'; g.fillRect(x, 0, 3, Hh); }
+    g.fillStyle = '#1d1a19'; g.fillRect(W / 2 - 3, 0, 6, Hh); g.fillRect(0, Hh * 0.42 - 3, W, 6);
   });
 }
+{
+  const enduit = enduitImmeuble;
+  poser(boite(LX * 2 + 0.8, 6.2, 0.4, enduit), 0, H + 1.7 + 3.1, fz + 0.05);
+  poser(boite(LX * 2 + 1.0, 0.16, 0.6, M.facade), 0, H + 1.7 + 6.2, fz + 0.1);
+  const vitre = new THREE.MeshStandardMaterial({ color: 0x0e1014, roughness: 0.15, metalness: 0.3 });
+  let graine = 7;
+  const hasard = () => ((graine = (graine * 9301 + 49297) % 233280) / 233280);
+  for (const etage of [0, 1]) for (let i = 0; i < 6; i++) {
+    const x = -LX + 1.2 + i * ((LX * 2 - 2.4) / 5), y = H + 2.6 + etage * 3.0;
+    const allumee = hasard() < 0.45;
+    const m = allumee ? new THREE.MeshStandardMaterial({ color: 0x1a120c, emissive: 0xffffff, emissiveMap: texFenetre(hasard()), emissiveIntensity: 0, roughness: 0.3 }) : vitre;
+    poser(new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.5), m), x, y, fz + 0.26);
+    poser(boite(1.12, 0.06, 0.12, M.facade), x, y - 0.78, fz + 0.3);
+    if (allumee) fenetresImmeuble.push(m);
+  }
+}
+/* le ciel au-dessus de la rue : bleu le jour ; la nuit, bleu profond et lueur chaude de la ville à l'horizon */
+const ciel3d = new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false, toneMapped: false,
+  uniforms: { haut: { value: new THREE.Color(0x5d8fc8) }, horizon: { value: new THREE.Color(0xc9dbe8) } },
+  vertexShader: 'varying vec3 vP; void main() { vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: 'uniform vec3 haut, horizon; varying vec3 vP; void main() { float h = clamp(vP.y * 1.6, 0.0, 1.0); gl_FragColor = vec4(mix(horizon, haut, pow(h, 0.7)), 1.0); }',
+});
+const domeCiel = new THREE.Mesh(new THREE.SphereGeometry(70, 32, 16), ciel3d); domeCiel.renderOrder = -1; scene.add(domeCiel);
+const CIEL = { jourH: new THREE.Color(0x5d8fc8), jourB: new THREE.Color(0xc9dbe8), nuitH: new THREE.Color(0x060914), nuitB: new THREE.Color(0x3a2418) };
 
 /* le plafond, percé du dôme, et SA ligne dorée */
 const forme = new THREE.Shape([new THREE.Vector2(-LX, -LZ), new THREE.Vector2(LX, -LZ), new THREE.Vector2(LX, LZ), new THREE.Vector2(-LX, LZ)]);
@@ -437,13 +508,47 @@ for (const pl of plan.plantes) {
    ================================================================ */
 const ciel = creerCiel(moteur, { facadeZ: fz, largeur: LX * 2, lieu: COTONOU });
 const graphe = creerGraphe(plan);
+const AVANCE_INTRO = new THREE.Vector3(0, -0.25, 5.4);
 const deplacement = creerDeplacement(moteur, graphe, { depart: params.has('direct') ? 'entree' : 'dehors', calque });
 /* on arrive dehors FACE à la boutique et à son enseigne, pas face à la rue */
-if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 2.7, plan.facade.z));   /* l'enseigne dans le tiers haut */
+if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 2.9, plan.facade.z));   /* l'enseigne dans le tiers haut */
+/* L'OUVERTURE CINÉMA (audit jeu vidéo, point 1) : au chargement, la caméra part du milieu de la rue
+   et avance lentement jusqu'au trottoir, le regard qui descend de l'enseigne vers la porte ; au
+   toucher d'« Entrer », elle accélère, les portes coulissent, on entre. Elle s'efface devant
+   « réduire les animations » et devant ?direct. La caméra est reprise APRÈS le déplacement à chaque
+   image, puis rendue exactement à la pose qu'il attend : aucun saut. */
+const intro = (!params.has('direct') && !matchMedia('(prefers-reduced-motion: reduce)').matches) ? { t: 0, dur: 7.5, vite: false, fini: false, surFin: null } : null;
+if (intro) {
+  const deb = new THREE.Vector3(), fin = new THREE.Vector3(), qDeb = new THREE.Quaternion(), qFin = new THREE.Quaternion();
+  const vise = new THREE.Matrix4(), haut = new THREE.Vector3(0, 1, 0), enseigne = new THREE.Vector3(0, 3.6, plan.facade.z);
+  const finIntro = moteur.chaqueImage((dt) => {
+    if (!btEntrer.disabled || intro.vite) intro.t += dt * (intro.vite ? 4 : 1);   /* il attend que le salon soit chargé */
+    const k = Math.min(1, intro.t / intro.dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    fin.copy(camera.position); qFin.copy(camera.quaternion);
+    deb.copy(fin).add(AVANCE_INTRO);
+    qDeb.setFromRotationMatrix(vise.lookAt(deb, enseigne, haut));
+    camera.position.lerpVectors(deb, fin, e);
+    camera.quaternion.slerpQuaternions(qDeb, qFin, e);
+    if (k >= 1) { finIntro(); intro.fini = true; if (intro.surFin) intro.surFin(); }
+  });
+}
 function deplacementPlus(objet, cible) { (window.__enAttente = window.__enAttente || []).push([objet, cible]); }
 for (const [o, c] of window.__enAttente || []) deplacement.ajouterInteractif(o, c);
 for (const id in totems) deplacement.ajouterInteractif(totems[id], { type: 'piece', id });
 
+const faisceauxCreations = [];
+/* LA CHORÉGRAPHIE DE LUMIÈRE (audit jeu vidéo, point 1) : à l'entrée, les projecteurs s'allument
+   un à un sur les créations, en 0,8 s chacun, à 0,35 s d'écart */
+let faisceauxAllumes = params.has('direct');   /* en direct, ils sont allumés d'emblée */
+function allumerFaisceaux() {
+  if (faisceauxAllumes) return; faisceauxAllumes = true;
+  let t = 0;
+  const fin = moteur.chaqueImage((dt) => {
+    t += dt; let tous = true;
+    faisceauxCreations.forEach((f, i) => { const k = Math.min(1, Math.max(0, (t - i * 0.35) / 0.8)); f.l.intensity = f.base * k * k * (3 - 2 * k); if (k < 1) tous = false; });
+    if (tous) fin();
+  });
+}
 /* LA LUMIÈRE TAMISÉE (Mongazi, 2026-11-12 : « ça doit être tamisé et ultra stylé… les lumières
    exceptionnelles et luxueuses ») : la pièce baisse, et chaque création exposée reçoit SON
    faisceau chaud, comme une maison de couture le soir. Le nombre de faisceaux suit la qualité
@@ -451,6 +556,7 @@ for (const id in totems) deplacement.ajouterInteractif(totems[id], { type: 'piec
    suffit à poser la lumière. */
 {
   const nb = q.nom === 'haute' ? 7 : q.nom === 'moyenne' ? 4 : 2;
+  /* sans « direct », ils attendent dans le noir que le visiteur entre (chorégraphie) */
   const exposees = Object.keys(totems).filter(id => totems[id].position.y < 1).slice(0, nb);
   const centre = new THREE.Vector3(0, 0, 0), p = new THREE.Vector3();
   for (const id of exposees) {
@@ -460,6 +566,8 @@ for (const id in totems) deplacement.ajouterInteractif(totems[id], { type: 'piec
     faisceau.position.set(p.x + versCentre.x * 1.1, H - 0.25, p.z + versCentre.z * 1.1);
     faisceau.target.position.set(p.x, 1.05, p.z);
     scene.add(faisceau, faisceau.target);
+    faisceauxCreations.push({ l: faisceau, base: faisceau.intensity });
+    if (!params.has('direct')) faisceau.intensity = 0;
   }
 }
 
@@ -552,7 +660,9 @@ reperes.ajouter({ id: 'hillary', genre: 'personne', nom: 'Hillary', ou: (v) => h
 reperes.ajouter({ id: 'affiches', nom: 'Les affiches', ou: (v) => panneaux[1].getWorldPosition(v).add(AUTRE.set(0, 0.95, 0)), faire: () => (deplacement.noeud !== 'evenements' ? deplacement.allerA('evenements', { puis: () => lireAffiche(1) }) : lireAffiche(1)) });
 reperes.ajouter({ id: 'ecran', nom: F.tiktok ? 'Son TikTok' : 'L\'écran de la maison', ou: (v) => ecranTiktok.getWorldPosition(v).add(AUTRE.set(0.1, 1.1, 0)), faire: () => (deplacement.noeud !== 'tiktok' ? deplacement.allerA('tiktok', { puis: toucherTiktok }) : toucherTiktok()) });
 reperes.ajouter({ id: 'porte', genre: 'porte', nom: () => (deplacement.noeud === 'dehors' ? 'Entrer' : 'Sortir'), ou: (v) => v.set(0, 2.25, fz),
-  faire: () => deplacement.allerA(deplacement.noeud === 'dehors' ? 'entree' : 'dehors') });
+  faire: () => deplacement.allerA(deplacement.noeud === 'dehors' ? 'entree' : 'dehors'),
+  /* pas de point « Entrer » ni « Sortir » au-dessus de la tête quand on franchit la porte */
+  si: () => Math.hypot(camera.position.x, camera.position.z - fz) > 2.6 });
 
 /* ---------- les invites posées sur place (« PAYER » de la référence) ---------- */
 const invite = document.createElement('button'); invite.type = 'button'; invite.className = 'invite'; calque.appendChild(invite);
@@ -688,14 +798,15 @@ deplacement.surArrivee.push((id) => {
 });
 
 /* ---------- la course d'Afi : elle vient d'elle-même ---------- */
-let afiPrete = false;
+let afiPrete = false, afiPreteA = 0;
 /* l'accroche : Afi vient dans les premières secondes, dès qu'on est entré (référence : la course
    est confiée avant la 10e seconde) */
-deplacement.surArrivee.push((id) => { if (id !== 'dehors') afiPrete = true; son.sortir(id === 'dehors'); });
+deplacement.surArrivee.push((id) => { if (id !== 'dehors') { if (!afiPrete) afiPreteA = moteur.temps(); afiPrete = true; allumerFaisceaux(); } son.sortir(id === 'dehors'); });
 deplacement.surDepart.push(() => son.sortir(false));
 moteur.chaqueImage((dt, t) => {
   /* elle n'aborde pas quelqu'un qui commande au comptoir, ni quelqu'un sur le trottoir */
-  if (ctx.quete === 0 && afiPrete && t > 7 && !dialogue.actif && !['comptoir', 'dehors'].includes(deplacement.noeud) && !document.body.classList.contains('en-fiche') && !document.body.classList.contains('en-cadran')) {
+  /* elle laisse d'abord la lumière s'allumer : 5 s après l'arrivée dans le salon (l'ouverture cinéma) */
+  if (ctx.quete === 0 && afiPrete && t > 7 && t > afiPreteA + 5 && !dialogue.actif && !['comptoir', 'dehors'].includes(deplacement.noeud) && !document.body.classList.contains('en-fiche') && !document.body.classList.contains('en-cadran')) {
     if (pnj.aborder('afi', 'afi_course')) ctx.quete = -1;   /* -1 : en route vers le joueur */
   }
 });
@@ -714,6 +825,9 @@ moteur.chaqueImage(() => {
   moteur.renderer.toneMappingExposure = melanger(0.95, 0.88, e.nuit) * (1 - e.pluie * 0.06);
   scene.environmentIntensity = melanger(0.24, 0.15, e.nuit);
   if (cielHemi) cielHemi.intensity *= 0.42;
+  ciel3d.uniforms.haut.value.copy(CIEL.jourH).lerp(CIEL.nuitH, e.nuit); ciel3d.uniforms.horizon.value.copy(CIEL.jourB).lerp(CIEL.nuitB, e.nuit);
+  for (const f of fenetresImmeuble) f.emissiveIntensity = 1.4 * e.nuit;
+  enduitImmeuble.emissive.setRGB(0.2, 0.17, 0.14).multiplyScalar(Math.max(0, 1 - e.nuit) * (1 - e.pluie * 0.4));
   moteur.reglerHalo(melanger(0.36, 0.55, e.nuit));
   son.ambiance(e);
 });
@@ -757,7 +871,9 @@ function entrer() {
   setTimeout(() => son.machineACoudre(new THREE.Vector3(plan.atelier.table.x, 0.9, plan.atelier.table.z)), 1500);
   ouverture.classList.add('partie');
   setTimeout(() => ouverture.remove(), 2200);
-  if (deplacement.noeud === 'dehors') setTimeout(() => deplacement.allerA('entree'), 700);
+  const avancer = () => { ouvrirPortes(); setTimeout(() => deplacement.allerA('entree'), 450); };
+  if (deplacement.noeud === 'dehors') { if (intro && !intro.fini) { intro.vite = true; intro.surFin = avancer; } else setTimeout(avancer, 300); }
+  else allumerFaisceaux();
   setTimeout(() => dialogue.sousTitre('hillary', ctx.visites > 1 ? 'Re-bonjour ! Entre, entre.' : 'Bienvenue ! Viens, approche-toi.'), 2600);
 }
 btEntrer.onclick = entrer;

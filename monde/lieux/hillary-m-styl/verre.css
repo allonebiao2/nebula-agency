@@ -325,3 +325,7 @@ body:has(#ouverture:not(.partie)) :is(.hud, .bt-sac, .bt-carnet, .repere, .point
 .cd-boutons .cd-pas:has(.cd-suivant:not([hidden])) { flex: 1; }
 .cd-boutons .cd-actions { flex: 1; }
 .cadran section[data-etape="2"] > h3, .cadran section[data-etape="3"] > h3 { display: none; }
+
+/* vague 1 (l'ouverture cinéma) : la carte de titre ne se pose plus sur les sous-titres du bas */
+.carte-titre { bottom: calc(22% + env(safe-area-inset-bottom)); }
+@media (max-width: 560px) { .carte-titre { bottom: calc(118px + env(safe-area-inset-bottom)); } }

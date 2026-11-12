@@ -166,9 +166,11 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     if (document.body.classList.contains('en-fiche') || document.body.classList.contains('en-cadran')) return;
     const avant = new THREE.Vector3(-Math.sin(deplacement.lacet), 0, -Math.cos(deplacement.lacet));
     const ici = new THREE.Vector3(camera.position.x, 0, camera.position.z);
-    const rdv = ici.clone().addScaledVector(avant, 1.25);
-    /* arrivée : à son rendez-vous, ou déjà tout près du joueur */
-    if (r.distanceTo(rdv) > 0.35 && r.distanceTo(ici) > 1.5) {
+    /* ⚠️ 1,60 m : au téléphone, en portrait, le champ vertical est très ouvert, et à 1,25 m son visage
+       remplissait l'écran (capture du 2026-11-13) ; à 1,60 m on cadre la tête et le buste */
+    const rdv = ici.clone().addScaledVector(avant, 1.6);
+    /* arrivée : à son rendez-vous, ou déjà assez près du joueur */
+    if (r.distanceTo(rdv) > 0.35 && r.distanceTo(ici) > 1.8) {
       /* ⚠️ on ne recalcule le chemin que si le joueur a VRAIMENT bougé : recalculer toutes
          les 2 s la renvoyait au point de passage le plus proche, et elle n'arrivait jamais */
       const bouge = !ab.cible || ab.cible.distanceTo(rdv) > 1;
