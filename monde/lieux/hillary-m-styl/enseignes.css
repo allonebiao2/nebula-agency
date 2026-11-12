@@ -123,7 +123,10 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .dlg-nom { position: absolute; top: -13px; left: 16px; margin: 0; padding: 5px 11px; border-radius: 4px; background: var(--c, var(--pot-magenta)); color: var(--pot-encre);
   font: 900 .8rem var(--lettre); letter-spacing: .06em; box-shadow: var(--ombre-plaque); }
 .dlg-texte { color: var(--pot-appret); font-size: 1.02rem; line-height: 1.52; max-width: 62ch; }
-.dlg-suite { color: var(--pot-jaune); }
+/* ⚠️ dialogue.js pose la couleur de la personne EN LIGNE sur le nom : sans !important, le nom
+   s'écrivait rose sur sa plaque rose, invisible (capture du 2026-11-12) */
+.dialogue .dlg-nom { color: var(--pot-encre) !important; }
+.dlg-suite { font-size: 0; width: 9px; height: 12px; right: 20px; bottom: 16px; background: var(--pot-jaune); clip-path: polygon(0 0, 100% 50%, 0 100%); }
 .dlg-partir { top: 10px; right: 10px; min-height: 32px; padding: 0 10px; background: var(--pot-appret); color: var(--pot-encre); font-size: .7rem; }
 .dlg-partir:hover { background: var(--marque-f); color: var(--pot-appret); }
 .losange { border-color: var(--pot-jaune); box-shadow: none; background: var(--pot-encre); border-radius: 2px; }
@@ -142,6 +145,10 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .opt { min-height: 44px; padding: 0 14px; background: var(--pot-appret); color: var(--pot-encre); font-size: .72rem; }
 .opt:hover, .opt:focus-visible { background: var(--pot-jaune); }
 .opt i { display: none; }
+/* l'action principale reste magenta : la règle générale de .opt, plus bas, l'écrasait */
+.opt.opt-principal { background: var(--marque-f); color: var(--pot-appret); }
+.opt.opt-principal:hover, .opt.opt-principal:focus-visible { background: var(--pot-magenta-nuit); }
+.opt-titre small { text-shadow: none; }
 
 /* ---------- la fiche d'une pièce : une grande enseigne qui se retourne ---------- */
 .fiche { background: rgba(21,17,15,.72); }
