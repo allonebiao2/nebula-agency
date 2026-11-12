@@ -12,7 +12,11 @@ import { THREE } from './moteur.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 
-const ANIMATIONS = ['marcher', 'parler', 'saluer', 'hocher', 'reflechir', 'regarder'];
+const ANIMATIONS = ['marcher', 'parler', 'saluer', 'hocher', 'reflechir', 'regarder', 'parler-2', 'attendre-2', 'demarrer', 'arreter'];
+/* plusieurs gestes par situation, tirés au hasard (audit jeu vidéo, vague 2) : jamais le même en boucle */
+const VARIANTES = { parler: ['parler', 'parler-2'], attendre: ['attendre', 'attendre-2'] };
+/* jouées une fois, autour de la marche ; leur déplacement propre est retiré (c'est le code qui fait avancer) */
+const UNE_FOIS = new Set(['demarrer', 'arreter']);
 
 /* l'état de la silhouette → l'animation du corps */
 function animationVoulue(st) {
@@ -55,7 +59,16 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
 
   const melangeur = new THREE.AnimationMixer(modele);
   const actions = {};
-  const ajouter = (nom, clip) => { if (clip) { clip.name = nom; actions[nom] = melangeur.clipAction(clip); } };
+  const ajouter = (nom, clip) => {
+    if (!clip) return;
+    clip.name = nom;
+    if (UNE_FOIS.has(nom)) for (const piste of clip.tracks) if (/Hips\.position$/.test(piste.name)) {
+      const v = piste.values, x0 = v[0], z0 = v[2];
+      for (let i = 0; i < v.length; i += 3) { v[i] = x0; v[i + 2] = z0; }
+    }
+    actions[nom] = melangeur.clipAction(clip);
+    if (UNE_FOIS.has(nom)) { actions[nom].setLoop(THREE.LoopOnce, 1); actions[nom].clampWhenFinished = true; }
+  };
   ajouter('attendre', modele.animations[0]);
   if (!actions.attendre) throw new Error(`${prefixe} : aucune animation dans ${prefixe}-attendre.fbx`);
   let courante = 'attendre';
@@ -81,8 +94,8 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
   modele.position.y = -bas * s;
 
   /* la tête suit encore le regard que la silhouette calcule (vers le joueur, vers une autre) */
-  let tete = null;
-  modele.traverse((o) => { if (!tete && o.isBone && /Head$/.test(o.name)) tete = o; });
+  let tete = null, cou = null;
+  modele.traverse((o) => { if (!tete && o.isBone && /Head$/.test(o.name)) tete = o; if (!cou && o.isBone && /Neck$/.test(o.name)) cou = o; });
   const e = new THREE.Euler(0, 0, 0, 'YXZ'), q = new THREE.Quaternion();
 
   /* le corps remplace la silhouette */
@@ -91,25 +104,64 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
   if (tete) perso.positionTete = (v = new THREE.Vector3()) => tete.getWorldPosition(v);
 
   const majSilhouette = perso.maj;
+  /* l'état « de base » (marcher, parler, attendre…) et le clip qui le joue (une variante) */
+  let base = 'attendre', transitoire = null, prochainChangement = 0, rotPrec = perso.racine.rotation.y;
+  const dernier = {};
+  function choisir(b) {
+    const liste = (VARIANTES[b] || [b]).filter(n => actions[n]);
+    if (!liste.length) return actions[b] ? b : 'attendre';
+    let n = liste[Math.floor(Math.random() * liste.length)];
+    if (liste.length > 1 && n === dernier[b]) n = liste[(liste.indexOf(n) + 1) % liste.length];
+    return (dernier[b] = n);
+  }
+  function jouer(nom, duree = fondu) {
+    const vers = actions[nom]; if (!vers || nom === courante) return;
+    const de = actions[courante];
+    vers.reset(); vers.setEffectiveTimeScale(1); vers.setEffectiveWeight(1); vers.play();
+    if (de) vers.crossFadeFrom(de, duree, true);
+    courante = nom;
+  }
+  melangeur.addEventListener('finished', (ev) => { if (transitoire && ev.action === actions[transitoire]) transitoire = null; });
+
   perso.maj = (dt, t) => {
     majSilhouette(dt, t);
     const st = perso.st;
     let voulue = animationVoulue(st);
-    if (!actions[voulue]) voulue = 'attendre';
-    if (voulue !== courante) {
-      const de = actions[courante], vers = actions[voulue];
-      vers.reset(); vers.setEffectiveTimeScale(1); vers.setEffectiveWeight(1); vers.play();
-      vers.crossFadeFrom(de, fondu, true);
-      courante = voulue;
+    if (!actions[voulue] && !VARIANTES[voulue]) voulue = 'attendre';
+    /* une animation jouée une fois se laisse finir, sauf si l'on se met à parler ou à saluer */
+    if (transitoire && (voulue === 'parler' || voulue === 'saluer')) transitoire = null;
+    if (!transitoire) {
+      if (voulue !== base) {
+        if (voulue === 'marcher' && actions.demarrer) { jouer('demarrer', 0.2); transitoire = 'demarrer'; }
+        else if (base === 'marcher' && voulue !== 'parler' && voulue !== 'saluer' && actions.arreter) { jouer('arreter', 0.25); transitoire = 'arreter'; }
+        else jouer(choisir(voulue));
+        base = voulue; prochainChangement = t + 6 + Math.random() * 4;
+      } else if (UNE_FOIS.has(courante)) {
+        jouer(choisir(base), 0.3);   /* le départ ou l'arrêt fini, on enchaîne sur la marche ou l'attente */
+      } else if ((base === 'parler' || base === 'attendre') && t > prochainChangement) {
+        jouer(choisir(base), 0.6);   /* une longue réplique, une longue attente : le geste change */
+        prochainChangement = t + (base === 'parler' ? 5 + Math.random() * 3 : 9 + Math.random() * 5);
+      }
     }
+    /* la marche suit la vitesse réelle ; à l'arrêt, si elle pivote, ses pieds piétinent au lieu de glisser */
+    const vitesseRot = Math.abs(Math.atan2(Math.sin(perso.racine.rotation.y - rotPrec), Math.cos(perso.racine.rotation.y - rotPrec))) / Math.max(dt, 1e-3);
+    rotPrec = perso.racine.rotation.y;
     if (courante === 'marcher') actions.marcher.setEffectiveTimeScale(THREE.MathUtils.clamp(st.vitesse / vitesseMarche, 0.6, 1.6));
+    if (!transitoire && base === 'attendre' && vitesseRot > 1.2 && actions.marcher && courante !== 'marcher') { jouer('marcher', 0.15); actions.marcher.setEffectiveTimeScale(0.55); }
+    else if (base === 'attendre' && courante === 'marcher' && vitesseRot < 0.3) jouer(choisir('attendre'), 0.3);
     melangeur.update(dt);
-    if (tete) { e.set(st.teteTangage * 0.8, st.teteLacet * 0.8, 0); tete.quaternion.multiply(q.setFromEuler(e)); }
+    /* le regard : le cou en prend 40 %, la tête 60 % (une tête seule qui tourne fait poupée) */
+    if (tete) {
+      if (cou) { e.set(st.teteTangage * 0.3, st.teteLacet * 0.35, 0); cou.quaternion.multiply(q.setFromEuler(e)); }
+      e.set(st.teteTangage * (cou ? 0.5 : 0.8), st.teteLacet * (cou ? 0.5 : 0.8), 0); tete.quaternion.multiply(q.setFromEuler(e));
+    }
   };
 
   /* les autres animations arrivent ensuite, sans retenir l'apparition du corps */
   Promise.allSettled(ANIMATIONS.map(n => charger(n).then(o => ajouter(n, o.animations[0]))))
     .then(r => { const rates = r.filter(x => x.status === 'rejected').length; if (rates) console.warn(`${prefixe} : ${rates} animation(s) manquante(s)`); });
 
+  /* pour les contrôles : le geste joué en ce moment */
+  perso.animation = () => courante;
   return { modele, actions };
 }
