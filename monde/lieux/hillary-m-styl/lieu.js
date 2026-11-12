@@ -43,6 +43,11 @@ const q = moteur.qualite;
 scene.background = new THREE.Color(0x0b0a0c);
 const M = { sol: MATIERES.sol(), platre: MATIERES.platre(), laque: MATIERES.laque(), chene: MATIERES.chene(), laiton: MATIERES.laiton(),
   encre: MATIERES.encre(), creme: MATIERES.creme(), porcelaine: MATIERES.porcelaine(), velours: MATIERES.velours(0xa0145c), verre: MATIERES.verre() };
+/* LE SALON TAMISÉ (Mongazi, 2026-11-12 : « tamisé et ultra stylé ») : des murs taupe expresso et un
+   plafond brun nuit, pour que la lumière chaude DESSINE la pièce au lieu de rebondir partout ; les
+   présentoirs laqués restent clairs, les tissus et les robes ressortent. */
+const MUR_TAMISE = 0x4b3d37;
+M.platre.color.set(MUR_TAMISE);
 
 let aCharger = 0, charges = 0;
 const chargeur = new THREE.TextureLoader();
@@ -125,13 +130,13 @@ poser(boite(fac.porte.x2 - fac.porte.x1, 0.05, 0.08, M.laiton), 0, fac.porte.hau
 const forme = new THREE.Shape([new THREE.Vector2(-LX, -LZ), new THREE.Vector2(LX, -LZ), new THREE.Vector2(LX, LZ), new THREE.Vector2(-LX, LZ)]);
 const trou = new THREE.Path(); trou.absarc(plan.dome.x, plan.dome.z, plan.dome.rayon, 0, Math.PI * 2, true); forme.holes.push(trou);
 /* le plafond a sa propre matière, légèrement lumineuse : sous le seul éclairage d'ambiance, il virait au brun */
-const plafond = new THREE.Mesh(new THREE.ShapeGeometry(forme, 64), new THREE.MeshStandardMaterial({ color: 0xfbf8f2, roughness: 0.95, emissive: 0x3a3530 }));
+const plafond = new THREE.Mesh(new THREE.ShapeGeometry(forme, 64), new THREE.MeshStandardMaterial({ color: 0x2b2421, roughness: 0.9, emissive: 0x0c0907 }));
 plafond.rotation.x = Math.PI / 2; plafond.position.y = H; scene.add(plafond);
-const texLavis = texteCanvas(8, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#f7efe1'); gr.addColorStop(1, '#ffd79a'); g.fillStyle = gr; g.fillRect(0, 0, 8, 256); });
+const texLavis = texteCanvas(8, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#231a14'); gr.addColorStop(0.55, '#6b4423'); gr.addColorStop(1, '#e0a058');   /* tamisé : un halo ambré qui monte de la ligne dorée et se perd dans le fond sombre */ g.fillStyle = gr; g.fillRect(0, 0, 8, 256); });
 const matLavis = new THREE.MeshBasicMaterial({ map: texLavis, side: THREE.BackSide });
 const paroiDome = new THREE.Mesh(new THREE.CylinderGeometry(plan.dome.rayon, plan.dome.rayon, plan.dome.creux, 96, 1, true), matLavis);
 poser(paroiDome, plan.dome.x, H + plan.dome.creux / 2, plan.dome.z);
-const fondDome = new THREE.Mesh(new THREE.CircleGeometry(plan.dome.rayon, 96), new THREE.MeshBasicMaterial({ color: 0xf7f1e7 }));
+const fondDome = new THREE.Mesh(new THREE.CircleGeometry(plan.dome.rayon, 96), new THREE.MeshBasicMaterial({ color: 0x1e1713 }));
 fondDome.rotation.x = Math.PI / 2; poser(fondDome, plan.dome.x, H + plan.dome.creux, plan.dome.z);
 const matLigne = new THREE.MeshBasicMaterial({ color: new THREE.Color(2.4, 1.75, 0.9), toneMapped: false });
 const ligneDoree = new THREE.Mesh(new THREE.TorusGeometry(plan.dome.rayon - 0.02, 0.022, 8, 160), matLigne);
@@ -148,10 +153,10 @@ function spot(x, z, r = 0.9, force = 0.5) {
 interieurs.push({ maj: (n, pluie) => { for (const k of flaques) k.f.material.opacity = k.force * melanger(0.45, 1.0, Math.max(n, pluie * 0.6)); } });
 
 /* les vraies lumières, peu nombreuses (chacune coûte sur un téléphone) */
-const lampes = [new THREE.PointLight(0xffd9a8, 0, 11, 2), new THREE.PointLight(0xffd2a0, 0, 9, 2)];
+const lampes = [new THREE.PointLight(0xffc98a, 0, 11, 2), new THREE.PointLight(0xffc488, 0, 9, 2)];
 lampes[0].position.set(0, 3.5, 0.4); lampes[1].position.set(0, 3.2, -3.8);
 scene.add(lampes[0]); if (q.nom !== 'basse') scene.add(lampes[1]);
-interieurs.push({ maj: (n, pluie) => { const k = Math.max(n, pluie * 0.5); lampes[0].intensity = melanger(4, 14, k); lampes[1].intensity = melanger(3, 10, k); } });
+interieurs.push({ maj: (n, pluie) => { const k = Math.max(n, pluie * 0.5); lampes[0].intensity = melanger(5, 9, k); lampes[1].intensity = melanger(4, 7, k); } });
 
 /* ================================================================
    2 · LES PIÈCES D'HILLARY : podiums, totems, mur des créations
@@ -439,6 +444,25 @@ function deplacementPlus(objet, cible) { (window.__enAttente = window.__enAttent
 for (const [o, c] of window.__enAttente || []) deplacement.ajouterInteractif(o, c);
 for (const id in totems) deplacement.ajouterInteractif(totems[id], { type: 'piece', id });
 
+/* LA LUMIÈRE TAMISÉE (Mongazi, 2026-11-12 : « ça doit être tamisé et ultra stylé… les lumières
+   exceptionnelles et luxueuses ») : la pièce baisse, et chaque création exposée reçoit SON
+   faisceau chaud, comme une maison de couture le soir. Le nombre de faisceaux suit la qualité
+   (chacun coûte sur un téléphone). Aucune ombre portée : trop chère, et la flaque peinte au sol
+   suffit à poser la lumière. */
+{
+  const nb = q.nom === 'haute' ? 7 : q.nom === 'moyenne' ? 4 : 2;
+  const exposees = Object.keys(totems).filter(id => totems[id].position.y < 1).slice(0, nb);
+  const centre = new THREE.Vector3(0, 0, 0), p = new THREE.Vector3();
+  for (const id of exposees) {
+    totems[id].getWorldPosition(p);
+    const versCentre = centre.clone().sub(p).setY(0).normalize();
+    const faisceau = new THREE.SpotLight(0xffcf96, 34, 7.5, 0.36, 0.8, 2);
+    faisceau.position.set(p.x + versCentre.x * 1.1, H - 0.25, p.z + versCentre.z * 1.1);
+    faisceau.target.position.set(p.x, 1.05, p.z);
+    scene.add(faisceau, faisceau.target);
+  }
+}
+
 const son = creerSon();
 deplacement.surPas.push(() => son.pas());
 ciel.surEclair.push(() => son.tonnerre(0.8 + Math.random() * 2.5));
@@ -679,13 +703,16 @@ dialogue.surFermeture.push(() => {
   afiPrete = false; setTimeout(() => { afiPrete = ctx.quete === 0; }, 25000);
 });
 
+let cielHemi = null; scene.traverse(o => { if (o.isHemisphereLight) cielHemi = o; });
 /* ---------- la nuit, la pluie, à l'intérieur ---------- */
 moteur.chaqueImage(() => {
   const e = ciel.etat;
   for (const i of interieurs) i.maj(e.nuit, e.pluie);
-  moteur.renderer.toneMappingExposure = melanger(1.05, 0.95, e.nuit) * (1 - e.pluie * 0.08);
-  scene.environmentIntensity = melanger(0.6, 0.32, e.nuit);
-  moteur.reglerHalo(melanger(0.28, 0.5, e.nuit));
+  /* tamisé : la pièce reste basse de jour comme de nuit ; la lumière du ciel n'y entre qu'à moitié */
+  moteur.renderer.toneMappingExposure = melanger(0.95, 0.88, e.nuit) * (1 - e.pluie * 0.06);
+  scene.environmentIntensity = melanger(0.24, 0.15, e.nuit);
+  if (cielHemi) cielHemi.intensity *= 0.42;
+  moteur.reglerHalo(melanger(0.36, 0.55, e.nuit));
   son.ambiance(e);
 });
 
@@ -746,7 +773,7 @@ async function embellir() {
   await R.eclairage('photo_studio_loft_hall', 0.6);
   await Promise.all([
     R.matiere(M.sol, 'marble_01', { repeat: [8, 6], relief: 0.5 }),
-    R.matiere(M.platre, 'painted_plaster_wall', { repeat: [5, 2], teinte: 0xf4ede3, relief: 0.35 }).then(() => { M.platre.map = null; M.platre.color.set(0xf6f0e6); M.platre.needsUpdate = true; }),   /* le relief du plâtre, pas son gris : sa référence a des murs crème lisses */
+    R.matiere(M.platre, 'painted_plaster_wall', { repeat: [5, 2], teinte: 0xf4ede3, relief: 0.35 }).then(() => { M.platre.map = null; M.platre.color.set(MUR_TAMISE); M.platre.needsUpdate = true; }),   /* le relief du plâtre, pas son gris : sa référence a des murs crème lisses */
     R.matiere(M.chene, 'oak_veneer_01', { repeat: [1, 2] }),
     R.matiere(M.velours, 'velour_velvet', { repeat: [2, 2], teinte: 0xd8307f }),
   ]);
