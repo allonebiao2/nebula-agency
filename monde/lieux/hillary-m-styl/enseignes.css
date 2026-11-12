@@ -71,7 +71,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .hud-son svg { stroke: var(--pot-appret); }
 .objectif { top: calc(max(10px, env(safe-area-inset-top)) + 54px); left: 12px; padding: 10px 13px; border-left: 0; border-radius: 5px; background: var(--pot-bleu); color: var(--pot-appret);
   box-shadow: inset 0 0 0 3px var(--pot-bleu), inset 0 0 0 4.5px rgba(242,237,228,.55), var(--ombre-plaque); font-size: .84rem; }
-.objectif small { color: var(--pot-jaune); font-weight: 800; font-size: .64rem; }
+.objectif small { color: var(--pot-jaune); font-weight: 800; font-size: .7rem; }
 .objectif.fini { background: var(--pot-encre); box-shadow: inset 0 0 0 3px var(--pot-encre), inset 0 0 0 4.5px var(--pot-jaune), var(--ombre-plaque); }
 
 /* le sac et le carnet : leur état est peint sur la plaque, pas dans une pastille */
@@ -90,15 +90,15 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .repere i { width: 16px; height: 16px; background: var(--pot-magenta); border: 3px solid var(--pot-appret); box-shadow: 0 2px 0 rgba(0,0,0,.35), 0 6px 10px -3px rgba(0,0,0,.6); animation: none; }
 .repere.personne i { background: var(--pot-jaune); }
 .repere.porte i { background: var(--pot-bleu); }
-.repere span { padding: 5px 9px 5px 10px; border-radius: 4px; background: var(--pot-appret); color: var(--pot-encre); font: 800 .66rem var(--police-libelle);
+.repere span { padding: 5px 9px 5px 10px; border-radius: 4px; background: var(--pot-appret); color: var(--pot-encre); font: 800 .7rem var(--police-libelle);
   letter-spacing: .1em; text-transform: uppercase; box-shadow: var(--ombre-plaque); }
 .repere.personne span { background: var(--pot-encre); color: var(--pot-jaune); }
 .repere:hover span, .repere:focus-visible span { background: var(--pot-magenta); color: var(--pot-appret); }
 .point-etiquette { min-height: 32px; padding: 6px 11px; border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque);
-  font: 800 .64rem var(--police-libelle); letter-spacing: .12em; text-transform: uppercase; }
+  font: 800 .7rem var(--police-libelle); letter-spacing: .12em; text-transform: uppercase; }
 .point-etiquette::after { width: 2px; height: 10px; bottom: -10px; transform: translateX(-50%); background: var(--pot-encre); }
 .point-etiquette:hover { background: var(--pot-magenta); }
-.pnj-nom { border-radius: 3px; background: var(--pot-encre); color: var(--c, var(--pot-appret)); font: 800 .64rem var(--police-libelle); letter-spacing: .12em; box-shadow: var(--ombre-plaque); }
+.pnj-nom { border-radius: 3px; background: var(--pot-encre); color: var(--c, var(--pot-appret)); font: 800 .7rem var(--police-libelle); letter-spacing: .12em; box-shadow: var(--ombre-plaque); }
 .invite { min-height: 46px; border-radius: 5px; background: var(--pot-appret); color: var(--pot-encre); font: 800 .78rem var(--police-libelle); letter-spacing: .09em; text-transform: uppercase;
   box-shadow: inset 0 0 0 3px var(--pot-appret), inset 0 0 0 4.5px var(--pot-magenta), var(--ombre-plaque); }
 .invite i { color: var(--pot-magenta); }
@@ -106,12 +106,12 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 /* ---------- les sous-titres et la carte de titre ---------- */
 .soustitres { left: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); }
 .st-ligne { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); text-shadow: none; font-size: .9rem; box-shadow: var(--ombre-plaque); }
-.st-ligne b { color: var(--c, var(--pot-jaune)); font-weight: 800; font-size: .66rem; letter-spacing: .12em; }
+.st-ligne b { color: var(--c, var(--pot-jaune)); font-weight: 800; font-size: .7rem; letter-spacing: .12em; }
 .carte-titre { left: 12px; padding: 12px 16px 13px; border-left: 0; border-radius: 6px; background: var(--pot-jaune); color: var(--pot-encre);
   box-shadow: inset 0 0 0 4px var(--pot-jaune), inset 0 0 0 5.5px var(--pot-encre), var(--ombre-plaque); }
 .carte-titre b { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 0; text-shadow: 2px 2px 0 var(--pot-magenta); }
-.carte-titre span { color: var(--pot-encre); font-weight: 800; font-size: .68rem; }
-.maquette { color: rgba(242,237,228,.5); font-size: .58rem; }
+.carte-titre span { color: var(--pot-encre); font-weight: 800; font-size: .7rem; }
+.maquette { color: rgba(242,237,228,.5); font-size: .7rem; }
 
 /* ---------- le dialogue : un panneau peint, ancré en bas ---------- */
 .bandes.ouvertes i { background: var(--pot-encre); }
@@ -121,7 +121,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
   font: 900 .8rem var(--lettre); letter-spacing: .06em; box-shadow: var(--ombre-plaque); }
 .dlg-texte { color: var(--pot-appret); font-size: 1.02rem; line-height: 1.52; max-width: 62ch; }
 .dlg-suite { color: var(--pot-jaune); }
-.dlg-partir { top: 10px; right: 10px; min-height: 32px; padding: 0 10px; background: var(--pot-appret); color: var(--pot-encre); font-size: .6rem; }
+.dlg-partir { top: 10px; right: 10px; min-height: 32px; padding: 0 10px; background: var(--pot-appret); color: var(--pot-encre); font-size: .7rem; }
 .dlg-partir:hover { background: var(--pot-magenta); color: var(--pot-appret); }
 .losange { border-color: var(--pot-jaune); box-shadow: none; background: var(--pot-encre); border-radius: 2px; }
 .ch { min-height: 44px; padding: 9px 13px; background: var(--pot-appret); color: var(--pot-encre); font-size: .72rem; line-height: 1.3; letter-spacing: .07em; }
@@ -145,15 +145,15 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .fiche-cadre { border-radius: 8px; background: var(--pot-appret); color: var(--pot-encre);
   box-shadow: inset 0 0 0 8px var(--pot-appret), inset 0 0 0 9.5px var(--pot-encre), 0 5px 0 rgba(0,0,0,.4), 0 40px 70px -20px rgba(0,0,0,.85); }
 .fiche-photo { background: var(--pot-appret-use); border-radius: 8px 0 0 8px; margin: 10px 0 10px 10px; }
-.fiche-vraie { border-radius: 3px; background: var(--pot-encre); color: var(--pot-appret); font: 800 .58rem var(--police-libelle); }
-.fiche-tourner { background: var(--pot-encre); color: var(--pot-appret); font-size: .64rem; }
+.fiche-vraie { border-radius: 3px; background: var(--pot-encre); color: var(--pot-appret); font: 800 .7rem var(--police-libelle); }
+.fiche-tourner { background: var(--pot-encre); color: var(--pot-appret); font-size: .7rem; }
 .fiche-infos { padding: 30px 28px 26px; }
-.fiche-rang { color: var(--pot-magenta); font-weight: 800; font-size: .66rem; }
+.fiche-rang { color: var(--pot-magenta); font-weight: 800; font-size: .7rem; }
 .fiche-infos h2 { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; font-size: clamp(1.7rem, 4.4vw, 2.7rem); line-height: .95; letter-spacing: -.005em; margin: 8px 0 12px;
   text-shadow: 2px 2px 0 var(--pot-jaune); }
 .fiche-ds { color: var(--pot-encre-douce); font-size: .95rem; max-width: 60ch; }
 .stat { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque); }
-.stat span { color: var(--pot-jaune); font-weight: 800; font-size: .6rem; }
+.stat span { color: var(--pot-jaune); font-weight: 800; font-size: .7rem; }
 .stat b { font-family: var(--lettre); font-weight: 900; font-size: 1.25rem; letter-spacing: .01em; }
 .stat small { color: var(--pot-appret-use); }
 .stat-express { background: var(--pot-magenta); }
@@ -183,7 +183,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .carnet-savoir b { color: var(--pot-magenta); font-weight: 800; }
 .carnet-savoir small { color: var(--pot-encre-douce); }
 .toast { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque); font-size: .84rem; }
-.toast-annuler { background: var(--pot-magenta); color: var(--pot-appret); font-size: .62rem; }
+.toast-annuler { background: var(--pot-magenta); color: var(--pot-appret); font-size: .7rem; }
 
 /* ---------- le cadran de la commande ---------- */
 .cadran { background: rgba(21,17,15,.74); }
@@ -196,7 +196,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .cd-choix label { border-radius: 4px; background: var(--pot-appret-use); }
 .cadran input:not([type=radio]), .cadran select, .cadran textarea { border-radius: 4px; border: 2px solid var(--pot-encre); }
 .cadran input::placeholder, .cadran textarea::placeholder { color: var(--pot-encre-douce); }
-.puce { background: var(--pot-appret); color: var(--pot-magenta); border: 0; box-shadow: inset 0 0 0 1.5px var(--pot-magenta), var(--ombre-plaque); font-size: .62rem; }
+.puce { background: var(--pot-appret); color: var(--pot-magenta); border: 0; box-shadow: inset 0 0 0 1.5px var(--pot-magenta), var(--ombre-plaque); font-size: .7rem; }
 .cadran footer { background: var(--pot-appret-use); border-top: 0; }
 .cd-total b { color: var(--pot-magenta); font-family: var(--lettre); font-weight: 900; }
 .cd-encore { color: var(--pot-magenta-nuit); }
