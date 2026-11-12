@@ -25,7 +25,14 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
 > - ✅ **L'interface est en verre** (`lieux/hillary-m-styl/verre.css`). Mongazi a rejeté les « enseignes peintes », trouvées **ringardes**, et veut des boutons plats, petits, translucides, et rien qui cache la scène.
 > - ✅ **On arrive dehors**, face au caisson lumineux qui porte le logo d'Hillary, avec un petit bouton de verre « Entrer ».
 > - ✅ Les conversations suivent la vidéo Call of Duty : sous-titres en boîtes translucides, réponses en croix au centre.
-> - ⚠️ **Rien de tout cela n'a été REGARDÉ à l'écran** : le PC saturait et Chrome ne répondait plus. Lancer `python monde/_qc.py`, puis regarder `monde/_vues/tel-*.png`.
+> - ✅ **Tout est REGARDÉ** (20 h 25). QC 48/48 au téléphone. Dialogue Call of Duty vérifié (`_vues/tel-03-dialogue.png`). Arrivée dehors vérifiée (`_vues/tel-00-arrivee.png`). Rendu cinéma vérifié (`_vues/ordi-00-cinema.png`). Script de capture : scratchpad `voir_dehors.py` ; à recopier dans `monde/_outils/` si on le garde.
+> - ✅ **Le rendu cinéma est branché** en qualité « haute » (`socle/moteur.js` : GTAO, étalonnage, SMAA, halo adouci). ⚠️ Ce PC est en « moyenne » : on le voit avec `?qualite=haute`.
+> - ⚠️ **Dehors reste pauvre** : on voit l'enseigne et l'intérieur par la vitrine, mais ni mur de façade ni trottoir crédibles. 🙋 Le vrai remède est **la capture d'une vraie rue** (vidéo iPhone, puis Gaussian splat).
+> - **LA CUISSON DE LA LUMIÈRE (Blender, prochaine grande étape)** :
+>   1. Ajouter `GLTFExporter` (`_studio-video/node_modules/three/examples/jsm/exporters/`) et un `__monde.exporterDecor()` qui exporte le décor fixe, sans personnages ni repères, avec un **nom stable par objet**.
+>   2. Lancer `blender -b -P monde/_outils/cuire.py` : import, UV de cuisson (Smart UV Project, UV2), cuisson Cycles « Diffuse, Indirect + Color » ou AO, une carte de lumière par grand objet, puis export des PNG.
+>   3. Côté three.js : `material.lightMap` sur l'UV2, objet par objet, retrouvé par son nom.
+>   ⚠️ Le jour et la nuit sont réels (MET Norway) : on ne cuit que la lumière **indirecte** (rebonds, ombres douces), et la lumière directe reste dynamique.
 > - ✅ **Epic et Unreal sont désinstallés**, à la demande de Mongazi. ⚠️ Le journal de la suppression des dossiers n'a pas été relu : vérifier que `C:\Program Files\Epic Games` a disparu.
 > - 🔨 **Blender s'installe sur `D:\Blender`** (`winget`), pour le précalcul de la lumière.
 >
