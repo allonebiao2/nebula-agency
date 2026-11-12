@@ -9,7 +9,8 @@
 :root {
   /* les cinq pots */
   --pot-magenta: #e6007e; --pot-encre: #15110f; --pot-appret: #f2ede4; --pot-jaune: #f2b705; --pot-bleu: #1d4e89;
-  /* mélanges des mêmes pots, jamais une sixième couleur */
+  /* mélanges des mêmes pots, jamais une sixième couleur. ⚠️ Sous un TEXTE, le magenta est le
+     profond (#b3006a, 6,4:1 avec l'apprêt) : le vif ne tient que 3,9:1, il reste aux surfaces sans texte. */
   --pot-magenta-nuit: #8a0a4f; --pot-appret-use: #d9d1c4; --pot-encre-douce: #4a423c;
   --marque: var(--pot-magenta); --marque-f: #b3006a; --encre: var(--pot-encre); --papier: var(--pot-appret); --or: var(--pot-jaune);
   --lettre: "Bodoni Moda", Georgia, serif;
@@ -18,7 +19,7 @@
   --ombre-plaque: 0 3px 0 rgba(0, 0, 0, .22), 0 10px 18px -6px rgba(0, 0, 0, .55);
   --vis: radial-gradient(circle at 50% 50%, var(--pot-appret-use) 0 1.6px, var(--pot-encre-douce) 2px 2.8px, transparent 3.2px);
 }
-::selection { background: var(--pot-magenta); color: var(--pot-appret); }
+::selection { background: var(--marque-f); color: var(--pot-appret); }
 html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); }
 :focus-visible { outline: 3px solid var(--pot-jaune); outline-offset: 3px; }
 * { scrollbar-width: thin; scrollbar-color: var(--pot-encre-douce) transparent; }
@@ -29,11 +30,11 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
   text-transform: uppercase; letter-spacing: .09em; font-weight: 800; transform-origin: 50% -6px;
 }
 .bt { min-height: 44px; padding: 0 1.15em; font-size: .78rem; }
-.bt-plein, .opt-principal { background: var(--pot-magenta); color: var(--pot-appret);
-  box-shadow: inset 0 0 0 4px var(--pot-magenta), inset 0 0 0 5.5px rgba(242,237,228,.85), var(--ombre-plaque); }
-.bt-plein:hover, .opt-principal:hover { background: var(--marque-f); box-shadow: inset 0 0 0 4px var(--marque-f), inset 0 0 0 5.5px rgba(242,237,228,.85), var(--ombre-plaque); }
-.bt-or { background: var(--pot-jaune); color: var(--pot-encre); box-shadow: inset 0 0 0 4px var(--pot-jaune), inset 0 0 0 5.5px var(--pot-encre), var(--ombre-plaque); }
-.bt-ligne { background: var(--pot-appret); color: var(--pot-encre); box-shadow: inset 0 0 0 1.5px var(--pot-encre), var(--ombre-plaque); }
+.bt-plein, .opt-principal { background: var(--marque-f); color: var(--pot-appret);
+  box-shadow: var(--ombre-plaque); outline: 1.5px solid rgba(242,237,228,.85); outline-offset: -5.5px; }
+.bt-plein:hover, .opt-principal:hover { background: var(--pot-magenta-nuit); box-shadow: var(--ombre-plaque); }
+.bt-or { background: var(--pot-jaune); color: var(--pot-encre); box-shadow: var(--ombre-plaque); outline: 1.5px solid var(--pot-encre); outline-offset: -5.5px; }
+.bt-ligne { background: var(--pot-appret); color: var(--pot-encre); box-shadow: var(--ombre-plaque); outline: 1.5px solid var(--pot-encre); outline-offset: -1.5px; }
 .bt.inactif, .bt:disabled { opacity: 1; background: var(--pot-appret-use); color: var(--pot-encre-douce); box-shadow: var(--ombre-plaque); cursor: wait; }
 .bt:active, .opt:active, .ch:active { transform: none; }
 
@@ -47,13 +48,15 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .ouv-portes i:last-child { box-shadow: inset 2px 0 0 var(--pot-magenta-nuit); }
 .ouv-contenu { max-width: 560px; padding: 20px; }
 .enseigne { position: relative; padding: 30px 30px 26px; border-radius: 8px; background: var(--pot-jaune); color: var(--pot-encre); text-align: left;
-  box-shadow: inset 0 0 0 9px var(--pot-jaune), inset 0 0 0 11.5px var(--pot-encre), 0 4px 0 rgba(0,0,0,.35), 0 26px 40px -14px rgba(0,0,0,.8);
+  box-shadow: 0 4px 0 rgba(0,0,0,.35), 0 26px 40px -14px rgba(0,0,0,.8); outline: 2.5px solid var(--pot-encre); outline-offset: -11.5px;
   background-image: var(--vis), var(--vis), var(--vis), var(--vis);
   background-size: 8px 8px; background-repeat: no-repeat; background-position: 16px 16px, calc(100% - 16px) 16px, 16px calc(100% - 16px), calc(100% - 16px) calc(100% - 16px); }
 .ouv-contenu .enseigne-sceau { display: block; width: 96px; height: auto; margin: 0 0 16px; padding: 5px 9px; border-radius: 3px; background: #fff; box-shadow: 0 2px 0 rgba(0,0,0,.25); }
 .ouv-contenu h1, .enseigne h1 { margin: 0; font-family: var(--lettre); font-weight: 900; font-size: clamp(2.3rem, 10.5vw, 4.1rem); line-height: .9; letter-spacing: -.01em; text-transform: uppercase;
   color: var(--pot-encre); text-shadow: 3px 3px 0 var(--pot-magenta); }
-.enseigne h1 span { display: block; font-size: .4em; letter-spacing: .04em; margin-top: .35em; color: var(--pot-magenta); text-shadow: 1.5px 1.5px 0 var(--pot-encre); }
+/* le bandeau peint sous le nom : magenta sur jaune ne tient que 2,5:1, la lettre va sur le magenta */
+.enseigne h1 span { display: table; font-size: clamp(.95rem, 4.2vw, 1.6rem); letter-spacing: .05em; margin-top: .55em; padding: .2em .5em .16em; border-radius: 3px;
+  background: var(--marque-f); color: var(--pot-appret); text-shadow: 1.5px 1.5px 0 var(--pot-magenta-nuit); }
 .ouv-contenu p, .enseigne p { color: var(--pot-encre); font-size: .98rem; line-height: 1.5; margin: 16px 0 18px; max-width: 42ch; }
 .ouv-barre { width: 100%; height: 6px; margin: 0 0 16px; border-radius: 0; background: var(--pot-encre); }
 .ouv-barre i { background: var(--pot-magenta); }
@@ -70,9 +73,9 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .hud-son { width: 44px; height: 44px; border-radius: 5px; background: var(--pot-encre); backdrop-filter: none; box-shadow: var(--ombre-plaque); }
 .hud-son svg { stroke: var(--pot-appret); }
 .objectif { top: calc(max(10px, env(safe-area-inset-top)) + 54px); left: 12px; padding: 10px 13px; border-left: 0; border-radius: 5px; background: var(--pot-bleu); color: var(--pot-appret);
-  box-shadow: inset 0 0 0 3px var(--pot-bleu), inset 0 0 0 4.5px rgba(242,237,228,.55), var(--ombre-plaque); font-size: .84rem; }
+  box-shadow: var(--ombre-plaque); outline: 1.5px solid rgba(242,237,228,.55); outline-offset: -4.5px; font-size: .84rem; }
 .objectif small { color: var(--pot-jaune); font-weight: 800; font-size: .7rem; }
-.objectif.fini { background: var(--pot-encre); box-shadow: inset 0 0 0 3px var(--pot-encre), inset 0 0 0 4.5px var(--pot-jaune), var(--ombre-plaque); }
+.objectif.fini { background: var(--pot-encre); outline-color: var(--pot-jaune); }
 
 /* le sac et le carnet : leur état est peint sur la plaque, pas dans une pastille */
 .bt-sac, .bt-carnet { width: 48px; height: 48px; right: 12px; border-radius: 5px; background: var(--pot-encre); backdrop-filter: none; box-shadow: var(--ombre-plaque); }
@@ -84,7 +87,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .bt-sac.plein { background: var(--pot-magenta); }
 .bt-sac.plein .compte { background: var(--pot-appret); color: var(--pot-magenta); }
 .bt-sac.saute, .bt-carnet.saute { animation: balance .62s cubic-bezier(.2, .9, .3, 1); }
-.bt-carnet.complet { box-shadow: inset 0 0 0 3px var(--pot-encre), inset 0 0 0 4.5px var(--pot-jaune), var(--ombre-plaque); }
+.bt-carnet.complet { outline: 1.5px solid var(--pot-jaune); outline-offset: -4.5px; }
 
 /* ---------- les repères : de petites étiquettes de tôle ---------- */
 .repere i { width: 16px; height: 16px; background: var(--pot-magenta); border: 3px solid var(--pot-appret); box-shadow: 0 2px 0 rgba(0,0,0,.35), 0 6px 10px -3px rgba(0,0,0,.6); animation: none; }
@@ -93,14 +96,14 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .repere span { padding: 5px 9px 5px 10px; border-radius: 4px; background: var(--pot-appret); color: var(--pot-encre); font: 800 .7rem var(--police-libelle);
   letter-spacing: .1em; text-transform: uppercase; box-shadow: var(--ombre-plaque); }
 .repere.personne span { background: var(--pot-encre); color: var(--pot-jaune); }
-.repere:hover span, .repere:focus-visible span { background: var(--pot-magenta); color: var(--pot-appret); }
+.repere:hover span, .repere:focus-visible span { background: var(--marque-f); color: var(--pot-appret); }
 .point-etiquette { min-height: 32px; padding: 6px 11px; border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque);
   font: 800 .7rem var(--police-libelle); letter-spacing: .12em; text-transform: uppercase; }
 .point-etiquette::after { width: 2px; height: 10px; bottom: -10px; transform: translateX(-50%); background: var(--pot-encre); }
 .point-etiquette:hover { background: var(--pot-magenta); }
 .pnj-nom { border-radius: 3px; background: var(--pot-encre); color: var(--c, var(--pot-appret)); font: 800 .7rem var(--police-libelle); letter-spacing: .12em; box-shadow: var(--ombre-plaque); }
 .invite { min-height: 46px; border-radius: 5px; background: var(--pot-appret); color: var(--pot-encre); font: 800 .78rem var(--police-libelle); letter-spacing: .09em; text-transform: uppercase;
-  box-shadow: inset 0 0 0 3px var(--pot-appret), inset 0 0 0 4.5px var(--pot-magenta), var(--ombre-plaque); }
+  box-shadow: var(--ombre-plaque); outline: 1.5px solid var(--pot-magenta); outline-offset: -4.5px; }
 .invite i { color: var(--pot-magenta); }
 
 /* ---------- les sous-titres et la carte de titre ---------- */
@@ -108,7 +111,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .st-ligne { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); text-shadow: none; font-size: .9rem; box-shadow: var(--ombre-plaque); }
 .st-ligne b { color: var(--c, var(--pot-jaune)); font-weight: 800; font-size: .7rem; letter-spacing: .12em; }
 .carte-titre { left: 12px; padding: 12px 16px 13px; border-left: 0; border-radius: 6px; background: var(--pot-jaune); color: var(--pot-encre);
-  box-shadow: inset 0 0 0 4px var(--pot-jaune), inset 0 0 0 5.5px var(--pot-encre), var(--ombre-plaque); }
+  box-shadow: var(--ombre-plaque); outline: 1.5px solid var(--pot-encre); outline-offset: -5.5px; }
 .carte-titre b { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 0; text-shadow: 2px 2px 0 var(--pot-magenta); }
 .carte-titre span { color: var(--pot-encre); font-weight: 800; font-size: .7rem; }
 .maquette { color: rgba(242,237,228,.5); font-size: .7rem; }
@@ -116,16 +119,16 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 /* ---------- le dialogue : un panneau peint, ancré en bas ---------- */
 .bandes.ouvertes i { background: var(--pot-encre); }
 .dialogue { border-top: 0; border-radius: 6px; padding: 22px 18px 18px; background: var(--pot-encre); color: var(--pot-appret);
-  box-shadow: inset 0 0 0 5px var(--pot-encre), inset 0 0 0 6.5px rgba(242,237,228,.4), 0 4px 0 rgba(0,0,0,.35), 0 24px 40px -12px rgba(0,0,0,.7); }
+  box-shadow: 0 4px 0 rgba(0,0,0,.35), 0 24px 40px -12px rgba(0,0,0,.7); outline: 1.5px solid rgba(242,237,228,.4); outline-offset: -6.5px; }
 .dlg-nom { position: absolute; top: -13px; left: 16px; margin: 0; padding: 5px 11px; border-radius: 4px; background: var(--c, var(--pot-magenta)); color: var(--pot-encre);
   font: 900 .8rem var(--lettre); letter-spacing: .06em; box-shadow: var(--ombre-plaque); }
 .dlg-texte { color: var(--pot-appret); font-size: 1.02rem; line-height: 1.52; max-width: 62ch; }
 .dlg-suite { color: var(--pot-jaune); }
 .dlg-partir { top: 10px; right: 10px; min-height: 32px; padding: 0 10px; background: var(--pot-appret); color: var(--pot-encre); font-size: .7rem; }
-.dlg-partir:hover { background: var(--pot-magenta); color: var(--pot-appret); }
+.dlg-partir:hover { background: var(--marque-f); color: var(--pot-appret); }
 .losange { border-color: var(--pot-jaune); box-shadow: none; background: var(--pot-encre); border-radius: 2px; }
 .ch { min-height: 44px; padding: 9px 13px; background: var(--pot-appret); color: var(--pot-encre); font-size: .72rem; line-height: 1.3; letter-spacing: .07em; }
-.ch:hover, .ch:focus-visible { background: var(--pot-magenta); color: var(--pot-appret); box-shadow: var(--ombre-plaque); }
+.ch:hover, .ch:focus-visible { background: var(--marque-f); color: var(--pot-appret); box-shadow: var(--ombre-plaque); }
 .ch.neuf::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: .55em; vertical-align: .1em; border-radius: 50%; background: var(--pot-magenta); color: transparent; }
 .ch.neuf:hover::after, .ch.neuf:focus-visible::after { background: var(--pot-jaune); }
 .ch.deja { opacity: 1; background: var(--pot-appret-use); color: var(--pot-encre-douce); }
@@ -133,7 +136,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 
 /* ---------- les options près d'une personne ---------- */
 .options { min-width: 200px; padding: 12px; gap: 7px; border-radius: 6px; background: var(--pot-encre);
-  box-shadow: inset 0 0 0 4px var(--pot-encre), inset 0 0 0 5.5px rgba(242,237,228,.35), 0 4px 0 rgba(0,0,0,.35), 0 20px 34px -12px rgba(0,0,0,.7); }
+  box-shadow: 0 4px 0 rgba(0,0,0,.35), 0 20px 34px -12px rgba(0,0,0,.7); outline: 1.5px solid rgba(242,237,228,.35); outline-offset: -5.5px; }
 .opt-titre { font: 900 1.05rem var(--lettre); letter-spacing: .02em; color: var(--pot-jaune); text-shadow: 2px 2px 0 var(--pot-magenta-nuit); padding: 2px 4px 6px; }
 .opt-titre small { color: var(--pot-appret-use); font: 600 .72rem var(--police-texte); letter-spacing: 0; }
 .opt { min-height: 44px; padding: 0 14px; background: var(--pot-appret); color: var(--pot-encre); font-size: .72rem; }
@@ -143,7 +146,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 /* ---------- la fiche d'une pièce : une grande enseigne qui se retourne ---------- */
 .fiche { background: rgba(21,17,15,.72); }
 .fiche-cadre { border-radius: 8px; background: var(--pot-appret); color: var(--pot-encre);
-  box-shadow: inset 0 0 0 8px var(--pot-appret), inset 0 0 0 9.5px var(--pot-encre), 0 5px 0 rgba(0,0,0,.4), 0 40px 70px -20px rgba(0,0,0,.85); }
+  box-shadow: 0 5px 0 rgba(0,0,0,.4), 0 40px 70px -20px rgba(0,0,0,.85); outline: 1.5px solid var(--pot-encre); outline-offset: -9.5px; }
 .fiche-photo { background: var(--pot-appret-use); border-radius: 8px 0 0 8px; margin: 10px 0 10px 10px; }
 .fiche-vraie { border-radius: 3px; background: var(--pot-encre); color: var(--pot-appret); font: 800 .7rem var(--police-libelle); }
 .fiche-tourner { background: var(--pot-encre); color: var(--pot-appret); font-size: .7rem; }
@@ -156,7 +159,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .stat span { color: var(--pot-jaune); font-weight: 800; font-size: .7rem; }
 .stat b { font-family: var(--lettre); font-weight: 900; font-size: 1.25rem; letter-spacing: .01em; }
 .stat small { color: var(--pot-appret-use); }
-.stat-express { background: var(--pot-magenta); }
+.stat-express { background: var(--marque-f); }
 .stat-express span { color: var(--pot-appret); }
 .fiche-type select { border-radius: 4px; border: 2px solid var(--pot-encre); background: #fff; }
 .fiche .bt-ligne { color: var(--pot-encre); }
@@ -168,7 +171,7 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 
 /* ---------- le sac, le carnet, les messages ---------- */
 .sac, .carnet { border-radius: 6px; background: var(--pot-appret); color: var(--pot-encre);
-  box-shadow: inset 0 0 0 5px var(--pot-appret), inset 0 0 0 6.5px var(--pot-encre), 0 4px 0 rgba(0,0,0,.35), 0 24px 40px -12px rgba(0,0,0,.7); }
+  box-shadow: 0 4px 0 rgba(0,0,0,.35), 0 24px 40px -12px rgba(0,0,0,.7); outline: 1.5px solid var(--pot-encre); outline-offset: -6.5px; }
 .sac { top: calc(max(10px, env(safe-area-inset-top)) + 112px); padding: 16px; }
 .carnet { top: calc(max(10px, env(safe-area-inset-top)) + 168px); padding: 16px 18px; }
 .sac h3, .carnet h3 { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; font-size: 1.3rem; text-shadow: 2px 2px 0 var(--pot-jaune); }
@@ -183,11 +186,11 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .carnet-savoir b { color: var(--pot-magenta); font-weight: 800; }
 .carnet-savoir small { color: var(--pot-encre-douce); }
 .toast { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque); font-size: .84rem; }
-.toast-annuler { background: var(--pot-magenta); color: var(--pot-appret); font-size: .7rem; }
+.toast-annuler { background: var(--marque-f); color: var(--pot-appret); font-size: .7rem; }
 
 /* ---------- le cadran de la commande ---------- */
 .cadran { background: rgba(21,17,15,.74); }
-.cadran-cadre { border-radius: 8px; background: var(--pot-appret); box-shadow: inset 0 0 0 1.5px var(--pot-encre), 0 5px 0 rgba(0,0,0,.4), 0 40px 70px -20px rgba(0,0,0,.85); }
+.cadran-cadre { border-radius: 8px; background: var(--pot-appret); box-shadow: 0 5px 0 rgba(0,0,0,.4), 0 40px 70px -20px rgba(0,0,0,.85); outline: 1.5px solid var(--pot-encre); outline-offset: -1.5px; }
 .cadran header { background: var(--pot-encre); }
 .cd-marque { color: var(--pot-jaune); font-weight: 800; }
 .cadran h2 { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; color: var(--pot-appret); text-shadow: 2px 2px 0 var(--pot-magenta); }
@@ -196,10 +199,10 @@ html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); 
 .cd-choix label { border-radius: 4px; background: var(--pot-appret-use); }
 .cadran input:not([type=radio]), .cadran select, .cadran textarea { border-radius: 4px; border: 2px solid var(--pot-encre); }
 .cadran input::placeholder, .cadran textarea::placeholder { color: var(--pot-encre-douce); }
-.puce { background: var(--pot-appret); color: var(--pot-magenta); border: 0; box-shadow: inset 0 0 0 1.5px var(--pot-magenta), var(--ombre-plaque); font-size: .7rem; }
+.puce { background: var(--pot-appret); color: var(--pot-magenta); border: 0; box-shadow: var(--ombre-plaque); outline: 1.5px solid var(--pot-magenta); outline-offset: -1.5px; font-size: .7rem; }
 .cadran footer { background: var(--pot-appret-use); border-top: 0; }
 .cd-total b { color: var(--pot-magenta); font-family: var(--lettre); font-weight: 900; }
 .cd-encore { color: var(--pot-magenta-nuit); }
-@media (max-width: 560px) { .cadran-cadre { border-radius: 8px 8px 0 0; box-shadow: inset 0 0 0 1.5px var(--pot-encre); } }
+@media (max-width: 560px) { .cadran-cadre { border-radius: 8px 8px 0 0; box-shadow: none; } }
 
 @media (prefers-reduced-motion: reduce) { .balance, .bt-sac.saute, .bt-carnet.saute { animation: none; } }

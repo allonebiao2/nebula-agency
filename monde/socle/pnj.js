@@ -237,6 +237,20 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
           const dj = r.distanceTo(cam2); if (dj < 0.55) r.addScaledVector(r.clone().sub(cam2).setY(0).normalize(), (0.55 - dj));
         }
       } else n.perso.vitesse = 0;
+      /* L'ESPACE DE CHACUNE (Mongazi, 2026-11-12 : « ils se rentrent dedans ») : deux
+         visiteuses ne s'approchent pas à moins de 0,65 m, et aucune ne reste à moins de
+         0,85 m du visiteur (sauf pendant qu'elle lui parle). On écarte doucement, jamais d'un saut. */
+      /* ⚠️ seule celle qui MARCHE s'écarte : écarter deux visiteuses immobiles qui conversent
+         les faisait glisser, et celle qu'on allait voir sortait du cadre (QC du 2026-11-12) */
+      if (n.chemin) for (const m of pnj) {
+        if (m === n) continue;
+        const o = m.perso.racine.position, dx = r.x - o.x, dz = r.z - o.z, dd = Math.hypot(dx, dz);
+        if (dd > 1e-4 && dd < 0.65) { const k = Math.min(0.65 - dd, dt * 0.9) / dd; r.x += dx * k; r.z += dz * k; }
+      }
+      if (n.etat !== 'joueur' && n.etat !== 'retenue') {
+        const dx = r.x - cam2.x, dz = r.z - cam2.z, dd = Math.hypot(dx, dz);
+        if (dd > 1e-4 && dd < 0.85) { const k = Math.min(0.85 - dd, dt * 0.8) / dd; r.x += dx * k; r.z += dz * k; }
+      }
       if (n.etat === 'activite' && t > n.fin) suivante(n);
       /* on lève les yeux vers le joueur qui passe tout près */
       if (n.etat === 'activite' && r.distanceTo(cam2) < 2.2 && Math.random() < 0.01) n.perso.regarder(camera.position);

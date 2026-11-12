@@ -69,7 +69,7 @@ button { font: inherit; color: inherit; }
   opacity: 0; pointer-events: none !important; transition: opacity .35s, transform .45s cubic-bezier(.2,.8,.2,1); z-index: 4; cursor: pointer; }
 .dialogue.ouverte { opacity: 1; transform: translate(-50%, 0); pointer-events: auto !important; }
 .dlg-portrait { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #fff 0, #e9e1d4 55%, #cfc3b0 100%) center/cover;
-  box-shadow: 0 0 0 3px var(--c, var(--marque)), 0 0 24px color-mix(in srgb, var(--c, #e6007e) 45%, transparent); color: #3a2f26; font-family: var(--police-titre); font-size: 1.6rem; }
+  box-shadow: 0 0 0 3px var(--c, var(--marque)), 0 6px 14px -4px rgba(0,0,0,.5); color: #3a2f26; font-family: var(--police-titre); font-size: 1.6rem; }
 .dlg-portrait.a-image span { display: none; }
 .dlg-nom { font-family: var(--police-libelle); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: .78rem; margin: 2px 0 6px; }
 .dlg-texte { margin: 0; font-size: 1.06rem; line-height: 1.5; min-height: 3em; color: #fbf6ef; }
@@ -80,7 +80,7 @@ button { font: inherit; color: inherit; }
 .dlg-croix { grid-column: 1 / -1; display: none; position: relative; min-height: 0; }
 .dialogue.en-choix { cursor: default; }
 .dialogue.en-choix .dlg-croix { display: grid; grid-template-columns: 1fr 64px 1fr; grid-template-rows: auto auto auto; gap: 8px; justify-items: center; align-items: center; margin-top: 6px; }
-.losange { grid-column: 2; grid-row: 2; width: 26px; height: 26px; border: 2px solid var(--or); transform: rotate(45deg); border-radius: 4px; box-shadow: 0 0 14px rgba(201,162,84,.5); }
+.losange { grid-column: 2; grid-row: 2; width: 26px; height: 26px; border: 2px solid var(--or); transform: rotate(45deg); border-radius: 4px; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
 .ch { min-height: 46px; max-width: 100%; padding: 8px 14px; border-radius: 12px; border: 0; cursor: pointer; background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 1px var(--trait);
   font-size: .95rem; line-height: 1.25; text-align: center; transition: background .15s, box-shadow .15s; }
 .ch:hover, .ch:focus-visible { background: var(--marque); box-shadow: none; }
@@ -231,17 +231,17 @@ button { font: inherit; color: inherit; }
   border: 0; background: transparent; cursor: pointer; opacity: 0; pointer-events: none !important; transition: opacity .25s; }
 .repere.vu { opacity: 1; pointer-events: auto !important; }
 .repere i { flex: none; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #fff 0 28%, var(--marque) 30% 62%, rgba(230,0,126,0) 64%);
-  box-shadow: 0 0 0 2px rgba(255,255,255,.7), 0 0 16px 4px rgba(230,0,126,.55); animation: pouls 2.2s ease-in-out infinite; }
+  box-shadow: 0 0 0 2px rgba(255,255,255,.7), 0 3px 8px rgba(0,0,0,.45); animation: pouls 2.2s ease-in-out infinite; }
 .repere span { display: none; padding: 6px 11px; border-radius: 999px; background: rgba(12,10,14,.78); color: #fff; font: 600 .76rem var(--police-libelle); letter-spacing: .04em; white-space: nowrap; }
 .repere.nomme span { display: inline-block; }
-.repere.personne i { background: radial-gradient(circle, #fff 0 28%, #ffc061 30% 62%, rgba(255,192,97,0) 64%); box-shadow: 0 0 0 2px rgba(255,255,255,.7), 0 0 16px 4px rgba(255,192,97,.5); }
-.repere.porte i { background: radial-gradient(circle, #fff 0 28%, #6fd39b 30% 62%, rgba(111,211,155,0) 64%); box-shadow: 0 0 0 2px rgba(255,255,255,.7), 0 0 16px 4px rgba(111,211,155,.5); }
+.repere.personne i { background: radial-gradient(circle, #fff 0 28%, #ffc061 30% 62%, rgba(255,192,97,0) 64%); box-shadow: 0 0 0 2px rgba(255,255,255,.7), 0 3px 8px rgba(0,0,0,.45); }
+.repere.porte i { background: radial-gradient(circle, #fff 0 28%, #6fd39b 30% 62%, rgba(111,211,155,0) 64%); box-shadow: 0 0 0 2px rgba(255,255,255,.7), 0 3px 8px rgba(0,0,0,.45); }
 .repere:hover span, .repere:focus-visible span { display: inline-block; background: var(--marque); }
 @keyframes pouls { 50% { transform: scale(.82); } }
 
 /* ---------- l'invite d'action posée sur place ---------- */
 .invite { position: fixed; left: 0; top: 0; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 999px; border: 0; cursor: pointer;
-  background: #fff; color: var(--encre); font: 700 .9rem var(--police-libelle); letter-spacing: .03em; box-shadow: 0 8px 30px rgba(0,0,0,.45), 0 0 0 3px rgba(230,0,126,.55);
+  background: #fff; color: var(--encre); font: 700 .9rem var(--police-libelle); letter-spacing: .03em; box-shadow: 0 8px 30px rgba(0,0,0,.45); outline: 3px solid rgba(230,0,126,.55); outline-offset: -3px;
   opacity: 0; pointer-events: none !important; transition: opacity .25s; z-index: 3; }
 .invite i { font-style: normal; color: var(--marque); }
 .invite[style*="opacity: 1"] { pointer-events: auto !important; }
@@ -262,7 +262,7 @@ button { font: inherit; color: inherit; }
   background: var(--verre); backdrop-filter: blur(8px); display: grid; place-items: center; }
 .bt-carnet svg { width: 23px; height: 23px; fill: none; stroke: #fff; stroke-width: 1.7; stroke-linejoin: round; }
 .bt-carnet .compte { position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); padding: 1px 7px; border-radius: 999px; background: #2a2530; font: 700 .64rem/16px var(--police-libelle); white-space: nowrap; }
-.bt-carnet.complet { box-shadow: 0 0 0 2px #e3c27a, 0 0 18px rgba(227,194,122,.6); }
+.bt-carnet.complet { box-shadow: 0 0 0 2px #e3c27a, 0 4px 12px rgba(0,0,0,.4); }
 .bt-carnet.saute { animation: saute .5s; }
 .en-dialogue .bt-carnet { opacity: 0; pointer-events: none; }
 .carnet { position: fixed; right: 12px; top: calc(max(12px, env(safe-area-inset-top)) + 174px); width: min(400px, calc(100vw - 24px)); max-height: 62vh; overflow: auto; padding: 14px 16px;
