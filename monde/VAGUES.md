@@ -65,6 +65,14 @@ Décisions de Mongazi, le même jour :
   en euros (`PRODUCT.md`). Revue finale Impeccable : verdict « à corriger », 8 corrections, toutes
   appliquées (vis, ombres nettes, lettre peinte partout, nom et prix sur la plaque de chaque pièce,
   nuancier fermé, contrastes, sur-titres retirés, téléphone).
+- ✅ **« les enseignes peintes, c'est ringard… rien ne doit remplir l'écran, de la translucidité, des
+  boutons plats et petits, un enfant de 5 ans doit savoir s'en servir ; l'expérience commence dehors
+  avec l'enseigne d'Hillary et un petit bouton translucide »** (2026-11-12) → `verre.css` : verre fumé,
+  boutons plats de 40 px, le nom des créations dans la Bodoni d'Hillary, l'objectif replié en une
+  ligne, un seul « Partir » à la fois ; arrivée dehors face au caisson lumineux du logo. QC 48/48,
+  captures regardées (`_vues/tel-00-arrivee`, `tel-03-dialogue`, `tel-04-fiche`, `tel-07-afi`).
+- ✅ **le rendu cinéma** en qualité haute (GTAO, étalonnage, SMAA) : `_vues/ordi-00-cinema.png`.
+- 🔨 **Blender** : décor exporté (`monde/_outils/exporter_decor.py`, 116 objets, 3 lampes) ; cuisson à écrire.
 - 🔍 **« ce que nous construisons, quelqu'un l'a-t-il déjà fait au Bénin ? »** (2026-11-12, recherche web) :
   **rien trouvé d'équivalent au Bénin** (ce qui ne prouve pas que rien n'existe hors des moteurs de recherche).
   Au plus près : eTourism Benin (visites du patrimoine en réalité virtuelle et boutique d'artisanat),

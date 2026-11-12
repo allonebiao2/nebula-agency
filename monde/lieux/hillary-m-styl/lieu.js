@@ -482,10 +482,14 @@ ctx.apprendre = (id) => carnet.apprendre(id);
 
 /* ---------- ce que les textes peuvent demander au monde ---------- */
 const objectifEl = document.createElement('div'); objectifEl.className = 'objectif'; calque.appendChild(objectifEl);
+objectifEl.addEventListener('click', (e) => { e.stopPropagation(); objectifEl.classList.toggle('replie'); });
 const monde = {
   objectif(texte, sous = null, fini = false) {
     objectifEl.innerHTML = `<small>${fini ? 'Terminé' : 'En cours'}</small>${texte}${sous ? `<br><span style="opacity:.75">${sous}</span>` : ''}`;
-    objectifEl.classList.add('visible'); objectifEl.classList.toggle('fini', fini);
+    objectifEl.classList.add('visible'); objectifEl.classList.toggle('fini', fini); objectifEl.classList.remove('replie');
+    /* il se replie en UNE ligne au bout de 6 s, et se rouvre au toucher : rien ne doit occuper
+       l'écran (Mongazi, 2026-11-12) */
+    clearTimeout(objectifEl._replier); objectifEl._replier = setTimeout(() => objectifEl.classList.add('replie'), 6000);
     if (fini) { son.valider(); setTimeout(() => objectifEl.classList.remove('visible'), 7000); }
   },
   montrerPiece(id) { const t = totems[id]; if (t) { const p = new THREE.Vector3(); t.getWorldPosition(p); p.y += 1.1; deplacement.tournerVers(p); } },

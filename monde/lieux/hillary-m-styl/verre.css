@@ -34,7 +34,7 @@ html, body { caret-color: var(--marque); accent-color: var(--marque); }
 .ouv-carte { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border-radius: 14px; background: var(--verre); border: 1px solid var(--filet);
   -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); position: relative; overflow: hidden; }
 .ouv-marque { display: flex; flex-direction: column; gap: 1px; color: var(--texte); font: 700 .8rem var(--police-libelle); letter-spacing: .02em; }
-.ouv-marque small { font-weight: 500; font-size: .72rem; color: var(--texte-doux); letter-spacing: 0; }
+.ouv-marque small { font-weight: 500; font-size: .78rem; color: var(--texte-doux); letter-spacing: 0; }
 .ouv-entrer { min-height: 40px; padding: 0 22px; }
 .ouv-barre { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; margin: 0; width: auto; border-radius: 0; background: transparent; }
 .ouv-barre i { background: var(--marque); }
@@ -133,7 +133,7 @@ html, body { caret-color: var(--marque); accent-color: var(--marque); }
 .options { min-width: 168px; padding: 8px; gap: 4px; border-radius: 12px; background: var(--verre-fort); border: 1px solid var(--filet);
   -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: none; }
 .opt-titre { color: var(--texte); font: 700 .78rem var(--police-libelle); letter-spacing: .01em; text-transform: none; padding: 2px 6px 4px; text-shadow: none; }
-.opt-titre small { color: var(--texte-doux); font: 500 .72rem var(--police-texte); }
+.opt-titre small { color: var(--texte-doux); font: 500 .78rem var(--police-texte); }
 .opt { min-height: 40px; padding: 0 12px; border-radius: 8px; background: var(--verre-clair); color: var(--texte); font: 600 .84rem var(--police-libelle); letter-spacing: .01em; text-transform: none; box-shadow: none; }
 .opt:hover, .opt:focus-visible { background: rgba(255,255,255,.2); }
 .opt.opt-principal, .opt-principal { background: rgba(196, 0, 107, .92); }
@@ -203,3 +203,32 @@ html, body { caret-color: var(--marque); accent-color: var(--marque); }
 @media (max-width: 560px) { .cadran-cadre { border-radius: 16px 16px 0 0; } }
 
 @media (prefers-reduced-motion: reduce) { .ouverture.partie { transition: none; } }
+
+/* =========================================================================
+   LA VAGUE « INTERFACE PROFESSIONNELLE » (Mongazi, 2026-11-12)
+   ========================================================================= */
+/* l'objectif se replie en une ligne ; on le rouvre au toucher */
+.objectif { cursor: pointer; transition: max-width .3s, opacity .5s, transform .5s; }
+.objectif.replie { max-width: min(62vw, 300px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 6px 10px; }
+.objectif.replie br, .objectif.replie span { display: none; }
+.objectif.replie small { display: inline; margin-right: .45em; }
+
+/* le nom d'une création dans la lettre de la maison (la Bodoni d'Hillary), le reste en Archivo */
+.fiche-infos h2 { font: 500 clamp(1.55rem, 3.4vw, 2.1rem) "Bodoni Moda", Georgia, serif; letter-spacing: -.005em; line-height: 1.05; }
+.stat b, .sac-total, .cd-total b { font-variant-numeric: tabular-nums; }
+
+/* un seul « Partir » à la fois : celui de la conversation se cache sous une fiche ou la commande */
+.en-fiche .dlg-partir, .en-cadran .dlg-partir { opacity: 0; pointer-events: none; }
+
+/* la commande : des libellés en minuscules, une astérisque au lieu de « obligatoire » répété */
+.cd-recap span, .cd-mes legend { text-transform: none; letter-spacing: .01em; font-size: .78rem; font-weight: 600; }
+.cadran label i { font-size: 0; margin-left: 0; }
+.cadran label i::after { content: '*'; font-size: .82rem; color: #ff8cc6; margin-left: .2em; }
+
+/* la mention « maquette » s'efface derrière une carte d'options ouverte */
+body:has(.options.ouverte) .maquette { opacity: 0; }
+
+/* des apparitions douces : la carte d'options et le sac se posent, sans bond */
+.options { transform: translateY(6px) scale(.98); transition: opacity .2s, transform .25s cubic-bezier(.2, .8, .2, 1); }
+.options.ouverte { transform: none; }
+@media (prefers-reduced-motion: reduce) { .options, .objectif { transition: none; } }
