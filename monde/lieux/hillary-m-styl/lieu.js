@@ -431,19 +431,23 @@ try { ctx.visites = (+localStorage.getItem('monde:hms:visites') || 0) + 1; local
    moyen, Sènami brun clair, Maman Sènami brun très foncé ; Hillary provisoire jusqu'à ses photos.
    ⚠️ LES TAILLES (Mongazi, 2026-11-12) : Hillary mesure 1,68 m, c'est un fait. Les
    visiteuses sont inventées : Afi 1,71 m, Sènami 1,64 m, Maman Sènami 1,62 m. La
-   caméra du visiteur est à 1,62 m, hauteur d'yeux d'un adulte de 1,72 m environ. */
-const hillary = creerPersonnage({ nom: 'Hillary', taille: 1.68, peau: 0x6a452f, haut: { couleur: 0xe6007e }, bas: { type: 'jupe', wax: 7, palette: PALETTES_WAX[6], ampleur: 0.3 }, coiffe: 'chignon', boucles: true, manchesLongues: false });
+   caméra du visiteur est à 1,62 m, hauteur d'yeux d'un adulte de 1,72 m environ.
+   ⚠️ LES ÂGES (Mongazi, 2026-11-12 : « on doit appliquer les âges aussi dorénavant… Hillary
+   26 ans, donc jeune encore ») : Hillary 26 ans, c'est un fait. Afi 29 (partie de Cotonou il y a
+   dix ans), Sènami 21 (une adulte, pas une adolescente), Maman Sènami 47 (pas une grand-mère).
+   Chaque image d'un personnage dit son âge : personnages/CONSIGNES.md. */
+const hillary = creerPersonnage({ nom: 'Hillary', age: 26, taille: 1.68,peau: 0x6a452f, haut: { couleur: 0xe6007e }, bas: { type: 'jupe', wax: 7, palette: PALETTES_WAX[6], ampleur: 0.3 }, coiffe: 'chignon', boucles: true, manchesLongues: false });
 hillary.racine.position.set(plan.hillary.x, 0, plan.hillary.z); hillary.racine.rotation.y = capVersRotation(plan.hillary.cap);
 scene.add(hillary.racine); hillary.geste('comptoir');
 deplacement.ajouterInteractif(hillary.hitbox, { type: 'hillary' });
 personnes.hillary.perso = hillary;
 
 const visiteuses = [
-  { id: 'afi', perso: creerPersonnage({ nom: 'Afi', peau: 0x7a4e33, haut: { couleur: 0x1a1a1c }, bas: { type: 'manteau', couleur: 0xe6d8bf }, jambes: { couleur: 0x1a1a1c }, coiffe: 'court', boucles: true, sac: 0x6b4a32, manchesLongues: true, taille: 1.71 }),
+  { id: 'afi', perso: creerPersonnage({ nom: 'Afi', age: 29, peau: 0x7a4e33, haut: { couleur: 0x1a1a1c }, bas: { type: 'manteau', couleur: 0xe6d8bf }, jambes: { couleur: 0x1a1a1c }, coiffe: 'court', boucles: true, sac: 0x6b4a32, manchesLongues: true, taille: 1.71 }),
     gouts: { regarder: 2, photo: 0.6, toucher: 1, telephone: 1.2, assis: 0.5, comptoir: 1.4, fenetre: 1.5 }, goutsPlaces: { voir_heros: 2, mur_1: 1.5, mur_2: 1.5, affiches: 1.2 } },
-  { id: 'senami', perso: creerPersonnage({ nom: 'Sènami', peau: 0x9a6a48, haut: { wax: 3, palette: PALETTES_WAX[6] }, manches: false, jambes: { couleur: 0x35567f }, chaussures: 0xf2f2f2, coiffe: 'tresses', telephone: 0xe6007e, taille: 1.64 }),
+  { id: 'senami', perso: creerPersonnage({ nom: 'Sènami', age: 21, peau: 0x9a6a48, haut: { wax: 3, palette: PALETTES_WAX[6] }, manches: false, jambes: { couleur: 0x35567f }, chaussures: 0xf2f2f2, coiffe: 'tresses', telephone: 0xe6007e, taille: 1.64 }),
     gouts: { photo: 2.5, telephone: 2, assis: 1.6, regarder: 1, toucher: 0.8, comptoir: 0.6, fenetre: 0.6 }, goutsPlaces: { fauteuil_1: 2, fauteuil_2: 2, voir_d1: 1.5, voir_g1: 1.5 } },
-  { id: 'maman', perso: creerPersonnage({ nom: 'Maman Sènami', peau: 0x4a2f22, haut: { wax: 11, palette: PALETTES_WAX[2] }, bas: { type: 'boubou', wax: 11, palette: PALETTES_WAX[2] }, amples: true, manchesLongues: true, coiffe: 'gele', boucles: true, sac: 0x7a1f2b, taille: 1.62 }),
+  { id: 'maman', perso: creerPersonnage({ nom: 'Maman Sènami', age: 47, peau: 0x4a2f22, haut: { wax: 11, palette: PALETTES_WAX[2] }, bas: { type: 'boubou', wax: 11, palette: PALETTES_WAX[2] }, amples: true, manchesLongues: true, coiffe: 'gele', boucles: true, sac: 0x7a1f2b, taille: 1.62 }),
     gouts: { toucher: 2.2, regarder: 1.6, assis: 1.2, comptoir: 1, telephone: 0.4, photo: 0.2, fenetre: 0.8 }, goutsPlaces: { tissus_g: 2.5, voir_heros: 1.5, affiches: 1.3 } },
 ].map(v => ({ ...v, nom: PERSONNES[v.id].nom, couleur: PERSONNES[v.id].couleur }));
 for (const v of visiteuses) personnes[v.id].perso = v.perso;

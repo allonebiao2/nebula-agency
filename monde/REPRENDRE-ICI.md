@@ -27,7 +27,12 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
    - **le poids de ce qui remplit `C:`** (diagnostic) : `du -sh "/c/Program Files/Epic Games" /c/ProgramData/Epic /c/Users/USER/AppData/Local/Temp` (lent, en tâche de fond) ;
    - **le journal d'installation d'Epic** (diagnostic) : `grep -aiE "BuildPatch|LogInstall|UE_5\.8|Insufficient|Disk|Error" /c/Users/USER/AppData/Local/EpicGamesLauncher/Saved/Logs/EpicGamesLauncher.log | grep -viE "EOSAuth|Verify access" | tail -30`
      (on y avait vu l'alerte **DP-06** ; Unreal 5.8 est sur `C:\Program Files\Epic Games\UE_5.8`, `C:` à 12,8 Go libres).
-1. **Chrome** : il a été relié le 2026-11-12 par la commande **`/chrome`** (« Browser 1 »).
+1. ✅ **FAIT le 2026-11-12 après-midi** : Afi est envoyée sur Mixamo, ses 9 repères sont posés, le
+   squelette standard fonctionne (marche vérifiée dans l'aperçu), *Breathing Idle* appliquée.
+   `FBXLoader` (+ `fflate`, `NURBSCurve`, `NURBSUtils`) est copié dans `socle/vendor/three/addons/`.
+   🙋 **Reste : l'accord de Mongazi pour les 7 téléchargements**, puis les ranger.
+   (Rappel de la procédure, si tout est à refaire :)
+   **Chrome** : il a été relié le 2026-11-12 par la commande **`/chrome`** (« Browser 1 »).
    Si `tabs_context_mcp` répond « not connected », demander à Mongazi de retaper `/chrome`.
    ⚠️ **Dans ce Chrome, Mongazi N'ÉTAIT PAS connecté à Mixamo** (la page affichait « Log in ») :
    lui demander de cliquer sur **Log in** et de se connecter lui-même (⛔ ne jamais taper son mot
@@ -46,7 +51,10 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
    un `AnimationMixer` (attendre / marcher / parler / écouter) branché sur l'état du PNJ.
    ⚠️ **Alléger** : Afi fait 115 000 triangles (viser ~30 000 ; `trimesh` est installé).
 3. **Sènami et Maman Sènami en 3D**, dès que le quota Hugging Face est revenu (il se
-   remet chaque jour) : `python monde/_outils/en_3d.py monde/lieux/hillary-m-styl/personnages/senami-face.png --sortie monde/lieux/hillary-m-styl/personnages/senami.glb --resolution 512 --faces 40000 --detourer-ici`
+   remet chaque jour). ⚠️ **D'ABORD refaire leurs images avec leur âge** (Sènami 21 ans,
+   Maman 47 ; les premières faisaient 16-17 et 60-65) : consignes mot pour mot dans
+   `lieux/hillary-m-styl/personnages/CONSIGNES.md`, Cloudflare `flux-2-dev` (quota épuisé le
+   2026-11-12, remis à 1 h), REGARDER l'âge sur l'image, puis seulement : `python monde/_outils/en_3d.py monde/lieux/hillary-m-styl/personnages/senami-face.png --sortie monde/lieux/hillary-m-styl/personnages/senami.glb --resolution 512 --faces 40000 --detourer-ici`
    (puis `maman`). ⚠️ Le compte gratuit limite **le nombre de calculs par jour** : on a épuisé
    la journée du 2026-11-12 avec Afi et les essais.
 4. **Relancer le contrôle complet** (`python monde/_qc.py`) : ⚠️ **il n'a PAS été rejoué

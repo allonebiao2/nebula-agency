@@ -64,7 +64,7 @@ consignes l'interdisent en toutes lettres ; si ça arrive quand même, refaire.
 ### B1 · `hillary-planche.png` · son corps entier, prêt à animer
 
 ```
-Character turnaround sheet of the woman in the attached photos. The attached photos are the ONLY identity reference: preserve her exact face (face shape, eyes, eyebrows, nose, lips, jawline, hairline), her exact skin tone and her exact body type. No beautification, no skin lightening, no slimming, no makeup change, no age change. She is 1.68 m tall.
+Character turnaround sheet of the woman in the attached photos. The attached photos are the ONLY identity reference: preserve her exact face (face shape, eyes, eyebrows, nose, lips, jawline, hairline), her exact skin tone and her exact body type. No beautification, no skin lightening, no slimming, no makeup change, no age change. She is 26 years old and must look exactly her age, a young woman: never older. She is 1.68 m tall.
 She wears [SA TENUE DE COMPTOIR, idéalement une de ses créations, décrite précisément].
 Four views side by side, same scale, same height, aligned on the same ground line: front, left side (90°), back, right side (90°), plus a three-quarter front view.
 Pose for 3D rigging: A-pose, arms straight and held 45° away from the body, palms facing down, fingers slightly spread and visible, legs straight and slightly apart, feet flat on the ground and visible. Neutral face, mouth closed, eyes open looking straight ahead. Hair kept off the shoulders if possible. Clothing must not merge with the body at the armpits or between the legs. No bag, no phone, nothing in the hands.
@@ -122,9 +122,14 @@ inventés** : aucune photo d'une personne réelle n'est utilisée.
 
 | Visiteuse | Taille | Carnation | Allure |
 |---|---|---|---|
-| **Afi**, la Béninoise de Paris, la trentaine | 1,71 m | brun moyen, chaud | cheveux courts naturels, trench crème, tenue noire, créoles dorées, cabas en cuir |
-| **Sènami**, 20 ans, fan du TikTok d'Hillary | 1,64 m | brun clair | tresses longues relevées, crop top en wax, jean, baskets blanches, téléphone à coque magenta |
-| **Maman Sènami**, la cinquantaine | 1,62 m | brun très foncé | boubou en wax et gele assorti, bracelets dorés, sandales, petit sac à main |
+| **Afi**, la Béninoise de Paris, **29 ans** | 1,71 m | brun moyen, chaud | cheveux courts naturels, trench crème, tenue noire, créoles dorées, cabas en cuir |
+| **Sènami**, **21 ans** (une adulte, pas une adolescente), fan du TikTok d'Hillary | 1,64 m | brun clair | tresses longues relevées, crop top en wax, jean, baskets blanches, téléphone à coque magenta |
+| **Maman Sènami**, **47 ans** (pas une grand-mère) | 1,62 m | brun très foncé | boubou en wax et gele assorti, bracelets dorés, sandales, petit sac à main |
+
+Les consignes exactes, mot pour mot, sont dans `lieux/hillary-m-styl/personnages/CONSIGNES.md`.
+⚠️ **Toute consigne de personnage dit son âge** (Mongazi, 2026-11-12) : les générateurs
+vieillissent les mères et rajeunissent les filles (la première Maman Sènami faisait 60-65 ans,
+la première Sènami 16-17).
 
 ## D · LE SALON (le décor)
 
