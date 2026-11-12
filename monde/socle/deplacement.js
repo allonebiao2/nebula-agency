@@ -258,7 +258,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
       const d = Math.hypot(m.p.x - pos.x, m.p.z - pos.z);
       const a = ici || bloque ? 0 : borner((d - 0.6) / 1.5, 0, 1);
       const pulse = 0.75 + 0.25 * Math.sin(t * 2.6 + m.p.x);
-      m.mA.opacity = 0.34 * a * pulse; m.mD.opacity = 0.1 * a; m.mF.opacity = 0;
+      m.mA.opacity = 0.34 * a; m.mD.opacity = 0.1 * a; m.mF.opacity = 0;   /* fixe : plus de pulsation décorative (DESIGN.md) */
       m.g.visible = a > 0.01;
       if (m.etiquette) {
         proj.set(m.p.x, 0.55, m.p.z).project(camera);
