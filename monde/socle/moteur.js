@@ -42,7 +42,8 @@ function detecterQualite(renderer) {
 export function creerMoteur(conteneur) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: false });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  /* AgX : les hautes lumières se désaturent comme sur une vraie caméra (ACES « brûle » les blancs crème) */
+  renderer.toneMapping = THREE.AgXToneMapping;
   renderer.toneMappingExposure = 1.0;
   conteneur.appendChild(renderer.domElement);
   renderer.domElement.setAttribute('aria-label', 'Le salon en 3D');

@@ -157,6 +157,21 @@ inventés** : aucune photo d'une personne réelle n'est utilisée.
 
 ---
 
+
+### D bis · LES PANORAMAS À 360° (les plus utiles pour la 3D)
+
+Une image qui fait **tout le tour**, prise depuis un point : les outils qui fabriquent un
+lieu 3D à partir d'images (World Labs Marble, Tripo) en tirent le meilleur, et je peux
+aussi m'en servir directement comme environnement lumineux. **Format 2:1**, le plus grand
+possible. Coller d'abord le décor commun (ci-dessus), puis :
+
+| # | Fichier | Ce qu'il faut ajouter |
+|---|---|---|
+| P1 | `pano-01-centre.png` | `360-degree equirectangular panorama, 2:1 aspect ratio, taken from the center of the boutique at eye level 1.55 m, seamless left and right edges: the glass entrance and street on one side, the counter with the backlit H.M.S logo on the opposite side, the podiums, the events wall, the seating corner and the fitting room around. No people. No distortion artifacts.` |
+| P2 | `pano-02-comptoir.png` | `Same, taken standing in front of the sales counter, 2 meters from it.` |
+| P3 | `pano-03-rue-jour.png` | `360-degree equirectangular panorama, 2:1, taken on the sidewalk in front of the boutique on a street of Cotonou, Benin, in daylight: the boutique glass facade with its H.M.S sign on one side, the street with motorbike taxis (yellow shirts), small shops with hand-painted signs, palm trees, red laterite dust, power lines, black water tanks on flat roofs. No real brand logos. Seamless edges.` |
+| P4 | `pano-04-rue-nuit-pluie.png` | `Same street panorama at night under tropical rain, wet reflective ground, warm shop lights, street lamps.` |
+
 ## E · LES OBJETS DE LA MAISON
 
 Ce qui reste quand on ne peut pas photographier le vrai (section A).

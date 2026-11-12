@@ -18,6 +18,7 @@ import { creerSon } from '../../socle/son.js';
 import { creerReperes } from '../../socle/reperes.js';
 import { creerCarnet } from '../../socle/carnet.js';
 import { creerOptions } from '../../socle/options.js';
+import { creerRessources } from '../../socle/ressources.js';
 import { MATIERES, matWax, flaqueLumiere, ombreRonde, PALETTES_WAX } from '../../socle/matieres.js';
 import { DONNEES } from './donnees.js';
 import { PERSONNES, faitsMaison, dialoguesHillary, dialoguesVisiteuses, conversations, savoirsMaison } from './textes.js';
@@ -56,7 +57,8 @@ const boite = (w, h, p, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, p), m);
 const a = (o, x, y, z) => { o.position.set(x, y, z); return o; };
 function poser(o, x, y, z, ry = 0) { o.position.set(x, y, z); o.rotation.y = ry; scene.add(o); return o; }
 const H = plan.piece.hauteur, LX = plan.piece.largeur / 2, LZ = plan.piece.profondeur / 2;
-const interieurs = [];   /* ce que la nuit change : lumières, flaques, ligne dorée */
+const interieurs = [];
+const plantesDessinees = [], fauteuilsDessines = [];   /* remplacés ensuite par les objets scannés */   /* ce que la nuit change : lumières, flaques, ligne dorée */
 
 /* ================================================================
    1 · LA PIÈCE
@@ -103,7 +105,8 @@ poser(boite(fac.porte.x2 - fac.porte.x1, 0.05, 0.08, M.laiton), 0, fac.porte.hau
 /* le plafond, percé du dôme, et SA ligne dorée */
 const forme = new THREE.Shape([new THREE.Vector2(-LX, -LZ), new THREE.Vector2(LX, -LZ), new THREE.Vector2(LX, LZ), new THREE.Vector2(-LX, LZ)]);
 const trou = new THREE.Path(); trou.absarc(plan.dome.x, plan.dome.z, plan.dome.rayon, 0, Math.PI * 2, true); forme.holes.push(trou);
-const plafond = new THREE.Mesh(new THREE.ShapeGeometry(forme, 64), M.platre);
+/* le plafond a sa propre matière, légèrement lumineuse : sous le seul éclairage d'ambiance, il virait au brun */
+const plafond = new THREE.Mesh(new THREE.ShapeGeometry(forme, 64), new THREE.MeshStandardMaterial({ color: 0xfbf8f2, roughness: 0.95, emissive: 0x3a3530 }));
 plafond.rotation.x = Math.PI / 2; plafond.position.y = H; scene.add(plafond);
 const texLavis = texteCanvas(8, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#f7efe1'); gr.addColorStop(1, '#ffd79a'); g.fillStyle = gr; g.fillRect(0, 0, 8, 256); });
 const matLavis = new THREE.MeshBasicMaterial({ map: texLavis, side: THREE.BackSide });
@@ -332,7 +335,7 @@ let ecranTiktok, texEcran, ctxEcran;
     g.add(a(boite(0.78, 0.38, 0.72, M.velours), 0, 0.26, 0));
     g.add(a(boite(0.78, 0.5, 0.14, M.velours), 0, 0.62, -0.3));
     for (const s of [-1, 1]) g.add(a(boite(0.12, 0.26, 0.7, M.velours), s * 0.38, 0.52, 0));
-    poser(g, f.x - 0.25, 0, f.z, -Math.PI / 2);
+    poser(g, f.x - 0.25, 0, f.z, -Math.PI / 2); fauteuilsDessines.push(g);
   }
   const anneau = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.018, 8, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(2, 2, 2), toneMapped: false }));
   poser(anneau, ct.x + 1.4, 1.6, ct.z - 1.4, -Math.PI / 3);
@@ -397,7 +400,7 @@ function mannequin(couleur = 0xf2ece2) {
   poser(mannequin(), 3.3, 0, -4.9, -0.4);
 }
 for (const pl of plan.plantes) {
-  const g = new THREE.Group();
+  const g = new THREE.Group(); plantesDessinees.push(g);
   g.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.2, 0.5, 24), M.laque), 0, 0.25, 0));
   const texF = texteCanvas(128, 256, (c, W, Hh) => { c.fillStyle = '#2f6b3a'; c.beginPath(); c.ellipse(W / 2, Hh / 2, W * 0.42, Hh * 0.46, 0, 0, 7); c.fill(); c.strokeStyle = '#4c8a55'; c.lineWidth = 3; c.beginPath(); c.moveTo(W / 2, 10); c.lineTo(W / 2, Hh - 10); c.stroke(); c.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 5; i++) { c.beginPath(); c.ellipse(W * 0.15, Hh * (0.2 + i * 0.14), 14, 6, 0.4, 0, 7); c.fill(); c.beginPath(); c.ellipse(W * 0.85, Hh * (0.22 + i * 0.14), 14, 6, -0.4, 0, 7); c.fill(); } });
   const mf = new THREE.MeshStandardMaterial({ map: texF, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.7 });
@@ -689,6 +692,57 @@ function entrer() {
 }
 btEntrer.onclick = entrer;
 if (params.has('direct')) entrer();
+
+/* ================================================================
+   LE SALON S'EMBELLIT APRÈS L'OUVERTURE : lumière photographiée, matières scannées,
+   objets scannés (Poly Haven, CC0). En 3G, on entre tout de suite ; le reste arrive.
+   ================================================================ */
+const R = creerRessources(moteur);
+const poserAuSol = (o, x, z, hauteurVisee = null, ry = 0) => {
+  const b = new THREE.Box3().setFromObject(o);
+  if (hauteurVisee) o.scale.multiplyScalar(hauteurVisee / Math.max(0.01, b.max.y - b.min.y));
+  const b2 = new THREE.Box3().setFromObject(o);
+  o.position.set(x, -b2.min.y, z); o.rotation.y = ry; scene.add(o); return o;
+};
+async function embellir() {
+  await R.eclairage('photo_studio_loft_hall', 0.6);
+  await Promise.all([
+    R.matiere(M.sol, 'marble_01', { repeat: [8, 6], relief: 0.5 }),
+    R.matiere(M.platre, 'painted_plaster_wall', { repeat: [5, 2], teinte: 0xf4ede3, relief: 0.35 }).then(() => { M.platre.map = null; M.platre.color.set(0xf6f0e6); M.platre.needsUpdate = true; }),   /* le relief du plâtre, pas son gris : sa référence a des murs crème lisses */
+    R.matiere(M.chene, 'oak_veneer_01', { repeat: [1, 2] }),
+    R.matiere(M.velours, 'velour_velvet', { repeat: [2, 2], teinte: 0xd8307f }),
+  ]);
+  /* les plantes */
+  for (let i = 0; i < plan.plantes.length; i++) {
+    const o = await R.objet('potted_plant_04'); if (!o) break;
+    const pl = plan.plantes[i];
+    poserAuSol(o, pl.x, pl.z, 1.5, i * 1.3); plantesDessinees[i].visible = false;
+  }
+  /* le coin TikTok : deux vrais fauteuils et une table basse */
+  const ct = plan.coin_tiktok;
+  for (let i = 0; i < ct.fauteuils.length; i++) {
+    const o = await R.objet('modern_arm_chair_01'); if (!o) break;
+    const f = ct.fauteuils[i];
+    poserAuSol(o, f.x - 0.2, f.z, null, -Math.PI / 2); fauteuilsDessines[i].visible = false;
+  }
+  const table = await R.objet('coffee_table_round_01');
+  if (table) poserAuSol(table, ct.fauteuils[0].x + 0.55, (ct.fauteuils[0].z + ct.fauteuils[1].z) / 2, null);
+  /* sur le comptoir et les étagères : céramique et laiton */
+  const vase = await R.objet('ceramic_vase_01');
+  if (vase) { poserAuSol(vase, plan.comptoir.x + 0.75, plan.comptoir.z - 0.12, 0.32); vase.position.y += plan.comptoir.hauteur; }
+  for (const [x, y] of [[-6.2, 2.58], [5.9, 2.58]]) {
+    const v = await R.objet('brass_vase_01'); if (!v) break;
+    poserAuSol(v, x, -plan.piece.profondeur / 2 + 0.24, 0.3); v.position.y += y;
+  }
+  /* deux suspensions au-dessus du comptoir */
+  for (const x of [-1.1, 1.1]) {
+    const l = await R.objet('modern_ceiling_lamp_01'); if (!l) break;
+    const b = new THREE.Box3().setFromObject(l);
+    l.position.set(plan.comptoir.x + x, H - b.max.y, plan.comptoir.z + 0.1); scene.add(l);
+  }
+  document.body.classList.add('embelli');
+}
+setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', e)), params.has('direct') ? 200 : 2500);
 
 /* pour les contrôles automatiques */
 window.__monde = { moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

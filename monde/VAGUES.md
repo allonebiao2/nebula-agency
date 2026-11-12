@@ -70,6 +70,9 @@
 - 🙋 les 11 vues du salon et la vue par la fenêtre (Nano Banana Pro, `PROMPTS-NANO-BANANA.md` D1 à D11)
 - 🙋 ses vrais tissus photographiés à plat (A1), ses outils (A2)
 
+- 🔨 « LE GRAPHISME ET LA QUALITÉ doivent ressembler extrêmement à Call of Duty Korea, GTA 6… c'est un des objectifs principaux » (2026-11-12) → **piste 1 faite** : lumière photographiée (HDR), sol en vrai marbre, plâtre, chêne, velours scannés, plantes, fauteuils, table basse, vases et suspensions scannés (**Poly Haven, CC0**, 5,3 Mo, chargés APRÈS l'ouverture), tons AgX · ⏳ piste 2 : « salon photo 3D » depuis les panoramas P1 à P4 (🙋 à générer) · ⏳ piste 3 : Unreal diffusé en vidéo (démonstration) · ⏳ le plus gros écart restant : **les personnages** (vague 3)
+- 🙋 « télécharge Unreal depuis le navigateur », « prends le contrôle du PC » → la prise de contrôle de l'écran n'existe pas dans cette session (il faut l'application Claude pour ordinateur, option Computer use) ; lanceur ouvert sur la page Unreal par lien interne, installation à finir par Mongazi sur D:
+
 ## Vague 3 · Les personnages vivants ⏳
 
 - 🙋 « je veux que Hillary soit dedans avec une véritable ressemblance… comme les personnages des jeux » → son accord écrit + 8 à 10 photos + planche
