@@ -431,7 +431,7 @@ const ciel = creerCiel(moteur, { facadeZ: fz, largeur: LX * 2, lieu: COTONOU });
 const graphe = creerGraphe(plan);
 const deplacement = creerDeplacement(moteur, graphe, { depart: params.has('direct') ? 'entree' : 'dehors', calque });
 /* on arrive dehors FACE à la boutique et à son enseigne, pas face à la rue */
-if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 2.5, plan.facade.z));
+if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 1.85, plan.facade.z));
 function deplacementPlus(objet, cible) { (window.__enAttente = window.__enAttente || []).push([objet, cible]); }
 for (const [o, c] of window.__enAttente || []) deplacement.ajouterInteractif(o, c);
 for (const id in totems) deplacement.ajouterInteractif(totems[id], { type: 'piece', id });

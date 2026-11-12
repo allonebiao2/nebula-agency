@@ -12,13 +12,16 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 export { THREE };
 
 const PRESETS = {
   basse:   { nom: 'basse',   dpr: 0.8,  halo: false, reflets: false, pluie: 350,  ombres: false },
   moyenne: { nom: 'moyenne', dpr: 1.0,  halo: false, reflets: false, pluie: 800,  ombres: false },
-  haute:   { nom: 'haute',   dpr: 1.6,  halo: true,  reflets: true,  pluie: 1500, ombres: false },
+  haute:   { nom: 'haute',   dpr: 1.6,  halo: true,  reflets: true,  pluie: 1500, ombres: false, cinema: true },
 };
 
 function detecterQualite(renderer) {
@@ -57,13 +60,46 @@ export function creerMoteur(conteneur) {
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.55;
 
-  let composer = null, halo = null;
+  let composer = null, halo = null, etalonnage = null;
+  /* LE RENDU CINÉMA (qualité « haute » seulement : ordinateurs et appareils capables).
+     Mongazi (2026-11-12) : « ressembler à GTA 6 et Call of Duty ». Trois briques de three.js (MIT) :
+     - GTAO : les ombres de contact, là où un objet touche le sol ou le mur (ce qui « pose » un décor) ;
+     - un étalonnage de film : contraste et chaleur légers, vignettage, grain fin ;
+     - SMAA : un anticrénelage propre (le composeur contourne l'anticrénelage du moteur). */
+  const ETALONNAGE = {
+    uniforms: { tDiffuse: { value: null }, temps: { value: 0 }, grain: { value: 0.022 }, vignette: { value: 0.34 } },
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: `uniform sampler2D tDiffuse; uniform float temps, grain, vignette; varying vec2 vUv;
+      float bruit(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233)) + temps) * 43758.5453); }
+      void main() {
+        vec4 c = texture2D(tDiffuse, vUv); vec3 col = c.rgb;
+        float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
+        col = mix(vec3(l), col, 1.06);
+        col = (col - 0.5) * 1.05 + 0.5;
+        col *= vec3(1.02, 1.0, 0.975);
+        vec2 d = vUv - 0.5; col *= 1.0 - vignette * dot(d, d) * 1.6;
+        col += (bruit(vUv * 997.0) - 0.5) * grain;
+        gl_FragColor = vec4(clamp(col, 0.0, 1.0), c.a);
+      }`,
+  };
   function monterHalo() {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    halo = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.32, 0.55, 0.86);
+    if (qualite.cinema) {
+      const ao = new GTAOPass(scene, camera, innerWidth, innerHeight);
+      ao.output = GTAOPass.OUTPUT.Default; ao.blendIntensity = 0.9;
+      ao.updateGtaoMaterial({ radius: 0.32, distanceExponent: 1.4, thickness: 1.0, scale: 1.0, samples: 12 });
+      ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
+      composer.addPass(ao);
+    }
+    /* ⚠️ en rendu cinéma, un halo plus fort voilait les robes de blanc laiteux (capture du 2026-11-12) */
+    halo = new UnrealBloomPass(new THREE.Vector2(256, 256), qualite.cinema ? 0.16 : 0.32, 0.5, qualite.cinema ? 0.95 : 0.86);
     composer.addPass(halo);
     composer.addPass(new OutputPass());
+    if (qualite.cinema) {
+      etalonnage = new ShaderPass(ETALONNAGE); composer.addPass(etalonnage);
+      composer.addPass(new SMAAPass());
+    }
   }
   if (qualite.halo) monterHalo();
 
@@ -100,7 +136,7 @@ export function creerMoteur(conteneur) {
     if (moy > 1 / 33) {
       dernierAjustement = tempsTotal;
       if (dpr > 0.7) { dpr = Math.max(0.6, dpr - 0.2); redimensionner(); }
-      else if (composer) { composer = null; halo = null; qualite.halo = false; }
+      else if (composer) { composer = null; halo = null; etalonnage = null; qualite.halo = false; qualite.cinema = false; }
       moteur.surDescente.forEach(f => f(qualite));
     }
   }
@@ -111,6 +147,7 @@ export function creerMoteur(conteneur) {
     const dt = Math.min(horloge.getDelta(), 0.05);
     tempsTotal += dt;
     for (const f of abonnes) f(dt, tempsTotal);
+    if (etalonnage) etalonnage.uniforms.temps.value = tempsTotal % 100;
     if (composer) composer.render(); else renderer.render(scene, camera);
     surveiller(dt);
   }
