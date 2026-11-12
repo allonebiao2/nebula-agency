@@ -43,12 +43,12 @@ export function creerReperes({ moteur, calque, maxNoms = null, distanceMax = 9 }
     const places = [];
     vus.forEach((o, i) => {
       /* deux noms ne se chevauchent pas : le plus loin se contente du point */
-      const chevauche = places.some(p => Math.abs(p.x - o.x) < 120 && Math.abs(p.y - o.y) < 34);
+      const chevauche = places.some(p => Math.abs(p.x - o.x) < 210 && Math.abs(p.y - o.y) < 38);
       const avecNom = i < nbNoms && !chevauche;
       if (avecNom) places.push(o);
       /* un point seul ne se pose jamais SUR l'étiquette d'un autre (vu le 2026-11-12 :
          « ROBE DE C●RÉMONIE ») : il attend qu'on se rapproche */
-      else if (places.some(p => o.x > p.x - 16 && o.x < p.x + 190 && Math.abs(o.y - p.y) < 24)) { o.r.b.classList.remove('vu'); return; }
+      else if (places.some(p => o.x > p.x - 16 && o.x < p.x + 260 && Math.abs(o.y - p.y) < 26)) { o.r.b.classList.remove('vu'); return; }
       const nom = typeof o.r.nom === 'function' ? o.r.nom() : o.r.nom;
       if (nom !== o.r.txt) { o.r.txt = nom; o.r.b.querySelector('span').textContent = nom; o.r.b.setAttribute('aria-label', nom); }
       o.r.b.classList.add('vu');

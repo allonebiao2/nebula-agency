@@ -18,7 +18,7 @@
     --police-titre: "Bodoni Moda", Georgia, serif; --police-texte: "Manrope", system-ui, sans-serif; --police-libelle: "Archivo", system-ui, sans-serif; }
 </style>
 <link rel="stylesheet" href="../../socle/interface.css">
-<link rel="stylesheet" href="enseignes.css">
+<link rel="stylesheet" href="verre.css">
 <script type="importmap">
 { "imports": { "three": "../../socle/vendor/three/three.module.min.js", "three/addons/": "../../socle/vendor/three/addons/" } }
 </script>
@@ -29,17 +29,14 @@
 <div id="calque"></div>
 
 <div id="ouverture" class="ouverture" role="dialog" aria-label="Entrer dans le salon">
-  <div class="ouv-portes" aria-hidden="true"><i></i><i></i></div>
-  <div class="ouv-contenu">
-    <div class="enseigne">
-      <img class="enseigne-sceau" src="img/logo.png" alt="">
-      <h1>Hillary M. Styl<span>Le salon · Cotonou</span></h1>
-      <p>Une maison de couture à visiter comme un jeu. Regardez ses créations de près, parlez aux visiteuses, et retrouvez Hillary au comptoir.</p>
-      <div class="ouv-barre" aria-hidden="true"><i></i></div>
-      <button type="button" class="bt bt-plein ouv-entrer" disabled>Entrer dans le salon</button>
-    </div>
-    <p class="ouv-aide">Touchez les points pour vous déplacer. Glissez le doigt pour regarder tout autour.</p>
+  <!-- on arrive DEHORS, devant l'enseigne d'Hillary : la rue et la façade restent visibles,
+       seul un petit bouton de verre invite à entrer (Mongazi, 2026-11-12) -->
+  <div class="ouv-carte">
+    <div class="ouv-marque">HILLARY M. STYL<small>Maison de couture · Cotonou</small></div>
+    <button type="button" class="bt bt-plein ouv-entrer" disabled>Entrer</button>
+    <div class="ouv-barre" aria-hidden="true"><i></i></div>
   </div>
+  <p class="ouv-aide">Touche un point pour avancer · glisse pour regarder</p>
 </div>
 <noscript><p style="padding:24px">Ce salon en 3D a besoin de JavaScript. Le catalogue complet est aussi sur <a href="https://hillary-m-styl.pages.dev/" style="color:#ff7ec0">le site d'HILLARY M. STYL</a>.</p></noscript>
 

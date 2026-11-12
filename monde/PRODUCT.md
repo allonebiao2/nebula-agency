@@ -24,8 +24,8 @@ téléphone ; à terme une ville calquée sur Cotonou, un lieu par commerce, un 
 lieu est le salon de couture d'HILLARY M. STYL.
 
 **Le succès se mesure d'abord à un commerçant qui signe pour son propre lieu** (Mongazi,
-2026-11-12). La visite doit donc avoir la tenue d'une immersion valant **20 000 $ au moins**
-(ses mots) et **donner envie d'acheter** : le visiteur finit avec une pièce dans le sac et
+2026-11-12). La visite doit donc avoir la tenue d'une immersion valant **20 000 € au moins**
+(ses mots, 2026-11-12 : « je veux que ça vaille au moins et minimum 20 000 euros ») et **donner envie d'acheter** : le visiteur finit avec une pièce dans le sac et
 envoie sa commande sur WhatsApp.
 
 ## Positioning

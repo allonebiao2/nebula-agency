@@ -27,7 +27,7 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     scene.add(v.perso.racine);
     deplacement.ajouterInteractif(v.perso.hitbox, { type: 'pnj', id: v.id });
     const etiquette = document.createElement('div'); etiquette.className = 'pnj-nom'; etiquette.textContent = v.nom;
-    etiquette.style.setProperty('--c', v.couleur); calque.appendChild(etiquette);
+    etiquette.style.setProperty('--c', v.couleur); etiquette.style.setProperty('--c-texte', v.texte || '#15110f'); calque.appendChild(etiquette);
     occupees.set(p.id, v.id);
     return { ...v, etat: 'activite', place: p, fin: moteur.temps() + hasard(3, 10), chemin: null, histo: [p.id], etiquette, survol: false };
   });

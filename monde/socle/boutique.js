@@ -154,9 +154,8 @@ export function creerBoutique({ calque, donnees, son, cleStockage = 'monde:panie
           <span class="fiche-vraie">Photo de la maison</span>
         </div>
         <div class="fiche-infos">
-          <div class="fiche-rang">${esc(p.cat === 'sm' ? 'Sur-mesure' : 'Prêt-à-porter')}${p.tag ? ' · ' + esc(p.tag) : ''}</div>
           <h2>${esc(p.nom)}</h2>
-          ${p.ds ? `<p class="fiche-ds">${esc(p.ds)}</p>` : ''}
+          <p class="fiche-ds"><b class="fiche-genre">${esc(p.cat === 'sm' ? 'Sur-mesure' : 'Prêt-à-porter')}${p.tag ? ' · ' + esc(p.tag) : ''}.</b>${p.ds ? ' ' + esc(p.ds) : ''}</p>
           <div class="fiche-stats">
             <div class="stat"><span>Prix</span><b>${devis ? 'Sur devis' : fcfa(p.prix)}</b>${!devis && p.eur ? `<small>${p.eur} € · ${p.usd} $</small>` : ''}</div>
             <div class="stat"><span>Délai</span><b>${libDelai(p.jmin, p.jmax)}</b><small>confection normale</small></div>
@@ -242,7 +241,7 @@ export function creerBoutique({ calque, donnees, son, cleStockage = 'monde:panie
     }).join('');
     cadran.innerHTML = `
       <div class="cadran-cadre">
-        <header><span class="cd-marque">${esc(marque)}</span><h2>Votre commande</h2><button type="button" class="x" aria-label="Fermer">×</button></header>
+        <header><h2>Votre commande</h2><button type="button" class="x" aria-label="Fermer">×</button></header>
         <div class="cd-defile">
           <section><h3>1 · Vos pièces</h3>${panier.map(l => { const p = pieceDe(l.id), v = prixLigne(l); return `<div class="cd-ligne"><span>${esc(p.nom)}<small>${esc(libDelaiLigne(l))}</small></span><b>${v == null ? 'sur devis' : fcfa(v)}</b></div>`; }).join('')}</section>
           ${lignesMesures ? `<section><h3>2 · Vos mesures</h3>${lignesMesures}</section>` : ''}

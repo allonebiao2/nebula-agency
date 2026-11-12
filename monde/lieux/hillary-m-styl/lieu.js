@@ -103,6 +103,21 @@ for (const s of [-1, 1]) {   /* la porte : deux vantaux, poignées de laiton */
 }
 poser(boite(fac.porte.x2 - fac.porte.x1, 0.05, 0.08, M.laiton), 0, fac.porte.haut, fz);
 
+/* L'ENSEIGNE D'HILLARY, dehors, au-dessus de la porte (Mongazi, 2026-11-12 : « l'expérience
+   commence dehors, avec l'enseigne d'Hillary ») : un caisson lumineux blanc, son VRAI logo au
+   centre, comme les enseignes des boutiques de Cotonou. Elle s'allume aussi la nuit. */
+{
+  const hEns = Math.min(0.56, H - fac.linteau - 0.04), yEns = (H + fac.linteau) / 2, zEns = fz + 0.3;
+  const lumiere = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.55, roughness: 0.4 });
+  poser(boite(2.9, hEns + 0.06, 0.14, M.laque), 0, yEns, zEns - 0.02);
+  poser(new THREE.Mesh(new THREE.PlaneGeometry(2.8, hEns), lumiere), 0, yEns, zEns + 0.055);
+  new THREE.TextureLoader().load('img/logo.png', (tex) => {
+    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    const l = hEns * 0.94, logo = new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.55, roughness: 0.4 });
+    poser(new THREE.Mesh(new THREE.PlaneGeometry(l * (620 / 343), l), logo), 0, yEns, zEns + 0.06);
+  });
+}
+
 /* le plafond, percé du dôme, et SA ligne dorée */
 const forme = new THREE.Shape([new THREE.Vector2(-LX, -LZ), new THREE.Vector2(LX, -LZ), new THREE.Vector2(LX, LZ), new THREE.Vector2(-LX, LZ)]);
 const trou = new THREE.Path(); trou.absarc(plan.dome.x, plan.dome.z, plan.dome.rayon, 0, Math.PI * 2, true); forme.holes.push(trou);
@@ -415,6 +430,8 @@ for (const pl of plan.plantes) {
 const ciel = creerCiel(moteur, { facadeZ: fz, largeur: LX * 2, lieu: COTONOU });
 const graphe = creerGraphe(plan);
 const deplacement = creerDeplacement(moteur, graphe, { depart: params.has('direct') ? 'entree' : 'dehors', calque });
+/* on arrive dehors FACE à la boutique et à son enseigne, pas face à la rue */
+if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 2.5, plan.facade.z));
 function deplacementPlus(objet, cible) { (window.__enAttente = window.__enAttente || []).push([objet, cible]); }
 for (const [o, c] of window.__enAttente || []) deplacement.ajouterInteractif(o, c);
 for (const id in totems) deplacement.ajouterInteractif(totems[id], { type: 'piece', id });
@@ -450,7 +467,7 @@ const visiteuses = [
     gouts: { photo: 2.5, telephone: 2, assis: 1.6, regarder: 1, toucher: 0.8, comptoir: 0.6, fenetre: 0.6 }, goutsPlaces: { fauteuil_1: 2, fauteuil_2: 2, voir_d1: 1.5, voir_g1: 1.5 } },
   { id: 'maman', perso: creerPersonnage({ nom: 'Maman Sènami', age: 47, peau: 0x4a2f22, haut: { wax: 11, palette: PALETTES_WAX[2] }, bas: { type: 'boubou', wax: 11, palette: PALETTES_WAX[2] }, amples: true, manchesLongues: true, coiffe: 'gele', boucles: true, sac: 0x7a1f2b, taille: 1.62 }),
     gouts: { toucher: 2.2, regarder: 1.6, assis: 1.2, comptoir: 1, telephone: 0.4, photo: 0.2, fenetre: 0.8 }, goutsPlaces: { tissus_g: 2.5, voir_heros: 1.5, affiches: 1.3 } },
-].map(v => ({ ...v, nom: PERSONNES[v.id].nom, couleur: PERSONNES[v.id].couleur }));
+].map(v => ({ ...v, nom: PERSONNES[v.id].nom, couleur: PERSONNES[v.id].couleur, texte: PERSONNES[v.id].texte }));
 for (const v of visiteuses) personnes[v.id].perso = v.perso;
 
 const boutique = creerBoutique({ calque, donnees: D, son, cleStockage: 'monde:hms:panier', imgBase: 'img/' });
@@ -490,7 +507,9 @@ const reperes = creerReperes({ moteur, calque, maxNoms: matchMedia('(pointer: co
 const AUTRE = new THREE.Vector3();
 for (const id in totems) {
   const t = totems[id], p = pieceDe(id), haut = t.position.y > 1 ? 0.7 : 1.15;
-  reperes.ajouter({ id: 'piece-' + id, nom: p.nom, ou: (v) => t.getWorldPosition(v).add(AUTRE.set(0, haut + (t.position.y > 1 ? 0 : 0.05), 0)), faire: () => toucherPiece(id) });
+  /* la plaque d'une pièce porte son nom ET son prix, lus au catalogue (revue Impeccable : « une plaque au-dessus de chaque pièce dit son nom et son prix ») */
+  const nomPrix = p.prix == null ? p.nom : `${p.nom} · ${Number(p.prix).toLocaleString('fr-FR').replace(/[  ]/g, ' ')} F`;
+  reperes.ajouter({ id: 'piece-' + id, nom: nomPrix, ou: (v) => t.getWorldPosition(v).add(AUTRE.set(0, haut + (t.position.y > 1 ? 0 : 0.05), 0)), faire: () => toucherPiece(id) });
 }
 for (const n of pnj.pnj) {
   reperes.ajouter({ id: 'pnj-' + n.id, genre: 'personne', nom: () => (n.connue ? n.nom : 'Une visiteuse'),
@@ -669,7 +688,12 @@ hud.innerHTML = `<div class="hud-marque"><img src="img/logo.webp" alt="HILLARY M
   <button type="button" class="hud-son" aria-label="Couper le son"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="ondes" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></button>`;
 calque.appendChild(hud);
 const hudCiel = hud.querySelector('.hud-ciel');
-const majCiel = () => { hudCiel.textContent = ciel.libelle(); };
+/* au téléphone, la plaque du ciel ne garde que l'heure et la température (revue Impeccable) */
+const majCiel = () => {
+  const m = ciel.libelle().split(' · ');
+  if (m.length < 3) { hudCiel.textContent = m.join(' · '); return; }
+  hudCiel.innerHTML = `<span class="ciel-lieu">${m[0]} · </span>${m.slice(1, -1).join(' · ')}<span class="ciel-temps"> · ${m[m.length - 1]}</span>`;
+};
 majCiel(); setInterval(majCiel, 20000); ciel.pret.then(majCiel);
 const btSon = hud.querySelector('.hud-son');
 const majSon = () => { btSon.querySelector('.ondes').style.opacity = son.coupe ? '0' : '1'; btSon.setAttribute('aria-label', son.coupe ? 'Remettre le son' : 'Couper le son'); };
@@ -758,16 +782,6 @@ setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', pr
   .then(() => { const v = visiteuses.find(x => x.id === 'afi'); if (v) v.gouts.assis = 0; })   /* pas encore d'animation assise */
   .catch(e => console.warn('Afi reste en silhouette', e)), params.has('direct') ? 600 : 3200);
 
-/* LA SIGNATURE DES ENSEIGNES PEINTES : une plaque touchée se balance sur son crochet,
-   une fois, puis se repose. On anime la propriété `rotate`, qui s'ajoute au `transform`
-   des éléments placés à l'écran au lieu de l'écraser. */
-const PLAQUES = '.bt, .opt, .ch, .dlg-partir, .fiche-tourner, .bt-sac, .bt-carnet, .hud-son, .repere span, .point-etiquette, .invite';
-addEventListener('pointerdown', (e) => {
-  const p = e.target.closest && e.target.closest(PLAQUES);
-  if (!p) return;
-  p.classList.remove('balance'); void p.offsetWidth; p.classList.add('balance');
-}, { passive: true });
-addEventListener('animationend', (e) => { if (e.animationName === 'balance') e.target.classList.remove('balance'); });
 
 /* pour les contrôles automatiques */
 window.__monde = { moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

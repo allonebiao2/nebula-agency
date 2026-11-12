@@ -1,0 +1,205 @@
+/* LE SALON D'HILLARY M. STYL · l'interface en VERRE, plate, petite, discrète.
+   Mongazi (2026-11-12), après avoir rejeté les enseignes peintes (« ringard, pas professionnel ») :
+   « rien ne doit remplir l'écran et empêcher de bien voir tout ce qu'il y a à voir ; il doit y
+   avoir de la translucidité, les boutons doivent être plats et petits, pas encombrants ; même un
+   enfant de 5 ans doit savoir s'en servir ». Référence : l'interface de la vidéo Call of Duty.
+   Règles : la scène d'abord ; du verre fumé (jamais d'aplat qui cache) ; des boutons plats,
+   petits, à cible tactile de 40 px au moins ; une seule couleur d'accent, le magenta H.M.S ;
+   aucune animation infinie sous un flou. Chargée APRÈS socle/interface.css. */
+
+:root {
+  --verre: rgba(12, 10, 14, .46); --verre-fort: rgba(12, 10, 14, .68); --verre-clair: rgba(255, 255, 255, .1);
+  --filet: rgba(255, 255, 255, .16); --texte: #f6f3ee; --texte-doux: rgba(246, 243, 238, .74);
+  --marque: #e6007e; --marque-f: #c4006b; --encre: #0e0c10; --papier: #f6f3ee;
+  --flou: blur(12px) saturate(1.2);
+  --police-titre: "Archivo", system-ui, sans-serif; --police-texte: "Archivo", system-ui, sans-serif; --police-libelle: "Archivo", system-ui, sans-serif;
+}
+::selection { background: var(--marque); color: #fff; }
+html, body { caret-color: var(--marque); accent-color: var(--marque); }
+:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+* { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.25) transparent; }
+
+/* ---------- les boutons : plats, petits ---------- */
+.bt { min-height: 40px; padding: 0 16px; border-radius: 10px; font: 600 .84rem var(--police-libelle); letter-spacing: .01em; text-transform: none;
+  background: var(--verre); color: var(--texte); border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: none; }
+.bt-plein { background: rgba(196, 0, 107, .9); border-color: rgba(255,255,255,.22); color: #fff; }
+.bt-plein:hover { background: var(--marque); }
+.bt-or { background: rgba(255,255,255,.9); color: var(--encre); border-color: transparent; }
+.bt-ligne { background: transparent; color: inherit; box-shadow: none; border: 1px solid currentColor; }
+.bt.inactif, .bt:disabled { opacity: .55; cursor: wait; }
+
+/* ---------- l'arrivée : dehors, devant l'enseigne d'Hillary ---------- */
+.ouverture { background: transparent; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 0 16px calc(28px + env(safe-area-inset-bottom)); pointer-events: none; }
+.ouverture > * { pointer-events: auto; }
+.ouv-carte { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border-radius: 14px; background: var(--verre); border: 1px solid var(--filet);
+  -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); position: relative; overflow: hidden; }
+.ouv-marque { display: flex; flex-direction: column; gap: 1px; color: var(--texte); font: 700 .8rem var(--police-libelle); letter-spacing: .02em; }
+.ouv-marque small { font-weight: 500; font-size: .72rem; color: var(--texte-doux); letter-spacing: 0; }
+.ouv-entrer { min-height: 40px; padding: 0 22px; }
+.ouv-barre { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; margin: 0; width: auto; border-radius: 0; background: transparent; }
+.ouv-barre i { background: var(--marque); }
+.ouv-contenu .ouv-aide, .ouv-aide { margin: 10px 0 0; color: var(--texte); font-size: .76rem; text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+.ouverture.partie { opacity: 0; transition: opacity .6s; }
+
+/* ---------- le haut de l'écran : trois petits éléments ---------- */
+.hud { top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; gap: 8px; }
+.hud-marque { padding: 4px; gap: 8px; border-radius: 10px; background: var(--verre); border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); }
+.hud-marque img { height: 22px; border-radius: 6px; padding: 2px 5px; }
+.hud-marque span { display: none; }
+.hud-ciel { padding: 0 2px; border-radius: 0; background: none; backdrop-filter: none; color: var(--texte); font: 600 .74rem var(--police-libelle); text-shadow: 0 1px 3px rgba(0,0,0,.85); }
+.hud-son { width: 40px; height: 40px; border-radius: 10px; background: var(--verre); border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); }
+.hud-son svg { width: 18px; height: 18px; }
+@media (max-width: 560px) { .ciel-lieu, .ciel-temps { display: none; } }
+.objectif { top: calc(max(10px, env(safe-area-inset-top)) + 50px); left: 10px; max-width: min(300px, 72vw); padding: 7px 10px; border-left: 0; border-radius: 10px; font-size: .76rem; line-height: 1.35;
+  background: var(--verre); border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); }
+.objectif small { color: #ff8cc6; font: 700 .7rem var(--police-libelle); letter-spacing: .02em; text-transform: none; }
+.objectif.fini small { color: #9be3b7; }
+
+/* le sac et le carnet : deux petits boutons ronds, un chiffre discret */
+.bt-sac, .bt-carnet { width: 40px; height: 40px; right: 10px; border-radius: 10px; background: var(--verre); border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); }
+.bt-sac { top: calc(max(10px, env(safe-area-inset-top)) + 50px); }
+.bt-carnet { top: calc(max(10px, env(safe-area-inset-top)) + 98px); }
+.bt-sac svg, .bt-carnet svg { width: 19px; height: 19px; }
+.bt-sac .compte, .bt-carnet .compte { top: -5px; right: -5px; bottom: auto; left: auto; transform: none; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--marque); color: #fff; font: 700 .7rem/18px var(--police-libelle); font-variant-numeric: tabular-nums; }
+.bt-carnet .compte { background: rgba(255,255,255,.9); color: var(--encre); }
+.bt-sac.plein { background: rgba(196, 0, 107, .85); }
+.bt-sac.plein .compte { background: #fff; color: var(--marque-f); }
+.bt-carnet.complet { border-color: #9be3b7; }
+
+/* ---------- les repères : un point, et le nom des plus proches ---------- */
+.repere i { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.95); background: var(--marque); box-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.repere.personne i { background: #ffc061; }
+.repere.porte i { background: #9be3b7; }
+.repere span { padding: 4px 9px; border-radius: 8px; background: var(--verre-fort); color: var(--texte); font: 600 .74rem var(--police-libelle); letter-spacing: .01em; text-transform: none;
+  border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); }
+.repere:hover span, .repere:focus-visible span { background: rgba(196, 0, 107, .92); }
+.point-etiquette { min-height: 30px; padding: 4px 10px; border-radius: 8px; background: var(--verre-fort); color: var(--texte); font: 600 .72rem var(--police-libelle);
+  letter-spacing: .01em; text-transform: none; border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: none; }
+.point-etiquette::after { width: 1px; height: 8px; bottom: -8px; background: rgba(255,255,255,.6); transform: translateX(-50%); }
+.point-etiquette:hover { background: rgba(196, 0, 107, .92); }
+.pnj-nom { padding: 2px 8px; border-radius: 6px; background: var(--verre-fort); color: var(--c, var(--texte)); font: 700 .72rem var(--police-libelle); letter-spacing: .02em; text-transform: none; }
+.invite { min-height: 40px; padding: 0 16px; border-radius: 10px; background: var(--verre-fort); color: var(--texte); font: 600 .84rem var(--police-libelle); letter-spacing: .01em;
+  border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: none; outline: none; }
+.invite i { color: #ff8cc6; }
+
+/* ---------- les sous-titres, comme dans Call of Duty : une boîte par ligne ---------- */
+.soustitres { left: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); gap: 4px; }
+.st-ligne { padding: 4px 9px; border-radius: 4px; background: rgba(0,0,0,.55); color: #ececec; font-size: .86rem; line-height: 1.4; text-shadow: none; box-shadow: none; }
+.st-ligne b { color: var(--c, #ffd27a); font: 700 .8rem var(--police-libelle); letter-spacing: .02em; text-transform: none; background: none; padding: 0; margin-right: .4em; }
+.carte-titre { left: 14px; padding: 0; border: 0; background: none; box-shadow: none; outline: none; text-shadow: 0 1px 4px rgba(0,0,0,.85); }
+.carte-titre b { font: 800 1.15rem var(--police-libelle); letter-spacing: .01em; text-transform: none; color: #fff; }
+.carte-titre span { font: 600 .74rem var(--police-libelle); letter-spacing: .02em; color: var(--texte-doux); }
+.maquette { bottom: 4px; padding: 0; background: none; color: rgba(255,255,255,.6); font: 600 .66rem var(--police-libelle); letter-spacing: .06em; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
+
+/* ---------- les conversations, comme dans Call of Duty ----------
+   Pas de panneau : la réplique en sous-titre (le nom, puis la phrase, chacun dans sa boîte
+   translucide), à 36 % de la largeur ; les réponses en croix au centre, sur un voile léger.
+   Toucher n'importe où fait avancer. */
+.bandes { display: none; }
+.dialogue { inset: 0; width: auto; transform: none; display: block; padding: 0; border-radius: 0; background: none; box-shadow: none; outline: none; border: 0; }
+.dialogue.ouverte { transform: none; }
+.dlg-corps { position: absolute; left: 36%; right: 6%; bottom: calc(11% + env(safe-area-inset-bottom)); display: flex; align-items: flex-start; gap: 4px; }
+.dlg-nom { position: static; flex: none; margin: 0; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,.6); color: var(--c, #9be3b7);
+  font: 700 .84rem var(--police-libelle); letter-spacing: .01em; text-transform: none; }
+.dlg-texte { margin: 0; min-height: 0; max-width: 46ch; padding: 4px 10px 5px; border-radius: 4px; background: rgba(0,0,0,.55); color: #ececec; font-size: .94rem; line-height: 1.45; }
+.dlg-suite { display: none; }
+.dlg-partir { position: fixed; top: max(10px, env(safe-area-inset-top)); right: 10px; min-height: 36px; padding: 0 12px; border-radius: 10px; background: var(--verre); color: var(--texte);
+  border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); font: 600 .78rem var(--police-libelle); text-transform: none; letter-spacing: .01em; box-shadow: none; }
+.dialogue.en-choix::before { content: ''; position: fixed; inset: 0; background: rgba(0, 0, 0, .16); pointer-events: none; }
+.dialogue.en-choix .dlg-croix { position: fixed; left: 50%; top: 46%; transform: translate(-50%, -50%); width: min(560px, calc(100vw - 20px)); margin: 0;
+  display: grid; grid-template-columns: 1fr 30px 1fr; grid-template-rows: auto 30px auto; gap: 8px 10px; align-items: center; justify-items: center; }
+.dialogue.en-choix .losange { display: block; grid-column: 2; grid-row: 2; width: 14px; height: 14px; border: 1.5px solid #fff; background: none; border-radius: 2px; box-shadow: none; }
+.dialogue.en-choix .ch-haut { grid-column: 1 / -1; grid-row: 1; justify-self: center; }
+.dialogue.en-choix .ch-gauche { grid-column: 1; grid-row: 2; justify-self: end; }
+.dialogue.en-choix .ch-droite { grid-column: 3; grid-row: 2; justify-self: start; }
+.dialogue.en-choix .ch-bas { grid-column: 1 / -1; grid-row: 3; justify-self: center; }
+.ch { min-height: 38px; max-width: 100%; padding: 6px 12px; border-radius: 8px; background: rgba(0,0,0,.5); color: #fff; border: 1px solid rgba(255,255,255,.18);
+  font: 600 .84rem var(--police-libelle); line-height: 1.25; letter-spacing: .01em; text-transform: none; box-shadow: none; }
+.ch:hover, .ch:focus-visible { background: rgba(196, 0, 107, .92); border-color: transparent; }
+.ch kbd { display: none !important; }
+.ch.neuf::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: .5em; vertical-align: .12em; border-radius: 50%; background: #ff8cc6; }
+.ch.deja { opacity: .7; }
+.ch.deja::before { content: ''; display: inline-block; width: 4px; height: 8px; margin-right: .5em; border: solid #9be3b7; border-width: 0 2px 2px 0; rotate: 40deg; translate: 0 -2px; }
+@media (max-width: 560px) {
+  .dlg-corps { left: 10px; right: 10px; bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .dlg-texte { font-size: .9rem; }
+  .dialogue.en-choix .dlg-croix { top: 44%; grid-template-columns: 1fr 20px 1fr; grid-template-rows: auto 20px auto; gap: 6px; }
+  .dialogue.en-choix .losange { width: 10px; height: 10px; }
+  .ch { font-size: .8rem; padding: 6px 10px; }
+}
+
+/* ---------- les options près d'une personne : une petite carte de verre ---------- */
+.options { min-width: 168px; padding: 8px; gap: 4px; border-radius: 12px; background: var(--verre-fort); border: 1px solid var(--filet);
+  -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: none; }
+.opt-titre { color: var(--texte); font: 700 .78rem var(--police-libelle); letter-spacing: .01em; text-transform: none; padding: 2px 6px 4px; text-shadow: none; }
+.opt-titre small { color: var(--texte-doux); font: 500 .72rem var(--police-texte); }
+.opt { min-height: 40px; padding: 0 12px; border-radius: 8px; background: var(--verre-clair); color: var(--texte); font: 600 .84rem var(--police-libelle); letter-spacing: .01em; text-transform: none; box-shadow: none; }
+.opt:hover, .opt:focus-visible { background: rgba(255,255,255,.2); }
+.opt.opt-principal, .opt-principal { background: rgba(196, 0, 107, .92); }
+.opt i { display: none; }
+
+/* ---------- la fiche d'une pièce : un panneau de verre, la scène reste visible ---------- */
+.fiche { background: rgba(0,0,0,.28); }
+.fiche-cadre { width: min(820px, 100%); border-radius: 16px; background: rgba(14, 12, 16, .78); color: var(--texte); border: 1px solid var(--filet);
+  -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: 0 24px 60px rgba(0,0,0,.45); outline: none; }
+.fiche-photo { background: rgba(255,255,255,.06); border-radius: 16px 0 0 16px; margin: 0; }
+.fiche-vraie { border-radius: 6px; background: rgba(0,0,0,.55); color: var(--texte); font: 600 .7rem var(--police-libelle); letter-spacing: .02em; text-transform: none; }
+.fiche-tourner { border-radius: 8px; background: var(--verre-fort); color: var(--texte); font: 600 .74rem var(--police-libelle); text-transform: none; letter-spacing: .01em; }
+.fiche-infos { padding: 22px 22px 20px; }
+.fiche-infos h2 { font: 800 clamp(1.4rem, 3vw, 1.9rem) var(--police-titre); letter-spacing: -.01em; line-height: 1.1; text-transform: none; text-shadow: none; margin: 0 0 8px; color: #fff; }
+.fiche-ds { color: var(--texte-doux); font-size: .88rem; line-height: 1.5; }
+.fiche-genre { color: #ff8cc6; font-weight: 700; }
+.fiche-stats { gap: 6px; }
+.stat { border-radius: 10px; background: var(--verre-clair); color: var(--texte); box-shadow: none; border: 1px solid rgba(255,255,255,.08); }
+.stat span { color: var(--texte-doux); font: 600 .7rem var(--police-libelle); letter-spacing: .02em; text-transform: none; }
+.stat b { font: 800 1.05rem var(--police-libelle); color: #fff; }
+.stat small { color: var(--texte-doux); }
+.stat-express { background: rgba(196, 0, 107, .32); border-color: rgba(255,140,198,.35); }
+.fiche-type select { border-radius: 8px; border: 1px solid var(--filet); background: rgba(255,255,255,.08); color: var(--texte); }
+.fiche .bt-ligne { color: var(--texte); }
+@media (max-width: 720px) {
+  .fiche-cadre { border-radius: 16px 16px 0 0; max-height: 78vh; }
+  .fiche-photo { min-height: 28vh; border-radius: 16px 16px 0 0; }
+  .fiche-infos { padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); }
+}
+
+/* ---------- le sac, le carnet, les messages ---------- */
+.sac, .carnet { border-radius: 14px; background: rgba(14, 12, 16, .8); color: var(--texte); border: 1px solid var(--filet);
+  -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: 0 20px 50px rgba(0,0,0,.45); outline: none; }
+.sac { top: calc(max(10px, env(safe-area-inset-top)) + 98px); }
+.carnet { top: calc(max(10px, env(safe-area-inset-top)) + 146px); }
+.sac h3, .carnet h3 { font: 800 1.05rem var(--police-titre); text-transform: none; text-shadow: none; color: #fff; }
+.sac-ligne { border-bottom: 1px solid rgba(255,255,255,.1); }
+.sac-ligne img { border-radius: 6px; background: rgba(255,255,255,.08); }
+.sac-ligne small, .sac-note, .sac-vide, .carnet-reste, .carnet-savoir small { color: var(--texte-doux); }
+.sac-ligne button { border-radius: 8px; background: var(--verre-clair); color: var(--texte); }
+.sac-total { font: 700 .95rem var(--police-libelle); text-transform: none; }
+.x { color: var(--texte); }
+.carnet-jauge { height: 4px; border-radius: 4px; background: rgba(255,255,255,.12); }
+.carnet-jauge i { background: var(--marque); }
+.carnet-savoir { border-top: 1px solid rgba(255,255,255,.1); }
+.carnet-savoir b { color: #ff8cc6; font: 700 .76rem var(--police-libelle); letter-spacing: .02em; text-transform: none; }
+.toast { border-radius: 10px; background: var(--verre-fort); color: var(--texte); border: 1px solid var(--filet); -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: none; font-size: .82rem; }
+.toast-annuler { border-radius: 8px; background: rgba(196, 0, 107, .92); color: #fff; font: 600 .76rem var(--police-libelle); text-transform: none; letter-spacing: .01em; }
+
+/* ---------- le cadran de la commande : un formulaire clair et lisible ---------- */
+.cadran { background: rgba(0,0,0,.4); }
+.cadran-cadre { border-radius: 16px; background: rgba(14, 12, 16, .86); color: var(--texte); border: 1px solid var(--filet);
+  -webkit-backdrop-filter: var(--flou); backdrop-filter: var(--flou); box-shadow: 0 30px 70px rgba(0,0,0,.5); outline: none; }
+.cadran header { background: transparent; border-bottom: 1px solid rgba(255,255,255,.1); }
+.cadran h2 { font: 800 1.05rem var(--police-titre); text-transform: none; text-shadow: none; color: #fff; margin-left: 0; }
+.cadran section { border-bottom: 1px solid rgba(255,255,255,.1); }
+.cadran h3 { color: #ff8cc6; font: 700 .74rem var(--police-libelle); letter-spacing: .02em; text-transform: none; }
+.cd-ligne small, .cd-aide, .cd-mes small, .cd-promesse, .cd-recap span, .cadran label i, .cd-mes legend { color: var(--texte-doux); }
+.cd-choix label { border-radius: 10px; background: var(--verre-clair); }
+.cadran input:not([type=radio]), .cadran select, .cadran textarea { border-radius: 10px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.08); color: var(--texte); }
+.cadran input::placeholder, .cadran textarea::placeholder { color: rgba(246,243,238,.55); }
+.puce { border-radius: 8px; background: transparent; color: #ff8cc6; border: 1px solid rgba(255,140,198,.5); box-shadow: none; outline: none; font: 600 .76rem var(--police-libelle); text-transform: none; letter-spacing: .01em; }
+.cadran footer { background: rgba(255,255,255,.05); border-top: 1px solid rgba(255,255,255,.1); }
+.cd-total b { color: #ff8cc6; font: 800 1.15rem var(--police-libelle); }
+.cd-encore { color: #ff9db5; }
+.cd-qr small { color: var(--texte-doux); }
+@media (max-width: 560px) { .cadran-cadre { border-radius: 16px 16px 0 0; } }
+
+@media (prefers-reduced-motion: reduce) { .ouverture.partie { transition: none; } }

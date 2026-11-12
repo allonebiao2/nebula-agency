@@ -15,10 +15,10 @@
 import { fcfa, libDelai } from '../../socle/boutique.js';
 
 export const PERSONNES = {
-  hillary: { nom: 'Hillary', couleur: '#ff5cae', initiales: 'H' },
+  hillary: { nom: 'Hillary', couleur: '#ff8cc6', initiales: 'H' },
   afi: { nom: 'Afi', couleur: '#8fc3ff', initiales: 'A' },
   senami: { nom: 'Sènami', couleur: '#ffc061', initiales: 'S' },
-  maman: { nom: 'Maman Sènami', couleur: '#86e3b5', initiales: 'M' },
+  maman: { nom: 'Maman Sènami', couleur: '#9be3b7', initiales: 'M' },
 };
 
 const pick = (a) => a[Math.floor(Math.random() * a.length)];

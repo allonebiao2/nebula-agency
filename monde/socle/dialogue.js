@@ -23,7 +23,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
   boite.setAttribute('role', 'dialog'); boite.setAttribute('aria-label', 'Conversation');
   /* ⚠️ pas de portrait-image : c'est le CORPS 3D qui parle (Mongazi, 2026-11-12) */
   boite.innerHTML = `<div class="dlg-corps"><div class="dlg-nom"></div><p class="dlg-texte" aria-live="polite"></p><span class="dlg-suite" aria-hidden="true">▸</span></div>
-    <button type="button" class="dlg-partir" aria-label="Partir">Partir ✕</button>
+    <button type="button" class="dlg-partir" aria-label="Partir">Partir</button>
     <div class="dlg-croix" role="group" aria-label="Vos réponses"></div>`;
   calque.appendChild(boite);
   const $ = (s) => boite.querySelector(s);
@@ -38,7 +38,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
   function sousTitre(qui, texte, duree) {
     if (actif) return;
     const p = personnes[qui] || { nom: qui, couleur: '#fff' };
-    const l = el('p', 'st-ligne', `<b style="color:${p.couleur}">${esc(p.nom)}</b> ${esc(texte)}`);
+    const l = el('p', 'st-ligne', `<b style="--c:${p.couleur};--c-texte:${p.texte || '#15110f'}">${esc(p.nom)}</b> ${esc(texte)}`);
     st.appendChild(l);
     while (st.children.length > 3) st.firstChild.remove();
     const d = duree || (1.6 + texte.length * 0.055) * 1000;
@@ -49,7 +49,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
   const tonDe = (t) => (/\?\s*$/.test(t) ? 'question' : /!\s*$/.test(t) ? 'exclamation' : 'affirmation');
   function montrer(qui, texte = '') {
     const p = personnes[qui] || { nom: qui, couleur: '#e6007e' };
-    $('.dlg-nom').textContent = p.nom; $('.dlg-nom').style.color = p.couleur;
+    $('.dlg-nom').textContent = p.nom; $('.dlg-nom').style.color = p.texte || p.couleur;
     boite.style.setProperty('--c', p.couleur);
     for (const k in personnes) if (personnes[k].perso) personnes[k].perso.parler(k === qui, tonDe(texte));
     if (p.perso && deplacement) {
@@ -115,7 +115,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
 
   function direToi(texte) {
     return new Promise((ok) => {
-      $('.dlg-nom').textContent = 'Toi'; $('.dlg-nom').style.color = '#ffffff';
+      $('.dlg-nom').textContent = 'Toi'; $('.dlg-nom').style.color = '#15110f';
       boite.style.setProperty('--c', '#ffffff');
       for (const k in personnes) if (personnes[k].perso) personnes[k].perso.parler(false);
       $('.dlg-texte').textContent = texte; boite.classList.add('peut-suivre');

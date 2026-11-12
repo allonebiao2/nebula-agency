@@ -56,6 +56,23 @@ Décisions de Mongazi, le même jour :
 - ✅ **les 7 animations d'Afi téléchargées** (2026-11-12, 17 h 28) : `_partage\immersive  store 3D\personnages\afi\afi-{attendre,marcher,parler,saluer,hocher,reflechir,regarder}.fbx` (8,5 Mo ; seule `attendre` porte le corps ; `marcher` = *Female Walk* sur place)
 - 🙋 **« faut lancer Unreal Engine »** (2026-11-12) → le moteur n'est pas installé (installation sur `C:` annulée à 13 h 59) ; lanceur rouvert sur la page Unreal : **choisir `D:\Epic Games`**. ⚠️ ce PC (8 Go, Intel HD 5500) risque de ne pas ouvrir l'éditeur.
 
+- 🔨 **« les conversations comme dans la vidéo de Call of Duty que je t'ai montrée plutôt »**
+  (2026-11-12) → **remplace « comme dans Horizon Zero Dawn »** : plus de panneau de dialogue ;
+  la réplique en sous-titre (une plaque par ligne, le nom dans sa propre plaque, à 36 % de la
+  largeur), les réponses en croix au centre de l'écran sur un voile léger, la scène qui vit
+  derrière, toucher n'importe où pour avancer. Peint dans le nuancier des enseignes.
+- 🔨 **« je veux que ça vaille au moins et minimum 20 000 euros »** (2026-11-12) : l'étalon passe
+  en euros (`PRODUCT.md`). Revue finale Impeccable : verdict « à corriger », 8 corrections, toutes
+  appliquées (vis, ombres nettes, lettre peinte partout, nom et prix sur la plaque de chaque pièce,
+  nuancier fermé, contrastes, sur-titres retirés, téléphone).
+- 🔍 **« ce que nous construisons, quelqu'un l'a-t-il déjà fait au Bénin ? »** (2026-11-12, recherche web) :
+  **rien trouvé d'équivalent au Bénin** (ce qui ne prouve pas que rien n'existe hors des moteurs de recherche).
+  Au plus près : eTourism Benin (visites du patrimoine en réalité virtuelle et boutique d'artisanat),
+  AFRIKAFUN (visites 360° d'hôtels à Cotonou). En Afrique : Thrill Digital (Nigeria, jeu de mode
+  métavers, 2021) et **Otraverse (Tunisie, 2026 : le catalogue d'un e-commerçant devient une
+  boutique 3D générée par IA), le concurrent à surveiller**. Ailleurs : Obsess, Emperia, ByondXR,
+  Diakse (surtout des visites 360° ou des boutiques lourdes, pensées pour l'ordinateur).
+
 Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
 produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
 
