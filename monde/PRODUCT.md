@@ -65,6 +65,11 @@ de Cotonou passent dans le lieu. Référence de sensation donnée par Mongazi : 
 - Le lieu porte l'identité d'HILLARY M. STYL : monogramme **H.M.S**, **magenta `#E6007E`**,
   encre, papier patron crème ; ses polices de vitrine sont Bodoni Moda, Archivo et Manrope.
 - Tout en français, sans tiret cadratin dans les textes.
+- **L'interface est en verre fumé, plate, petite et discrète** (préférence durable de Mongazi,
+  2026-11-12, après avoir rejeté des « enseignes peintes » jugées ringardes) : rien ne doit
+  remplir l'écran ; étalon : l'interface de la vidéo Call of Duty qu'il a fournie.
+- **Le salon est tamisé** (murs sombres et chauds, une lumière par création) et porte une
+  musique feutrée.
 
 ## Evidence on Hand
 
