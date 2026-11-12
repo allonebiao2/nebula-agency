@@ -280,3 +280,11 @@ body:has(#ouverture:not(.partie)) :is(.hud, .bt-sac, .bt-carnet, .repere, .point
 
 /* et le nom des créations en Bodoni aussi dans le sac */
 .sac-ligne b { font: 500 1rem "Bodoni Moda", Georgia, serif; }
+
+/* vérification de la seconde revue (2026-11-12) */
+/* A · replié, l'objectif garde son titre court (une règle plus haut cachait TOUS ses span) */
+.objectif.replie .obj-court { display: inline; }
+/* C · la mention « maquette » s'efface aussi sous une fiche et sous la commande */
+.en-fiche .maquette, .en-cadran .maquette { opacity: 0; }
+/* au téléphone, les répliques d'ambiance passent au-dessus de la mention « maquette » */
+@media (max-width: 560px) { .soustitres { bottom: calc(34px + env(safe-area-inset-bottom)); } }

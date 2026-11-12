@@ -43,20 +43,23 @@ export function creerReperes({ moteur, calque, maxNoms = null, distanceMax = 9 }
     const places = [];
     vus.forEach((o, i) => {
       /* deux noms ne se chevauchent pas : le plus loin se contente du point */
-      const chevauche = places.some(p => Math.abs(p.x - o.x) < 210 && Math.abs(p.y - o.y) < 38);
+      const chevauche = places.some(p => o.x + 200 > p.g && o.x - 30 < p.d && Math.abs(p.y - o.y) < 38);
       const avecNom = i < nbNoms && !chevauche;
-      if (avecNom) places.push(o);
       /* un point seul ne se pose jamais SUR l'étiquette d'un autre (vu le 2026-11-12 :
          « ROBE DE C●RÉMONIE ») : il attend qu'on se rapproche */
-      else if (places.some(p => o.x > p.x - 16 && o.x < p.x + 260 && Math.abs(o.y - p.y) < 26)) { o.r.b.classList.remove('vu'); return; }
+      if (!avecNom && places.some(p => o.x > p.g - 16 && o.x < p.d + 16 && Math.abs(o.y - p.y) < 26)) { o.r.b.classList.remove('vu'); return; }
       const nom = typeof o.r.nom === 'function' ? o.r.nom() : o.r.nom;
       if (nom !== o.r.txt) { o.r.txt = nom; o.r.b.querySelector('span').textContent = nom; o.r.b.setAttribute('aria-label', nom); }
       o.r.b.classList.add('vu');
       o.r.b.classList.toggle('nomme', avecNom);
-      /* une étiquette ne sort jamais de l'écran : près du bord droit, elle passe à gauche de son point */
-      const aGauche = avecNom && o.x > innerWidth - 240;
-      o.r.b.classList.toggle('gauche', aGauche);
-      o.r.b.style.transform = aGauche ? `translate(${o.x - o.r.b.offsetWidth + 44}px, ${o.y}px)` : `translate(${o.x}px, ${o.y}px)`;
+      /* une étiquette ne sort jamais de l'écran : elle passe à gauche de son point SEULEMENT si
+         elle déborderait vraiment à droite (un seuil fixe retournait l'étiquette centrale au téléphone) */
+      let gauche = false, w = 44;
+      if (avecNom) { w = o.r.b.offsetWidth; gauche = o.x - 22 + w > innerWidth - 8 && o.x + 22 - w >= 8; }
+      o.r.b.classList.toggle('gauche', gauche);
+      const tx = gauche ? o.x - w + 44 : o.x;
+      if (avecNom) places.push({ g: tx - 22, d: tx - 22 + w, y: o.y });
+      o.r.b.style.transform = `translate(${tx}px, ${o.y}px)`;
     });
   });
 

@@ -265,7 +265,12 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
         const vis = proches.includes(id) && a > 0.3 && proj.z < 1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05 && d < 13;
         m.etiquette.style.opacity = vis ? String(Math.min(1, a)) : '0';
         m.etiquette.style.pointerEvents = vis ? 'auto' : 'none';
-        if (vis) m.etiquette.style.transform = `translate(${(proj.x * 0.5 + 0.5) * toile.clientWidth}px, ${(-proj.y * 0.5 + 0.5) * toile.clientHeight}px) translate(-50%, -100%)`;
+        /* l'étiquette reste DANS l'écran : bornée à 8 px des bords (revue Impeccable du 2026-11-12) */
+        if (vis) {
+          const demi = (m.etiquette.offsetWidth || 120) / 2, W = toile.clientWidth;
+          const x = Math.min(W - demi - 8, Math.max(demi + 8, (proj.x * 0.5 + 0.5) * W));
+          m.etiquette.style.transform = `translate(${x}px, ${(-proj.y * 0.5 + 0.5) * toile.clientHeight}px) translate(-50%, -100%)`;
+        }
       }
     }
   });
