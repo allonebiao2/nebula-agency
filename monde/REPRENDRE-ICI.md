@@ -20,6 +20,14 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
 
 ## 2 · La prochaine action exacte
 
+> **MISE À JOUR du 2026-11-12, 18 h 30** (à lire avant le reste de cette section) :
+> - ✅ Les **7 animations d'Afi** sont téléchargées : `_partage\immersive  store 3D\personnages\afi\afi-{attendre,marcher,parler,saluer,hocher,reflechir,regarder}.fbx`. Seule `attendre` porte le corps (6 Mo). `marcher` est *Female Walk* sur place. ⚠️ Sur Mixamo, **ne jamais changer de page pendant « Preparing download »** : la préparation reste bloquée (le serveur répond 202 en boucle).
+> - ✅ **L'interface est refaite par Impeccable** : direction « Les enseignes peintes de Cotonou », choisie par Mongazi (`lieux/hillary-m-styl/enseignes.css`, `PRODUCT.md`). Le contrat de direction vit dans `.impeccable/` (ignoré par git) ; `impeccable surface-brief read lieux/hillary-m-styl/index.html`, à lancer depuis `monde/`.
+> - ⛔ **Impeccable n'est PAS fini**, selon son contrat : il manque les captures 390 et 1440 de tous les états (dialogue, options, fiche, sac, cadran), `impeccable detect`, la revue finale (agent `impeccable-finish-reviewer`), puis `DESIGN.md` (agent `impeccable-documenter`). ⚠️ Le détecteur signale encore une lueur magenta sans décalage, qui vient de `socle/interface.css`.
+> - **Prochaine action** : copier les 7 FBX dans `lieux/hillary-m-styl/personnages/afi/` et brancher Afi animée (étape 2 ci-dessous ; `FBXLoader` est déjà dans le vendor). C'est ce qui fera disparaître les « Lego ».
+> - 🙋 **Unreal** : le lanceur Epic est ouvert sur la page d'Unreal. Mongazi installe dans **`D:\Epic Games`** (59,9 Go libres, contre 11,4 Go sur `C:`).
+> - ⚠️ **Les visiteuses se collent au visiteur dès l'entrée** (Maman Sènami et Afi à moins d'un mètre, vu en capture). Elles ne s'évitent pas non plus entre elles.
+
 0. **EN TOUT PREMIER, relancer les tâches de fond** que Mongazi voyait tourner « en bas »
    avant son `/clear` (il a demandé qu'on s'en souvienne) :
    - **le serveur du salon** (indispensable) : `python monde/_servir.py --sans-construire`
