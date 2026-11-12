@@ -96,11 +96,15 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     vers.normalize().multiplyScalar(0.95);
     const rdv = { x: pb.x + vers.x, z: pb.z + vers.z, pres: graphe.plusProche(pb.x, pb.z) };
     b.etat = 'attend'; b.perso.regarder(a.perso.positionTete());
-    partir(a, rdv, () => { a.etat = 'conversation'; demarrerLignes(); });
+    /* ⚠️ la conversation a pu être annulée pendant la marche (le visiteur lui a parlé) : on ne
+       relance que CELLE-CI, jamais une conversation disparue (erreur vue au QC du 2026-11-12) */
+    const cetteConv = convEnCours;
+    partir(a, rdv, () => { if (convEnCours !== cetteConv) return; a.etat = 'conversation'; demarrerLignes(); });
     a.etat = 'marche-conv';
     return true;
   }
   function demarrerLignes() {
+    if (!convEnCours) return;
     const { a, b } = convEnCours;
     a.etat = b.etat = 'conversation';
     a.perso.assis(false); b.perso.assis(false); a.perso.geste('repos'); b.perso.geste('repos'); a.perso.telephone(false); b.perso.telephone(false);

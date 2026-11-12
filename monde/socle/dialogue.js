@@ -38,7 +38,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
   function sousTitre(qui, texte, duree) {
     if (actif) return;
     const p = personnes[qui] || { nom: qui, couleur: '#fff' };
-    const l = el('p', 'st-ligne', `<b style="--c:${p.couleur};--c-texte:${p.texte || '#15110f'}">${esc(p.nom)}</b> ${esc(texte)}`);
+    const l = el('p', 'st-ligne', `<b style="--c:${p.couleur};--c-texte:${p.texte || '#15110f'}">${esc(p.nom)}</b><span>${esc(texte)}</span>`);
     st.appendChild(l);
     while (st.children.length > 3) st.firstChild.remove();
     const d = duree || (1.6 + texte.length * 0.055) * 1000;

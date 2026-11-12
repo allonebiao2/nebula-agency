@@ -27,7 +27,7 @@ export function creerCarnet({ calque, savoirs, cle = 'monde:carnet', son, toast 
   }
   function dessiner() {
     const reste = actifs.length - appris.size;
-    panneau.innerHTML = `<header><h3>Ce que vous savez de la maison</h3><button type="button" class="x" aria-label="Fermer">×</button></header>
+    panneau.innerHTML = `<header><h3>Ce que vous savez de la maison</h3><button type="button" class="x" aria-label="Fermer"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
       <div class="carnet-jauge"><i style="width:${Math.round(appris.size / actifs.length * 100)}%"></i></div>
       <p class="carnet-reste">${reste ? `Encore ${reste} chose${reste > 1 ? 's' : ''} à découvrir. Parlez à tout le monde, essayez chaque réponse.` : 'Vous connaissez la maison par cœur.'}</p>
       ${actifs.filter(s => appris.has(s.id)).map(s => `<div class="carnet-savoir"><b>${esc(s.titre)}</b><p>${esc(s.texte)}</p><small>${esc(s.source)}</small></div>`).join('')}

@@ -198,9 +198,9 @@ export function creerBoutique({ calque, donnees, son, cleStockage = 'monde:panie
   surChange.push(majCompte);
   function dessinerSac() {
     const t = totaux();
-    sac.innerHTML = `<header><h3>Votre sac</h3><button type="button" class="x" aria-label="Fermer">×</button></header>` +
+    sac.innerHTML = `<header><h3>Votre sac</h3><button type="button" class="x" aria-label="Fermer"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>` +
       (panier.length ? panier.map((l, i) => { const p = pieceDe(l.id); const v = prixLigne(l);
-        return `<div class="sac-ligne">${p.img ? `<img src="${imgBase}${esc(p.img)}" alt="">` : '<i></i>'}<div><b>${esc(p.nom)}</b><small>${esc(libDelaiLigne(l))}</small></div><span>${v == null ? 'sur devis' : fcfa(v)}</span><button type="button" data-i="${i}" aria-label="Retirer ${esc(p.nom)}">×</button></div>`; }).join('') +
+        return `<div class="sac-ligne">${p.img ? `<img src="${imgBase}${esc(p.img)}" alt="">` : '<i></i>'}<div><b>${esc(p.nom)}</b><small>${esc(libDelaiLigne(l))}</small></div><span>${v == null ? 'sur devis' : fcfa(v)}</span><button type="button" data-i="${i}" aria-label="Retirer ${esc(p.nom)}"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`; }).join('') +
         `<div class="sac-total"><span>Pièces</span><b>${t.devis ? 'sur devis' : fcfa(t.fcfa)}</b></div>
          <p class="sac-note">La livraison se choisit au comptoir. Rien n'est payé ici : règlement par Mobile Money, après confirmation sur WhatsApp.</p>
          <button type="button" class="bt bt-plein sac-valider">Valider au comptoir</button>`
@@ -241,25 +241,25 @@ export function creerBoutique({ calque, donnees, son, cleStockage = 'monde:panie
     }).join('');
     cadran.innerHTML = `
       <div class="cadran-cadre">
-        <header><h2>Votre commande</h2><button type="button" class="x" aria-label="Fermer">×</button></header>
+        <header><h2>Votre commande</h2><button type="button" class="x" aria-label="Fermer"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
         <div class="cd-defile">
-          <section><h3>1 · Vos pièces</h3>${panier.map(l => { const p = pieceDe(l.id), v = prixLigne(l); return `<div class="cd-ligne"><span>${esc(p.nom)}<small>${esc(libDelaiLigne(l))}</small></span><b>${v == null ? 'sur devis' : fcfa(v)}</b></div>`; }).join('')}</section>
-          ${lignesMesures ? `<section><h3>2 · Vos mesures</h3>${lignesMesures}</section>` : ''}
-          <section><h3>3 · Livraison</h3>
+          <section><h3>Vos pièces</h3>${panier.map(l => { const p = pieceDe(l.id), v = prixLigne(l); return `<div class="cd-ligne"><span>${esc(p.nom)}<small>${esc(libDelaiLigne(l))}</small></span><b>${v == null ? 'sur devis' : fcfa(v)}</b></div>`; }).join('')}</section>
+          ${lignesMesures ? `<section><h3>Vos mesures</h3>${lignesMesures}</section>` : ''}
+          <section><h3>Livraison</h3>
             <div class="cd-choix cd-mode"><label><input type="radio" name="mode" value="retrait" ${cmd.mode === 'retrait' ? 'checked' : ''}> Retrait à l'atelier · gratuit</label>
             <label><input type="radio" name="mode" value="expedition" ${cmd.mode === 'expedition' ? 'checked' : ''}> Expédition</label></div>
             <p class="cd-aide cd-retrait" ${cmd.mode === 'retrait' ? '' : 'hidden'}>${esc(D.atelier.adresse)}</p>
             <div class="cd-exp" ${cmd.mode === 'expedition' ? '' : 'hidden'}>
               <label>Pays <select data-c="pays"><option value="">Choisir</option>${D.pays.map(p => `<option value="${p.id}" ${cmd.pays && cmd.pays.id === p.id ? 'selected' : ''}>${esc(p.nom)}${p.frais != null ? ' · ' + fcfa(p.frais) : ' · à confirmer'}</option>`).join('')}</select></label>
-              <label>Ville de livraison <i>obligatoire</i><input data-c="ville" value="${esc(cmd.ville)}" placeholder="Abomey-Calavi"></label>
+              <label><span>Ville de livraison <i>obligatoire</i></span><input data-c="ville" value="${esc(cmd.ville)}" placeholder="Abomey-Calavi"></label>
               <label>Quartier ou point de repère<input data-c="repere" value="${esc(cmd.repere)}" placeholder="derrière la pharmacie"></label>
             </div></section>
-          <section><h3>4 · Vous</h3>
+          <section><h3>Vous</h3>
             <div class="cd-grille">
-              <label>Prénom <i>obligatoire</i><input data-c="prenom" autocomplete="given-name" value="${esc(cmd.prenom)}"></label>
-              <label>Nom <i>obligatoire</i><input data-c="nom" autocomplete="family-name" value="${esc(cmd.nom)}"></label>
-              <label>Téléphone <i>obligatoire</i><input data-c="tel" type="tel" autocomplete="tel" value="${esc(cmd.tel)}" placeholder="01 00 00 00 00"></label>
-              <label>Lieu de résidence <i>obligatoire</i><input data-c="residence" value="${esc(cmd.residence)}" placeholder="Cotonou, Fidjrossè"><button type="button" class="puce cd-meme" hidden></button></label>
+              <label><span>Prénom <i>obligatoire</i></span><input data-c="prenom" autocomplete="given-name" value="${esc(cmd.prenom)}"></label>
+              <label><span>Nom <i>obligatoire</i></span><input data-c="nom" autocomplete="family-name" value="${esc(cmd.nom)}"></label>
+              <label><span>Téléphone <i>obligatoire</i></span><input data-c="tel" type="tel" autocomplete="tel" value="${esc(cmd.tel)}" placeholder="01 00 00 00 00"></label>
+              <label><span>Lieu de résidence <i>obligatoire</i></span><input data-c="residence" value="${esc(cmd.residence)}" placeholder="Cotonou, Fidjrossè"><button type="button" class="puce cd-meme" hidden></button></label>
               <label>Email <i>facultatif</i><input data-c="mail" type="email" autocomplete="email" value="${esc(cmd.mail)}"></label>
               <label class="large">Une précision ? <i>facultatif</i><textarea data-c="note" rows="2">${esc(cmd.note)}</textarea></label>
             </div></section>

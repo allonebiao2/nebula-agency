@@ -232,3 +232,51 @@ body:has(.options.ouverte) .maquette { opacity: 0; }
 .options { transform: translateY(6px) scale(.98); transition: opacity .2s, transform .25s cubic-bezier(.2, .8, .2, 1); }
 .options.ouverte { transform: none; }
 @media (prefers-reduced-motion: reduce) { .options, .objectif { transition: none; } }
+
+/* =========================================================================
+   SECONDE REVUE FINALE D'IMPECCABLE (2026-11-12) : les huit corrections
+   ========================================================================= */
+/* 1 · la croix au téléphone : des rangées qui suivent le texte, le point « neuf » au coin */
+.dialogue.en-choix .dlg-croix { grid-template-rows: auto auto auto; }
+.dialogue.en-choix .losange { align-self: center; }
+.ch { position: relative; text-wrap: balance; }
+.ch.neuf { padding-right: 20px; }
+.ch.neuf::after { position: absolute; top: 7px; right: 7px; margin: 0; }
+@media (max-width: 560px) { .dialogue.en-choix .dlg-croix { grid-template-rows: auto auto auto; } }
+
+/* 2 · les sous-titres d'ambiance suivent le même système que la conversation (Call of Duty) */
+.soustitres { gap: 4px; }
+.st-ligne { display: flex; align-items: flex-start; gap: 4px; padding: 0; background: none; }
+.st-ligne b { flex: none; margin: 0; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,.6); }
+.st-ligne span { padding: 4px 10px 5px; border-radius: 4px; background: rgba(0,0,0,.55); }
+@media (min-width: 561px) { .soustitres { left: 36%; right: 6%; bottom: calc(11% + env(safe-area-inset-bottom)); max-width: none; } }
+
+/* 4 · l'arrivée : seule la carte « Entrer » ; le haut de l'écran et les repères viennent après */
+body:has(#ouverture:not(.partie)) :is(.hud, .bt-sac, .bt-carnet, .repere, .point-etiquette, .objectif) { opacity: 0 !important; pointer-events: none !important; }
+.bt-sac:not(.plein) .compte { display: none; }
+.bt-carnet { top: calc(max(10px, env(safe-area-inset-top)) + 110px); }
+.carnet { top: calc(max(10px, env(safe-area-inset-top)) + 158px); }
+.objectif .obj-sous { display: block; opacity: .75; }
+.objectif.replie .obj-suite, .objectif.replie .obj-sous { display: none; }
+
+/* 5 · la fiche : une seule action pleine, « Je la prends » ; l'express en verre bordé de magenta */
+.bt-or { background: rgba(196, 0, 107, .2); color: #fff; border: 1px solid rgba(255, 140, 198, .55); }
+.bt-or:hover { background: rgba(196, 0, 107, .32); }
+.fiche .bt-ligne { border-color: var(--filet); }
+
+/* 6 · la commande : le libellé et son astérisque sur la même ligne */
+.cadran label > span { display: block; }
+
+/* 7 · des icônes dessinées, du même trait que celles du haut */
+.ic-x { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.x { display: grid; place-items: center; font-size: 0; }
+.sac-ligne button { display: grid; place-items: center; }
+.sac-ligne .ic-x { width: 14px; height: 14px; }
+.invite i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ff8cc6; }
+
+/* 8 · lisibles partout : les étiquettes passent à gauche près du bord, la mention a sa pastille */
+.repere.gauche { flex-direction: row-reverse; padding: 0 12px 0 0; }
+.maquette { padding: 3px 9px; border-radius: 6px; background: var(--verre-fort); color: rgba(246,243,238,.88); text-shadow: none; }
+
+/* et le nom des créations en Bodoni aussi dans le sac */
+.sac-ligne b { font: 500 1rem "Bodoni Moda", Georgia, serif; }

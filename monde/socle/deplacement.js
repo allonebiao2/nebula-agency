@@ -78,13 +78,15 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
     const p = graphe.noeuds[id];
     if (p.passage) continue;
     const g = new THREE.Group(); g.position.set(p.x, 0.012, p.z);
-    const mA = new THREE.MeshBasicMaterial({ color: couleur, transparent: true, opacity: 0.9, depthWrite: false, toneMapped: false });
+    const mA = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false, toneMapped: false });
     const anneau = new THREE.Mesh(geoAnneau, mA); anneau.rotation.x = -Math.PI / 2;
     const mD = new THREE.MeshBasicMaterial({ color: 0xffd9a8, transparent: true, opacity: 0.25, depthWrite: false, toneMapped: false });
     const disque = new THREE.Mesh(geoDisque, mD); disque.rotation.x = -Math.PI / 2; disque.position.y = -0.002;
     const mF = new THREE.MeshBasicMaterial({ color: couleur, map: tex, transparent: true, opacity: 0.22, depthWrite: false,
       side: THREE.DoubleSide, blending: THREE.AdditiveBlending, toneMapped: false });
     const f = new THREE.Mesh(geoFaisceau, mF); f.position.y = 0.55;
+    /* ⚠️ plus de colonne lumineuse : c'était un décor d'interface dans la scène (revue Impeccable du 2026-11-12) */
+    f.visible = false;
     g.add(anneau, disque, f); scene.add(g);
     const cible = { type: 'point', id };
     for (const m of [anneau, disque, f]) { m.userData.cible = cible; interactifs.push(m); }
@@ -256,7 +258,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
       const d = Math.hypot(m.p.x - pos.x, m.p.z - pos.z);
       const a = ici || bloque ? 0 : borner((d - 0.6) / 1.5, 0, 1);
       const pulse = 0.75 + 0.25 * Math.sin(t * 2.6 + m.p.x);
-      m.mA.opacity = 0.75 * a * pulse; m.mD.opacity = 0.14 * a; m.mF.opacity = 0.09 * a * pulse;
+      m.mA.opacity = 0.34 * a * pulse; m.mD.opacity = 0.1 * a; m.mF.opacity = 0;
       m.g.visible = a > 0.01;
       if (m.etiquette) {
         proj.set(m.p.x, 0.55, m.p.z).project(camera);

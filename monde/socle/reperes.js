@@ -53,7 +53,10 @@ export function creerReperes({ moteur, calque, maxNoms = null, distanceMax = 9 }
       if (nom !== o.r.txt) { o.r.txt = nom; o.r.b.querySelector('span').textContent = nom; o.r.b.setAttribute('aria-label', nom); }
       o.r.b.classList.add('vu');
       o.r.b.classList.toggle('nomme', avecNom);
-      o.r.b.style.transform = `translate(${o.x}px, ${o.y}px)`;
+      /* une étiquette ne sort jamais de l'écran : près du bord droit, elle passe à gauche de son point */
+      const aGauche = avecNom && o.x > innerWidth - 240;
+      o.r.b.classList.toggle('gauche', aGauche);
+      o.r.b.style.transform = aGauche ? `translate(${o.x - o.r.b.offsetWidth + 44}px, ${o.y}px)` : `translate(${o.x}px, ${o.y}px)`;
     });
   });
 

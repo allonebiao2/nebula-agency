@@ -241,7 +241,7 @@ for (const pd of plan.podiums) {
    ================================================================ */
 const cp = plan.comptoir;
 {
-  const texCannelure = texteCanvas(512, 128, (g, W, Hh) => { for (let x = 0; x < W; x += 16) { const gr = g.createLinearGradient(x, 0, x + 16, 0); gr.addColorStop(0, '#e9e2d6'); gr.addColorStop(0.5, '#ffffff'); gr.addColorStop(1, '#d9d0c2'); g.fillStyle = gr; g.fillRect(x, 0, 16, Hh); } });
+  const texCannelure = texteCanvas(512, 128, (g, W, Hh) => { for (let x = 0; x < W; x += 16) { const gr = g.createLinearGradient(x, 0, x + 16, 0); gr.addColorStop(0, '#2c221d'); gr.addColorStop(0.5, '#5b463b'); gr.addColorStop(1, '#241c18');   /* tamisé : un comptoir cannelé expresso, plus de panneau blanc qui mange le bas de l'écran */ g.fillStyle = gr; g.fillRect(x, 0, 16, Hh); } });
   texCannelure.wrapS = THREE.RepeatWrapping; texCannelure.repeat.set(6, 1);
   const corps = boite(cp.longueur, cp.hauteur - 0.05, cp.profondeur, [M.laque, M.laque, M.laque, M.laque, new THREE.MeshStandardMaterial({ map: texCannelure, roughness: 0.4 }), M.laque]);
   poser(corps, cp.x, (cp.hauteur - 0.05) / 2, cp.z);
@@ -439,7 +439,7 @@ const ciel = creerCiel(moteur, { facadeZ: fz, largeur: LX * 2, lieu: COTONOU });
 const graphe = creerGraphe(plan);
 const deplacement = creerDeplacement(moteur, graphe, { depart: params.has('direct') ? 'entree' : 'dehors', calque });
 /* on arrive dehors FACE à la boutique et à son enseigne, pas face à la rue */
-if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 1.85, plan.facade.z));
+if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 2.7, plan.facade.z));   /* l'enseigne dans le tiers haut */
 function deplacementPlus(objet, cible) { (window.__enAttente = window.__enAttente || []).push([objet, cible]); }
 for (const [o, c] of window.__enAttente || []) deplacement.ajouterInteractif(o, c);
 for (const id in totems) deplacement.ajouterInteractif(totems[id], { type: 'piece', id });
@@ -509,7 +509,9 @@ const objectifEl = document.createElement('div'); objectifEl.className = 'object
 objectifEl.addEventListener('click', (e) => { e.stopPropagation(); objectifEl.classList.toggle('replie'); });
 const monde = {
   objectif(texte, sous = null, fini = false) {
-    objectifEl.innerHTML = `<small>${fini ? 'Terminé' : 'En cours'}</small>${texte}${sous ? `<br><span style="opacity:.75">${sous}</span>` : ''}`;
+    /* replié, l'objectif ne garde que son titre court (ce qui précède les deux-points) */
+    const [court, ...reste] = String(texte).split(' : ');
+    objectifEl.innerHTML = `<small>${fini ? 'Terminé' : 'En cours'}</small><span class="obj-court">${court}</span>${reste.length ? `<span class="obj-suite"> : ${reste.join(' : ')}</span>` : ''}${sous ? `<span class="obj-sous">${sous}</span>` : ''}`;
     objectifEl.classList.add('visible'); objectifEl.classList.toggle('fini', fini); objectifEl.classList.remove('replie');
     /* il se replie en UNE ligne au bout de 6 s, et se rouvre au toucher : rien ne doit occuper
        l'écran (Mongazi, 2026-11-12) */
@@ -568,7 +570,7 @@ moteur.chaqueImage(() => {
   if (vis) {
     projI.copy(i.ou()).project(camera);
     const dans = projI.z < 1 && Math.abs(projI.x) < 0.95 && Math.abs(projI.y) < 0.95;
-    invite.innerHTML = `<i aria-hidden="true">◆</i>${i.t}`;
+    invite.innerHTML = `<i aria-hidden="true"></i>${i.t}`;
     invite.style.opacity = dans ? '1' : '0'; invite.style.pointerEvents = dans ? 'auto' : 'none';
     if (dans) invite.style.transform = `translate(${Math.round((projI.x * 0.5 + 0.5) * innerWidth)}px, ${Math.round((-projI.y * 0.5 + 0.5) * innerHeight)}px) translate(-50%, -100%)`;
   } else { invite.style.opacity = '0'; invite.style.pointerEvents = 'none'; }
@@ -585,9 +587,9 @@ function toucherHillary() {
     titre: 'Hillary', sous: 'HILLARY M. STYL',
     ancre: (v) => v.set(plan.comptoir.x, 2.05, plan.comptoir.z - 0.4),
     choix: [
-      { t: 'Parler', icone: '💬', principal: true, faire: () => dialogue.ouvrir('hillary') },
-      boutique.panier().length ? { t: 'Valider ma commande', icone: '🛍', faire: () => dialogue.ouvrir('h_cest_tout') } : { t: 'Me conseiller', icone: '✨', faire: () => dialogue.ouvrir('h_conseil') },
-      { t: 'Laisser', icone: '↩', faire: () => {} },
+      { t: 'Parler', principal: true, faire: () => dialogue.ouvrir('hillary') },
+      boutique.panier().length ? { t: 'Valider ma commande', faire: () => dialogue.ouvrir('h_cest_tout') } : { t: 'Me conseiller', faire: () => dialogue.ouvrir('h_conseil') },
+      { t: 'Laisser', faire: () => {} },
     ],
   });
   if (deplacement.noeud === 'comptoir' && !deplacement.enMarche) montrer(); else deplacement.allerA('comptoir', { puis: montrer });
@@ -620,9 +622,9 @@ function toucherPnj(id) {
       titre: n.connue ? n.nom : 'Une visiteuse', sous: n.connue ? '' : 'Vous ne vous connaissez pas encore',
       ancre: (v) => n.perso.positionTete(v).add(new THREE.Vector3(0, -0.55, 0)),
       choix: [
-        { t: 'Parler', icone: '💬', principal: true, faire: () => pnj.parler(id, id) },
-        { t: 'Saluer', icone: '👋', faire: () => { n.perso.geste('saluer'); setTimeout(() => n.perso.geste('repos'), 1700); dialogue.sousTitre(id, SALUTS[id][Math.floor(Math.random() * 2)]); setTimeout(() => pnj.relacher(id), 2600); } },
-        { t: 'Laisser', icone: '↩', faire: () => pnj.relacher(id) },
+        { t: 'Parler', principal: true, faire: () => pnj.parler(id, id) },
+        { t: 'Saluer', faire: () => { n.perso.geste('saluer'); setTimeout(() => n.perso.geste('repos'), 1700); dialogue.sousTitre(id, SALUTS[id][Math.floor(Math.random() * 2)]); setTimeout(() => pnj.relacher(id), 2600); } },
+        { t: 'Laisser', faire: () => pnj.relacher(id) },
       ],
       auFermer: () => pnj.relacher(id),
     });
