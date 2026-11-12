@@ -80,6 +80,13 @@ Décisions de Mongazi, le même jour :
   du morceau seul, donc **hors du dépôt public**, `lieux/hillary-m-styl/musique/` ignoré) ; compressé à
   1,8 Mo, niveau égalisé ; part dès « Entrer », douce dedans, étouffée derrière la vitre dehors, coupée
   avec les autres sons. 🙋 **à écouter sur un vrai téléphone** (un navigateur de test ne prouve pas le son)
+- ✅ **POINT 5 FAIT (2026-11-12, nuit) : la relecture finale d'Impeccable et `DESIGN.md`**, à la demande
+  de Mongazi (« finalise le 5 au maximum… ne t'arrête pas tant qu'il n'est pas à 100 % »). Revue de la
+  version en verre : « à corriger » (8 points), puis deux passes de vérification jusqu'au verdict
+  **« ship »** (8 corrections + 3 régressions résolues, aucune nouvelle). `monde/DESIGN.md` écrit par le
+  documentaliste depuis le livré, puis le livré aligné sur ses règles (tailles, cibles de 40 px,
+  couleurs et arrondis sur l'échelle, anneau au sol fixe, Manrope retirée). Détecteur propre, QC 48/48
+  aux deux formats, captures regardées. **Suivant : le point 3, la commande en étapes.**
 - 🔨 **Blender** : décor exporté (`monde/_outils/exporter_decor.py`, 116 objets, 3 lampes) ; cuisson à écrire.
 - 🔍 **« ce que nous construisons, quelqu'un l'a-t-il déjà fait au Bénin ? »** (2026-11-12, recherche web) :
   **rien trouvé d'équivalent au Bénin** (ce qui ne prouve pas que rien n'existe hors des moteurs de recherche).

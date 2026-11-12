@@ -20,6 +20,11 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
 
 ## 2 · La prochaine action exacte
 
+> **ÉTAT DU 2026-11-12, 23 h** : interface en verre **relue par Impeccable (verdict « ship »)** et documentée
+> (`monde/DESIGN.md` ; le détecteur Impeccable le fait respecter). Salon tamisé (murs expresso, coupole
+> ambrée, un faisceau par création), musique Pixabay (hors dépôt, `lieux/hillary-m-styl/musique/`),
+> Blender 5.3 installé (`D:\Blenderlender.exe`). **Prochaine action : la commande en 3 étapes (point 3).**
+>
 > **ÉTAT DU 2026-11-12, 20 h** (le plus récent, à lire d'abord) :
 > - ✅ Afi est en 3D et animée dans le salon (`socle/habiller.js`). Les FBX vivent dans `lieux/hillary-m-styl/personnages/afi/`, ignorés par git (licence Mixamo).
 > - ✅ **L'interface est en verre** (`lieux/hillary-m-styl/verre.css`). Mongazi a rejeté les « enseignes peintes », trouvées **ringardes**, et veut des boutons plats, petits, translucides, et rien qui cache la scène.
