@@ -20,6 +20,23 @@ connecté, l'extension Claude pour Chrome vient d'être installée). **Rien n'es
 
 ## 2 · La prochaine action exacte
 
+> **ÉTAT DU 2026-11-12, 20 h** (le plus récent, à lire d'abord) :
+> - ✅ Afi est en 3D et animée dans le salon (`socle/habiller.js`). Les FBX vivent dans `lieux/hillary-m-styl/personnages/afi/`, ignorés par git (licence Mixamo).
+> - ✅ **L'interface est en verre** (`lieux/hillary-m-styl/verre.css`). Mongazi a rejeté les « enseignes peintes », trouvées **ringardes**, et veut des boutons plats, petits, translucides, et rien qui cache la scène.
+> - ✅ **On arrive dehors**, face au caisson lumineux qui porte le logo d'Hillary, avec un petit bouton de verre « Entrer ».
+> - ✅ Les conversations suivent la vidéo Call of Duty : sous-titres en boîtes translucides, réponses en croix au centre.
+> - ⚠️ **Rien de tout cela n'a été REGARDÉ à l'écran** : le PC saturait et Chrome ne répondait plus. Lancer `python monde/_qc.py`, puis regarder `monde/_vues/tel-*.png`.
+> - ✅ **Epic et Unreal sont désinstallés**, à la demande de Mongazi. ⚠️ Le journal de la suppression des dossiers n'a pas été relu : vérifier que `C:\Program Files\Epic Games` a disparu.
+> - 🔨 **Blender s'installe sur `D:\Blender`** (`winget`), pour le précalcul de la lumière.
+>
+> **L'OBJECTIF FIXÉ PAR MONGAZI** : « ressembler à GTA 6 et Call of Duty à 200 % », « ne t'arrête pas tant que tu ne l'auras pas atteint », « invoque tous tes meilleurs skills de design, utilise Blender ». Le plan, dans l'ordre de ce qui rapporte le plus :
+> 1. **La lumière précalculée** : exporter le salon en glTF (`GLTFExporter`, depuis la page), le cuire dans Blender (Cycles, sans fenêtre : `blender -b -P cuire.py`, une nuit sur ce PC), puis recharger les cartes de lumière dans three.js. En secours : three-gpu-pathtracer (MIT).
+> 2. **Le décor photoréel par Gaussian splats** (Spark, MIT, three r180 compatible, conçu pour mobile). 🙋 **Il faut une vidéo d'un VRAI lieu**, filmée à l'iPhone par Mongazi : un bel intérieur de boutique et la rue devant, à Cotonou. ⚠️ La lumière d'un splat est figée : pas de jour ni de nuit dedans.
+> 3. **Un post-traitement cinéma sur ordinateur** : GTAO, SMAA, bloom et étalonnage par LUT. Les addons sont dans `_studio-video/node_modules/three/examples/jsm/`, à copier comme `FBXLoader`. Niveau de qualité « haute » seulement.
+> 4. **Les personnages** : Sènami et sa mère (images avec l'âge, puis TRELLIS.2, puis Mixamo, comme Afi) ; Hillary avec ses photos et son accord ; alléger Afi (88 000 sommets).
+> 5. **Les robes en 3D sur les mannequins** (`PROMPTS-ROBES-3D.md`).
+> 6. **La finition de l'interface** par Impeccable (revue, puis `DESIGN.md`) et les autres skills de design.
+
 > **MISE À JOUR du 2026-11-12, 18 h 30** (à lire avant le reste de cette section) :
 > - ✅ Les **7 animations d'Afi** sont téléchargées : `_partage\immersive  store 3D\personnages\afi\afi-{attendre,marcher,parler,saluer,hocher,reflechir,regarder}.fbx`. Seule `attendre` porte le corps (6 Mo). `marcher` est *Female Walk* sur place. ⚠️ Sur Mixamo, **ne jamais changer de page pendant « Preparing download »** : la préparation reste bloquée (le serveur répond 202 en boucle).
 > - ✅ **L'interface est refaite par Impeccable** : direction « Les enseignes peintes de Cotonou », choisie par Mongazi (`lieux/hillary-m-styl/enseignes.css`, `PRODUCT.md`). Le contrat de direction vit dans `.impeccable/` (ignoré par git) ; `impeccable surface-brief read lieux/hillary-m-styl/index.html`, à lancer depuis `monde/`.
