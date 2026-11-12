@@ -104,13 +104,25 @@ def main():
     ap.add_argument("--faces", type=int, default=120000, help="nombre de faces visé (léger pour la 3G)")
     ap.add_argument("--texture", type=int, default=1024)
     ap.add_argument("--graine", type=int, default=0)
+    ap.add_argument("--detourer-ici", action="store_true",
+                    help="détourer sur le PC (rembg) : 2 calculs Hugging Face au lieu de 3, le quota gratuit compte les calculs")
     a = ap.parse_args()
     session = "".join(random.choices(string.ascii_lowercase + string.digits, k=11))
     print(f"→ TRELLIS.2 · {a.image.name} · session {session} · {'avec' if jeton() else 'sans'} jeton Hugging Face")
-    img = envoyer_fichier(a.image)
-    appeler(2, [], session)                                         # start_session
-    print("1/3 · détourage")
-    pre = appeler(4, [img], session)[0]                              # preprocess_image
+    if a.detourer_ici:
+        from rembg import new_session, remove
+        from PIL import Image
+        detoure = a.image.with_name(a.image.stem + "-detoure.png")
+        remove(Image.open(a.image).convert("RGB"), session=new_session("isnet-general-use")).save(detoure)
+        print(f"1/3 · détouré sur le PC : {detoure.name}")
+        img = envoyer_fichier(detoure)
+        appeler(2, [], session)                                     # start_session (sans carte graphique)
+        pre = img
+    else:
+        img = envoyer_fichier(a.image)
+        appeler(2, [], session)                                     # start_session
+        print("1/3 · détourage")
+        pre = appeler(4, [img], session)[0]                          # preprocess_image
     print("2/3 · image vers 3D")
     appeler(7, [pre, a.graine, a.resolution, 7.5, 0.7, 12, 5.0, 7.5, 0.5, 12, 3.0, 1.0, 0.0, 12, 3.0], session)
     print("3/3 · export .glb")
