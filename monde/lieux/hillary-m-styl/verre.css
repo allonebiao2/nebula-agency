@@ -68,7 +68,7 @@ html, body { caret-color: var(--marque); accent-color: var(--marque); }
 .bt-carnet.complet { border-color: #9be3b7; }
 
 /* ---------- les repères : un point, et le nom des plus proches ---------- */
-.repere i { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.95); background: var(--marque); box-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.repere i { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.95); background: var(--marque); box-shadow: 0 1px 4px rgba(0,0,0,.6); animation: none; }
 .repere.personne i { background: #ffc061; }
 .repere.porte i { background: #9be3b7; }
 .repere span { padding: 4px 9px; border-radius: 8px; background: var(--verre-fort); color: var(--texte); font: 600 .74rem var(--police-libelle); letter-spacing: .01em; text-transform: none;
