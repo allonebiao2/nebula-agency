@@ -260,3 +260,12 @@ Mongazi : « je ne veux pas de Lego, je veux de vrais personnages 3D », puis il
 3. **Squelette et animations** : Mixamo (gratuit, compte Adobe de Mongazi) : il y dépose le modèle,
    place les repères (menton, poignets, coudes, genoux, aine), choisit les animations (attendre,
    parler, marcher, saluer, écouter, poser une question), télécharge en FBX. Three.js lit le FBX.
+
+## Étape 2 · le graphisme réel (Poly Haven) et l'étape 3 qui avance (2026-11-12, soir)
+
+- **Poly Haven (CC0)** : `python monde/_outils/polyhaven.py` télécharge matières (diffuse, normale, rugosité en 1K → WebP), l'éclairage HDR 1K et des objets glTF dont les textures sont **converties en WebP** (le .gltf est réécrit). Une plante de 6 Mo tombe à 0,6 Mo ; la plante dont la géométrie pèse 5,8 Mo est écartée.
+- `socle/ressources.js` charge tout **après l'ouverture** (on entre tout de suite, le salon s'embellit). Une matière scannée est posée SUR un matériau existant : tout ce qui l'utilise change d'un coup.
+- ⚠️ Un mur en « plâtre peint » scanné paraît **gris béton** : on garde son relief, pas sa couleur (la référence d'Hillary a des murs crème lisses). ⚠️ Le plafond, éclairé par le seul environnement, virait au **brun** : matière propre, légèrement lumineuse. ⚠️ Une liste utilisée avant d'être déclarée (`fauteuilsDessines`) : erreur « avant initialisation », la page ne se charge pas.
+- **TRELLIS.2 par Hugging Face** : avec le jeton, Afi passe (≈ 30 s de calcul) ; puis **« ZeroGPU runs limit »** : le compte gratuit compte les CALCULS par jour. `--detourer-ici` détoure sur le PC (rembg, `isnet-general-use`).
+- **Mixamo** n'accepte pas le glTF : `_outils/glb_vers_obj.py` lit le .glb à la main (en-tête, bloc JSON, bloc binaire, transformations des nœuds) ; la texture était rangée dans une **extension** (`textures[i].extensions.*.source`) et en WebP → convertie en PNG.
+- **Unreal** sur ce PC : l'installation est partie sur `C:` (par défaut) et s'est bloquée faute de place (alerte DP-06). Le lanceur **refuse la racine d'un disque** : il faut un dossier (`D:\Epic Games`).

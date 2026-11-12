@@ -68,3 +68,10 @@ Trouvé en route : sur le site EN LIGNE d'Hillary, l'Ensemble Jean et la Robe É
 introuvable » aux mesures (jeu `haut_jupe` inexistant). Rien corrigé sans Hillary.
 
 Unreal : lanceur installé, compte Epic créé par Mongazi, **moteur pas encore sur le disque** au soir.
+
+## Le soir : le graphisme et les vrais personnages
+
+- Mongazi : « le graphisme et la qualité doivent ressembler extrêmement à Call of Duty Korea, GTA 6, c'est un des objectifs principaux » → dit franchement : la qualité console dans un téléphone en 3G n'existe pas ; trois pistes (matières et lumière réelles dans le navigateur, faite ; « salon photo 3D » depuis des panoramas, à venir ; Unreal diffusé en vidéo, pour une démonstration).
+- « Je ne veux pas de Lego, je veux de vrais personnages 3D » + « voie gratuite » → Afi en vraie 3D (TRELLIS.2, Hugging Face) ; Mixamo pour l'animer (il s'y est connecté) ; Mesh2Motion en alternative sans compte.
+- « Prends le contrôle du PC », « télécharge Unreal » → pas de contrôle d'écran dans le terminal ; Unreal installé par lui sur `C:`, coincé faute de place.
+- « Mets tout en mémoire… pour se retrouver au poil près » → `monde/REPRENDRE-ICI.md`.

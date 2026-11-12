@@ -428,10 +428,10 @@
 
 ### LE MONDE · les lieux en 3D  *(produit interne, nom provisoire, 2026-11-12)*
 - **Ce que c'est** : des commerces visitables en 3D à la première personne, dans le navigateur, d'abord au téléphone ; à terme une ville calquée sur Cotonou, un lieu par commerce, un loyer. **Premier lieu : le salon d'HILLARY M. STYL**, puis Grain d'Esthétique.
-- **Où** : `monde/` · **`VAGUES.md`** = LE registre (chaque demande de Mongazi, avec ses mots, sa vague, son état ; ⚡ toute nouvelle demande y entre au moment où il la fait) · `DEROULEMENT.md` = le carnet du futur skill · `socle/` (moteur commun) + `lieux/<lieu>/` (`plan.json` lu aussi par Unreal) · voir : `python monde/_servir.py` puis `http://localhost:8765/` · contrôle : `python monde/_qc.py` (visite jouée jusqu'au WhatsApp, un navigateur à la fois sur ce PC).
-- **État** : vague 1 (maquette jouable) faite, **pas en ligne** (`noindex`, personnages de maquette). Vagues 2 à 8 dans le registre (décor Unreal/Blender, personnages vivants, robes 3D, mise en ligne, ville, back-office d'Hillary, loyer).
-- ⛔ **Catalogue LU dans la vitrine** (`_construire.py`, lecteur de LE STANDARD), jamais recopié · ⛔ **PNJ visiteuses, jamais de fausses clientes** · ⛔ **rien d'inventé** : TikTok, événements, histoire d'Hillary restent cachés tant que `faits.json` est vide · ⛔ **aucun visage réel sans accord écrit** ; les robes vont sur mannequins, validées par Hillary.
-- ⏳ Mongazi : moteur Unreal sur `D:` (⚠️ ce PC : 8 Go, Intel HD 5500), questionnaire + photos + gestes filmés d'Hillary, planches de ses robes, compte TikTok, WaveSpeed (≈ 40 $).
+- **EN ARRIVANT : lire `monde/REPRENDRE-ICI.md`** (la prochaine action exacte, les impasses déjà rencontrées), puis **`monde/VAGUES.md`** (chaque demande de Mongazi avec ses mots ; ⚡ toute nouvelle demande y entre au moment où il la fait) et `monde/DEROULEMENT.md` (le carnet du futur skill).
+- **État au 2026-11-12** : maquette jouable en local (`python monde/_servir.py` → `http://localhost:8765/`), décor réel (Poly Haven CC0), **pas en ligne**. Personnages : silhouettes de maquette, sauf **Afi en vraie 3D** (TRELLIS.2 sur Hugging Face, `monde/_outils/en_3d.py`) à animer sur Mixamo. Objectif de Mongazi : un rendu le plus proche possible de *Call of Duty* et *GTA 6*.
+- ⛔ **Catalogue LU dans la vitrine** (`_construire.py`), jamais recopié · ⛔ **PNJ visiteuses, jamais de fausses clientes** · ⛔ **rien d'inventé** (TikTok, événements, histoire d'Hillary cachés tant que `faits.json` est vide) · ⛔ **aucun visage réel sans accord écrit** · photos d'Hillary dans `_partage/**/hillary/` (exclu de GitHub).
+- ⚠️ Ce PC : 8 Go, un navigateur Playwright à la fois · PyPI et GitHub parfois injoignables depuis Cotonou · Unreal 5.8 coincé sur `C:` plein (à réinstaller dans `D:\Epic Games`).
 
 ### LA BOBINE · l'éditeur vidéo  *(produit interne, 2026-11-02)*
 - **Ce que c'est** : le montage vidéo dans le navigateur, PC et téléphone. Mongazi veut « exactement CapCut, renommé » :

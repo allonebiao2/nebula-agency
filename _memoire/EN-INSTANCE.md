@@ -62,7 +62,7 @@ D'après `CLAUDE.md` et la mémoire de Claude au 2026-11-11 : l'état exact est 
 
 | Projet | Où il en est | Ce qui le débloque | Renvoi |
 |---|---|---|---|
-| **LE MONDE** (salon 3D d'Hillary, nom provisoire) | maquette jouable faite (vague 1), pas en ligne ; registre `monde/VAGUES.md` | 🙋 installer le moteur Unreal sur D: ; le questionnaire et les photos d'Hillary (+ son accord) ; ses gestes filmés ; les planches de ses robes ; le compte TikTok ; recharger WaveSpeed (≈ 40 $) · ⛔ défaut sur son site : mesures « haut_jupe » introuvables | `monde/VAGUES.md` |
+| **LE MONDE** (salon 3D d'Hillary, nom provisoire) | maquette jouable, décor réel, Afi en vraie 3D ; **pas en ligne** ; reprise : `monde/REPRENDRE-ICI.md` | 🤖 animer Afi (Mixamo par Chrome), Sènami et Maman en 3D (quota Hugging Face quotidien), rejouer `_qc.py` · 🙋 réinstaller Unreal dans `D:\Epic Games` ; photos, accord et questionnaire d'Hillary ; ses gestes filmés ; panoramas et vues du salon ; planches des robes · ⛔ défaut sur son site : mesures « haut_jupe » introuvables | `monde/REPRENDRE-ICI.md` |
 | **NEBULA VOIX** | lancé le 2026-11-05, prototype « Awa » essayé à la voix | la suite du plan ; ⛔ aucun appel à un particulier sans accord préalable prouvé | `nebula-voix/docs/PLAN.md` (dépôt privé) |
 | **MA LETTRE À…** | en ligne ; la plume est coupée ; le film n'est pas publiable tant qu'elle l'est ; ouvertures 3D sans constructeur, serveur ni caisse | 🙋 **le premier franc** (La Carte, 1 000 F) ; critères d'arrêt 1er ou 16 décembre | `malettre/CONTEXT.md` |
 | **PISTE** | encaisse et livre tout seul | 🙋 **le premier paiement réel** n'a jamais eu lieu | `piste/PAIEMENT.md` |

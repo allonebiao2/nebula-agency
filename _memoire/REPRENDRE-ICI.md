@@ -7,6 +7,15 @@
 
 ---
 
+## 0 duoquadragies. LE 2026-11-12 · LE MONDE, LE SALON 3D D'HILLARY (le chantier en cours)
+
+- **Lire `monde/REPRENDRE-ICI.md` en premier** : où on en est, la prochaine action exacte, tous les chemins pris et les impasses. Puis `monde/VAGUES.md` (toutes les demandes de Mongazi, avec ses mots).
+- **État** : maquette jouable en local (`python monde/_servir.py` → `http://localhost:8765/`), décor réel (Poly Haven), **pas en ligne**. Afi existe en vraie 3D (`monde/lieux/hillary-m-styl/personnages/afi.glb`), à animer sur **Mixamo** (Mongazi connecté ; extension Claude pour Chrome installée, liaison à vérifier).
+- **Bloqué** : Unreal 5.8 coincé sur `C:` (plein, alerte DP-06) → à réinstaller dans `D:\Epic Games` ; quota Hugging Face du jour épuisé (Sènami et Maman demain) ; photos et accord d'Hillary.
+- ⚠️ Le contrôle complet n'a **pas** été rejoué après l'embellissement graphique.
+
+---
+
 ## 0 unquadragies. LES 2026-11-11 ET 12 · LE MONTEUR, L'AGENT DE MONTAGE VIDÉO
 
 - **Le produit** : l'agent qui monte tout type de vidéo, avec ou sans rush, en appli (option B choisie par Mongazi).
