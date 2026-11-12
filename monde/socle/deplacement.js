@@ -244,7 +244,12 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
     camera.rotation.set(tangage, lacet, roulis);
     cinema += (cinemaVise - cinema) * (1 - Math.exp(-dt * 3));
     camera.fov = (camera.userData.fovBase || fovBase || camera.fov) - cinema * 8; camera.updateProjectionMatrix();
-    /* les points : ils respirent, et celui où l'on se tient s'efface */
+    /* les points : ils respirent, et celui où l'on se tient s'efface.
+       ⚠️ Seuls les DEUX plus proches portent leur nom : nommer tous les points visibles
+       empilait six ou sept étiquettes, dont une sur la robe exposée (vu le 2026-11-12). */
+    const proches = Object.keys(marqueurs).filter(id => marqueurs[id].etiquette && !(id === noeud && !marche))
+      .map(id => [id, Math.hypot(marqueurs[id].p.x - pos.x, marqueurs[id].p.z - pos.z)])
+      .sort((x, y) => x[1] - y[1]).slice(0, 2).map(x => x[0]);
     for (const id in marqueurs) {
       const m = marqueurs[id];
       const ici = id === noeud && !marche;
@@ -255,7 +260,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
       m.g.visible = a > 0.01;
       if (m.etiquette) {
         proj.set(m.p.x, 0.55, m.p.z).project(camera);
-        const vis = a > 0.3 && proj.z < 1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05 && d < 13;
+        const vis = proches.includes(id) && a > 0.3 && proj.z < 1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05 && d < 13;
         m.etiquette.style.opacity = vis ? String(Math.min(1, a)) : '0';
         m.etiquette.style.pointerEvents = vis ? 'auto' : 'none';
         if (vis) m.etiquette.style.transform = `translate(${(proj.x * 0.5 + 0.5) * toile.clientWidth}px, ${(-proj.y * 0.5 + 0.5) * toile.clientHeight}px) translate(-50%, -100%)`;

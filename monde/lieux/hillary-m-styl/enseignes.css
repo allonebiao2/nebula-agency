@@ -1,0 +1,205 @@
+/* LE SALON D'HILLARY M. STYL · le monde « Les enseignes peintes de Cotonou ».
+   Chaque mot est peint à la main sur une plaque de tôle émaillée, comme l'enseigne
+   d'un atelier de Cotonou, mais au niveau d'une maison de couture.
+   Règles : cinq pots de peinture et rien d'autre ; des aplats, jamais de dégradé ni
+   de verre dépoli ; une plaque projette une ombre nette sur le mur ; la lettre
+   d'enseigne est la Bodoni d'Hillary en graisse noire, avec son ombre peinte.
+   Chargée APRÈS socle/interface.css : le socle reste celui des autres lieux. */
+
+:root {
+  /* les cinq pots */
+  --pot-magenta: #e6007e; --pot-encre: #15110f; --pot-appret: #f2ede4; --pot-jaune: #f2b705; --pot-bleu: #1d4e89;
+  /* mélanges des mêmes pots, jamais une sixième couleur */
+  --pot-magenta-nuit: #8a0a4f; --pot-appret-use: #d9d1c4; --pot-encre-douce: #4a423c;
+  --marque: var(--pot-magenta); --marque-f: #b3006a; --encre: var(--pot-encre); --papier: var(--pot-appret); --or: var(--pot-jaune);
+  --lettre: "Bodoni Moda", Georgia, serif;
+  --police-titre: "Bodoni Moda", Georgia, serif; --police-texte: "Archivo", system-ui, sans-serif; --police-libelle: "Archivo", system-ui, sans-serif;
+  /* l'ombre d'une plaque sur le mur : décalée, un peu floue */
+  --ombre-plaque: 0 3px 0 rgba(0, 0, 0, .22), 0 10px 18px -6px rgba(0, 0, 0, .55);
+  --vis: radial-gradient(circle at 50% 50%, var(--pot-appret-use) 0 1.6px, var(--pot-encre-douce) 2px 2.8px, transparent 3.2px);
+}
+::selection { background: var(--pot-magenta); color: var(--pot-appret); }
+html, body { caret-color: var(--pot-magenta); accent-color: var(--pot-magenta); }
+:focus-visible { outline: 3px solid var(--pot-jaune); outline-offset: 3px; }
+* { scrollbar-width: thin; scrollbar-color: var(--pot-encre-douce) transparent; }
+
+/* ---------- la plaque : le seul composant de l'interface ---------- */
+.bt, .opt, .ch, .dlg-partir, .fiche-tourner, .toast-annuler, .puce, .x {
+  border-radius: 5px; box-shadow: var(--ombre-plaque); font-family: var(--police-libelle);
+  text-transform: uppercase; letter-spacing: .09em; font-weight: 800; transform-origin: 50% -6px;
+}
+.bt { min-height: 44px; padding: 0 1.15em; font-size: .78rem; }
+.bt-plein, .opt-principal { background: var(--pot-magenta); color: var(--pot-appret);
+  box-shadow: inset 0 0 0 4px var(--pot-magenta), inset 0 0 0 5.5px rgba(242,237,228,.85), var(--ombre-plaque); }
+.bt-plein:hover, .opt-principal:hover { background: var(--marque-f); box-shadow: inset 0 0 0 4px var(--marque-f), inset 0 0 0 5.5px rgba(242,237,228,.85), var(--ombre-plaque); }
+.bt-or { background: var(--pot-jaune); color: var(--pot-encre); box-shadow: inset 0 0 0 4px var(--pot-jaune), inset 0 0 0 5.5px var(--pot-encre), var(--ombre-plaque); }
+.bt-ligne { background: var(--pot-appret); color: var(--pot-encre); box-shadow: inset 0 0 0 1.5px var(--pot-encre), var(--ombre-plaque); }
+.bt.inactif, .bt:disabled { opacity: 1; background: var(--pot-appret-use); color: var(--pot-encre-douce); box-shadow: var(--ombre-plaque); cursor: wait; }
+.bt:active, .opt:active, .ch:active { transform: none; }
+
+/* la signature : une plaque touchée se balance sur son crochet, une fois, puis se repose */
+.balance { animation: balance .62s cubic-bezier(.2, .9, .3, 1); }
+@keyframes balance { 0% { rotate: 0deg; } 18% { rotate: -5deg; } 42% { rotate: 3.2deg; } 66% { rotate: -1.4deg; } 84% { rotate: .5deg; } 100% { rotate: 0deg; } }
+
+/* ---------- l'enseigne d'ouverture ---------- */
+.ouverture { background: var(--pot-encre); }
+.ouv-portes i, .ouv-portes i:last-child { background: var(--pot-encre); box-shadow: inset -2px 0 0 var(--pot-magenta-nuit); }
+.ouv-portes i:last-child { box-shadow: inset 2px 0 0 var(--pot-magenta-nuit); }
+.ouv-contenu { max-width: 560px; padding: 20px; }
+.enseigne { position: relative; padding: 30px 30px 26px; border-radius: 8px; background: var(--pot-jaune); color: var(--pot-encre); text-align: left;
+  box-shadow: inset 0 0 0 9px var(--pot-jaune), inset 0 0 0 11.5px var(--pot-encre), 0 4px 0 rgba(0,0,0,.35), 0 26px 40px -14px rgba(0,0,0,.8);
+  background-image: var(--vis), var(--vis), var(--vis), var(--vis);
+  background-size: 8px 8px; background-repeat: no-repeat; background-position: 16px 16px, calc(100% - 16px) 16px, 16px calc(100% - 16px), calc(100% - 16px) calc(100% - 16px); }
+.ouv-contenu .enseigne-sceau { display: block; width: 96px; height: auto; margin: 0 0 16px; padding: 5px 9px; border-radius: 3px; background: #fff; box-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.ouv-contenu h1, .enseigne h1 { margin: 0; font-family: var(--lettre); font-weight: 900; font-size: clamp(2.3rem, 10.5vw, 4.1rem); line-height: .9; letter-spacing: -.01em; text-transform: uppercase;
+  color: var(--pot-encre); text-shadow: 3px 3px 0 var(--pot-magenta); }
+.enseigne h1 span { display: block; font-size: .4em; letter-spacing: .04em; margin-top: .35em; color: var(--pot-magenta); text-shadow: 1.5px 1.5px 0 var(--pot-encre); }
+.ouv-contenu p, .enseigne p { color: var(--pot-encre); font-size: .98rem; line-height: 1.5; margin: 16px 0 18px; max-width: 42ch; }
+.ouv-barre { width: 100%; height: 6px; margin: 0 0 16px; border-radius: 0; background: var(--pot-encre); }
+.ouv-barre i { background: var(--pot-magenta); }
+.ouv-entrer { min-height: 50px; padding: 0 1.6em; font-size: .9rem; }
+.ouv-contenu .ouv-aide { color: var(--pot-appret-use); font-size: .78rem; line-height: 1.5; margin: 18px 4px 0; text-align: left; }
+
+/* ---------- le haut de l'écran : trois plaques ---------- */
+.hud { top: max(10px, env(safe-area-inset-top)); left: 12px; right: 12px; gap: 8px; }
+.hud-marque { padding: 5px 12px 5px 5px; gap: 9px; border-radius: 5px; background: var(--pot-appret); color: var(--pot-encre); backdrop-filter: none; box-shadow: var(--ombre-plaque); }
+.hud-marque img { height: 26px; border-radius: 3px; padding: 2px 6px; }
+.hud-marque span { font-family: var(--lettre); font-weight: 900; font-size: .9rem; letter-spacing: .03em; opacity: 1; text-shadow: 1px 1px 0 var(--pot-magenta); }
+.hud-ciel { padding: 7px 11px; border-radius: 5px; background: var(--pot-bleu); color: var(--pot-appret); backdrop-filter: none; box-shadow: var(--ombre-plaque);
+  font-weight: 700; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+.hud-son { width: 44px; height: 44px; border-radius: 5px; background: var(--pot-encre); backdrop-filter: none; box-shadow: var(--ombre-plaque); }
+.hud-son svg { stroke: var(--pot-appret); }
+.objectif { top: calc(max(10px, env(safe-area-inset-top)) + 54px); left: 12px; padding: 10px 13px; border-left: 0; border-radius: 5px; background: var(--pot-bleu); color: var(--pot-appret);
+  box-shadow: inset 0 0 0 3px var(--pot-bleu), inset 0 0 0 4.5px rgba(242,237,228,.55), var(--ombre-plaque); font-size: .84rem; }
+.objectif small { color: var(--pot-jaune); font-weight: 800; font-size: .64rem; }
+.objectif.fini { background: var(--pot-encre); box-shadow: inset 0 0 0 3px var(--pot-encre), inset 0 0 0 4.5px var(--pot-jaune), var(--ombre-plaque); }
+
+/* le sac et le carnet : leur état est peint sur la plaque, pas dans une pastille */
+.bt-sac, .bt-carnet { width: 48px; height: 48px; right: 12px; border-radius: 5px; background: var(--pot-encre); backdrop-filter: none; box-shadow: var(--ombre-plaque); }
+.bt-sac { top: calc(max(10px, env(safe-area-inset-top)) + 54px); }
+.bt-carnet { top: calc(max(10px, env(safe-area-inset-top)) + 110px); }
+.bt-sac svg, .bt-carnet svg { stroke: var(--pot-appret); }
+.bt-sac .compte, .bt-carnet .compte { top: auto; right: auto; bottom: -9px; left: 50%; transform: translateX(-50%); min-width: 22px; height: 18px; padding: 0 6px; border-radius: 3px;
+  background: var(--pot-jaune); color: var(--pot-encre); font: 900 .72rem/18px var(--lettre); box-shadow: 0 2px 0 rgba(0,0,0,.3); }
+.bt-sac.plein { background: var(--pot-magenta); }
+.bt-sac.plein .compte { background: var(--pot-appret); color: var(--pot-magenta); }
+.bt-sac.saute, .bt-carnet.saute { animation: balance .62s cubic-bezier(.2, .9, .3, 1); }
+.bt-carnet.complet { box-shadow: inset 0 0 0 3px var(--pot-encre), inset 0 0 0 4.5px var(--pot-jaune), var(--ombre-plaque); }
+
+/* ---------- les repères : de petites étiquettes de tôle ---------- */
+.repere i { width: 16px; height: 16px; background: var(--pot-magenta); border: 3px solid var(--pot-appret); box-shadow: 0 2px 0 rgba(0,0,0,.35), 0 6px 10px -3px rgba(0,0,0,.6); animation: none; }
+.repere.personne i { background: var(--pot-jaune); }
+.repere.porte i { background: var(--pot-bleu); }
+.repere span { padding: 5px 9px 5px 10px; border-radius: 4px; background: var(--pot-appret); color: var(--pot-encre); font: 800 .66rem var(--police-libelle);
+  letter-spacing: .1em; text-transform: uppercase; box-shadow: var(--ombre-plaque); }
+.repere.personne span { background: var(--pot-encre); color: var(--pot-jaune); }
+.repere:hover span, .repere:focus-visible span { background: var(--pot-magenta); color: var(--pot-appret); }
+.point-etiquette { min-height: 32px; padding: 6px 11px; border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque);
+  font: 800 .64rem var(--police-libelle); letter-spacing: .12em; text-transform: uppercase; }
+.point-etiquette::after { width: 2px; height: 10px; bottom: -10px; transform: translateX(-50%); background: var(--pot-encre); }
+.point-etiquette:hover { background: var(--pot-magenta); }
+.pnj-nom { border-radius: 3px; background: var(--pot-encre); color: var(--c, var(--pot-appret)); font: 800 .64rem var(--police-libelle); letter-spacing: .12em; box-shadow: var(--ombre-plaque); }
+.invite { min-height: 46px; border-radius: 5px; background: var(--pot-appret); color: var(--pot-encre); font: 800 .78rem var(--police-libelle); letter-spacing: .09em; text-transform: uppercase;
+  box-shadow: inset 0 0 0 3px var(--pot-appret), inset 0 0 0 4.5px var(--pot-magenta), var(--ombre-plaque); }
+.invite i { color: var(--pot-magenta); }
+
+/* ---------- les sous-titres et la carte de titre ---------- */
+.soustitres { left: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); }
+.st-ligne { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); text-shadow: none; font-size: .9rem; box-shadow: var(--ombre-plaque); }
+.st-ligne b { color: var(--c, var(--pot-jaune)); font-weight: 800; font-size: .66rem; letter-spacing: .12em; }
+.carte-titre { left: 12px; padding: 12px 16px 13px; border-left: 0; border-radius: 6px; background: var(--pot-jaune); color: var(--pot-encre);
+  box-shadow: inset 0 0 0 4px var(--pot-jaune), inset 0 0 0 5.5px var(--pot-encre), var(--ombre-plaque); }
+.carte-titre b { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 0; text-shadow: 2px 2px 0 var(--pot-magenta); }
+.carte-titre span { color: var(--pot-encre); font-weight: 800; font-size: .68rem; }
+.maquette { color: rgba(242,237,228,.5); font-size: .58rem; }
+
+/* ---------- le dialogue : un panneau peint, ancré en bas ---------- */
+.bandes.ouvertes i { background: var(--pot-encre); }
+.dialogue { border-top: 0; border-radius: 6px; padding: 22px 18px 18px; background: var(--pot-encre); color: var(--pot-appret);
+  box-shadow: inset 0 0 0 5px var(--pot-encre), inset 0 0 0 6.5px rgba(242,237,228,.4), 0 4px 0 rgba(0,0,0,.35), 0 24px 40px -12px rgba(0,0,0,.7); }
+.dlg-nom { position: absolute; top: -13px; left: 16px; margin: 0; padding: 5px 11px; border-radius: 4px; background: var(--c, var(--pot-magenta)); color: var(--pot-encre);
+  font: 900 .8rem var(--lettre); letter-spacing: .06em; box-shadow: var(--ombre-plaque); }
+.dlg-texte { color: var(--pot-appret); font-size: 1.02rem; line-height: 1.52; max-width: 62ch; }
+.dlg-suite { color: var(--pot-jaune); }
+.dlg-partir { top: 10px; right: 10px; min-height: 32px; padding: 0 10px; background: var(--pot-appret); color: var(--pot-encre); font-size: .6rem; }
+.dlg-partir:hover { background: var(--pot-magenta); color: var(--pot-appret); }
+.losange { border-color: var(--pot-jaune); box-shadow: none; background: var(--pot-encre); border-radius: 2px; }
+.ch { min-height: 44px; padding: 9px 13px; background: var(--pot-appret); color: var(--pot-encre); font-size: .72rem; line-height: 1.3; letter-spacing: .07em; }
+.ch:hover, .ch:focus-visible { background: var(--pot-magenta); color: var(--pot-appret); box-shadow: var(--ombre-plaque); }
+.ch.neuf::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: .55em; vertical-align: .1em; border-radius: 50%; background: var(--pot-magenta); color: transparent; }
+.ch.neuf:hover::after, .ch.neuf:focus-visible::after { background: var(--pot-jaune); }
+.ch.deja { opacity: 1; background: var(--pot-appret-use); color: var(--pot-encre-douce); }
+.ch.deja::before { content: ''; display: inline-block; width: 5px; height: 9px; margin-right: .6em; border: solid var(--pot-encre-douce); border-width: 0 2px 2px 0; rotate: 40deg; translate: 0 -2px; color: transparent; }
+
+/* ---------- les options près d'une personne ---------- */
+.options { min-width: 200px; padding: 12px; gap: 7px; border-radius: 6px; background: var(--pot-encre);
+  box-shadow: inset 0 0 0 4px var(--pot-encre), inset 0 0 0 5.5px rgba(242,237,228,.35), 0 4px 0 rgba(0,0,0,.35), 0 20px 34px -12px rgba(0,0,0,.7); }
+.opt-titre { font: 900 1.05rem var(--lettre); letter-spacing: .02em; color: var(--pot-jaune); text-shadow: 2px 2px 0 var(--pot-magenta-nuit); padding: 2px 4px 6px; }
+.opt-titre small { color: var(--pot-appret-use); font: 600 .72rem var(--police-texte); letter-spacing: 0; }
+.opt { min-height: 44px; padding: 0 14px; background: var(--pot-appret); color: var(--pot-encre); font-size: .72rem; }
+.opt:hover, .opt:focus-visible { background: var(--pot-jaune); }
+.opt i { display: none; }
+
+/* ---------- la fiche d'une pièce : une grande enseigne qui se retourne ---------- */
+.fiche { background: rgba(21,17,15,.72); }
+.fiche-cadre { border-radius: 8px; background: var(--pot-appret); color: var(--pot-encre);
+  box-shadow: inset 0 0 0 8px var(--pot-appret), inset 0 0 0 9.5px var(--pot-encre), 0 5px 0 rgba(0,0,0,.4), 0 40px 70px -20px rgba(0,0,0,.85); }
+.fiche-photo { background: var(--pot-appret-use); border-radius: 8px 0 0 8px; margin: 10px 0 10px 10px; }
+.fiche-vraie { border-radius: 3px; background: var(--pot-encre); color: var(--pot-appret); font: 800 .58rem var(--police-libelle); }
+.fiche-tourner { background: var(--pot-encre); color: var(--pot-appret); font-size: .64rem; }
+.fiche-infos { padding: 30px 28px 26px; }
+.fiche-rang { color: var(--pot-magenta); font-weight: 800; font-size: .66rem; }
+.fiche-infos h2 { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; font-size: clamp(1.7rem, 4.4vw, 2.7rem); line-height: .95; letter-spacing: -.005em; margin: 8px 0 12px;
+  text-shadow: 2px 2px 0 var(--pot-jaune); }
+.fiche-ds { color: var(--pot-encre-douce); font-size: .95rem; max-width: 60ch; }
+.stat { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque); }
+.stat span { color: var(--pot-jaune); font-weight: 800; font-size: .6rem; }
+.stat b { font-family: var(--lettre); font-weight: 900; font-size: 1.25rem; letter-spacing: .01em; }
+.stat small { color: var(--pot-appret-use); }
+.stat-express { background: var(--pot-magenta); }
+.stat-express span { color: var(--pot-appret); }
+.fiche-type select { border-radius: 4px; border: 2px solid var(--pot-encre); background: #fff; }
+.fiche .bt-ligne { color: var(--pot-encre); }
+@media (max-width: 720px) {
+  .fiche-cadre { border-radius: 8px 8px 0 0; }
+  .fiche-photo { margin: 10px 10px 0; border-radius: 6px; }
+  .fiche-infos { padding: 18px 18px calc(18px + env(safe-area-inset-bottom)); }
+}
+
+/* ---------- le sac, le carnet, les messages ---------- */
+.sac, .carnet { border-radius: 6px; background: var(--pot-appret); color: var(--pot-encre);
+  box-shadow: inset 0 0 0 5px var(--pot-appret), inset 0 0 0 6.5px var(--pot-encre), 0 4px 0 rgba(0,0,0,.35), 0 24px 40px -12px rgba(0,0,0,.7); }
+.sac { top: calc(max(10px, env(safe-area-inset-top)) + 112px); padding: 16px; }
+.carnet { top: calc(max(10px, env(safe-area-inset-top)) + 168px); padding: 16px 18px; }
+.sac h3, .carnet h3 { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; font-size: 1.3rem; text-shadow: 2px 2px 0 var(--pot-jaune); }
+.sac-ligne { border-bottom: 1.5px dashed var(--pot-appret-use); }
+.sac-ligne img { border-radius: 3px; background: var(--pot-appret-use); }
+.sac-ligne button { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); }
+.sac-total { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; }
+.sac-note, .sac-vide, .carnet-reste { color: var(--pot-encre-douce); }
+.carnet-jauge { height: 8px; border-radius: 0; background: var(--pot-appret-use); }
+.carnet-jauge i { background: var(--pot-magenta); }
+.carnet-savoir { border-top: 1.5px dashed var(--pot-appret-use); }
+.carnet-savoir b { color: var(--pot-magenta); font-weight: 800; }
+.carnet-savoir small { color: var(--pot-encre-douce); }
+.toast { border-radius: 4px; background: var(--pot-encre); color: var(--pot-appret); box-shadow: var(--ombre-plaque); font-size: .84rem; }
+.toast-annuler { background: var(--pot-magenta); color: var(--pot-appret); font-size: .62rem; }
+
+/* ---------- le cadran de la commande ---------- */
+.cadran { background: rgba(21,17,15,.74); }
+.cadran-cadre { border-radius: 8px; background: var(--pot-appret); box-shadow: inset 0 0 0 1.5px var(--pot-encre), 0 5px 0 rgba(0,0,0,.4), 0 40px 70px -20px rgba(0,0,0,.85); }
+.cadran header { background: var(--pot-encre); }
+.cd-marque { color: var(--pot-jaune); font-weight: 800; }
+.cadran h2 { font-family: var(--lettre); font-weight: 900; text-transform: uppercase; color: var(--pot-appret); text-shadow: 2px 2px 0 var(--pot-magenta); }
+.cadran section { border-bottom: 1.5px dashed var(--pot-appret-use); }
+.cadran h3 { color: var(--pot-magenta); font-weight: 800; }
+.cd-choix label { border-radius: 4px; background: var(--pot-appret-use); }
+.cadran input:not([type=radio]), .cadran select, .cadran textarea { border-radius: 4px; border: 2px solid var(--pot-encre); }
+.cadran input::placeholder, .cadran textarea::placeholder { color: var(--pot-encre-douce); }
+.puce { background: var(--pot-appret); color: var(--pot-magenta); border: 0; box-shadow: inset 0 0 0 1.5px var(--pot-magenta), var(--ombre-plaque); font-size: .62rem; }
+.cadran footer { background: var(--pot-appret-use); border-top: 0; }
+.cd-total b { color: var(--pot-magenta); font-family: var(--lettre); font-weight: 900; }
+.cd-encore { color: var(--pot-magenta-nuit); }
+@media (max-width: 560px) { .cadran-cadre { border-radius: 8px 8px 0 0; box-shadow: inset 0 0 0 1.5px var(--pot-encre); } }
+
+@media (prefers-reduced-motion: reduce) { .balance, .bt-sac.saute, .bt-carnet.saute { animation: none; } }

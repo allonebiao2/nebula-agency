@@ -19,6 +19,46 @@
 - ✅ « gardes tout le déroulement d'un côté… pour créer un skill » → `DEROULEMENT.md`
 - ✅ « donnes-moi tout ce que tu veux que je t'apporte » → `A-APPORTER.md`
 
+## LE BUT · faire ACHETER 🔨 (Mongazi, 2026-11-12, en fin d'après-midi)
+
+> « je suis allé voir, je vois toujours des Lego, pas des personnages, c'est tout brouillon et
+> ils se rentrent dedans. Un des objectifs aussi, surtout, c'est que les gens viennent pour
+> acheter : l'expérience doit donner envie au client d'acheter les produits ou services, donc
+> ça doit être encore plus pro. On est archi loin du GTA que je t'ai envoyé et de GTA 6. »
+
+Ce que j'ai vu en refaisant le tour dans son Chrome (2026-11-12, 16 h) :
+- **les personnages sont des capsules** (le vrai modèle d'Afi existe, il n'est pas encore dans le salon) ;
+- **les robes sont des photos collées sur des panneaux** (des silhouettes en carton), pas des vêtements ;
+- **les étiquettes s'empilent** : six ou sept bulles à l'écran, dont une posée SUR la robe (« Le comptoir ») ;
+- **la rue derrière la vitrine est un dessin** (façades plates, moto en boules) ;
+- **les visiteuses ne s'évitent pas entre elles** : `pnj.js` ne contourne que le joueur ;
+- **le salon met environ 30 s à s'ouvrir** sur ce PC.
+
+Décisions de Mongazi, le même jour :
+- ✅ « oui, télécharge les 7 » (les animations d'Afi sur Mixamo) ;
+- **le décor reste en 3D vivante** : « je ne veux pas que ce soit juste des images figées, je veux
+  que ça vive » (les panoramas 360° figés sont écartés) ;
+- **scanner le vrai lieu = la voie des PROCHAINS clients qui ont un emplacement** : « j'avais pensé
+  à filmer… mais Hillary n'en a pas » ;
+- 🙋 **il envoie les images faites pour le salon** : elles deviennent le modèle à atteindre (et une
+  source de matières), pas un décor plat.
+
+- 🔨 **« même la navigation, et les boutons qui sont trop gros et trop lambda : il faut invoquer
+  Impeccable pour rehausser cette qualité, et les polices, etc. C'est trop lambda, ça ressemble à
+  un salon de couture et une immersion 3D de 200 dollars ; le but ultime, c'est que ça ressemble à
+  une immersion 3D valant 20 000 dollars minimum »** (2026-11-12) → refonte de l'interface
+  (navigation, repères, boutons, typographie, bulles de dialogue, fiche, sac, cadran) par le skill
+  Impeccable ; **l'étalon : 20 000 $**.
+
+- ✅ **direction de l'interface choisie par Mongazi : « Les enseignes peintes »** (tirage Impeccable,
+  `seed:677424d6dda1b16c`) : chaque mot peint à la main comme l'enseigne d'un atelier de Cotonou, au
+  niveau d'une maison de couture ; nuancier fermé de 5 pots. Fiche produit : `PRODUCT.md`.
+- ✅ **les 7 animations d'Afi téléchargées** (2026-11-12, 17 h 28) : `_partage\immersive  store 3D\personnages\afi\afi-{attendre,marcher,parler,saluer,hocher,reflechir,regarder}.fbx` (8,5 Mo ; seule `attendre` porte le corps ; `marcher` = *Female Walk* sur place)
+- 🙋 **« faut lancer Unreal Engine »** (2026-11-12) → le moteur n'est pas installé (installation sur `C:` annulée à 13 h 59) ; lanceur rouvert sur la page Unreal : **choisir `D:\Epic Games`**. ⚠️ ce PC (8 Go, Intel HD 5500) risque de ne pas ouvrir l'éditeur.
+
+Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
+produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
+
 ## Vague 1 · La maquette jouable 🔨 (2026-11-12)
 
 - ✅ « un salon de couture 3D ultra immersif… à la 1re personne… moderne, lumineux, au Bénin »

@@ -483,7 +483,9 @@ moteur.chaqueImage(() => son.ecouteur(camera));
 deplacement.surDepart.push((id) => { if (id === 'dehors' || deplacement.noeud === 'dehors') setTimeout(() => son.porte(new THREE.Vector3(0, 1.3, fz)), 350); });
 
 /* ---------- les repères au pouce, sur tout ce qui se touche ---------- */
-const reperes = creerReperes({ moteur, calque });
+/* trois noms au plus sur un téléphone, quatre sur un écran : au-delà, les étiquettes
+   s'empilaient sur les pièces (Mongazi, 2026-11-12 : « c'est tout brouillon ») */
+const reperes = creerReperes({ moteur, calque, maxNoms: matchMedia('(pointer: coarse)').matches ? 3 : 4 });
 const AUTRE = new THREE.Vector3();
 for (const id in totems) {
   const t = totems[id], p = pieceDe(id), haut = t.position.y > 1 ? 0.7 : 1.15;
@@ -747,6 +749,17 @@ async function embellir() {
   document.body.classList.add('embelli');
 }
 setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', e)), params.has('direct') ? 200 : 2500);
+
+/* LA SIGNATURE DES ENSEIGNES PEINTES : une plaque touchée se balance sur son crochet,
+   une fois, puis se repose. On anime la propriété `rotate`, qui s'ajoute au `transform`
+   des éléments placés à l'écran au lieu de l'écraser. */
+const PLAQUES = '.bt, .opt, .ch, .dlg-partir, .fiche-tourner, .bt-sac, .bt-carnet, .hud-son, .repere span, .point-etiquette, .invite';
+addEventListener('pointerdown', (e) => {
+  const p = e.target.closest && e.target.closest(PLAQUES);
+  if (!p) return;
+  p.classList.remove('balance'); void p.offsetWidth; p.classList.add('balance');
+}, { passive: true });
+addEventListener('animationend', (e) => { if (e.animationName === 'balance') e.target.classList.remove('balance'); });
 
 /* pour les contrôles automatiques */
 window.__monde = { moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
