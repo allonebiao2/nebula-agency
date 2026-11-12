@@ -144,3 +144,8 @@ monde/_dist/
 monde/lieux/*/img/
 monde/lieux/*/polices/
 monde/lieux/*/donnees.js
+
+# LE MONDE : photos personnelles d'Hillary (visage, gestes filmés, voix). Le dépôt est PUBLIC : jamais dans git.
+_partage/**/hillary/
+_partage/**/Hillary/
+monde/lieux/*/prive/
