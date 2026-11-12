@@ -427,11 +427,11 @@
 - Détail : mémoire `project_agent-vocal-numeros-benin`, et `_memoire/conversations/2026-11-05-nebula-voix.md`.
 
 ### LE MONDE · les lieux en 3D  *(produit interne, nom provisoire, 2026-11-12)*
-- **Ce que c'est** : des commerces visitables en 3D à la première personne, dans le navigateur, chacun avec son lien ; à terme une ville calquée sur Cotonou (un loyer plus tard). **Premier lieu : le salon de couture d'HILLARY M. STYL** (Hillary au comptoir, trois visiteuses PNJ, achat jusqu'à WhatsApp, jour/nuit et pluie réels de Cotonou). Deuxième : Grain d'Esthétique.
-- **Où** : `monde/` · **`VISION.md`** (l'analyse et les décisions) · `A-APPORTER.md` (ce que Mongazi fournit) · **`DEROULEMENT.md`** (le carnet du futur skill `nebula-lieu-3d` : chaque étape y entre au moment où elle est faite).
-- **Décidé le 2026-11-12** : Three.js dans le navigateur (lumière précalculée dans Blender via Colab) ; Unreal installé « pour la création » (lanceur posé, moteur à installer sur `D:` par Mongazi ; ⚠️ ce PC a 8 Go et une Intel HD 5500) ; PNJ écrits d'abord ; mesures au choix du client.
-- ⛔ **Le catalogue est LU dans `PIECES`, jamais recopié** · ⛔ **les PNJ sont des visiteurs, pas de fausses clientes satisfaites** · ⛔ **aucun visage réel sans accord écrit** (Hillary) ; les femmes qui portent ses pièces sur les photos ne sont jamais reconstruites, les pièces vont sur des mannequins, **validées une à une par Hillary**.
-- ⏳ Rien de construit : vague 1 (maquette jouable) au feu vert de Mongazi ; WaveSpeed à recharger (environ 40 $).
+- **Ce que c'est** : des commerces visitables en 3D à la première personne, dans le navigateur, d'abord au téléphone ; à terme une ville calquée sur Cotonou, un lieu par commerce, un loyer. **Premier lieu : le salon d'HILLARY M. STYL**, puis Grain d'Esthétique.
+- **Où** : `monde/` · **`VAGUES.md`** = LE registre (chaque demande de Mongazi, avec ses mots, sa vague, son état ; ⚡ toute nouvelle demande y entre au moment où il la fait) · `DEROULEMENT.md` = le carnet du futur skill · `socle/` (moteur commun) + `lieux/<lieu>/` (`plan.json` lu aussi par Unreal) · voir : `python monde/_servir.py` puis `http://localhost:8765/` · contrôle : `python monde/_qc.py` (visite jouée jusqu'au WhatsApp, un navigateur à la fois sur ce PC).
+- **État** : vague 1 (maquette jouable) faite, **pas en ligne** (`noindex`, personnages de maquette). Vagues 2 à 8 dans le registre (décor Unreal/Blender, personnages vivants, robes 3D, mise en ligne, ville, back-office d'Hillary, loyer).
+- ⛔ **Catalogue LU dans la vitrine** (`_construire.py`, lecteur de LE STANDARD), jamais recopié · ⛔ **PNJ visiteuses, jamais de fausses clientes** · ⛔ **rien d'inventé** : TikTok, événements, histoire d'Hillary restent cachés tant que `faits.json` est vide · ⛔ **aucun visage réel sans accord écrit** ; les robes vont sur mannequins, validées par Hillary.
+- ⏳ Mongazi : moteur Unreal sur `D:` (⚠️ ce PC : 8 Go, Intel HD 5500), questionnaire + photos + gestes filmés d'Hillary, planches de ses robes, compte TikTok, WaveSpeed (≈ 40 $).
 
 ### LA BOBINE · l'éditeur vidéo  *(produit interne, 2026-11-02)*
 - **Ce que c'est** : le montage vidéo dans le navigateur, PC et téléphone. Mongazi veut « exactement CapCut, renommé » :

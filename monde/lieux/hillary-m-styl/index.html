@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le salon HILLARY M. STYL</title>
+<meta name="description" content="Visitez le salon de couture HILLARY M. STYL en 3D, comme dans un jeu : ses créations, Hillary au comptoir, et la commande jusqu'à WhatsApp.">
+<meta name="theme-color" content="#0b0a0c">
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/logo.webp">
+<link rel="preload" href="polices/bodoni-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Bodoni Moda"; src: url(polices/bodoni-normal.woff2) format("woff2"); font-weight: 400 900; font-display: swap; }
+  @font-face { font-family: "Bodoni Moda"; src: url(polices/bodoni-italic.woff2) format("woff2"); font-style: italic; font-weight: 400 900; font-display: swap; }
+  @font-face { font-family: "Archivo"; src: url(polices/archivo-normal.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: "Manrope"; src: url(polices/manrope-normal.woff2) format("woff2"); font-weight: 200 800; font-display: swap; }
+  :root { --marque: #e6007e; --marque-f: #b8005f; --or: #c9a254; --encre: #0b0a0c; --papier: #f4f1ec;
+    --police-titre: "Bodoni Moda", Georgia, serif; --police-texte: "Manrope", system-ui, sans-serif; --police-libelle: "Archivo", system-ui, sans-serif; }
+</style>
+<link rel="stylesheet" href="../../socle/interface.css">
+<script type="importmap">
+{ "imports": { "three": "../../socle/vendor/three/three.module.min.js", "three/addons/": "../../socle/vendor/three/addons/" } }
+</script>
+<script src="../../socle/vendor/qrcode.min.js" defer></script>
+</head>
+<body>
+<div id="scene"></div>
+<div id="calque"></div>
+
+<div id="ouverture" class="ouverture" role="dialog" aria-label="Entrer dans le salon">
+  <div class="ouv-portes" aria-hidden="true"><i></i><i></i></div>
+  <div class="ouv-contenu">
+    <img src="img/logo.png" alt="HILLARY M. STYL">
+    <h1>Le salon</h1>
+    <p>Une maison de couture à visiter comme un jeu. Regardez ses créations de près, parlez aux visiteuses, et retrouvez Hillary au comptoir.</p>
+    <div class="ouv-barre" aria-hidden="true"><i></i></div>
+    <button type="button" class="bt bt-plein ouv-entrer" disabled>Entrer dans le salon</button>
+    <p class="ouv-aide">Touchez les points lumineux pour vous déplacer.<br>Glissez le doigt pour regarder tout autour.</p>
+  </div>
+</div>
+<noscript><p style="padding:24px">Ce salon en 3D a besoin de JavaScript. Le catalogue complet est aussi sur <a href="https://hillary-m-styl.pages.dev/" style="color:#ff7ec0">le site d'HILLARY M. STYL</a>.</p></noscript>
+
+<script type="module" src="lieu.js"></script>
+</body>
+</html>

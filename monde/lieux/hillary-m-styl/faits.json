@@ -1,0 +1,27 @@
+{
+ "_lire": "CE QUE MONGAZI TIENT À JOUR À LA MAIN. Une valeur vide = la fonction reste CACHÉE dans le salon : rien n'est inventé. Après une modification, relancer python monde/_construire.py.",
+ "tiktok": {
+  "compte": "",
+  "derniere_video": {
+   "lien": "",
+   "resume": ""
+  }
+ },
+ "instagram": "",
+ "facebook": "",
+ "evenements": [],
+ "_exemple_evenement": {
+  "titre": "Nouvelle collection",
+  "date": "2026-12-20",
+  "heure": "16 h",
+  "lieu": "À l'atelier",
+  "texte": "Une phrase, celle d'Hillary.",
+  "affiche": ""
+ },
+ "quartier": "",
+ "horaires": "",
+ "histoire": "",
+ "vision": "",
+ "sens_nom": "",
+ "_lire_histoire": "histoire, vision, sens_nom : LES MOTS D'HILLARY (questionnaire), recopiés tels quels. Vides = la branche « Parle-moi de toi » ne les propose pas."
+}

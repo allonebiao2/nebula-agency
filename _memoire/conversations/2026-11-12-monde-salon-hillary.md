@@ -44,3 +44,27 @@ choix du client.
 
 ## La suite
 Vague 1, la maquette jouable (ne demande que ses réponses, déjà données) : au feu vert de Mongazi.
+
+## La suite : la maquette jouable (même journée)
+
+Feu vert de Mongazi (« continue où tu en étais »). Construit dans `monde/` :
+- un **socle** réutilisable (moteur, ciel réel de Cotonou, déplacement « point & click » + regard Street View,
+  repères au pouce, options près d'une personne, personnages animés, PNJ à agenda, dialogue en croix, carnet,
+  boutique jusqu'à WhatsApp, sons placés dans l'espace) et le **lieu d'Hillary** construit depuis `plan.json` ;
+- le catalogue **lu** dans la vitrine par le lecteur de LE STANDARD (19 fiches, 12 pays, 6 jeux de mesures) ;
+- `_qc.py` joue une visite complète, du trottoir au message WhatsApp contrôlé au franc près.
+
+Demandes ajoutées en cours de route, toutes dans **`monde/VAGUES.md`** avec ses mots : mobile d'abord et repères au
+pouce · tailles (Hillary 1,68 m) · les corps parlent, pas des images · question, écoute, réponse · tout choisir
+apprend tout (le carnet) · sons réalistes libres · tout noter vague par vague · le visiteur ne voit pas ses bras ·
+s'approcher, puis des options, puis la discussion · un back-office pour qu'Hillary change son salon (vague 7) ·
+Unreal pour la construction · « les PNJ je te laisse gérer, des Noires claires ou foncées de peau » · Hillary
+reconnaissable (consignes refaites, ses gestes filmés).
+
+Un agent a analysé la vidéo de référence (`monde/ANALYSE-VIDEO-REFERENCE.md`, 52 procédés mesurés) : quatre
+réglages corrigés (champ de vision, hauteur des yeux, cadence des pas, dialogue qui avance seul).
+
+Trouvé en route : sur le site EN LIGNE d'Hillary, l'Ensemble Jean et la Robe Émeraude affichent « Type de vêtement
+introuvable » aux mesures (jeu `haut_jupe` inexistant). Rien corrigé sans Hillary.
+
+Unreal : lanceur installé, compte Epic créé par Mongazi, **moteur pas encore sur le disque** au soir.

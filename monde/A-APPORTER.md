@@ -1,6 +1,11 @@
 # Ce que Mongazi doit apporter · le salon d'Hillary
 
 > Écrit le 2026-11-12. Classé par vague : ce qui débloque la vague 1 d'abord.
+>
+> 📌 **Les consignes complètes à générer** (Hillary, ses visiteuses, ses
+> portraits de dialogue, le salon, les objets, les vraies photos à prendre) :
+> **`PROMPTS-NANO-BANANA.md`**. **Le message à envoyer à Hillary** :
+> **`QUESTIONNAIRE-HILLARY.md`**. Cette page-ci n'est que la liste à cocher.
 > Coche au fur et à mesure, ou dépose les fichiers dans `_partage/immersive  store 3D/`.
 
 ---

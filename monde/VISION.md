@@ -325,6 +325,9 @@ Les **mesures** (sur-mesure) : question posée à Mongazi (voir § 6).
 
 ## 5. Le plan, en vagues
 
+> ⚠️ **La référence à jour est `VAGUES.md`** (toutes les demandes de Mongazi, vague par
+> vague, avec leur état). Le tableau ci-dessous est celui du 2026-11-12 au matin.
+
 | Vague | Ce qu'elle livre | Ce dont elle a besoin |
 |---|---|---|
 | **0** | cette analyse, les questions, la liste à apporter | rien ✅ |

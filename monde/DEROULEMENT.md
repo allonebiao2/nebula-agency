@@ -164,6 +164,80 @@ moteur exige le compte Epic de Mongazi : marche à suivre dans `A-APPORTER.md`.
 
 ---
 
-## Étape 1 · la maquette jouable
+## Étape 1 · la maquette jouable (2026-11-12)
 
-*À venir.*
+### L'architecture, celle que le skill reproduira pour chaque lieu
+
+```
+monde/
+  socle/              LE MOTEUR COMMUN (aucun lieu n'y est décrit)
+    moteur.js         rendu, 3 niveaux de qualité choisis seuls, descente si < 33 i/s
+    ciel.js           soleil du lieu (formules de Meeus), météo réelle, rue peinte, pluie, éclairs, zems
+    deplacement.js    graphe de passages, marche sur courbe, regard « Street View », points lumineux
+    reperes.js        un point lumineux + son nom sur chaque élément touchable (au pouce)
+    options.js        la carte « Parler · Saluer · Laisser » près d'une personne
+    personnages.js    personnages de maquette animés à la main (marche, gestes, ton de la parole)
+    pnj.js            agendas, conversations entre elles, approche du joueur
+    dialogue.js       sous-titres nommés, dialogue en croix, réponses explorées ✓/✦
+    carnet.js         « ce que vous savez de la maison » (le compteur donne envie de tout explorer)
+    boutique.js       fiche « comme dans un jeu », sac, cadran, message WhatsApp (règles de la vitrine)
+    son.js            bruitages enregistrés (CC0) placés dans l'espace + synthèse en secours
+    matieres.js       wax générés, bois, laiton, sol, flaques de lumière
+    vendor/           three.js 0.180 (MIT) + qrcode-generator (MIT), copiés en local
+    sons/             19 bruitages Kenney (CC0) + leurs licences
+  lieux/<lieu>/
+    plan.json         LA DISPOSITION, unique : lue par le navigateur ET par Unreal
+    faits.json        ce que le client tient à jour (TikTok, événements, son histoire) ; vide = caché
+    textes.js         tout ce qui se dit ; chaque chiffre tiré des données
+    lieu.js           le décor construit depuis le plan, et le câblage
+    index.html        polices et couleurs du client
+  unreal/construire_lieu.py   le même plan, construit dans Unreal (caméras de bande-annonce)
+  _construire.py      LIT le catalogue dans la vitrine (lecteur de LE STANDARD) → donnees.js
+  _servir.py          serveur local + relais météo (MET Norway), joignable au téléphone en Wi-Fi
+  _qc.py              une visite complète jouée par Playwright, captures dans _vues/
+```
+
+Commandes : `python monde/_servir.py` (puis `http://localhost:8765/`), `python monde/_qc.py`.
+
+### Les pièges de cette étape (chacun a coûté un essai)
+
+- ⛔ **`Object.assign(maillage, { position: … })` lève une erreur** : dans Three.js,
+  `position` n'est pas remplaçable, elle se RÈGLE (`position.set`). Toute la page
+  tombait. Un petit outil `a(o, x, y, z)` le fait proprement.
+- ⛔ **Un modulo négatif en JavaScript donne un rayon négatif** (motifs de wax sur
+  les bords d'une texture : `i = -1`), et le canevas plante. `((x % n) + n) % n`.
+- ⛔ **Une variable locale qui porte le nom d'un outil** (`const a` dans une boucle
+  où l'on appelait `a(…)` juste avant) : erreur « avant initialisation ».
+- ⛔ **Les espaces des milliers (U+202F, U+00A0) ont disparu au copier-coller** :
+  « 100 000 F » s'écrivait de deux façons et le contrôle des prix échouait. Les
+  écrire en codes `\u202f\u00a0`.
+- ⚠️ **Un PNJ qui recalcule son chemin toutes les 2 s en repartant du point de
+  passage le plus proche n'arrive jamais.** Ne recalculer que si la cible a bougé
+  de plus d'un mètre, et marcher droit sur les 3 derniers mètres.
+- ⚠️ **Un PNJ qui « vient parler au joueur » doit savoir attendre** : Afi s'était
+  glissée dans la demi-seconde entre la dernière réplique d'Hillary et le cadran
+  de commande. Jamais pendant un dialogue, ni dans les 3 s qui suivent, ni devant
+  une fiche ou un cadran, ni au comptoir.
+- ⚠️ **Un bouton qui suit une tête qui respire tremble** : Playwright refusait de
+  cliquer, un pouce aussi. On ancre les invites sur ce qui ne bouge pas (le
+  comptoir) et on arrondit au pixel.
+- ⚠️ **Les options s'ouvrent après que le regard s'est posé** : au téléphone, le
+  champ est étroit en largeur, une personne à 1,3 m sort vite du cadre.
+- ⚠️ **Sur ce PC (8 Go)**, un agent qui travaille en même temps fait tomber les
+  chargements Playwright : `wait_until="domcontentloaded"` et des délais longs.
+- ⚠️ **Les scripts Python passés au shell par un document « heredoc » cassent sur
+  les apostrophes du code JavaScript** : les écrire dans un fichier et le lancer.
+
+### Ce que l'analyse de la référence a corrigé (agent, `ANALYSE-VIDEO-REFERENCE.md`)
+
+- champ de vision **75° en horizontal** (66° en vertical donnait ~98° en horizontal) ;
+- yeux à **1,55 m** ;
+- **un pas tous les 0,68 m**, la tête descend à chaque pas, le son tombe au même
+  instant (3,7 pas/s désaccordés avant) ;
+- **le dialogue avance seul**, toucher pour aller plus vite ;
+- les **bras croisés = impatience** : Hillary accueille les mains sur le comptoir.
+
+### Les décisions de Mongazi pendant l'étape
+
+Voir `VAGUES.md`, qui les garde toutes, avec ses mots.
+

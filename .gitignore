@@ -137,3 +137,10 @@ labobine/catalogues/
 
 # moteur binaire du skill Impeccable (20 Mo, réinstallé par `npx impeccable update`) : jamais dans le dépôt public
 **/impeccable/scripts/bin/
+
+# LE MONDE : fichiers générés (le catalogue est LU à chaque construction, jamais recopié dans git)
+monde/_vues/
+monde/_dist/
+monde/lieux/*/img/
+monde/lieux/*/polices/
+monde/lieux/*/donnees.js

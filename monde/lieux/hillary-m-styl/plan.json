@@ -1,0 +1,456 @@
+{
+ "_lire": "LE PLAN DU SALON, unique source de la disposition. Lu par le navigateur (lieu.js) ET par Unreal (monde/unreal/construire_lieu.py). Mètres. x vers la droite, y vers le haut, z vers l'entrée (la façade vitrée est en z = +6, le comptoir au fond en z = -6). Un angle de regard (cap) vaut 0 quand on regarde le fond (-z), 90 vers la droite (+x).",
+ "lieu": "hillary-m-styl",
+ "nom": "HILLARY M. STYL",
+ "piece": {
+  "largeur": 16,
+  "profondeur": 12,
+  "hauteur": 4.2
+ },
+ "dome": {
+  "x": 0,
+  "z": 0.4,
+  "rayon": 3.4,
+  "creux": 0.45
+ },
+ "facade": {
+  "z": 6,
+  "porte": {
+   "x1": -1.2,
+   "x2": 1.2,
+   "haut": 3.0
+  },
+  "vitrines": [
+   {
+    "x1": -7.6,
+    "x2": -1.6
+   },
+   {
+    "x1": 1.6,
+    "x2": 7.6
+   }
+  ],
+  "allege": 0.35,
+  "linteau": 3.6
+ },
+ "podiums": [
+  {
+   "id": "heros",
+   "x": 0,
+   "z": 0.4,
+   "r": 1.1,
+   "h": 0.32,
+   "pieces": [
+    "h1",
+    "h15",
+    "h18"
+   ]
+  },
+  {
+   "id": "g1",
+   "x": -2.9,
+   "z": 3.4,
+   "r": 0.72,
+   "h": 0.24,
+   "pieces": [
+    "h2"
+   ]
+  },
+  {
+   "id": "g2",
+   "x": -4.6,
+   "z": 1.0,
+   "r": 0.72,
+   "h": 0.42,
+   "pieces": [
+    "h5"
+   ]
+  },
+  {
+   "id": "d1",
+   "x": 2.9,
+   "z": 3.4,
+   "r": 0.72,
+   "h": 0.24,
+   "pieces": [
+    "h3"
+   ]
+  },
+  {
+   "id": "d2",
+   "x": 4.6,
+   "z": 1.0,
+   "r": 0.72,
+   "h": 0.42,
+   "pieces": [
+    "h10"
+   ]
+  }
+ ],
+ "mur_creations": {
+  "x": 8,
+  "z1": -3.6,
+  "z2": 3.8,
+  "colonnes": 6,
+  "rangees": 2,
+  "y_bas": 0.75,
+  "y_haut": 2.35
+ },
+ "comptoir": {
+  "x": 0,
+  "z": -4.4,
+  "longueur": 4.6,
+  "profondeur": 0.72,
+  "hauteur": 1.05
+ },
+ "hillary": {
+  "x": 0,
+  "z": -5.15,
+  "cap": 180
+ },
+ "logo": {
+  "z": -5.98,
+  "y": 2.85,
+  "largeur": 2.3
+ },
+ "etageres_tissus": [
+  {
+   "x1": -7.4,
+   "x2": -3.4
+  },
+  {
+   "x1": 3.4,
+   "x2": 7.4
+  }
+ ],
+ "mur_evenements": {
+  "x": -8,
+  "z1": -4.6,
+  "z2": -0.4,
+  "affiches": 3
+ },
+ "coin_tiktok": {
+  "x": -8,
+  "z": 3.4,
+  "ecran": {
+   "largeur": 1.1,
+   "hauteur": 1.95,
+   "y": 1.55
+  },
+  "fauteuils": [
+   {
+    "x": -6.3,
+    "z": 2.7
+   },
+   {
+    "x": -6.3,
+    "z": 4.1
+   }
+  ]
+ },
+ "cabine": {
+  "x1": 5.2,
+  "x2": 7.9,
+  "z1": -5.9,
+  "z2": -4.0
+ },
+ "atelier": {
+  "table": {
+   "x": -4.8,
+   "z": -4.7
+  },
+  "mannequin": {
+   "x": -3.3,
+   "z": -4.9
+  }
+ },
+ "plantes": [
+  {
+   "x": -7.3,
+   "z": 5.4
+  },
+  {
+   "x": 7.3,
+   "z": 5.4
+  },
+  {
+   "x": -2.4,
+   "z": -5.5
+  },
+  {
+   "x": 2.4,
+   "z": -5.5
+  }
+ ],
+ "points": [
+  {
+   "id": "entree",
+   "nom": "L'entrée",
+   "x": 0,
+   "z": 4.7,
+   "cap": 0
+  },
+  {
+   "id": "expo_g",
+   "nom": "Expositions · gauche",
+   "x": -1.7,
+   "z": 1.9,
+   "cap": -55
+  },
+  {
+   "id": "expo_d",
+   "nom": "Expositions · droite",
+   "x": 1.7,
+   "z": 1.9,
+   "cap": 55
+  },
+  {
+   "id": "comptoir",
+   "nom": "Le comptoir",
+   "x": 0,
+   "z": -2.6,
+   "cap": 0
+  },
+  {
+   "id": "creations",
+   "nom": "Le mur des créations",
+   "x": 5.4,
+   "z": -0.6,
+   "cap": 90
+  },
+  {
+   "id": "evenements",
+   "nom": "Le mur des événements",
+   "x": -5.6,
+   "z": -2.0,
+   "cap": -90
+  },
+  {
+   "id": "tiktok",
+   "nom": "L'espace TikTok",
+   "x": -5.0,
+   "z": 3.1,
+   "cap": -90
+  },
+  {
+   "id": "atelier",
+   "nom": "L'atelier",
+   "x": -3.0,
+   "z": -3.3,
+   "cap": -45
+  },
+  {
+   "id": "dehors",
+   "nom": "Le trottoir",
+   "x": 0,
+   "z": 7.4,
+   "cap": 180
+  }
+ ],
+ "passages": [
+  {
+   "id": "avant",
+   "x": 0,
+   "z": 2.7
+  },
+  {
+   "id": "g_arr",
+   "x": -1.9,
+   "z": -1.0
+  },
+  {
+   "id": "d_arr",
+   "x": 1.9,
+   "z": -1.0
+  },
+  {
+   "id": "cabine",
+   "x": 3.7,
+   "z": -3.4
+  }
+ ],
+ "liens": [
+  [
+   "entree",
+   "avant"
+  ],
+  [
+   "avant",
+   "expo_g"
+  ],
+  [
+   "avant",
+   "expo_d"
+  ],
+  [
+   "expo_g",
+   "g_arr"
+  ],
+  [
+   "expo_d",
+   "d_arr"
+  ],
+  [
+   "g_arr",
+   "comptoir"
+  ],
+  [
+   "d_arr",
+   "comptoir"
+  ],
+  [
+   "expo_g",
+   "tiktok"
+  ],
+  [
+   "g_arr",
+   "evenements"
+  ],
+  [
+   "d_arr",
+   "creations"
+  ],
+  [
+   "comptoir",
+   "atelier"
+  ],
+  [
+   "g_arr",
+   "atelier"
+  ],
+  [
+   "comptoir",
+   "cabine"
+  ],
+  [
+   "d_arr",
+   "cabine"
+  ],
+  [
+   "dehors",
+   "entree"
+  ]
+ ],
+ "places_pnj": [
+  {
+   "id": "voir_heros",
+   "x": 0.0,
+   "z": 2.05,
+   "cap": 0,
+   "activite": "regarder",
+   "pres": "avant"
+  },
+  {
+   "id": "voir_g1",
+   "x": -2.2,
+   "z": 2.6,
+   "cap": -40,
+   "activite": "photo",
+   "pres": "expo_g"
+  },
+  {
+   "id": "voir_g2",
+   "x": -3.6,
+   "z": 1.5,
+   "cap": -110,
+   "activite": "regarder",
+   "pres": "expo_g"
+  },
+  {
+   "id": "voir_d1",
+   "x": 2.2,
+   "z": 2.6,
+   "cap": 40,
+   "activite": "toucher",
+   "pres": "expo_d"
+  },
+  {
+   "id": "voir_d2",
+   "x": 3.6,
+   "z": 1.5,
+   "cap": 110,
+   "activite": "regarder",
+   "pres": "expo_d"
+  },
+  {
+   "id": "mur_1",
+   "x": 6.7,
+   "z": 2.0,
+   "cap": 90,
+   "activite": "regarder",
+   "pres": "d_arr"
+  },
+  {
+   "id": "mur_2",
+   "x": 6.7,
+   "z": -2.6,
+   "cap": 90,
+   "activite": "photo",
+   "pres": "creations"
+  },
+  {
+   "id": "affiches",
+   "x": -6.7,
+   "z": -3.2,
+   "cap": -90,
+   "activite": "regarder",
+   "pres": "evenements"
+  },
+  {
+   "id": "fauteuil_1",
+   "x": -6.3,
+   "z": 2.7,
+   "cap": -90,
+   "activite": "assis",
+   "pres": "tiktok"
+  },
+  {
+   "id": "fauteuil_2",
+   "x": -6.3,
+   "z": 4.1,
+   "cap": -90,
+   "activite": "assis",
+   "pres": "tiktok"
+  },
+  {
+   "id": "comptoir_g",
+   "x": -0.9,
+   "z": -3.55,
+   "cap": 0,
+   "activite": "comptoir",
+   "pres": "comptoir"
+  },
+  {
+   "id": "comptoir_d",
+   "x": 0.9,
+   "z": -3.55,
+   "cap": 0,
+   "activite": "comptoir",
+   "pres": "comptoir"
+  },
+  {
+   "id": "tissus_g",
+   "x": -5.2,
+   "z": -5.0,
+   "cap": 0,
+   "activite": "toucher",
+   "pres": "atelier"
+  },
+  {
+   "id": "tissus_d",
+   "x": 4.8,
+   "z": -2.9,
+   "cap": 40,
+   "activite": "telephone",
+   "pres": "cabine"
+  },
+  {
+   "id": "fenetre",
+   "x": -4.2,
+   "z": 5.2,
+   "cap": 180,
+   "activite": "fenetre",
+   "pres": "entree"
+  }
+ ]
+}
