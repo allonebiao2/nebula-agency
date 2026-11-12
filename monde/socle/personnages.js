@@ -76,24 +76,28 @@ export function creerPersonnage(d) {
   const tete = new THREE.Group(); tete.position.y = 0.62; torse.add(tete);
   const crane = maille(new THREE.SphereGeometry(0.105, 24, 18), peau); crane.scale.set(0.92, 1.12, 1); tete.add(crane);
 
-  /* coiffures et coiffes */
+  /* coiffures et coiffes
+     ⚠️ une calotte de cheveux est une DEMI-sphère inclinée vers l'arrière : une sphère entière
+     enveloppait tout le crâne et cachait le visage (Afi semblait tourner le dos, vu le 2026-11-12) */
+  const calotte = (r) => new THREE.SphereGeometry(r, 22, 12, 0, Math.PI * 2, 0, Math.PI * 0.52);
   if (d.coiffe === 'gele') {
     const m = tissu(d.coiffeTissu || d.haut, [1, 1]);
     const a = maille(new THREE.SphereGeometry(0.15, 20, 14), m); a.scale.set(1.25, 0.72, 1.05); a.position.set(0, 0.1, -0.01); tete.add(a);
     const b = maille(new THREE.SphereGeometry(0.15, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), m); b.scale.set(1.5, 1.05, 0.55); b.position.set(0, 0.14, -0.06); b.rotation.x = -0.25; tete.add(b);
     const n = maille(new THREE.TorusGeometry(0.11, 0.035, 10, 24), m); n.rotation.x = Math.PI / 2 - 0.2; n.position.y = 0.04; tete.add(n);
   } else if (d.coiffe === 'tresses') {
-    const c = maille(new THREE.SphereGeometry(0.112, 20, 14), mCheveux); c.scale.set(0.95, 1.08, 1.05); c.position.set(0, 0.012, -0.006); tete.add(c);
+    const c = maille(calotte(0.113), mCheveux); c.scale.set(0.95, 1.1, 1.05); c.position.set(0, 0.012, -0.01); c.rotation.x = -0.35; tete.add(c);
     const q = maille(new THREE.CylinderGeometry(0.035, 0.05, 0.12, 10), mCheveux); q.position.set(0, 0.15, -0.05); q.rotation.x = -0.4; tete.add(q);
     for (let i = 0; i < 9; i++) {
       const t = maille(new THREE.CylinderGeometry(0.009, 0.007, 0.48, 6), mCheveux);
       t.position.set((i - 4) * 0.018, -0.06, -0.12 - Math.abs(i - 4) * 0.004); t.rotation.x = 0.18; tete.add(t);
     }
   } else if (d.coiffe === 'chignon') {
-    const c = maille(new THREE.SphereGeometry(0.11, 20, 14), mCheveux); c.scale.set(0.96, 1.05, 1.05); c.position.set(0, 0.015, -0.006); tete.add(c);
+    const c = maille(calotte(0.111), mCheveux); c.scale.set(0.96, 1.08, 1.05); c.position.set(0, 0.015, -0.01); c.rotation.x = -0.35; tete.add(c);
     const b = maille(new THREE.SphereGeometry(0.06, 14, 10), mCheveux); b.position.set(0, 0.11, -0.08); tete.add(b);
   } else {
-    const c = maille(new THREE.SphereGeometry(0.112, 20, 14), mCheveux); c.scale.set(0.97, 1.06, 1.04); c.position.set(0, 0.02, -0.004); tete.add(c);
+    /* cheveux courts naturels : du volume au-dessus et derrière, le visage reste dégagé */
+    const c = maille(calotte(0.125), mCheveux); c.scale.set(1.05, 1.12, 1.08); c.position.set(0, 0.025, -0.012); c.rotation.x = -0.4; tete.add(c);
   }
   if (d.boucles) for (const c of [1, -1]) { const o = maille(new THREE.TorusGeometry(0.018, 0.004, 6, 16), new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 1, roughness: 0.25 })); o.position.set(c * 0.098, -0.04, 0); o.rotation.y = Math.PI / 2; tete.add(o); }
 

@@ -85,6 +85,7 @@ def main():
         pg.set_default_navigation_timeout(180000); pg.set_default_timeout(60000)
         pg.goto(BASE + "?direct=1&qualite=moyenne", wait_until="domcontentloaded")
         jusqua(pg, "window.__monde !== undefined", 90)
+        pg.evaluate("__monde.ctx.quete = 99")   # Afi attendra son tour (elle vient d'elle-même dès 7 s)
         time.sleep(5)
         m = pg.evaluate("({n: Object.keys(__monde.totems).length, num: __monde.D.whatsapp, q: __monde.moteur.qualite.nom})")
         ok(m["n"] == len(D["pieces"]), "toutes les pièces du catalogue sont exposées", f"{m['n']} / {len(D['pieces'])}")
@@ -204,14 +205,11 @@ def main():
         # 6 · la course d'Afi : elle vient d'elle-même
         pg.evaluate("__monde.deplacement.allerA('expo_g')")
         jusqua(pg, "__monde.deplacement.noeud === 'expo_g' && !__monde.deplacement.enMarche", 40)
-        # on laisse faire le salon, comme pour un vrai visiteur : Afi vient d'elle-même
-        # (au plus tard 25 s après la dernière conversation) ; à défaut, on l'appelle une fois
+        # son tour : on la fait venir (elle attend 3 s après la dernière conversation)
         try:
-            try:
-                jusqua(pg, "document.querySelector('.dialogue').classList.contains('ouverte') && document.querySelector('.dlg-nom').textContent === 'Afi'", 75)
-            except Exception:
-                pg.evaluate("if (!__monde.pnj.abordage) { __monde.ctx.quete = 0; __monde.pnj.aborder('afi', 'afi_course'); }")
-                jusqua(pg, "document.querySelector('.dialogue').classList.contains('ouverte')", 60)
+            time.sleep(3.2)
+            pg.evaluate("__monde.pnj.annulerAbordage(); __monde.ctx.quete = 0; __monde.pnj.aborder('afi', 'afi_course')")
+            jusqua(pg, "document.querySelector('.dialogue').classList.contains('ouverte') && document.querySelector('.dlg-nom').textContent === 'Afi'", 90)
             ok(pg.evaluate("document.querySelector('.dlg-nom').textContent") == "Afi", "Afi vient d'elle-même confier sa course")
             avancer_jusqu_aux_choix(pg); shot("07-afi")
             choisir(pg, "demander à Hillary")

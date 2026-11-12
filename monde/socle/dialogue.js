@@ -113,6 +113,17 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
     });
   }
 
+  function direToi(texte) {
+    return new Promise((ok) => {
+      $('.dlg-nom').textContent = 'Toi'; $('.dlg-nom').style.color = '#ffffff';
+      boite.style.setProperty('--c', '#ffffff');
+      for (const k in personnes) if (personnes[k].perso) personnes[k].perso.parler(false);
+      $('.dlg-texte').textContent = texte; boite.classList.add('peut-suivre');
+      const fin = () => { clearTimeout(minuteur); attente = null; ok(); };
+      minuteur = setTimeout(fin, 700 + texte.length * 22);
+      attente = fin;
+    });
+  }
   async function jouer(id) {
     let n = typeof id === 'function' ? id(ctx) : (registre[id] ? registre[id](ctx) : null);
     while (n) {
@@ -137,6 +148,8 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
         const c = await proposer(choix, n);
         if (ecoutant) ecoutant.ecouter(false);
         $('.dlg-texte').parentElement.classList.remove('fige');
+        /* ta réponse, dite : elle reste un instant sous « Toi » avant que l'autre réponde */
+        if (!c.muet) await direToi(c.t);
         if (c.action) { const r = await c.action(ctx); if (r !== undefined) suite = r; }
         if (c.va !== undefined) suite = c.va;
       }

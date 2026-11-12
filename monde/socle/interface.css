@@ -289,3 +289,10 @@ button { font: inherit; color: inherit; }
 .opt:hover, .opt:focus-visible { background: rgba(255,255,255,.16); }
 .opt-principal { background: var(--marque); } .opt-principal:hover { background: var(--marque-f); }
 .en-dialogue .options, .en-fiche .options, .en-cadran .options { display: none; }
+
+/* ---------- la carte de titre (6 s, à l'entrée) ---------- */
+.carte-titre { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); padding: 10px 16px 10px 14px; border-left: 3px solid var(--marque);
+  background: linear-gradient(90deg, rgba(10,8,12,.75), rgba(10,8,12,0)); opacity: 0; transform: translateY(8px); transition: opacity .8s, transform .8s; pointer-events: none !important; z-index: 3; }
+.carte-titre.visible { opacity: 1; transform: none; }
+.carte-titre b { display: block; font-family: var(--police-titre); font-weight: 500; font-size: 1.35rem; letter-spacing: .04em; }
+.carte-titre span { font: 600 .74rem var(--police-libelle); letter-spacing: .1em; text-transform: uppercase; color: #e3c27a; }

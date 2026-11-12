@@ -41,6 +41,10 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     const pts = [];
     for (const k of ids) { const g = graphe.noeuds[k]; pts.push(new THREE.Vector3(g.x, 0, g.z)); }
     pts.push(new THREE.Vector3(cible.x, 0, cible.z));
+    /* ⚠️ jamais par l'endroit où se tient le joueur : son point de passage est souvent le plus
+       proche, et le réflexe qui l'évite la repoussait à chaque image (Afi restait plantée à 55 cm) */
+    const joueur = new THREE.Vector3(camera.position.x, 0, camera.position.z);
+    for (let i = pts.length - 2; i >= 0; i--) if (pts[i].distanceTo(joueur) < 0.9) pts.splice(i, 1);
     /* on saute le premier point s'il nous fait revenir en arrière */
     if (pts.length > 1 && pts[0].distanceTo(r) < 1.2) pts.shift();
     return pts;
@@ -159,13 +163,14 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     const avant = new THREE.Vector3(-Math.sin(deplacement.lacet), 0, -Math.cos(deplacement.lacet));
     const ici = new THREE.Vector3(camera.position.x, 0, camera.position.z);
     const rdv = ici.clone().addScaledVector(avant, 1.25);
-    if (r.distanceTo(rdv) > 0.35) {
+    /* arrivée : à son rendez-vous, ou déjà tout près du joueur */
+    if (r.distanceTo(rdv) > 0.35 && r.distanceTo(ici) > 1.5) {
       /* ⚠️ on ne recalcule le chemin que si le joueur a VRAIMENT bougé : recalculer toutes
          les 2 s la renvoyait au point de passage le plus proche, et elle n'arrivait jamais */
       const bouge = !ab.cible || ab.cible.distanceTo(rdv) > 1;
       if (bouge && t > ab.relance) {
         ab.relance = t + 1.5; ab.cible = rdv.clone();
-        if (r.distanceTo(rdv) < 3.2) { n.chemin = [rdv.clone()]; n.etat = 'aborde'; }
+        if (r.distanceTo(rdv) < 6) { n.chemin = [rdv.clone()]; n.etat = 'aborde'; }
         else { partir(n, { x: rdv.x, z: rdv.z, pres: graphe.plusProche(rdv.x, rdv.z) }, null); n.etat = 'aborde'; }
       } else if (!n.chemin) n.chemin = [ab.cible.clone()];
       return;

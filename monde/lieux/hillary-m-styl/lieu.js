@@ -577,6 +577,23 @@ deplacement.surToucher.push((c) => {
   return false;
 });
 boutique.surValider.push(() => parlerHillary('h_cest_tout'));
+/* ton sac, posé sur le comptoir : il apparaît avec la première pièce (référence : le sac plein qu'on porte) */
+const sacComptoir = new THREE.Group();
+{
+  const corps = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.4, 0.14), new THREE.MeshStandardMaterial({ color: 0xe6007e, roughness: 0.55 }));
+  corps.position.y = 0.2; sacComptoir.add(corps);
+  for (const s of [-1, 1]) { const anse = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.008, 6, 20, Math.PI), M.creme); anse.position.set(s * 0.08, 0.4, 0); sacComptoir.add(anse); }
+  const mono = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.1), new THREE.MeshBasicMaterial({ map: texteCanvas(256, 140, (g, W, H) => { g.fillStyle = '#f4efe6'; g.font = '600 64px "Bodoni Moda", Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('H.M.S', W / 2, H / 2); }), transparent: true }));
+  mono.position.set(0, 0.24, 0.072); sacComptoir.add(mono);
+  sacComptoir.position.set(plan.comptoir.x - 0.6, plan.comptoir.hauteur, plan.comptoir.z + 0.05); sacComptoir.rotation.y = 0.35;
+  sacComptoir.visible = boutique.panier().length > 0; scene.add(sacComptoir);
+}
+boutique.surChange.push(() => {
+  const plein = boutique.panier().length > 0;
+  if (plein && !sacComptoir.visible) { sacComptoir.visible = true; sacComptoir.scale.setScalar(0.01); }
+  if (!plein) sacComptoir.visible = false;
+});
+moteur.chaqueImage((dt) => { if (sacComptoir.visible && sacComptoir.scale.x < 1) sacComptoir.scale.setScalar(Math.min(1, sacComptoir.scale.x + dt * 3)); });
 boutique.surEnvoi.push(() => {
   setTimeout(() => {
     boutique.fermerCadran();
@@ -587,11 +604,15 @@ boutique.surEnvoi.push(() => {
 });
 
 /* ---------- Hillary vit derrière son comptoir ---------- */
-let hillaryProchain = 4, hillaryAccueil = false;
+let hillaryProchain = 4, hillaryAccueil = false, regardProchain = 0, regardToi = true;
 moteur.chaqueImage((dt, t) => {
   const d = camera.position.distanceTo(hillary.racine.position);
-  if (dialogue.actif && personnes.hillary.perso.st.parle) hillary.regarder(camera.position);
-  else if (d < 5.5) hillary.regarder(camera.position); else hillary.regarder(null);
+  /* ⚠️ elle ne te FIXE pas : elle regarde sa tâche, et lève les yeux vers toi aux temps forts
+     (quand elle parle, quand tu arrives) ; la référence alterne ainsi (analyse de la vidéo) */
+  if (t > regardProchain) { regardProchain = t + 1.8 + Math.random() * 2.6; regardToi = Math.random() < (d < 4 ? 0.65 : 0.3); }
+  if (dialogue.actif) hillary.regarder(camera.position);
+  else if (d < 5.5 && regardToi) hillary.regarder(camera.position);
+  else hillary.regarder(new THREE.Vector3(plan.comptoir.x + 0.9, 1.08, plan.comptoir.z));
   if (!dialogue.actif && t > hillaryProchain) {
     hillaryProchain = t + 6 + Math.random() * 9;
     /* quand on approche, elle ACCUEILLE (mains sur le comptoir ou bras le long du corps) :
@@ -606,10 +627,13 @@ deplacement.surArrivee.push((id) => {
 
 /* ---------- la course d'Afi : elle vient d'elle-même ---------- */
 let afiPrete = false;
-deplacement.surArrivee.push((id) => { if (id !== 'entree' && id !== 'dehors') afiPrete = true; });
+/* l'accroche : Afi vient dans les premières secondes, dès qu'on est entré (référence : la course
+   est confiée avant la 10e seconde) */
+deplacement.surArrivee.push((id) => { if (id !== 'dehors') afiPrete = true; son.sortir(id === 'dehors'); });
+deplacement.surDepart.push(() => son.sortir(false));
 moteur.chaqueImage((dt, t) => {
   /* elle n'aborde pas quelqu'un qui commande au comptoir, ni quelqu'un sur le trottoir */
-  if (ctx.quete === 0 && afiPrete && t > 14 && !dialogue.actif && !['comptoir', 'dehors'].includes(deplacement.noeud) && !document.body.classList.contains('en-fiche') && !document.body.classList.contains('en-cadran')) {
+  if (ctx.quete === 0 && afiPrete && t > 7 && !dialogue.actif && !['comptoir', 'dehors'].includes(deplacement.noeud) && !document.body.classList.contains('en-fiche') && !document.body.classList.contains('en-cadran')) {
     if (pnj.aborder('afi', 'afi_course')) ctx.quete = -1;   /* -1 : en route vers le joueur */
   }
 });
@@ -646,8 +670,18 @@ maquette.textContent = 'Maquette · personnages et décor provisoires'; calque.a
 /* ---------- l'ouverture : les portes, puis on entre depuis le trottoir ---------- */
 majBarre();
 moteur.demarrer();
+/* la carte de titre (référence : 6 s, en bas à gauche, le lieu, l'heure, le temps qu'il fait) */
+function carteDeTitre() {
+  const c = document.createElement('div'); c.className = 'carte-titre';
+  const h = ciel.etat.heure, m = ciel.libelle().split(' · ').slice(2).join(' · ');
+  c.innerHTML = `<b>HILLARY M. STYL</b><span>Cotonou · ${h.h} h ${String(h.m).padStart(2, '0')}${m ? ' · ' + m : ''}</span>`;
+  calque.appendChild(c); requestAnimationFrame(() => c.classList.add('visible'));
+  setTimeout(() => { c.classList.remove('visible'); setTimeout(() => c.remove(), 900); }, 6000);
+}
 function entrer() {
   son.demarrer();
+  setTimeout(carteDeTitre, 900);
+  setTimeout(() => son.machineACoudre(new THREE.Vector3(plan.atelier.table.x, 0.9, plan.atelier.table.z)), 1500);
   ouverture.classList.add('partie');
   setTimeout(() => ouverture.remove(), 2200);
   if (deplacement.noeud === 'dehors') setTimeout(() => deplacement.allerA('entree'), 700);

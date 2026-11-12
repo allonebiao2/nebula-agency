@@ -9,7 +9,8 @@
 const BANQUE = { pas: 5, tissu: 4, sac: 2, choix: 2, clic: 1, ouvrir: 1, valider: 1, fermer: 1, cintre: 1, 'porte-ouvre': 0, 'porte-ferme': 0 };
 
 export function creerSon({ base = '../../socle/sons/' } = {}) {
-  let ctx = null, maitre = null, bruitBuf = null, rue = null, pluie = null, coupe = false, dirEcoute = null;
+  let ctx = null, maitre = null, bruitBuf = null, rue = null, pluie = null, clim = null, coupe = false, dirEcoute = null, dehors = false;
+  let machine = null;
   const bruts = {}, tampons = {};
   /* on télécharge tout de suite (116 Ko), on décode au premier geste */
   for (const [nom, n] of Object.entries(BANQUE)) {
@@ -61,6 +62,7 @@ export function creerSon({ base = '../../socle/sons/' } = {}) {
     const comp = ctx.createDynamicsCompressor(); comp.connect(ctx.destination);
     maitre = ctx.createGain(); maitre.gain.value = coupe ? 0 : 0.8; maitre.connect(comp);
     rue = source('lowpass', 420, 0.4, 0.035);          /* la rumeur de la rue, derrière la vitre */
+    clim = source('lowpass', 180, 0.7, 0.018);         /* le souffle du climatiseur : la pièce existe */
     pluie = source('bandpass', 2400, 0.6, 0);          /* la pluie sur la tôle */
     decoder();
   }
@@ -101,6 +103,25 @@ export function creerSon({ base = '../../socle/sons/' } = {}) {
     pasDe(pos) { jouer('pas', { pos, vol: 0.22 }); },
     tissu(pos) { jouer('tissu', { pos, vol: 0.55 }); },
     cintre(pos) { jouer('cintre', { pos, vol: 0.35 }); },
+    sortir(v) { dehors = v; },
+    /* la machine à coudre de l'atelier, placée dans l'espace : on l'entend en s'approchant */
+    machineACoudre(pos) {
+      if (!ctx || machine) return;
+      const sr = ctx.sampleRate, buf = ctx.createBuffer(1, sr * 3, sr), d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) {
+        const t = i / sr, cycle = (t * 13) % 1;                       /* 13 points par seconde */
+        const choc = Math.exp(-cycle * 38) * (Math.random() * 2 - 1);
+        const moteur = Math.sin(2 * Math.PI * 92 * t) * 0.12 + Math.sin(2 * Math.PI * 184 * t) * 0.05;
+        const rafale = (t % 3) < 2.2 ? 1 : 0;                         /* elle s'arrête, elle reprend */
+        d[i] = (choc * 0.6 + moteur) * rafale * 0.5;
+      }
+      const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+      const p = ctx.createPanner(); p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1.2; p.rolloffFactor = 1.6;
+      if (p.positionX) { p.positionX.value = pos.x; p.positionY.value = pos.y; p.positionZ.value = pos.z; } else p.setPosition(pos.x, pos.y, pos.z);
+      const g = ctx.createGain(); g.gain.value = 0.18;
+      src.connect(g).connect(p).connect(maitre); src.start();
+      machine = { src, g };
+    },
     /* l'oreille suit la caméra */
     ecouteur(camera) {
       if (!ctx) return;
@@ -117,7 +138,10 @@ export function creerSon({ base = '../../socle/sons/' } = {}) {
     ambiance(etat) {
       if (!ctx) return;
       const t = ctx.currentTime;
-      rue.g.gain.setTargetAtTime(coupe ? 0 : 0.035 * (1 - etat.nuit * 0.55) * (1 - etat.pluie * 0.5), t, 1.5);
+      /* dehors, la rue monte de ~10 dB et le filtre s'ouvre (la vitre ne la retient plus) */
+      rue.g.gain.setTargetAtTime(coupe ? 0 : 0.035 * (dehors ? 3.2 : 1) * (1 - etat.nuit * 0.55) * (1 - etat.pluie * 0.5), t, 0.6);
+      rue.f.frequency.setTargetAtTime(dehors ? 1600 : 420, t, 0.5);
+      if (clim) clim.g.gain.setTargetAtTime(coupe ? 0 : (dehors ? 0.004 : 0.018), t, 0.8);
       pluie.g.gain.setTargetAtTime(coupe ? 0 : 0.11 * etat.pluie, t, 1.5);
       pluie.f.frequency.setTargetAtTime(1800 + etat.pluie * 1400, t, 2);
     },

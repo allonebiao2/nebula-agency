@@ -41,15 +41,19 @@
 - ✅ « le viewer a des réponses prédéfinies, on pourrait être tenté de tout choisir et apprendre tout sur la boutique : qui l'a créée, la cliente, les réalisations, la vision, absolument tout » → réponses explorées cochées ✓, nouvelles ✦, **le carnet** (« 7 sur 12 ») ; histoire, vision, sens du « M. » : 🙋 les mots d'Hillary (questionnaire)
 - 🔨 « il doit y avoir des bruits ultra réalistes, ouverture de porte, cherche des repos de bruitage libres » → voir vague 1 bis
 - ✅ contrôle automatique : une visite complète jusqu'au message WhatsApp, au franc près (`_qc.py`)
-- ⏳ **le contrôle donne 46/47 au 2026-11-12** : seul rouge, Afi dans l'enchaînement complet du contrôle (en page neuve elle vient en 1,5 s) ; à reprendre, rien de masqué
+- ✅ **le contrôle donne 48/48** (2026-11-12) : Afi restait plantée à 55 cm du joueur, son chemin passait par sa position et le réflexe d'évitement la repoussait ; corrigé (chemins qui évitent le joueur, arrivée à 1,50 m)
 - ✅ « nous, on ne voit pas le bras » → décision : **le visiteur ne voit jamais ses propres bras** (dans la référence, on voit les mains du joueur payer ; pas chez nous)
 - 🔨 « il faut être un peu plus proche ; quand on voit quelqu'un au loin et que le point s'affiche, on va vers lui avec l'animation, ensuite il y a des options : parler, etc., et là la discussion commence » → elle s'arrête et se tourne dès qu'on la choisit, on marche jusqu'à 1,30 m, puis **Parler · Saluer · Laisser** ; Hillary : **Parler · Me conseiller / Valider ma commande · Laisser**
 - ✅ le rapport de l'agent (`ANALYSE-VIDEO-REFERENCE.md`, 52 procédés mesurés) a corrigé quatre réglages : **champ de vision 75° en horizontal** (au lieu de ~98°), **yeux à 1,55 m**, **un pas tous les 0,68 m avec la tête qui descend à chaque pas** (au lieu de 3,7 pas/s désaccordés), **le dialogue avance seul** (toucher pour aller plus vite) ; et Hillary **accueille les mains sur le comptoir** (les bras croisés, c'est l'impatience)
+
+- ✅ « en attendant, avances » (2026-11-12) → priorités de l'analyse vidéo, sans rien télécharger : **carte de titre** à l'entrée (6 s, heure et météo réelles), **ta réponse reprise sous « Toi »**, **le regard d'Hillary** qui alterne sa tâche et toi, **le sac magenta sur le comptoir** dès la première pièce, **l'accroche** (Afi vient dans les premières secondes)
+- ⏳ restent de l'analyse : fondus pour les longs trajets, exposition qui réagit à la porte, têtes qui se tournent ensemble vers l'écran, passants derrière la vitrine, Hillary qui lève et retourne la pièce
 
 ## Vague 1 bis · Les vrais sons 🔨
 
 - 🔨 bruitages libres de droits, vérifiés (licence) : porte, pas sur carrelage, tissus, sac, cintres, machine à coudre, rue de Cotonou, pluie sur la tôle
 - 🔨 sons **placés dans l'espace** (la porte s'entend du côté de la porte, les pas d'une visiteuse viennent d'où elle marche)
+- ✅ **le son de la pièce** (climatiseur), **la machine à coudre de l'atelier** placée dans l'espace, **la rue qui monte d'environ 10 dB et s'éclaircit dehors**
 - ✅ 19 bruitages enregistrés, CC0, 116 Ko (Kenney) : porte, pas, tissus, sac, interface → `SONS.md`
 - ⏳ pluie sur la tôle, rue de Cotonou, machine à coudre, tonnerre : encore synthétisés ; 🙋 idéal = **un vrai enregistrement de 2 min devant une vitrine à Cotonou** et 30 s de **la vraie machine d'Hillary**
 
