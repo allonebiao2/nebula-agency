@@ -241,3 +241,22 @@ Commandes : `python monde/_servir.py` (puis `http://localhost:8765/`), `python m
 
 Voir `VAGUES.md`, qui les garde toutes, avec ses mots.
 
+
+## Étape 3 (début) · de vrais personnages 3D, par la voie gratuite (2026-11-12)
+
+Mongazi : « je ne veux pas de Lego, je veux de vrais personnages 3D », puis il choisit
+**la voie gratuite** (plutôt que de recharger WaveSpeed).
+
+1. **Les planches** des trois visiteuses : Cloudflare Workers AI (`flux-2-dev`), gratuit,
+   `python scripts/image_cf.py "…" --modele flux-2-dev --largeur 1536 --hauteur 768`. Réussies.
+2. **Planche vers 3D** : `python monde/_outils/en_3d.py vue-de-face.png --sortie perso.glb`, qui
+   parle à la démo **TRELLIS.2** de Microsoft sur Hugging Face (code et poids MIT). ⚠️ Ce jour-là,
+   **PyPI et GitHub ne répondaient pas** depuis Cotonou (Hugging Face, si) : l'outil parle le
+   protocole Gradio 6 (`sse_v3`) à la main, sans bibliothèque. ⚠️ La démo officielle `microsoft/TRELLIS`
+   était en panne ; `microsoft/TRELLIS.2` tournait.
+   ⛔ **Le quota gratuit de carte graphique (ZeroGPU) sans compte ne suffit pas** : refusé à
+   l'étape image vers 3D (« 120 s demandées »), retour dans 24 h. 🙋 Il faut **un compte Hugging
+   Face gratuit et son jeton** (`secrets/huggingface.env`, `HF_TOKEN=…`).
+3. **Squelette et animations** : Mixamo (gratuit, compte Adobe de Mongazi) : il y dépose le modèle,
+   place les repères (menton, poignets, coudes, genoux, aine), choisit les animations (attendre,
+   parler, marcher, saluer, écouter, poser une question), télécharge en FBX. Three.js lit le FBX.
