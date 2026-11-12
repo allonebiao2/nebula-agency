@@ -56,7 +56,10 @@ function majBarre() { barre.style.width = (aCharger ? Math.round(charges / aChar
 const boite = (w, h, p, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, p), m);
 /* ⚠️ la position d'un objet Three.js ne se remplace pas (propriété non modifiable), elle se règle */
 const a = (o, x, y, z) => { o.position.set(x, y, z); return o; };
-function poser(o, x, y, z, ry = 0) { o.position.set(x, y, z); o.rotation.y = ry; scene.add(o); return o; }
+/* chaque objet du décor reçoit un NOM STABLE (l'ordre de construction) : la cuisson de la lumière
+   dans Blender rend une carte par objet, retrouvée par ce nom */
+let numDecor = 0;
+function poser(o, x, y, z, ry = 0) { o.position.set(x, y, z); o.rotation.y = ry; if (!o.name) o.name = 'decor-' + (++numDecor); scene.add(o); return o; }
 const H = plan.piece.hauteur, LX = plan.piece.largeur / 2, LZ = plan.piece.profondeur / 2;
 const interieurs = [];
 const plantesDessinees = [], fauteuilsDessines = [];   /* remplacés ensuite par les objets scannés */   /* ce que la nuit change : lumières, flaques, ligne dorée */
@@ -783,5 +786,32 @@ setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', pr
   .catch(e => console.warn('Afi reste en silhouette', e)), params.has('direct') ? 600 : 3200);
 
 
+/* EXPORTER LE DÉCOR FIXE POUR BLENDER (la cuisson de la lumière, REPRENDRE-ICI.md) : formes, couleurs
+   et lampes seulement (⚠️ les textures dessinées par programme font échouer l'exporteur, et la
+   cuisson n'en a pas besoin) ;
+   sans personnages, sans repères, sans vitres ni miroir ; avec les lumières. Lancé par
+   monde/_outils/exporter_decor.py, qui récupère le téléchargement `salon-decor.glb`. */
+async function exporterDecor() {
+  const { GLTFExporter } = await import('three/addons/exporters/GLTFExporter.js');
+  const exclus = new Set([hillary.racine, ...visiteuses.map(v => v.perso.racine)]);
+  const dehors = (o) => { for (let q = o; q; q = q.parent) if (exclus.has(q)) return true; return false; };
+  const racine = new THREE.Group();
+  scene.updateMatrixWorld(true);
+  scene.traverse((o) => {
+    if (dehors(o) || !o.visible) return;
+    if (o.isMesh && o.name && !o.isReflector && !(o.material && o.material.transparent)) {
+      const m = o.material || {};
+      const c = new THREE.Mesh(o.geometry, new THREE.MeshStandardMaterial({ color: m.color ? m.color.clone() : 0xffffff, roughness: m.roughness ?? 0.8, metalness: m.metalness ?? 0, emissive: m.emissive ? m.emissive.clone() : 0x000000 }));
+      c.applyMatrix4(o.matrixWorld); c.name = o.name; racine.add(c);
+    } else if (o.isPointLight || o.isSpotLight || o.isDirectionalLight) {
+      const l = o.clone(false); l.applyMatrix4(o.parent ? o.parent.matrixWorld : new THREE.Matrix4()); racine.add(l);
+    }
+  });
+  const glb = await new GLTFExporter().parseAsync(racine, { binary: true });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([glb], { type: 'model/gltf-binary' })); a.download = 'salon-decor.glb'; a.click();
+  return racine.children.length;
+}
+
 /* pour les contrôles automatiques */
-window.__monde = { moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { exporterDecor, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
