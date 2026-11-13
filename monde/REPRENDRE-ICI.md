@@ -102,8 +102,8 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 ## 4 · LA PROCHAINE ACTION EXACTE : la vague 4, la chaîne d'assets pour la 3G
 
 > ✅ **2026-11-13, 11 h : R1 (LA LUMIÈRE CUITE) FAITE** (QC 53/53, regardée dans Chrome ; détail dans
-> `REALISME.md`). **Prochaine action : R2, l'ombre de contact sous chaque personnage** (les objets ont la leur
-> par la cuisson), puis R6 (le sol qui reflète au téléphone aussi) et R5 (le plafond de l'étalon). Ce qui suit
+> `REALISME.md`). ✅ R2 (ombres de contact) fait aussi. **Prochaine action : R6, le sol qui reflète au
+> téléphone aussi** (le miroir n'existe qu'en qualité haute), puis R5 (le plafond de l'étalon). Ce qui suit
 > est l'historique de la nuit.
 >
 > (historique) **ÉTAT DU 2026-11-13, 4 h 35 : R1 EN COURS.** La chaîne marche

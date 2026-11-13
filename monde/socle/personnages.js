@@ -8,7 +8,7 @@
    Repère d'un personnage : il regarde vers +z local. Tout est animé à la
    main (aucun squelette importé) : marche, souffle, regard, gestes. */
 import { THREE, borner, angleVers, melanger } from './moteur.js';
-import { matWax, ombreRonde } from './matieres.js';
+import { matWax, ombreContact } from './matieres.js';
 
 export function capVersRotation(cap) { const c = cap * Math.PI / 180; return Math.atan2(Math.sin(c), -Math.cos(c)); }
 
@@ -131,7 +131,7 @@ export function creerPersonnage(d) {
     sac.position.set(0.24, 0.1, 0); torse.add(sac);
   }
 
-  const ombre = ombreRonde(0.38, 0.32); racine.add(ombre);
+  const ombre = ombreContact(0.4, 0.4); racine.add(ombre);
   const hitbox = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 1.78, 10),
     new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false, transparent: true, opacity: 0 }));
   hitbox.position.y = 0.89; racine.add(hitbox);
@@ -211,7 +211,7 @@ export function creerPersonnage(d) {
   }
 
   return {
-    nom: d.nom, racine, corps, tete, hitbox, st,
+    nom: d.nom, racine, corps, tete, hitbox, st, ombre,
     set vitesse(v) { st.vitesse = v; },
     geste(nom) { st.geste = POSES[nom] ? nom : 'repos'; },
     assis(v) { st.assis = v; },

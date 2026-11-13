@@ -73,6 +73,13 @@ qualité haute), de jour (`?heure=14`) et de nuit (`?heure=21`).
   (sa lumière reste en direct, R10 s'en occupera), les personnages n'ont pas encore d'ombre au sol (R2),
   la géométrie cuite pèse 1,6 Mo non compressée (R14). Refaire une cuisson : `cuire.py` puis
   `cuisson_finir.py` (en-tête de `cuire.py`).
+- ✅ **R2 · les ombres de contact (2026-11-13)** : les objets posés ont la leur par la cuisson (R1) ; chaque
+  personnage a une **ombre de contact** en direct (`ombreContact` dans `socle/matieres.js` : une ombre serrée
+  et foncée au cœur d'une ombre large et douce ; avant, une seule tache pâle, ils flottaient), et un
+  personnage habillé a en plus **une ombre sous chaque pied**, qui suit le pas et pâlit quand le pied se lève,
+  l'ombre large suivant le bassin (`socle/habiller.js`). ⚠️ `renderOrder 2` : en qualité haute le sol est
+  translucide, une ombre dessinée avant lui disparaissait. Regardé au téléphone et à l'ordinateur
+  (`monde/_outils/captures/voir_ombres.py`). QC 53/53.
 - Comparer à tout moment : `?sans-cuisson` (tout) ou `?sans-lumiere-cuite` (garder l'occlusion).
 
 ## Ce que JE fais (sans attendre personne) : R1 à R6, R9 à R12, R14

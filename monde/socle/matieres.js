@@ -120,6 +120,18 @@ export function flaqueLumiere(rayon = 1, couleur = 0xffe2b0, intensite = 0.6) {
 
 /* l'ombre ronde sous un personnage ou un podium */
 let texOmbre = null;
+/* L'OMBRE DE CONTACT (REALISME.md R2) : là où un corps touche le sol, une ombre SERRÉE et foncée, au cœur
+   d'une ombre LARGE et douce (une seule tache, pâle, ne posait pas les personnages : ils flottaient).
+   ⚠️ renderOrder 2 : en qualité haute le sol est translucide (au-dessus de son miroir), et une ombre
+   dessinée avant lui disparaissait sous lui selon l'endroit. */
+export function ombreContact(rayon = 0.42, force = 0.4) {
+  const g = new THREE.Group();
+  const large = ombreRonde(rayon, force), serree = ombreRonde(rayon * 0.42, Math.min(0.8, force * 1.7));
+  serree.position.y = 0.005;
+  for (const m of [large, serree]) m.renderOrder = 2;
+  g.add(large, serree); g.userData = { large, serree };
+  return g;
+}
 export function ombreRonde(rayon = 0.4, force = 0.35) {
   if (!texOmbre) {
     const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');

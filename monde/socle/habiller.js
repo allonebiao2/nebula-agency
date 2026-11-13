@@ -11,6 +11,7 @@
 import { THREE } from './moteur.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import { ombreContact } from './matieres.js';
 
 const ANIMATIONS = ['marcher', 'parler', 'saluer', 'hocher', 'reflechir', 'regarder', 'parler-2', 'attendre-2', 'demarrer', 'arreter'];
 /* plusieurs gestes par situation, tirés au hasard (audit jeu vidéo, vague 2) : jamais le même en boucle */
@@ -98,6 +99,19 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
   modele.traverse((o) => { if (!tete && o.isBone && /Head$/.test(o.name)) tete = o; if (!cou && o.isBone && /Neck$/.test(o.name)) cou = o; });
   const e = new THREE.Euler(0, 0, 0, 'YXZ'), q = new THREE.Quaternion();
 
+  /* LES OMBRES DES PIEDS (REALISME.md R2) : une petite ombre allongée sous chaque pied, qui le suit et pâlit
+     quand il se lève ; l'ombre large suit le bassin (un geste le déplace). Les os sont lus après l'animation. */
+  const os = {};
+  modele.traverse((o) => { if (o.isBone) for (const k of ['Hips', 'LeftFoot', 'RightFoot']) if (!os[k] && new RegExp(k + '$').test(o.name)) os[k] = o; });
+  const piedsOmbre = [];
+  if (os.LeftFoot && os.RightFoot && perso.ombre) {
+    for (let i = 0; i < 2; i++) {
+      const p = ombreContact(0.11, 0.55); p.scale.set(0.75, 1, 1.5); p.position.y = 0.002;
+      perso.racine.add(p); piedsOmbre.push(p);
+    }
+  }
+  const vPied = new THREE.Vector3();
+
   /* le corps remplace la silhouette */
   perso.racine.add(modele);
   perso.corps.visible = false;
@@ -150,6 +164,16 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
     if (!transitoire && base === 'attendre' && vitesseRot > 1.2 && actions.marcher && courante !== 'marcher') { jouer('marcher', 0.15); actions.marcher.setEffectiveTimeScale(0.55); }
     else if (base === 'attendre' && courante === 'marcher' && vitesseRot < 0.3) jouer(choisir('attendre'), 0.3);
     melangeur.update(dt);
+    if (piedsOmbre.length) {
+      perso.racine.updateMatrixWorld(true);
+      [os.LeftFoot, os.RightFoot].forEach((b, i) => {
+        b.getWorldPosition(vPied); const haut = vPied.y;
+        perso.racine.worldToLocal(vPied); piedsOmbre[i].position.x = vPied.x; piedsOmbre[i].position.z = vPied.z + 0.04;
+        const k = THREE.MathUtils.clamp(1 - (haut - 0.09) / 0.14, 0, 1);   /* le pied se lève : son ombre pâlit */
+        piedsOmbre[i].userData.large.material.opacity = 0.55 * k; piedsOmbre[i].userData.serree.material.opacity = 0.8 * k;
+      });
+      if (os.Hips) { os.Hips.getWorldPosition(vPied); perso.racine.worldToLocal(vPied); perso.ombre.position.x = vPied.x; perso.ombre.position.z = vPied.z; }
+    }
     /* le regard : le cou en prend 40 %, la tête 60 % (une tête seule qui tourne fait poupée) */
     if (tete) {
       if (cou) { e.set(st.teteTangage * 0.3, st.teteLacet * 0.35, 0); cou.quaternion.multiply(q.setFromEuler(e)); }
