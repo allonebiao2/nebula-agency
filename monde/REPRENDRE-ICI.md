@@ -124,6 +124,12 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
   bijoux de h1 déjà effacés) · **R14 mesure** (`_outils/mesurer.py` écrit : tel 57 i/s immobile, **28 en
   marchant** à expliquer ; qualité haute 6-13 i/s ici ; **25 Mo** au téléphone, dont l'ancienne
   `afi-attendre.fbx` 5,8 Mo qui ne sert plus que de repli) · captures 390/1440 jour+nuit · commit.
+- ✅ **R14, 1er gain (17 h 45)** : `fusionnerDecor()` fond le décor fixe cuit par matière (179 pièces → 11), originaux
+  cachés mais touchables : **232 → 124 appels de dessin, 21 → 30 i/s dans Chrome** sur ce PC, image identique,
+  QC 53/53. `?sans-fusion` pour comparer. Prochains leviers : les 28 i/s en marchant, les personnages (40 000
+  triangles chacun) en basse qualité, les 44 matières « Basic + map + transparente » (affiches, étiquettes).
+- Port USB de Mongazi : le contrôleur USB 3.0 Intel (PCI 9CB1) n'est plus vu du tout ; conseillé : vidange
+  complète (15 s sans chargeur), puis BIOS (Échap, F10). Rien modifié.
 - Outils neufs : `alleger_perso.py`, `transferer_squelette.py`, `mesurer.py`, `captures/voir_salon.py`,
   `captures/voir_personnages.py` ; `en_3d.py --sans-jeton`.
 

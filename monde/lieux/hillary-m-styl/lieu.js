@@ -1041,6 +1041,41 @@ async function embellir() {
   document.body.classList.add('embelli');
   await appliquerCuisson().catch(e => console.warn('lumière cuite non appliquée', e));
   try { poserRefletSol(); } catch (e) { console.warn('reflet du sol non posé', e); }
+  await fusionnerDecor().catch(e => console.warn('décor non fusionné', e));
+}
+
+/* R14 · MOINS D'APPELS DE DESSIN (Mongazi, 2026-11-13 : « le maximum d'images/s possible ») : le décor fixe CUIT
+   était dessiné pièce par pièce (205 maillages sur 232 appels par image, mesuré dans Chrome). Une fois la lumière
+   cuite posée, on fond toutes les pièces qui partagent la même matière en UN seul maillage. Les originaux restent,
+   CACHÉS : les rayons du toucher les trouvent encore (three.js ne regarde pas `visible` en lançant un rayon), et la
+   matière partagée garde le jour et la nuit. Exclus : ce qui bouge (les portes), les personnages, ce qui n'est pas
+   cuit. `?sans-fusion` pour comparer. */
+const fusionDecor = { avant: 0, apres: 0 };
+async function fusionnerDecor() {
+  if (params.has('sans-fusion')) return;
+  const { mergeGeometries } = await import('three/addons/utils/BufferGeometryUtils.js');
+  scene.updateMatrixWorld(true);
+  const exclus = PERSONNAGES(), bouge = new Set(vantaux.flatMap(v => [v.verre, v.poignee]));
+  const groupes = new Map();
+  scene.traverse((o) => {
+    if (!o.isMesh || o.isSkinnedMesh || o.isInstancedMesh || o.name === 'fusion' || bouge.has(o) || !vraimentVisible(o) || dansPersonnage(o, exclus)) return;
+    const m = o.material;
+    if (!m || Array.isArray(m) || !m.lightMap) return;   /* seulement le décor fixe à lumière cuite */
+    const g = o.geometry, sig = Object.keys(g.attributes).sort().join(',') + (g.index ? '|i' : '');
+    const cle = m.uuid + '|' + sig;
+    if (!groupes.has(cle)) groupes.set(cle, { m, liste: [] });
+    groupes.get(cle).liste.push(o);
+  });
+  for (const { m, liste } of groupes.values()) {
+    if (liste.length < 2) continue;
+    const geos = liste.map((o) => { const g = o.geometry.clone(); g.morphAttributes = {}; g.applyMatrix4(o.matrixWorld); return g; });
+    const fus = mergeGeometries(geos, false);
+    geos.forEach(g => g.dispose());
+    if (!fus) continue;
+    const mesh = new THREE.Mesh(fus, m); mesh.name = 'fusion'; mesh.matrixAutoUpdate = false; mesh.updateMatrix(); scene.add(mesh);
+    for (const o of liste) o.visible = false;
+    fusionDecor.avant += liste.length; fusionDecor.apres++;
+  }
 }
 setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', e)), params.has('direct') ? 200 : 2500);
 
@@ -1348,4 +1383,4 @@ function poserRefletSol() {
 }
 
 /* pour les contrôles automatiques */
-window.__monde = { exporterDecor, clesCuisson, cuisson, refletSol, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
