@@ -131,6 +131,11 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 - ✅ **R14, 2e gain** : les étiquettes (`reperes.js`, `deplacement.js`) n'écrivent plus que ce qui change et ne
   mesurent plus leur largeur à chaque image (lectures forcées de mise en page) : **en marchant, 28 → 40 i/s**
   au téléphone (Playwright), immobile 60 (plafond de l'écran). QC 53/53. `mesure-apres.json` dans `_vues/`.
+- ⛔ **MONGAZI (18 h) : « les visages sont catastrophiques », « qualité très basse », « chargement » aussi.**
+  PROCHAINE ACTION : `_outils/projeter_visage.py` (Blender : projeter l'image d'origine de face sur la tête,
+  cuire dans la texture du modèle allégé, puis refaire le FBX : Afi par Mixamo-déjà-fait → retransférer
+  le squelette avec `transferer_squelette.py` en donneur = `afi29-attendre.fbx`). Puis chargement (GLB
+  meshopt + KTX2), puis qualité d'image. Accord d'Hillary : donné (« elle m'a accordé son accord »).
 - Port USB de Mongazi : le contrôleur USB 3.0 Intel (PCI 9CB1) n'est plus vu du tout ; conseillé : vidange
   complète (15 s sans chargeur), puis BIOS (Échap, F10). Rien modifié.
 - Outils neufs : `alleger_perso.py`, `transferer_squelette.py`, `mesurer.py`, `captures/voir_salon.py`,

@@ -175,6 +175,11 @@ Chrome) avant la suivante :
   `salon-vue-comptoir-arche` (la lumière).
 - 🔨 **I2 · les personnages** : ✅ nouvelle Afi (Mixamo) et ✅ Sènami (squelette d'Afi transféré, Mixamo refusait) dans le salon, animées ; ⏳ Maman (quota 3D du 2026-11-14).
 - ⏳ **I3 · ses robes h1 et h2 en 3D** sur mannequins, défauts de planche corrigés ; 🙋 validation d'Hillary.
+- 🔨 **« seigneur les visages sont catastrophiques », « la qualité aussi est encore très basse et le chargement aussi »**
+  (Mongazi, 2026-11-13, 18 h) → plan : (1) **reprojeter le visage net de l'image d'origine** sur la tête 3D
+  (Blender, projection de face + cuisson dans la texture : `_outils/projeter_visage.py`), (2) **chargement** :
+  FBX → GLB compressé (meshopt) + textures KTX2, HDR plus léger, fichiers inutiles retirés, (3) **qualité
+  d'image** : anticrénelage et étalonnage légers aussi en moyenne.
 - 🔨 **I4 · Hillary** : ✅ accord donné (Mongazi, 2026-11-13 : « elle m'a accordé son accord donc vas-y ») ; 3D au retour du quota TRELLIS (2026-11-14), Higgsfield et WaveSpeed à 0 crédit.
 - 🔨 **« je veux plus que du 60 images par seconde sur PC et mobile »** (2026-11-13) : l'écran plafonne la cadence (60, 90, 120 ou 144 Hz) ; le moteur ne bride rien, on allège jusqu'à tenir la fréquence de chaque écran.
 
