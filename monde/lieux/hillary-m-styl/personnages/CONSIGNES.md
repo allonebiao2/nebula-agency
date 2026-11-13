@@ -26,6 +26,16 @@ cheveux gris, visage d'adolescente).
 Vue de face en pied, pose A pour Mixamo, fond gris clair uni, pas d'ombre portée,
 rien dans les mains (le téléphone et le sac sont ajoutés dans le salon).
 
+## Afi, 29 ans (Mongazi la régénère lui-même, 2026-11-13)
+
+> Écrite d'après son image actuelle (`afi-face.png`, celle du modèle 3D en place) pour qu'elle reste
+> reconnaissable : manteau crème, cheveux courts naturels, créoles dorées. Elle vit à Paris depuis dix ans
+> (partie à 19 ans), c'est la diaspora qui vient commander pour une cérémonie.
+
+```
+Full body front view of a 29-year-old Beninese woman who lives in Paris, a confident young professional who looks her age: smooth skin, no wrinkles, no grey hair, an adult face, not a teenager. Photorealistic 3D video game character reference. Very dark brown skin, natural, no skin lightening. Height 1.71 m, tall and slim. Short natural afro hair, small round gold hoop earrings. Open knee-length cream wool coat with notched lapels, fitted black crew-neck top, slim black trousers, black pointed ballet flats. Pose for 3D rigging: A-pose, arms straight and held 45 degrees away from the body, palms facing down, fingers slightly spread and visible, legs straight and slightly apart, feet flat on the ground and visible. Neutral face, mouth closed, eyes open looking straight ahead. Nothing in the hands, no bag, no phone. Plain light grey background, soft even studio lighting, no cast shadows, orthographic-like camera, the whole body visible from head to feet, centered, sharp focus.
+```
+
 ## Sènami, 21 ans
 
 ```
@@ -66,7 +76,7 @@ Mongazi génère les personnages en 3D de son côté. Pour qu'ils entrent dans l
 Animate this exact character, keep her face, skin tone, body, hair and clothes identical. Full body always visible from head to feet, static locked-off camera at chest height, no zoom, no camera movement, no cuts, plain light grey studio background, soft even lighting, realistic natural human motion, real-time speed, 6 seconds. Action:
 ```
 
-**Les actions (les mêmes pour Sènami et Maman Sènami, chacune dans son caractère) :**
+**Les actions (les mêmes pour Afi, Sènami et Maman Sènami, chacune dans son caractère) :**
 
 | Fichier | Action à ajouter après « Action: » |
 |---|---|
@@ -80,6 +90,7 @@ Animate this exact character, keep her face, skin tone, body, hair and clothes i
 **Une action propre à chacune :**
 
 - **Sènami (TikTok)** : `she raises her phone in her right hand and films herself, smiling and talking to the phone camera, turns slightly to show the room behind her.`
+- **Afi (la diaspora)** : `she reads a small price tag at chest height, then checks her phone, smiles and nods, satisfied.`
 - **Maman Sènami (le wax)** : `she gently takes the edge of a wax fabric between her fingers, feels its texture, nods with approval like an expert.`
 
 ⚠️ Exiger « full body always visible » et « static camera » : une vidéo qui recadre ou coupe les pieds ne
