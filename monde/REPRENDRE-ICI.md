@@ -136,6 +136,13 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
   cuire dans la texture du modèle allégé, puis refaire le FBX : Afi par Mixamo-déjà-fait → retransférer
   le squelette avec `transferer_squelette.py` en donneur = `afi29-attendre.fbx`). Puis chargement (GLB
   meshopt + KTX2), puis qualité d'image. Accord d'Hillary : donné (« elle m'a accordé son accord »).
+- ✅ **LES VISAGES, 1re réponse (18 h 45)** : `_outils/projeter_visage.py` (Blender : correspondance texel ← pixel de
+  la photo, de face, centrée sur la TÊTE) puis `_outils/appliquer_visage.py` (Python pur : mélange sur la texture
+  d'origine extraite du .glb ; ⚠️ écrire l'image depuis Blender la rendait toute verte) → `afi29-peau.jpg`,
+  `senami-peau.jpg`, posées par `habiller({ texture })`. Vu dans Chrome : yeux, nez, lèvres de la photo, nets.
+  Reste une tache claire sur une joue de Sènami. **Le vrai saut = têtes MPFB2** (yeux, clignements, bouche) :
+  demander l'accord de Mongazi pour télécharger le module (~100 Mo).
+- Mongazi (18 h 30) : « pour ces 4 points, peux-tu les faire ? » → oui : têtes, densité, robes 3D, moins d'interface.
 - Port USB de Mongazi : le contrôleur USB 3.0 Intel (PCI 9CB1) n'est plus vu du tout ; conseillé : vidange
   complète (15 s sans chargeur), puis BIOS (Échap, F10). Rien modifié.
 - Outils neufs : `alleger_perso.py`, `transferer_squelette.py`, `mesurer.py`, `captures/voir_salon.py`,

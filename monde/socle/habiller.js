@@ -35,7 +35,9 @@ function animationVoulue(st) {
    `attendre`), les douze autres gestes viennent d'Afi. Seules les ROTATIONS passent d'un corps à l'autre ;
    la position du bassin est remise à l'échelle du nouveau corps (sinon il flotte ou s'enfonce), et les
    positions des autres os sont jetées (elles imposeraient les longueurs d'os de l'autre). */
-export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche = 1.2, fondu = 0.35, gestes = null }) {
+/* `texture` (facultatif) : une texture qui REMPLACE celle du fichier (même dépliage) : le visage reprojeté depuis
+   l'image d'origine par `_outils/projeter_visage.py` (Mongazi, 2026-11-13 : « les visages sont catastrophiques »). */
+export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche = 1.2, fondu = 0.35, gestes = null, texture = null }) {
   const chargeur = new FBXLoader();
   const charger = (nom) => new Promise((ok, ko) => chargeur.load(`${dossier}${prefixe}-${nom}.fbx`, ok, undefined, ko));
   const chargerGeste = gestes ? (nom) => new Promise((ok, ko) => chargeur.load(`${gestes.dossier}${gestes.prefixe}-${nom}.fbx`, ok, undefined, ko)) : charger;
@@ -67,6 +69,10 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
       return n;
     };
     o.material = Array.isArray(o.material) ? o.material.map(convertir) : convertir(o.material);
+    if (texture) new THREE.TextureLoader().load(texture, (tx) => {
+      tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
+      for (const m of [].concat(o.material)) if (m.map) { tx.flipY = m.map.flipY; tx.wrapS = m.map.wrapS; tx.wrapT = m.map.wrapT; m.map = tx; m.needsUpdate = true; }
+    });
   });
 
   const melangeur = new THREE.AnimationMixer(modele);

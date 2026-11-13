@@ -1095,11 +1095,11 @@ setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', 
    gestes viennent des fichiers d'Afi (`gestes`) : un seul fichier par personnage. Repli : l'ancienne Afi. */
 const GESTES_AFI = { dossier: 'personnages/afi/', prefixe: 'afi' };
 const pasAssise = (id) => () => { const v = visiteuses.find(x => x.id === id); if (v) v.gouts.assis = 0; };   /* pas encore d'animation assise */
-setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', prefixe: 'afi29', taille: 1.71, gestes: GESTES_AFI })
+setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', prefixe: 'afi29', taille: 1.71, gestes: GESTES_AFI, texture: 'personnages/afi/afi29-peau.jpg' })
   .catch(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', prefixe: 'afi', taille: 1.71 }))
   .then(pasAssise('afi'))
   .catch(e => console.warn('Afi reste en silhouette', e)), params.has('direct') ? 600 : 3200);
-setTimeout(() => habiller(personnes.senami.perso, { dossier: 'personnages/senami/', prefixe: 'senami', taille: 1.64, gestes: GESTES_AFI })
+setTimeout(() => habiller(personnes.senami.perso, { dossier: 'personnages/senami/', prefixe: 'senami', taille: 1.64, gestes: GESTES_AFI, texture: 'personnages/senami/senami-peau.jpg' })
   .then(pasAssise('senami'))
   .catch(e => console.warn('Sènami reste en silhouette', e)), params.has('direct') ? 900 : 3600);
 
