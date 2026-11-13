@@ -149,6 +149,11 @@ Décisions de Mongazi, le même jour :
   conversationnels autour de la structure, intégrés en lui » → **`monde/COMMERCIAL.md`** (ses mots en entier,
   ce que j'en comprends, 5 questions ouvertes, ce qu'il faudra). À construire « après ».
 
+- 💤 **UN TEASER VIDÉO PAR BOUTIQUE** (2026-11-13) : « à garder en mémoire aussi : pour chaque boutique ou
+  structure virtuelle qu'on fera, on fera une vidéo teaser publicitaire pour cette structure, de leurs
+  boutiques, avec des plans, mouvements de caméra à l'intérieur, plans, etc., ultra réaliste » →
+  **`monde/TEASERS.md`** (les deux façons de la tourner, le montage, les règles).
+
 Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
 produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
 
