@@ -253,9 +253,26 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
         const o = m.perso.racine.position, dx = r.x - o.x, dz = r.z - o.z, dd = Math.hypot(dx, dz);
         if (dd > 1e-4 && dd < 0.65) { const k = Math.min(0.65 - dd, dt * 0.9) / dd; r.x += dx * k; r.z += dz * k; }
       }
-      if (n.etat !== 'joueur' && n.etat !== 'retenue') {
+      {
+        /* 0,85 m au moins ; et celle qui PARLE au visiteur se tient à 1,30 m, sinon son visage remplit
+           l'écran du téléphone (capture du 2026-11-13) */
+        const mini = n.etat === 'joueur' ? 1.3 : n.etat === 'retenue' ? 0 : 0.85;
         const dx = r.x - cam2.x, dz = r.z - cam2.z, dd = Math.hypot(dx, dz);
-        if (dd > 1e-4 && dd < 0.85) { const k = Math.min(0.85 - dd, dt * 0.8) / dd; r.x += dx * k; r.z += dz * k; }
+        if (mini && dd > 1e-4 && dd < mini) { const k = Math.min(mini - dd, dt * 0.8) / dd; r.x += dx * k; r.z += dz * k; }
+      }
+      /* personne ne s'interpose entre le visiteur et celle qui lui parle : une visiteuse sur la ligne de
+         regard s'écarte doucement de côté (capture du 2026-11-13 : Maman Sènami cachait Afi) */
+      const foyer = pnj.find(m => m.etat === 'joueur');
+      if (foyer && foyer !== n) {
+        const f = foyer.perso.racine.position, ax = f.x - cam2.x, az = f.z - cam2.z, L2 = ax * ax + az * az;
+        if (L2 > 0.01) {
+          const k = Math.max(0, Math.min(1, ((r.x - cam2.x) * ax + (r.z - cam2.z) * az) / L2));
+          const px = cam2.x + ax * k, pz = cam2.z + az * k, dx = r.x - px, dz = r.z - pz, dd = Math.hypot(dx, dz);
+          if (k > 0 && k < 0.98 && dd < 0.9) {
+            const L = Math.sqrt(L2), nx = dd > 1e-3 ? dx / dd : -az / L, nz = dd > 1e-3 ? dz / dd : ax / L;
+            const pas = Math.min(0.9 - dd, dt * 0.9); r.x += nx * pas; r.z += nz * pas;
+          }
+        }
       }
       if (n.etat === 'activite' && t > n.fin) suivante(n);
       /* on lève les yeux vers le joueur qui passe tout près */

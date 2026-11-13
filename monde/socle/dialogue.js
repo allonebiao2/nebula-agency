@@ -15,6 +15,7 @@ import { THREE } from './moteur.js';
 const DIRS = ['haut', 'gauche', 'droite', 'bas'];
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+const cibleRegard = new THREE.Vector3(), BAISSE_REGARD = new THREE.Vector3(0, -0.2, 0);
 export function creerDialogue({ calque, son, deplacement, personnes, registre = {}, ctx = {} }) {
   const el = (tag, cls, html = '') => { const e = document.createElement(tag); if (cls) e.className = cls; e.innerHTML = html; return e; };
   const st = el('div', 'soustitres'); st.setAttribute('aria-live', 'polite'); calque.appendChild(st);
@@ -53,8 +54,20 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
     boite.style.setProperty('--c', p.couleur);
     for (const k in personnes) if (personnes[k].perso) personnes[k].perso.parler(k === qui, tonDe(texte));
     if (p.perso && deplacement) {
-      const tete = p.perso.positionTete(new THREE.Vector3());
-      deplacement.tournerVers(tete.add(new THREE.Vector3(0, -0.08, 0)));
+      /* LA MISE EN SCÈNE (audit jeu vidéo, vague 3) : celle qui parle est cadrée de la taille à la tête,
+         quelle que soit sa distance, le regard au tiers haut ; le fond se floute sur les appareils capables */
+      const tete = p.perso.positionTete(new THREE.Vector3()), camera = deplacement.camera;
+      const d = Math.max(0.8, tete.distanceTo(camera.position));
+      const base = camera.userData.fovBase || camera.fov;
+      /* deux exigences : de la taille à la tête en hauteur (1,2 m), et 1,10 m de large autour d'elle :
+         en portrait, l'écran est étroit, et un cadre calculé sur la seule hauteur coupait tout (capture du 2026-11-13) */
+      const enHauteur = 2 * Math.atan(0.6 / d);
+      const enLargeur = 2 * Math.atan(Math.tan(Math.atan(0.55 / d)) / Math.max(0.3, camera.aspect));
+      const fov = Math.min(base - 4, Math.max(base * 0.55, Math.max(enHauteur, enLargeur) * 180 / Math.PI));
+      /* le regard visé : 20 cm sous l'os de la tête (le menton), suivi à chaque image */
+      const vise = () => p.perso.positionTete(cibleRegard).add(BAISSE_REGARD);
+      if (deplacement.suivre) deplacement.suivre(vise); else deplacement.tournerVers(vise());
+      deplacement.cadrer && deplacement.cadrer(fov, d);
     }
   }
   function ecrire(texte) {

@@ -817,6 +817,21 @@ dialogue.surFermeture.push(() => {
 });
 
 let cielHemi = null; scene.traverse(o => { if (o.isHemisphereLight) cielHemi = o; });
+/* LA LUMIÈRE DE FACE DES CONVERSATIONS (audit jeu vidéo, vague 3) : comme au cinéma, une lumière douce
+   portée par la caméra éclaire le visage de celle qui parle, puis s'efface quand la conversation finit */
+const lumiereFace = new THREE.SpotLight(0xfff0dd, 0, 6, 0.55, 1, 2);
+scene.add(lumiereFace, lumiereFace.target);
+const decalFace = new THREE.Vector3();
+moteur.chaqueImage((dt) => {
+  const orateur = dialogue.actif ? Object.values(personnes).find(p => p.perso && p.perso.st && p.perso.st.parle) : null;
+  const vise = orateur ? 2.4 : 0;   /* douce : à 7, le manteau d'Afi brûlait en blanc (capture du 2026-11-13) */
+  lumiereFace.intensity += (vise - lumiereFace.intensity) * (1 - Math.exp(-dt * 3));
+  if (lumiereFace.intensity < 0.01) return;
+  decalFace.set(0.35, 0.25, 0).applyQuaternion(camera.quaternion);
+  lumiereFace.position.copy(camera.position).add(decalFace);
+  if (orateur) orateur.perso.positionTete(lumiereFace.target.position);
+});
+
 /* ---------- la nuit, la pluie, à l'intérieur ---------- */
 moteur.chaqueImage(() => {
   const e = ciel.etat;

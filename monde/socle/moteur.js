@@ -14,6 +14,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 export { THREE };
@@ -60,7 +61,7 @@ export function creerMoteur(conteneur) {
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.55;
 
-  let composer = null, halo = null, etalonnage = null;
+  let composer = null, halo = null, etalonnage = null, flouPasse = null;
   /* LE RENDU CINÉMA (qualité « haute » seulement : ordinateurs et appareils capables).
      Mongazi (2026-11-12) : « ressembler à GTA 6 et Call of Duty ». Trois briques de three.js (MIT) :
      - GTAO : les ombres de contact, là où un objet touche le sol ou le mur (ce qui « pose » un décor) ;
@@ -91,6 +92,11 @@ export function creerMoteur(conteneur) {
       ao.updateGtaoMaterial({ radius: 0.32, distanceExponent: 1.4, thickness: 1.0, scale: 1.0, samples: 12 });
       ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
       composer.addPass(ao);
+      /* la profondeur de champ des conversations (audit jeu vidéo, vague 3) : éteinte hors dialogue.
+         ⚠️ le flou de three.js ne gère pas l'occlusion : un fond très clair (le disque d'un podium) « bave »
+         sur la personne nette. À 0,009 il voilait les jambes d'Afi : flou plafonné à 0,0055. */
+      flouPasse = new BokehPass(scene, camera, { focus: 2, aperture: 0.0018, maxblur: 0.0055 });
+      flouPasse.enabled = false; composer.addPass(flouPasse);
     }
     /* ⚠️ en rendu cinéma, un halo plus fort voilait les robes de blanc laiteux (capture du 2026-11-12) */
     halo = new UnrealBloomPass(new THREE.Vector2(256, 256), qualite.cinema ? 0.16 : 0.32, 0.5, qualite.cinema ? 0.95 : 0.86);
@@ -136,7 +142,7 @@ export function creerMoteur(conteneur) {
     if (moy > 1 / 33) {
       dernierAjustement = tempsTotal;
       if (dpr > 0.7) { dpr = Math.max(0.6, dpr - 0.2); redimensionner(); }
-      else if (composer) { composer = null; halo = null; etalonnage = null; qualite.halo = false; qualite.cinema = false; }
+      else if (composer) { composer = null; halo = null; etalonnage = null; flouPasse = null; qualite.halo = false; qualite.cinema = false; }
       moteur.surDescente.forEach(f => f(qualite));
     }
   }
@@ -154,6 +160,8 @@ export function creerMoteur(conteneur) {
 
   const moteur = {
     THREE, renderer, scene, camera, qualite,
+    /* flou de profondeur de champ : net à `distance` mètres, le reste se floute (qualité haute seulement) */
+    flou(actif, distance = 2) { if (!flouPasse) return; flouPasse.enabled = !!actif; flouPasse.uniforms.focus.value = distance; },
     surDescente: [],
     chaqueImage(f) { abonnes.push(f); return () => abonnes.splice(abonnes.indexOf(f), 1); },
     demarrer() { if (!enMarche) { enMarche = true; horloge.getDelta(); boucle(); } },

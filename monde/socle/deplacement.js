@@ -64,7 +64,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
   const pos = new THREE.Vector3(n0.x, hauteur, n0.z);
   let lacet = -rad(n0.cap || 0), tangage = -0.04, lacetVise = lacet, tangageVise = tangage;
   let roulis = 0;
-  let noeud = depart, marche = null, bloque = false, dernierGlisser = -10, fovBase = null, cinema = 0, cinemaVise = 0;
+  let noeud = depart, marche = null, bloque = false, dernierGlisser = -10, fovBase = null, cinema = 0, cinemaVise = 0, fovCadre = null, suivi = null;
   const surArrivee = [], surPas = [], surToucher = [], surDepart = [];
   const interactifs = [];
 
@@ -235,6 +235,10 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
         if (m.puis) m.puis();
       }
     }
+    /* en conversation, la caméra SUIT celle qui parle à chaque image. ⚠️ La viser une seule fois ne
+       suffisait pas : selon le trajet, une orientation arrivée après coup la laissait cadrée sur les
+       hanches d'Afi, la tête coupée (capture du 2026-11-13, tangage −0,47 au lieu de −0,20) */
+    if (suivi && !marche && !appui) { const cible = suivi(); if (cible) tournerVers(cible); }
     if (!appui) {
       lacet += elan.x; tangage = borner(tangage + elan.y, -0.62, 0.5);
       if (Math.abs(elan.x) + Math.abs(elan.y) > 1e-5) { lacetVise = lacet; tangageVise = tangage; }
@@ -243,9 +247,13 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
       lacet += (lacetVise - lacet) * k; tangage += (tangageVise - tangage) * k;
     }
     camera.position.copy(pos);
-    camera.rotation.set(tangage, lacet, roulis);
+    /* un souffle de caméra à l'épaule, mesuré sur la référence (0,1 à 0,3 px au repos) : la vue vit */
+    const souffle = marche ? 0 : 1;
+    camera.rotation.set(tangage + souffle * 0.0016 * Math.sin(t * 0.83), lacet + souffle * 0.0013 * Math.sin(t * 0.61 + 1.7), roulis + souffle * 0.0008 * Math.sin(t * 0.47));
     cinema += (cinemaVise - cinema) * (1 - Math.exp(-dt * 3));
-    camera.fov = (camera.userData.fovBase || fovBase || camera.fov) - cinema * 8; camera.updateProjectionMatrix();
+    /* en conversation, le cadre se resserre jusqu'à « fovCadre » (cadrage de celle qui parle), sinon de 8° */
+    const baseFov = camera.userData.fovBase || fovBase || camera.fov;
+    camera.fov = baseFov - cinema * (fovCadre != null ? Math.max(4, baseFov - fovCadre) : 8); camera.updateProjectionMatrix();
     /* les points : ils respirent, et celui où l'on se tient s'efface.
        ⚠️ Seuls les DEUX plus proches portent leur nom : nommer tous les points visibles
        empilait six ou sept étiquettes, dont une sur la robe exposée (vu le 2026-11-12). */
@@ -278,10 +286,15 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
   const deplacement = {
     allerA, tournerVers, graphe, interactifs, surArrivee, surPas, surToucher, surDepart, surSurvol: [],
     get position() { return pos; }, get noeud() { return noeud; }, get enMarche() { return !!marche; },
+    get camera() { return camera; },
     get lacet() { return lacet; },
     ajouterInteractif(objet, cible) { objet.traverse(o => { if (o.isMesh) { o.userData.cible = cible; interactifs.push(o); } }); },
     bloquer(v) { bloque = v; },
-    cinema(v) { cinemaVise = v ? 1 : 0; },
+    cinema(v) { cinemaVise = v ? 1 : 0; if (!v) { fovCadre = null; suivi = null; moteur.flou && moteur.flou(false); } },
+    /* suivre un point qui bouge (la tête de celle qui parle) : une fonction qui rend un Vector3, ou null */
+    suivre(f) { suivi = f || null; },
+    /* cadrer celle qui parle : le champ vertical voulu, et la mise au point à sa distance */
+    cadrer(fov, distance) { fovCadre = fov; moteur.flou && moteur.flou(fov != null, distance); },
     /* aller TOUT PRÈS de quelqu'un : le point de passage le plus proche, puis les derniers pas
        jusqu'à ~1,3 m d'elle (Mongazi : « il faut être un peu plus proche ») */
     allerPres(point, { distance = 1.3, puis } = {}) {
