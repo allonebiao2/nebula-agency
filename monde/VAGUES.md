@@ -127,6 +127,13 @@ Décisions de Mongazi, le même jour :
   `REPRENDRE-ICI.md` réécrit (état exact, prochaine action, tout ce qui reste, carte du code, pièges),
   scripts de capture rangés dans `monde/_outils/captures/`.
 
+- 🔨 **« le salon doit être virtuel mais le plus réaliste possible, garde en mémoire, tu vas me dire ce
+  qu'il faut pour que ce mini-objectif soit atteint à 100 % »** (2026-11-13) → `monde/REALISME.md` : la
+  grille R1 à R15 (le réalisme est à 100 % quand toutes sont vraies), ce que je fais seul, ce qu'il faut
+  de lui, et l'ordre proposé (la lumière cuite d'abord, la compression 3G fondue dedans), **à confirmer**.
+  L'étalon : la photo de vision d'Hillary (robes sur mannequins, podiums, sol brillant, spots, ligne
+  lumineuse).
+
 Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
 produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
 

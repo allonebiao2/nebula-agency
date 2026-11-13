@@ -4,7 +4,8 @@
 > près ainsi que tout ce qui reste à faire, comme ça quand je fais clear et je démarre une nouvelle
 > discussion tu puisses te repérer à la lettre près ».
 >
-> **Ordre de lecture en arrivant** : cette page → `AUDIT-JEU-VIDEO.md` (la feuille de route en
+> **Ordre de lecture en arrivant** : cette page → **`REALISME.md`** (le mini-objectif « le plus
+> réaliste possible » du 2026-11-13 : la grille R1 à R15, ce qu'il faut de chacun) → `AUDIT-JEU-VIDEO.md` (la feuille de route en
 > vagues, et sa section « Avancement ») → `VAGUES.md` (toutes ses demandes, avec ses mots) →
 > `DEROULEMENT.md` (le carnet du futur skill et tous les pièges) → `DESIGN.md` (les règles de
 > l'interface en verre) → `lieux/hillary-m-styl/personnages/CONSIGNES.md` (âges, consignes d'image,
@@ -99,6 +100,12 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
   parcours** : toucher Afi, s'approcher, options, « Parler »).
 
 ## 4 · LA PROCHAINE ACTION EXACTE : la vague 4, la chaîne d'assets pour la 3G
+
+> ⚡ **2026-11-13, plus tard dans la matinée** : Mongazi fixe un mini-objectif, « le salon doit être
+> virtuel mais le plus réaliste possible ». Tout est dans **`monde/REALISME.md`**. J'y propose de
+> **commencer par la lumière cuite** (vague 5) en y fondant la compression 3G, au lieu de la vague 4
+> seule. **Attendre sa réponse sur l'ordre** ; s'il dit oui, la prochaine action devient « écrire
+> `monde/_outils/cuire.py` » (REALISME.md, « Ce que JE fais », point 1). Sinon, le plan ci-dessous.
 
 > Les consignes « image → vidéo » pour animer les personnages ont été **données à Mongazi le
 > 2026-11-13** (elles sont aussi dans `personnages/CONSIGNES.md`). Rien ne l'attend de ce côté.
