@@ -104,8 +104,11 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 > ⚡ **2026-11-13, plus tard dans la matinée** : Mongazi fixe un mini-objectif, « le salon doit être
 > virtuel mais le plus réaliste possible ». Tout est dans **`monde/REALISME.md`**. J'y propose de
 > **commencer par la lumière cuite** (vague 5) en y fondant la compression 3G, au lieu de la vague 4
-> seule. **Attendre sa réponse sur l'ordre** ; s'il dit oui, la prochaine action devient « écrire
-> `monde/_outils/cuire.py` » (REALISME.md, « Ce que JE fais », point 1). Sinon, le plan ci-dessous.
+> seule. ✅ **Il a tranché** : « concentre-toi sur ce que tu peux faire toi… un à la fois… à 200 %…
+> regarde avec Chrome ». **La prochaine action est donc R1, la lumière cuite** : écrire
+> `monde/_outils/cuire.py` (REALISME.md, « Ce que JE fais », point 1), puis R5/R6, R3/R4, R9, R10,
+> R11/R12, R14, un à la fois. La vague 4 (3G) est fondue dans R14 ; le plan ci-dessous reste la
+> référence pour la partie 3G.
 
 > Les consignes « image → vidéo » pour animer les personnages ont été **données à Mongazi le
 > 2026-11-13** (elles sont aussi dans `personnages/CONSIGNES.md`). Rien ne l'attend de ce côté.
