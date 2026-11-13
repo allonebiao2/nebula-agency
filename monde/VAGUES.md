@@ -157,6 +157,26 @@ Décisions de Mongazi, le même jour :
 Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
 produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
 
+## L'INTÉGRATION · ses images deviennent le salon 🔨 (2026-11-13, après-midi)
+
+> Après l'analyse des 24 assets (`ARRIVEES.md`) et mes deux propositions (le jour clair comme ses
+> images, le soir tamisé ; garder 16 × 12 × 4,2 m) : **« parfait intègres et /goal assure-toi que ce
+> soit parfait et que ça vaille 20 000 euros minimum et que ce soit minimum à 100 % »**.
+> Avant : « pour le salon j'ai pas encore fini de générer les plans, et lors des créations j'arrivais
+> pas à avoir de la constance entre les images » ; « les personnages aussi ».
+
+Une vague à la fois, chacune à 100 % (QC, captures 390 et 1440 de jour et de nuit, regardées dans
+Chrome) avant la suivante :
+- ✅ **I1 · la pièce de ses images** (QC 53/53, cuisson 2048 refaite, vue dans Chrome) : de jour, crème et lumineuse ; le soir, tamisée · plafond clair à
+  gorge lumineuse dorée sur une courbe et spots encastrés · sol crème brillant qui reflète, au téléphone
+  aussi (R6) · comptoir bois clair et laiton sous une arche rétroéclairée au logo · cabine d'essayage à
+  rideau de velours magenta · portants dorés · écran vertical (SES vraies photos, rien d'inventé) · banc
+  de velours magenta · puis la lumière recuite dans Blender. Références : `salon-plan-iso` (le plan),
+  `salon-vue-comptoir-arche` (la lumière).
+- 🔨 **I2 · les personnages** : ✅ nouvelle Afi (Mixamo) et ✅ Sènami (squelette d'Afi transféré, Mixamo refusait) dans le salon, animées ; ⏳ Maman (quota 3D du 2026-11-14).
+- ⏳ **I3 · ses robes h1 et h2 en 3D** sur mannequins, défauts de planche corrigés ; 🙋 validation d'Hillary.
+- ⛔ **I4 · Hillary** : attend son accord écrit et les six expressions de son visage (pas dans le dossier).
+
 ## Vague 1 · La maquette jouable 🔨 (2026-11-12)
 
 - ✅ « un salon de couture 3D ultra immersif… à la 1re personne… moderne, lumineux, au Bénin »

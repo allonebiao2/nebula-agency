@@ -43,13 +43,14 @@ const q = moteur.qualite;
 scene.background = new THREE.Color(0x0b0a0c);
 const M = { sol: MATIERES.sol(), platre: MATIERES.platre(), laque: MATIERES.laque(), chene: MATIERES.chene(), laiton: MATIERES.laiton(),
   encre: MATIERES.encre(), creme: MATIERES.creme(), porcelaine: MATIERES.porcelaine(), velours: MATIERES.velours(0xa0145c), verre: MATIERES.verre() };
-/* LE SALON TAMISÉ (Mongazi, 2026-11-12 : « tamisé et ultra stylé ») : des murs taupe expresso et un
-   plafond brun nuit, pour que la lumière chaude DESSINE la pièce au lieu de rebondir partout ; les
-   présentoirs laqués restent clairs, les tissus et les robes ressortent. */
-const MUR_TAMISE = 0x4b3d37;
+/* LE SALON DE SES IMAGES (Mongazi, 2026-11-13, `ARRIVEES.md` : « parfait, intègre ») : des murs crème, un
+   plafond clair, un sol crème qui brille. De jour, la pièce est lumineuse comme sur ses huit images ; le
+   soir, elle se TAMISE par la lumière (lampes baissées, gorge dorée qui domine), plus par la peinture.
+   ⚠️ Avant (2026-11-12, « tamisé et ultra stylé ») : murs taupe expresso et plafond brun nuit, jour et nuit. */
+const MUR = 0xece3d6;
 /* la façade : anthracite satiné, comme les boutiques de luxe le soir (audit jeu vidéo, vague 1) */
 M.facade = new THREE.MeshStandardMaterial({ color: 0x1d1a19, roughness: 0.38, metalness: 0.15 });
-M.platre.color.set(MUR_TAMISE);
+M.platre.color.set(MUR);
 
 let aCharger = 0, charges = 0;
 const chargeur = new THREE.TextureLoader();
@@ -197,38 +198,60 @@ const ciel3d = new THREE.ShaderMaterial({
 const domeCiel = new THREE.Mesh(new THREE.SphereGeometry(70, 32, 16), ciel3d); domeCiel.renderOrder = -1; scene.add(domeCiel);
 const CIEL = { jourH: new THREE.Color(0x5d8fc8), jourB: new THREE.Color(0xc9dbe8), nuitH: new THREE.Color(0x060914), nuitB: new THREE.Color(0x3a2418) };
 
-/* le plafond, percé du dôme, et SA ligne dorée */
+/* LE PLAFOND DE SES IMAGES : clair, percé d'une grande COUPOLE OVALE dont le bord porte une gorge lumineuse
+   dorée (`salon-vue-comptoir-arche`, `salon-plan-iso`). La lumière de la gorge monte et lave la paroi de la
+   coupole, puis se perd dans son fond crème. (Avant : un rond de 3,4 m, ambré sur fond brun nuit.) */
+const coupole = { x: plan.dome.x, z: plan.dome.z, rx: plan.dome.rx ?? plan.dome.rayon, rz: plan.dome.rz ?? plan.dome.rayon, creux: plan.dome.creux };
+const dansCoupole = (x, z) => ((x - coupole.x) / coupole.rx) ** 2 + ((z - coupole.z) / coupole.rz) ** 2 < 1;
 const forme = new THREE.Shape([new THREE.Vector2(-LX, -LZ), new THREE.Vector2(LX, -LZ), new THREE.Vector2(LX, LZ), new THREE.Vector2(-LX, LZ)]);
-const trou = new THREE.Path(); trou.absarc(plan.dome.x, plan.dome.z, plan.dome.rayon, 0, Math.PI * 2, true); forme.holes.push(trou);
-/* le plafond a sa propre matière, légèrement lumineuse : sous le seul éclairage d'ambiance, il virait au brun */
-const plafond = new THREE.Mesh(new THREE.ShapeGeometry(forme, 64), new THREE.MeshStandardMaterial({ color: 0x2b2421, roughness: 0.9, emissive: 0x0c0907 }));
+const trou = new THREE.Path(); trou.absellipse(coupole.x, coupole.z, coupole.rx, coupole.rz, 0, Math.PI * 2, true); forme.holes.push(trou);
+/* légèrement lumineux : sous les seuls spots qui éclairent vers le bas, un plafond clair virait au gris */
+const matPlafond = new THREE.MeshStandardMaterial({ color: 0xf2ece3, roughness: 0.92, emissive: 0x1c1813 });
+const plafond = new THREE.Mesh(new THREE.ShapeGeometry(forme, 96), matPlafond);
 plafond.rotation.x = Math.PI / 2; plafond.position.y = H; scene.add(plafond);
-const texLavis = texteCanvas(8, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#231a14'); gr.addColorStop(0.55, '#6b4423'); gr.addColorStop(1, '#e0a058');   /* tamisé : un halo ambré qui monte de la ligne dorée et se perd dans le fond sombre */ g.fillStyle = gr; g.fillRect(0, 0, 8, 256); });
+/* la paroi de la coupole : chaude en bas (la gorge), crème en haut */
+const texLavis = texteCanvas(8, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#eadfcf'); gr.addColorStop(0.5, '#f4e3c8'); gr.addColorStop(1, '#ffd79c'); g.fillStyle = gr; g.fillRect(0, 0, 8, 256); });
 const matLavis = new THREE.MeshBasicMaterial({ map: texLavis, side: THREE.BackSide });
-const paroiDome = new THREE.Mesh(new THREE.CylinderGeometry(plan.dome.rayon, plan.dome.rayon, plan.dome.creux, 96, 1, true), matLavis);
-poser(paroiDome, plan.dome.x, H + plan.dome.creux / 2, plan.dome.z);
-const fondDome = new THREE.Mesh(new THREE.CircleGeometry(plan.dome.rayon, 96), new THREE.MeshBasicMaterial({ color: 0x1e1713 }));
-fondDome.rotation.x = Math.PI / 2; poser(fondDome, plan.dome.x, H + plan.dome.creux, plan.dome.z);
+const paroiDome = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, coupole.creux, 128, 1, true), matLavis);
+paroiDome.scale.set(coupole.rx, 1, coupole.rz);
+poser(paroiDome, coupole.x, H + coupole.creux / 2, coupole.z);
+/* le fond : crème, plus clair au bord où la gorge l'éclaire */
+const texFond = texteCanvas(256, 256, (g, W) => { const gr = g.createRadialGradient(W / 2, W / 2, W * 0.1, W / 2, W / 2, W / 2); gr.addColorStop(0, '#e6dccd'); gr.addColorStop(0.75, '#ede2d1'); gr.addColorStop(1, '#f8e7cb'); g.fillStyle = gr; g.fillRect(0, 0, W, W); });
+const matFondDome = new THREE.MeshBasicMaterial({ map: texFond });
+const fondDome = new THREE.Mesh(new THREE.CircleGeometry(1, 128), matFondDome);
+fondDome.rotation.x = Math.PI / 2; fondDome.scale.set(coupole.rx, coupole.rz, 1); poser(fondDome, coupole.x, H + coupole.creux, coupole.z);
+/* la gorge dorée : un tube qui suit l'ovale */
 const matLigne = new THREE.MeshBasicMaterial({ color: new THREE.Color(2.4, 1.75, 0.9), toneMapped: false });
-const ligneDoree = new THREE.Mesh(new THREE.TorusGeometry(plan.dome.rayon - 0.02, 0.022, 8, 160), matLigne);
-ligneDoree.rotation.x = Math.PI / 2; poser(ligneDoree, plan.dome.x, H - 0.02, plan.dome.z);
-interieurs.push({ maj: (n) => { const k = melanger(1.0, 1.35, n); matLigne.color.setRGB(2.4 * k, 1.75 * k, 0.9 * k); matLavis.color.setScalar(melanger(1, 1.05, n)); } });
+const ovale = new THREE.CatmullRomCurve3(new THREE.EllipseCurve(0, 0, coupole.rx - 0.03, coupole.rz - 0.03).getPoints(160).slice(0, -1).map(p => new THREE.Vector3(p.x, 0, p.y)), true);
+const ligneDoree = new THREE.Mesh(new THREE.TubeGeometry(ovale, 320, 0.024, 8, true), matLigne);
+poser(ligneDoree, coupole.x, H - 0.02, coupole.z);
+/* le soir, la gorge DOMINE (la pièce baisse, elle non) */
+interieurs.push({ maj: (n) => { const k = melanger(1.0, 1.2, n); matLigne.color.setRGB(2.4 * k, 1.75 * k, 0.9 * k); matLavis.color.setScalar(melanger(1, 0.9, n)); matFondDome.color.setScalar(melanger(1, 0.62, n)); matPlafond.emissive.setRGB(0.11, 0.094, 0.074).multiplyScalar(melanger(1, 0.45, n)); } });
 
-/* les spots encastrés, et leurs flaques au sol */
+/* les spots encastrés, et leurs flaques au sol (dans la coupole, le spot est au fond de la coupole) */
 const flaques = [], spotsEncastres = [];
+const hauteurPlafond = (x, z) => dansCoupole(x, z) ? H + coupole.creux : H;
 function spot(x, z, r = 0.9, force = 0.5) {
-  spotsEncastres.push({ x, z, r, force });
+  const y = hauteurPlafond(x, z);
+  spotsEncastres.push({ x, z, r, force, y });
   const d = new THREE.Mesh(new THREE.CircleGeometry(0.07, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.2, 1.9, 1.5), toneMapped: false }));
-  d.rotation.x = Math.PI / 2; poser(d, x, H - 0.005, z);
+  d.rotation.x = Math.PI / 2; poser(d, x, y - 0.005, z);
   const f = flaqueLumiere(r, 0xffe2b0, force); f.position.x = x; f.position.z = z; scene.add(f); flaques.push({ f, force });
 }
-interieurs.push({ maj: (n, pluie) => { for (const k of flaques) k.f.material.opacity = k.force * melanger(0.45, 1.0, Math.max(n, pluie * 0.6)); } });
+interieurs.push({ maj: (n, pluie) => { for (const k of flaques) k.f.material.opacity = k.force * melanger(1.0, 0.7, n); } });
+/* la couronne de spots autour de la coupole, sur le plafond plat (ses images en montrent partout) */
+for (let i = 0; i < 14; i++) {
+  const t = (i + 0.5) / 14 * Math.PI * 2, x = coupole.x + Math.cos(t) * (coupole.rx + 0.8), z = coupole.z + Math.sin(t) * (coupole.rz + 0.75);
+  if (Math.abs(x) < LX - 0.5 && z > -LZ + 0.5 && z < fz - 0.5) spot(x, z, 0.75, 0.22);
+}
 
-/* les vraies lumières, peu nombreuses (chacune coûte sur un téléphone) */
+/* les vraies lumières, peu nombreuses (chacune coûte sur un téléphone). De jour la boutique est allumée
+   en plein ; le soir elle baisse (le tamisé) */
 const lampes = [new THREE.PointLight(0xffc98a, 0, 11, 2), new THREE.PointLight(0xffc488, 0, 9, 2)];
 lampes[0].position.set(0, 3.5, 0.4); lampes[1].position.set(0, 3.2, -3.8);
 scene.add(lampes[0]); if (q.nom !== 'basse') scene.add(lampes[1]);
-interieurs.push({ maj: (n, pluie) => { const k = Math.max(n, pluie * 0.5); lampes[0].intensity = melanger(5, 9, k); lampes[1].intensity = melanger(4, 7, k); } });
+const TAMISE = 0.45;   /* la force des lampes le soir, rapportée à celle du jour (les projecteurs sur les créations, eux, restent) */
+interieurs.push({ maj: (n) => { const k = melanger(1, TAMISE, n); lampes[0].intensity = 9 * k; lampes[1].intensity = 7 * k; } });
 
 /* ================================================================
    2 · LES PIÈCES D'HILLARY : podiums, totems, mur des créations
@@ -312,13 +335,34 @@ for (const pd of plan.podiums) {
    3 · LE COMPTOIR, LE MUR DU FOND, LES TISSUS
    ================================================================ */
 const cp = plan.comptoir;
+/* LE BOIS CLAIR CANNELÉ de ses images (comptoir et arche) : des cannelures de 3 cm, une couleur de chêne
+   blond et une carte de relief qui creuse vraiment chaque cannelure (la lumière rasante les dessine) */
+const CANNELURES = 32;   /* par mètre de texture */
+const texCannelure = texteCanvas(512, 256, (g, W, Hh) => {
+  g.fillStyle = '#d2ad80'; g.fillRect(0, 0, W, Hh);
+  const r = (s => () => (s = (s * 9301 + 49297) % 233280) / 233280)(5);
+  for (let i = 0; i < 260; i++) { g.strokeStyle = `rgba(${150 + r() * 40},${105 + r() * 30},${60 + r() * 20},${0.08 + r() * 0.1})`; g.lineWidth = 0.6 + r() * 1.4; const x = r() * W; g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + r() * 6 - 3, Hh * 0.3, x + r() * 6 - 3, Hh * 0.7, x + r() * 4 - 2, Hh); g.stroke(); }   /* le fil du bois */
+  const p = W / 16; for (let x = 0; x < W; x += p) { const gr = g.createLinearGradient(x, 0, x + p, 0); gr.addColorStop(0, 'rgba(90,60,30,.28)'); gr.addColorStop(0.18, 'rgba(255,240,215,.10)'); gr.addColorStop(0.55, 'rgba(255,240,215,.16)'); gr.addColorStop(1, 'rgba(90,60,30,.22)'); g.fillStyle = gr; g.fillRect(x, 0, p, Hh); }
+});
+texCannelure.wrapS = texCannelure.wrapT = THREE.RepeatWrapping; texCannelure.repeat.set(CANNELURES / 16, 1);
+const norCannelure = (() => {   /* le relief : un demi-cylindre creux par cannelure, en carte de normales */
+  const c = document.createElement('canvas'); c.width = 64; c.height = 4; const g = c.getContext('2d'); const d = g.createImageData(64, 4);
+  for (let x = 0; x < 64; x++) { const u = (x + 0.5) / 64 * 2 - 1, nx = -u * 0.85, nz = Math.sqrt(1 - nx * nx); for (let y = 0; y < 4; y++) { const i = (y * 64 + x) * 4; d.data[i] = (nx * 0.5 + 0.5) * 255; d.data[i + 1] = 128; d.data[i + 2] = nz * 255; d.data[i + 3] = 255; } }
+  g.putImageData(d, 0, 0); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(CANNELURES, 1); return t;
+})();
+M.cannele = new THREE.MeshStandardMaterial({ map: texCannelure, normalMap: norCannelure, normalScale: new THREE.Vector2(0.9, 0.9), roughness: 0.58 });
+M.pierre = new THREE.MeshStandardMaterial({ color: 0xf5f1ea, roughness: 0.22 });   /* le plateau : pierre blanche polie */
+/* une forme « stade » (rectangle aux bouts ronds), extrudée vers le haut */
+function stade(L, P) { const r = P / 2, s = new THREE.Shape(); s.moveTo(-L / 2 + r, -r); s.lineTo(L / 2 - r, -r); s.absarc(L / 2 - r, 0, r, -Math.PI / 2, Math.PI / 2, false); s.lineTo(-L / 2 + r, r); s.absarc(-L / 2 + r, 0, r, Math.PI / 2, Math.PI * 1.5, false); return s; }
+function extruder(forme, haut, segments = 24) { const g = new THREE.ExtrudeGeometry(forme, { depth: haut, bevelEnabled: false, curveSegments: segments }); g.rotateX(-Math.PI / 2); return g; }
 {
-  const texCannelure = texteCanvas(512, 128, (g, W, Hh) => { for (let x = 0; x < W; x += 16) { const gr = g.createLinearGradient(x, 0, x + 16, 0); gr.addColorStop(0, '#2c221d'); gr.addColorStop(0.5, '#5b463b'); gr.addColorStop(1, '#241c18');   /* tamisé : un comptoir cannelé expresso, plus de panneau blanc qui mange le bas de l'écran */ g.fillStyle = gr; g.fillRect(x, 0, 16, Hh); } });
-  texCannelure.wrapS = THREE.RepeatWrapping; texCannelure.repeat.set(6, 1);
-  const corps = boite(cp.longueur, cp.hauteur - 0.05, cp.profondeur, [M.laque, M.laque, M.laque, M.laque, new THREE.MeshStandardMaterial({ map: texCannelure, roughness: 0.4 }), M.laque]);
-  poser(corps, cp.x, (cp.hauteur - 0.05) / 2, cp.z);
-  poser(boite(cp.longueur + 0.12, 0.05, cp.profondeur + 0.1, M.chene), cp.x, cp.hauteur - 0.025, cp.z);
-  poser(boite(cp.longueur + 0.12, 0.012, 0.012, M.laiton), cp.x, cp.hauteur - 0.05, cp.z + cp.profondeur / 2 + 0.05);
+  /* LE COMPTOIR DE SES IMAGES : bois blond cannelé aux bouts arrondis, socle de laiton en retrait, plateau
+     de pierre blanche (`salon-vue-comptoir-arche`, `salon-plan-iso`). (Avant : une boîte cannelée expresso.) */
+  const socle = 0.08, haut = cp.hauteur - 0.05 - socle;
+  poser(new THREE.Mesh(extruder(stade(cp.longueur - 0.08, cp.profondeur - 0.08), socle), M.laiton), cp.x, 0, cp.z);
+  poser(new THREE.Mesh(extruder(stade(cp.longueur, cp.profondeur), haut, 32), M.cannele), cp.x, socle, cp.z);
+  poser(new THREE.Mesh(extruder(stade(cp.longueur + 0.14, cp.profondeur + 0.12), 0.05, 32), M.pierre), cp.x, cp.hauteur - 0.05, cp.z);
+  poser(new THREE.Mesh(extruder(stade(cp.longueur + 0.02, cp.profondeur + 0.02), 0.012, 32), M.laiton), cp.x, cp.hauteur - 0.062, cp.z);
   spot(cp.x - 1.2, cp.z + 1.2, 1.0, 0.45); spot(cp.x + 1.2, cp.z + 1.2, 1.0, 0.45);
   /* sur le comptoir : la machine, le mètre ruban magenta, la tablette, une pile de wax */
   const machine = new THREE.Group();
@@ -332,20 +376,38 @@ const cp = plan.comptoir;
   const tablette = boite(0.26, 0.012, 0.18, M.encre); poser(tablette, cp.x + 1.1, cp.hauteur + 0.006, cp.z + 0.05, -0.3);
   for (let i = 0; i < 4; i++) poser(boite(0.34, 0.035, 0.26, matWax(40 + i, PALETTES_WAX[(i + 2) % 8])), cp.x + 1.7, cp.hauteur + 0.02 + i * 0.036, cp.z - 0.05, i * 0.05);
 }
-/* le mur du fond : lames de chêne et logo rétroéclairé */
+/* LE MUR DU FOND : L'ARCHE AU LOGO de ses images (`salon-vue-comptoir-arche`, `salon-vue-allee`) : une arche de
+   bois blond cannelé, une niche blanche rétroéclairée dedans, une ligne de lumière qui en suit le bord, et
+   son vrai logo au milieu. Elle cadre Hillary derrière son comptoir. (Avant : un pan de lames de chêne.) */
+const matArcheLed = new THREE.MeshBasicMaterial({ color: new THREE.Color(2.3, 1.85, 1.25), toneMapped: false });
+const matNiche = new THREE.MeshBasicMaterial({ map: texteCanvas(256, 384, (g, W, Hh) => {
+  const gr = g.createRadialGradient(W / 2, Hh * 0.62, W * 0.12, W / 2, Hh * 0.62, Hh * 0.75); gr.addColorStop(0, '#fbf6ee'); gr.addColorStop(0.7, '#f3ebdf'); gr.addColorStop(1, '#ffe7c2'); g.fillStyle = gr; g.fillRect(0, 0, W, Hh); }) });
 {
-  const lames = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 3.5, 0.04), M.chene, 64);
-  const m4 = new THREE.Matrix4();
-  for (let i = 0; i < 64; i++) { m4.makeTranslation(-2.6 + i * (5.2 / 63), 1.75, -LZ + 0.03); lames.setMatrixAt(i, m4); }
-  scene.add(lames);
+  /* une arche = un rectangle surmonté d'un demi-cercle */
+  const arche = (w, hDroit) => { const r = w / 2, s = new THREE.Shape(); s.moveTo(-r, 0); s.lineTo(r, 0); s.lineTo(r, hDroit); s.absarc(0, hDroit, r, 0, Math.PI, false); s.lineTo(-r, 0); return s; };
+  const zMur = -LZ;
+  const ext = new THREE.ExtrudeGeometry(arche(3.5, 2.15), { depth: 0.07, bevelEnabled: false, curveSegments: 48 });
+  poser(new THREE.Mesh(ext, M.cannele), 0, 0, zMur + 0.005);
+  const wN = 2.7, hN = 1.95;
+  const niche = new THREE.Mesh(new THREE.ShapeGeometry(arche(wN, hN), 48), matNiche);
+  /* les UV d'une forme sont en mètres : ramenés entre 0 et 1 pour la texture de la niche */
+  { const uv = niche.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) + wN / 2) / wN, uv.getY(i) / (hN + wN / 2)); }
+  poser(niche, 0, 0, zMur + 0.078);
+  /* la ligne de lumière qui suit le bord de la niche */
+  const chemin = new THREE.CurvePath();
+  chemin.add(new THREE.LineCurve3(new THREE.Vector3(-wN / 2, 0.05, 0), new THREE.Vector3(-wN / 2, hN, 0)));
+  chemin.add(new THREE.CatmullRomCurve3(new THREE.ArcCurve(0, hN, wN / 2, Math.PI, 0, true).getPoints(48).map(p => new THREE.Vector3(p.x, p.y, 0))));
+  chemin.add(new THREE.LineCurve3(new THREE.Vector3(wN / 2, hN, 0), new THREE.Vector3(wN / 2, 0.05, 0)));
+  poser(new THREE.Mesh(new THREE.TubeGeometry(chemin, 200, 0.016, 6, false), matArcheLed), 0, 0, zMur + 0.09);
   const lg = plan.logo;
-  const halo = new THREE.Mesh(new THREE.PlaneGeometry(lg.largeur * 1.5, lg.largeur * 0.95), new THREE.MeshBasicMaterial({
-    map: texteCanvas(256, 160, (g, W, Hh) => { const gr = g.createRadialGradient(W / 2, Hh / 2, 0, W / 2, Hh / 2, W / 2); gr.addColorStop(0, 'rgba(255,240,220,.95)'); gr.addColorStop(1, 'rgba(255,240,220,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, Hh); }),
-    transparent: true, depthWrite: false, toneMapped: false }));
-  poser(halo, 0, lg.y, lg.z + 0.035);
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(lg.largeur * 1.2, lg.largeur * 0.8), new THREE.MeshBasicMaterial({
+    map: texteCanvas(256, 160, (g, W, Hh) => { const gr = g.createRadialGradient(W / 2, Hh / 2, 0, W / 2, Hh / 2, W / 2); gr.addColorStop(0, 'rgba(255,248,236,.85)'); gr.addColorStop(1, 'rgba(255,248,236,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, Hh); }),
+    transparent: true, depthWrite: false }));
+  poser(halo, 0, lg.y, zMur + 0.085);
   const logoMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });
-  const logo = new THREE.Mesh(new THREE.PlaneGeometry(lg.largeur, lg.largeur * 343 / 620), logoMat); poser(logo, 0, lg.y, lg.z + 0.05);
+  const logo = new THREE.Mesh(new THREE.PlaneGeometry(lg.largeur, lg.largeur * 343 / 620), logoMat); poser(logo, 0, lg.y, zMur + 0.095);
   photo('logo.png', (t) => { logoMat.map = t; logoMat.opacity = 1; logoMat.needsUpdate = true; });
+  interieurs.push({ maj: (n) => { matNiche.color.setScalar(melanger(1, 0.78, n)); } });
 }
 /* les étagères de wax */
 {
@@ -480,6 +542,33 @@ function mannequin(couleur = 0xf2ece2) {
   miroir.add(boite(0.7, 1.8, 0.03, new THREE.MeshStandardMaterial({ color: 0xc8ccd0, metalness: 1, roughness: 0.04 })));
   miroir.add(a(boite(0.76, 1.86, 0.02, M.laiton), 0, 0, -0.02));
   poser(miroir, cb.x1 - 0.05, 1.05, cb.z2 + 0.5, -Math.PI / 2 + 0.25);
+}
+/* LE PORTANT DORÉ de ses images (`salon-plan-iso`) : contre la vitrine de droite, une barre de laiton sur deux
+   montants, et des coupons de wax suspendus sur des cintres de bois. ⛔ Des TISSUS, jamais des vêtements :
+   une robe inventée pendue là passerait pour une pièce de son catalogue. */
+{
+  const x1 = 4.3, x2 = 6.4, z = fz - 0.95, h = 1.72;
+  const portant = new THREE.Group();
+  const tube = (lg) => new THREE.CylinderGeometry(0.014, 0.014, lg, 12);
+  for (const x of [x1, x2]) {
+    portant.add(a(new THREE.Mesh(tube(h), M.laiton), x, h / 2, 0));
+    const pied = new THREE.Mesh(tube(0.5), M.laiton); pied.rotation.x = Math.PI / 2; portant.add(a(pied, x, 0.015, 0));
+  }
+  const barre = new THREE.Mesh(tube(x2 - x1 + 0.04), M.laiton); barre.rotation.z = Math.PI / 2; portant.add(a(barre, (x1 + x2) / 2, h, 0));
+  const bois = new THREE.MeshStandardMaterial({ color: 0x8a5a34, roughness: 0.5 });
+  const n = 7;
+  for (let i = 0; i < n; i++) {
+    const x = x1 + 0.22 + i * (x2 - x1 - 0.44) / (n - 1), ry = (i % 2 ? 0.08 : -0.06);
+    const crochet = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.004, 6, 16, Math.PI * 1.4), M.laiton); crochet.position.set(x, h + 0.01, 0); crochet.rotation.set(0, Math.PI / 2, -0.4); portant.add(crochet);
+    const cintre = boite(0.42, 0.022, 0.03, bois); cintre.position.set(x, h - 0.06, 0); cintre.rotation.y = Math.PI / 2 + ry; portant.add(cintre);
+    /* le coupon : un pan de tissu qui tombe en plis souples (ondulé, plus ample en bas) */
+    const geo = new THREE.PlaneGeometry(0.4, 1.0, 12, 10), pos = geo.attributes.position;
+    for (let k = 0; k < pos.count; k++) { const u = pos.getX(k), v = pos.getY(k), bas = (0.5 - v); pos.setZ(k, Math.sin(u * 22 + i) * 0.018 * (0.4 + bas * 1.4)); pos.setX(k, u * (1 + bas * 0.12)); }
+    geo.computeVertexNormals();
+    const pan = new THREE.Mesh(geo, matWax(300 + i, PALETTES_WAX[(i * 3) % 8], [1, 2.4])); pan.material.side = THREE.DoubleSide;
+    pan.position.set(x, h - 0.58, 0.004); pan.rotation.y = Math.PI / 2 + ry; portant.add(pan);
+  }
+  poser(portant, 0, 0, z);
 }
 {
   const at = plan.atelier;
@@ -638,6 +727,8 @@ const monde = {
 };
 Object.assign(dialogue.registre, dialoguesHillary({ D, F, boutique, ctx, monde }), dialoguesVisiteuses({ D, F, ctx, monde }));
 const pnj = creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, visiteuses, conversations: conversations(D, F), ctx, personnes, son });
+/* au comptoir, personne ne se tient entre le visiteur et Hillary (trois visiteuses alignées devant elle, 2026-11-13) */
+pnj.reglages.foyer = () => (Math.hypot(camera.position.x - hillary.racine.position.x, camera.position.z - hillary.racine.position.z) < 3.8 ? hillary.racine.position : null);
 /* l'oreille suit la caméra ; la porte s'ouvre et se referme quand on la passe */
 moteur.chaqueImage(() => son.ecouteur(camera));
 deplacement.surDepart.push((id) => { if (id === 'dehors' || deplacement.noeud === 'dehors') setTimeout(() => son.porte(new THREE.Vector3(0, 1.3, fz)), 350); });
@@ -837,14 +928,15 @@ moteur.chaqueImage((dt) => {
 moteur.chaqueImage(() => {
   const e = ciel.etat;
   for (const i of interieurs) i.maj(e.nuit, e.pluie);
-  /* tamisé : la pièce reste basse de jour comme de nuit ; la lumière du ciel n'y entre qu'à moitié */
-  moteur.renderer.toneMappingExposure = melanger(0.95, 0.88, e.nuit) * (1 - e.pluie * 0.06);
-  scene.environmentIntensity = melanger(0.24, 0.15, e.nuit);
-  if (cielHemi) cielHemi.intensity *= 0.42;
+  /* LE JOUR DE SES IMAGES, LE SOIR TAMISÉ (2026-11-13) : de jour, la pièce est claire et la lumière du ciel
+     entre par la vitrine ; le soir, elle baisse et se réchauffe. (Avant : tamisée jour et nuit.) */
+  moteur.renderer.toneMappingExposure = melanger(1.04, 0.84, e.nuit) * (1 - e.pluie * 0.06);
+  scene.environmentIntensity = melanger(0.5, 0.15, e.nuit);
+  if (cielHemi) cielHemi.intensity *= melanger(0.75, 0.42, e.nuit);
   ciel3d.uniforms.haut.value.copy(CIEL.jourH).lerp(CIEL.nuitH, e.nuit); ciel3d.uniforms.horizon.value.copy(CIEL.jourB).lerp(CIEL.nuitB, e.nuit);
   for (const f of fenetresImmeuble) f.emissiveIntensity = 1.4 * e.nuit;
   enduitImmeuble.emissive.setRGB(0.2, 0.17, 0.14).multiplyScalar(Math.max(0, 1 - e.nuit) * (1 - e.pluie * 0.4));
-  moteur.reglerHalo(melanger(0.36, 0.55, e.nuit));
+  moteur.reglerHalo(melanger(0.22, 0.42, e.nuit), melanger(1.7, 1.15, e.nuit));   /* seules les lampes, la gorge et les néons rayonnent */
   son.ambiance(e);
 });
 
@@ -908,10 +1000,14 @@ const poserAuSol = (o, x, z, hauteurVisee = null, ry = 0) => {
 };
 async function embellir() {
   await R.eclairage('photo_studio_loft_hall', 0.6);
+  const mapSol = M.sol.map;
   await Promise.all([
-    R.matiere(M.sol, 'marble_01', { repeat: [8, 6], relief: 0.5 }),
-    R.matiere(M.platre, 'painted_plaster_wall', { repeat: [5, 2], teinte: 0xf4ede3, relief: 0.35 }).then(() => { M.platre.map = null; M.platre.color.set(MUR_TAMISE); M.platre.needsUpdate = true; }),   /* le relief du plâtre, pas son gris : sa référence a des murs crème lisses */
-    R.matiere(M.chene, 'oak_veneer_01', { repeat: [1, 2] }),
+    /* LE SOL DE SES IMAGES : crème poli, presque uni, de grandes dalles ; du marbre scanné on garde le relief
+       et la rugosité (le poli inégal d'une vraie pierre), pas ses veines beiges (avant : un marbre beige) */
+    R.matiere(M.sol, 'marble_01', { repeat: [8, 6], relief: 0.18 }).then(() => { M.sol.map = mapSol; M.sol.color.set(0xffffff); M.sol.roughness = 0.2; M.sol.needsUpdate = true; }),
+    R.matiere(M.platre, 'painted_plaster_wall', { repeat: [5, 2], teinte: 0xf4ede3, relief: 0.35 }).then(() => { M.platre.map = null; M.platre.color.set(MUR); M.platre.needsUpdate = true; }),   /* le relief du plâtre, pas son gris : sa référence a des murs crème lisses */
+    /* le chêne BLOND de ses étagères : le placage scanné, éclairci (une couleur au-delà de 1 éclaircit) */
+    R.matiere(M.chene, 'oak_veneer_01', { repeat: [1, 2] }).then(() => { M.chene.color.setRGB(1.55, 1.38, 1.18); }),
     R.matiere(M.velours, 'velour_velvet', { repeat: [2, 2], teinte: 0xd8307f }),
   ]);
   /* les plantes */
@@ -944,15 +1040,25 @@ async function embellir() {
   }
   document.body.classList.add('embelli');
   await appliquerCuisson().catch(e => console.warn('lumière cuite non appliquée', e));
+  try { poserRefletSol(); } catch (e) { console.warn('reflet du sol non posé', e); }
 }
 setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', e)), params.has('direct') ? 200 : 2500);
 
 /* AFI, LE PREMIER VRAI PERSONNAGE (TRELLIS.2 puis Mixamo, 2026-11-12) : son corps et ses
    sept animations arrivent après l'ouverture ; d'ici là, et si le chargement échoue, sa
    silhouette tient sa place. Sènami et Maman Sènami suivront le même chemin. */
-setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', prefixe: 'afi', taille: 1.71 })
-  .then(() => { const v = visiteuses.find(x => x.id === 'afi'); if (v) v.gouts.assis = 0; })   /* pas encore d'animation assise */
+/* 2026-11-13 : LA NOUVELLE AFI (29 ans, image de Mongazi, TRELLIS.2, squelette Mixamo `afi29`) et SÈNAMI (21 ans ;
+   Mixamo refusait ses tresses, elle a reçu le squelette d'Afi par `_outils/transferer_squelette.py`). Les douze
+   gestes viennent des fichiers d'Afi (`gestes`) : un seul fichier par personnage. Repli : l'ancienne Afi. */
+const GESTES_AFI = { dossier: 'personnages/afi/', prefixe: 'afi' };
+const pasAssise = (id) => () => { const v = visiteuses.find(x => x.id === id); if (v) v.gouts.assis = 0; };   /* pas encore d'animation assise */
+setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', prefixe: 'afi29', taille: 1.71, gestes: GESTES_AFI })
+  .catch(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', prefixe: 'afi', taille: 1.71 }))
+  .then(pasAssise('afi'))
   .catch(e => console.warn('Afi reste en silhouette', e)), params.has('direct') ? 600 : 3200);
+setTimeout(() => habiller(personnes.senami.perso, { dossier: 'personnages/senami/', prefixe: 'senami', taille: 1.64, gestes: GESTES_AFI })
+  .then(pasAssise('senami'))
+  .catch(e => console.warn('Sènami reste en silhouette', e)), params.has('direct') ? 900 : 3600);
 
 
 /* LA CLÉ DE CUISSON : un nom STABLE pour chaque maillage du décor, le même à chaque chargement et à
@@ -1045,7 +1151,7 @@ async function exporterDecor() {
      sol étaient peintes), et l'anneau doré de la coupole éclaire vraiment le plafond qui l'entoure */
   for (const k of spotsEncastres) {
     /* ⚠️ un cône large (r × 1,5) fondait les flaques en un éclairage uniforme, sans contraste : on le resserre */
-    racine.add(lampeExportee(true, new THREE.Color(0xffe2b0), 70 * k.force, new THREE.Vector3(k.x, H - 0.03, k.z), new THREE.Vector3(k.x, 0, k.z), Math.atan(k.r * 1.05 / H), 0.55));
+    racine.add(lampeExportee(true, new THREE.Color(0xffe2b0), 70 * k.force, new THREE.Vector3(k.x, k.y - 0.03, k.z), new THREE.Vector3(k.x, 0, k.z), Math.atan(k.r * 1.05 / k.y), 0.55));
   }
   {
     const anneau = new THREE.Mesh(ligneDoree.geometry, new THREE.MeshStandardMaterial({ color: 0x000000, emissive: matLigne.color.clone() }));
@@ -1126,7 +1232,8 @@ async function appliquerCuisson() {
     moteur.chaqueImage(() => {
       let p = 1;
       if (faisceauxCreations.length) p = faisceauxCreations.reduce((t, f) => t + (f.base ? f.l.intensity / f.base : 1), 0) / faisceauxCreations.length;
-      const k = (0.3 + 0.7 * p) * melanger(0.75, 1, nuitCuite) * cuisson.facteur;
+      /* cuite aux forces de JOUR (lampes pleines) ; le soir, elle baisse avec les lampes (le tamisé) */
+      const k = (0.3 + 0.7 * p) * melanger(1, TAMISE, nuitCuite) * cuisson.facteur;
       for (const m of cuitsLumiere) m.lightMapIntensity = info.intensite_lumiere * k;
     });
   }
@@ -1156,5 +1263,89 @@ function eclairerCuit(m, lum, info) {
   m.needsUpdate = true; cuitsLumiere.add(m);
 }
 
+/* R6 · LE SOL QUI REFLÈTE, AU TÉLÉPHONE AUSSI (REALISME.md). En qualité haute, un vrai miroir (`Reflector`,
+   qui redessine toute la scène à chaque image). Aux qualités moyenne et basse, LE MIROIR PAR PHOTO À 360° :
+   un sol plat reflète exactement ce que voit L'ŒIL DU VISITEUR REFLÉTÉ SOUS LE SOL. On photographie donc la
+   pièce depuis ce point (x, −y, z), sans le sol ni les personnages, et chaque point du sol lit la photo dans
+   la direction « œil reflété → ce point » : le reflet d'un podium tombe sous le podium, juste et net, tant
+   que le visiteur reste là. Il se déplace par points de passage : la photo est REFAITE quand il s'arrête
+   ailleurs, et quand la lumière change (jour, soir, projecteurs, pluie). Une face de la photo par image
+   (six images), pour ne jamais faire hoqueter le téléphone. Coût ordinaire : une lecture de texture.
+   `?sans-reflet` pour comparer.
+   ⚠️ 1er essai (même jour) : une photo prise une fois au centre, projetée sur les murs (parallaxe en boîte).
+   Aucun reflet visible : un podium AU MILIEU de la pièce n'est pas sur les murs, et le centre tombait même
+   dans les panneaux du podium central.
+   ⚠️ La matière du sol a déjà sa lumière cuite (`eclairerCuit`) : les deux retouches du shader s'ENCHAÎNENT.
+   ⚠️ L'environnement apporte aussi de la lumière DIFFUSE : `irradiance` la règle à part, sans toucher au reflet. */
+const refletSol = { prises: 0, actif: false, irradiance: Number(params.get('reflet-irr') || 0.8), force: Number(params.get('reflet-force') || 2.4), signature: '' };   /* réglables à l'essai : ?reflet-force=…&reflet-irr=… */
+function poserRefletSol() {
+  if (q.reflets || params.has('sans-reflet') || refletSol.actif) return;
+  const r = moteur.renderer, mat = sol.material;   /* ⚠️ la matière réellement posée (la cuisson peut l'avoir clonée) */
+  const flottant = r.extensions.has('EXT_color_buffer_half_float') || r.extensions.has('EXT_color_buffer_float');
+  const cible = new THREE.WebGLCubeRenderTarget(q.nom === 'basse' ? 128 : 256, { type: flottant ? THREE.HalfFloatType : THREE.UnsignedByteType });
+  const cam = new THREE.CubeCamera(0.05, 80, cible); scene.add(cam);
+  mat.roughness = 0.12;   /* × la rugosité du marbre scanné (0,5) : un poli de 0,06, le sol miroir de ses images */
+  const pmrem = new THREE.PMREMGenerator(r);
+  const uni = { uOeilReflete: { value: new THREE.Vector3() }, uIrradiance: { value: refletSol.irradiance } };
+  let env = null, face = -1;
+  const prise = new THREE.Vector3(1e9, 0, 0);   /* où la dernière photo a été prise (l'œil, pas son reflet) */
+  function commencer() {
+    prise.copy(camera.position);
+    cam.position.set(prise.x, -prise.y, prise.z); cam.updateMatrixWorld(true);
+    face = 0;
+  }
+  function uneFace() {
+    const caches = [sol, ...PERSONNAGES()].filter(o => o && o.visible);
+    caches.forEach(o => { o.visible = false; });
+    if (cam.coordinateSystem !== r.coordinateSystem) { cam.coordinateSystem = r.coordinateSystem; cam.updateCoordinateSystem(); }
+    const avantCible = r.getRenderTarget(), xr = r.xr.enabled; r.xr.enabled = false;
+    r.setRenderTarget(cible, face); r.render(scene, cam.children[face]);
+    r.setRenderTarget(avantCible); r.xr.enabled = xr;
+    caches.forEach(o => { o.visible = true; });
+    if (++face < 6) return;
+    face = -1;
+    const ancien = env; env = pmrem.fromCubemap(cible.texture);
+    uni.uOeilReflete.value.copy(cam.position);
+    mat.envMap = env.texture; mat.needsUpdate = !ancien;
+    if (ancien) ancien.dispose();
+    refletSol.prises++;
+  }
+  const avant = mat.onBeforeCompile, cle = mat.customProgramCacheKey.bind(mat);
+  const ANCRE = 'reflectVec = inverseTransformDirection( reflectVec, viewMatrix );', IRR = 'return PI * envMapColor.rgb * envMapIntensity;';
+  mat.onBeforeCompile = (sh, rr) => {
+    if (avant) avant.call(mat, sh, rr);
+    const chunk = THREE.ShaderChunk.envmap_physical_pars_fragment;
+    if (!chunk.includes(ANCRE) || !chunk.includes(IRR)) { console.warn('reflet du sol : le shader de three.js a changé'); return; }
+    Object.assign(sh.uniforms, uni);
+    sh.vertexShader = 'varying vec3 vPosMonde;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n\tvPosMonde = ( modelMatrix * vec4( transformed, 1.0 ) ).xyz;');
+    sh.fragmentShader = 'varying vec3 vPosMonde;\nuniform vec3 uOeilReflete;\nuniform float uIrradiance;\n' +
+      sh.fragmentShader.replace('#include <envmap_physical_pars_fragment>', chunk
+        .replace(ANCRE, ANCRE + '\n\t\t\treflectVec = normalize( vPosMonde - uOeilReflete );')
+        .replace(IRR, 'return PI * envMapColor.rgb * envMapIntensity * uIrradiance;'));
+  };
+  mat.customProgramCacheKey = () => cle() + '|reflet';
+  /* la première photo d'un coup (le sol ne doit pas rester sans reflet), les suivantes face par face */
+  commencer(); while (face >= 0) uneFace();
+  refletSol.actif = true;
+  const signature = () => {
+    const e = ciel.etat, p = faisceauxCreations.length ? faisceauxCreations.reduce((t, f) => t + (f.base ? f.l.intensity / f.base : 1), 0) / faisceauxCreations.length : 1;
+    return [Math.round(e.nuit * 10), Math.round(e.pluie * 4), Math.round(p * 5), cuisson.appliquee].join(',');
+  };
+  refletSol.signature = signature();
+  let attente = 0, calme = 0;
+  const avantPos = camera.position.clone();
+  moteur.chaqueImage((dt) => {
+    uni.uIrradiance.value = refletSol.irradiance / refletSol.force; mat.envMapIntensity = refletSol.force;
+    if (face >= 0) { uneFace(); return; }
+    /* le visiteur s'est-il arrêté (moins de 2 mm par image pendant 0,3 s) ? */
+    calme = camera.position.distanceTo(avantPos) < 0.002 ? calme + dt : 0; avantPos.copy(camera.position);
+    if (calme > 0.3 && camera.position.distanceTo(prise) > 0.25) { commencer(); return; }
+    attente += dt; if (attente < 1) return; attente = 0;
+    const s = signature();
+    if (s !== refletSol.signature) { refletSol.signature = s; commencer(); }
+  });
+  refletSol.prendre = () => { commencer(); while (face >= 0) uneFace(); };
+}
+
 /* pour les contrôles automatiques */
-window.__monde = { exporterDecor, clesCuisson, cuisson, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { exporterDecor, clesCuisson, cuisson, refletSol, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

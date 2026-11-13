@@ -85,7 +85,10 @@ plusieurs vues (le dos n'est plus inventé).
 - **h1, Robe de cérémonie** : **très fidèle** (tie-dye bleu à gauche, rouge à droite, bretelles à
   volants, bustier à pointe, volants de satin bleu roi et bordeaux). ⛔ **Un défaut** : le mannequin
   porte **les bijoux de la photo** (manchette dorée en haut du bras, bracelets aux poignets).
-  Consigne C à coller dans la même conversation :
+  ✅ **Corrigé par moi le jour même** (Mongazi : « intègre ») : bijoux effacés au pixel (OpenCV, l'or et ses
+  creux, sans toucher au tie-dye) → `robes/robe-h1-planche-sans-bijoux.jpg` ; vue de face seule →
+  `robes/robe-h1-face.jpg` (et `robe-h2-face.jpg`, pour que la 3D n'hérite pas du dos inventé de h2).
+  Consigne C, si on préfère la refaire au générateur :
   `Keep everything identical, except: remove all jewelry from the mannequin, no gold cuff on the upper arm and no bracelets on the wrists. The mannequin wears nothing but the dress.`
 - **h2, L'ensemble Mira** : **fidèle de face** (manches ballon jaunes, bonnets en wax brun, corset
   à baleines rayées de bleu, jupe à volants étagés jaune, bleu, brun). ⚠️ **Le dos est inventé** (dos

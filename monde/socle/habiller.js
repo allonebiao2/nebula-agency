@@ -30,11 +30,22 @@ function animationVoulue(st) {
   return 'attendre';
 }
 
-export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche = 1.2, fondu = 0.35 }) {
+/* `gestes` (facultatif) : { dossier, prefixe } d'un AUTRE personnage dont on rejoue les animations. Tous les
+   squelettes Mixamo portent les mêmes noms d'os : un seul téléchargement par personnage (son corps, avec
+   `attendre`), les douze autres gestes viennent d'Afi. Seules les ROTATIONS passent d'un corps à l'autre ;
+   la position du bassin est remise à l'échelle du nouveau corps (sinon il flotte ou s'enfonce), et les
+   positions des autres os sont jetées (elles imposeraient les longueurs d'os de l'autre). */
+export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche = 1.2, fondu = 0.35, gestes = null }) {
   const chargeur = new FBXLoader();
   const charger = (nom) => new Promise((ok, ko) => chargeur.load(`${dossier}${prefixe}-${nom}.fbx`, ok, undefined, ko));
+  const chargerGeste = gestes ? (nom) => new Promise((ok, ko) => chargeur.load(`${gestes.dossier}${gestes.prefixe}-${nom}.fbx`, ok, undefined, ko)) : charger;
+  /* la hauteur du bassin DEBOUT, lue sur la PREMIÈRE IMAGE d'une animation debout. ⚠️ Pas sur la pose de repos
+     du fichier : celle de la nouvelle Afi (Mixamo) met le bassin à −0,06 contre +0,03 chez l'ancienne, le
+     rapport devenait NÉGATIF et le corps passait 1,76 m sous le sol, invisible (2026-11-13). */
+  const bassinDebout = (clip) => { const p = clip && clip.tracks.find(x => /Hips\.position$/.test(x.name)); return p ? p.values[1] : null; };
 
   const modele = await charger('attendre');
+  const bassinCible = bassinDebout(modele.animations[0]);   /* son « attendre », debout */
 
   /* des matières qui répondent à la lumière du salon comme le décor (l'export Mixamo est en Phong) */
   modele.traverse((o) => {
@@ -182,7 +193,17 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
   };
 
   /* les autres animations arrivent ensuite, sans retenir l'apparition du corps */
-  Promise.allSettled(ANIMATIONS.map(n => charger(n).then(o => ajouter(n, o.animations[0]))))
+  /* la référence de l'autre personnage : SON attente debout (« attendre-2 »), chargée d'abord */
+  const bassinSource = gestes ? await chargerGeste('attendre-2').then(o => bassinDebout(o.animations[0])).catch(() => null) : null;
+  const k = bassinSource && bassinCible && bassinSource > 0 && bassinCible > 0 ? bassinCible / bassinSource : 1;
+  const adapter = (o) => {
+    const clip = o.animations[0];
+    if (!gestes || !clip) return clip;
+    clip.tracks = clip.tracks.filter(p => !/\.position$/.test(p.name) || /Hips\.position$/.test(p.name));
+    for (const p of clip.tracks) if (/Hips\.position$/.test(p.name)) for (let i = 0; i < p.values.length; i++) p.values[i] *= k;
+    return clip;
+  };
+  Promise.allSettled(ANIMATIONS.map(n => chargerGeste(n).then(o => ajouter(n, adapter(o)))))
     .then(r => { const rates = r.filter(x => x.status === 'rejected').length; if (rates) console.warn(`${prefixe} : ${rates} animation(s) manquante(s)`); });
 
   /* pour les contrôles : le geste joué en ce moment */

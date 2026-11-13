@@ -101,6 +101,32 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
   `tel-scene-hillary.png` (filmées par `monde/_outils/captures/filmer_dialogue.py`, **par le vrai
   parcours** : toucher Afi, s'approcher, options, « Parler »).
 
+## ⚡ ÉTAT DU 2026-11-13, 17 h 30 (le plus récent : lire d'abord)
+
+**L'INTÉGRATION de ses 24 assets** (`ARRIVEES.md`, `VAGUES.md` « L'INTÉGRATION ») · **objectif `/goal` de Mongazi :
+« ne t'arrête pas tant que ça ne vaut pas 20 000 € et 100 % », « comme GTA 6 », « le maximum d'images/s ».**
+- ✅ **I1 la pièce de ses images** (non commitée avant ce point, voir le commit du jour) : crème, coupole OVALE
+  (`plan.json` dome rx 5,4 / rz 3,5 / creux 0,5) à gorge dorée + couronne de 14 spots, comptoir bois blond
+  cannelé (`M.cannele`, carte de normales) au plateau de pierre, arche rétroéclairée au logo (`plan.logo` y 2,32
+  largeur 1,9), portant doré à coupons de wax, sol crème poli ; jour clair / soir tamisé (`TAMISE` 0,45, halo
+  `reglerHalo(force, seuil)` limité aux lampes) ; **cuisson refaite 2048** (39 lampes, 19 min, exportée à 14 h =
+  lampes pleines) ; **R6 le sol qui reflète au téléphone** = miroir par l'œil reflété (`poserRefletSol`) ;
+  visiteuses écartées de la ligne de regard vers Hillary au comptoir (`pnj.reglages.foyer`). QC **53/53**.
+- 🔨 **I2 personnages** : **nouvelle Afi** (TRELLIS.2 → `alleger_perso.py` 40 000 tri, texture 2048 → Mixamo
+  → `personnages/afi/afi29-attendre.fbx`) et **Sènami** (Mixamo ÉCHOUE sur ses tresses, 5 essais → **plan B
+  `_outils/transferer_squelette.py`** : le squelette d'Afi, poids recopiés → `personnages/senami/senami-attendre.fbx`)
+  **sont dans le salon, visibles et animées**, avec les 12 gestes d'Afi (`habiller({ gestes })`, échelle du
+  bassin lue sur la 1re image d'« attendre », PAS sur la pose de repos : elle rendait le corps invisible, 1,76 m
+  sous le sol). Vu dans Chrome. ⏳ **Maman et Hillary** : quota ZeroGPU épuisé (compte ET anonyme), retenter
+  le 2026-11-14 (`en_3d.py … --faces 100000`, `--sans-jeton` en secours). ⛔ Hillary : **son accord écrit** d'abord.
+- ⏳ **Ce qui reste, dans l'ordre** : regarder Afi/Sènami de près (visage d'Afi sombre et peu détaillé, talons
+  inventés) · Maman (même chaîne que Sènami) · robes h1/h2 en 3D (`robes/robe-h1-face.jpg`, `robe-h2-face.jpg`,
+  bijoux de h1 déjà effacés) · **R14 mesure** (`_outils/mesurer.py` écrit : tel 57 i/s immobile, **28 en
+  marchant** à expliquer ; qualité haute 6-13 i/s ici ; **25 Mo** au téléphone, dont l'ancienne
+  `afi-attendre.fbx` 5,8 Mo qui ne sert plus que de repli) · captures 390/1440 jour+nuit · commit.
+- Outils neufs : `alleger_perso.py`, `transferer_squelette.py`, `mesurer.py`, `captures/voir_salon.py`,
+  `captures/voir_personnages.py` ; `en_3d.py --sans-jeton`.
+
 ## 4 · LA PROCHAINE ACTION EXACTE : la vague 4, la chaîne d'assets pour la 3G
 
 > ✅ **2026-11-13, 11 h : R1 (LA LUMIÈRE CUITE) FAITE** (QC 53/53, regardée dans Chrome ; détail dans

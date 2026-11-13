@@ -53,3 +53,35 @@ section 4 (mesurer d'abord). Puis la 5 (lumière cuite dans Blender). Toute la l
 - ✅ Site d'Hillary : mesures de la jupe (ses mots), « haut + jupe » réparé, publié.
 - Gardés en mémoire : la consigne d'Afi (il la régénère), le commercial NEBULA (`monde/COMMERCIAL.md`), un teaser
   vidéo par boutique (`monde/TEASERS.md`).
+
+## Suite (après-midi) : ses assets, puis « intègre »
+
+- Mongazi dépose 24 fichiers en vrac dans `hillary\` : **rangés et analysés** (`monde/ARRIVEES.md`) : nouvelle
+  Afi (29 ans), Sènami (21), Maman (47), Hillary en pose A ; 9 vidéos (parler, marcher, écouter, tourner) ;
+  planches h1 et h2 (fidèles, défauts notés) + une pièce **absente de son catalogue** ; 8 vues du salon.
+  Dossier `_partage/immersive  store 3D/` **exclu de git en entier**.
+- Il dit ne pas arriver à rendre ses images cohérentes : **la 3D est la constance**, une image pour le plan
+  (`salon-plan-iso`), une pour la lumière (`salon-vue-comptoir-arche`).
+- **« parfait intègres et /goal … 20 000 euros minimum … minimum à 100 % »**, puis « prends le contrôle du
+  PC et de Chrome pour mieux regarder », puis « libère l'espace ».
+- **I1, la pièce de ses images** (`monde/VAGUES.md`, « L'INTÉGRATION ») : murs crème, coupole OVALE à gorge
+  dorée + couronne de spots, comptoir de bois blond cannelé (relief en carte de normales) au plateau de pierre
+  blanche, arche rétroéclairée au logo, portant doré à coupons de wax (des tissus, jamais des vêtements), sol
+  crème poli ; **le jour clair, le soir tamisé** (`TAMISE` 0,45, halo limité aux lampes : la pièce claire
+  devenait laiteuse) ; lumière recuite (essai 1024 en 6 min 30, finale 2048 lancée). Regardé dans son Chrome :
+  l'arrivée dehors est belle, **les silhouettes des visiteuses cassent l'illusion**.
+- **R6, le sol qui reflète au téléphone** : le plan du matin (photo au centre + parallaxe en boîte) **ne
+  montrait aucun reflet** ; remplacé par **le miroir par l'œil reflété** (photo à 360° prise en (x, −y, z),
+  refaite à chaque arrêt, une face par image).
+- **I2, les personnages** : nouvelle Afi et Sènami en 3D (TRELLIS.2, qui exige désormais ≥ 100 000 faces) ;
+  Maman : quota ZeroGPU du compte épuisé, demain (`--sans-jeton` ajouté) ; `habiller({ gestes })` : Sènami et
+  Maman rejoueront les 12 animations d'Afi (rotations seules, bassin remis à l'échelle) ; `alleger_perso.py`
+  écrit (Blender, avant Mixamo). Mongazi accepte les 2 téléchargements Mixamo.
+- Planche h1 : bijoux effacés (OpenCV) ; vues de face h1 et h2 découpées.
+- ⛔ Hillary : son accord écrit est demandé avant d'envoyer son visage à Hugging Face.
+- **Fin d'après-midi** : cuisson 2048 refaite (19 min) ; QC 53/53 ; Mixamo (Mongazi s'est reconnecté) : nouvelle
+  Afi riggée ; **Sènami refusée 5 fois par Mixamo** → `transferer_squelette.py` (squelette d'Afi + poids recopiés) ;
+  les deux **visibles et animées** dans le salon (bug du bassin négatif corrigé). Maman : quota ZeroGPU épuisé
+  (compte et anonyme). `mesurer.py` : 57 i/s immobile / 28 en marchant au téléphone, 25 Mo chargés.
+- Mongazi demande aussi de regarder un **port USB** (gauche, ne reconnaît plus le téléphone) : diagnostic seul
+  (le contrôleur USB 3.0 Intel n'est plus détecté), réglages laissés à Mongazi.

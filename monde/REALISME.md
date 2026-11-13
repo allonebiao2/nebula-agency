@@ -80,8 +80,15 @@ qualité haute), de jour (`?heure=14`) et de nuit (`?heure=21`).
   l'ombre large suivant le bassin (`socle/habiller.js`). ⚠️ `renderOrder 2` : en qualité haute le sol est
   translucide, une ombre dessinée avant lui disparaissait. Regardé au téléphone et à l'ordinateur
   (`monde/_outils/captures/voir_ombres.py`). QC 53/53.
-- ⏭️ **R6 · le sol qui reflète, au téléphone aussi : LE PROCHAIN** (plan décidé, rien d'écrit : une prise à
-  360° du salon une seule fois + correction de parallaxe en boîte ; détail dans `REPRENDRE-ICI.md` § 4).
+- 🔨 **R6 · le sol qui reflète, au téléphone aussi (2026-11-13, après-midi)** : en qualité haute, le `Reflector`
+  d'avant ; en moyenne et basse, **le miroir par photo à 360° prise depuis L'ŒIL REFLÉTÉ sous le sol**
+  (`poserRefletSol` dans `lieu.js`) : un sol plat reflète exactement ce que voit l'œil reflété en (x, −y, z),
+  donc chaque point du sol lit la photo dans la direction « œil reflété → ce point ». Juste et net tant que le
+  visiteur reste au même endroit ; **refaite quand il s'arrête ailleurs** (une face par image, aucun hoquet)
+  et quand la lumière change. ⛔ **Le plan prévu le matin ne marchait pas** (une photo au centre projetée sur
+  les murs, parallaxe en boîte) : un podium AU MILIEU de la pièce n'est pas sur les murs, et le centre de la
+  pièce tombait dans les panneaux du podium central. Réglages : `?reflet-force=` (2,4) et `?reflet-irr=` (0,8),
+  `?sans-reflet` pour comparer. Vu au téléphone : le podium et sa lumière se reflètent sous lui.
 - Comparer à tout moment : `?sans-cuisson` (tout) ou `?sans-lumiere-cuite` (garder l'occlusion).
 
 ## Ce que JE fais (sans attendre personne) : R1 à R6, R9 à R12, R14

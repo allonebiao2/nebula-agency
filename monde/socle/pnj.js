@@ -14,6 +14,8 @@ const GESTES = { regarder: 'regarder', photo: 'photo', toucher: 'toucher', telep
 const hasard = (a, b) => a + Math.random() * (b - a);
 
 export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, visiteuses, conversations, ctx, personnes, son = null }) {
+  /* `reglages.foyer()` : une position (ou null) que personne ne doit cacher au visiteur, posée par le lieu */
+  const reglages = { foyer: null };
   const { scene, camera } = moteur;
   const places = plan.places_pnj;
   const occupees = new Map();
@@ -262,9 +264,12 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
       }
       /* personne ne s'interpose entre le visiteur et celle qui lui parle : une visiteuse sur la ligne de
          regard s'écarte doucement de côté (capture du 2026-11-13 : Maman Sènami cachait Afi) */
+      /* … ni entre lui et le FOYER que le lieu désigne (au comptoir : Hillary ; capture du 2026-11-13, trois
+         visiteuses alignées entre le visiteur et elle) */
       const foyer = pnj.find(m => m.etat === 'joueur');
-      if (foyer && foyer !== n) {
-        const f = foyer.perso.racine.position, ax = f.x - cam2.x, az = f.z - cam2.z, L2 = ax * ax + az * az;
+      const fPos = foyer ? (foyer !== n ? foyer.perso.racine.position : null) : (reglages.foyer ? reglages.foyer() : null);
+      if (fPos) {
+        const f = fPos, ax = f.x - cam2.x, az = f.z - cam2.z, L2 = ax * ax + az * az;
         if (L2 > 0.01) {
           const k = Math.max(0, Math.min(1, ((r.x - cam2.x) * ax + (r.z - cam2.z) * az) / L2));
           const px = cam2.x + ax * k, pz = cam2.z + az * k, dx = r.x - px, dz = r.z - pz, dd = Math.hypot(dx, dz);
@@ -290,5 +295,5 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     }
   });
 
-  return { pnj, parId, aborder, annulerAbordage, parler, retenir, relacher, get conversation() { return convEnCours; }, get abordage() { return abordage; } };
+  return { pnj, parId, reglages, aborder, annulerAbordage, parler, retenir, relacher, get conversation() { return convEnCours; }, get abordage() { return abordage; } };
 }

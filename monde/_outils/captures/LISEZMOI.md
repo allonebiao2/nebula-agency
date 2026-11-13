@@ -11,6 +11,7 @@ dans `monde/_vues/`. **Un seul à la fois** : ce PC a 8 Go, deux navigateurs Pla
 | `voir_dehors.py` | l'arrivée dehors (avant « Entrer ») au téléphone, puis le rendu cinéma à l'ordinateur | `python monde/_outils/captures/voir_dehors.py` |
 | `voir_cuisson.py` | le salon de nuit **avec et sans** lumière cuite, au même endroit, ordinateur (haute) et téléphone → `{ordi,tel}-cuisson-entree-{avec,sans}.png` ; dit combien de maillages ont reçu la cuisson | `python monde/_outils/captures/voir_cuisson.py` |
 | `regler_cuisson.py` | UNE page, plusieurs forces de lumière cuite (`__monde.cuisson.facteur`) → `ordi-regle-<f>.png`, et le rapport de luminance de quatre zones contre la version sans cuisson | `python monde/_outils/captures/regler_cuisson.py 0.6 1 1.5` |
+| `voir_salon.py` | le salon tel qu'un visiteur le voit, **de jour (14 h) ET de nuit (21 h)**, ordinateur (haute) et téléphone, à l'entrée et aux points donnés → `{ordi,tel}-salon-<point>-<heure>h-<suffixe>.png` | `python monde/_outils/captures/voir_salon.py avant comptoir` · `HEURES="21" APPAREILS="tel" …` |
 | `preuves_revue.py` | les preuves demandées par la revue Impeccable (intérieur, réplique d'ambiance, étiquette au bord droit) | `python monde/_outils/captures/preuves_revue.py` |
 
 Autres outils recopiés :

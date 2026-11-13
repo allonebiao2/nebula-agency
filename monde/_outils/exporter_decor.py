@@ -23,8 +23,8 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ICI = Path(__file__).resolve().parent.parent
 SORTIE = ICI / "_cuisson"
 # ⚠️ `sans-cuisson` : exporter une page qui a déjà posé la lumière cuite exporterait ses formes recousues
-# qualité HAUTE (les 7 projecteurs, le 2e plafonnier) et 21 h (les lampes à leur force de nuit)
-URL = "http://localhost:8765/lieux/hillary-m-styl/?direct=1&qualite=haute&heure=21&sans-cuisson"
+# qualité HAUTE (les 7 projecteurs, le 2e plafonnier) et 14 h : depuis le 2026-11-13 les lampes sont cuites à leur force de JOUR (pleine), le soir les baisse (TAMISE dans lieu.js)
+URL = "http://localhost:8765/lieux/hillary-m-styl/?direct=1&qualite=haute&heure=14&sans-cuisson"
 
 
 def main() -> int:

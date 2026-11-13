@@ -168,7 +168,9 @@ export function creerMoteur(conteneur) {
     temps: () => tempsTotal,
     redimensionner,
     /* la force du halo selon l'heure (la ligne dorée brille plus la nuit) */
-    reglerHalo(force) { if (halo) halo.strength = force; },
+    /* `seuil` (facultatif) : au-dessus de quelle luminance un pixel rayonne. Une pièce claire dépasse 0,95
+       partout et tout l'écran devenait laiteux (salon crème, 2026-11-13) : seules les lampes doivent rayonner */
+    reglerHalo(force, seuil) { if (halo) { halo.strength = force; if (seuil != null) halo.threshold = seuil; } },
   };
   return moteur;
 }

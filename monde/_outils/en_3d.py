@@ -11,6 +11,7 @@ répondaient pas depuis la connexion de Cotonou (Hugging Face, si). Protocole Gr
 « sse_v3 » : envoyer le fichier, rejoindre la file avec un identifiant de session,
 lire le flux jusqu'à « process_completed ». Le même identifiant garde l'état entre
 « image_to_3d » et « extract_glb ».
+⚠️ Depuis le 2026-11-13 la démo refuse `--faces` sous 100 000 : alléger ensuite (`alleger_perso.py`).
 ⚠️ Quota gratuit de carte graphique : sans compte, il est court. Avec un jeton
 Hugging Face gratuit (variable HF_TOKEN, ou secrets/huggingface.env), il est plus long.
 ⛔ Règle NEBULA : un modèle généré d'une pièce du catalogue est VALIDÉ par la cliente
@@ -37,6 +38,8 @@ API = ESPACE + "/gradio_api"
 
 
 def jeton() -> str | None:
+    if os.environ.get("NEBULA_SANS_JETON"):   # --sans-jeton : le quota anonyme est compté à part (par adresse)
+        return None
     if os.environ.get("HF_TOKEN"):
         return os.environ["HF_TOKEN"]
     f = RACINE_DEPOT / "secrets" / "huggingface.env"
@@ -101,12 +104,15 @@ def main():
     ap.add_argument("image", type=Path)
     ap.add_argument("--sortie", type=Path, required=True)
     ap.add_argument("--resolution", default="512", choices=["512", "1024", "1536"])
-    ap.add_argument("--faces", type=int, default=120000, help="nombre de faces visé (léger pour la 3G)")
+    ap.add_argument("--faces", type=int, default=100000, help="nombre de faces visé (léger pour la 3G)")
     ap.add_argument("--texture", type=int, default=1024)
     ap.add_argument("--graine", type=int, default=0)
+    ap.add_argument("--sans-jeton", action="store_true", help="sans le compte Hugging Face : quand son quota du jour est épuisé (« ZeroGPU runs limit »)")
     ap.add_argument("--detourer-ici", action="store_true",
                     help="détourer sur le PC (rembg) : 2 calculs Hugging Face au lieu de 3, le quota gratuit compte les calculs")
     a = ap.parse_args()
+    if a.sans_jeton:
+        os.environ["NEBULA_SANS_JETON"] = "1"
     session = "".join(random.choices(string.ascii_lowercase + string.digits, k=11))
     print(f"→ TRELLIS.2 · {a.image.name} · session {session} · {'avec' if jeton() else 'sans'} jeton Hugging Face")
     if a.detourer_ici:

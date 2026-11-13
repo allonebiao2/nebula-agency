@@ -1,14 +1,14 @@
 {
   "geometrie": "salon-cuit.glb",
   "occlusion": "occlusion.webp",
-  "version": 1794552416,
+  "version": 1794581818,
   "intensite": 1.0,
   "taille": 2048,
-  "echantillons": 128,
+  "echantillons": 96,
   "distance": 1.2,
   "lumiere": "lumiere.webp",
-  "intensite_lumiere": 11.2804,
-  "echantillons_lumiere": 256,
+  "intensite_lumiere": 10.2548,
+  "echantillons_lumiere": 192,
   "emission": 1.0,
   "calibrage": 0.8
 }
