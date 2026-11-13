@@ -52,6 +52,21 @@ qualité haute), de jour (`?heure=14`) et de nuit (`?heure=21`).
 | R14 | **Ça tourne** : 30 images/s au téléphone (le réalisme ne doit pas tuer la 3G ; c'est la vague 4 de l'audit) | `monde/_outils/mesurer.py` (à écrire) |
 | R15 | Le bandeau « MAQUETTE » retiré | quand R1 à R14 sont vrais |
 
+## L'avancement, critère par critère
+
+- 🔨 **R1 · la lumière cuite (2026-11-13, en cours)** : la chaîne marche de bout en bout.
+  `exporter_decor.py` (toute la scène, clés stables, lampes orientées, lampes de cuisson) →
+  `cuire.py` (Blender sans fenêtre : dépliage commun, occlusion + lumière des 25 lampes, lissage, export) →
+  `appliquerCuisson()` (géométrie recousue, `aoMap` + `lightMap`, lampes en direct coupées sur les surfaces
+  cuites du dedans, force qui suit l'allumage des projecteurs et la nuit). Les dix pièges rencontrés :
+  `_memoire/apprentissages/2026-11-13-cuisson-lumiere-blender-threejs.md`. Essais en 1024 px : la version
+  cuite est plus juste que la version en direct (dégradés, ombres sous les tables, ombre des panneaux sur
+  le podium). **Reste** : cuisson finale en 2048 px, comparaison jour et nuit, téléphone, regard dans Chrome,
+  poids (WebP), QC, puis « est-ce que ça suffit ? ».
+  ⚠️ La cuisson finale (2048 px) a été **tuée faute de mémoire** pendant la lumière des lampes : l'occlusion
+  2048 est faite, la lumière est encore celle d'un essai 1024. Commande de reprise : `REPRENDRE-ICI.md` § 4.
+- Comparer à tout moment : `?sans-cuisson` (tout) ou `?sans-lumiere-cuite` (garder l'occlusion).
+
 ## Ce que JE fais (sans attendre personne) : R1 à R6, R9 à R12, R14
 
 Dans l'ordre de ce qui rapporte le plus :

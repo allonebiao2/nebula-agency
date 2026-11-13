@@ -9,6 +9,8 @@ dans `monde/_vues/`. **Un seul à la fois** : ce PC a 8 Go, deux navigateurs Pla
 | `filmer_dialogue.py` | conversation avec Hillary puis avec Afi, **par le vrai parcours** (toucher Afi, options, « Parler »), ordinateur en qualité haute et téléphone → `{ordi,tel}-scene-{hillary,afi}.png` | `python monde/_outils/captures/filmer_dialogue.py` |
 | `sonde_cadre.py` | mesure la caméra (position, tangage, champ) et projette les os de la tête d'Afi à l'écran pendant une conversation, journalise chaque `tournerVers` et `cadrer` → `sonde-cadre.png` | `python monde/_outils/captures/sonde_cadre.py` |
 | `voir_dehors.py` | l'arrivée dehors (avant « Entrer ») au téléphone, puis le rendu cinéma à l'ordinateur | `python monde/_outils/captures/voir_dehors.py` |
+| `voir_cuisson.py` | le salon de nuit **avec et sans** lumière cuite, au même endroit, ordinateur (haute) et téléphone → `{ordi,tel}-cuisson-entree-{avec,sans}.png` ; dit combien de maillages ont reçu la cuisson | `python monde/_outils/captures/voir_cuisson.py` |
+| `regler_cuisson.py` | UNE page, plusieurs forces de lumière cuite (`__monde.cuisson.facteur`) → `ordi-regle-<f>.png`, et le rapport de luminance de quatre zones contre la version sans cuisson | `python monde/_outils/captures/regler_cuisson.py 0.6 1 1.5` |
 | `preuves_revue.py` | les preuves demandées par la revue Impeccable (intérieur, réplique d'ambiance, étiquette au bord droit) | `python monde/_outils/captures/preuves_revue.py` |
 
 Autres outils recopiés :

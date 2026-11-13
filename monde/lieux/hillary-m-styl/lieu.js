@@ -215,8 +215,9 @@ ligneDoree.rotation.x = Math.PI / 2; poser(ligneDoree, plan.dome.x, H - 0.02, pl
 interieurs.push({ maj: (n) => { const k = melanger(1.0, 1.35, n); matLigne.color.setRGB(2.4 * k, 1.75 * k, 0.9 * k); matLavis.color.setScalar(melanger(1, 1.05, n)); } });
 
 /* les spots encastrés, et leurs flaques au sol */
-const flaques = [];
+const flaques = [], spotsEncastres = [];
 function spot(x, z, r = 0.9, force = 0.5) {
+  spotsEncastres.push({ x, z, r, force });
   const d = new THREE.Mesh(new THREE.CircleGeometry(0.07, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.2, 1.9, 1.5), toneMapped: false }));
   d.rotation.x = Math.PI / 2; poser(d, x, H - 0.005, z);
   const f = flaqueLumiere(r, 0xffe2b0, force); f.position.x = x; f.position.z = z; scene.add(f); flaques.push({ f, force });
@@ -942,6 +943,7 @@ async function embellir() {
     l.position.set(plan.comptoir.x + x, H - b.max.y, plan.comptoir.z + 0.1); scene.add(l);
   }
   document.body.classList.add('embelli');
+  await appliquerCuisson().catch(e => console.warn('lumière cuite non appliquée', e));
 }
 setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', e)), params.has('direct') ? 200 : 2500);
 
@@ -953,32 +955,201 @@ setTimeout(() => habiller(personnes.afi.perso, { dossier: 'personnages/afi/', pr
   .catch(e => console.warn('Afi reste en silhouette', e)), params.has('direct') ? 600 : 3200);
 
 
-/* EXPORTER LE DÉCOR FIXE POUR BLENDER (la cuisson de la lumière, REPRENDRE-ICI.md) : formes, couleurs
-   et lampes seulement (⚠️ les textures dessinées par programme font échouer l'exporteur, et la
-   cuisson n'en a pas besoin) ;
-   sans personnages, sans repères, sans vitres ni miroir ; avec les lumières. Lancé par
-   monde/_outils/exporter_decor.py, qui récupère le téléchargement `salon-decor.glb`. */
+/* LA CLÉ DE CUISSON : un nom STABLE pour chaque maillage du décor, le même à chaque chargement et à
+   chaque qualité. ⚠️ Les numéros « decor-N » dépendent de l'ordre de construction, qui change avec la
+   qualité (le nombre de faisceaux, le miroir du sol) ; et le sol, le plafond ou les objets scannés n'en
+   avaient même pas : ils manquaient à l'export du 2026-11-12. La clé = la signature de l'objet de premier
+   niveau (sa forme, sa position au centimètre, son orientation) + le chemin jusqu'au maillage. */
+/* ⚠️ Blender tronque les noms à 63 caractères : la clé voyage sous forme d'empreinte (FNV-1a, 32 bits) */
+function empreinte(t) { let h = 0x811c9dc5; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return 'c' + h.toString(16).padStart(8, '0'); }
+function clesCuisson() {
+  const cles = new Map(), vus = new Map();
+  for (const T of scene.children) {
+    const p = T.position;
+    /* ⚠️ la forme est FIGÉE au premier calcul : une fois la géométrie cuite posée, le nombre de sommets
+       change, et la clé avec (113 maillages sur 211 seulement, le 2026-11-13) */
+    const forme = T.userData.formeCuisson ??= (T.isMesh ? T.geometry.type + ':' + T.geometry.attributes.position.count : (T.userData.scan || 'G') + ':' + T.children.length);
+    const sig = forme + '@' + [p.x, p.y, p.z, T.rotation.x, T.rotation.y].map(v => v.toFixed(2)).join(',');
+    const n = vus.get(sig) || 0; vus.set(sig, n + 1);
+    const parcourir = (o, chemin) => { if (o.isMesh) cles.set(o, empreinte(sig + '#' + n + chemin)); o.children.forEach((c, k) => parcourir(c, chemin + '/' + k)); };
+    parcourir(T, '');
+  }
+  return cles;
+}
+const PERSONNAGES = () => new Set([hillary.racine, ...visiteuses.map(v => v.perso.racine)]);
+const dansPersonnage = (o, exclus) => { for (let q = o; q; q = q.parent) if (exclus.has(q)) return true; return false; };
+const vraimentVisible = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+/* ce qui reçoit une carte de lumière : le décor opaque éclairé. Les petits objets scannés (plantes, vases,
+   suspensions) ne font qu'OCCULTER : ils assombrissent le sol et les murs, sans prendre de place dans la carte */
+const OCCULTEURS_SEULS = new Set(['potted_plant_04', 'ceramic_vase_01', 'brass_vase_01', 'modern_ceiling_lamp_01']);
+
+/* EXPORTER LE DÉCOR FIXE POUR BLENDER (la cuisson de la lumière, REALISME.md R1) : formes, couleurs et
+   lampes (⚠️ les textures dessinées par programme font échouer l'exporteur, et la cuisson n'en a pas
+   besoin) ; sans personnages, sans repères, sans vitres, sans miroir, sans ciel ; avec les lumières.
+   Chaque maillage porte sa CLÉ DE CUISSON en nom, et en « extras » : son objet scanné, s'il reçoit une
+   carte, et sa zone (dedans ou dehors). Lancé par monde/_outils/exporter_decor.py. */
+/* une lampe telle que glTF la comprend : un projecteur pointe selon le −Z de son nœud, sa cible en enfant */
+function lampeExportee(projecteur, couleur, intensite, position, cible, angle = 0.5, penombre = 0.5) {
+  const l = projecteur ? new THREE.SpotLight(couleur, intensite, 0, angle, penombre, 2) : new THREE.PointLight(couleur, intensite, 0, 2);
+  l.position.copy(position);
+  if (projecteur) { l.lookAt(cible); l.add(l.target); l.target.position.set(0, 0, -1); }
+  return l;
+}
+/* un groupe de la géométrie = un morceau (même ordre que les groupes) */
+function decouperGroupes(geo) {
+  const g = geo.index ? geo.toNonIndexed() : geo;
+  return geo.groups.map((gr) => {
+    const m = new THREE.BufferGeometry();
+    for (const [nom, at] of Object.entries(g.attributes)) {
+      m.setAttribute(nom, new THREE.BufferAttribute(at.array.slice(gr.start * at.itemSize, (gr.start + gr.count) * at.itemSize), at.itemSize, at.normalized));
+    }
+    return m;
+  });
+}
 async function exporterDecor() {
   const { GLTFExporter } = await import('three/addons/exporters/GLTFExporter.js');
-  const exclus = new Set([hillary.racine, ...visiteuses.map(v => v.perso.racine)]);
-  const dehors = (o) => { for (let q = o; q; q = q.parent) if (exclus.has(q)) return true; return false; };
+  const exclus = PERSONNAGES(), cles = clesCuisson();
   const racine = new THREE.Group();
+  const dedans = new THREE.Box3(new THREE.Vector3(-LX - 0.3, -0.1, -LZ - 0.3), new THREE.Vector3(LX + 0.3, H + 0.3, fz + 0.3));
   scene.updateMatrixWorld(true);
+  const bb = new THREE.Box3(), centre = new THREE.Vector3();
   scene.traverse((o) => {
-    if (dehors(o) || !o.visible) return;
-    if (o.isMesh && o.name && !o.isReflector && !(o.material && o.material.transparent)) {
-      const m = o.material || {};
-      const c = new THREE.Mesh(o.geometry, new THREE.MeshStandardMaterial({ color: m.color ? m.color.clone() : 0xffffff, roughness: m.roughness ?? 0.8, metalness: m.metalness ?? 0, emissive: m.emissive ? m.emissive.clone() : 0x000000 }));
-      c.applyMatrix4(o.matrixWorld); c.name = o.name; racine.add(c);
-    } else if (o.isPointLight || o.isSpotLight || o.isDirectionalLight) {
-      const l = o.clone(false); l.applyMatrix4(o.parent ? o.parent.matrixWorld : new THREE.Matrix4()); racine.add(l);
+    if (dansPersonnage(o, exclus) || !vraimentVisible(o)) return;
+    if (o.isMesh && cles.has(o) && !o.isReflector && !o.isInstancedMesh && !o.isSkinnedMesh) {
+      const m = Array.isArray(o.material) ? o.material[0] : (o.material || {});
+      /* ⚠️ en qualité haute le sol est translucide (au-dessus de son miroir) : il cuit quand même */
+      if (m.isShaderMaterial || m.isMeshBasicMaterial || (m.transparent && m.opacity < 0.99 && o !== sol) || m.side === THREE.BackSide) return;
+      let scan = ''; for (let q = o; q; q = q.parent) if (q.userData && q.userData.scan) { scan = q.userData.scan; break; }
+      bb.setFromObject(o).getCenter(centre);
+      const extras = { scan, recepteur: !OCCULTEURS_SEULS.has(scan), zone: dedans.containsPoint(centre) ? 'dedans' : 'dehors' };
+      const matiere = (mm) => new THREE.MeshStandardMaterial({ color: mm && mm.color ? mm.color.clone() : 0xffffff, roughness: mm?.roughness ?? 0.8, metalness: mm?.metalness ?? 0, emissive: mm && mm.emissive ? mm.emissive.clone() : 0x000000 });
+      /* ⚠️ UNE MATIÈRE PAR FACE (les meubles à lattes) : la forme revenue de Blender avait perdu son
+         découpage par matière, et three.js ne dessine RIEN d'un maillage à plusieurs matières sans
+         groupes (les deux meubles devant les plantes avaient disparu, vu le 2026-11-13). Chaque groupe
+         part donc en morceau séparé « clé + g + rang », et la page recolle les morceaux au retour. */
+      const morceaux = Array.isArray(o.material) && o.geometry.groups.length ? decouperGroupes(o.geometry) : [o.geometry];
+      morceaux.forEach((geo, k) => {
+        const mm = Array.isArray(o.material) ? o.material[o.geometry.groups[k].materialIndex] : o.material;
+        const c = new THREE.Mesh(geo, matiere(mm));
+        c.applyMatrix4(o.matrixWorld); c.name = cles.get(o) + (morceaux.length > 1 || Array.isArray(o.material) ? 'g' + k : '');
+        c.userData = extras; racine.add(c);
+      });
+    } else if ((o.isPointLight || o.isSpotLight) && o.intensity > 0 && o !== lumiereFace) {
+      /* ⚠️ un projecteur de three.js VISE SA CIBLE ; l'exporteur glTF ne connaît que l'orientation du nœud :
+         sans ce `lookAt`, les 7 projecteurs éclairaient le mur du fond dans Blender (2026-11-13) */
+      racine.add(lampeExportee(o.isSpotLight, o.color, o.intensity, o.getWorldPosition(new THREE.Vector3()), o.isSpotLight ? o.target.getWorldPosition(new THREE.Vector3()) : null, o.angle, o.penumbra));
     }
   });
+  /* DES LAMPES POUR LA CUISSON SEULEMENT (elles n'existent pas dans la page, elles ne coûtent rien au
+     téléphone) : chaque spot encastré du plafond devient un vrai projecteur vers le bas (ses flaques au
+     sol étaient peintes), et l'anneau doré de la coupole éclaire vraiment le plafond qui l'entoure */
+  for (const k of spotsEncastres) {
+    /* ⚠️ un cône large (r × 1,5) fondait les flaques en un éclairage uniforme, sans contraste : on le resserre */
+    racine.add(lampeExportee(true, new THREE.Color(0xffe2b0), 70 * k.force, new THREE.Vector3(k.x, H - 0.03, k.z), new THREE.Vector3(k.x, 0, k.z), Math.atan(k.r * 1.05 / H), 0.55));
+  }
+  {
+    const anneau = new THREE.Mesh(ligneDoree.geometry, new THREE.MeshStandardMaterial({ color: 0x000000, emissive: matLigne.color.clone() }));
+    ligneDoree.updateMatrixWorld(true); anneau.applyMatrix4(ligneDoree.matrixWorld);
+    anneau.name = 'anneau-dore'; anneau.userData = { recepteur: false, emetteur: true, zone: 'dedans' };
+    racine.add(anneau);
+  }
   const glb = await new GLTFExporter().parseAsync(racine, { binary: true });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([glb], { type: 'model/gltf-binary' })); a.download = 'salon-decor.glb'; a.click();
   return racine.children.length;
 }
 
+/* LA LUMIÈRE CUITE REVIENT (REALISME.md R1) : `cuisson/salon-cuit.glb` porte, pour chaque maillage
+   récepteur, sa forme avec une 2e coordonnée de texture (`uv1`, dépliée dans Blender), et
+   `cuisson/cuisson.json` nomme la carte d'occlusion. La géométrie cuite REMPLACE l'ancienne (même forme,
+   coutures en plus) et chaque matière reçoit la carte en `aoMap` sur le canal 1.
+   ⚠️ La bande GAUCHE de la carte est blanche : un maillage qui partage une matière cuite sans avoir
+   d'`uv1` lit (0, 0), donc du blanc, donc rien ne change pour lui. `?sans-cuisson` pour comparer. */
+const cuisson = { appliquee: 0, total: 0, facteur: 1 };   /* `facteur` : pour régler la lumière cuite à l'œil, en direct */
+async function appliquerCuisson() {
+  if (params.has('sans-cuisson')) return;
+  let info;
+  try { const r = await fetch('cuisson/cuisson.json', { cache: 'no-cache' }); if (!r.ok) return; info = await r.json(); } catch { return; }
+  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  const [g, carte] = await Promise.all([
+    new GLTFLoader().loadAsync('cuisson/' + info.geometrie + '?v=' + info.version),
+    new THREE.TextureLoader().loadAsync('cuisson/' + info.occlusion + '?v=' + info.version),
+  ]);
+  carte.flipY = false; carte.channel = 1; carte.colorSpace = THREE.NoColorSpace;
+  carte.anisotropy = 4; carte.needsUpdate = true;
+  const cuit = new Map(), cuitObj = new Map(), zoneDe = new Map();
+  g.scene.traverse((o) => { if (o.isMesh && o.geometry.attributes.uv1) { cuit.set(o.name, o.geometry); cuitObj.set(o.name, o); } });
+  cuisson.total = cuit.size;
+  const { mergeGeometries } = await import('three/addons/utils/BufferGeometryUtils.js');
+  const exclus = PERSONNAGES(), matieres = new Set();
+  for (const [o, cle] of clesCuisson()) {
+    if (dansPersonnage(o, exclus)) continue;
+    let geo = null;
+    if (Array.isArray(o.material)) {
+      /* les morceaux d'un maillage à plusieurs matières, recollés avec leurs groupes */
+      const n = o.geometry.groups.length, morceaux = [];
+      for (let k = 0; k < n; k++) morceaux.push(cuit.get(cle + 'g' + k));
+      if (!n || morceaux.some(x => !x)) continue;
+      geo = mergeGeometries(morceaux, true); if (!geo) continue;
+      geo.groups.forEach((gr, k) => { gr.materialIndex = o.geometry.groups[k].materialIndex; });
+    } else geo = cuit.get(cle);
+    if (!geo) continue;
+    o.geometry = geo; cuisson.appliquee++;
+    zoneDe.set(o, (cuitObj.get(Array.isArray(o.material) ? cle + 'g0' : cle) || {}).userData?.zone || 'dedans');
+    for (const m of [].concat(o.material)) if (m && 'aoMap' in m && !m.isShaderMaterial && !m.isMeshBasicMaterial) matieres.add(m);
+  }
+  for (const m of matieres) { m.aoMap = carte; m.aoMapIntensity = info.intensite ?? 1; m.needsUpdate = true; }
+
+  /* LA LUMIÈRE DES LAMPES, CUITE : sur les surfaces fixes du DEDANS, elle REMPLACE le calcul en direct des
+     plafonniers et des projecteurs (ombres douces, rebonds, l'anneau de la coupole qui éclaire vraiment).
+     Le soleil, le ciel et les reflets restent en direct : le jour et la nuit réels continuent de jouer.
+     ⚠️ Une matière partagée avec le dehors ou avec un objet non cuit est CLONÉE pour le dedans : sinon le
+     dehors perdrait ses lampes, ou un objet sans `uv1` prendrait une lumière plate. */
+  if (info.lumiere && !params.has('sans-lumiere-cuite')) {
+    const lum = await new THREE.TextureLoader().loadAsync('cuisson/' + info.lumiere + '?v=' + info.version);
+    lum.flipY = false; lum.channel = 1; lum.colorSpace = THREE.SRGBColorSpace; lum.anisotropy = 4; lum.needsUpdate = true;
+    const autres = new Set();
+    scene.traverse((o) => { if (o.isMesh && zoneDe.get(o) !== 'dedans') for (const m of [].concat(o.material)) if (m) autres.add(m); });
+    const clones = new Map();
+    const convertir = (m) => {
+      if (!m || !('lightMap' in m) || m.isShaderMaterial || m.isMeshBasicMaterial) return m;
+      if (!autres.has(m)) { eclairerCuit(m, lum, info); return m; }
+      if (!clones.has(m)) { const c = m.clone(); eclairerCuit(c, lum, info); clones.set(m, c); }
+      return clones.get(m);
+    };
+    for (const [o, zone] of zoneDe) if (zone === 'dedans') o.material = Array.isArray(o.material) ? o.material.map(convertir) : convertir(o.material);
+    cuisson.lumiere = cuitsLumiere.size; cuisson.clones = clones.size;
+    /* les flaques peintes au sol faisaient semblant : la vraie lumière cuite les remplace */
+    for (const k of flaques) k.f.visible = false;
+    /* la force suit les projecteurs (qui s'allument un à un pendant l'ouverture) et la nuit (les
+       plafonniers baissent le jour, de 9 à 5 et de 7 à 4) */
+    moteur.chaqueImage(() => {
+      let p = 1;
+      if (faisceauxCreations.length) p = faisceauxCreations.reduce((t, f) => t + (f.base ? f.l.intensity / f.base : 1), 0) / faisceauxCreations.length;
+      const k = (0.3 + 0.7 * p) * melanger(0.75, 1, nuitCuite) * cuisson.facteur;
+      for (const m of cuitsLumiere) m.lightMapIntensity = info.intensite_lumiere * k;
+    });
+  }
+  document.body.classList.add('cuit');
+}
+let nuitCuite = 1;
+interieurs.push({ maj: (n, pluie) => { nuitCuite = Math.max(n, pluie * 0.5); } });
+const cuitsLumiere = new Set();
+const DEBUT_LAMPES = '#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )', FIN_LAMPES = '#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )';
+/* une matière cuite : la carte de lumière, et le shader SANS les boucles des plafonniers et des projecteurs
+   (dans three.js r180 elles se suivent, juste avant celle du soleil : on coupe de l'une à l'autre) */
+function eclairerCuit(m, lum, info) {
+  m.lightMap = lum; m.lightMapIntensity = info.intensite_lumiere;
+  m.aoMapIntensity = info.ao_sur_lumiere ?? 0.5;   /* la lumière cuite contient déjà ses ombres */
+  const avant = m.onBeforeCompile, cle = m.customProgramCacheKey.bind(m);
+  m.onBeforeCompile = (sh, r) => {
+    if (avant) avant.call(m, sh, r);
+    const c = THREE.ShaderChunk.lights_fragment_begin, i = c.indexOf(DEBUT_LAMPES), j = c.indexOf(FIN_LAMPES);
+    if (i >= 0 && j > i) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', c.slice(0, i) + c.slice(j));
+  };
+  m.customProgramCacheKey = () => cle() + '|cuit';
+  m.needsUpdate = true; cuitsLumiere.add(m);
+}
+
 /* pour les contrôles automatiques */
-window.__monde = { exporterDecor, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { exporterDecor, clesCuisson, cuisson, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

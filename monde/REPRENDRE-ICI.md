@@ -101,6 +101,22 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 ## 4 · LA PROCHAINE ACTION EXACTE : la vague 4, la chaîne d'assets pour la 3G
 
+> 🔴 **ÉTAT EXACT DU 2026-11-13, 4 h 35 : R1 (LA LUMIÈRE CUITE) EN COURS.** La chaîne marche
+> (`exporter_decor.py` → `cuire.py` → `appliquerCuisson()` dans `lieu.js`, détail dans `REALISME.md`
+> et `_memoire/apprentissages/2026-11-13-cuisson-lumiere-blender-threejs.md`). La cuisson FINALE a été
+> **tuée par Claude Code faute de mémoire** (8 Go) au milieu de la lumière des lampes : dans
+> `lieux/hillary-m-styl/cuisson/`, `occlusion.png` est en 2048 (final), mais `lumiere.png` et
+> `salon-cuit.glb` sont ceux d'un ESSAI en 1024, aux cônes des spots encastrés encore larges.
+> **Prochaine action, avec l'accord de Mongazi** (fermer Chrome et Edge d'abord) : relancer la seule
+> lumière, environ 30 min :
+> `"D:/Blender/blender.exe" -b --factory-startup -P monde/_outils/cuire.py -- --taille 2048 --echantillons-lumiere 256 --lissage 3 --quoi lumiere`
+> (si la mémoire manque encore : `--taille 1536`). ⚠️ `--quoi lumiere` refait le dépliage : il est
+> déterministe, l'occlusion déjà cuite reste alignée (à vérifier sur les captures). Puis relancer le serveur
+> (`python monde/_servir.py --sans-construire`, lui aussi tué), `python monde/_outils/captures/voir_cuisson.py`,
+> régler la force avec `regler_cuisson.py` (la calibration physique, facteur 1, tombait juste à l'essai),
+> regarder jour (`?heure=14`) et nuit, au téléphone et dans Chrome, convertir les cartes en WebP, QC 52/52,
+> commit des fichiers de `cuisson/`. ⚠️ Le QC n'a PAS été rejoué depuis le début de R1.
+
 > ⚡ **2026-11-13, plus tard dans la matinée** : Mongazi fixe un mini-objectif, « le salon doit être
 > virtuel mais le plus réaliste possible ». Tout est dans **`monde/REALISME.md`**. J'y propose de
 > **commencer par la lumière cuite** (vague 5) en y fondant la compression 3G, au lieu de la vague 4

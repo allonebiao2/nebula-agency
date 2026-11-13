@@ -56,7 +56,10 @@ export function creerRessources(moteur, base = '../../socle/ressources/polyhaven
         cacheObjets.set(nom, new Promise((ok) => gltf.load(`${base}${nom}/${nom}.gltf`, (g) => ok(g.scene), undefined, () => ok(null))));
       }
       const modele = await cacheObjets.get(nom);
-      return modele ? modele.clone(true) : null;
+      if (!modele) return null;
+      /* l'objet scanné garde son nom de source : la cuisson de la lumière le reconnaît (occulteur seul
+         pour les petits objets) */
+      const o = modele.clone(true); o.userData.scan = nom; return o;
     },
   };
 }

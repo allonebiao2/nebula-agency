@@ -22,7 +22,9 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ICI = Path(__file__).resolve().parent.parent
 SORTIE = ICI / "_cuisson"
-URL = "http://localhost:8765/lieux/hillary-m-styl/?direct=1&qualite=moyenne"
+# ⚠️ `sans-cuisson` : exporter une page qui a déjà posé la lumière cuite exporterait ses formes recousues
+# qualité HAUTE (les 7 projecteurs, le 2e plafonnier) et 21 h (les lampes à leur force de nuit)
+URL = "http://localhost:8765/lieux/hillary-m-styl/?direct=1&qualite=haute&heure=21&sans-cuisson"
 
 
 def main() -> int:
