@@ -1291,8 +1291,12 @@ function eclairerCuit(m, lum, info) {
     /* ⚠️ on GARDE les reflets des lampes (le marbre qui brille : un reflet dépend du regard, il ne se cuit
        pas) et on retire seulement leur part diffuse, que la carte de lumière apporte déjà. Couper les
        boucles entières éteignait les reflets du sol (vu au téléphone le 2026-11-13). */
-    if (i >= 0 && j > i) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>',
-      c.slice(0, i) + 'vec3 diffusAvantLampes = reflectedLight.directDiffuse;\n' + c.slice(i, j) + 'reflectedLight.directDiffuse = diffusAvantLampes;\n' + c.slice(j));
+    /* R14 : aux qualités moyenne et basse, les boucles des lampes SAUTENT entièrement sur le décor cuit : leur
+       diffus est dans la carte, leur éclat sur le sol vient du reflet à 360° de R6. C'était le gros du coût par
+       pixel sur un grand écran (Chrome de Mongazi, 2026-11-13). En haute, on garde leurs reflets. */
+    if (i >= 0 && j > i) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', q.reflets
+      ? c.slice(0, i) + 'vec3 diffusAvantLampes = reflectedLight.directDiffuse;\n' + c.slice(i, j) + 'reflectedLight.directDiffuse = diffusAvantLampes;\n' + c.slice(j)
+      : c.slice(0, i) + c.slice(j));
   };
   m.customProgramCacheKey = () => cle() + '|cuit';
   m.needsUpdate = true; cuitsLumiere.add(m);

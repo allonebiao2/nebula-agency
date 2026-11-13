@@ -139,6 +139,12 @@ export function creerMoteur(conteneur) {
     const moy = fenetre.reduce((a, b) => a + b, 0) / fenetre.length;
     fenetre = [];
     if (tempsTotal - dernierAjustement < 3) return;
+    /* … et REMONTER quand il y a de la marge (Mongazi, 2026-11-13 : « le maximum d'images/s ») : une baisse de
+       finesse décidée pendant le chargement (pic de calcul) ne doit pas durer toute la visite */
+    const plafond = Math.min(window.devicePixelRatio || 1, qualite.dpr);
+    if (moy < 1 / 55 && dpr < plafond - 0.05 && tempsTotal - dernierAjustement > 6) {
+      dernierAjustement = tempsTotal; dpr = Math.min(plafond, dpr + 0.1); redimensionner(); return;
+    }
     if (moy > 1 / 33) {
       dernierAjustement = tempsTotal;
       if (dpr > 0.7) { dpr = Math.max(0.6, dpr - 0.2); redimensionner(); }

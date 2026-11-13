@@ -67,7 +67,8 @@ messagerie) sont dans la table ci-dessous ; **rien n'a été supprimé**, seulem
   épaules et le haut du buste** (la consigne B1 demandait les cheveux dégagés) : même défaut que
   Sènami, en plus marqué. Fond lavande, pas gris (sans gêne pour le détourage).
   ⛔ **Il manque** : les **six expressions de son visage en 3D** dont Mongazi a parlé (pas dans le
-  dossier) et **son accord écrit**. La ressemblance, seul Mongazi peut la confirmer.
+  dossier). ✅ **Accord** : Mongazi, 2026-11-13 : « elle m'a accordé son accord donc vas-y » (une trace écrite lui
+  est demandée dans `hillary\`). La ressemblance, seul Mongazi peut la confirmer.
 
 ### Les vidéos
 

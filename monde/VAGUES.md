@@ -175,7 +175,8 @@ Chrome) avant la suivante :
   `salon-vue-comptoir-arche` (la lumière).
 - 🔨 **I2 · les personnages** : ✅ nouvelle Afi (Mixamo) et ✅ Sènami (squelette d'Afi transféré, Mixamo refusait) dans le salon, animées ; ⏳ Maman (quota 3D du 2026-11-14).
 - ⏳ **I3 · ses robes h1 et h2 en 3D** sur mannequins, défauts de planche corrigés ; 🙋 validation d'Hillary.
-- ⛔ **I4 · Hillary** : attend son accord écrit et les six expressions de son visage (pas dans le dossier).
+- 🔨 **I4 · Hillary** : ✅ accord donné (Mongazi, 2026-11-13 : « elle m'a accordé son accord donc vas-y ») ; 3D au retour du quota TRELLIS (2026-11-14), Higgsfield et WaveSpeed à 0 crédit.
+- 🔨 **« je veux plus que du 60 images par seconde sur PC et mobile »** (2026-11-13) : l'écran plafonne la cadence (60, 90, 120 ou 144 Hz) ; le moteur ne bride rien, on allège jusqu'à tenir la fréquence de chaque écran.
 
 ## Vague 1 · La maquette jouable 🔨 (2026-11-12)
 
