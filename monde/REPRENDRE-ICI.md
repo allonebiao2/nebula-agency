@@ -24,10 +24,12 @@
    Au téléphone, sur le même Wi-Fi : `http://192.168.100.203:8765/lieux/hillary-m-styl/` (adresse
    relevée le 2026-11-13, elle peut changer : `ipconfig`). Sans `--sans-construire` si `plan.json`
    ou le catalogue d'Hillary a changé (il reconstruit d'abord).
-3. **Regarder ce que Mongazi a déposé** dans `_partage\immersive  store 3D\personnages\` (deux
-   espaces entre « immersive » et « store ») : un dossier `senami\` ou `maman\` (modèle 3D, vidéos
-   d'animation dans `videos\`), un dossier `_partage\immersive  store 3D\hillary\` (ses photos + son
-   accord écrit). Au 2026-11-13 au matin, **seul `afi\` existe**.
+3. **Regarder ce que Mongazi a déposé** dans `_partage\immersive  store 3D\` (deux espaces entre
+   « immersive » et « store ») et le **ranger** comme le 2026-11-13 : `personnages\<prénom>\` (image,
+   `videos\`), `hillary\`, `robes\`, `salon\`. **Tout arrivage s'inscrit dans `monde/ARRIVEES.md`**
+   (rangement + analyse). ⚡ **2026-11-13 après-midi : 24 fichiers reçus et analysés** (nouvelle Afi,
+   Sènami, Maman, Hillary en pose A, 9 vidéos, planches h1 et h2 + une pièce inconnue, 8 vues du salon) ;
+   ⏸️ **Mongazi : ne rien intégrer**, il finit les plans et dira « intègre ».
 4. Puis **la prochaine action exacte** (section 4).
 
 ⚠️ **Plus aucune tâche Epic ou Unreal à relancer** : Epic et Unreal sont **désinstallés** le

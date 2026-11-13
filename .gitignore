@@ -148,6 +148,8 @@ monde/lieux/*/donnees.js
 # LE MONDE : photos personnelles d'Hillary (visage, gestes filmés, voix). Le dépôt est PUBLIC : jamais dans git.
 _partage/**/hillary/
 _partage/**/Hillary/
+# tout le dossier source du salon (planches de SES robes, son logo, FBX Mixamo, vidéos des personnages) : rien n'y est publiable tel quel
+_partage/immersive  store 3D/
 monde/lieux/*/prive/
 monde/lieux/*/personnages/*-mixamo.zip
 

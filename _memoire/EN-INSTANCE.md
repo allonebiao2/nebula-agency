@@ -9,7 +9,7 @@
 >
 > 🙋 attend une réponse ou un geste de Mongazi · 🤖 Claude peut le faire · 🕰️ plus tard, exprès
 >
-> Dernière mise à jour : **2026-11-11**.
+> Dernière mise à jour : **2026-11-13**.
 
 ---
 
@@ -62,7 +62,7 @@ D'après `CLAUDE.md` et la mémoire de Claude au 2026-11-11 : l'état exact est 
 
 | Projet | Où il en est | Ce qui le débloque | Renvoi |
 |---|---|---|---|
-| **LE MONDE** (salon 3D d'Hillary, nom provisoire) | jouable en local, **pas en ligne** ; interface en verre (« ship »), ouverture cinéma, Afi en 3D qui vit, conversations mises en scène ; QC 52/52 ; on suit `monde/AUDIT-JEU-VIDEO.md` vague par vague (1 ✅, 2 🟡, 3 ✅) | 🤖 **réalisme « le plus possible »** (`monde/REALISME.md`, grille R1-R15 ; ordre proposé : lumière cuite d'abord, 3G fondue dedans, **à confirmer par Mongazi**), sinon **vague 4, la 3G** (`REPRENDRE-ICI.md` § 4), puis 5 (lumière cuite dans Blender), main animée de la 1re visite, animations des panneaux · 🙋 planches des robes + validation d'Hillary (R7), Sènami et Maman en 3D (il les génère, `personnages/CONSIGNES.md`), vidéos d'animation, essai sur son téléphone, photos et accord d'Hillary, planches des robes, vidéo d'une rue | `monde/REPRENDRE-ICI.md` |
+| **LE MONDE** (salon 3D d'Hillary, nom provisoire) | jouable en local, **pas en ligne** ; interface en verre (« ship »), ouverture cinéma, Afi en 3D qui vit, conversations mises en scène ; QC 52/52 ; on suit `monde/AUDIT-JEU-VIDEO.md` vague par vague (1 ✅, 2 🟡, 3 ✅) | 🤖 **réalisme « le plus possible »** (`monde/REALISME.md`, grille R1-R15 ; ordre proposé : lumière cuite d'abord, 3G fondue dedans, **à confirmer par Mongazi**), sinon **vague 4, la 3G** (`REPRENDRE-ICI.md` § 4), puis 5 (lumière cuite dans Blender), main animée de la 1re visite, animations des panneaux · 🙋 planches des robes + validation d'Hillary (R7), Sènami et Maman en 3D (il les génère, `personnages/CONSIGNES.md`), vidéos d'animation, essai sur son téléphone, photos et accord d'Hillary, planches des robes, vidéo d'une rue  · ⏸️ **2026-11-13 : 24 assets reçus et analysés** (`monde/ARRIVEES.md`), rien intégré sur sa consigne ; 🙋 finir les plans, 6 expressions d'Hillary + accord écrit, pièce de `robe-inconnue`, consignes C de h1/h2, **jour clair + nuit tamisée ?** | `monde/REPRENDRE-ICI.md` |
 | **NEBULA VOIX** | lancé le 2026-11-05, prototype « Awa » essayé à la voix | la suite du plan ; ⛔ aucun appel à un particulier sans accord préalable prouvé | `nebula-voix/docs/PLAN.md` (dépôt privé) |
 | **MA LETTRE À…** | en ligne ; la plume est coupée ; le film n'est pas publiable tant qu'elle l'est ; ouvertures 3D sans constructeur, serveur ni caisse | 🙋 **le premier franc** (La Carte, 1 000 F) ; critères d'arrêt 1er ou 16 décembre | `malettre/CONTEXT.md` |
 | **PISTE** | encaisse et livre tout seul | 🙋 **le premier paiement réel** n'a jamais eu lieu | `piste/PAIEMENT.md` |
