@@ -128,6 +128,9 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
   cachés mais touchables : **232 → 124 appels de dessin, 21 → 30 i/s dans Chrome** sur ce PC, image identique,
   QC 53/53. `?sans-fusion` pour comparer. Prochains leviers : les 28 i/s en marchant, les personnages (40 000
   triangles chacun) en basse qualité, les 44 matières « Basic + map + transparente » (affiches, étiquettes).
+- ✅ **R14, 2e gain** : les étiquettes (`reperes.js`, `deplacement.js`) n'écrivent plus que ce qui change et ne
+  mesurent plus leur largeur à chaque image (lectures forcées de mise en page) : **en marchant, 28 → 40 i/s**
+  au téléphone (Playwright), immobile 60 (plafond de l'écran). QC 53/53. `mesure-apres.json` dans `_vues/`.
 - Port USB de Mongazi : le contrôleur USB 3.0 Intel (PCI 9CB1) n'est plus vu du tout ; conseillé : vidange
   complète (15 s sans chargeur), puis BIOS (Échap, F10). Rien modifié.
 - Outils neufs : `alleger_perso.py`, `transferer_squelette.py`, `mesurer.py`, `captures/voir_salon.py`,

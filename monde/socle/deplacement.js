@@ -204,6 +204,8 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
 
   /* ---------- chaque image ---------- */
   const proj = new THREE.Vector3();
+  const tailleToile = { w: toile.clientWidth, h: toile.clientHeight };
+  addEventListener('resize', () => { tailleToile.w = toile.clientWidth; tailleToile.h = toile.clientHeight; });
   moteur.chaqueImage((dt, t) => {
     if (fovBase === null) fovBase = camera.fov;
     if (marche) {
@@ -271,13 +273,18 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
       if (m.etiquette) {
         proj.set(m.p.x, 0.55, m.p.z).project(camera);
         const vis = proches.includes(id) && a > 0.3 && proj.z < 1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05 && d < 13;
-        m.etiquette.style.opacity = vis ? String(Math.min(1, a)) : '0';
-        m.etiquette.style.pointerEvents = vis ? 'auto' : 'none';
+        /* ⚠️ R14 : n'écrire que ce qui change, et mesurer la largeur UNE fois (son texte ne change pas) ; la taille de
+           la toile est lue une fois par image, pas une fois par étiquette (lectures forcées de mise en page) */
+        const op = vis ? String(Math.round(Math.min(1, a) * 50) / 50) : '0';
+        if (m.op !== op) { m.etiquette.style.opacity = op; m.op = op; }
+        if (m.pe !== vis) { m.etiquette.style.pointerEvents = vis ? 'auto' : 'none'; m.pe = vis; }
         /* l'étiquette reste DANS l'écran : bornée à 8 px des bords (revue Impeccable du 2026-11-12) */
         if (vis) {
-          const demi = (m.etiquette.offsetWidth || 120) / 2, W = toile.clientWidth;
+          if (!m.demi) m.demi = (m.etiquette.offsetWidth || 0) / 2;
+          const demi = m.demi || 60, W = tailleToile.w;
           const x = Math.min(W - demi - 8, Math.max(demi + 8, (proj.x * 0.5 + 0.5) * W));
-          m.etiquette.style.transform = `translate(${x}px, ${(-proj.y * 0.5 + 0.5) * toile.clientHeight}px) translate(-50%, -100%)`;
+          const tr = `translate(${Math.round(x)}px, ${Math.round((-proj.y * 0.5 + 0.5) * tailleToile.h)}px) translate(-50%, -100%)`;
+          if (m.tr !== tr) { m.etiquette.style.transform = tr; m.tr = tr; }
         }
       }
     }

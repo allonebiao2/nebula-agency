@@ -31,12 +31,12 @@ export function creerReperes({ moteur, calque, maxNoms = null, distanceMax = 9 }
     const cache = document.body.classList.contains('en-dialogue') || document.body.classList.contains('en-fiche') || document.body.classList.contains('en-cadran');
     const vus = [];
     for (const r of liste) {
-      if (cache || (r.si && !r.si())) { r.b.classList.remove('vu'); continue; }
+      if (cache || (r.si && !r.si())) { if (r.vu !== false) { r.b.classList.remove('vu'); r.vu = false; } continue; }
       r.ou(v);
       const d = v.distanceTo(camera.position);
       v.project(camera);
       const dans = v.z < 1 && Math.abs(v.x) < 0.9 && v.y > -0.82 && v.y < 0.86 && d < distanceMax;
-      if (!dans) { r.b.classList.remove('vu'); continue; }
+      if (!dans) { if (r.vu !== false) { r.b.classList.remove('vu'); r.vu = false; } continue; }
       vus.push({ r, d, x: Math.round((v.x * 0.5 + 0.5) * innerWidth), y: Math.round((-v.y * 0.5 + 0.5) * innerHeight) });
     }
     vus.sort((a, b) => a.d - b.d);
@@ -47,19 +47,26 @@ export function creerReperes({ moteur, calque, maxNoms = null, distanceMax = 9 }
       const avecNom = i < nbNoms && !chevauche;
       /* un point seul ne se pose jamais SUR l'étiquette d'un autre (vu le 2026-11-12 :
          « ROBE DE C●RÉMONIE ») : il attend qu'on se rapproche */
-      if (!avecNom && places.some(p => o.x > p.g - 16 && o.x < p.d + 16 && Math.abs(o.y - p.y) < 26)) { o.r.b.classList.remove('vu'); return; }
+      if (!avecNom && places.some(p => o.x > p.g - 16 && o.x < p.d + 16 && Math.abs(o.y - p.y) < 26)) { if (o.r.vu !== false) { o.r.b.classList.remove('vu'); o.r.vu = false; } return; }
       const nom = typeof o.r.nom === 'function' ? o.r.nom() : o.r.nom;
       if (nom !== o.r.txt) { o.r.txt = nom; o.r.b.querySelector('span').textContent = nom; o.r.b.setAttribute('aria-label', nom); }
-      o.r.b.classList.add('vu');
-      o.r.b.classList.toggle('nomme', avecNom);
+      /* ⚠️ R14 : n'écrire dans le DOM que ce qui CHANGE, et ne mesurer une largeur qu'une fois par texte. Lire
+         `offsetWidth` juste après avoir changé une classe ou un `transform` force le navigateur à recalculer TOUTE la
+         mise en page, étiquette par étiquette, à chaque image : la cadence tombait de moitié en marchant. */
+      if (!o.r.vu) { o.r.b.classList.add('vu'); o.r.vu = true; }
+      if (o.r.nomme !== avecNom) { o.r.b.classList.toggle('nomme', avecNom); o.r.nomme = avecNom; }
       /* une étiquette ne sort jamais de l'écran : elle passe à gauche de son point SEULEMENT si
          elle déborderait vraiment à droite (un seuil fixe retournait l'étiquette centrale au téléphone) */
       let gauche = false, w = 44;
-      if (avecNom) { w = o.r.b.offsetWidth; gauche = o.x - 22 + w > innerWidth - 8 && o.x + 22 - w >= 8; }
-      o.r.b.classList.toggle('gauche', gauche);
+      if (avecNom) {
+        if (o.r.wPour !== o.r.txt || !o.r.w) { o.r.w = o.r.b.offsetWidth; o.r.wPour = o.r.txt; }
+        w = o.r.w; gauche = o.x - 22 + w > innerWidth - 8 && o.x + 22 - w >= 8;
+      }
+      if (o.r.gauche !== gauche) { o.r.b.classList.toggle('gauche', gauche); o.r.gauche = gauche; }
       const tx = gauche ? o.x - w + 44 : o.x;
       if (avecNom) places.push({ g: tx - 22, d: tx - 22 + w, y: o.y });
-      o.r.b.style.transform = `translate(${tx}px, ${o.y}px)`;
+      const tr = `translate(${tx}px, ${o.y}px)`;
+      if (o.r.tr !== tr) { o.r.b.style.transform = tr; o.r.tr = tr; }
     });
   });
 
