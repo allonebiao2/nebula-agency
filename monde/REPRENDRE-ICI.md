@@ -101,7 +101,12 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 ## 4 · LA PROCHAINE ACTION EXACTE : la vague 4, la chaîne d'assets pour la 3G
 
-> 🔴 **ÉTAT EXACT DU 2026-11-13, 4 h 35 : R1 (LA LUMIÈRE CUITE) EN COURS.** La chaîne marche
+> ✅ **2026-11-13, 11 h : R1 (LA LUMIÈRE CUITE) FAITE** (QC 53/53, regardée dans Chrome ; détail dans
+> `REALISME.md`). **Prochaine action : R2, l'ombre de contact sous chaque personnage** (les objets ont la leur
+> par la cuisson), puis R6 (le sol qui reflète au téléphone aussi) et R5 (le plafond de l'étalon). Ce qui suit
+> est l'historique de la nuit.
+>
+> (historique) **ÉTAT DU 2026-11-13, 4 h 35 : R1 EN COURS.** La chaîne marche
 > (`exporter_decor.py` → `cuire.py` → `appliquerCuisson()` dans `lieu.js`, détail dans `REALISME.md`
 > et `_memoire/apprentissages/2026-11-13-cuisson-lumiere-blender-threejs.md`). La cuisson FINALE a été
 > **tuée par Claude Code faute de mémoire** (8 Go) au milieu de la lumière des lampes : dans

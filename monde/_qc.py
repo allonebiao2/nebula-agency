@@ -238,6 +238,16 @@ def main():
         pg.goto(BASE + "?direct=1&qualite=moyenne&heure=14&meteo=pluie", wait_until="domcontentloaded")
         jusqua(pg, "window.__monde !== undefined", 90); time.sleep(5)
         ok(pg.evaluate("__monde.ciel.etat.pluie") > 0.5 and pg.evaluate("__monde.ciel.etat.jour") > 0.9, "?heure=14&meteo=pluie : jour et pluie")
+        # 9 · LA LUMIÈRE CUITE (REALISME.md R1) : toutes les clés du décor retrouvent leur forme cuite, les
+        #     matières du dedans reçoivent la carte de lumière. ⚠️ Une clé qui ne correspond plus (un objet
+        #     déplacé, une forme changée) fait tomber ce chiffre sans aucune erreur dans la console.
+        try:
+            jusqua(pg, "document.body.classList.contains('cuit')", 90)
+            c = pg.evaluate("__monde.cuisson")
+            ok(c["appliquee"] >= 200 and c.get("lumiere", 0) >= 20,
+               "la lumière cuite est posée sur le décor", f"{c['appliquee']} maillages, {c.get('lumiere', 0)} matières éclairées")
+        except Exception as e:
+            ok(False, "la lumière cuite est posée sur le décor", str(e)[:120])
         pg.evaluate("__monde.deplacement.tournerVers(new (__monde.moteur.THREE.Vector3)(0, 1.6, 9))"); time.sleep(1.5)
         shot("09-pluie-jour")
 

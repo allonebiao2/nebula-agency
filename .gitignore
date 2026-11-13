@@ -159,3 +159,5 @@ monde/_cuisson/
 
 # LE MONDE : musique Pixabay (licence : usage dans le projet, pas de redistribution du morceau seul ; le dépôt est public)
 monde/lieux/*/musique/
+# LE MONDE : les cartes de lumière brutes (4 Mo chacune) ; la page lit les WebP
+monde/lieux/*/cuisson/*.png

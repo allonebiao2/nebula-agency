@@ -3,7 +3,9 @@
     python monde/_servir.py --sans-construire          (dans un autre terminal)
     python monde/_outils/exporter_decor.py             → monde/_cuisson/salon-decor.glb
     "D:/Blender/blender.exe" -b --factory-startup -P monde/_outils/cuire.py -- [--taille 2048] [--echantillons 128]
-        [--echantillons-lumiere 256] [--quoi ao,lumiere] [--emission 1] [--calibrage 1] [--lissage 2]
+        [--echantillons-lumiere 256] [--quoi ao,lumiere] [--emission 1] [--calibrage 0.8] [--lissage 2]
+    python monde/_outils/cuisson_finir.py               (les cartes en WebP, ~0,4 Mo au lieu de 4)
+    Réglages de la cuisson livrée (2026-11-13) : --taille 2048 --echantillons 128 --echantillons-lumiere 256 --lissage 3
 
 Ce qu'il fait, sans fenêtre :
   1. importe le décor exporté par la page (chaque maillage porte sa CLÉ DE CUISSON en nom, et en
@@ -45,7 +47,7 @@ POIDS_DEHORS = option("--poids-dehors", 0.3)  # le dehors prend 0,3 fois la dens
 BANDE = 0.012                                 # la bande blanche réservée, à gauche
 ECHANTILLONS_LUMIERE = option("--echantillons-lumiere", 256)
 EMISSION = option("--emission", 1.0)          # l'anneau doré éclaire : facteur sur son émission physique (÷ 683)
-CALIBRAGE = option("--calibrage", 1.0)        # correction finale de la lumière cuite, réglée à l'œil
+CALIBRAGE = option("--calibrage", 0.8)        # correction finale, réglée à l'œil dans Chrome le 2026-11-13 (0,8 : le podium ne brûle plus)
 LISSAGE = option("--lissage", 2)              # rayon du lissage anti-bruit, en pixels
 QUOI = option("--quoi", "ao,lumiere").split(",")
 PLAFOND_REBONDS = option("--clamp", 0.02)     # plafonne un rebond isolé trop fort (les « lucioles » de Cycles)

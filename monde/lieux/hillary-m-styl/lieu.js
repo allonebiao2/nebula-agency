@@ -1136,8 +1136,9 @@ let nuitCuite = 1;
 interieurs.push({ maj: (n, pluie) => { nuitCuite = Math.max(n, pluie * 0.5); } });
 const cuitsLumiere = new Set();
 const DEBUT_LAMPES = '#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )', FIN_LAMPES = '#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )';
-/* une matière cuite : la carte de lumière, et le shader SANS les boucles des plafonniers et des projecteurs
-   (dans three.js r180 elles se suivent, juste avant celle du soleil : on coupe de l'une à l'autre) */
+/* une matière cuite : la carte de lumière, et le shader où les plafonniers et les projecteurs n'apportent plus
+   que leurs REFLETS (dans three.js r180 leurs boucles se suivent, juste avant celle du soleil : on encadre de
+   l'une à l'autre, et la part diffuse qu'elles ajoutent est retirée) */
 function eclairerCuit(m, lum, info) {
   m.lightMap = lum; m.lightMapIntensity = info.intensite_lumiere;
   m.aoMapIntensity = info.ao_sur_lumiere ?? 0.5;   /* la lumière cuite contient déjà ses ombres */
@@ -1145,7 +1146,11 @@ function eclairerCuit(m, lum, info) {
   m.onBeforeCompile = (sh, r) => {
     if (avant) avant.call(m, sh, r);
     const c = THREE.ShaderChunk.lights_fragment_begin, i = c.indexOf(DEBUT_LAMPES), j = c.indexOf(FIN_LAMPES);
-    if (i >= 0 && j > i) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', c.slice(0, i) + c.slice(j));
+    /* ⚠️ on GARDE les reflets des lampes (le marbre qui brille : un reflet dépend du regard, il ne se cuit
+       pas) et on retire seulement leur part diffuse, que la carte de lumière apporte déjà. Couper les
+       boucles entières éteignait les reflets du sol (vu au téléphone le 2026-11-13). */
+    if (i >= 0 && j > i) sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>',
+      c.slice(0, i) + 'vec3 diffusAvantLampes = reflectedLight.directDiffuse;\n' + c.slice(i, j) + 'reflectedLight.directDiffuse = diffusAvantLampes;\n' + c.slice(j));
   };
   m.customProgramCacheKey = () => cle() + '|cuit';
   m.needsUpdate = true; cuitsLumiere.add(m);

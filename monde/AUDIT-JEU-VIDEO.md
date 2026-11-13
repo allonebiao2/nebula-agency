@@ -105,6 +105,9 @@
   image** (viser une seule fois laissait parfois la tête coupée), souffle de caméra au repos, oratrice
   à 1,30 m, les autres visiteuses écartées de la ligne de regard, lumière de face douce (2,4) portée par
   la caméra. QC 52/52, filmé au téléphone et à l'ordinateur par le vrai parcours.
+- ✅ **Vague 5 · la lumière cuite dans Blender (2026-11-13, avancée par Mongazi avant la 4)** : occlusion +
+  lumière des 25 lampes cuites en 2048 px, appliquées au décor du dedans, reflets gardés en direct. C'est le
+  critère R1 de `REALISME.md`, qui porte désormais la suite (le mini-objectif « le plus réaliste possible »).
 - ⏭️ **Vague 4 · la chaîne d'assets pour la 3G : LA PROCHAINE.** Le plan pas à pas est dans
   `REPRENDRE-ICI.md`, section 4 (mesurer d'abord, puis Afi allégée, meshopt, KTX2, fusion, instanciation,
   zéro allocation, chargement par étapes, mesurer après).

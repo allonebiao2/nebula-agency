@@ -54,7 +54,7 @@ qualité haute), de jour (`?heure=14`) et de nuit (`?heure=21`).
 
 ## L'avancement, critère par critère
 
-- 🔨 **R1 · la lumière cuite (2026-11-13, en cours)** : la chaîne marche de bout en bout.
+- ✅ **R1 · la lumière cuite (2026-11-13, FAITE)** : la chaîne marche de bout en bout.
   `exporter_decor.py` (toute la scène, clés stables, lampes orientées, lampes de cuisson) →
   `cuire.py` (Blender sans fenêtre : dépliage commun, occlusion + lumière des 25 lampes, lissage, export) →
   `appliquerCuisson()` (géométrie recousue, `aoMap` + `lightMap`, lampes en direct coupées sur les surfaces
@@ -63,8 +63,16 @@ qualité haute), de jour (`?heure=14`) et de nuit (`?heure=21`).
   cuite est plus juste que la version en direct (dégradés, ombres sous les tables, ombre des panneaux sur
   le podium). **Reste** : cuisson finale en 2048 px, comparaison jour et nuit, téléphone, regard dans Chrome,
   poids (WebP), QC, puis « est-ce que ça suffit ? ».
-  ⚠️ La cuisson finale (2048 px) a été **tuée faute de mémoire** pendant la lumière des lampes : l'occlusion
-  2048 est faite, la lumière est encore celle d'un essai 1024. Commande de reprise : `REPRENDRE-ICI.md` § 4.
+  **Livré** : cuisson 2048 px (occlusion 128 échantillons, lumière des 25 lampes 256 échantillons, lissage 3),
+  cartes en WebP (204 + 156 Ko au lieu de 4 Mo), force réglée à l'œil **dans Chrome** à 0,8 (le podium ne
+  brûle plus), les **reflets des lampes gardés en direct** sur le marbre (seule la part diffuse est cuite),
+  regardé de nuit et de jour, à l'ordinateur et au téléphone, avec et sans cuisson : la version cuite est
+  plus juste partout (vraies flaques de lumière aux bords doux, ombres des panneaux sur le podium, ombres
+  de la table dans les flaques, dégradés sur les étagères). QC **53/53** (un contrôle neuf : la lumière
+  cuite est posée). **Ce qui n'en fait pas partie, dit franchement** : le dehors ne reçoit que l'occlusion
+  (sa lumière reste en direct, R10 s'en occupera), les personnages n'ont pas encore d'ombre au sol (R2),
+  la géométrie cuite pèse 1,6 Mo non compressée (R14). Refaire une cuisson : `cuire.py` puis
+  `cuisson_finir.py` (en-tête de `cuire.py`).
 - Comparer à tout moment : `?sans-cuisson` (tout) ou `?sans-lumiere-cuite` (garder l'occlusion).
 
 ## Ce que JE fais (sans attendre personne) : R1 à R6, R9 à R12, R14
