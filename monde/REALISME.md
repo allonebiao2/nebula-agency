@@ -80,6 +80,8 @@ qualité haute), de jour (`?heure=14`) et de nuit (`?heure=21`).
   l'ombre large suivant le bassin (`socle/habiller.js`). ⚠️ `renderOrder 2` : en qualité haute le sol est
   translucide, une ombre dessinée avant lui disparaissait. Regardé au téléphone et à l'ordinateur
   (`monde/_outils/captures/voir_ombres.py`). QC 53/53.
+- ⏭️ **R6 · le sol qui reflète, au téléphone aussi : LE PROCHAIN** (plan décidé, rien d'écrit : une prise à
+  360° du salon une seule fois + correction de parallaxe en boîte ; détail dans `REPRENDRE-ICI.md` § 4).
 - Comparer à tout moment : `?sans-cuisson` (tout) ou `?sans-lumiere-cuite` (garder l'occlusion).
 
 ## Ce que JE fais (sans attendre personne) : R1 à R6, R9 à R12, R14

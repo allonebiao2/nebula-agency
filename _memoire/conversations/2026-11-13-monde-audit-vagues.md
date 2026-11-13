@@ -43,3 +43,13 @@
 **La vague 4, la chaîne d'assets pour la 3G**, avec son plan pas à pas dans `REPRENDRE-ICI.md`,
 section 4 (mesurer d'abord). Puis la 5 (lumière cuite dans Blender). Toute la liste de ce qui reste,
 à moi, à Mongazi et à Hillary : `REPRENDRE-ICI.md`, section 5.
+
+## Suite (même jour) : le réalisme, Hillary, et deux idées gardées
+
+- Mongazi : « le salon doit être virtuel mais le plus réaliste possible » → `monde/REALISME.md` (R1-R15), puis
+  « concentre-toi sur ce que tu peux faire toi… un à la fois… à 200 %… regarde avec Chrome ».
+- ✅ R1 la lumière cuite dans Blender, ✅ R2 les ombres de contact ; R6 (le sol qui reflète au téléphone)
+  planifié en détail dans `monde/REPRENDRE-ICI.md` § 4.
+- ✅ Site d'Hillary : mesures de la jupe (ses mots), « haut + jupe » réparé, publié.
+- Gardés en mémoire : la consigne d'Afi (il la régénère), le commercial NEBULA (`monde/COMMERCIAL.md`), un teaser
+  vidéo par boutique (`monde/TEASERS.md`).

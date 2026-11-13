@@ -103,7 +103,20 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 > ✅ **2026-11-13, 11 h : R1 (LA LUMIÈRE CUITE) FAITE** (QC 53/53, regardée dans Chrome ; détail dans
 > `REALISME.md`). ✅ R2 (ombres de contact) fait aussi. **Prochaine action : R6, le sol qui reflète au
-> téléphone aussi** (le miroir n'existe qu'en qualité haute), puis R5 (le plafond de l'étalon). Ce qui suit
+> téléphone aussi** (le miroir `Reflector` n'existe qu'en qualité haute), puis R5 (le plafond de l'étalon).
+> **LE PLAN DE R6, décidé, rien d'écrit encore** (2026-11-13, 11 h 30) : aux qualités `moyenne` et `basse`,
+> une **photo à 360° du salon prise UNE fois** au chargement (après `appliquerCuisson()` dans `embellir()`),
+> avec `THREE.CubeCamera` + `WebGLCubeRenderTarget(256)` au centre de la pièce vers 1,5 m de haut, **sol,
+> personnages et repères masqués pendant la prise**, posée en `M.sol.envMap` ; et une **correction de
+> parallaxe en boîte** (le reflet projeté sur les vrais murs) par `onBeforeCompile` : un `varying` de
+> position monde dans le vertex shader, et dans `getIBLRadiance` (three r180, chunk
+> `envmap_physical_pars_fragment`) juste après la ligne
+> `reflectVec = inverseTransformDirection( reflectVec, viewMatrix );` : intersection du rayon avec la boîte
+> de la pièce (`uBoiteMin`/`uBoiteMax` = −LX, 0, −LZ / LX, H, fz) puis `reflectVec = pointSurBoite − uCentreCube`.
+> ⚠️ Le sol a déjà une `customProgramCacheKey`/`onBeforeCompile` (lumière cuite, `eclairerCuit`) : les
+> ENCHAÎNER, pas les écraser. ⚠️ L'`envMap` apporte aussi de la lumière diffuse au sol : régler
+> `envMapIntensity` à l'œil (rapport de luminance avec `regler_cuisson.py`). Coût à chaque image : une
+> lecture de texture. Vérifier au téléphone (`voir_cuisson.py`), dans Chrome, QC, puis commit. Ce qui suit
 > est l'historique de la nuit.
 >
 > (historique) **ÉTAT DU 2026-11-13, 4 h 35 : R1 EN COURS.** La chaîne marche
