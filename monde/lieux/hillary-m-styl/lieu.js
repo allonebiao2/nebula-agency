@@ -1076,6 +1076,14 @@ async function fusionnerDecor() {
     for (const o of liste) o.visible = false;
     fusionDecor.avant += liste.length; fusionDecor.apres++;
   }
+  /* LE DÉCOR FIGÉ : three.js recalcule à CHAQUE image la matrice de chaque objet de la scène (≈ 900 ici), même
+     immobile ; le décor posé (`decor-N`) et les objets scannés ne bougent jamais, on les fige une fois pour
+     toutes. Restent libres : les portes, les personnages, la caméra du reflet, la lumière de face, la rue. */
+  scene.updateMatrixWorld(true);
+  for (const o of scene.children) {
+    const fixe = (o.name.startsWith('decor-') || (o.userData && o.userData.scan) || o.name === 'fusion') && !bouge.has(o) && !exclus.has(o);
+    if (fixe) o.traverse((x) => { if (!bouge.has(x)) { x.matrixAutoUpdate = false; fusionDecor.figes = (fusionDecor.figes || 0) + 1; } });
+  }
 }
 setTimeout(() => embellir().catch(e => console.warn('embellissement incomplet', e)), params.has('direct') ? 200 : 2500);
 
