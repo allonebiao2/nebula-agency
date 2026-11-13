@@ -224,6 +224,9 @@ Le plan (à tenir dans cet ordre ; **mesurer avant d'optimiser**) :
 10. ✅ Le défaut de son site en ligne est **corrigé et publié le 2026-11-13** (section 11).
 
 ### Plus loin (vagues du registre `VAGUES.md`)
+- 💤 **Le commercial NEBULA** dans chaque boutique (habillé en gris, logo NEBULA, il approche quand le client
+  s'attarde, « Vous auriez quelques minutes que je vous parle ? » Oui/Non, puis un parcours de vente
+  prédéfini ; une IA plus tard) : **`monde/COMMERCIAL.md`**, avec 5 questions ouvertes pour Mongazi.
 11. La mise en ligne du salon (rien n'est en ligne) · la ville (vague 6 du registre) · le back-office
     d'Hillary (vague 7 du registre) · le loyer (vague 8) · le futur skill tiré de `DEROULEMENT.md`.
 

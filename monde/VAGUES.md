@@ -140,6 +140,15 @@ Décisions de Mongazi, le même jour :
   (`REALISME.md`) ; l'ordre est tranché : **ce que je peux faire seul, en commençant par la lumière cuite
   (R1)**.
 
+- 💤 **LE COMMERCIAL NEBULA** (2026-11-13) : « après, dans chaque boutique ou structure, pour commencer ça sera
+  déjà Hillary, y'aura un commercial habillé en gris et marqué avec le logo NEBULA Agency […] quand le client
+  est un peu longtemps dans la boutique, il approche, et il demande toujours : "Vous auriez quelques minutes
+  que je vous parle ?" ; le client choisit oui ou non ; quand c'est oui, il doit être un expert ultra-puissant
+  en vente, pousser à la vente au maximum mais sans encombrer ; pas d'intelligence artificielle pour le
+  moment, plus tard oui ; des questions prédéfinies avec des réponses adaptées, un ou plusieurs workflows
+  conversationnels autour de la structure, intégrés en lui » → **`monde/COMMERCIAL.md`** (ses mots en entier,
+  ce que j'en comprends, 5 questions ouvertes, ce qu'il faudra). À construire « après ».
+
 Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
 produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
 
