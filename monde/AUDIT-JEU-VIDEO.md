@@ -93,6 +93,21 @@
   détouré dans la page), filet de lumière sous le linteau, portes vitrées qui coulissent, musique qui
   monte, projecteurs qui s'allument un à un, Afi qui attend 5 s puis s'arrête à 1,60 m, carte de titre
   au-dessus des sous-titres, point de porte masqué quand on la franchit. QC 52/52, filmé de nuit et de jour.
+- 🟡 **Vague 2 · des personnages qui vivent (2026-11-13, partielle, `b271315`)** : Afi a 13 animations
+  (variantes de parole et d'attente tirées au hasard, démarrage et arrêt joués une fois, pieds qui
+  piétinent quand elle pivote, regard cou + tête, gestes qui changent seuls). **Reste** : Sènami et sa
+  mère en 3D (Mongazi les génère lui-même, consignes dans `personnages/CONSIGNES.md`), Hillary (ses
+  photos et son accord). ⛔ Pas de clignement sur un modèle TRELLIS (pas de visage riggé). Non faits :
+  IK des pieds, os ressorts, peau délitée, gestes de métier ; l'allègement d'Afi passe à la vague 4.
+- ✅ **Vague 3 · la mise en scène des conversations (2026-11-13, `f7d60aa`)** : cadrage de la taille à la
+  tête selon la distance ET la largeur d'écran, profondeur de champ (`BokehPass`, qualité haute, éteinte
+  hors dialogue, flou plafonné pour ne pas baver sur l'oratrice), **caméra qui suit la tête à chaque
+  image** (viser une seule fois laissait parfois la tête coupée), souffle de caméra au repos, oratrice
+  à 1,30 m, les autres visiteuses écartées de la ligne de regard, lumière de face douce (2,4) portée par
+  la caméra. QC 52/52, filmé au téléphone et à l'ordinateur par le vrai parcours.
+- ⏭️ **Vague 4 · la chaîne d'assets pour la 3G : LA PROCHAINE.** Le plan pas à pas est dans
+  `REPRENDRE-ICI.md`, section 4 (mesurer d'abord, puis Afi allégée, meshopt, KTX2, fusion, instanciation,
+  zéro allocation, chargement par étapes, mesurer après).
 
 ## L'ordre conseillé (effet sur la vente et le « wow », à coût maîtrisé)
 

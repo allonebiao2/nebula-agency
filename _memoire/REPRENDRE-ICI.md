@@ -1,9 +1,19 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-11-12
+## Point de reprise pour une session terminal · dernière mise à jour 2026-11-13
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 trequadragies. LE 2026-11-13 · LE MONDE, LE SALON 3D D'HILLARY (le chantier en cours)
+
+- **Lire `monde/REPRENDRE-ICI.md` en premier** (réécrit « à la lettre près » le 2026-11-13, à la demande de Mongazi) : ce qu'on relance en arrivant (le serveur du salon), la prochaine action exacte, TOUT ce qui reste (à moi, à Mongazi, à Hillary), la carte du code, les pièges. Puis `monde/AUDIT-JEU-VIDEO.md`, `monde/VAGUES.md`, `monde/DEROULEMENT.md`.
+- **État** : jouable en local (`python monde/_servir.py --sans-construire` → `http://localhost:8765/lieux/hillary-m-styl/`), **pas en ligne**, QC 52/52. Interface en verre (« ship »), ouverture cinéma, salon tamisé avec musique, Afi en vraie 3D qui vit, conversations mises en scène.
+- **Méthode** (Mongazi) : l'audit vague par vague, « ne passe pas à une autre tant que celle-ci n'est pas à 100 % ». Vagues 1 ✅ · 2 🟡 · 3 ✅ · **4 (la 3G) = la prochaine**.
+- **Attend Mongazi** : Sènami et Maman Sènami en 3D (il les génère, consignes dans `monde/lieux/hillary-m-styl/personnages/CONSIGNES.md`), leurs vidéos d'animation, l'essai sur son téléphone, les photos et l'accord d'Hillary.
+- Epic et Unreal sont **désinstallés** (rien à réinstaller). Le bloc du 2026-11-12 ci-dessous est périmé.
 
 ---
 

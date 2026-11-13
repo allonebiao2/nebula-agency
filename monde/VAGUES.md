@@ -101,6 +101,32 @@ Décisions de Mongazi, le même jour :
   boutique 3D générée par IA), le concurrent à surveiller**. Ailleurs : Obsess, Emperia, ByondXR,
   Diakse (surtout des visites 360° ou des boutiques lourdes, pensées pour l'ordinateur).
 
+- ✅ **« hormis la relecture d'Impeccable, quand tu analyses en profondeur, mets-toi dans la peau d'un
+  expert en animation 3D et en création de jeu vidéo : qu'est-ce qui peut encore être optimisé et
+  apporté à ce niveau ? »** (2026-11-12, nuit) → `monde/AUDIT-JEU-VIDEO.md` (8 chapitres, chaque point
+  avec son effet, son coût et ce qui dépend de lui ; l'ordre conseillé en 7 vagues).
+- 🔨 **« enchaîne donc chacun jusqu'au dernier, chaque point, et chacun doit être à 100 % ; tu as champ
+  libre, utilise tous les moyens possibles pour atteindre cet objectif »**, puis **« fais-les par vagues,
+  mets toute ton énergie et tes compétences dans une à la fois, et ne passe pas à une autre tant que
+  celle sur laquelle tu es n'est pas à 100 % »** (2026-11-12, nuit) → la méthode de travail du salon
+  (`REPRENDRE-ICI.md`, section 2). ✅ Vague 1 (ouverture cinéma, `bcfc59e`) · 🟡 vague 2 (Afi vit,
+  `b271315` ; Sènami, Maman et Hillary attendent) · ✅ vague 3 (mise en scène des conversations,
+  `f7d60aa`) · ⏭️ vague 4 (la 3G).
+- ⏳ **« OUI JE LES ENVOIE D'ici là »** (2026-11-13) : les photos d'Hillary (et son accord), à déposer dans
+  `_partage\immersive  store 3D\hillary\`.
+- ✅ **« en attendant tu peux enchaîner avec le prochain ; je pense qu'il faut que je génère en 3D les
+  autres persos pour te faciliter la tâche, donc laisse-moi les prompts pour les autres persos et tu
+  enchaînes en attendant avec le prochain point »** (2026-11-13) → consignes d'image et de 3D dans
+  `personnages/CONSIGNES.md` (`6a07d12`) ; 🙋 il génère Sènami et Maman Sènami lui-même.
+- ✅ **« pour chacun des prompts, donne-moi des prompts pour animer les images générées »** (2026-11-13) →
+  consignes « image → vidéo » dans `personnages/CONSIGNES.md` (`5e9a19d`) : un début commun, six actions
+  (attendre, marcher, parler, écouter, saluer, regarder une robe), une action propre à chacune (Sènami
+  se filme pour TikTok, Maman palpe le wax), vidéos à déposer dans `…\personnages\<prénom>\videos\`.
+- ✅ **« mets tout en mémoire à la lettre près ainsi que tout ce qui reste à faire, comme ça quand je fais
+  clear et je démarre une nouvelle discussion tu puisses te repérer à la lettre près »** (2026-11-13) →
+  `REPRENDRE-ICI.md` réécrit (état exact, prochaine action, tout ce qui reste, carte du code, pièges),
+  scripts de capture rangés dans `monde/_outils/captures/`.
+
 Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
 produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
 
@@ -217,7 +243,11 @@ Premières réflexions (à affiner) :
 
 | Quoi | Pour quelle vague | Où c'est expliqué |
 |---|---|---|
-| installer le moteur Unreal sur `D:` | 2 | `A-APPORTER.md` |
+| ~~installer le moteur Unreal sur `D:`~~ : **abandonné**, Epic et Unreal désinstallés à sa demande le 2026-11-12 (« désinstalle Epic complètement et vide son cache ») | 2 | `REPRENDRE-ICI.md` |
+| **Sènami et Maman Sènami en 3D**, qu'il génère lui-même (2026-11-13) | audit, vague 2 | `personnages/CONSIGNES.md` |
+| les vidéos d'animation de chaque personnage (image → vidéo) | audit, vague 2 | `personnages/CONSIGNES.md` |
+| essayer le salon sur son vrai téléphone et écouter la musique | interface, point 1 | `REPRENDRE-ICI.md`, section 0 |
+| la vidéo d'une rue de Cotonou filmée à l'iPhone (Gaussian splat) | audit, vague 7 | `AUDIT-JEU-VIDEO.md` |
 | le compte TikTok d'Hillary et sa dernière vidéo | 1 | `QUESTIONNAIRE-HILLARY.md` |
 | le questionnaire (ses mots, son histoire, sa vision, le « M. ») | 1 et 3 | `QUESTIONNAIRE-HILLARY.md` |
 | ses photos + son accord écrit (visage, voix) | 3 | `PROMPTS-NANO-BANANA.md` B |

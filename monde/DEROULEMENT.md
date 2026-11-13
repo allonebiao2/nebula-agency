@@ -271,3 +271,52 @@ Mongazi : « je ne veux pas de Lego, je veux de vrais personnages 3D », puis il
 - **Unreal** sur ce PC : l'installation est partie sur `C:` (par défaut) et s'est bloquée faute de place (alerte DP-06). Le lanceur **refuse la racine d'un disque** : il faut un dossier (`D:\Epic Games`).
 - **Les âges** (Mongazi : « on doit appliquer les âges aussi dorénavant ») : chaque personnage a un âge **dans les données** (`age` dans `lieu.js`) **et dans chaque consigne d'image**. ⚠️ Sans âge écrit, le générateur a fait une mère de 60-65 ans pour une fille de 20 et une fille de 16-17 : il vieillit les mères et rajeunit les filles. Écrire l'âge **et** ce qu'on ne veut pas voir (rides profondes, cheveux gris, visage d'adolescente), puis **regarder l'âge sur l'image avant la 3D** (un calcul de 3D coûte une part du quota du jour). Garder les consignes **mot pour mot** (`personnages/CONSIGNES.md`) : celles du matin étaient perdues.
 - **Mixamo par l'extension Chrome** : l'envoi du `.zip` passe par le champ de fichier caché de la fenêtre « Upload Character » (jamais par le bouton, qui ouvre une fenêtre du système). Les repères se posent en faisant glisser les cercles ; avec « Use Symmetry », un côté suffit. ⚠️ Dans une petite fenêtre, le bouton « Next » de l'étape de vérification sort de l'écran : le viser par sa référence, pas par ses coordonnées.
+
+## Étape 4 · l'audit d'un expert en jeu vidéo, vague par vague (2026-11-12 nuit et 2026-11-13)
+
+Mongazi : « mets-toi dans la peau d'un expert en animation 3D et en création de jeu vidéo », puis
+« fais-les par vagues… ne passe pas à une autre tant que celle-ci n'est pas à 100 % ». La feuille de
+route est `AUDIT-JEU-VIDEO.md` (pour le skill : **un audit écrit d'abord, puis une vague à la fois,
+chacune fermée par le QC, les captures regardées et un commit**).
+
+**Vague 1 · l'ouverture cinéma** (à reproduire pour chaque lieu : c'est le premier « wow » et il ne
+dépend de personne) : le visiteur arrive dans la rue, la caméra avance seule vers l'enseigne pendant
+7,5 s **mais n'avance que quand le lieu est chargé** (sinon le travelling saccade pendant le
+chargement) ; l'immeuble au-dessus de la boutique, ses fenêtres et leurs rideaux éclairés le soir ;
+un ciel jour et nuit ; l'enseigne lumineuse faite du **logo détouré dans la page** (canvas : le blanc
+devient transparent, le noir passe en crème) ; les portes vitrées qui coulissent ; la musique qui
+monte ; **les projecteurs qui s'allument un à un sur les créations** (0,35 s d'écart, 0,8 s de montée).
+
+**Vague 2 · des personnages qui vivent** (`socle/habiller.js`, réutilisable tel quel) :
+- plusieurs variantes par état (`parler`/`parler-2`, `attendre`/`attendre-2`), tirées au hasard, qui
+  changent seules (5 à 8 s en parlant, 9 à 14 s en attente) ;
+- `demarrer` et `arreter` (*Start Walking*, *Stop Walking*) joués **une fois**
+  (`LoopOnce` + `clampWhenFinished`), **déplacement propre retiré** des pistes `Hips.position` (sinon
+  elle avance deux fois) ;
+- pieds qui piétinent quand elle pivote (`marcher` à 0,55 au-delà de 1,2 rad/s) ;
+- regard réparti sur le cou (35 %) et la tête (50 %) ;
+- ⚠️ un modèle TRELLIS n'a **pas de visage riggé** : ni clignement ni lèvres. Pour un personnage
+  principal (Hillary), prévoir un visage à blend shapes (MPFB2/MakeHuman).
+
+**Vague 3 · la mise en scène des conversations** (le « sentiment de film ») :
+- cadrage calculé, pas fixé : de la taille à la tête **selon la distance**, avec une contrainte de
+  **largeur** (en portrait, un cadre calculé sur la seule hauteur coupait tout) ;
+- profondeur de champ (`BokehPass`) en qualité haute seulement, **éteinte hors dialogue** ;
+  ⚠️ ce flou ne gère pas l'occlusion : un fond très clair « bave » sur la personne nette, garder
+  `maxblur` bas (0,0055) ;
+- ⚠️ **la caméra suit la tête à chaque image** (`deplacement.suivre`) : la viser une seule fois
+  laissait parfois, selon le trajet, une orientation tardive cadrer les hanches ;
+- un léger souffle de caméra au repos (quelques millièmes de radian) : la vue vit ;
+- l'oratrice tenue à 1,30 m, les autres personnages **écartés de la ligne de regard** ;
+- une lumière de face portée par la caméra, **douce** (à 7 elle brûlait un manteau crème : 2,4) ;
+- ⚠️ **tester par le vrai parcours** (toucher, s'approcher, options, « Parler ») : appeler la
+  conversation directement filmait l'oratrice derrière un panneau, ce qu'aucun visiteur ne vit.
+
+**Les personnages générés par le client lui-même** (Mongazi, 2026-11-13) : lui donner des consignes
+qui rendent le modèle utilisable sans retouche (image de face en pose A sur fond gris uni, rien dans
+les mains, l'âge écrit ; 20 000 à 40 000 triangles, texture de 2048 px au plus, GLB ou FBX ; un
+dossier de dépôt nommé) et des consignes « image → vidéo » pour des références de mouvement (caméra
+fixe, corps entier du début à la fin, 5 à 8 s). Modèle : `lieux/hillary-m-styl/personnages/CONSIGNES.md`.
+
+**Les scripts de capture** vivent dans `monde/_outils/captures/` (ils étaient dans le dossier
+temporaire de la session : un `/clear` les aurait perdus).
