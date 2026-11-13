@@ -736,7 +736,9 @@ deplacement.surDepart.push((id) => { if (id === 'dehors' || deplacement.noeud ==
 /* ---------- les repères au pouce, sur tout ce qui se touche ---------- */
 /* trois noms au plus sur un téléphone, quatre sur un écran : au-delà, les étiquettes
    s'empilaient sur les pièces (Mongazi, 2026-11-12 : « c'est tout brouillon ») */
-const reperes = creerReperes({ moteur, calque, maxNoms: matchMedia('(pointer: coarse)').matches ? 3 : 4 });
+/* MOINS D'INTERFACE (Mongazi, 2026-11-13, et la référence Call of Duty : « une interface presque absente ») : un seul
+   nom à la fois, le plus proche ; les autres repères restent des points ; rien au-delà de 6 m. (Avant : 3 ou 4 noms, 9 m.) */
+const reperes = creerReperes({ moteur, calque, maxNoms: 1, distanceMax: 6 });
 const AUTRE = new THREE.Vector3();
 for (const id in totems) {
   const t = totems[id], p = pieceDe(id), haut = t.position.y > 1 ? 0.7 : 1.15;

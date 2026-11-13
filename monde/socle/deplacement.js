@@ -261,7 +261,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
        empilait six ou sept étiquettes, dont une sur la robe exposée (vu le 2026-11-12). */
     const proches = Object.keys(marqueurs).filter(id => marqueurs[id].etiquette && !(id === noeud && !marche))
       .map(id => [id, Math.hypot(marqueurs[id].p.x - pos.x, marqueurs[id].p.z - pos.z)])
-      .sort((x, y) => x[1] - y[1]).slice(0, 2).map(x => x[0]);
+      .sort((x, y) => x[1] - y[1]).slice(0, 1).map(x => x[0]);   /* un seul nom de lieu à la fois (moins d'interface, 2026-11-13) */
     for (const id in marqueurs) {
       const m = marqueurs[id];
       const ici = id === noeud && !marche;
