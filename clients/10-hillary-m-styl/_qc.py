@@ -546,13 +546,19 @@ async def main():
         await page.wait_for_timeout(2500)
 
         # nombre de mesures par type de vetement
-        attendu = {"robe_taille": 9, "robe_droite": 15, "robe_ovale": 11, "pantalon": 6, "haut": 8}
+        attendu = {"robe_taille": 9, "robe_droite": 15, "robe_ovale": 11, "pantalon": 6, "haut": 8,
+                   "jupe": 6, "haut_jupe": 13}
         got = await page.evaluate("()=>{const o={};for(const k in MESURES)o[k]=MESURES[k].champs.length;return o;}")
         for k, v in attendu.items():
             ok(got.get(k) == v, f"mesures {k} = {v} (vu {got.get(k)})")
         ids = await page.evaluate("()=>{const o={};for(const k in MESURES)o[k]=MESURES[k].champs.map(c=>c.id);return o;}")
         for k, lst in ids.items():
             ok(len(lst) == len(set(lst)), f"mesures {k} : aucun identifiant en double")
+        # ⛔ chaque piece doit trouver SON jeu de mesures : l'Ensemble Jean et la Robe
+        # Emeraude portaient le type « haut_jupe », absent de MESURES, et affichaient
+        # « Type de vetement introuvable » en ligne de 2026-08-17 a 2026-11-13.
+        orph = await page.evaluate("()=>PIECES.filter(p=>p.type&&!MESURES[p.type]).map(p=>p.nom+' ('+p.type+')')")
+        ok(not orph, f"chaque piece sur mesure a son jeu de mesures (orphelines : {orph or 'aucune'})")
 
         # --- parcours d'achat complet, sur la PREMIERE piece reelle du catalogue.
         #     Le nom, le prix et le supplement express sont LUS dans les donnees :

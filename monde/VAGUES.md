@@ -133,6 +133,12 @@ Décisions de Mongazi, le même jour :
   de lui, et l'ordre proposé (la lumière cuite d'abord, la compression 3G fondue dedans), **à confirmer**.
   L'étalon : la photo de vision d'Hillary (robes sur mannequins, podiums, sol brillant, spots, ligne
   lumineuse).
+- 🔨 **« je t'envoie les assets tout à l'heure ; en attendant, concentre-toi sur ce que tu peux faire toi.
+  Atteins 100 % de chacun en te demandant à chaque fois si ça suffit, regarde ce que tu fais avec Chrome et
+  améliore jusqu'à ce que ce soit parfait et à 200 % pour chacun des points, et fais ça un à la fois, et
+  termine toujours un avant d'enchaîner l'autre »** (2026-11-13) → la méthode du réalisme
+  (`REALISME.md`) ; l'ordre est tranché : **ce que je peux faire seul, en commençant par la lumière cuite
+  (R1)**.
 
 Règle qui en sort : **chaque choix se juge à « est-ce que ça donne envie d'acheter ? »**. Le
 produit est le héros de chaque plan ; le décor, les personnages et les jeux le servent.
@@ -267,4 +273,4 @@ Premières réflexions (à affiner) :
 
 ## Ce que j'ai trouvé en route (hors salon)
 
-- ⛔ **Sur le site en ligne d'Hillary**, commander l'**Ensemble Jean** ou la **Robe Émeraude** affiche « Type de vêtement introuvable » à l'étape des mesures : leur jeu de mesures `haut_jupe` n'existe pas. 🙋 Il faut qu'Hillary dise quelles mesures elle prend pour une jupe ; rien n'est corrigé sans elle.
+- ✅ **Sur le site en ligne d'Hillary**, l'**Ensemble Jean** et la **Robe Émeraude** affichaient « Type de vêtement introuvable » (jeu `haut_jupe` inexistant). **Corrigé et publié le 2026-11-13** avec ses mots : « tour de taille ; tour de bassin ; hauteur de bassin ; longueur jupe courte ; longueur jupe longue ; longueur genoux » (`clients/10-hillary-m-styl/CONTEXT.md`).

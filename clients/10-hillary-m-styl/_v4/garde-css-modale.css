@@ -27,7 +27,9 @@
 @media(min-width:800px){.ov{padding:34px 22px}.sheet{min-height:0}}
 .sh-top{position:sticky;top:0;z-index:5;background:var(--craie);border-bottom:1px solid var(--ligne);
   padding:16px 22px;display:flex;align-items:center;gap:14px}
-.sh-top .mark{width:36px;height:36px;flex:0 0 auto;border-radius:9px;background-color:#fff;background-size:78%}
+/* ⚠️ la V4 a retiré la règle générique `.mark{background:var(--logo)…}` : la vignette de la fiche
+   restait un carré BLANC (vu le 2026-11-13). Le monogramme est donc posé ici, explicitement. */
+.sh-top .mark{width:36px;height:36px;flex:0 0 auto;border-radius:9px;background:#fff var(--logo) center/78% no-repeat}
 .sh-top .t{flex:1;min-width:0}
 .sh-top .t b{display:block;font-family:var(--ff-d);font-size:19px;font-weight:400;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis}

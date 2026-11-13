@@ -86,6 +86,20 @@ Dans l'ordre de ce qui rapporte le plus :
 | **L'essai sur son téléphone** | R14 | mesure faite sur ce PC seulement |
 | Recharger WaveSpeed (≈ 40 $, facultatif) | R7, R10 | voie gratuite, plus lente et moins fine |
 
+## La méthode, fixée par Mongazi (2026-11-13)
+
+> « je t'envoie les assets tout à l'heure ; en attendant, concentre-toi sur ce que tu peux faire toi.
+> Atteins 100 % de chacun en te demandant à chaque fois si ça suffit, regarde ce que tu fais avec Chrome
+> et améliore jusqu'à ce que ce soit parfait et à 200 % pour chacun des points, et fais ça un à la fois,
+> et termine toujours un avant d'enchaîner l'autre. »
+
+- **Un critère à la fois**, dans l'ordre de « Ce que JE fais » : on ne commence pas le suivant tant que
+  le courant n'est pas à 200 %.
+- **Regarder dans Chrome** (l'extension Claude pour Chrome, `/chrome`), au téléphone et à l'ordinateur,
+  pas seulement des captures Playwright ; à chaque tour se demander « est-ce que ça suffit ? » et
+  améliorer tant que la réponse est non.
+- Les apports de Mongazi (« les assets ») arrivent plus tard : R7 et R8 attendent.
+
 ## L'ordre proposé (à confirmer par Mongazi)
 
 La prochaine vague prévue était la **4 (la 3G)**. Je propose de traiter **le réalisme d'abord, en

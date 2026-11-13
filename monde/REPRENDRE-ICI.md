@@ -197,7 +197,7 @@ Le plan (à tenir dans cet ordre ; **mesurer avant d'optimiser**) :
    exclu de GitHub). Mongazi a écrit le 2026-11-13 : « OUI JE LES ENVOIE D'ici là ». Puis la même
    chaîne que les visiteuses, à 26 ans et 1,68 m.
 9. Le questionnaire (`QUESTIONNAIRE-HILLARY.md`), son TikTok, les vidéos de ses vrais gestes, sa voix.
-10. ⛔ Le défaut de son site en ligne (section 11).
+10. ✅ Le défaut de son site en ligne est **corrigé et publié le 2026-11-13** (section 11).
 
 ### Plus loin (vagues du registre `VAGUES.md`)
 11. La mise en ligne du salon (rien n'est en ligne) · la ville (vague 6 du registre) · le back-office
@@ -294,9 +294,11 @@ Le 2026-11-13 : vague 1 de l'audit, l'ouverture cinéma (`bcfc59e`) · vague 2 c
 
 ## 11 · Trouvé en route (hors salon)
 
-⛔ **Sur le site EN LIGNE d'Hillary**, l'Ensemble Jean et la Robe Émeraude affichent « Type de
-vêtement introuvable » à l'étape des mesures (jeu `haut_jupe` inexistant). 🙋 Il faut qu'Hillary
-dise quelles mesures elle prend pour une jupe. Rien n'est corrigé sans elle.
+✅ **CORRIGÉ ET EN LIGNE le 2026-11-13** : l'Ensemble Jean et la Robe Émeraude affichaient « Type de
+vêtement introuvable » (jeu `haut_jupe` inexistant). Hillary a donné ses mesures de jupe (« tour de
+taille ; tour de bassin ; hauteur de bassin ; longueur jupe courte ; longueur jupe longue ; longueur
+genoux ») ; jeux `jupe` et `haut_jupe` ajoutés, contrôle neuf, QC 197. Détail :
+`clients/10-hillary-m-styl/CONTEXT.md`, « 2026-11-13 · LA JUPE ».
 
 ---
 

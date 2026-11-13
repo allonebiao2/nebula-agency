@@ -1333,6 +1333,44 @@ signale**. La fenêtre est donc haute, et toute la modale y tient.
 
 ---
 
+## 2026-11-13 · LA JUPE : le jeu de mesures qui manquait (en ligne)
+
+**Le défaut** (trouvé le 2026-11-12 pendant le chantier du salon 3D) : l'**Ensemble Jean** (h14) et la
+**Robe Émeraude** (h16) portent le type `haut_jupe` (donné par Hillary avec ses onze modèles du
+2026-08-16/17), mais **ce jeu n'existait pas** dans `MESURES` : leur commande affichait **« Type de
+vêtement introuvable »** à l'étape des mesures, **en ligne depuis le 2026-08-17**. Aucun contrôle ne le
+voyait.
+
+**La réponse d'Hillary, transmise mot pour mot par Mongazi le 2026-11-13** : pour une jupe, elle prend
+« **tour de taille ; tour de bassin ; hauteur de bassin ; longueur jupe courte ; longueur jupe longue ;
+longueur genoux** ».
+
+**Ce qui est en place** (`_v4/garde-moteur.js`) :
+- un jeu **`jupe`** (« Jupe », 6 mesures, ses mots exacts), qui sert aussi aux pièces à type libre ;
+- un jeu **`haut_jupe`** (« Haut et jupe », **13 mesures**) : l'**union exacte** du jeu `haut` et du jeu
+  `jupe`, moins le tour de taille présent dans les deux. **Même règle que `haut_pantalon`** (qu'Hillary
+  avait formulée « ceux d'un pantalon et un haut »). ⚠️ Cette union est une **lecture du nom du type**,
+  pas une phrase d'Hillary : à lui faire confirmer à l'occasion (et dire si l'Émeraude, robe courte,
+  garde vraiment « longueur jupe longue »). Toutes les mesures restent facultatives (une mesure vide part
+  en « à prendre ensemble »).
+- les identifiants sont **partagés** quand c'est la même mesure (`t_taille`, `t_bassins` du pantalon,
+  `l_genou`) : une mesure saisie une fois resservira ; nouveaux : `h_bassin`, `l_jupe_courte`,
+  `l_jupe_longue`.
+- **un contrôle neuf** dans `_qc.py` : **chaque pièce sur mesure doit trouver son jeu** (et `jupe` = 6,
+  `haut_jupe` = 13). **QC 192 → 197.**
+
+**Trouvé en vérifiant en ligne** : la **vignette de la fiche de commande** (en haut à gauche, à côté du
+nom de la pièce) était un **carré blanc** depuis la V4 : la règle générique `.mark{background:var(--logo)…}`
+avait disparu, il ne restait que le fond blanc. Le monogramme est reposé dans `garde-css-modale.css`.
+
+✅ **Publié deux fois le 2026-11-13** (`wrangler pages deploy _dist`, wrangler 3.114 global) et **vérifié
+sur le site public** au téléphone : Ensemble Jean et Robe Émeraude affichent leurs 13 mesures, aucune
+erreur de console, monogramme visible.
+
+⏳ Reste de l'ancienne liste : les 11 mesures de la **robe ovale**, la matière de chaque pièce, le jeu
+« haut + jupe » de **Mira** (aujourd'hui en `robe_ovale` : à lui demander si Mira doit passer en `haut_jupe`),
+le libellé « Robe de ville ».
+
 ## 📌 Résumé transféré de `CLAUDE.md` (2026-09-16)
 
 > Cette ligne vivait dans le tableau « Clients actifs » de `CLAUDE.md`, où elle pesait **27 287 caractères**. `CLAUDE.md` est chargé à chaque session et avait dépassé la limite de 150 000 caractères de Claude Code : le détail vit désormais ici, et `CLAUDE.md` n'en garde qu'un résumé qui renvoie à ce fichier.

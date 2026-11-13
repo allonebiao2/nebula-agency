@@ -186,6 +186,47 @@ var MESURES = {
       {id:"t_manche",   g:"Les manches",   l:"Tour de manche"},
       {id:"l_manche",   g:"Les manches",   l:"Longueur manche"}
     ]
+  },
+
+  /* LA JUPE, mot pour mot d'Hillary (réponse transmise par Mongazi le 2026-11-13) :
+     « tour de taille ; tour de bassin ; hauteur de bassin ; longueur jupe courte ;
+     longueur jupe longue ; longueur genoux ».
+     ⚠️ Les identifiants sont PARTAGÉS avec les autres jeux quand c'est la même mesure
+     (t_taille, t_bassins du pantalon, l_genou) : une mesure saisie une fois resservira. */
+  jupe: {
+    nom: "Jupe",
+    champs: [
+      {id:"t_taille",      g:"Les tours",     l:"Tour de taille"},
+      {id:"t_bassins",     g:"Les tours",     l:"Tour de bassin"},
+      {id:"h_bassin",      g:"Les longueurs", l:"Hauteur de bassin"},
+      {id:"l_jupe_courte", g:"Les longueurs", l:"Longueur jupe courte"},
+      {id:"l_jupe_longue", g:"Les longueurs", l:"Longueur jupe longue"},
+      {id:"l_genou",       g:"Les longueurs", l:"Longueur genoux"}
+    ]
+  },
+
+  /* HAUT ET JUPE (« haut + jupe », le type qu'Hillary a donné à l'Ensemble Jean et à la
+     Robe Émeraude). ⛔ Ce jeu MANQUAIT : depuis le 2026-08-17, commander ces deux pièces
+     affichait « Type de vêtement introuvable » à l'étape des mesures.
+     Même règle que « haut_pantalon » : l'UNION exacte du jeu « haut » et du jeu « jupe »,
+     sans rien réinterpréter, moins le tour de taille qui figure dans les deux : 13 mesures. */
+  haut_jupe: {
+    nom: "Haut et jupe",
+    champs: [
+      {id:"epaules",       g:"Le haut",       l:"Épaules"},
+      {id:"carr_dev",      g:"Le haut",       l:"Carrure devant"},
+      {id:"carr_dos",      g:"Le haut",       l:"Carrure dos"},
+      {id:"poitrine",      g:"Le haut",       l:"Tour de poitrine"},
+      {id:"t_taille",      g:"Le haut",       l:"Tour de taille"},
+      {id:"t_bassins",     g:"Les tours",     l:"Tour de bassin"},
+      {id:"l_habit",       g:"Les longueurs", l:"Longueur habit"},
+      {id:"h_bassin",      g:"Les longueurs", l:"Hauteur de bassin"},
+      {id:"l_jupe_courte", g:"Les longueurs", l:"Longueur jupe courte"},
+      {id:"l_jupe_longue", g:"Les longueurs", l:"Longueur jupe longue"},
+      {id:"l_genou",       g:"Les longueurs", l:"Longueur genoux"},
+      {id:"t_manche",      g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",      g:"Les manches",   l:"Longueur manche"}
+    ]
   }
 };
 
