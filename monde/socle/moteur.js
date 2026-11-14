@@ -131,7 +131,7 @@ export function creerMoteur(conteneur) {
   /* ?profil : le temps moyen de chaque tâche par image (R14, « le maximum d'images/s »), lu par moteur.profil() */
   const profil = new URLSearchParams(location.search).has('profil');
   const horloge = new THREE.Clock();
-  let tempsTotal = 0, enMarche = false;
+  let tempsTotal = 0, enMarche = false, sansComposition = false;
   /* mesure des images, pour descendre d'un cran si l'appareil peine */
   let fenetre = [], dernierAjustement = 0;
   function surveiller(dt) {
@@ -163,7 +163,7 @@ export function creerMoteur(conteneur) {
     if (profil) for (const f of abonnes) { const t0 = performance.now(); f(dt, tempsTotal); f.__ms = (f.__ms || 0) * 0.97 + (performance.now() - t0) * 0.03; }
     else for (const f of abonnes) f(dt, tempsTotal);
     if (etalonnage) etalonnage.uniforms.temps.value = tempsTotal % 100;
-    if (composer) composer.render(); else renderer.render(scene, camera);
+    if (composer && !sansComposition) composer.render(); else renderer.render(scene, camera);
     surveiller(dt);
   }
 
@@ -180,6 +180,9 @@ export function creerMoteur(conteneur) {
     /* `seuil` (facultatif) : au-dessus de quelle luminance un pixel rayonne. Une pièce claire dépasse 0,95
        partout et tout l'écran devenait laiteux (salon crème, 2026-11-13) : seules les lampes doivent rayonner */
     profil: () => abonnes.filter(f => f.__ms).sort((a, b) => b.__ms - a.__ms).slice(0, 12).map(f => [Math.round(f.__ms * 100) / 100, f.toString().replace(/\s+/g, ' ').slice(0, 90)]),
+    /* le monde photographique (socle/monde-photo.js) porte déjà sa lumière et ses couleurs : ni ombres de
+       contact, ni halo, ni étalonnage par-dessus (ils délavaient la photo et ne coûtaient que des images/s) */
+    composition(oui) { sansComposition = !oui; },
     reglerHalo(force, seuil) { if (halo) { halo.strength = force; if (seuil != null) halo.threshold = seuil; } },
   };
   return moteur;

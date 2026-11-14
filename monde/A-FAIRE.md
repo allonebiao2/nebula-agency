@@ -39,8 +39,8 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 ## 🤖 CLAUDE
 
 ### D · Tout de suite, sans rien attendre
-- [ ] D1 · Le contrôle qui cale (la fiche recouvre un bouton, deux fois de suite, deux endroits différents) : trouver, réparer, QC vert
-- [ ] D2 · Enregistrer le monde photographique (`socle/monde-photo.js`, Spark 2.4, interrompu par la coupure) : commit, push
+- [x] D1 · Le contrôle qui cale : ✅ 2026-11-14, QC **58/58**. Deux faux rouges : (1) le QC touchait la bulle au moment où la fiche s'ouvre par-dessus → `toucher_dialogue()` n'attend plus 60 s ; (2) le test du fondu lisait l'opacité depuis une page occupée → il lit l'opacité RÉELLE du voile au moment du saut. Et un vrai gain : le saut attend `transitionend` (l'écran noir), filet 700 ms (`socle/deplacement.js`)
+- [x] D2 · Le monde photographique : ✅ 2026-11-14, essayé avec le monde d'exemple (500 000 points, `?monde=../../_cuisson/essai-monde.spz`) : chargé, décor modélisé retiré, personnages et pièces par-dessus, 0 erreur ; commité
 - [ ] D3 · La marche : vitesse calée sur la foulée (les pieds ne glissent plus), démarrage et arrêt progressifs, virages progressifs, brancher `afi-tourner-gauche/droite.fbx`
 - [ ] D4 · Le personnage-vidéo : détourer (birefnet, une image à la fois), boucler, jouer la vidéo à la place de la 3D pendant les conversations, couleur accordée au salon (jour, nuit), ombre au sol. **Essai avec `afi-parler.mp4`**, captures 390 et 1440, Mongazi juge
 - [ ] D5 · Trouver un outil vidéo → mouvement 3D, gratuit, à licence commerciale (code ET poids vérifiés), pour tirer la vraie démarche de ses vidéos « marcher »

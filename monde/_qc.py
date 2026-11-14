@@ -22,7 +22,7 @@ import urllib.parse
 from datetime import date, timedelta
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
 ICI = Path(__file__).resolve().parent
 VUES = ICI / "_vues"
@@ -54,13 +54,23 @@ def jusqua(pg, js, t=40):
     pg.wait_for_function(js, timeout=t * 1000)
 
 
+def toucher_dialogue(pg):
+    """Toucher la bulle pour avancer. La fiche d'une pièce peut s'ouvrir PAR-DESSUS entre le moment où l'on
+    regarde et celui où l'on touche (depuis la vague E, Hillary lève d'abord la carte) : le doigt tombe alors
+    sur la fiche, c'est normal. On n'attend pas 60 s que la fiche s'en aille, on regarde à nouveau."""
+    try:
+        pg.click(".dialogue .dlg-corps", timeout=1500)
+    except PWTimeout:
+        pass
+
+
 def avancer_jusqu_aux_choix(pg, max_clics=10):
     for _ in range(max_clics):
         if pg.evaluate("document.querySelector('.dialogue').classList.contains('en-choix')"):
             return True
         if not pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"):
             return False
-        pg.click(".dialogue .dlg-corps"); time.sleep(0.35)
+        toucher_dialogue(pg); time.sleep(0.35)
     return pg.evaluate("document.querySelector('.dialogue').classList.contains('en-choix')")
 
 
@@ -117,7 +127,7 @@ def main():
         choisir(pg, "cérémonie")
         for _ in range(8):
             if pg.evaluate("document.querySelector('.fiche').classList.contains('ouverte')"): break
-            pg.click(".dialogue .dlg-corps"); time.sleep(0.4)
+            toucher_dialogue(pg); time.sleep(0.4)
         ok(pg.evaluate("document.querySelector('.fiche').classList.contains('ouverte')"), "Hillary présente une pièce : sa fiche s'ouvre")
         nom_piece = pg.evaluate("document.querySelector('.fiche h2').textContent")
         piece = next((x for x in D["pieces"] if x["nom"] == nom_piece), None)
@@ -132,7 +142,7 @@ def main():
         choisir(pg, "c'est tout")
         for _ in range(6):
             if pg.evaluate("document.querySelector('.cadran').classList.contains('ouvert')"): break
-            if pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"): pg.click(".dialogue .dlg-corps")
+            if pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"): toucher_dialogue(pg)
             time.sleep(0.5)
         ok(pg.evaluate("document.querySelector('.cadran').classList.contains('ouvert')"), "« Valide ta commande ici » : le cadran s'affiche")
         ok(pg.evaluate("__monde.carnet.appris.has('ceremonie')"), "demander conseil pour une cérémonie inscrit un savoir au carnet")
@@ -190,7 +200,7 @@ def main():
         for _ in range(6):
             if not pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"): break
             if pg.evaluate("document.querySelector('.dialogue').classList.contains('en-choix')"): pg.locator(".dlg-croix button").last.click()
-            else: pg.click(".dialogue .dlg-corps")
+            else: toucher_dialogue(pg)
             time.sleep(0.4)
         ok(pg.evaluate("__monde.pnj.parId.maman.connue === true"), "après lui avoir parlé, son repère porte son nom")
         # à zéro, on se tait, et elle réagit ; une conversation de commande, elle, n'a jamais de minuteur
@@ -203,7 +213,7 @@ def main():
             ok(False, "le minuteur écoulé : « Pas de réponse », et elle réagit", pg.evaluate("document.querySelector('.dlg-texte').textContent"))
         for _ in range(6):
             if not pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"): break
-            pg.click(".dialogue .dlg-corps"); time.sleep(0.4)
+            toucher_dialogue(pg); time.sleep(0.4)
         # les réponses déjà explorées sont cochées, et « Partir » ferme la conversation
         pg.evaluate("__monde.dialogue.ouvrir('hillary')"); avancer_jusqu_aux_choix(pg)
         ok(pg.evaluate("document.querySelectorAll('.dlg-croix .ch.deja').length") >= 1, "une réponse déjà choisie est cochée")
@@ -243,7 +253,7 @@ def main():
             choisir(pg, "demander à Hillary")
             for _ in range(4):
                 if not pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"): break
-                pg.click(".dialogue .dlg-corps"); time.sleep(0.4)
+                toucher_dialogue(pg); time.sleep(0.4)
             ok(pg.evaluate("document.querySelector('.objectif').classList.contains('visible')"), "la course s'affiche comme un objectif")
         except Exception as e:
             ok(False, "Afi vient d'elle-même confier sa course", str(e)[:120])
@@ -281,9 +291,17 @@ def main():
               if (__monde.pnj.annulerAbordage) __monde.pnj.annulerAbordage(); __monde.dialogue.fermer(); await attendre(300);
               D.allerA('evenements'); await jusqua(() => !D.enMarche, 12000);
               D.allerA('expo_g'); await attendre(300);
-              let max = 0; D.allerA('creations');
-              const t0 = performance.now(); while (performance.now() - t0 < 2500) { await attendre(40); max = Math.max(max, +getComputedStyle(v).opacity); }
-              const p = D.position; return { max, noeud: D.noeud, x: p.x, z: p.z, marche: D.enMarche, dialogue: __monde.dialogue.actif }; }""")
+              /* on note ce que le CODE fait du voile (posé noir, puis levé), pas l'opacité lue depuis la page : une page
+                 occupée une fraction de seconde ne voyait rien passer (faux rouge, 2026-11-14) */
+              const pose = []; const mo = new MutationObserver(() => pose.push([performance.now(), v.style.opacity, +getComputedStyle(v).opacity])); mo.observe(v, { attributes: true });
+              D.allerA('creations');
+              await jusqua(() => !D.enMarche, 4000); await attendre(200); mo.disconnect();
+              const noir = pose.find(x => x[1] === '1'), leve = noir && pose.find(x => x[1] === '0' && x[0] > noir[0]);
+              /* l'opacité RÉELLE du voile au moment où il se lève (= au moment du saut) : 1 si l'écran était noir. Une durée ne
+                 prouve rien : un voile qui repart d'un fondu pas encore remonté devient noir en 120 ms (la transition
+                 inversée est raccourcie par le navigateur), et c'est juste */
+              const max = leve ? leve[2] : 0;
+              const p = D.position; return { max, noir_ms: leve ? Math.round(leve[0] - noir[0]) : null, noeud: D.noeud, x: p.x, z: p.z, marche: D.enMarche, dialogue: __monde.dialogue.actif }; }""")
             pt = next(p for p in donnees_plan()["points"] if p["id"] == "creations")
             ok(r["max"] > 0.95 and r["noeud"] == "creations" and not r["marche"] and abs(r["x"] - pt["x"]) < 0.3 and abs(r["z"] - pt["z"]) < 0.3,
                "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(r))

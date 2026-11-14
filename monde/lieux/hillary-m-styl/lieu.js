@@ -21,6 +21,7 @@ import { creerCarnet } from '../../socle/carnet.js';
 import { creerOptions } from '../../socle/options.js';
 import { creerRessources } from '../../socle/ressources.js';
 import { MATIERES, matWax, flaqueLumiere, ombreRonde, PALETTES_WAX } from '../../socle/matieres.js';
+import { creerMondePhoto } from '../../socle/monde-photo.js';
 import { DONNEES } from './donnees.js';
 import { PERSONNES, faitsMaison, dialoguesHillary, dialoguesVisiteuses, conversations, savoirsMaison } from './textes.js';
 
@@ -195,7 +196,7 @@ const ciel3d = new THREE.ShaderMaterial({
   vertexShader: 'varying vec3 vP; void main() { vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
   fragmentShader: 'uniform vec3 haut, horizon; varying vec3 vP; void main() { float h = clamp(vP.y * 1.6, 0.0, 1.0); gl_FragColor = vec4(mix(horizon, haut, pow(h, 0.7)), 1.0); }',
 });
-const domeCiel = new THREE.Mesh(new THREE.SphereGeometry(70, 32, 16), ciel3d); domeCiel.renderOrder = -1; scene.add(domeCiel);
+const domeCiel = new THREE.Mesh(new THREE.SphereGeometry(70, 32, 16), ciel3d); domeCiel.renderOrder = -1; domeCiel.userData.garder = true; scene.add(domeCiel);
 const CIEL = { jourH: new THREE.Color(0x5d8fc8), jourB: new THREE.Color(0xc9dbe8), nuitH: new THREE.Color(0x060914), nuitB: new THREE.Color(0x3a2418) };
 
 /* LE PLAFOND DE SES IMAGES : clair, percé d'une grande COUPOLE OVALE dont le bord porte une gorge lumineuse
@@ -870,7 +871,7 @@ const monde = {
 };
 Object.assign(dialogue.registre, dialoguesHillary({ D, F, boutique, ctx, monde }), dialoguesVisiteuses({ D, F, ctx, monde }));
 const presenterCarte = (() => {
-  const g = new THREE.Group(); g.visible = false; scene.add(g);
+  const g = new THREE.Group(); g.visible = false; g.userData.garder = true; scene.add(g);
   const pivot = new THREE.Group(); g.add(pivot);
   pivot.add(boite(0.47, 0.65, 0.008, M.laiton));
   pivot.add(a(boite(0.45, 0.63, 0.014, M.creme), 0, 0, 0));
@@ -1040,7 +1041,7 @@ const sacComptoir = new THREE.Group();
   const mono = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.1), new THREE.MeshBasicMaterial({ map: texteCanvas(256, 140, (g, W, H) => { g.fillStyle = '#f4efe6'; g.font = '600 64px "Bodoni Moda", Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('H.M.S', W / 2, H / 2); }), transparent: true }));
   mono.position.set(0, 0.24, 0.072); sacComptoir.add(mono);
   sacComptoir.position.set(plan.comptoir.x - 0.6, plan.comptoir.hauteur, plan.comptoir.z + 0.05); sacComptoir.rotation.y = 0.35;
-  sacComptoir.visible = boutique.panier().length > 0; scene.add(sacComptoir);
+  sacComptoir.visible = boutique.panier().length > 0; sacComptoir.userData.garder = true; scene.add(sacComptoir);
   /* P25 (référence : l'objet qui se remplit et passe de main en main) : le papier de soie qui dépasse du sac monte à
      chaque pièce ajoutée */
   const soie = new THREE.Group(); soie.position.y = 0.4; sacComptoir.add(soie);
@@ -1718,6 +1719,7 @@ function poserRefletSol() {
   let attente = 0, calme = 0;
   const avantPos = camera.position.clone();
   moteur.chaqueImage((dt) => {
+    if (refletSol.suspendu) return;   /* le monde photographique a remplacé le sol */
     uni.uIrradiance.value = refletSol.irradiance / refletSol.force; mat.envMapIntensity = refletSol.force;
     if (face >= 0) { uneFace(); return; }
     /* le visiteur s'est-il arrêté (moins de 2 mm par image pendant 0,3 s) ? */
@@ -1730,5 +1732,40 @@ function poserRefletSol() {
   refletSol.prendre = () => { commencer(); while (face >= 0) uneFace(); };
 }
 
+/* LE MONDE PHOTOGRAPHIQUE (Mongazi, 2026-11-14 : « GTA de 2001 » ; voie choisie : un monde 3D généré par IA).
+   `?monde=<adresse d'un .spz>` pour essayer un monde, `plan.mondePhoto` = { url, calage } quand il est validé.
+   Le décor modélisé du DEDANS s'en va quand le monde est là ; restent les personnes, les pièces d'Hillary (ses
+   photos), le sac, la carte qu'elle présente, le ciel et la rue. `?calage` : le pupitre (socle/monde-photo.js).
+   ⚠️ Le monde est une IMAGE GÉNÉRÉE : ambiance seulement. Une robe qu'on y verrait n'est PAS le catalogue
+   (CLAUDE.md) : la générer depuis une vue aux portants et podiums VIDES, les vraies pièces viennent par-dessus. */
+const sourceMonde = params.get('monde') || (plan.mondePhoto && plan.mondePhoto.url) || '';
+function decorDuDedans() {
+  const garder = new Set([...PERSONNAGES(), ...Object.values(totems)]);
+  const dedans = new THREE.Box3(new THREE.Vector3(-LX - 0.3, -0.1, -LZ - 0.3), new THREE.Vector3(LX + 0.3, H + 0.3, fz + 0.3));
+  const bb = new THREE.Box3(), c = new THREE.Vector3();
+  return scene.children.filter((o) => {
+    if (o.isLight || o.isCamera || garder.has(o) || (o.userData && o.userData.garder)) return false;
+    bb.setFromObject(o); if (bb.isEmpty()) return false;
+    return dedans.containsPoint(bb.getCenter(c));
+  });
+}
+const mondePhoto = sourceMonde ? creerMondePhoto({
+  moteur, decor: decorDuDedans,
+  surEtat: (e) => {
+    const el = document.querySelector('.monde-etat') || calque.appendChild(Object.assign(document.createElement('div'), { className: 'monde-etat' }));
+    el.textContent = e.erreur ? 'Le salon photographique n’a pas pu venir' : 'Le salon photographique arrive · ' + Math.round(e.charge * 100) + ' %';
+    el.hidden = e.pret && !e.erreur;
+    refletSol.suspendu = !!e.photo;
+  },
+}) : null;
+if (mondePhoto) {
+  mondePhoto.pupitre(params.has('calage'));
+  /* APRÈS le premier écran (règle 3G) : le salon modélisé d'abord, le monde ensuite, en fondu */
+  setTimeout(() => mondePhoto.charger(sourceMonde, (plan.mondePhoto && plan.mondePhoto.calage) || {}).catch(e => console.warn('monde photographique', e)), params.has('direct') ? 300 : 3000);
+  /* le soir, il se tamise comme le salon modélisé (le monde est une photo de jour) */
+  const teinte = new THREE.Color();
+  moteur.chaqueImage(() => { const k = melanger(1, 0.55, nuitCuite); mondePhoto.teinter(teinte.setRGB(k, k * 0.97, k * 0.92)); });
+}
+
 /* pour les contrôles automatiques */
-window.__monde = { son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

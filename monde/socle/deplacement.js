@@ -74,9 +74,19 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
   const voile = calque ? (() => { const v = document.createElement('div'); v.className = 'fondu-noir'; v.setAttribute('aria-hidden', 'true');
     v.style.cssText = 'position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s ease-in;z-index:0';
     calque.prepend(v); return v; })() : null;
+  /* le saut n'a lieu qu'une fois l'écran NOIR (fin de la transition), pas au bout d'un temps fixe : sur un téléphone
+     occupé, 360 ms pouvaient passer sans qu'une seule image du voile soit peinte, et l'on voyait la caméra sauter
+     (vu au QC le 2026-11-14). Filet : 700 ms si la transition ne se termine jamais (onglet caché, image figée). */
   const fondu = voile ? (auMilieu) => {
     voile.style.transition = 'opacity .35s ease-in'; voile.style.opacity = '1'; voile.style.pointerEvents = 'auto';
-    setTimeout(() => { auMilieu(); requestAnimationFrame(() => { voile.style.transition = 'opacity .45s ease-out'; voile.style.opacity = '0'; voile.style.pointerEvents = 'none'; }); }, 360);
+    let fait = false;
+    const sauter = (e) => {
+      if (fait || (e && e.propertyName !== 'opacity')) return;
+      fait = true; voile.removeEventListener('transitionend', sauter); clearTimeout(filet);
+      auMilieu(); requestAnimationFrame(() => { voile.style.transition = 'opacity .45s ease-out'; voile.style.opacity = '0'; voile.style.pointerEvents = 'none'; });
+    };
+    voile.addEventListener('transitionend', sauter);
+    const filet = setTimeout(sauter, 700);
   } : null;
   const interactifs = [];
 

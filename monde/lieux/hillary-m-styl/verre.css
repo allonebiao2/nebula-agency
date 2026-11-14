@@ -341,3 +341,8 @@ body:has(#ouverture:not(.partie)) :is(.hud, .bt-sac, .bt-carnet, .repere, .point
 /* vague 1 (l'ouverture cinéma) : la carte de titre ne se pose plus sur les sous-titres du bas */
 .carte-titre { bottom: calc(22% + env(safe-area-inset-bottom)); }
 @media (max-width: 560px) { .carte-titre { bottom: calc(118px + env(safe-area-inset-bottom)); } }
+
+/* le monde photographique qui arrive (socle/monde-photo.js) : discret, il ne bloque rien */
+.monde-etat { position: fixed; left: 50%; top: calc(max(10px, env(safe-area-inset-top)) + 54px); transform: translateX(-50%); z-index: 5; padding: 4px 10px; border-radius: 8px;
+  background: var(--verre-fort); color: var(--texte); font: 600 .72rem var(--police-libelle); letter-spacing: .01em; white-space: nowrap; pointer-events: none; }
+.monde-etat[hidden] { display: none; }

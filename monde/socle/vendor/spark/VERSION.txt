@@ -1,0 +1,3 @@
+Spark 2.4.0 (@sparkjsdev/spark, MIT, World Labs) : https://github.com/sparkjsdev/spark
+Copie de dist/spark.module.min.js du paquet npm, sans modification. Exige three >= 0.180 (le socle est en r180).
+Ne se charge QUE si un lieu déclare un monde photographique (import à la demande).
