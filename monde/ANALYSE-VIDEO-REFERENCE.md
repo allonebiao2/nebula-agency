@@ -601,7 +601,7 @@ dans les premières secondes · P51 affiches tirées des données (« Prochainem
 |---|---|---|
 | ✅ A · la caméra (2026-11-14, QC 55/55) | P1, P4, P7, P9, P10, P11 | yeux à 1,52 m ; vitesse de croisière constante (départ 0,3 s, arrêt 0,4 s) ; la caméra ne saute plus d'une oratrice à l'autre tant qu'elle est dans le cadre ; bandes de cinéma à la seule accroche ; fondu au noir de 0,8 s sur les longs trajets ; l'œil qui s'habitue en passant la porte |
 | ✅ B · le dialogue (2026-11-14, QC 58/58) | P33, P34 | « Pas de réponse » en haut de la croix pour les répliques légères, un minuteur doux de 7 s qui se vide par les deux bouts (jamais pour une commande) |
-| C · le son | P43 | les murmures des conversations lointaines (bruit passé dans des formants qui bougent), 0 Ko |
+| ✅ C · le son (2026-11-14 ; 🙋 à écouter sur un vrai téléphone) | P43 | les murmures des conversations lointaines (bruit passé dans des formants qui bougent), 0 Ko |
 | D · la vie | P14, P17, P18, P27, P28, P47 | la tablette du comptoir allumée, le ventilateur sur pied qui tourne, les affichettes « Essayage » et « Sur-mesure », les têtes qui se tournent ensemble, des passants en silhouettes derrière la vitrine, l'accroche au milieu d'une scène (Sènami filme sa mère) |
 | E · l'objet et le geste | P23, P25, P40, P50, P52 | le sac magenta qui se remplit sur le comptoir à chaque pièce, Hillary qui présente la pièce (face puis dos), la main au téléphone avant WhatsApp, les dix secondes après la commande |
 

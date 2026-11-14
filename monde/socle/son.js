@@ -143,6 +143,40 @@ export function creerSon({ base = '../../socle/sons/' } = {}) {
       src.connect(g).connect(p).connect(maitre); src.start();
       machine = { src, g };
     },
+    /* P43 (référence) : LE MURMURE d'une conversation trop lointaine pour être sous-titrée. Ce n'est pas une voix et
+       ce ne sont pas des mots : une hauteur de voix qui flotte (l'intonation), du souffle, deux formants qui sautent
+       d'une voyelle à l'autre au rythme des syllabes, des pauses ; étouffé, placé là où elles parlent, ≈ 10 dB sous
+       tout le reste. Synthétisé : 0 Ko. */
+    murmures: 0,
+    murmure(pos, duree = 2, hauteur = 220) {
+      if (!ctx || coupe || dehors) return;
+      this.murmures++;
+      const t0 = ctx.currentTime + 0.02, fin = t0 + duree;
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(hauteur, t0);
+      for (let t = t0 + 0.3; t < fin; t += 0.3) o.frequency.linearRampToValueAtTime(hauteur * (0.88 + Math.random() * 0.28), t);
+      const n = ctx.createBufferSource(); n.buffer = bruit();
+      const go = ctx.createGain(); go.gain.value = 0.35; const gn = ctx.createGain(); gn.gain.value = 0.5;
+      const f1 = ctx.createBiquadFilter(); f1.type = 'bandpass'; f1.Q.value = 5;
+      const f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.Q.value = 7;
+      const env = ctx.createGain(); env.gain.setValueAtTime(0.0001, t0);
+      const voyelles = [[750, 1250], [420, 2200], [520, 1800], [320, 2500], [600, 1050], [480, 1500]];
+      let t = t0;
+      while (t < fin - 0.1) {
+        const d = 0.14 + Math.random() * 0.14, [a, b] = voyelles[Math.floor(Math.random() * voyelles.length)];
+        f1.frequency.setTargetAtTime(a, t, 0.025); f2.frequency.setTargetAtTime(b, t, 0.025);
+        env.gain.setTargetAtTime(1, t, 0.02); env.gain.setTargetAtTime(0.12, t + d * 0.72, 0.03);
+        t += d; if (Math.random() < 0.12) t += 0.18 + Math.random() * 0.2;   /* une respiration */
+      }
+      env.gain.setTargetAtTime(0.0001, fin, 0.06);
+      const etouffe = ctx.createBiquadFilter(); etouffe.type = 'lowpass'; etouffe.frequency.value = 1700;
+      const g = ctx.createGain(); g.gain.value = 0.32;
+      const p = ctx.createPanner(); p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 2; p.rolloffFactor = 1;
+      if (p.positionX) { p.positionX.value = pos.x; p.positionY.value = pos.y; p.positionZ.value = pos.z; } else p.setPosition(pos.x, pos.y, pos.z);
+      o.connect(go); n.connect(gn);
+      for (const s of [go, gn]) { s.connect(f1); s.connect(f2); }
+      f1.connect(env); f2.connect(env); env.connect(etouffe).connect(g).connect(p).connect(maitre);
+      o.start(t0); o.stop(fin + 0.4); n.start(t0, Math.random()); n.stop(fin + 0.4);
+    },
     /* l'oreille suit la caméra */
     ecouteur(camera) {
       if (!ctx) return;

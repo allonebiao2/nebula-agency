@@ -13,6 +13,8 @@ const DUREES = { regarder: [9, 20], photo: [5, 9], toucher: [6, 12], telephone: 
 const GESTES = { regarder: 'regarder', photo: 'photo', toucher: 'toucher', telephone: 'telephone', assis: 'repos', comptoir: 'comptoir', fenetre: 'fenetre' };
 const hasard = (a, b) => a + Math.random() * (b - a);
 
+/* la hauteur de voix de chacune, pour son murmure (Maman la plus grave, Sènami la plus haute) */
+const HAUTEURS_VOIX = { afi: 212, senami: 238, maman: 188 };
 export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, visiteuses, conversations, ctx, personnes, son = null }) {
   /* `reglages.foyer()` : une position (ou null) que personne ne doit cacher au visiteur, posée par le lieu */
   const reglages = { foyer: null };
@@ -135,6 +137,8 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     const milieu = new THREE.Vector3().addVectors(cv.a.perso.racine.position, cv.b.perso.racine.position).multiplyScalar(0.5);
     const pres = milieu.distanceTo(new THREE.Vector3(camera.position.x, 0, camera.position.z)) < 9.5;
     if (pres) { dialogue.sousTitre(l.qui, l.t); cv.entendu = true; }
+    /* P43 (référence) : trop loin pour lire, on les ENTEND quand même, un murmure sans mots là où elles parlent */
+    else if (son && son.murmure) son.murmure(new THREE.Vector3(milieu.x, 1.5, milieu.z), 1.1 + l.t.length * 0.05, HAUTEURS_VOIX[l.qui] || 215);
     cv.finLigne = t + 1.6 + l.t.length * 0.055;
   }
 
