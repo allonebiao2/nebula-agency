@@ -577,3 +577,35 @@ textes bougent encore (P46).
   rire, jamais pour faire acheter.
 - **Pas d'animation infinie sous un flou d'arrière-plan** (règle du dépôt) :
   le voile des choix est une couleur, pas un `backdrop-filter`.
+
+---
+
+## 12. L'audit du 2026-11-14 : ce qui est pris, ce qui reste (« REA ce qui est possible de prendre et d'ajouter à 100 % »)
+
+> Demande de Mongazi du 2026-11-14. REA a refusé la vidéo (« unsupported binary format » : il démonte des
+> programmes, pas des films) ; l'audit est fait **contre le code**, procédé par procédé. La colonne
+> « Salon aujourd'hui » du § 9 date du 12 novembre : elle est périmée, c'est ce tableau qui fait foi.
+
+**Déjà dans le salon (vérifié dans le code)** : P2 focale 75° horizontal (`moteur.js`) · P3 et P44 un pas tous
+les 0,68 m, tête et son au même instant, roulis par foulée (`deplacement.js`) · P5 immobile = immobile · P8 vrai
+flou en qualité haute (vague 3) · P15 sol qui reflète à toutes les qualités (R6) · P16 et P17 la densité et le
+désordre vrai (R9, ce jour) · P19 · P20 · P21 et P26 Hillary alterne regard et tâche, accueille sans croiser les
+bras · P29 Afi la Parisienne · P30 les répliques avancent seules · P31 · P32 « Toi » · P33 la croix · P35 elle
+écoute pendant qu'on choisit · P37 · P38 la carte de titre · P39 objectif replié à 6 s, un seul nom à la fois ·
+P41 climatiseur et machine à coudre · P45 la porte-filtre (+10 dB dehors, filtre à 1 600 Hz) · P48 Afi vient
+dans les premières secondes · P51 affiches tirées des données (« Prochainement » tant que `faits.json` est vide).
+
+**Ce qui reste, en vagues (une à la fois, chacune regardée et contrôlée)** :
+
+| Vague | Procédés | Ce qu'on construit |
+|---|---|---|
+| A · la caméra | P1, P4, P7, P9, P10, P11 | yeux à 1,52 m ; vitesse de croisière constante (départ 0,3 s, arrêt 0,4 s) ; la caméra ne saute plus d'une oratrice à l'autre tant qu'elle est dans le cadre ; bandes de cinéma à la seule accroche ; fondu au noir de 0,8 s sur les longs trajets ; l'œil qui s'habitue en passant la porte |
+| B · le dialogue | P33, P34 | « Pas de réponse » en haut de la croix pour les répliques légères, un minuteur doux de 7 s qui se vide par les deux bouts (jamais pour une commande) |
+| C · le son | P43 | les murmures des conversations lointaines (bruit passé dans des formants qui bougent), 0 Ko |
+| D · la vie | P14, P17, P18, P27, P28, P47 | la tablette du comptoir allumée, le ventilateur sur pied qui tourne, les affichettes « Essayage » et « Sur-mesure », les têtes qui se tournent ensemble, des passants en silhouettes derrière la vitrine, l'accroche au milieu d'une scène (Sènami filme sa mère) |
+| E · l'objet et le geste | P23, P25, P40, P50, P52 | le sac magenta qui se remplit sur le comptoir à chaque pièce, Hillary qui présente la pièce (face puis dos), la main au téléphone avant WhatsApp, les dix secondes après la commande |
+
+**Pas maintenant** : P12 flou de bougé (non, § 10) · P13 un blanc par zone (il faut recuire la lumière : avec la
+prochaine cuisson) · P22 « parler en faisant » et P24 le guide qui se retourne (attendent Hillary et Maman en
+3D) · P42 et P46 des voix (⛔ jamais une voix imitée sans accord écrit ; textes encore mouvants) · P49 la première
+visite écrite de 90 s (après les vagues A à E, elle les assemble).
