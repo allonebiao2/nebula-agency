@@ -110,7 +110,14 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 - ⛔ **Maman Sènami en 3D : quota ZeroGPU épuisé** le 2026-11-14 à 2 h (compte : « 0 s left » ; anonyme : « try again in
   14:08:40 », donc vers 16 h 20). Détourage déjà fait : `_partage/immersive  store 3D/personnages/maman/maman-face-47ans-detoure.png`.
   Relancer : `python monde/_outils/en_3d.py "<dossier maman>/maman-face-47ans.jpg" --sortie "<dossier maman>/maman-3d.glb" --faces 100000 --detourer-ici` (puis `--sans-jeton`).
-- 🔨 **LA PROCHAINE ACTION : « REA ce qui est possible de prendre et d'ajouter à 100 % »** (Mongazi, vidéo *Call of
+- ✅ **Vagues A à E de la référence faites** (`ANALYSE-VIDEO-REFERENCE.md` § 12), QC 58/58, commits `7ee3d98` → `2f04a93`.
+- 🔴 **LA PROCHAINE ACTION (Mongazi, 2026-11-14) : L'IMAGE, plus le comportement.** « c'est limite comme un GTA de 2001 ».
+  Il a choisi la voie **« Monde 3D généré par IA »** : un monde en Gaussian splat (World Labs Marble ou équivalent) généré
+  depuis ses vues du salon (`_partage/immersive  store 3D/salon/*.jpg`), affiché par **Spark** (MIT, three.js ≥ r180 ; le
+  socle est en r180), personnages, pièces et commande PAR-DESSUS. 🙋 **Lui** : compte gratuit Marble (4 essais, sans droits
+  commerciaux) pour JUGER la qualité ; si oui, Pro 35 $/mois (droits commerciaux, carte bancaire : sa décision). ⚠️ Le poids
+  d'un monde (dizaines de Mo ?) contre la règle 3G : à MESURER sur le premier export.
+- (fait) « REA ce qui est possible de prendre et d'ajouter à 100 % » (Mongazi, vidéo *Call of
   Duty*). REA refuse les vidéos ; on part de `ANALYSE-VIDEO-REFERENCE.md` § 9 : pour chaque procédé P1 à P52 marqué
   « oui » ou « à adapter », vérifier dans le code s'il existe, et construire ce qui manque, un à la fois.
 
