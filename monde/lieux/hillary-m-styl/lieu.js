@@ -741,6 +741,9 @@ if (!params.has('direct')) deplacement.tournerVers(new THREE.Vector3(0, 2.9, pla
    « réduire les animations » et devant ?direct. La caméra est reprise APRÈS le déplacement à chaque
    image, puis rendue exactement à la pose qu'il attend : aucun saut. */
 const intro = (!params.has('direct') && !matchMedia('(prefers-reduced-motion: reduce)').matches) ? { t: 0, dur: 7.5, vite: false, fini: false, surFin: null } : null;
+/* P9 (référence) : les bandes de cinéma, À LA SEULE OUVERTURE, retirées d'un coup quand la main revient au visiteur
+   (jamais pendant une conversation : `verre.css` les y cache) */
+const bandesIntro = intro ? (() => { const b = document.createElement('div'); b.className = 'bandes-intro'; b.setAttribute('aria-hidden', 'true'); b.innerHTML = '<i></i><i></i>'; calque.appendChild(b); return b; })() : null;
 if (intro) {
   const deb = new THREE.Vector3(), fin = new THREE.Vector3(), qDeb = new THREE.Quaternion(), qFin = new THREE.Quaternion();
   const vise = new THREE.Matrix4(), haut = new THREE.Vector3(0, 1, 0), enseigne = new THREE.Vector3(0, 3.6, plan.facade.z);
@@ -752,7 +755,7 @@ if (intro) {
     qDeb.setFromRotationMatrix(vise.lookAt(deb, enseigne, haut));
     camera.position.lerpVectors(deb, fin, e);
     camera.quaternion.slerpQuaternions(qDeb, qFin, e);
-    if (k >= 1) { finIntro(); intro.fini = true; if (intro.surFin) intro.surFin(); }
+    if (k >= 1) { finIntro(); intro.fini = true; if (bandesIntro) bandesIntro.remove(); if (intro.surFin) intro.surFin(); }
   });
 }
 function deplacementPlus(objet, cible) { (window.__enAttente = window.__enAttente || []).push([objet, cible]); }
@@ -1060,12 +1063,19 @@ moteur.chaqueImage((dt) => {
 });
 
 /* ---------- la nuit, la pluie, à l'intérieur ---------- */
-moteur.chaqueImage(() => {
+/* P11 (référence) : L'ŒIL QUI S'HABITUE en passant la porte. Entrer dans plus sombre que d'où l'on vient (le salon
+   de jour, la rue la nuit) commence sombre et s'éclaircit ; entrer dans plus clair commence ébloui. 1,5 s environ. */
+let oeil = 1, dedansAvant = null;
+moteur.chaqueImage((dt) => {
   const e = ciel.etat;
+  const dedans = camera.position.z < fz;
+  if (dedansAvant !== null && dedans !== dedansAvant) oeil = dedans ? melanger(0.72, 1.22, e.nuit) : melanger(1.3, 0.68, e.nuit);
+  dedansAvant = dedans;
+  oeil += (1 - oeil) * (1 - Math.exp(-Math.min(dt, 0.1) * 1.5));   /* 90 % du chemin en 1,5 s */
   for (const i of interieurs) i.maj(e.nuit, e.pluie);
   /* LE JOUR DE SES IMAGES, LE SOIR TAMISÉ (2026-11-13) : de jour, la pièce est claire et la lumière du ciel
      entre par la vitrine ; le soir, elle baisse et se réchauffe. (Avant : tamisée jour et nuit.) */
-  moteur.renderer.toneMappingExposure = melanger(1.04, 0.84, e.nuit) * (1 - e.pluie * 0.06);
+  moteur.renderer.toneMappingExposure = melanger(1.04, 0.84, e.nuit) * (1 - e.pluie * 0.06) * oeil;
   scene.environmentIntensity = melanger(0.5, 0.15, e.nuit);
   if (cielHemi) cielHemi.intensity *= melanger(0.75, 0.42, e.nuit);
   ciel3d.uniforms.haut.value.copy(CIEL.jourH).lerp(CIEL.nuitH, e.nuit); ciel3d.uniforms.horizon.value.copy(CIEL.jourB).lerp(CIEL.nuitB, e.nuit);

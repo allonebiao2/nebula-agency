@@ -15,7 +15,7 @@ import { THREE } from './moteur.js';
 const DIRS = ['haut', 'gauche', 'droite', 'bas'];
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-const cibleRegard = new THREE.Vector3(), BAISSE_REGARD = new THREE.Vector3(0, -0.2, 0);
+const cibleRegard = new THREE.Vector3(), BAISSE_REGARD = new THREE.Vector3(0, -0.2, 0), ecran = new THREE.Vector3();
 export function creerDialogue({ calque, son, deplacement, personnes, registre = {}, ctx = {} }) {
   const el = (tag, cls, html = '') => { const e = document.createElement(tag); if (cls) e.className = cls; e.innerHTML = html; return e; };
   const st = el('div', 'soustitres'); st.setAttribute('aria-live', 'polite'); calque.appendChild(st);
@@ -28,7 +28,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
     <div class="dlg-croix" role="group" aria-label="Vos réponses"></div>`;
   calque.appendChild(boite);
   const $ = (s) => boite.querySelector(s);
-  let actif = false, attente = null, tapeur = null, choixCourants = [], selection = 0;
+  let actif = false, attente = null, tapeur = null, choixCourants = [], selection = 0, cadree = null;
   /* les réponses déjà explorées : cochées ; les autres : une étoile. On a envie de tout essayer. */
   let vus = new Set();
   try { vus = new Set(JSON.parse(localStorage.getItem('monde:vus')) || []); } catch (e) { /* rien */ }
@@ -57,6 +57,13 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
       /* LA MISE EN SCÈNE (audit jeu vidéo, vague 3) : celle qui parle est cadrée de la taille à la tête,
          quelle que soit sa distance, le regard au tiers haut ; le fond se floute sur les appareils capables */
       const tete = p.perso.positionTete(new THREE.Vector3()), camera = deplacement.camera;
+      /* P7 (référence) : à plusieurs, la caméra NE SAUTE PAS d'une oratrice à l'autre ; elle ne se tourne vers la
+         nouvelle que si celle-ci sort du centre de l'image (sinon : un coup de caméra à chaque réplique) */
+      if (cadree && cadree !== qui) {
+        ecran.copy(tete).project(camera);
+        if (ecran.z < 1 && Math.abs(ecran.x) < 0.55 && ecran.y > -0.45 && ecran.y < 0.8) return;
+      }
+      cadree = qui;
       const d = Math.max(0.8, tete.distanceTo(camera.position));
       const base = camera.userData.fovBase || camera.fov;
       /* deux exigences : de la taille à la tête en hauteur (1,2 m), et 1,10 m de large autour d'elle :
@@ -174,7 +181,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
 
   function ouvrir(id) {
     if (actif) return false;
-    actif = true; st.innerHTML = '';
+    actif = true; st.innerHTML = ''; cadree = null;
     document.body.classList.add('en-dialogue');
     boite.classList.add('ouverte'); bandes.classList.add('ouvertes');
     if (deplacement) { deplacement.bloquer(true); deplacement.cinema(true); }

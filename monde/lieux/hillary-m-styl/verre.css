@@ -97,6 +97,11 @@ html, body { caret-color: var(--marque); accent-color: var(--marque); }
    translucide), à 36 % de la largeur ; les réponses en croix au centre, sur un voile léger.
    Toucher n'importe où fait avancer. */
 .bandes { display: none; }
+/* P9 : les bandes de l'ouverture seulement (format 2,35:1 de la référence), sous l'interface, retirées d'un coup */
+.bandes-intro { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.bandes-intro i { position: absolute; left: 0; right: 0; height: 9vh; background: #000; }
+.bandes-intro i:first-child { top: 0; } .bandes-intro i:last-child { bottom: 0; }
+@media (max-width: 560px) { .bandes-intro i { height: 6vh; } }
 .dialogue { inset: 0; width: auto; transform: none; display: block; padding: 0; border-radius: 0; background: none; box-shadow: none; outline: none; border: 0; }
 .dialogue.ouverte { transform: none; }
 .dlg-corps { position: absolute; left: 36%; right: 6%; bottom: calc(11% + env(safe-area-inset-bottom)); display: flex; align-items: flex-start; gap: 4px; }

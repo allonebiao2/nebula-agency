@@ -56,7 +56,9 @@ function faisceau() {
   const t = new THREE.CanvasTexture(c); return t;
 }
 
-export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 1.55, vitesse = 1.45,
+/* P1 (référence) : les yeux à 1,52 m, 15 à 20 cm sous ceux des personnages : on lève à peine les yeux vers Afi
+   (1,71 m) et Hillary (1,68 m), on est à hauteur de Maman Sènami (1,62 m), on ne domine personne */
+export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 1.52, vitesse = 1.45,
   couleur = 0xe6007e, calque } = {}) {
   const { camera, scene, renderer } = moteur;
   const toile = renderer.domElement;
@@ -66,6 +68,16 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
   let roulis = 0;
   let noeud = depart, marche = null, bloque = false, dernierGlisser = -10, fovBase = null, cinema = 0, cinemaVise = 0, fovCadre = null, suivi = null;
   const surArrivee = [], surPas = [], surToucher = [], surDepart = [];
+  let enFondu = false;
+  const LONG_TRAJET = 8, reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* P10 : le voile noir (0,35 s pour descendre, le saut, 0,45 s pour remonter : 0,8 s comme la référence) */
+  const voile = calque ? (() => { const v = document.createElement('div'); v.className = 'fondu-noir'; v.setAttribute('aria-hidden', 'true');
+    v.style.cssText = 'position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s ease-in;z-index:0';
+    calque.prepend(v); return v; })() : null;
+  const fondu = voile ? (auMilieu) => {
+    voile.style.transition = 'opacity .35s ease-in'; voile.style.opacity = '1'; voile.style.pointerEvents = 'auto';
+    setTimeout(() => { auMilieu(); requestAnimationFrame(() => { voile.style.transition = 'opacity .45s ease-out'; voile.style.opacity = '0'; voile.style.pointerEvents = 'none'; }); }, 360);
+  } : null;
   const interactifs = [];
 
   /* ---------- les points lumineux ---------- */
@@ -103,7 +115,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
 
   /* ---------- marcher ---------- */
   function allerA(id, { regard = null, puis = null, sansChemin = false, fin = null } = {}) {
-    if (bloque && !puis) return false;
+    if ((bloque && !puis) || enFondu) return false;
     const cibleN = graphe.noeuds[id];
     if (!cibleN) return false;
     let ids = sansChemin ? [id] : graphe.chemin(noeud, id);
@@ -123,9 +135,43 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
     }
     const courbe = pts.length === 2 ? new THREE.LineCurve3(pts[0], pts[1]) : new THREE.CatmullRomCurve3(pts, false, 'centripetal', 0.5);
     const L = courbe.getLength();
-    marche = { courbe, L, t: 0, duree: L / vitesse + 0.35, id, regard, capFinal, puis, pasPrec: 0 };
+    const prof = profil(L);
+    /* P10 (référence) : un LONG trajet se coupe d'un fondu au noir de 0,8 s (une ellipse, comme le film), sauf
+       pendant une conversation et pour qui a demandé moins d'animations ; la marche reste pour les pas courts */
+    if (L > LONG_TRAJET && fondu && !bloque && !reduit) {
+      /* ⚠️ la marche en cours s'arrête net : sinon elle continue sous le voile et ramène la caméra en arrière */
+      marche = null; enFondu = true;
+      surDepart.forEach(f => f(id));
+      fondu(() => {
+        enFondu = false;
+        const fin = courbe.getPointAt(1), avant = courbe.getPointAt(0.97);
+        pos.x = fin.x; pos.z = fin.z; pos.y = hauteur; roulis = 0; noeud = id;
+        lacet = lacetVise = Math.atan2(-(fin.x - avant.x), -(fin.z - avant.z));
+        tournerVers(regard instanceof THREE.Vector3 ? regard : null, capFinal);
+        lacet = lacetVise; tangage = tangageVise;
+        surArrivee.forEach(f => f(id)); if (puis) puis();
+      });
+      return true;
+    }
+    marche = { courbe, L, t: 0, duree: prof.duree, prof, id, regard, capFinal, puis, pasPrec: 0 };
     surDepart.forEach(f => f(id));
     return true;
+  }
+  /* P4 (référence) : une vitesse de CROISIÈRE constante, un départ en 0,3 s et un arrêt en 0,4 s (avant : un
+     cosinus sur tout le trajet, la vitesse variait sans cesse jusqu'à 2,3 m/s, et la cadence des pas avec elle).
+     Un trajet trop court pour atteindre la croisière fait un triangle à la même accélération. */
+  const T_DEPART = 0.3, T_ARRET = 0.4;
+  function profil(L) {
+    const v = Math.min(vitesse, 2 * L / (T_DEPART + T_ARRET));
+    const croisiere = Math.max(0, (L - v * (T_DEPART + T_ARRET) / 2) / v);
+    const duree = T_DEPART + croisiere + T_ARRET;
+    return { L, v, croisiere, duree,
+      parcouru(t) {
+        if (t <= 0) return 0;
+        if (t < T_DEPART) return 0.5 * v / T_DEPART * t * t;
+        if (t < T_DEPART + croisiere) return v * T_DEPART / 2 + v * (t - T_DEPART);
+        const reste = Math.max(0, duree - t); return L - 0.5 * v / T_ARRET * reste * reste;
+      } };
   }
   function tournerVers(point, cap) {
     if (point) { lacetVise = Math.atan2(-(point.x - pos.x), -(point.z - pos.z)); tangageVise = Math.atan2(point.y - hauteur, Math.hypot(point.x - pos.x, point.z - pos.z)) * 0.8; }
@@ -210,7 +256,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
     if (fovBase === null) fovBase = camera.fov;
     if (marche) {
       marche.t += dt;
-      const u = doux(marche.t / marche.duree);
+      const u = marche.L > 0 ? Math.min(1, marche.prof.parcouru(marche.t) / marche.L) : 1;
       const p = marche.courbe.getPointAt(Math.min(u, 1));
       pos.x = p.x; pos.z = p.z;
       const dist = u * marche.L;
@@ -292,7 +338,7 @@ export function creerDeplacement(moteur, graphe, { depart = 'entree', hauteur = 
 
   const deplacement = {
     allerA, tournerVers, graphe, interactifs, surArrivee, surPas, surToucher, surDepart, surSurvol: [],
-    get position() { return pos; }, get noeud() { return noeud; }, get enMarche() { return !!marche; },
+    get position() { return pos; }, get noeud() { return noeud; }, get enMarche() { return !!marche || enFondu; },
     get camera() { return camera; },
     get lacet() { return lacet; },
     ajouterInteractif(objet, cible) { objet.traverse(o => { if (o.isMesh) { o.userData.cible = cible; interactifs.push(o); } }); },

@@ -42,6 +42,10 @@ def donnees() -> dict:
     return json.loads(s[s.index("{"): s.rindex("}") + 1])
 
 
+def donnees_plan() -> dict:
+    return json.loads((Path(__file__).parent / "lieux" / "hillary-m-styl" / "plan.json").read_text(encoding="utf-8"))
+
+
 def fcfa(n: int) -> str:
     return f"{n:,}".replace(",", " ") + " F"
 
@@ -250,6 +254,24 @@ def main():
             ok(False, "la lumière cuite est posée sur le décor", str(e)[:120])
         pg.evaluate("__monde.deplacement.tournerVers(new (__monde.moteur.THREE.Vector3)(0, 1.6, 9))"); time.sleep(1.5)
         shot("09-pluie-jour")
+        # 10 · LA CAMÉRA DE LA RÉFÉRENCE (ANALYSE-VIDEO-REFERENCE.md § 12, vague A) : les yeux à 1,52 m (P1), un long
+        #      trajet coupé d'un fondu au noir qui arrive bien (P10), un trajet lancé PENDANT une marche ne la laisse pas
+        #      ramener la caméra en arrière (le défaut trouvé le 2026-11-14)
+        try:
+            ok(abs(pg.evaluate("__monde.deplacement.position.y") - 1.52) < 0.03, "les yeux à 1,52 m, sous ceux des personnages")
+            r = pg.evaluate("""async () => {
+              const D = __monde.deplacement, v = document.querySelector('.fondu-noir'), attendre = (ms) => new Promise(r => setTimeout(r, ms));
+              const jusqua = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await attendre(50); };
+              D.allerA('evenements'); await jusqua(() => !D.enMarche, 12000);
+              D.allerA('expo_g'); await attendre(300);
+              let max = 0; D.allerA('creations');
+              const t0 = performance.now(); while (performance.now() - t0 < 2500) { await attendre(40); max = Math.max(max, +getComputedStyle(v).opacity); }
+              const p = D.position; return { max, noeud: D.noeud, x: p.x, z: p.z, marche: D.enMarche }; }""")
+            pt = next(p for p in donnees_plan()["points"] if p["id"] == "creations")
+            ok(r["max"] > 0.95 and r["noeud"] == "creations" and not r["marche"] and abs(r["x"] - pt["x"]) < 0.3 and abs(r["z"] - pt["z"]) < 0.3,
+               "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(r))
+        except Exception as e:
+            ok(False, "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(e)[:160])
 
         ok(not erreurs, "aucune erreur dans la console", " | ".join(erreurs[:3]))
         b.close()
