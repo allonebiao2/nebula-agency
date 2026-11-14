@@ -163,8 +163,12 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
     if (transitoire && (voulue === 'parler' || voulue === 'saluer')) transitoire = null;
     if (!transitoire) {
       if (voulue !== base) {
-        if (voulue === 'marcher' && actions.demarrer) { jouer('demarrer', 0.2); transitoire = 'demarrer'; }
-        else if (base === 'marcher' && voulue !== 'parler' && voulue !== 'saluer' && actions.arreter) { jouer('arreter', 0.25); transitoire = 'arreter'; }
+        /* ⚠️ ni « demarrer » ni « arreter » ne sont joués pour la marche du salon (2026-11-14, mesuré avec
+           `_outils/mesurer_marche.py`) : ce sont deux AUTRES allures de Mixamo (le départ finit à 1,3 m/s quand
+           sa marche va à 0,8), leur avancée propre était retirée, et le pied d'appui glissait de 30 cm/s. Elle
+           part de SA marche, qui accélère et freine en douceur, la cadence des pas suivant la vitesse. */
+        if (voulue === 'marcher' && actions.demarrer && perso.departEnAnimation) { jouer('demarrer', 0.2); transitoire = 'demarrer'; }
+        else if (base === 'marcher' && voulue !== 'parler' && voulue !== 'saluer' && actions.arreter && perso.arretEnAnimation) { jouer('arreter', 0.25); transitoire = 'arreter'; }
         else jouer(choisir(voulue));
         base = voulue; prochainChangement = t + 6 + Math.random() * 4;
       } else if (UNE_FOIS.has(courante)) {
@@ -177,7 +181,13 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
     /* la marche suit la vitesse réelle ; à l'arrêt, si elle pivote, ses pieds piétinent au lieu de glisser */
     const vitesseRot = Math.abs(Math.atan2(Math.sin(perso.racine.rotation.y - rotPrec), Math.cos(perso.racine.rotation.y - rotPrec))) / Math.max(dt, 1e-3);
     rotPrec = perso.racine.rotation.y;
-    if (courante === 'marcher') actions.marcher.setEffectiveTimeScale(THREE.MathUtils.clamp(st.vitesse / vitesseMarche, 0.6, 1.6));
+    /* la cadence suit la vitesse réelle, au pas près (vitesse propre mesurée, sinon le réglage d'avant) : pendant un
+       départ ou une arrivée en douceur, les pas ralentissent avec le corps au lieu de patiner */
+    if (courante === 'marcher') {
+      const k = base === 'marcher' ? st.vitesse / (perso.vitesseNaturelle || vitesseMarche)
+        : 0.35 + vitesseRot * 0.12;   /* elle pivote sur place : des petits pas au rythme du pivot */
+      actions.marcher.setEffectiveTimeScale(THREE.MathUtils.clamp(k, base === 'marcher' ? 0.3 : 0.45, base === 'marcher' ? 1.8 : 0.85));
+    }
     if (!transitoire && base === 'attendre' && vitesseRot > 1.2 && actions.marcher && courante !== 'marcher') { jouer('marcher', 0.15); actions.marcher.setEffectiveTimeScale(0.55); }
     else if (base === 'attendre' && courante === 'marcher' && vitesseRot < 0.3) jouer(choisir('attendre'), 0.3);
     melangeur.update(dt);
@@ -210,7 +220,43 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
     return clip;
   };
   Promise.allSettled(ANIMATIONS.map(n => chargerGeste(n).then(o => ajouter(n, adapter(o)))))
-    .then(r => { const rates = r.filter(x => x.status === 'rejected').length; if (rates) console.warn(`${prefixe} : ${rates} animation(s) manquante(s)`); });
+    .then(r => {
+      const rates = r.filter(x => x.status === 'rejected').length; if (rates) console.warn(`${prefixe} : ${rates} animation(s) manquante(s)`);
+      if (actions.marcher) mesurerMarche(actions.marcher.getClip());
+    });
+
+  /* LA MARCHE QUI NE GLISSE PLUS (Mongazi, 2026-11-14 : « la façon de marcher, tout, on doit tout revoir »).
+     Avant : l'animation tournait à vitesse/1,2 (un chiffre posé au jugé), donc le pied posé au sol reculait
+     plus vite ou moins vite que le corps n'avançait : il glissait. Ici on MESURE la vitesse propre de la marche
+     sur CE corps, à sa taille : pendant l'appui, le pied posé recule par rapport au bassin exactement à la
+     vitesse de la marche. Le salon fait ensuite tourner l'animation à vitesse_réelle / vitesse_propre. */
+  function mesurerMarche(clip) {
+    if (!os.LeftFoot || !os.RightFoot || !os.Hips || !clip) return;
+    const m2 = new THREE.AnimationMixer(modele), a = m2.clipAction(clip); a.play();
+    const N = 72, D = clip.duration, pieds = [[], []], bassin = [], v = new THREE.Vector3();
+    perso.racine.updateMatrixWorld(true);
+    for (let i = 0; i <= N; i++) {
+      m2.setTime(i * D / N); modele.updateMatrixWorld(true);
+      os.Hips.getWorldPosition(v); perso.racine.worldToLocal(v); bassin.push(v.clone());
+      [os.LeftFoot, os.RightFoot].forEach((b, j) => { b.getWorldPosition(v); perso.racine.worldToLocal(v); pieds[j].push(v.clone()); });
+    }
+    a.stop(); m2.uncacheRoot(modele);
+    const vitesses = [];
+    for (const P of pieds) {
+      const bas = Math.min(...P.map(x => x.y));
+      for (let i = 0; i < N; i++) {
+        if (P[i].y > bas + 0.03 || P[i + 1].y > bas + 0.03) continue;   /* le pied n'est pas posé */
+        vitesses.push(-((P[i + 1].z - bassin[i + 1].z) - (P[i].z - bassin[i].z)) / (D / N));
+      }
+    }
+    vitesses.sort((x, y) => x - y);
+    const vp = vitesses.length >= 6 ? vitesses[vitesses.length >> 1] : 0;
+    perso.mesureMarche = { vitesse: Math.round(vp * 1000) / 1000, appuis: vitesses.length, duree: D };
+    if (vp > 0.4 && vp < 2.5) {
+      perso.vitesseNaturelle = vp;
+      perso.pas = vp * D / 2;   /* un cycle = deux pas */
+    }
+  }
 
   /* pour les contrôles : le geste joué en ce moment */
   perso.animation = () => courante;

@@ -15,6 +15,10 @@ const hasard = (a, b) => a + Math.random() * (b - a);
 
 /* la hauteur de voix de chacune, pour son murmure (Maman la plus grave, Sènami la plus haute) */
 const HAUTEURS_VOIX = { afi: 212, senami: 238, maman: 188 };
+/* la marche d'une personne : accélération et freinage (m/s²), vitesse de rotation en marchant et sur place (rad/s),
+   distance à laquelle on prend le virage vers le point suivant (m) */
+const MARCHE = { accel: 1.6, freinage: 1.3, tour: 2.4, tourSurPlace: 4.2, virage: 0.32 };
+
 export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, visiteuses, conversations, ctx, personnes, son = null }) {
   /* `reglages.foyer()` : une position (ou null) que personne ne doit cacher au visiteur, posée par le lieu */
   /* `conversations` : le lieu peut retenir les conversations tant que le visiteur n'est pas entré (l'accroche les ouvre) */
@@ -246,6 +250,29 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
   });
   deplacement.surSurvol.push((c) => { for (const n of pnj) n.survol = !!(c && c.type === 'pnj' && c.id === n.id); });
 
+  /* LE PAS DE CÔTÉ (2026-11-14) : une visiteuse IMMOBILE qu'il faut écarter (trop près du visiteur, ou entre lui
+     et celle qui lui parle) ne GLISSE plus sur le sol : elle fait de vrais pas, puis se retourne vers ce qu'elle
+     regardait. Celle qui marche déjà, celle qui parle au visiteur et celle qu'il retient ne sont pas concernées
+     (on garde pour elles l'écart doux d'avant, rendu `false`). Un petit écart (< 8 cm) ne vaut pas un pas. */
+  function pasDeCote(n, nx, nz, besoin) {
+    if (n.chemin || n.perso.st.assis || n.etat === 'joueur' || n.etat === 'retenue' || n.etat === 'aborde') return false;
+    if (n.pasJusqua && moteur.temps() < n.pasJusqua) return true;   /* le pas d'avant vient de finir : on laisse respirer */
+    if (besoin < 0.08) return true;
+    const r = n.perso.racine.position, ecart = besoin + 0.25;
+    const rot = n.perso.racine.rotation.y, enCours = n.ensuite;
+    n.chemin = [new THREE.Vector3(r.x + nx * ecart, 0, r.z + nz * ecart)];
+    n.ensuite = () => { n.perso.tourner(rot); n.pasJusqua = moteur.temps() + 1.2; if (enCours) enCours(); };
+    return true;
+  }
+
+  /* LES ÉCARTS D'UNE VISITEUSE QUI MARCHE (2026-11-14) : on ne la pousse plus de côté sous ses pieds (elle
+     glissait) ; l'écart s'ajoute à SA trajectoire à l'image suivante, et son corps comme ses pas suivent la
+     direction réelle : elle dévie en marchant. Immobile, l'écart reste direct (le pas de côté s'en charge). */
+  function pousser(n, x, z) {
+    if (n.chemin) { const q = n.pousse || (n.pousse = { x: 0, z: 0 }); q.x += x; q.z += z; n.pousseeTotale = (n.pousseeTotale || 0) + Math.hypot(x, z); }
+    else { const r = n.perso.racine.position; r.x += x; r.z += z; }
+  }
+
   /* ---------- chaque image ---------- */
   const proj = new THREE.Vector3(), cam2 = new THREE.Vector3();
   moteur.chaqueImage((dt, t) => {
@@ -256,20 +283,49 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     for (const n of pnj) {
       const r = n.perso.racine.position;
       if (n.chemin && n.chemin.length) {
-        const cible = n.chemin[0];
-        const d = cible.clone().sub(r); d.y = 0; const L = d.length();
-        const v = n.vitesse || 1.0;
-        if (L < 0.08) { n.chemin.shift(); if (!n.chemin.length) { n.chemin = null; n.perso.vitesse = 0; const e = n.ensuite; n.ensuite = null; if (e) e(); } }
-        else {
-          const pasL = Math.min(L, v * dt); r.addScaledVector(d.normalize(), pasL);
-          /* ses pas viennent de là où elle marche */
-          n.distPas = (n.distPas || 0) + pasL;
-          if (son && n.distPas > 0.62) { n.distPas = 0; son.pasDe(new THREE.Vector3(r.x, 0.05, r.z)); }
-          n.perso.vitesse = v; n.perso.tourner(Math.atan2(d.x, d.z));
+        /* LA MARCHE (Mongazi, 2026-11-14 : « la façon de marcher, tout »). Avant : pleine vitesse dès la première
+           image, arrêt net, et des angles secs à chaque point du chemin (le corps tournait APRÈS la trajectoire,
+           elle marchait un instant de travers). Maintenant, comme une personne : elle se tourne d'abord vers où
+           elle va (en piétinant), accélère, prend ses virages en courbe en passant près des points sans les
+           toucher, et ralentit pour s'arrêter pile. Sa vitesse de croisière est celle de SON animation (aucun
+           glissement des pieds), modulée par son allure (`n.allure`, 1 par défaut). */
+        let cible = n.chemin[0], dx = cible.x - r.x, dz = cible.z - r.z, L = Math.hypot(dx, dz);
+        if (n.chemin.length > 1 && L < MARCHE.virage) { n.chemin.shift(); cible = n.chemin[0]; dx = cible.x - r.x; dz = cible.z - r.z; L = Math.hypot(dx, dz); }
+        const fin = n.chemin.length === 1;
+        if (n.cap == null) n.cap = n.perso.racine.rotation.y;
+        if (fin && L < 0.05) {
+          r.x = cible.x; r.z = cible.z;
+          n.chemin = null; n.v = 0; n.perso.vitesse = 0; const e = n.ensuite; n.ensuite = null; if (e) e();
+        } else {
+          let reste = L; for (let i = 1; i < n.chemin.length; i++) reste += n.chemin[i].distanceTo(n.chemin[i - 1]);
+          const vise = Math.atan2(dx, dz), ecart = Math.atan2(Math.sin(vise - n.cap), Math.cos(vise - n.cap));
+          const tour = (n.v || 0) > 0.2 ? MARCHE.tour : MARCHE.tourSurPlace;
+          n.cap += THREE.MathUtils.clamp(ecart, -tour * dt, tour * dt);
+          const croisiere = n.vitesse || (n.perso.vitesseNaturelle || 1.0) * (n.allure || 1);
+          const aligne = Math.max(0, Math.cos(Math.min(Math.PI / 2, Math.abs(ecart) * 1.15)));
+          const vVise = Math.min(croisiere, Math.sqrt(2 * MARCHE.freinage * Math.max(0, reste - 0.02))) * aligne * aligne;
+          n.v = (n.v || 0) + THREE.MathUtils.clamp(vVise - (n.v || 0), -MARCHE.freinage * 1.6 * dt, MARCHE.accel * dt);
+          /* tout près du but, on y va droit : une courbe au ralenti tournerait autour */
+          const droit = fin && L < 0.35, ax = droit ? dx / L : Math.sin(n.cap), az = droit ? dz / L : Math.cos(n.cap);
+          const pasL = Math.min(n.v * dt, droit ? L : Infinity);
+          /* son pas, plus l'écart demandé à l'image d'avant : c'est le mouvement RÉEL, que suivent le corps et la cadence */
+          const q = n.pousse; n.pousse = null;
+          const mx = ax * pasL + (q ? q.x : 0), mz = az * pasL + (q ? q.z : 0), m = Math.hypot(mx, mz);
+          r.x += mx; r.z += mz;
+          const reel = dt > 0 ? m / dt : n.v, versAvant = m > 1e-5 && (mx * ax + mz * az) > 0.3 * m;
+          /* ses pas viennent de là où elle marche, à la longueur de SES pas */
+          n.distPas = (n.distPas || 0) + m;
+          if (son && n.distPas > (n.perso.pas || 0.62)) { n.distPas = 0; son.pasDe(new THREE.Vector3(r.x, 0.05, r.z)); }
+          /* le corps suit la trajectoire SANS retard (le cap est déjà adouci par la limite de rotation) : avec le
+             lissage d'avant, le corps avait jusqu'à 37° de retard dans un virage et le pied posé glissait de côté */
+          const vMontree = q && versAvant ? reel : n.v, capVise = q && versAvant ? Math.atan2(mx, mz) : n.cap;
+          /* adouci sur ~80 ms : un écart qui va et vient ne fait pas trembler le corps */
+          n.capM = n.capM == null ? capVise : n.capM + Math.atan2(Math.sin(capVise - n.capM), Math.cos(capVise - n.capM)) * Math.min(1, dt * 12);
+          n.perso.vitesse = vMontree; n.perso.tourner(n.capM); if (vMontree > 0.05) n.perso.racine.rotation.y = n.capM;
           /* on contourne le joueur au lieu de lui passer à travers */
           const dj = r.distanceTo(cam2); if (dj < 0.55) r.addScaledVector(r.clone().sub(cam2).setY(0).normalize(), (0.55 - dj));
         }
-      } else n.perso.vitesse = 0;
+      } else { n.v = 0; n.cap = null; n.capM = null; n.pousse = null; n.perso.vitesse = 0; }
       /* L'ESPACE DE CHACUNE (Mongazi, 2026-11-12 : « ils se rentrent dedans ») : deux
          visiteuses ne s'approchent pas à moins de 0,65 m, et aucune ne reste à moins de
          0,85 m du visiteur (sauf pendant qu'elle lui parle). On écarte doucement, jamais d'un saut. */
@@ -278,14 +334,16 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
       if (n.chemin) for (const m of pnj) {
         if (m === n) continue;
         const o = m.perso.racine.position, dx = r.x - o.x, dz = r.z - o.z, dd = Math.hypot(dx, dz);
-        if (dd > 1e-4 && dd < 0.65) { const k = Math.min(0.65 - dd, dt * 0.9) / dd; r.x += dx * k; r.z += dz * k; }
+        if (dd > 1e-4 && dd < 0.65) { const k = Math.min(0.65 - dd, dt * 0.9) / dd; pousser(n, dx * k, dz * k); }
       }
       {
         /* 0,85 m au moins ; et celle qui PARLE au visiteur se tient à 1,30 m, sinon son visage remplit
            l'écran du téléphone (capture du 2026-11-13) */
         const mini = n.etat === 'joueur' ? 1.3 : n.etat === 'retenue' ? 0 : 0.85;
         const dx = r.x - cam2.x, dz = r.z - cam2.z, dd = Math.hypot(dx, dz);
-        if (mini && dd > 1e-4 && dd < mini) { const k = Math.min(mini - dd, dt * 0.8) / dd; r.x += dx * k; r.z += dz * k; }
+        if (mini && dd > 1e-4 && dd < mini) {
+          if (!pasDeCote(n, dx / dd, dz / dd, mini - dd)) { const k = Math.min(mini - dd, dt * 0.8) / dd; pousser(n, dx * k, dz * k); }
+        }
       }
       /* personne ne s'interpose entre le visiteur et celle qui lui parle : une visiteuse sur la ligne de
          regard s'écarte doucement de côté (capture du 2026-11-13 : Maman Sènami cachait Afi) */
@@ -300,7 +358,7 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
           const px = cam2.x + ax * k, pz = cam2.z + az * k, dx = r.x - px, dz = r.z - pz, dd = Math.hypot(dx, dz);
           if (k > 0 && k < 0.98 && dd < 0.9) {
             const L = Math.sqrt(L2), nx = dd > 1e-3 ? dx / dd : -az / L, nz = dd > 1e-3 ? dz / dd : ax / L;
-            const pas = Math.min(0.9 - dd, dt * 0.9); r.x += nx * pas; r.z += nz * pas;
+            if (!pasDeCote(n, nx, nz, 0.9 - dd)) { const pas = Math.min(0.9 - dd, dt * 0.9); pousser(n, nx * pas, nz * pas); }
           }
         }
       }
@@ -325,5 +383,6 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
   });
 
   return { pnj, parId, reglages, aborder, annulerAbordage, parler, retenir, relacher, reagir, lancer: (id) => !convEnCours && lancerConversation(id),
+    envoyer: (id, x, z, ensuite = null) => partir(parId[id], { x, z }, ensuite),
     liberer(id) { const n = parId[id]; if (n && n.fin === Infinity) n.fin = moteur.temps() + hasard(1, 4); }, get conversation() { return convEnCours; }, get abordage() { return abordage; } };
 }

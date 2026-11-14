@@ -308,6 +308,14 @@ def main():
         except Exception as e:
             ok(False, "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(e)[:160])
 
+        # 11 · LA MARCHE (2026-11-14) : la cadence des pas vient de la vitesse propre de SA marche, mesurée sur ses pieds
+        #      (habiller.js) ; sans elle, les pieds glissent. Le patinage lui-même : `_outils/mesurer_marche.py`.
+        try:
+            jusqua(pg, "(() => { const n = __monde.pnj.parId.afi; return n && n.perso.mesureMarche; })()", 60)
+            m = pg.evaluate("__monde.pnj.parId.afi.perso.mesureMarche")
+            ok(0.5 < (m.get("vitesse") or 0) < 1.6, "la marche d'Afi est calée sur ses pas (vitesse propre mesurée)", json.dumps(m))
+        except Exception as e:
+            ok(False, "la marche d'Afi est calée sur ses pas (vitesse propre mesurée)", str(e)[:120])
         ok(not erreurs, "aucune erreur dans la console", " | ".join(erreurs[:3]))
         b.close()
     n_ok = sum(1 for r in resultats if r[0])
