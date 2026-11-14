@@ -603,7 +603,7 @@ dans les premières secondes · P51 affiches tirées des données (« Prochainem
 | ✅ B · le dialogue (2026-11-14, QC 58/58) | P33, P34 | « Pas de réponse » en haut de la croix pour les répliques légères, un minuteur doux de 7 s qui se vide par les deux bouts (jamais pour une commande) |
 | ✅ C · le son (2026-11-14 ; 🙋 à écouter sur un vrai téléphone) | P43 | les murmures des conversations lointaines (bruit passé dans des formants qui bougent), 0 Ko |
 | ✅ D · la vie (2026-11-14, QC 58/58 ; + P6 le regard guidé vers l'accroche) | P14, P17, P18, P27, P28, P47 | la tablette du comptoir allumée, le ventilateur sur pied qui tourne, les affichettes « Essayage » et « Sur-mesure », les têtes qui se tournent ensemble, des passants en silhouettes derrière la vitrine, l'accroche au milieu d'une scène (Sènami filme sa mère) |
-| E · l'objet et le geste | P23, P25, P40, P50, P52 | le sac magenta qui se remplit sur le comptoir à chaque pièce, Hillary qui présente la pièce (face puis dos), la main au téléphone avant WhatsApp, les dix secondes après la commande |
+| ✅ E · l'objet et le geste (2026-11-14, QC 58/58 ; ⛔ P40 écarté : retarder WhatsApp coûte des commandes, et l'app s'ouvre avant qu'on voie la main) | P23, P25, P40, P50, P52 | le sac magenta qui se remplit sur le comptoir à chaque pièce, Hillary qui présente la pièce (face puis dos), la main au téléphone avant WhatsApp, les dix secondes après la commande |
 
 **Pas maintenant** : P12 flou de bougé (non, § 10) · P13 un blanc par zone (il faut recuire la lumière : avec la
 prochaine cuisson) · P22 « parler en faisant » et P24 le guide qui se retourne (attendent Hillary et Maman en

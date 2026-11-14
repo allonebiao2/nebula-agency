@@ -855,6 +855,10 @@ const monde = {
     clearTimeout(objectifEl._replier); objectifEl._replier = setTimeout(() => objectifEl.classList.add('replie'), 6000);
     if (fini) { son.valider(); setTimeout(() => objectifEl.classList.remove('visible'), 7000); }
   },
+  /* P23 + P50 (référence : présenter l'objet, le lever, le retourner ; une petite scène qu'on REGARDE avant de toucher) :
+     Hillary lève la carte du lookbook de la pièce (SA vraie photo), on la voit de face, elle la retourne : le dos (les
+     photos de dos existent pour une partie des pièces), puis la fiche s'ouvre. Toucher l'écran passe la scène. */
+  presenterPiece(id) { return presenterCarte(id); },
   montrerPiece(id) { const t = totems[id]; if (t) { const p = new THREE.Vector3(); t.getWorldPosition(p); p.y += 1.1; deplacement.tournerVers(p); } },
   ouvrirTiktok(abonner = false) {
     if (!F.tiktok) return;
@@ -865,6 +869,49 @@ const monde = {
   afiAuComptoir() { const n = pnj.parId.afi; n.goutsPlaces = { comptoir_g: 400, comptoir_d: 400 }; n.fin = 0; },
 };
 Object.assign(dialogue.registre, dialoguesHillary({ D, F, boutique, ctx, monde }), dialoguesVisiteuses({ D, F, ctx, monde }));
+const presenterCarte = (() => {
+  const g = new THREE.Group(); g.visible = false; scene.add(g);
+  const pivot = new THREE.Group(); g.add(pivot);
+  pivot.add(boite(0.47, 0.65, 0.008, M.laiton));
+  pivot.add(a(boite(0.45, 0.63, 0.014, M.creme), 0, 0, 0));
+  const mats = [0, 1].map(() => new THREE.MeshBasicMaterial({ transparent: true, toneMapped: false, color: new THREE.Color(0.97, 0.97, 0.97) }));
+  const faces = mats.map((m, k) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); p.position.z = k ? -0.008 : 0.008; if (k) p.rotation.y = Math.PI; pivot.add(p); return p; });
+  const cache = {}, charger = (nom) => (cache[nom] ??= new Promise((ok) => chargeur.load('img/' + nom, (tx) => { tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4; ok(tx); }, undefined, () => ok(null))));
+  const garnir = (k, tx) => { mats[k].map = tx; mats[k].needsUpdate = true; const r = tx ? tx.image.width / tx.image.height : 0.7, H = 0.6, W = 0.42; const h = Math.min(H, W / r); faces[k].scale.set(h * r, h, 1); faces[k].visible = !!tx; };
+  const ici = new THREE.Vector3(), vers = new THREE.Vector3();
+  return async (id) => {
+    const p = boutique.pieceDe(id); if (!p || !p.img) { monde.montrerPiece(id); return; }
+    const [face, dos] = await Promise.all([charger(p.img), p.img2 ? charger(p.img2) : null]);
+    if (!face) { monde.montrerPiece(id); return; }
+    garnir(0, face); garnir(1, dos);
+    return new Promise((fini) => {
+      let tt = 0, fin = false;
+      const duree = dos ? 6.2 : 4.2;
+      const passer = () => { tt = Math.max(tt, duree - 0.45); };
+      addEventListener('pointerdown', passer, { once: true, capture: true });
+      g.visible = true; pivot.rotation.y = 0;
+      /* elle la tient devant elle, entre elle et toi, à hauteur de poitrine */
+      const hp = hillary.racine.position;
+      vers.set(camera.position.x - hp.x, 0, camera.position.z - hp.z).normalize();
+      ici.set(hp.x + vers.x * 0.5, 1.44, hp.z + vers.z * 0.5);   /* levée à hauteur de visage : le bas de la carte reste au-dessus du comptoir */
+      const d = Math.max(0.8, ici.distanceTo(camera.position));
+      /* le cadre tient la carte en hauteur ET en largeur (au téléphone, l'écran est étroit : elle remplissait tout) */
+      const enH = 2 * Math.atan(0.46 / d), enL = 2 * Math.atan(Math.tan(Math.atan(0.36 / d)) / Math.max(0.3, camera.aspect));
+      deplacement.suivre(() => ici); deplacement.cadrer(Math.min(70, Math.max(26, Math.max(enH, enL) * 180 / Math.PI)), d);
+      const arreter = moteur.chaqueImage((dt) => {
+        if (fin) return; tt += dt;
+        const monte = Math.min(1, tt / 0.45), e = 1 - Math.pow(1 - monte, 3);
+        g.position.set(ici.x, ici.y - 0.25 * (1 - e) + Math.sin(tt * 1.3) * 0.006, ici.z);
+        g.lookAt(camera.position.x, g.position.y, camera.position.z);
+        g.scale.setScalar(0.7 + 0.3 * e);
+        /* elle la retourne entre 2,4 et 3,1 s, puis la rend face à toi à la fin */
+        if (dos) { const k = Math.min(1, Math.max(0, (tt - 2.4) / 0.7)); pivot.rotation.y = Math.PI * (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2); }
+        if (tt > duree - 0.45) g.scale.setScalar(Math.max(0.01, (duree - tt) / 0.45));
+        if (tt >= duree) { fin = true; g.visible = false; removeEventListener('pointerdown', passer, { capture: true }); arreter(); fini(); }
+      });
+    });
+  };
+})();
 const pnj = creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, visiteuses, conversations: conversations(D, F), ctx, personnes, son });
 /* au comptoir, personne ne se tient entre le visiteur et Hillary (trois visiteuses alignées devant elle, 2026-11-13) */
 pnj.reglages.foyer = () => (Math.hypot(camera.position.x - hillary.racine.position.x, camera.position.z - hillary.racine.position.z) < 3.8 ? hillary.racine.position : null);
@@ -994,17 +1041,43 @@ const sacComptoir = new THREE.Group();
   mono.position.set(0, 0.24, 0.072); sacComptoir.add(mono);
   sacComptoir.position.set(plan.comptoir.x - 0.6, plan.comptoir.hauteur, plan.comptoir.z + 0.05); sacComptoir.rotation.y = 0.35;
   sacComptoir.visible = boutique.panier().length > 0; scene.add(sacComptoir);
+  /* P25 (référence : l'objet qui se remplit et passe de main en main) : le papier de soie qui dépasse du sac monte à
+     chaque pièce ajoutée */
+  const soie = new THREE.Group(); soie.position.y = 0.4; sacComptoir.add(soie);
+  [[0xfbf7f1, -0.05, 0.3], [0xf2c6d6, 0.05, -0.4], [0xfbf7f1, 0.0, 1.2]].forEach(([c, x, r]) => {
+    const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.09, 1), new THREE.MeshStandardMaterial({ color: c, roughness: 0.9, flatShading: true }));
+    m.scale.set(1.1, 0.75, 0.55); m.position.set(x, 0.01, 0); m.rotation.set(0.3, r, 0.2); soie.add(m);
+  });
+  sacComptoir.userData.soie = soie;
 }
+let sacAvant = boutique.panier().length, sacSaut = 0, sacTendu = 0;
+const BASE_SAC = sacComptoir.position.clone();
+const remplirSac = () => { const n = boutique.panier().length; sacComptoir.userData.soie.scale.set(1, Math.min(1.9, 0.6 + 0.35 * n), 1); sacComptoir.userData.soie.position.y = 0.4 + Math.min(0.05, 0.012 * n); };
+remplirSac();
 boutique.surChange.push(() => {
-  const plein = boutique.panier().length > 0;
+  const n = boutique.panier().length, plein = n > 0;
   if (plein && !sacComptoir.visible) { sacComptoir.visible = true; sacComptoir.scale.setScalar(0.01); }
-  if (!plein) sacComptoir.visible = false;
+  else if (n > sacAvant) sacSaut = 1;   /* une pièce de plus : il sautille */
+  if (!plein) { sacComptoir.visible = false; sacTendu = 0; sacComptoir.position.copy(BASE_SAC); }
+  remplirSac(); sacAvant = n;
 });
-moteur.chaqueImage((dt) => { if (sacComptoir.visible && sacComptoir.scale.x < 1) sacComptoir.scale.setScalar(Math.min(1, sacComptoir.scale.x + dt * 3)); });
+moteur.chaqueImage((dt) => {
+  if (!sacComptoir.visible) return;
+  if (sacComptoir.scale.x < 1 && !sacSaut) sacComptoir.scale.setScalar(Math.min(1, sacComptoir.scale.x + dt * 3));
+  else if (sacSaut > 0) { sacSaut = Math.max(0, sacSaut - dt * 2.6); sacComptoir.scale.set(1 - 0.05 * Math.sin(sacSaut * Math.PI), 1 + 0.09 * Math.sin(sacSaut * Math.PI), 1); }
+  /* P52 : la commande est partie, Hillary te TEND le sac : il glisse vers toi au bord du comptoir et se soulève un instant */
+  if (sacTendu > 0 && sacTendu < 1) {
+    sacTendu = Math.min(1, sacTendu + dt / 1.3); const e = 1 - Math.pow(1 - sacTendu, 3);
+    sacComptoir.position.set(BASE_SAC.x + 0.25 * e, BASE_SAC.y + Math.sin(sacTendu * Math.PI) * 0.08, BASE_SAC.z + 0.24 * e);
+  }
+});
 boutique.surEnvoi.push(() => {
   setTimeout(() => {
     boutique.fermerCadran();
     dialogue.sousTitre('hillary', 'Merci ! Je te réponds sur WhatsApp.');
+    sacTendu = 0.001;
+    /* P52 (référence : le paiement n'est pas la fin) : celles qui sont là le remarquent, la plus proche le dit */
+    setTimeout(() => pnj.reagir(() => camera.position.clone(), { rayon: 9, duree: 2.2, lignes: { afi: 'Tu vois ? Elle est géniale.', senami: 'Félicitations ! Tu vas être belle.', maman: 'Bon choix. Tu ne le regretteras pas.' } }), 2600);
     boutique.toast('Commande envoyée sur WhatsApp. Votre sac reste ici tant que vous ne le videz pas.', { annuler: () => boutique.vider(), duree: 9000 });
     const b = document.querySelector('.toast:last-child .toast-annuler'); if (b) b.textContent = 'Vider le sac';
   }, 600);
@@ -1658,4 +1731,4 @@ function poserRefletSol() {
 }
 
 /* pour les contrôles automatiques */
-window.__monde = { son, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

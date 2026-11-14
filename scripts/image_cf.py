@@ -58,7 +58,9 @@ def generer(prompt: str, modele: str = "flux-1-schnell", largeur: int = 1024, ha
     (FLUX.2) ; la réponse est soit l'image brute, soit du JSON qui la porte en base64."""
     acc, tok = cles()
     url = f"https://api.cloudflare.com/client/v4/accounts/{acc}/ai/run/{RAPIDES.get(modele, modele)}"
-    champs = {"prompt": prompt, "width": largeur, "height": hauteur}
+    champs = {"prompt": prompt}
+    if modele != "flux-1-schnell":   # ⚠️ depuis le 2026-11-14, FLUX.1 schnell refuse width/height (erreur 5006) : il rend 1024 × 1024
+        champs.update(width=largeur, height=hauteur)
     if etapes:
         champs["steps" if "flux" in modele else "num_steps"] = etapes
     code, typ, corps = _envoyer(url, tok, json.dumps(champs).encode(), "application/json")

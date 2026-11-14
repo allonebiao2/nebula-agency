@@ -82,7 +82,7 @@ export function dialoguesHillary({ D, F, boutique, ctx, monde }) {
       dit: [`${intro} ${p.nom}. ${phrase1(p.ds)}`,
         `${fcfa(p.prix)}, prête en ${enMots(p.jmax)}.${p.expPrix != null ? ` En express, ${libDelai(p.expMin, p.expMax)} pour ${fcfa(p.expPrix)}.` : ''}`],
       alors: async () => {
-        monde.montrerPiece(p.id);
+        await monde.presenterPiece(p.id);
         const r = await boutique.ouvrirFiche(p.id, { mode: 'presentation' });
         if (r.action === 'normal' || r.action === 'express') { boutique.ajouter(p.id, { express: r.action === 'express', typeMesure: r.typeMesure }); return 'h_cest_tout'; }
         if (r.action === 'autre') return presenter(liste, i + 1);
