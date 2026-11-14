@@ -181,6 +181,7 @@ Chrome) avant la suivante :
   FBX → GLB compressé (meshopt) + textures KTX2, HDR plus léger, fichiers inutiles retirés, (3) **qualité
   d'image** : anticrénelage et étalonnage légers aussi en moyenne.
 - 🔨 **I4 · Hillary** : ✅ accord donné (Mongazi, 2026-11-13 : « elle m'a accordé son accord donc vas-y ») ; 3D au retour du quota TRELLIS (2026-11-14), Higgsfield et WaveSpeed à 0 crédit.
+- 🔨 **« REA ce qui est possible de prendre et d'ajouter à 100 % »** (2026-11-14, à propos de la vidéo *Call of Duty* : « tu te rappelles de la vidéo de Call of Duty que je t'ai envoyée ? », « invoque REA ») → ⚠️ **REA refuse le MP4** (« unsupported binary format » : il démonte des programmes, pas des films) ; `reverse-any-video` en ferait une COPIE (interdit ici, et payant). Le démontage existe déjà : `ANALYSE-VIDEO-REFERENCE.md`. **Plan** : relever chacun des 52 procédés (§ 9) transposables ET absents du code, puis les construire un à un, chacun regardé et contrôlé.
 - 🔨 **« je veux plus que du 60 images par seconde sur PC et mobile »** (2026-11-13) : l'écran plafonne la cadence (60, 90, 120 ou 144 Hz) ; le moteur ne bride rien, on allège jusqu'à tenir la fréquence de chaque écran.
 
 ## Vague 1 · La maquette jouable 🔨 (2026-11-12)

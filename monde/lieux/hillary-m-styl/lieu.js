@@ -364,7 +364,7 @@ function extruder(forme, haut, segments = 24) { const g = new THREE.ExtrudeGeome
   poser(new THREE.Mesh(extruder(stade(cp.longueur + 0.14, cp.profondeur + 0.12), 0.05, 32), M.pierre), cp.x, cp.hauteur - 0.05, cp.z);
   poser(new THREE.Mesh(extruder(stade(cp.longueur + 0.02, cp.profondeur + 0.02), 0.012, 32), M.laiton), cp.x, cp.hauteur - 0.062, cp.z);
   spot(cp.x - 1.2, cp.z + 1.2, 1.0, 0.45); spot(cp.x + 1.2, cp.z + 1.2, 1.0, 0.45);
-  /* sur le comptoir : la machine, le mètre ruban magenta, la tablette, une pile de wax */
+  /* sur le comptoir : la machine, la tablette, une pile de wax (le mètre ruban et le reste : « LA VIE DE L'ATELIER ») */
   const machine = new THREE.Group();
   machine.add(a(boite(0.4, 0.07, 0.18, M.creme), 0, 0.035, 0));
   machine.add(a(boite(0.08, 0.24, 0.14, M.creme), 0.15, 0.17, 0));
@@ -372,7 +372,6 @@ function extruder(forme, haut, segments = 24) { const g = new THREE.ExtrudeGeome
   machine.add(a(boite(0.04, 0.1, 0.04, M.laiton), -0.15, 0.2, 0));
   const volant = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.03, 24), M.encre); volant.rotation.z = Math.PI / 2; volant.position.set(0.21, 0.24, 0); machine.add(volant);
   poser(machine, cp.x - 1.5, cp.hauteur, cp.z - 0.05, 0.25);
-  const metre = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.014, 8, 32), MATIERES.magenta()); metre.rotation.x = Math.PI / 2; poser(metre, cp.x + 0.45, cp.hauteur + 0.015, cp.z + 0.1);
   const tablette = boite(0.26, 0.012, 0.18, M.encre); poser(tablette, cp.x + 1.1, cp.hauteur + 0.006, cp.z + 0.05, -0.3);
   for (let i = 0; i < 4; i++) poser(boite(0.34, 0.035, 0.26, matWax(40 + i, PALETTES_WAX[(i + 2) % 8])), cp.x + 1.7, cp.hauteur + 0.02 + i * 0.036, cp.z - 0.05, i * 0.05);
 }
@@ -569,6 +568,140 @@ function mannequin(couleur = 0xf2ece2) {
     pan.position.set(x, h - 0.58, 0.004); pan.rotation.y = Math.PI / 2 + ry; portant.add(pan);
   }
   poser(portant, 0, 0, z);
+}
+/* LA VIE DE L'ATELIER (REALISME.md R9, la densité ; Mongazi, 2026-11-13, et la référence Call of Duty : « aucune
+   étagère vide, le désordre vrai ») : des TISSUS et des OUTILS, jamais un vêtement inventé. Sur la table de coupe :
+   le rouleau entamé d'où sort le coupon, les bobines, une pile de wax pliés, la craie, des chutes tombées au sol.
+   Sur le comptoir : une pile, l'échantillonnier en éventail, le mètre ruban sorti de son boîtier, le coussin à
+   épingles, le carnet de croquis fermé et son crayon, la tasse d'Hillary. Au pied du comptoir : les sacs de la
+   maison à son logo. Contre le mur des rendez-vous : le panier de rouleaux.
+   ⚡ LE COÛT : ~70 petits maillages. Matières PARTAGÉES (8 wax, 3 têtes d'épingle…) et maillages opaques marqués
+   `fondre` : `fusionnerDecor()` les réunit par matière (un appel de dessin par matière, pas un par objet). */
+{
+  const at = plan.atelier;
+  /* quatre wax pour tous les objets de vie (quatre appels de dessin), aux palettes 0, 2, 5 et 7 : variées entre elles */
+  const wx = (() => { const m = [], pal = [0, 2, 5, 7]; return (k) => (m[k % 4] ??= matWax(500 + (k % 4), PALETTES_WAX[pal[k % 4]])); })();
+  const fixe = (o) => { o.traverse((x) => { if (x.isMesh && !x.isInstancedMesh && !x.material.transparent) x.userData.fondre = true; }); return o; };
+  const pv = (o, x, y, z, ry = 0) => fixe(poser(o, x, y, z, ry));
+  /* la table de coupe est tournée de 0,2 rad : on place dans SON repère (x le long, z en profondeur, +z vers la salle) */
+  const RT = 0.2, DESSUS = 0.785;
+  const surTable = (lx, lz) => [at.table.x + lx * Math.cos(RT) + lz * Math.sin(RT), at.table.z - lx * Math.sin(RT) + lz * Math.cos(RT)];
+  const pile = ([x, z], y0, n, graine, ry = 0) => { for (let i = 0; i < n; i++) pv(boite(0.36 - (i % 2) * 0.02, 0.028, 0.27, wx(graine + i * 3)), x + Math.sin(i * 2.1) * 0.012, y0 + 0.014 + i * 0.029, z + Math.cos(i * 1.7) * 0.01, ry + Math.sin(i) * 0.06); };
+
+  /* — LA TABLE DE COUPE — */
+  /* le rouleau ENTAMÉ : le coupon posé sur la table sort de lui (même wax) */
+  { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.58, 20), matWax(77, PALETTES_WAX[1], [1, 1])); r.rotation.x = Math.PI / 2;
+    const g = new THREE.Group(); g.add(r); const [x, z] = surTable(-0.64, 0.02); pv(g, x, DESSUS + 0.055, z, RT); }
+  pile(surTable(0.47, -0.19), DESSUS, 6, 1, RT + 0.08);
+  /* le présentoir de bobines (40 bobines, une seule forme : un seul appel de dessin) */
+  {
+    const rack = new THREE.Group();
+    rack.add(a(boite(0.5, 0.36, 0.06, M.chene), 0, 0.18, -0.03));
+    const bob = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.016, 0.016, 0.045, 10), new THREE.MeshStandardMaterial({ roughness: 0.55 }), 40);
+    const m4 = new THREE.Matrix4(), coul = new THREE.Color(), teintes = [0xe6007e, 0xffffff, 0x141215, 0xd4a017, 0x1f4fa8, 0x2e8b57, 0xc0392b, 0xf2c6d6, 0x8e44ad, 0xe67e22];
+    for (let i = 0; i < 40; i++) { m4.makeTranslation(-0.21 + (i % 10) * 0.047, 0.05 + Math.floor(i / 10) * 0.085, 0.02); bob.setMatrixAt(i, m4); bob.setColorAt(i, coul.set(teintes[(i * 7) % 10])); }
+    rack.add(bob);
+    const [x, z] = surTable(-0.1, -0.3); pv(rack, x, DESSUS, z, RT);
+  }
+  /* la craie de tailleur, au bord du coupon */
+  { const [x, z] = surTable(0.12, 0.2); pv(boite(0.05, 0.007, 0.036, new THREE.MeshStandardMaterial({ color: 0x9fc3e6, roughness: 0.9 })), x, 0.794, z, RT + 0.5); }
+  /* des chutes tombées sous la table : des BANDES et des POINTES de wax découpées (une coupe n'est jamais carrée),
+     à plat, à moitié sous le plateau */
+  [[[-0.15, -0.02], [0.14, -0.035], [0.15, 0.008], [-0.13, 0.026]], [[-0.07, -0.05], [0.09, -0.035], [-0.02, 0.065]], [[-0.11, -0.012], [0.12, -0.006], [0.105, 0.018], [-0.1, 0.02]]]
+    .forEach((pts, i) => {
+      const forme = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y)));
+      const geo = new THREE.ShapeGeometry(forme).rotateX(-Math.PI / 2);
+      const uv = geo.attributes.uv; for (let j = 0; j < uv.count; j++) uv.setXY(j, uv.getX(j) * 2.5, uv.getY(j) * 2.5);   /* les UV d'une forme sont en mètres */
+      const [lx, lz, ry] = [[0.28, 0.42, 0.3], [-0.12, 0.38, 1.9], [0.58, 0.24, -0.6]][i], [x, z] = surTable(lx, lz);
+      pv(new THREE.Mesh(geo, wx(i * 3 + 1)), x, 0.003 + i * 0.0008, z, ry);
+    });
+
+  /* — LE COMPTOIR — */
+  pile([cp.x - 0.75, cp.z - 0.12], cp.hauteur - 0.005, 3, 17, 0.08);
+  /* l'échantillonnier : six lames de wax en éventail autour d'un rivet de laiton */
+  {
+    const ev = new THREE.Group();
+    for (let i = 0; i < 6; i++) { const l = new THREE.Group(), b = boite(0.075, 0.003, 0.21, wx(i * 3 + 1)); b.position.set(0, i * 0.0032, -0.09); l.add(b); l.rotation.y = -0.55 + i * 0.22; ev.add(l); }
+    ev.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.024, 12), M.laiton), 0, 0.01, 0));
+    pv(ev, cp.x - 1.02, cp.hauteur + 0.002, cp.z + 0.22, 2.6);
+  }
+  /* le mètre ruban : son boîtier magenta, et le ruban gradué tiré sur le plateau en courbe douce */
+  {
+    const m = new THREE.Group();
+    const boitier = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.034, 0.016, 28), MATIERES.magenta()); boitier.position.y = 0.008; m.add(boitier);
+    m.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.018, 16), M.laiton), 0, 0.009, 0));
+    const grad = texteCanvas(512, 16, (g, W, Hh) => { g.fillStyle = '#efcc3e'; g.fillRect(0, 0, W, Hh); g.fillStyle = '#1b1712';   /* jaune de couturière : visible sur la pierre crème */
+      for (let i = 0; i <= 60; i++) { const x = i / 60 * W; g.fillRect(x, 0, 1, i % 10 === 0 ? Hh * 0.7 : i % 5 === 0 ? Hh * 0.5 : Hh * 0.3); } });
+    const L = 0.42, geo = new THREE.PlaneGeometry(L, 0.016, 24, 1).rotateX(-Math.PI / 2), p = geo.attributes.position;
+    for (let j = 0; j < p.count; j++) { const u = (p.getX(j) + L / 2) / L; p.setZ(j, p.getZ(j) + Math.sin(u * Math.PI * 1.3) * 0.05); p.setY(j, 0.0015); }
+    geo.computeVertexNormals();
+    m.add(a(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: grad, roughness: 0.6 })), L / 2 + 0.03, 0, 0));
+    pv(m, cp.x + 0.42, cp.hauteur, cp.z + 0.12, 0.35);
+  }
+  /* le coussin à épingles (trois matières pour les neuf têtes) */
+  {
+    const c = new THREE.Group(), tetes = [0xffd23f, 0xffffff, 0x1f4fa8].map(t => new THREE.MeshStandardMaterial({ color: t, roughness: 0.3 })), tete = new THREE.SphereGeometry(0.006, 6, 4);
+    c.add(new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), M.velours));
+    for (let i = 0; i < 9; i++) { const e = new THREE.Mesh(tete, tetes[i % 3]); const a1 = i * 2.4, b1 = 0.3 + (i % 3) * 0.3; e.position.set(Math.sin(a1) * Math.sin(b1) * 0.06, Math.cos(b1) * 0.06, Math.cos(a1) * Math.sin(b1) * 0.06); c.add(e); }
+    pv(c, cp.x + 0.12, cp.hauteur, cp.z - 0.06);
+  }
+  /* le carnet de croquis FERMÉ (rien d'inventé dedans) et son crayon */
+  {
+    const k = new THREE.Group();
+    k.add(a(boite(0.21, 0.016, 0.148, M.encre), 0, 0.008, 0));
+    k.add(a(boite(0.205, 0.013, 0.004, M.creme), 0.002, 0.008, 0.073));   /* la tranche des pages */
+    k.add(a(boite(0.008, 0.0175, 0.15, MATIERES.magenta()), 0.07, 0.008, 0));   /* l'élastique */
+    const crayon = new THREE.Mesh(new THREE.CylinderGeometry(0.0038, 0.0038, 0.16, 6), new THREE.MeshStandardMaterial({ color: 0x2b2b2b, roughness: 0.5 }));
+    crayon.rotation.z = Math.PI / 2; crayon.position.set(0.01, 0.0195, -0.03); crayon.rotation.y = 0.12; k.add(crayon);
+    pv(k, cp.x - 0.32, cp.hauteur, cp.z + 0.16, -0.18);
+  }
+  /* la tasse d'Hillary, côté atelier du comptoir */
+  {
+    const t = new THREE.Group();
+    t.add(new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.062, 0.008, 28), M.porcelaine));
+    t.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.032, 0.07, 24, 1, true), M.porcelaine), 0, 0.043, 0));
+    t.add(a(new THREE.Mesh(new THREE.CircleGeometry(0.032, 24).rotateX(-Math.PI / 2), M.porcelaine), 0, 0.009, 0));
+    t.add(a(new THREE.Mesh(new THREE.CircleGeometry(0.038, 24).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x3b2314, roughness: 0.15 })), 0, 0.066, 0));
+    const anse = new THREE.Mesh(new THREE.TorusGeometry(0.018, 0.0045, 8, 16, Math.PI * 1.2), M.porcelaine); anse.position.set(0.043, 0.045, 0); anse.rotation.z = -Math.PI * 0.6; t.add(anse);
+    pv(t, cp.x + 1.4, cp.hauteur, cp.z - 0.22, 0.5);
+  }
+  /* les sacs de la maison, au pied du comptoir : papier magenta, anses noires, son logo */
+  {
+    const papier = new THREE.MeshStandardMaterial({ color: 0xe6007e, roughness: 0.7 }), anse = new THREE.MeshStandardMaterial({ color: 0x141215, roughness: 0.6 });
+    const logoSac = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, color: 0xffffff });
+    photo('logo.png', (tx) => { logoSac.map = tx; logoSac.opacity = 1; logoSac.needsUpdate = true; });
+    [[0.32, 0.4, 0.12, 0], [0.26, 0.34, 0.1, 0.35], [0.36, 0.3, 0.14, -0.25]].forEach(([w, h, p, ry], i) => {
+      const sac = new THREE.Group();
+      sac.add(a(boite(w, h, p, papier), 0, h / 2, 0));
+      const t = new THREE.Mesh(new THREE.TorusGeometry(w * 0.22, 0.006, 6, 20, Math.PI), anse); t.position.set(0, h, 0); sac.add(t);
+      const l = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.7, w * 0.7 * 343 / 620), logoSac); l.position.set(0, h * 0.55, p / 2 + 0.002); sac.add(l);
+      pv(sac, cp.x + cp.longueur / 2 + 0.35 + i * 0.3, 0, cp.z + 0.15 - i * 0.12, ry);
+    });
+  }
+
+  /* — LE PANIER DE ROULEAUX, contre le mur des rendez-vous : osier tressé, un bord roulé — */
+  {
+    const tresse = texteCanvas(256, 128, (g, W, Hh) => {
+      g.fillStyle = '#6e4f2c'; g.fillRect(0, 0, W, Hh);
+      const rang = 16, brin = 32;
+      for (let y = 0; y < Hh; y += rang) for (let x = 0; x <= W; x += brin) {
+        const dec = ((y / rang) % 2) * brin / 2, gr = g.createLinearGradient(0, y, 0, y + rang);
+        gr.addColorStop(0, '#8a6538'); gr.addColorStop(0.45, '#b98d57'); gr.addColorStop(1, '#7a5530');
+        g.fillStyle = gr; g.beginPath(); g.roundRect(x + dec - brin / 2 + 2, y + 2, brin - 4, rang - 3, 5); g.fill();
+      }
+    });
+    tresse.wrapS = tresse.wrapT = THREE.RepeatWrapping; tresse.repeat.set(5, 3);
+    const osier = new THREE.MeshStandardMaterial({ map: tresse, roughness: 0.88, side: THREE.DoubleSide });
+    const panier = new THREE.Group();
+    panier.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.25, 0.5, 28, 1, true), osier), 0, 0.25, 0));
+    panier.add(a(new THREE.Mesh(new THREE.CircleGeometry(0.25, 28).rotateX(-Math.PI / 2), osier), 0, 0.01, 0));
+    const bord = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.018, 8, 40), new THREE.MeshStandardMaterial({ color: 0x8a6538, roughness: 0.85 })); bord.rotation.x = Math.PI / 2; bord.position.y = 0.5; panier.add(bord);
+    for (let i = 0; i < 7; i++) {
+      const r = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.15, 14), wx(i * 5));
+      const ang = i / 7 * Math.PI * 2; r.position.set(Math.sin(ang) * 0.13, 0.55, Math.cos(ang) * 0.13); r.rotation.set(Math.cos(ang) * 0.18, 0, -Math.sin(ang) * 0.18); panier.add(r);
+    }
+    pv(panier, -7.45, 0, 0.35);
+  }
 }
 {
   const at = plan.atelier;
@@ -1062,12 +1195,34 @@ async function fusionnerDecor() {
   scene.traverse((o) => {
     if (!o.isMesh || o.isSkinnedMesh || o.isInstancedMesh || o.name === 'fusion' || bouge.has(o) || !vraimentVisible(o) || dansPersonnage(o, exclus)) return;
     const m = o.material;
-    if (!m || Array.isArray(m) || !m.lightMap) return;   /* seulement le décor fixe à lumière cuite */
+    if (!m || Array.isArray(m) || !(m.lightMap || o.userData.fondre)) return;   /* le décor fixe à lumière cuite, et les objets de vie (`fondre`) */
     const g = o.geometry, sig = Object.keys(g.attributes).sort().join(',') + (g.index ? '|i' : '');
     const cle = m.uuid + '|' + sig;
     if (!groupes.has(cle)) groupes.set(cle, { m, liste: [] });
     groupes.get(cle).liste.push(o);
   });
+  /* LES OBJETS DE VIE UNIS (sans texture) : réunis en UN seul maillage, leur couleur portée par les sommets ; la
+     tasse, le crayon, la craie, les épingles… ne coûtent plus un appel de dessin chacun (30 → 1). Le laiton y perd
+     son reflet métallique : invisible à cette taille. */
+  {
+    const unis = [], mUni = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.5 });
+    for (const [k, gr] of [...groupes]) if (!gr.m.map && !gr.m.lightMap && gr.liste.every(o => o.userData.fondre)) { unis.push(...gr.liste); groupes.delete(k); }
+    const geos = unis.map((o) => {
+      const g = (o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()); g.morphAttributes = {};
+      for (const n of Object.keys(g.attributes)) if (n !== 'position' && n !== 'normal') g.deleteAttribute(n);
+      g.applyMatrix4(o.matrixWorld);
+      const c = o.material.color, n = g.attributes.position.count, col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3)); return g;
+    });
+    const fus = geos.length > 1 ? mergeGeometries(geos, false) : null;
+    geos.forEach(g => g.dispose());
+    if (fus) {
+      const mesh = new THREE.Mesh(fus, mUni); mesh.name = 'fusion'; mesh.matrixAutoUpdate = false; mesh.updateMatrix(); scene.add(mesh);
+      for (const o of unis) o.visible = false;
+      fusionDecor.avant += unis.length; fusionDecor.apres++; fusionDecor.unis = unis.length;
+    }
+  }
   for (const { m, liste } of groupes.values()) {
     if (liste.length < 2) continue;
     const geos = liste.map((o) => { const g = o.geometry.clone(); g.morphAttributes = {}; g.applyMatrix4(o.matrixWorld); return g; });

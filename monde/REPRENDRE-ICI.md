@@ -101,7 +101,20 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
   `tel-scene-hillary.png` (filmées par `monde/_outils/captures/filmer_dialogue.py`, **par le vrai
   parcours** : toucher Afi, s'approcher, options, « Parler »).
 
-## ⚡ ÉTAT DU 2026-11-13, 17 h 30 (le plus récent : lire d'abord)
+## ⚡ ÉTAT DU 2026-11-14 (le plus récent : lire d'abord)
+
+- ✅ **R9, la densité** : 25 objets de vie dans l'atelier et au comptoir (détail : `REALISME.md`, ligne R9). Matières
+  partagées, et `fusionnerDecor()` réunit aussi les objets marqués `fondre` (par matière ; les unis en UN maillage à
+  couleurs par sommet) : **+13 appels de dessin** seulement. QC 53/53 (un contrôle rouge au 1er passage, non
+  identifié, vert au 2e). Regardés : ordinateur de jour, téléphone de nuit. ⏳ pas encore dans la lumière cuite.
+- ⛔ **Maman Sènami en 3D : quota ZeroGPU épuisé** le 2026-11-14 à 2 h (compte : « 0 s left » ; anonyme : « try again in
+  14:08:40 », donc vers 16 h 20). Détourage déjà fait : `_partage/immersive  store 3D/personnages/maman/maman-face-47ans-detoure.png`.
+  Relancer : `python monde/_outils/en_3d.py "<dossier maman>/maman-face-47ans.jpg" --sortie "<dossier maman>/maman-3d.glb" --faces 100000 --detourer-ici` (puis `--sans-jeton`).
+- 🔨 **LA PROCHAINE ACTION : « REA ce qui est possible de prendre et d'ajouter à 100 % »** (Mongazi, vidéo *Call of
+  Duty*). REA refuse les vidéos ; on part de `ANALYSE-VIDEO-REFERENCE.md` § 9 : pour chaque procédé P1 à P52 marqué
+  « oui » ou « à adapter », vérifier dans le code s'il existe, et construire ce qui manque, un à la fois.
+
+## ⚡ ÉTAT DU 2026-11-13, 17 h 30
 
 **L'INTÉGRATION de ses 24 assets** (`ARRIVEES.md`, `VAGUES.md` « L'INTÉGRATION ») · **objectif `/goal` de Mongazi :
 « ne t'arrête pas tant que ça ne vaut pas 20 000 € et 100 % », « comme GTA 6 », « le maximum d'images/s ».**
