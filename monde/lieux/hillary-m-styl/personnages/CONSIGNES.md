@@ -95,3 +95,65 @@ Animate this exact character, keep her face, skin tone, body, hair and clothes i
 
 ⚠️ Exiger « full body always visible » et « static camera » : une vidéo qui recadre ou coupe les pieds ne
 sert pas à la capture. Déposer les vidéos dans `_partage\immersive  store 3D\personnages\<prénom>\videos\`.
+
+
+## LES PERSONNAGES EN VIDÉO (2026-11-14) : la vidéo EST le personnage en conversation
+
+> Mongazi : « comment faire pour que ce soit ultra réaliste ? », « pour les visages, comment se rapprocher
+> le maximum possible ? ». Constat : ses images et vidéos sont photoréalistes, c'est le passage en 3D
+> (TRELLIS : ~100 px de texture pour le visage ; Mixamo : mouvement générique) qui les détruit. Donc en
+> conversation on montre **sa vidéo elle-même**, détourée, posée dans le salon (fond déjà flou). La 3D ne
+> sert plus qu'à marcher, de loin. Les consignes « mouvement » plus haut restent pour la capture de mouvement.
+
+**Les règles** : toujours partir de la MÊME image (jamais d'un texte seul) · Flow, mode « Frames to Video »,
+**la même image en PREMIÈRE et en DERNIÈRE image** (la boucle se rejoue sans saut) · Veo 3.1 **Qualité**
+plutôt que Fast pour les visages si les crédits le permettent · **1080p** si Flow le propose · fond gris uni,
+caméra fixe, corps entier (je détoure) · le son ne sert pas (je l'enlève).
+
+### 1 · L'image de départ (Nano Banana Pro, en joignant l'image en pose A du personnage)
+
+Fichier : `personnages\<prénom>\<prénom>-depart.jpg`
+
+```
+Keep this exact woman perfectly identical: same face, same skin tone, same hair, same clothes, same jewelry, same body proportions, same plain light grey background, same soft even studio lighting, same full-body framing from head to feet. Change only her pose: she stands naturally and relaxed, facing the camera, arms resting loosely along her body, hands relaxed and visible, weight evenly on both feet, a very slight natural smile, eyes looking straight into the camera. Photorealistic photograph, sharp focus on the face, 9:16 vertical.
+```
+
+### 2 · Le début commun des vidéos (Flow, à coller avant chaque action)
+
+```
+Animate this exact woman. Keep her face, skin tone, hair, body and clothes perfectly identical to the image. Static locked-off camera at her eye level, about 2.5 meters in front of her, no zoom, no camera movement, no cuts. Her full body stays visible from head to feet the whole time. Plain light grey studio background, soft even frontal lighting, no cast shadows. Realistic, subtle, natural human motion at real-time speed, natural blinking, 8 seconds. She faces the camera because she is talking with the person holding it. The video starts and ends in exactly the same pose as the image, so it loops seamlessly. Action:
+```
+
+### 3 · Les actions (après « Action: »)
+
+| Fichier | Qui | Action |
+|---|---|---|
+| `<prénom>-ecouter-boucle.mp4` | Afi, Sènami, Maman, Hillary | `she listens attentively to the person in front of her, looking them in the eyes, nods slowly twice, a small warm smile, hands relaxed, a slight shift of weight, then settles back into the starting pose.` |
+| `<prénom>-parler-boucle.mp4` | Afi, Sènami, Maman, Hillary | `she talks warmly to the person in front of her, natural lip movement as if speaking French, small hand gestures kept close to her body at waist and chest height, elbows near her sides, gentle head movements, then returns to the starting pose.` |
+| `hillary-accueillir-boucle.mp4` | Hillary | `she welcomes a client who just walked into her boutique, a bright and sincere smile, a small open-hand gesture inviting them closer, then returns to the starting pose.` |
+| `hillary-conseiller-boucle.mp4` | Hillary | `she advises a client about a dress, confident and professional, her hands describe a fitted waist and a long flowing skirt with graceful gestures close to her body, then returns to the starting pose.` |
+
+⚠️ « elbows near her sides » : des mains qui partent loin sortent du cadre et se détourent mal.
+
+### 4 · Hillary : partir de SES vraies photos
+
+Joindre 2 ou 3 vraies photos de son visage (face, trois quarts) **et** `hillary\hillary-corps-face.jpg` :
+
+```
+The woman in the reference photos is the person to depict: keep her real face exactly, same face shape, same features, same skin tone, same hairline, do not beautify or change her. Full body front view, she wears exactly the outfit of the full-body image: black long-sleeved dress with an asymmetric hem, nude ballet flats, long locs with rings, gold hoop earrings. She stands naturally and relaxed, facing the camera, arms resting loosely along her body, a warm natural smile, eyes looking straight into the camera. Plain light grey background, soft even studio lighting, no cast shadows, full body visible from head to feet, photorealistic photograph, sharp focus on the face, 9:16 vertical.
+```
+
+Fichier : `hillary\hillary-depart.jpg`. ⛔ Son accord écrit (une trace) dans `hillary\` avant toute mise en ligne.
+
+### 5 · Le décor pour Marble (Nano Banana Pro, en joignant `salon\salon-vue-comptoir-arche.jpg`)
+
+Les robes de ces vues ne sont PAS les siennes (fourreaux magenta inventés) : le monde se génère avec des
+mannequins nus, sans logo (le vrai logo est posé par-dessus en 3D), sans personne.
+
+```
+Keep this boutique interior identical: same architecture, same oval ceiling with the golden light cove and recessed spotlights, same glossy cream floor with its reflections, same wooden counter, same arch, same magenta velvet curtains, same shelves of folded wax fabrics, same plants, same windows onto the street, same daylight. Change only: every mannequin is a bare white mannequin with no clothes at all; the backlit arch behind the counter is plain and empty, no logo and no text; the vertical screen on the wall is switched off, plain black; no people anywhere. Widen the view into a 16:9 landscape wide-angle photograph taken at eye level, about 1.6 m high, showing more of the room on both sides, with straight vertical lines. Photorealistic architectural photograph, sharp everywhere.
+```
+
+Fichier : `salon\salon-a-vide-16x9.jpg`, puis dans Marble (compte gratuit) : « créer un monde » depuis cette image.
+⚠️ Vérifié le 2026-11-14 (docs.worldlabs.ai) : **le gratuit permet de REGARDER le monde, pas de l'exporter** ;
+l'export demande Standard (20 $), les droits commerciaux demandent Pro (35 $/mois).

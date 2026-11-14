@@ -103,6 +103,8 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 ## ⚡ ÉTAT DU 2026-11-14 (le plus récent : lire d'abord)
 
+- 🔴 **2026-11-14, après-midi : LA LISTE COMPLÈTE, qui fait quoi, est dans `monde/A-FAIRE.md`** (Mongazi : « liste absolument tout »). Direction : décor en monde photographique (Spark, `socle/monde-photo.js`, non commité au moment de la coupure de courant), **personnages en conversation = ses vidéos détourées** (consignes neuves : `personnages/CONSIGNES.md`, « LES PERSONNAGES EN VIDÉO »), marche refaite dans le code. ⚠️ Le QC cale deux fois (la fiche recouvre un bouton) : à réparer avant de commiter le monde photographique.
+
 - ✅ **R9, la densité** : 25 objets de vie dans l'atelier et au comptoir (détail : `REALISME.md`, ligne R9). Matières
   partagées, et `fusionnerDecor()` réunit aussi les objets marqués `fondre` (par matière ; les unis en UN maillage à
   couleurs par sommet) : **+13 appels de dessin** seulement. QC 53/53 (un contrôle rouge au 1er passage, non
