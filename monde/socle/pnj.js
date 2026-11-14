@@ -17,7 +17,8 @@ const hasard = (a, b) => a + Math.random() * (b - a);
 const HAUTEURS_VOIX = { afi: 212, senami: 238, maman: 188 };
 export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, visiteuses, conversations, ctx, personnes, son = null }) {
   /* `reglages.foyer()` : une position (ou null) que personne ne doit cacher au visiteur, posée par le lieu */
-  const reglages = { foyer: null };
+  /* `conversations` : le lieu peut retenir les conversations tant que le visiteur n'est pas entré (l'accroche les ouvre) */
+  const reglages = { foyer: null, conversations: true };
   const { scene, camera } = moteur;
   const places = plan.places_pnj;
   const occupees = new Map();
@@ -25,7 +26,8 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
   const dejaDites = new Set();
 
   const pnj = visiteuses.map((v, i) => {
-    const p = places[(i * 5 + 2) % places.length];
+    /* `placeDepart` : le lieu peut poser une visiteuse quelque part au chargement (l'accroche de l'entrée) */
+    const p = (v.placeDepart && (typeof v.placeDepart === 'object' ? v.placeDepart : places.find(x => x.id === v.placeDepart))) || places[(i * 5 + 2) % places.length];
     v.perso.racine.position.set(p.x, 0, p.z);
     v.perso.racine.rotation.y = capVersRotation(p.cap);
     scene.add(v.perso.racine);
@@ -33,7 +35,8 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     const etiquette = document.createElement('div'); etiquette.className = 'pnj-nom'; etiquette.textContent = v.nom;
     etiquette.style.setProperty('--c', v.couleur); etiquette.style.setProperty('--c-texte', v.texte || '#15110f'); calque.appendChild(etiquette);
     occupees.set(p.id, v.id);
-    return { ...v, etat: 'activite', place: p, fin: moteur.temps() + hasard(3, 10), chemin: null, histo: [p.id], etiquette, survol: false };
+    /* posée pour l'accroche, elle attend là jusqu'à ce que le lieu la libère (ou que l'accroche finisse) */
+    return { ...v, etat: 'activite', place: p, fin: v.placeDepart ? Infinity : moteur.temps() + hasard(3, 10), chemin: null, histo: [p.id], etiquette, survol: false };
   });
   const parId = Object.fromEntries(pnj.map(n => [n.id, n]));
 
@@ -84,10 +87,11 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
   }
 
   /* ---------- conversations entre elles ---------- */
-  function lancerConversation() {
+  /* `voulu` : lancer UNE conversation précise (l'accroche) ; elle ignore sa condition `si` (qui la tient hors du tirage) */
+  function lancerConversation(voulu = null) {
     if (dialogue.actif) return false;
     const libres = pnj.filter(n => n.etat === 'activite');
-    const toutes = conversations(ctx).filter(c => !dejaDites.has(c.id) && c.qui.every(q => libres.some(n => n.id === q)) && (!c.si || c.si(ctx)));
+    const toutes = conversations(ctx).filter(c => !dejaDites.has(c.id) && c.qui.every(q => libres.some(n => n.id === q)) && (voulu ? c.id === voulu : (!c.si || c.si(ctx))));
     if (!toutes.length) return false;
     const c = toutes[Math.floor(Math.random() * toutes.length)];
     dejaDites.add(c.id);
@@ -125,7 +129,7 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     if (cv.i >= cv.c.lignes.length) {
       /* une conversation entendue de près apprend quelque chose : au carnet */
       if (cv.entendu && cv.c.savoir && ctx && ctx.apprendre) ctx.apprendre(cv.c.savoir);
-      for (const n of [cv.a, cv.b]) { n.etat = 'activite'; n.fin = t + hasard(1, 4); n.perso.regarder(null); n.perso.ecouter(false); }
+      for (const n of [cv.a, cv.b]) { n.etat = 'activite'; n.fin = t + hasard(1, 4); n.perso.regarder(null); n.perso.ecouter(false); n.perso.telephone(false); }
       convEnCours = null; prochaineConv = t + hasard(14, 30); return;
     }
     const l = cv.c.lignes[cv.i];
@@ -134,12 +138,29 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     if (qui) qui.perso.parler(true, ton);
     /* l'autre écoute, et le montre */
     for (const m of [cv.a, cv.b]) if (m !== qui) { m.perso.parler(false); m.perso.ecouter(true); }
+    /* une réplique peut porter un geste : sortir ou ranger le téléphone, regarder le visiteur ensemble */
+    if (qui && l.telephone !== undefined) qui.perso.telephone(!!l.telephone);
+    if (l.regardeJoueur) for (const m of [cv.a, cv.b]) m.perso.regarder(camera.position.clone());
     const milieu = new THREE.Vector3().addVectors(cv.a.perso.racine.position, cv.b.perso.racine.position).multiplyScalar(0.5);
     const pres = milieu.distanceTo(new THREE.Vector3(camera.position.x, 0, camera.position.z)) < 9.5;
     if (pres) { dialogue.sousTitre(l.qui, l.t); cv.entendu = true; }
     /* P43 (référence) : trop loin pour lire, on les ENTEND quand même, un murmure sans mots là où elles parlent */
     else if (son && son.murmure) son.murmure(new THREE.Vector3(milieu.x, 1.5, milieu.z), 1.1 + l.t.length * 0.05, HAUTEURS_VOIX[l.qui] || 215);
     cv.finLigne = t + 1.6 + l.t.length * 0.055;
+  }
+
+  /* P27 (référence : tous les soldats lèvent la tête vers la télé) : UNE RÉACTION COLLECTIVE. Celles qui ne parlent pas
+     au visiteur tournent la tête vers la même chose, presque ensemble (décalées de quelques dixièmes), puis reprennent ;
+     la plus proche peut lâcher une phrase (`lignes` : une par personne), sous-titrée si on est assez près. */
+  function reagir(point, { duree = 2.4, rayon = Infinity, lignes = null } = {}) {
+    const c = new THREE.Vector3(camera.position.x, 0, camera.position.z);
+    const ok = pnj.filter(n => !['joueur', 'retenue'].includes(n.etat) && n.perso.racine.position.distanceTo(c) < rayon);
+    ok.forEach((n, i) => setTimeout(() => { n.perso.regarder(typeof point === 'function' ? point() : point.clone()); n.reagitJusqua = moteur.temps() + duree * (0.85 + Math.random() * 0.3); }, i * 170 + Math.random() * 120));
+    if (lignes && !dialogue.actif) {
+      const parle = ok.filter(n => lignes[n.id]).sort((a, b) => a.perso.racine.position.distanceTo(c) - b.perso.racine.position.distanceTo(c))[0];
+      if (parle && parle.perso.racine.position.distanceTo(c) < 9.5) setTimeout(() => dialogue.sousTitre(parle.id, lignes[parle.id]), 650);
+    }
+    return ok.length;
   }
 
   /* ---------- venir parler au joueur ---------- */
@@ -228,7 +249,7 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
   /* ---------- chaque image ---------- */
   const proj = new THREE.Vector3(), cam2 = new THREE.Vector3();
   moteur.chaqueImage((dt, t) => {
-    if (t > prochaineConv && !convEnCours && !abordage) { if (!lancerConversation()) prochaineConv = t + hasard(6, 12); }
+    if (reglages.conversations && t > prochaineConv && !convEnCours && !abordage) { if (!lancerConversation()) prochaineConv = t + hasard(6, 12); }
     if (convEnCours) avancerConversation(t);
     majAbordage(t);
     cam2.set(camera.position.x, 0, camera.position.z);
@@ -283,6 +304,10 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
           }
         }
       }
+      if (n.reagitJusqua && t > n.reagitJusqua) {
+        n.reagitJusqua = 0; const cv = convEnCours;
+        if (cv && (cv.a === n || cv.b === n)) n.perso.regarder((cv.a === n ? cv.b : cv.a).perso.positionTete()); else if (n.etat !== 'joueur' && n.etat !== 'retenue') n.perso.regarder(null);
+      }
       if (n.etat === 'activite' && t > n.fin) suivante(n);
       /* on lève les yeux vers le joueur qui passe tout près */
       if (n.etat === 'activite' && r.distanceTo(cam2) < 2.2 && Math.random() < 0.01) n.perso.regarder(camera.position);
@@ -299,5 +324,6 @@ export function creerPnj({ moteur, plan, graphe, deplacement, dialogue, calque, 
     }
   });
 
-  return { pnj, parId, reglages, aborder, annulerAbordage, parler, retenir, relacher, get conversation() { return convEnCours; }, get abordage() { return abordage; } };
+  return { pnj, parId, reglages, aborder, annulerAbordage, parler, retenir, relacher, reagir, lancer: (id) => !convEnCours && lancerConversation(id),
+    liberer(id) { const n = parId[id]; if (n && n.fin === Infinity) n.fin = moteur.temps() + hasard(1, 4); }, get conversation() { return convEnCours; }, get abordage() { return abordage; } };
 }

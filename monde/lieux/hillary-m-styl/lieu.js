@@ -799,7 +799,9 @@ function allumerFaisceaux() {
 
 const son = creerSon();
 deplacement.surPas.push(() => son.pas());
-ciel.surEclair.push(() => son.tonnerre(0.8 + Math.random() * 2.5));
+/* P27 : au tonnerre, toutes tournent la tête vers la vitrine, et la plus proche le dit */
+const TONNERRE = { maman: 'Eh ! Ça va tomber fort.', afi: 'La pluie de Cotonou… Ça m\'avait manqué.', senami: 'Waouh, tu as entendu ?' };
+ciel.surEclair.push(() => { const d = 0.8 + Math.random() * 2.5; son.tonnerre(d); setTimeout(() => pnj.reagir(new THREE.Vector3(0, 1.9, fz + 2.5), { lignes: TONNERRE }), d * 1000 + 350); });
 
 const personnes = JSON.parse(JSON.stringify(PERSONNES));
 const ctx = { ciel: ciel.etat, quete: 0, vuHillary: false, visites: 1 };
@@ -825,9 +827,10 @@ const visiteuses = [
   { id: 'afi', perso: creerPersonnage({ nom: 'Afi', age: 29, peau: 0x7a4e33, haut: { couleur: 0x1a1a1c }, bas: { type: 'manteau', couleur: 0xe6d8bf }, jambes: { couleur: 0x1a1a1c }, coiffe: 'court', boucles: true, sac: 0x6b4a32, manchesLongues: true, taille: 1.71 }),
     gouts: { regarder: 2, photo: 0.6, toucher: 1, telephone: 1.2, assis: 0.5, comptoir: 1.4, fenetre: 1.5 }, goutsPlaces: { voir_heros: 2, mur_1: 1.5, mur_2: 1.5, affiches: 1.2 } },
   { id: 'senami', perso: creerPersonnage({ nom: 'Sènami', age: 21, peau: 0x9a6a48, haut: { wax: 3, palette: PALETTES_WAX[6] }, manches: false, jambes: { couleur: 0x35567f }, chaussures: 0xf2f2f2, coiffe: 'tresses', telephone: 0xe6007e, taille: 1.64 }),
-    gouts: { photo: 2.5, telephone: 2, assis: 1.6, regarder: 1, toucher: 0.8, comptoir: 0.6, fenetre: 0.6 }, goutsPlaces: { fauteuil_1: 2, fauteuil_2: 2, voir_d1: 1.5, voir_g1: 1.5 } },
+    placeDepart: 'voir_g1', gouts: { photo: 2.5, telephone: 2, assis: 1.6, regarder: 1, toucher: 0.8, comptoir: 0.6, fenetre: 0.6 }, goutsPlaces: { fauteuil_1: 2, fauteuil_2: 2, voir_d1: 1.5, voir_g1: 1.5 } },
   { id: 'maman', perso: creerPersonnage({ nom: 'Maman Sènami', age: 47, peau: 0x4a2f22, haut: { wax: 11, palette: PALETTES_WAX[2] }, bas: { type: 'boubou', wax: 11, palette: PALETTES_WAX[2] }, amples: true, manchesLongues: true, coiffe: 'gele', boucles: true, sac: 0x7a1f2b, taille: 1.62 }),
-    gouts: { toucher: 2.2, regarder: 1.6, assis: 1.2, comptoir: 1, telephone: 0.4, photo: 0.2, fenetre: 0.8 }, goutsPlaces: { tissus_g: 2.5, voir_heros: 1.5, affiches: 1.3 } },
+    /* pour l'accroche : à 1,1 m de Sènami, côte à côte VUES DE L'ENTRÉE (l'une derrière l'autre, on ne voyait qu'un dos) */
+    placeDepart: { id: 'accroche', x: -1.45, z: 1.75, cap: 140, activite: 'regarder' }, gouts: { toucher: 2.2, regarder: 1.6, assis: 1.2, comptoir: 1, telephone: 0.4, photo: 0.2, fenetre: 0.8 }, goutsPlaces: { tissus_g: 2.5, voir_heros: 1.5, affiches: 1.3 } },
 ].map(v => ({ ...v, nom: PERSONNES[v.id].nom, couleur: PERSONNES[v.id].couleur, texte: PERSONNES[v.id].texte }));
 for (const v of visiteuses) personnes[v.id].perso = v.perso;
 
@@ -1035,10 +1038,101 @@ let afiPrete = false, afiPreteA = 0;
    est confiée avant la 10e seconde) */
 deplacement.surArrivee.push((id) => { if (id !== 'dehors') { if (!afiPrete) afiPreteA = moteur.temps(); afiPrete = true; allumerFaisceaux(); } son.sortir(id === 'dehors'); });
 deplacement.surDepart.push(() => son.sortir(false));
+/* P47 (référence) : on entre AU MILIEU d'une scène : Sènami filme sa mère, près de l'entrée (Afi vient ensuite, à 9 s) */
+let accrocheFaite = false;
+/* les conversations n'attendent personne dehors : elles commencent quand on entre, par celle-ci */
+if (!params.has('direct')) pnj.reglages.conversations = false;
+const accroche = () => {
+  pnj.reglages.conversations = true;
+  if (accrocheFaite || dialogue.actif) return;
+  accrocheFaite = !!pnj.lancer('accroche');
+  if (!accrocheFaite) { pnj.liberer('senami'); pnj.liberer('maman'); return; }
+  /* pendant la scène, rien d'autre à l'écran (référence) : les noms des lieux se taisent jusqu'à sa fin */
+  document.body.classList.add('scene-en-cours');
+  const debut = moteur.temps(), fin = setInterval(() => { if (!pnj.conversation || moteur.temps() - debut > 16) { document.body.classList.remove('scene-en-cours'); clearInterval(fin); } }, 500);
+  /* P6 (référence : le regard guidé vers ce qui compte) : on entend « Maman, souris ! », on tourne la tête vers elles */
+  setTimeout(() => {
+    if (dialogue.actif || deplacement.enMarche) return;
+    const a = pnj.parId.senami.perso.positionTete(new THREE.Vector3()), b = pnj.parId.maman.perso.positionTete(new THREE.Vector3());
+    deplacement.tournerVers(a.add(b).multiplyScalar(0.5).add(new THREE.Vector3(0, -0.25, 0)));
+  }, 450);
+};
+deplacement.surArrivee.push((id) => { if (id !== 'dehors') setTimeout(accroche, 250); });
+if (params.has('direct')) setTimeout(accroche, 1500);
+/* P27 : une pièce entre dans le sac : celles qui sont près lèvent les yeux, la plus proche approuve (on donne envie) */
+const COMPLIMENTS = { afi: 'Bon choix !', senami: 'Oh, elle est belle, celle-là !', maman: 'Ça va bien t\'aller, ça.' };
+let tailleSac = boutique.panier().length;
+
+/* P14 (référence : les écrans du lieu vivent) : LA TABLETTE DU COMPTOIR EST ALLUMÉE, sur un pied, tournée vers le
+   client, et elle montre TON SAC (nombre de pièces et total tirés du sac, jamais inventés). Dessinée : 0 Ko. */
+const peindreTablette = (() => {
+  const c = document.createElement('canvas'); c.width = 320; c.height = 220; const g = c.getContext('2d');
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  const pied = new THREE.Group();
+  pied.add(a(boite(0.03, 0.08, 0.03, M.laiton), 0, 0.04, -0.02));
+  const ecran = new THREE.Group(); ecran.position.set(0, 0.1, 0); ecran.rotation.x = -0.62;
+  ecran.add(boite(0.25, 0.172, 0.009, M.encre));
+  ecran.add(a(new THREE.Mesh(new THREE.PlaneGeometry(0.236, 0.158), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, color: new THREE.Color(0.92, 0.92, 0.92) })), 0, 0, 0.0047));
+  pied.add(ecran);
+  poser(pied, cp.x + 1.1, cp.hauteur + 0.012, cp.z + 0.05, -0.3);
+  const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return () => {
+    const T = boutique.totaux();
+    g.fillStyle = '#121014'; g.fillRect(0, 0, 320, 220);
+    g.fillStyle = '#e6007e'; g.fillRect(0, 214, 320, 6);
+    g.textAlign = 'center'; g.fillStyle = '#e6007e'; g.font = '600 15px Archivo, sans-serif'; g.fillText('HILLARY M. STYL', 160, 34);
+    g.fillStyle = '#f4efe6'; g.font = '500 34px "Bodoni Moda", Georgia, serif'; g.fillText('Votre sac', 160, 92);
+    if (!T.articles) { g.fillStyle = 'rgba(244,239,230,.6)'; g.font = '400 18px Archivo, sans-serif'; g.fillText('vide pour l\'instant', 160, 134); }
+    else {
+      g.fillStyle = '#f4efe6'; g.font = '500 20px Archivo, sans-serif'; g.fillText(`${T.articles} pièce${T.articles > 1 ? 's' : ''}`, 160, 132);
+      g.fillStyle = '#d9b26a'; g.font = '600 28px Archivo, sans-serif'; g.fillText(T.fcfa ? `${fmt(T.fcfa)} F${T.devis ? ' + devis' : ''}` : 'sur devis', 160, 176);
+    }
+    tex.needsUpdate = true;
+  };
+})();
+peindreTablette(); boutique.surChange.push(peindreTablette);
+
+/* P17 (référence : le désordre vrai ; Cotonou, il fait chaud) : UN VENTILATEUR SUR PIED dans l'atelier, qui tourne et
+   balaie lentement de gauche à droite. Il bouge : il n'est ni fondu ni figé avec le décor. */
+{
+  const v = new THREE.Group(), blanc = new THREE.MeshStandardMaterial({ color: 0xece8e1, roughness: 0.45 });
+  v.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.03, 28), blanc), 0, 0.015, 0));
+  v.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.08, 10), M.laiton), 0, 0.55, 0));
+  const tete = new THREE.Group(); tete.position.y = 1.12; v.add(tete);
+  tete.add(a(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.07, 0.14, 18).rotateX(Math.PI / 2), blanc), 0, 0, -0.07));
+  const grille = texteCanvas(256, 256, (g2, W) => {
+    g2.clearRect(0, 0, W, W); g2.strokeStyle = '#d8d3cb'; g2.lineWidth = 3;
+    for (let r = 20; r < 126; r += 21) { g2.beginPath(); g2.arc(W / 2, W / 2, r, 0, 7); g2.stroke(); }
+    for (let k = 0; k < 24; k++) { const an = k / 24 * Math.PI * 2; g2.beginPath(); g2.moveTo(W / 2 + Math.cos(an) * 18, W / 2 + Math.sin(an) * 18); g2.lineTo(W / 2 + Math.cos(an) * 125, W / 2 + Math.sin(an) * 125); g2.stroke(); }
+    g2.fillStyle = '#d8d3cb'; g2.beginPath(); g2.arc(W / 2, W / 2, 18, 0, 7); g2.fill();
+  });
+  const matGrille = new THREE.MeshStandardMaterial({ map: grille, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.5 });
+  for (const z of [0.045, -0.035]) tete.add(a(new THREE.Mesh(new THREE.CircleGeometry(0.24, 40), matGrille), 0, 0, z));
+  tete.add(a(new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.008, 6, 48), blanc), 0, 0, 0.005));
+  const helice = new THREE.Group(); helice.position.z = 0.005; tete.add(helice);
+  const pale = new THREE.MeshStandardMaterial({ color: 0xbfd6e6, roughness: 0.3, transparent: true, opacity: 0.85 });
+  for (let k = 0; k < 3; k++) { const p = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 8), pale); p.scale.set(0.055, 0.2, 0.01); p.position.set(Math.sin(k * 2.094) * 0.11, Math.cos(k * 2.094) * 0.11, 0); p.rotation.z = -k * 2.094; helice.add(p); }
+  v.position.set(-7.25, 0, -4.85); v.rotation.y = Math.PI / 2 - 0.15; v.name = 'ventilateur'; scene.add(v);
+  moteur.chaqueImage((dt, temps) => { helice.rotation.z -= dt * 11; tete.rotation.y = Math.sin(temps * 0.35) * 0.6; });
+}
+
+/* P18 (référence : le texte du lieu, partout) : « ESSAYAGE » au-dessus du rideau de la cabine, plaque d'encre filetée de
+   laiton comme les affiches. Un mot vrai : la cabine est là. */
+{
+  const cb = plan.cabine, l = 0.86, h = 0.2;
+  const plaque = texteCanvas(512, 120, (g2, W, Hh) => {
+    g2.fillStyle = '#141215'; g2.fillRect(0, 0, W, Hh); g2.strokeStyle = '#c9a254'; g2.lineWidth = 4; g2.strokeRect(8, 8, W - 16, Hh - 16);
+    g2.fillStyle = '#e6c88a'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.font = '500 54px "Bodoni Moda", Georgia, serif';
+    if ('letterSpacing' in g2) g2.letterSpacing = '10px';
+    g2.fillText('ESSAYAGE', W / 2 + 5, Hh / 2 + 3);
+  });
+  poser(new THREE.Mesh(new THREE.PlaneGeometry(l, h), new THREE.MeshStandardMaterial({ map: plaque, roughness: 0.4, emissive: 0x231d12 })), (cb.x1 + cb.x2) / 2, 2.86, cb.z2 + 0.03);
+}
+boutique.surChange.push(() => { const n = boutique.panier().length; if (n > tailleSac) pnj.reagir(() => camera.position.clone(), { rayon: 6, duree: 1.8, lignes: COMPLIMENTS }); tailleSac = n; });
 moteur.chaqueImage((dt, t) => {
   /* elle n'aborde pas quelqu'un qui commande au comptoir, ni quelqu'un sur le trottoir */
   /* elle laisse d'abord la lumière s'allumer : 5 s après l'arrivée dans le salon (l'ouverture cinéma) */
-  if (ctx.quete === 0 && afiPrete && t > 7 && t > afiPreteA + 5 && !dialogue.actif && !['comptoir', 'dehors'].includes(deplacement.noeud) && !document.body.classList.contains('en-fiche') && !document.body.classList.contains('en-cadran')) {
+  if (ctx.quete === 0 && afiPrete && t > 7 && t > afiPreteA + 9 && !dialogue.actif && !['comptoir', 'dehors'].includes(deplacement.noeud) && !document.body.classList.contains('en-fiche') && !document.body.classList.contains('en-cadran')) {
     if (pnj.aborder('afi', 'afi_course')) ctx.quete = -1;   /* -1 : en route vers le joueur */
   }
 });

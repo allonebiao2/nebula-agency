@@ -239,7 +239,13 @@ export function dialoguesVisiteuses({ D, F, ctx, monde }) {
 export function conversations(D, F) {
   return (c) => {
     const L = [];
-    const add = (id, qui, lignes, si, savoir) => L.push({ id, qui, lignes: lignes.map(([q, t]) => ({ qui: q, t })), si, savoir });
+    const add = (id, qui, lignes, si, savoir) => L.push({ id, qui, lignes: lignes.map(([q, t, o]) => ({ qui: q, t, ...(o || {}) })), si, savoir });
+    /* P47 (référence : on entre AU MILIEU d'une scène, la première réplique tombe à 0 s) : Sènami filme sa mère pour
+       SON TikTok à elle (rien n'est dit de la maison). Lancée par le lieu à l'entrée, jamais tirée au sort (`si`). */
+    add('accroche', ['senami', 'maman'], [
+      ['senami', 'Maman, souris ! C\'est pour TikTok.', { telephone: true }],
+      ['maman', 'Range ce téléphone. On est venues pour ta robe.'],
+      ['maman', 'Bonjour ! Excuse ma fille…', { regardeJoueur: true }]], () => false);
     add('mesures', ['senami', 'maman'], [
       ['senami', 'Maman, il y a vraiment beaucoup de mesures pour une robe…'],
       ['maman', F.mesRobeDroite ? `${F.mesRobeDroite} pour une robe droite. C'est comme ça qu'on coud bien.` : 'C\'est comme ça qu\'on coud bien.'],

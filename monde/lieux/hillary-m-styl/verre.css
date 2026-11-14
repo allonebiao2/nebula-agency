@@ -98,6 +98,8 @@ html, body { caret-color: var(--marque); accent-color: var(--marque); }
    Toucher n'importe où fait avancer. */
 .bandes { display: none; }
 /* P9 : les bandes de l'ouverture seulement (format 2,35:1 de la référence), sous l'interface, retirées d'un coup */
+/* une scène se joue (l'accroche) : les noms des lieux se taisent */
+body.scene-en-cours .point-etiquette { opacity: 0 !important; pointer-events: none !important; }
 .bandes-intro { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
 .bandes-intro i { position: absolute; left: 0; right: 0; height: 9vh; background: #000; }
 .bandes-intro i:first-child { top: 0; } .bandes-intro i:last-child { bottom: 0; }

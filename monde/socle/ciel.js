@@ -203,6 +203,41 @@ function dessinZem(ctx, W, H) {
   ctx.fillStyle = '#1e1e22'; ctx.beginPath(); ctx.arc(W * 0.36, H * 0.22, H * 0.08, 0, 7); ctx.fill();
 }
 
+/* P28 (référence : la vie de fond, personne n'est là pour décorer) : UN PASSANT sur le trottoir, quatre images de
+   marche dessinées (silhouettes, aucun visage), vu de profil. Trois allures de Cotonou : la femme au pagne qui porte
+   sa bassine sur la tête, l'homme en chemise, la jeune femme en robe. */
+const ALLURES = [
+  { haut: '#b5462e', bas: '#d9a441', pagne: true, bassine: '#8a8f96', peau: '#3b2619' },
+  { haut: '#e9e4da', bas: '#2a3140', pagne: false, bassine: null, peau: '#5a3a26' },
+  { haut: '#2f6b5a', bas: '#2f6b5a', pagne: true, bassine: null, peau: '#6b4630' },
+  { haut: '#20232b', bas: '#6d5a44', pagne: false, bassine: null, peau: '#3f2a1c' },
+];
+function dessinPassant(allure) {
+  return (g, W, H) => {
+    g.clearRect(0, 0, W, H);
+    for (let k = 0; k < 4; k++) {
+      const x0 = k * W / 4, cx = x0 + W / 8, ph = Math.sin(k / 4 * Math.PI * 2), echelle = H / 256;
+      const y = (v) => v * echelle;
+      g.save();
+      /* les jambes, qui se croisent selon l'image */
+      g.strokeStyle = allure.pagne ? allure.peau : allure.bas; g.lineCap = 'round'; g.lineWidth = y(11);
+      for (const s of [1, -1]) { g.beginPath(); g.moveTo(cx, y(150)); g.lineTo(cx + s * ph * y(20), y(238)); g.stroke(); }
+      g.fillStyle = '#1b1a1c'; for (const s of [1, -1]) { g.beginPath(); g.ellipse(cx + s * ph * y(20) + y(5), y(242), y(9), y(4), 0, 0, 7); g.fill(); }
+      /* le bas : pagne (long, droit) ou pantalon (déjà dessiné par les jambes) */
+      if (allure.pagne) { g.fillStyle = allure.bas; g.beginPath(); g.moveTo(cx - y(18), y(140)); g.lineTo(cx + y(18), y(140)); g.lineTo(cx + y(14) + ph * y(6), y(225)); g.lineTo(cx - y(14) + ph * y(6), y(225)); g.fill(); }
+      /* le buste, les bras qui balancent */
+      g.fillStyle = allure.haut; g.beginPath(); g.roundRect(cx - y(16), y(70), y(32), y(78), y(10)); g.fill();
+      g.strokeStyle = allure.peau; g.lineWidth = y(8);
+      if (allure.bassine) { for (const s of [1, -1]) { g.beginPath(); g.moveTo(cx + s * y(10), y(78)); g.lineTo(cx + s * y(16), y(30)); g.stroke(); } }
+      else { g.beginPath(); g.moveTo(cx, y(80)); g.lineTo(cx - ph * y(22), y(140)); g.stroke(); }
+      /* la tête, et la bassine posée dessus */
+      g.fillStyle = allure.peau; g.beginPath(); g.arc(cx + y(2), y(52), y(15), 0, 7); g.fill();
+      if (allure.bassine) { g.fillStyle = allure.bassine; g.beginPath(); g.ellipse(cx + y(2), y(30), y(36), y(10), 0, 0, 7); g.fill(); g.fillRect(cx - y(30), y(18), y(64), y(12)); }
+      g.restore();
+    }
+  };
+}
+
 /* ---------- le ciel complet ---------- */
 export function creerCiel(moteur, { facadeZ = 6, largeur = 16, lieu = COTONOU, relais = '/api/meteo' } = {}) {
   const { scene } = moteur;
@@ -252,6 +287,15 @@ export function creerCiel(moteur, { facadeZ = 6, largeur = 16, lieu = COTONOU, r
     zems.push({ m, mat, v: 0, actif: false });
   }
   let prochainZem = 2;
+
+  /* P28 : les passants (au plus quatre à la fois), sur le trottoir devant la vitrine */
+  const passants = ALLURES.map((al) => {
+    const tx = texteCanvas(512, 256, dessinPassant(al)); tx.repeat.set(0.25, 1);
+    const mat = new THREE.MeshBasicMaterial({ map: tx, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 1.8), mat); m.visible = false; groupe.add(m);
+    return { m, mat, tx, v: 0, actif: false, dist: 0 };
+  });
+  let prochainPassant = 1.5;
 
   /* la pluie */
   const N = q.pluie;
@@ -355,6 +399,27 @@ export function creerCiel(moteur, { facadeZ = 6, largeur = 16, lieu = COTONOU, r
         z.mat.color.setScalar(melanger(0.3, 1, etat.jour));
       }
       prochainZem = (etat.nuit > 0.5 ? 7 : 2.5) + Math.random() * (etat.pluie > 0.5 ? 14 : 6);
+    }
+    /* passants */
+    prochainPassant -= dt;
+    if (prochainPassant <= 0) {
+      const libres = passants.filter(k => !k.actif), p = libres[Math.floor(Math.random() * libres.length)];
+      if (p) {
+        const sens = Math.random() < 0.5 ? 1 : -1;
+        p.actif = true; p.m.visible = true; p.v = sens * (1.05 + Math.random() * 0.35); p.dist = 0; p.sens = sens;
+        p.m.position.set(-sens * 13, 0.9, facadeZ + 1.1 + Math.random() * 1.1);
+        p.mat.color.setScalar(melanger(0.55, 1, etat.jour));   /* la nuit, éclairé par la rue et la vitrine : pas une ombre */
+      }
+      prochainPassant = (etat.nuit > 0.5 ? 9 : 3) + Math.random() * (etat.pluie > 0.5 ? 18 : 6);
+    }
+    for (const p of passants) {
+      if (!p.actif) continue;
+      p.m.position.x += p.v * dt; p.dist += Math.abs(p.v) * dt;
+      const k = Math.floor(p.dist / 0.34) % 4;
+      /* vu depuis le salon, on regarde le dos du plan : on retourne l'image pour celui qui marche vers -x (comme les zems) */
+      if (p.sens > 0) { p.tx.repeat.x = 0.25; p.tx.offset.x = k * 0.25; } else { p.tx.repeat.x = -0.25; p.tx.offset.x = (k + 1) * 0.25; }
+      p.m.position.y = 0.9 + Math.abs(Math.sin(p.dist / 0.34 * Math.PI)) * 0.02;
+      if (Math.abs(p.m.position.x) > 14) { p.actif = false; p.m.visible = false; }
     }
     for (const z of zems) {
       if (!z.actif) continue;
