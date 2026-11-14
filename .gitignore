@@ -166,3 +166,9 @@ monde/lieux/*/cuisson/*.png
 
 # LE MONDE : essais de génération (images d’ambiance, jamais versionnées)
 monde/_generation/
+
+# LE MONDE : les personnages en vidéo. Hillary est une personne RÉELLE (le dépôt est PUBLIC : jamais son image ici) ;
+# les autres se refont par monde/_outils/perso_video.py depuis _partage (hors dépôt)
+monde/lieux/*/personnages/hillary/
+monde/lieux/*/personnages/*/video-*.mp4
+monde/lieux/*/personnages/*/video-*.json

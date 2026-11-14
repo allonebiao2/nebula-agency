@@ -103,6 +103,27 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 ## ⚡ ÉTAT DU 2026-11-14 (le plus récent : lire d'abord)
 
+- 🔴 **2026-11-15, 1 h : ARRÊT SUR LIMITE D'UTILISATION, vague 1 presque finie.** Les vidéos des QUATRE personnages
+  sont prêtes sur le disque (hors git) : Hillary (`personnages/hillary/` : écouter 23 s, parler, saluer ; Wan 2.2
+  gratuit par `_outils/en_video.py`, détourage par la couleur `perso_video.py --fond-uni --buste 1.18`, montage
+  `monter_video.py`), Afi, Sènami, Maman (parler + écouter). Hillary est branchée EN VIDÉO PERMANENTE à son comptoir
+  (`VIDEOS.hillary.toujours`), fondu entre vidéos, salut joué une fois. Accord d'Hillary : `_partage/…/hillary/ACCORD.md`.
+  ⛔ **PAS FAIT** : regarder les planches (`python monde/_outils/captures/voir_perso_video.py`, puis `--nuit`),
+  **rejouer le QC** (`python monde/_qc.py`, le § 12 est neuf, jamais joué), vérifier la place d'Hillary derrière le
+  comptoir. ⚠️ Deux captures sur trois ont vu la vidéo d'Hillary « pas prête » (intermittent, cause non trouvée).
+  Quota ZeroGPU du compte épuisé jusqu'au 2026-11-15 vers minuit ; le quota anonyme (`--sans-jeton`) marchait encore.
+
+- 🔴 **2026-11-14, 15 h : MONGAZI A COLLÉ LA CONSIGNE `PROMPT-FABLE.md` DANS CETTE SESSION** : elle fait loi (qualité
+  « 100 000 dollars », vrai salon de couture, 7 critères notés sur des captures, vagues 1 à 7 dans l'ordre, aucune
+  question, rien d'acheté, un seul travail lourd à la fois). Puis : « ne plafonne pas à GTA 2001, monte à GTA 2026 ».
+- ✅ Faits et poussés : monde photographique (Spark), QC sans faux rouges, la marche (patinage 34 → 9 cm/s).
+- 🔨 **Vague 1, les personnages-vidéo** : Afi FAITE (parler 1,3 Mo + écouter 0,4 Mo tiré du passage calme ; planches
+  `_vues/video-contre-3d.jpg` et `-nuit.jpg`) ; **Sènami (parler, écouter) et Maman (parler) en détourage** (≈ 6 à
+  10 s par image sur ce PC), Maman « écouter » à tirer ensuite de ses masques (`perso_video.py --calme 3 --vitesse 0.85
+  --reprendre <dossier>`). Restent : captures des trois, QC avec le contrôle neuf (§ 12 de `_qc.py`), commit.
+- 📝 **Brouillons prêts, PAS appliqués** : `monde/_brouillons/` (vague 2 : étalonnage dans le tone mapping, vignettage,
+  faisceaux visibles + poussière ; vague 3 : matières vraies).
+
 - 🔴 **2026-11-14, après-midi : LA LISTE COMPLÈTE, qui fait quoi, est dans `monde/A-FAIRE.md`** (Mongazi : « liste absolument tout »). Direction : décor en monde photographique (Spark, `socle/monde-photo.js`, non commité au moment de la coupure de courant), **personnages en conversation = ses vidéos détourées** (consignes neuves : `personnages/CONSIGNES.md`, « LES PERSONNAGES EN VIDÉO »), marche refaite dans le code. ⚠️ Le QC cale deux fois (la fiche recouvre un bouton) : à réparer avant de commiter le monde photographique.
 
 - ✅ **R9, la densité** : 25 objets de vie dans l'atelier et au comptoir (détail : `REALISME.md`, ligne R9). Matières

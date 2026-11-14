@@ -22,6 +22,7 @@ import { creerOptions } from '../../socle/options.js';
 import { creerRessources } from '../../socle/ressources.js';
 import { MATIERES, matWax, flaqueLumiere, ombreRonde, PALETTES_WAX } from '../../socle/matieres.js';
 import { creerMondePhoto } from '../../socle/monde-photo.js';
+import { creerPersoVideo } from '../../socle/perso-video.js';
 import { DONNEES } from './donnees.js';
 import { PERSONNES, faitsMaison, dialoguesHillary, dialoguesVisiteuses, conversations, savoirsMaison } from './textes.js';
 
@@ -1440,6 +1441,37 @@ setTimeout(() => habiller(personnes.senami.perso, { dossier: 'personnages/senami
   .then(pasAssise('senami'))
   .catch(e => console.warn('Sènami reste en silhouette', e)), params.has('direct') ? 900 : 3600);
 
+/* LES PERSONNAGES EN VIDÉO (2026-11-14, Mongazi : « ultra réaliste », « les visages, le maximum possible ») : quand
+   une visiteuse parle AU visiteur, on voit SA vidéo détourée (photoréaliste), plus son modèle 3D. Préparées par
+   `_outils/perso_video.py` depuis `_partage/immersive  store 3D/personnages/<prénom>/videos/`. Chargées APRÈS
+   le premier écran (règle 3G). Une vidéo absente : la 3D reste. `?sans-video` : la 3D partout. */
+const persoVideos = {};
+/* « écouter » d'Afi : il n'existe pas de vidéo où elle écoute ; c'est le passage de 3 s où son visage bouge le moins dans
+   « parler » (−32 % de mouvement), rejoué à 0,85 (`perso_video.py --calme 3 --vitesse 0.85`). Le choix : une vraie personne qui
+   respire et bouge à peine vaut mieux qu'une image figée (morte) ou que sa vidéo « parler » (elle parlerait en écoutant). */
+const VIDEOS = {
+  /* HILLARY (accord donné : Mongazi, 2026-11-13 et 2026-11-14, `_partage/…/hillary/ACCORD.md`) : elle ne quitte pas son
+     comptoir, donc elle est en vidéo TOUJOURS (plus jamais la silhouette de maquette), en buste (le comptoir cache le
+     reste), tournée vers le visiteur où qu'il soit. Ses vidéos : Wan 2.2 (Apache 2.0, gratuit, `_outils/en_video.py`)
+     depuis son image, puis `perso_video.py --buste`. « écouter » est une boucle parfaite (première image = dernière). */
+  hillary: { taille: 1.68, toujours: true, sources: { parler: 'personnages/hillary/video-parler', ecouter: 'personnages/hillary/video-ecouter' } },
+  afi: { taille: 1.71, sources: { parler: 'personnages/afi/video-parler', ecouter: 'personnages/afi/video-ecouter' } },
+  senami: { taille: 1.64, sources: { parler: 'personnages/senami/video-parler', ecouter: 'personnages/senami/video-ecouter' } },
+  /* Maman n'a pas encore de 3D : sa vidéo remplace sa silhouette de maquette (même repli « écouter » qu'Afi) */
+  maman: { taille: 1.62, sources: { parler: 'personnages/maman/video-parler', ecouter: 'personnages/maman/video-ecouter' } },
+};
+function creerVideo(id) {
+  const v = VIDEOS[id], p = personnes[id] && personnes[id].perso; if (!v || !p || persoVideos[id]) return;
+  persoVideos[id] = creerPersoVideo({ moteur, perso: p, taille: v.taille, sources: v.sources,
+    actif: v.toujours ? () => true : () => { const n = pnj.parId[id]; return !!n && (n.etat === 'joueur' || n.etat === 'retenue'); },
+    /* le jour : la lumière neutre de la vitrine ; le soir : plus bas et plus chaud (mesuré sur les captures du
+       2026-11-14 : le manteau rejoint la teinte du sol), et la lumière qui tombe des spots */
+    teinte: () => ({ r: melanger(1, 0.6, nuitCuite), g: melanger(0.985, 0.53, nuitCuite), b: melanger(0.955, 0.44, nuitCuite), chute: melanger(0.06, 0.3, nuitCuite) }) });
+}
+/* Hillary d'abord (on la voit dès l'entrée), les visiteuses ensuite (on ne les voit en vidéo qu'en leur parlant) */
+setTimeout(() => creerVideo('hillary'), params.has('direct') ? 400 : 2800);
+setTimeout(() => { for (const id of Object.keys(VIDEOS)) creerVideo(id); }, params.has('direct') ? 1500 : 9000);
+
 
 /* LA CLÉ DE CUISSON : un nom STABLE pour chaque maillage du décor, le même à chaque chargement et à
    chaque qualité. ⚠️ Les numéros « decor-N » dépendent de l'ordre de construction, qui change avec la
@@ -1768,4 +1800,4 @@ if (mondePhoto) {
 }
 
 /* pour les contrôles automatiques */
-window.__monde = { mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { persoVideos, mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

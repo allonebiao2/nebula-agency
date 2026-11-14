@@ -132,6 +132,7 @@ export async function habiller(perso, { dossier, prefixe, taille, vitesseMarche 
   /* le corps remplace la silhouette */
   perso.racine.add(modele);
   perso.corps.visible = false;
+  perso.modele3d = modele;   /* le personnage-vidéo (socle/perso-video.js) le cache en conversation */
   if (tete) perso.positionTete = (v = new THREE.Vector3()) => tete.getWorldPosition(v);
 
   const majSilhouette = perso.maj;

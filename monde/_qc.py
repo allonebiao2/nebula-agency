@@ -308,6 +308,20 @@ def main():
         except Exception as e:
             ok(False, "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(e)[:160])
 
+        # 12 · LES PERSONNAGES EN VIDÉO (2026-11-14) : retenue par le visiteur, Afi passe en VIDÉO (son modèle 3D se
+        #      cache), puis revient en 3D quand on la relâche. Une vidéo absente ou illisible laisse la 3D, sans erreur.
+        try:
+            jusqua(pg, "__monde.persoVideos.afi && __monde.persoVideos.afi.etat.pret", 60)
+            clips = pg.evaluate("Object.keys(__monde.persoVideos.afi.clips).sort().join(',')")
+            ok(clips == "ecouter,parler", "Afi a ses deux vidéos (parler, écouter)", clips)
+            pg.evaluate("__monde.pnj.retenir('afi')")
+            jusqua(pg, "__monde.persoVideos.afi.montre === 1", 15)
+            ok(pg.evaluate("!__monde.pnj.parId.afi.perso.modele3d.visible"), "retenue, Afi est en vidéo (sa 3D est cachée)")
+            pg.evaluate("__monde.pnj.relacher('afi')")
+            jusqua(pg, "__monde.persoVideos.afi.montre === 0", 15)
+            ok(pg.evaluate("__monde.pnj.parId.afi.perso.modele3d.visible"), "relâchée, Afi revient en 3D")
+        except Exception as e:
+            ok(False, "Afi passe en vidéo quand on lui parle, et revient en 3D", str(e)[:160])
         # 11 · LA MARCHE (2026-11-14) : la cadence des pas vient de la vitesse propre de SA marche, mesurée sur ses pieds
         #      (habiller.js) ; sans elle, les pieds glissent. Le patinage lui-même : `_outils/mesurer_marche.py`.
         try:

@@ -4,7 +4,8 @@ Usage : python monde/_outils/captures/voir_salon.py [suffixe] [point ...]
   suffixe : ajouté au nom des captures (ex. « avant », « apres ») ; défaut « vue »
   point   : points de passage (`__monde.plan.points`) où se rendre en plus de l'entrée
 → monde/_vues/{ordi,tel}-salon-<point>-<heure>h-<suffixe>.png
-Un seul navigateur, une page à la fois (ce PC a 8 Go). Variables : HEURES="14 21", APPAREILS="ordi tel".
+Un seul navigateur, une page à la fois (ce PC a 8 Go). Variables : HEURES="14 21", APPAREILS="ordi tel", GL=gpu (la vraie carte),
+EXTRA="&sans-look" (paramètres ajoutés à l'adresse, pour comparer).
 """
 import os, sys, time
 sys.stdout.reconfigure(encoding="utf-8")
@@ -18,7 +19,8 @@ appareils = os.environ.get("APPAREILS", "ordi tel").split()
 CONF = {"ordi": ({"width": 1440, "height": 900}, False, "&qualite=haute"), "tel": ({"width": 390, "height": 844}, True, "")}
 
 with sync_playwright() as pw:
-    b = pw.chromium.launch(args=["--use-gl=angle", "--enable-unsafe-swiftshader"])
+    # GL=gpu : la vraie carte graphique (ce que voit un visiteur) ; par défaut le rendu logiciel (stable, plus lent)
+    b = pw.chromium.launch(args=["--use-angle=d3d11", "--ignore-gpu-blocklist"] if os.environ.get("GL") == "gpu" else ["--use-gl=angle", "--enable-unsafe-swiftshader"])
     for nom in appareils:
         vp, tactile, q = CONF[nom]
         for h in heures:
@@ -26,7 +28,7 @@ with sync_playwright() as pw:
             err = []
             pg.on("pageerror", lambda e: err.append(str(e)))
             pg.on("console", lambda m: m.type in ("error", "warning") and err.append(m.text[:160]))
-            pg.goto(f"http://localhost:8765/lieux/hillary-m-styl/?direct=1&meteo=clair&heure={h}{q}")
+            pg.goto(f"http://localhost:8765/lieux/hillary-m-styl/?direct=1&meteo=clair&heure={h}{q}" + os.environ.get("EXTRA", ""))
             t0 = time.time()
             while time.time() - t0 < 150:
                 try:
