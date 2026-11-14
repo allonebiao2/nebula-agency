@@ -13,6 +13,8 @@
 import { THREE } from './moteur.js';
 
 const DIRS = ['haut', 'gauche', 'droite', 'bas'];
+/* P34 (référence : ≈ 5 s ; au téléphone on lit plus lentement) : le temps laissé pour une réplique LÉGÈRE */
+const DUREE_LEGER = 7000;
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 const cibleRegard = new THREE.Vector3(), BAISSE_REGARD = new THREE.Vector3(0, -0.2, 0), ecran = new THREE.Vector3();
@@ -112,24 +114,37 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
   });
   const $$ = (s) => [...boite.querySelectorAll(s)];
 
+  /* P33 et P34 (référence) : sur une conversation LÉGÈRE (`leger: true`, jamais une commande ni une course), la croix
+     offre « Pas de réponse » en haut, et un minuteur doux se vide par les deux bouts ; à zéro, on se tait, et
+     l'autre réagit (`silence`, sa phrase à elle). Toucher n'importe quelle réponse arrête le minuteur. */
+  let compteChoix = null;
   function proposer(choix, n) {
+    const leger = !!(n && n.leger) && choix.length < 4 && !choix.some(c => c.dir === 'haut');
+    if (leger) choix = [{ t: 'Pas de réponse', dir: 'haut', muet: true, silence: true, va: n.silence ? () => ({ qui: n.qui, dit: [n.silence] }) : null }, ...choix];
     return new Promise((ok) => {
       const croix = $('.dlg-croix'); croix.innerHTML = '<i class="losange" aria-hidden="true"></i>';
       const libres = DIRS.filter(d => !choix.some(c => c.dir === d));
       choixCourants = choix.map(c => ({ ...c, dir: c.dir || libres.shift() }));
       choixCourants.forEach((c, i) => {
         const k = cleChoix(n || {}, c), deja = vus.has(k);
-        const b = el('button', `ch ch-${c.dir} ${deja ? 'deja' : 'neuf'}`, `<kbd>${i + 1}</kbd>${esc(c.t)}`);
+        const b = el('button', `ch ch-${c.dir} ${c.silence ? 'ch-silence' : deja ? 'deja' : 'neuf'}`, `<kbd>${i + 1}</kbd>${esc(c.t)}`);
         b.type = 'button'; b.dataset.dir = c.dir;
         b.addEventListener('click', (e) => {
-          e.stopPropagation(); son && son.choix(); choixCourants = []; croix.innerHTML = ''; boite.classList.remove('en-choix');
+          e.stopPropagation(); clearTimeout(compteChoix); compteChoix = null;
+          son && son.choix(); choixCourants = []; croix.innerHTML = ''; boite.classList.remove('en-choix');
           vus.add(k); try { localStorage.setItem('monde:vus', JSON.stringify([...vus])); } catch (_) { /* rien */ }
           ok(c);
         });
         croix.appendChild(b);
       });
+      if (leger) {
+        const m = el('div', 'dlg-minuteur', '<i></i>'); m.setAttribute('aria-hidden', 'true'); m.style.setProperty('--duree', DUREE_LEGER + 'ms');
+        croix.appendChild(m);
+        compteChoix = setTimeout(() => { const s = croix.querySelector('.ch-silence'); if (s) s.click(); }, DUREE_LEGER);
+      }
       boite.classList.add('en-choix');
-      setTimeout(() => { const b = croix.querySelector('button'); if (b) b.focus({ preventScroll: true }); }, 50);
+      /* le focus va à la première VRAIE réponse (pas au silence) */
+      setTimeout(() => { const b = croix.querySelector('button:not(.ch-silence)') || croix.querySelector('button'); if (b) b.focus({ preventScroll: true }); }, 50);
     });
   }
 
@@ -191,7 +206,7 @@ export function creerDialogue({ calque, son, deplacement, personnes, registre = 
   }
   function fermer() {
     if (!actif) return;
-    actif = false; attente = null; choixCourants = []; clearTimeout(minuteur);
+    actif = false; attente = null; choixCourants = []; clearTimeout(minuteur); clearTimeout(compteChoix); compteChoix = null;
     for (const k in personnes) if (personnes[k].perso) personnes[k].perso.parler(false);
     document.body.classList.remove('en-dialogue');
     boite.classList.remove('ouverte', 'en-choix'); bandes.classList.remove('ouvertes');

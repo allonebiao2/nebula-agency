@@ -194,7 +194,7 @@ export function dialoguesVisiteuses({ D, F, ctx, monde }) {
         'À Paris, on me demande toujours d\'où viennent mes tenues. Cette fois, j\'aurai une réponse.',
         'Les prix sont aussi en euros et en dollars, c\'est pratique pour moi.',
         'Je regarde surtout les pièces de cérémonie. Pour samedi.']);
-      return { qui: 'afi', savoir: /euros/.test(ligneAfi) ? 'devises' : undefined, dit: [ligneAfi],
+      return { qui: 'afi', savoir: /euros/.test(ligneAfi) ? 'devises' : undefined, dit: [ligneAfi], leger: true, silence: 'Bon… je te laisse regarder, alors.',
         choix: [{ t: 'Bonne chance pour samedi !', va: null }, { t: 'Tu as vu la robe au centre ?', va: 'afi_heros' }] };
     },
     afi_heros: () => ({ qui: 'afi', dit: [F.plusCher ? `La ${F.plusCher.nom} ? ${phrase1(F.plusCher.ds)} Elle ne passe pas inaperçue.` : 'Celle du centre ? Magnifique.'] }),
@@ -209,6 +209,7 @@ export function dialoguesVisiteuses({ D, F, ctx, monde }) {
       return { qui: 'senami', dit: [pick([
         'J\'ai une cérémonie dans dix jours. Maman veut du sur-mesure, moi je veux que ce soit prêt à temps.',
         F.coupDeCoeur ? `Tu as vu la ${F.coupDeCoeur.nom} ? ${phrase1(F.coupDeCoeur.ds)} Je suis tombée dedans.` : 'Je ne sais pas laquelle choisir.'])],
+        leger: true, silence: 'Tu es timide, toi ! Pas grave.',
         choix: [
           { t: 'Deux semaines, c\'est le délai normal', si: () => F.normal != null, va: 'senami_delai' },
           { t: 'Il y a l\'express', va: 'senami_express' },
@@ -221,6 +222,7 @@ export function dialoguesVisiteuses({ D, F, ctx, monde }) {
     maman: () => ({ qui: 'maman', dit: [pick([
       'De mon temps, on allait chez la couturière du quartier avec son pagne sous le bras. Ici, regarde : tout est expliqué.',
       'Ma fille trouve qu\'on prend trop de mesures. Moi je dis que c\'est ça, le vrai sur-mesure.'])],
+      leger: true, silence: 'On ne parle pas beaucoup, hein ? Bonne visite quand même.',
       choix: [
         { t: 'On peut donner ses mesures soi-même ?', va: 'maman_mesures' },
         F.mesRobeDroite ? { t: 'Combien de mesures pour une robe ?', va: 'maman_combien' } : null,

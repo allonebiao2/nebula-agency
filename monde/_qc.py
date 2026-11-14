@@ -183,16 +183,31 @@ def main():
         pg.evaluate("__monde.pnj.parler('maman', 'maman')"); time.sleep(0.6)
         ok(pg.evaluate("document.querySelector('.dlg-nom').textContent") == "Maman Sènami", "on peut parler à Maman Sènami")
         avancer_jusqu_aux_choix(pg); shot("06-maman")
-        pg.locator(".dlg-croix button").first.click(); time.sleep(0.4)
+        # P33 et P34 (référence) : une conversation légère offre « Pas de réponse » en haut et un minuteur
+        ok(pg.evaluate("!!document.querySelector('.dlg-croix .ch-haut.ch-silence') && !!document.querySelector('.dlg-croix .dlg-minuteur')"),
+           "une conversation légère offre « Pas de réponse » et un minuteur")
+        pg.locator(".dlg-croix button:not(.ch-silence)").first.click(); time.sleep(0.4)
         for _ in range(6):
             if not pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"): break
             if pg.evaluate("document.querySelector('.dialogue').classList.contains('en-choix')"): pg.locator(".dlg-croix button").last.click()
             else: pg.click(".dialogue .dlg-corps")
             time.sleep(0.4)
         ok(pg.evaluate("__monde.pnj.parId.maman.connue === true"), "après lui avoir parlé, son repère porte son nom")
+        # à zéro, on se tait, et elle réagit ; une conversation de commande, elle, n'a jamais de minuteur
+        pg.evaluate("__monde.pnj.parler('maman', 'maman')"); time.sleep(0.6)
+        avancer_jusqu_aux_choix(pg)
+        try:
+            jusqua(pg, "document.querySelector('.dlg-texte').textContent.toLowerCase().includes('bonne visite quand même')", 12)
+            ok(True, "le minuteur écoulé : « Pas de réponse », et elle réagit")
+        except Exception:
+            ok(False, "le minuteur écoulé : « Pas de réponse », et elle réagit", pg.evaluate("document.querySelector('.dlg-texte').textContent"))
+        for _ in range(6):
+            if not pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"): break
+            pg.click(".dialogue .dlg-corps"); time.sleep(0.4)
         # les réponses déjà explorées sont cochées, et « Partir » ferme la conversation
         pg.evaluate("__monde.dialogue.ouvrir('hillary')"); avancer_jusqu_aux_choix(pg)
         ok(pg.evaluate("document.querySelectorAll('.dlg-croix .ch.deja').length") >= 1, "une réponse déjà choisie est cochée")
+        ok(not pg.evaluate("!!document.querySelector('.dlg-croix .dlg-minuteur, .dlg-croix .ch-silence')"), "chez Hillary (la commande), ni minuteur ni « Pas de réponse »")
         ok(pg.evaluate("document.querySelectorAll('.dlg-croix .ch.neuf').length") >= 1, "les réponses pas encore explorées portent une étoile")
         pg.click(".dlg-partir"); time.sleep(0.5)
         ok(not pg.evaluate("document.querySelector('.dialogue').classList.contains('ouverte')"), "« Partir » ferme la conversation")
@@ -262,11 +277,13 @@ def main():
             r = pg.evaluate("""async () => {
               const D = __monde.deplacement, v = document.querySelector('.fondu-noir'), attendre = (ms) => new Promise(r => setTimeout(r, ms));
               const jusqua = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await attendre(50); };
+              /* ⚠️ Afi vient d'elle-même dans les premières secondes (P48) : sa conversation ne doit pas couper le test */
+              if (__monde.pnj.annulerAbordage) __monde.pnj.annulerAbordage(); __monde.dialogue.fermer(); await attendre(300);
               D.allerA('evenements'); await jusqua(() => !D.enMarche, 12000);
               D.allerA('expo_g'); await attendre(300);
               let max = 0; D.allerA('creations');
               const t0 = performance.now(); while (performance.now() - t0 < 2500) { await attendre(40); max = Math.max(max, +getComputedStyle(v).opacity); }
-              const p = D.position; return { max, noeud: D.noeud, x: p.x, z: p.z, marche: D.enMarche }; }""")
+              const p = D.position; return { max, noeud: D.noeud, x: p.x, z: p.z, marche: D.enMarche, dialogue: __monde.dialogue.actif }; }""")
             pt = next(p for p in donnees_plan()["points"] if p["id"] == "creations")
             ok(r["max"] > 0.95 and r["noeud"] == "creations" and not r["marche"] and abs(r["x"] - pt["x"]) < 0.3 and abs(r["z"] - pt["z"]) < 0.3,
                "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(r))

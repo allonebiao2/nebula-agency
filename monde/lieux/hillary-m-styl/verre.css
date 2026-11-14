@@ -245,6 +245,11 @@ body:has(.options.ouverte) .maquette { opacity: 0; }
 .dialogue.en-choix .dlg-croix { grid-template-rows: auto auto auto; }
 .dialogue.en-choix .losange { align-self: center; }
 .ch { position: relative; text-wrap: balance; }
+/* P33 : « Pas de réponse », plus discret que les vraies réponses ; P34 : le minuteur, un trait qui se vide par les deux bouts */
+.ch-silence { color: rgba(255,255,255,.78); font-style: italic; }
+.dialogue.en-choix .dlg-minuteur { grid-column: 1 / -1; grid-row: 4; justify-self: center; width: 150px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.22); overflow: hidden; margin-top: 4px; }
+.dlg-minuteur i { display: block; height: 100%; background: #fff; transform-origin: center; animation: vider-minuteur var(--duree, 7s) linear forwards; }
+@keyframes vider-minuteur { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .ch.neuf { padding-right: 20px; }
 .ch.neuf::after { position: absolute; top: 7px; right: 7px; margin: 0; }
 @media (max-width: 560px) { .dialogue.en-choix .dlg-croix { grid-template-rows: auto auto auto; } }

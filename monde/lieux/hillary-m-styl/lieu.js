@@ -957,7 +957,9 @@ function toucherPnj(id) {
   const p = n.perso.positionTete(new THREE.Vector3());
   /* les options n'apparaissent qu'une fois le regard posé sur elle (au téléphone, le champ est
      étroit en largeur : une personne toute proche sort vite du cadre) */
-  deplacement.allerPres(new THREE.Vector3(p.x, p.y - 0.1, p.z), { distance: 1.3, puis: () => setTimeout(() => {
+  /* ⚠️ à l'arrivée, on vise sa tête LÀ OÙ ELLE EST (elle a pu bouger pendant le trajet) : viser l'endroit du toucher
+     laissait parfois la caméra de dos (QC du 2026-11-14) */
+  deplacement.allerPres(new THREE.Vector3(p.x, p.y - 0.1, p.z), { distance: 1.3, puis: () => { deplacement.tournerVers(n.perso.positionTete(new THREE.Vector3()).add(new THREE.Vector3(0, -0.1, 0))); setTimeout(() => {
     options.ouvrir({
       titre: n.connue ? n.nom : 'Une visiteuse', sous: n.connue ? '' : 'Vous ne vous connaissez pas encore',
       ancre: (v) => n.perso.positionTete(v).add(new THREE.Vector3(0, -0.55, 0)),
@@ -968,7 +970,7 @@ function toucherPnj(id) {
       ],
       auFermer: () => pnj.relacher(id),
     });
-  }, 550) });
+  }, 550); } });
 }
 deplacement.surToucher.push((c) => {
   if (c.type === 'piece') { toucherPiece(c.id); return true; }
