@@ -48,6 +48,8 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 
 - [ ] D7 · **De VRAIES vidéos « écouter » pour Afi et Maman, sans payer** : Wan 2.2 « première et dernière image » sur ZeroGPU (Space `multimodalart/wan-2-2-first-last-frame` ; poids annoncés Apache 2.0, À VÉRIFIER sur la fiche officielle Wan-AI). Donner la 1re image de sa vidéo « parler » (bras le long du corps) en première ET en dernière image : une boucle parfaite où elle écoute. Quota ZeroGPU : épuisé à 2 h le 2026-11-14, retour vers 16 h 20. En attendant : le passage calme de « parler » (`--calme`).
 
+- [x] D8 · **Vague 2, le rendu** : ✅ 2026-11-15, QC **66/66**. Étalonnage de film dans le tone mapping (toutes qualités), vignettage, faisceaux visibles et poussière, brume de profondeur, soir plus tamisé, **le soleil qui entre par la vitrine** (façade au sud-ouest). 53 i/s immobile, 44 en marchant au téléphone. ⛔ Notes : lumière 7 à 7,5, étalonnage 7,5 à 8, « waouh » 6,5 à 7 : le seuil de 8 n'est pas atteint partout, ce sont les matières (vague 3) et le décor (vague 4) qui retiennent. Détail : `_memoire/apprentissages/2026-11-15-rendu-film-sans-passe.md`
+
 ### E · Dès que ses fichiers arrivent
 - [ ] E1 · Le monde Marble : le caler sur le salon (`?calage`), mesurer poids et images/s au téléphone, retirer le décor modélisé du dedans, poser par-dessus le vrai logo et ses pièces
 - [ ] E2 · Ses vidéos : détourer, boucler, brancher Afi, Sènami, Maman

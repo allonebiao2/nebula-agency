@@ -24,6 +24,7 @@ import { MATIERES, matWax, flaqueLumiere, ombreRonde, PALETTES_WAX } from '../..
 import { creerMondePhoto } from '../../socle/monde-photo.js';
 import { creerPersoVideo } from '../../socle/perso-video.js';
 import { creerFaisceaux } from '../../socle/faisceaux.js';
+import { creerSoleilVitrine } from '../../socle/soleil-vitrine.js';
 import { DONNEES } from './donnees.js';
 import { PERSONNES, faitsMaison, dialoguesHillary, dialoguesVisiteuses, conversations, savoirsMaison } from './textes.js';
 
@@ -733,7 +734,17 @@ for (const pl of plan.plantes) {
 /* ================================================================
    6 · LE CIEL, LE DÉPLACEMENT, LES GENS
    ================================================================ */
-const ciel = creerCiel(moteur, { facadeZ: fz, largeur: LX * 2, lieu: COTONOU });
+/* LA FAÇADE REGARDE LE SUD-OUEST (215°), choisi le 2026-11-15 : Hillary n'a pas de salon physique, son orientation est
+   donc libre. Plein sud (l'ancien réglage), le soleil entrait de biais toute la journée d'octobre à février et jamais de
+   mai à juillet ; au sud-ouest il entre par la vitrine TOUS les après-midi de l'année (en face vers 14 h, et à l'heure
+   dorée il traverse toute la pièce), et le matin la lumière reste douce. */
+const ciel = creerCiel(moteur, { facadeZ: fz, largeur: LX * 2, lieu: COTONOU, capFacade: 215 });
+/* LE SOLEIL DANS LA VITRINE (vague 2) : chaque ouverture de la façade projetée sur le sol le long du vrai soleil */
+const soleilVitrine = creerSoleilVitrine({ moteur, ciel, facadeZ: fz, piece: { x1: -LX, x2: LX, z1: -LZ, z2: fz },
+  ouvertures: [
+    ...fac.vitrines.map(v => ({ x1: v.x1, x2: v.x2, bas: fac.allege, haut: fac.linteau, montants: 2 })),
+    { x1: fac.porte.x1, x2: fac.porte.x2, bas: 0, haut: fac.porte.haut, montants: 0 },
+  ] });
 const graphe = creerGraphe(plan);
 const AVANCE_INTRO = new THREE.Vector3(0, -0.25, 5.4);
 const deplacement = creerDeplacement(moteur, graphe, { depart: params.has('direct') ? 'entree' : 'dehors', calque });
@@ -1267,7 +1278,9 @@ moteur.chaqueImage((dt) => {
   /* LE JOUR DE SES IMAGES, LE SOIR TAMISÉ (2026-11-13) : de jour, la pièce est claire et la lumière du ciel
      entre par la vitrine ; le soir, elle baisse et se réchauffe. (Avant : tamisée jour et nuit.) */
   /* le soir : 0,92 (avant 0,84) depuis que l'étalonnage creuse les ombres (vague 2) : les personnes restent lisibles */
-  moteur.renderer.toneMappingExposure = melanger(1.04, 0.92, e.nuit) * (1 - e.pluie * 0.06) * oeil;
+  /* quand le soleil entre par la vitrine, l'œil (et un appareil photo) se règle sur lui : le reste de la pièce baisse d'un
+     cran, c'est ce contraste qui fait « photo » */
+  moteur.renderer.toneMappingExposure = melanger(1.04, 0.92, e.nuit) * (1 - e.pluie * 0.06) * oeil * (1 - 0.1 * soleilVitrine.etat.part);
   scene.environmentIntensity = melanger(0.5, 0.15, e.nuit);
   if (cielHemi) cielHemi.intensity *= melanger(0.75, 0.42, e.nuit);
   ciel3d.uniforms.haut.value.copy(CIEL.jourH).lerp(CIEL.nuitH, e.nuit); ciel3d.uniforms.horizon.value.copy(CIEL.jourB).lerp(CIEL.nuitB, e.nuit);
@@ -1821,4 +1834,4 @@ if (mondePhoto) {
 }
 
 /* pour les contrôles automatiques */
-window.__monde = { faisceauxVus, persoVideos, mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { soleilVitrine, faisceauxVus, persoVideos, mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

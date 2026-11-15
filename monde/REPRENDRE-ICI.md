@@ -103,6 +103,13 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 ## ⚡ ÉTAT DU 2026-11-14 (le plus récent : lire d'abord)
 
+- ✅ **2026-11-15, 14 h : VAGUE 2 FAITE (le rendu), QC 66/66.** Étalonnage de film pour toutes les qualités (`LOOK` dans
+  `socle/moteur.js`, `?sans-look` pour comparer), vignettage, faisceaux + poussière (`socle/faisceaux.js`), brume,
+  soir plus tamisé, **soleil par la vitrine** (`socle/soleil-vitrine.js`, façade au sud-ouest : `capFacade: 215`).
+  Notes honnêtes : 7 à 8 selon le critère, pas 8 partout. **La suite : vague 3 (la vie et les matières), brouillon
+  `monde/_brouillons/vague3_matieres.py`.** ⚠️ Le serveur est coupé par Claude Code dès que la session est en pause
+  (mémoire) : le relancer en arrivant.
+
 - ✅ **2026-11-15, 9 h : VAGUE 1 FINIE (les personnages en vidéo), QC 62/62.** Hillary en vidéo permanente à son
   comptoir, Afi, Sènami et Maman en vidéo quand on leur parle ; regardé au téléphone (jour, nuit) et à l'ordinateur.
   Le défaut « Hillary pas prête » venait de l'attente de `loadeddata` : la vidéo est maintenant LANCÉE, jamais

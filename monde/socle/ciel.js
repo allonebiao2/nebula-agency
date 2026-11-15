@@ -239,7 +239,10 @@ function dessinPassant(allure) {
 }
 
 /* ---------- le ciel complet ---------- */
-export function creerCiel(moteur, { facadeZ = 6, largeur = 16, lieu = COTONOU, relais = '/api/meteo' } = {}) {
+/* `capFacade` : vers où REGARDE la façade, en degrés de boussole (0 = nord, 90 = est, 180 = sud, 270 = ouest). Dans la
+   scène la façade regarde +z. ⚠️ `positionSoleil` rend un azimut compté DEPUIS LE SUD, vers l'ouest (convention de
+   Meeus) : azimut de boussole = azimut + 180. Par défaut 180 (plein sud : l'ancien comportement, soleil en face à midi). */
+export function creerCiel(moteur, { facadeZ = 6, largeur = 16, lieu = COTONOU, relais = '/api/meteo', capFacade = 180 } = {}) {
   const { scene } = moteur;
   const q = moteur.qualite;
   const etat = { heure: maintenant(lieu), soleil: { elevation: 30, azimut: 0 }, jour: 1, nuit: 0, dore: 0,
@@ -348,7 +351,7 @@ export function creerCiel(moteur, { facadeZ = 6, largeur = 16, lieu = COTONOU, r
   setInterval(calculerHeure, 30 * 1000);
 
   function maj(dt, t) {
-    const el = etat.soleil.elevation * RAD, az = etat.soleil.azimut * RAD;
+    const el = etat.soleil.elevation * RAD, az = (etat.soleil.azimut + 180 - capFacade) * RAD;
     const dir = new THREE.Vector3(-Math.sin(az) * Math.cos(el), Math.max(0.05, Math.sin(el)), Math.cos(az) * Math.cos(el)).normalize();
     soleil.position.copy(dir).multiplyScalar(30);
     const voile = 1 - etat.nuages * 0.55 - etat.pluie * 0.25;

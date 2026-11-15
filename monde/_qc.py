@@ -308,6 +308,17 @@ def main():
         except Exception as e:
             ok(False, "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(e)[:160])
 
+        # 13 · LE RENDU (vague 2, 2026-11-15) : l'étalonnage de film est dans le tone mapping (toutes qualités), les
+        #      faisceaux et la brume existent, et sous la pluie le soleil n'entre pas par la vitrine.
+        try:
+            r = pg.evaluate("""(() => { const M = __monde, T = M.moteur.THREE; return {
+              look: M.moteur.renderer.toneMapping === T.CustomToneMapping, faisceaux: M.faisceauxVus.liste.length,
+              brume: !!M.moteur.scene.fog, soleil: M.soleilVitrine.etat.force, vignette: !!document.querySelector('.vignette-film') }; })()""")
+            ok(r["look"], "l'étalonnage de film est posé (tone mapping du salon)", str(r))
+            ok(r["faisceaux"] >= 2 and r["brume"], "les faisceaux et la brume de profondeur existent", str(r))
+            ok(r["soleil"] < 0.05, "sous la pluie, le soleil n'entre pas par la vitrine", str(r))
+        except Exception as e:
+            ok(False, "le rendu de la vague 2 est en place", str(e)[:160])
         # 12 · LES PERSONNAGES EN VIDÉO (2026-11-14) : retenue par le visiteur, Afi passe en VIDÉO (son modèle 3D se
         #      cache), puis revient en 3D quand on la relâche. Une vidéo absente ou illisible laisse la 3D, sans erreur.
         try:
@@ -330,6 +341,15 @@ def main():
             ok(0.5 < (m.get("vitesse") or 0) < 1.6, "la marche d'Afi est calée sur ses pas (vitesse propre mesurée)", json.dumps(m))
         except Exception as e:
             ok(False, "la marche d'Afi est calée sur ses pas (vitesse propre mesurée)", str(e)[:120])
+        # 14 · LE SOLEIL DANS LA VITRINE : par ciel dégagé à 16 h, il entre (la façade regarde le sud-ouest) et sa flaque
+        #      s'allonge dans la pièce ; à 21 h, plus rien.
+        try:
+            pg.goto(BASE + "?direct=1&qualite=moyenne&heure=16&meteo=clair", wait_until="domcontentloaded")
+            jusqua(pg, "window.__monde !== undefined", 90); time.sleep(4)
+            s = pg.evaluate("__monde.soleilVitrine.etat")
+            ok(s["force"] > 0.15 and 2 < s["profondeur"] < 12, "à 16 h par ciel dégagé, le soleil entre par la vitrine", str(s))
+        except Exception as e:
+            ok(False, "à 16 h par ciel dégagé, le soleil entre par la vitrine", str(e)[:160])
         ok(not erreurs, "aucune erreur dans la console", " | ".join(erreurs[:3]))
         b.close()
     n_ok = sum(1 for r in resultats if r[0])
