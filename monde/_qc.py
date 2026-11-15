@@ -311,7 +311,7 @@ def main():
         # 12 · LES PERSONNAGES EN VIDÉO (2026-11-14) : retenue par le visiteur, Afi passe en VIDÉO (son modèle 3D se
         #      cache), puis revient en 3D quand on la relâche. Une vidéo absente ou illisible laisse la 3D, sans erreur.
         try:
-            jusqua(pg, "__monde.persoVideos.afi && __monde.persoVideos.afi.etat.pret", 60)
+            jusqua(pg, "__monde.persoVideos.afi && __monde.persoVideos.afi.etat.charge >= 2", 90)
             clips = pg.evaluate("Object.keys(__monde.persoVideos.afi.clips).sort().join(',')")
             ok(clips == "ecouter,parler", "Afi a ses deux vidéos (parler, écouter)", clips)
             pg.evaluate("__monde.pnj.retenir('afi')")

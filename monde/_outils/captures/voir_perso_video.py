@@ -55,7 +55,7 @@ with sync_playwright() as pw:
             if mode == "video":
                 for qui in QUI:
                     try:
-                        pg.wait_for_function(f"__monde.persoVideos['{qui}'] && __monde.persoVideos['{qui}'].etat.pret", timeout=90000)
+                        pg.wait_for_function(f"__monde.persoVideos['{qui}'] && __monde.persoVideos['{qui}'].etat.charge >= 1", timeout=90000)
                     except Exception:
                         print(nom, qui, "vidéo PAS prête :", pg.evaluate(f"__monde.persoVideos['{qui}'] ? JSON.stringify(__monde.persoVideos['{qui}'].etat) : 'absente'"),
                               pg.evaluate("JSON.stringify(performance.getEntriesByType('resource').filter(e => /video-/.test(e.name)).map(e => [e.name.slice(-34), Math.round(e.startTime), Math.round(e.responseEnd), e.transferSize]))"),
@@ -82,7 +82,8 @@ with sync_playwright() as pw:
                         time.sleep(3.2)
                     pg.screenshot(path=str(V / f"{nom}-{mode}-{qui}{SUF}.png"))
                     etat = pg.evaluate(f"__monde.persoVideos['{qui}'] ? JSON.stringify(__monde.persoVideos['{qui}'].etat) : 'sans vidéo'")
-                    print(nom, mode, qui, etat)
+                    ou = pg.evaluate(f"(() => {{ const n = __monde.pnj.parId['{qui}']; return n ? n.etat : 'comptoir'; }})() + ' · dialogue ' + __monde.dialogue.actif")
+                    print(nom, mode, qui, etat, "·", ou)
                 except Exception as e:
                     print(nom, mode, qui, "ÉCHEC :", str(e)[:200])
                 fermer(pg)

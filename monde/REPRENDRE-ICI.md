@@ -103,6 +103,11 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 ## ⚡ ÉTAT DU 2026-11-14 (le plus récent : lire d'abord)
 
+- ✅ **2026-11-15, 9 h : VAGUE 1 FINIE (les personnages en vidéo), QC 62/62.** Hillary en vidéo permanente à son
+  comptoir, Afi, Sènami et Maman en vidéo quand on leur parle ; regardé au téléphone (jour, nuit) et à l'ordinateur.
+  Le défaut « Hillary pas prête » venait de l'attente de `loadeddata` : la vidéo est maintenant LANCÉE, jamais
+  attendue. **La suite : vague 2 (le rendu), brouillon dans `monde/_brouillons/vague2_patch.py`.**
+
 - 🔴 **2026-11-15, 1 h : ARRÊT SUR LIMITE D'UTILISATION, vague 1 presque finie.** Les vidéos des QUATRE personnages
   sont prêtes sur le disque (hors git) : Hillary (`personnages/hillary/` : écouter 23 s, parler, saluer ; Wan 2.2
   gratuit par `_outils/en_video.py`, détourage par la couleur `perso_video.py --fond-uni --buste 1.18`, montage

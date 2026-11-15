@@ -1454,7 +1454,7 @@ const VIDEOS = {
      comptoir, donc elle est en vidéo TOUJOURS (plus jamais la silhouette de maquette), en buste (le comptoir cache le
      reste), tournée vers le visiteur où qu'il soit. Ses vidéos : Wan 2.2 (Apache 2.0, gratuit, `_outils/en_video.py`)
      depuis son image, puis `perso_video.py --buste`. « écouter » est une boucle parfaite (première image = dernière). */
-  hillary: { taille: 1.68, toujours: true, sources: { parler: 'personnages/hillary/video-parler', ecouter: 'personnages/hillary/video-ecouter' } },
+  hillary: { taille: 1.68, toujours: true, sources: { ecouter: 'personnages/hillary/video-ecouter', parler: 'personnages/hillary/video-parler', saluer: 'personnages/hillary/video-saluer' } },
   afi: { taille: 1.71, sources: { parler: 'personnages/afi/video-parler', ecouter: 'personnages/afi/video-ecouter' } },
   senami: { taille: 1.64, sources: { parler: 'personnages/senami/video-parler', ecouter: 'personnages/senami/video-ecouter' } },
   /* Maman n'a pas encore de 3D : sa vidéo remplace sa silhouette de maquette (même repli « écouter » qu'Afi) */
