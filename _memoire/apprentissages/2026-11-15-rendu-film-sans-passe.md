@@ -56,3 +56,22 @@ Mesuré (Playwright sur ce PC, format téléphone, « moyenne ») : **53 i/s imm
 
 ⛔ **Le seuil de 8 n'est PAS atteint partout.** Le rendu a donné ce qu'il pouvait sur un décor en boîtes : ce qui retient
 la note, ce sont les MATIÈRES (surfaces unies : vague 3) et le décor lui-même (monde photographique : vague 4).
+
+
+## Vague 3 (le même jour) : de vrais imprimés à la place de motifs dessinés
+
+- **Les tissus wax du décor étaient DESSINÉS par le code** (cercles, feuilles, losanges) : c'est ce qui se voyait le
+  plus. Huit imprimés originaux générés gratuitement (FLUX.1 schnell, Apache 2.0, `scripts/image_cf.py`), 384 px en
+  WebP, 344 Ko en tout, posés APRÈS le premier écran dans le canevas de chaque texture (`chargerWaxPhotos`).
+- ⛔ **Redessiner un canevas et prévenir la texture d'ORIGINE ne suffit pas quand les matières portent des COPIES**
+  (`texture.clone()` pour une répétition propre) : three.js ne renvoie une texture à la carte graphique que si SA
+  version change, et l'original n'est porté par aucune matière. Les rouleaux gardaient leur dessin, sans erreur.
+  Prévenir chaque copie (`needsUpdate`).
+- **Un imprimé fin se délave de loin** : en mosaïque 2 × 2 les motifs devenaient une bouillie pastel, et les trois
+  imprimés à fond clair pâlissaient les étagères. Motif en entier dans le canevas + répétition EN MIROIR (raccord sans
+  couture), fonds colorés, +18 % de couleur.
+- **Regarder le code avant d'ajouter** : le sol, les murs, le chêne et le velours portaient déjà des matières scannées
+  (Poly Haven, posées par `embellir()`). Mes reliefs calculés par-dessus ne changeaient presque rien, et le laiton
+  « patiné » à 0,9 de contraste paraissait SALI en gros plan (ramené à 0,3).
+- Le filtre de Cloudflare a refusé un des huit prompts pour « contenu NSFW » (un faux positif sur des losanges
+  bruns) : reformuler, ne pas insister.

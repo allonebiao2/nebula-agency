@@ -108,6 +108,7 @@ def main():
     ap.add_argument("--texture", type=int, default=1024)
     ap.add_argument("--graine", type=int, default=0)
     ap.add_argument("--sans-jeton", action="store_true", help="sans le compte Hugging Face : quand son quota du jour est épuisé (« ZeroGPU runs limit »)")
+    ap.add_argument("--deja-detoure", action="store_true", help="l'image est DÉJÀ détourée (PNG transparent) : ni rembg ici (1,6 Go de mémoire), ni détourage sur la démo")
     ap.add_argument("--detourer-ici", action="store_true",
                     help="détourer sur le PC (rembg) : 2 calculs Hugging Face au lieu de 3, le quota gratuit compte les calculs")
     a = ap.parse_args()
@@ -115,7 +116,11 @@ def main():
         os.environ["NEBULA_SANS_JETON"] = "1"
     session = "".join(random.choices(string.ascii_lowercase + string.digits, k=11))
     print(f"→ TRELLIS.2 · {a.image.name} · session {session} · {'avec' if jeton() else 'sans'} jeton Hugging Face")
-    if a.detourer_ici:
+    if a.deja_detoure:
+        img = envoyer_fichier(a.image)
+        appeler(2, [], session)                                     # start_session (sans carte graphique)
+        pre = img
+    elif a.detourer_ici:
         from rembg import new_session, remove
         from PIL import Image
         detoure = a.image.with_name(a.image.stem + "-detoure.png")

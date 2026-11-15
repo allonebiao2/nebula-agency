@@ -103,6 +103,13 @@ personnages sont encore des silhouettes de maquette.** **Rien n'est en ligne.** 
 
 ## ⚡ ÉTAT DU 2026-11-14 (le plus récent : lire d'abord)
 
+- ✅ **2026-11-15, 18 h 30 : VAGUE 3 FAITE (la vie et les matières), QC 67/67.** Vrais imprimés wax sur les rouleaux
+  (`socle/ressources/wax/`, `chargerWaxPhotos` dans `socle/matieres.js`), velours, laiton, grain d'enduit ; Hillary a
+  4 vidéos (écouter, parler, parler-2, saluer). **La suite, dans l'ordre : (4) le décor photographique sans payer (seule
+  piste à licence commerciale : NVIDIA Lyra 1.0, lourd) ; (5) Maman en 3D dès que le quota ZeroGPU revient (vers minuit :
+  `python monde/_outils/en_3d.py "<maman>/maman-face-47ans-detoure.png" --sortie "<maman>/maman-3d.glb" --faces 100000
+  --deja-detoure`) ; (6) la 3G (33 Mo chargés, dont 11 Mo de vidéos : les charger à la demande) ; (7) l'interface.**
+
 - ✅ **2026-11-15, 14 h : VAGUE 2 FAITE (le rendu), QC 66/66.** Étalonnage de film pour toutes les qualités (`LOOK` dans
   `socle/moteur.js`, `?sans-look` pour comparer), vignettage, faisceaux + poussière (`socle/faisceaux.js`), brume,
   soir plus tamisé, **soleil par la vitrine** (`socle/soleil-vitrine.js`, façade au sud-ouest : `capFacade: 215`).

@@ -50,6 +50,8 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 
 - [x] D8 · **Vague 2, le rendu** : ✅ 2026-11-15, QC **66/66**. Étalonnage de film dans le tone mapping (toutes qualités), vignettage, faisceaux visibles et poussière, brume de profondeur, soir plus tamisé, **le soleil qui entre par la vitrine** (façade au sud-ouest). 53 i/s immobile, 44 en marchant au téléphone. ⛔ Notes : lumière 7 à 7,5, étalonnage 7,5 à 8, « waouh » 6,5 à 7 : le seuil de 8 n'est pas atteint partout, ce sont les matières (vague 3) et le décor (vague 4) qui retiennent. Détail : `_memoire/apprentissages/2026-11-15-rendu-film-sans-passe.md`
 
+- [x] D9 · **Vague 3, la vie et les matières** : ✅ 2026-11-15, QC **67/67**. Les tissus du décor portent de VRAIS imprimés wax (8 motifs originaux générés gratuitement, 344 Ko, posés après le premier écran ; avant : motifs dessinés par le code). Velours à reflet de velours, laiton à peine patiné, grain d'enduit. Hillary a une seconde vidéo de parole (« conseiller »). ℹ️ Le sol, les murs, le chêne et le velours portaient DÉJÀ des matières scannées (Poly Haven) : le gain des matières est faible, celui des imprimés est net. ⛔ Reste pour atteindre 8 : Maman en 3D (quota ZeroGPU), les robes en 3D (planches), le décor photographique (Marble)
+
 ### E · Dès que ses fichiers arrivent
 - [ ] E1 · Le monde Marble : le caler sur le salon (`?calage`), mesurer poids et images/s au téléphone, retirer le décor modélisé du dedans, poser par-dessus le vrai logo et ses pièces
 - [ ] E2 · Ses vidéos : détourer, boucler, brancher Afi, Sènami, Maman

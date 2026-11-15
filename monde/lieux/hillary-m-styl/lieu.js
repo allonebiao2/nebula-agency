@@ -20,7 +20,7 @@ import { creerReperes } from '../../socle/reperes.js';
 import { creerCarnet } from '../../socle/carnet.js';
 import { creerOptions } from '../../socle/options.js';
 import { creerRessources } from '../../socle/ressources.js';
-import { MATIERES, matWax, flaqueLumiere, ombreRonde, PALETTES_WAX } from '../../socle/matieres.js';
+import { MATIERES, matWax, flaqueLumiere, ombreRonde, PALETTES_WAX, chargerWaxPhotos, etatWax } from '../../socle/matieres.js';
 import { creerMondePhoto } from '../../socle/monde-photo.js';
 import { creerPersoVideo } from '../../socle/perso-video.js';
 import { creerFaisceaux } from '../../socle/faisceaux.js';
@@ -1349,6 +1349,7 @@ const poserAuSol = (o, x, z, hauteurVisee = null, ry = 0) => {
   o.position.set(x, -b2.min.y, z); o.rotation.y = ry; scene.add(o); return o;
 };
 async function embellir() {
+  chargerWaxPhotos('../../socle/ressources/wax/');   /* les vrais imprimés sur les rouleaux, après le premier écran */
   await R.eclairage('photo_studio_loft_hall', 0.6);
   const mapSol = M.sol.map;
   await Promise.all([
@@ -1488,7 +1489,7 @@ const VIDEOS = {
      comptoir, donc elle est en vidéo TOUJOURS (plus jamais la silhouette de maquette), en buste (le comptoir cache le
      reste), tournée vers le visiteur où qu'il soit. Ses vidéos : Wan 2.2 (Apache 2.0, gratuit, `_outils/en_video.py`)
      depuis son image, puis `perso_video.py --buste`. « écouter » est une boucle parfaite (première image = dernière). */
-  hillary: { taille: 1.68, toujours: true, sources: { ecouter: 'personnages/hillary/video-ecouter', parler: 'personnages/hillary/video-parler', saluer: 'personnages/hillary/video-saluer' } },
+  hillary: { taille: 1.68, toujours: true, sources: { ecouter: 'personnages/hillary/video-ecouter', parler: 'personnages/hillary/video-parler', 'parler-2': 'personnages/hillary/video-parler-2', saluer: 'personnages/hillary/video-saluer' } },
   afi: { taille: 1.71, sources: { parler: 'personnages/afi/video-parler', ecouter: 'personnages/afi/video-ecouter' } },
   senami: { taille: 1.64, sources: { parler: 'personnages/senami/video-parler', ecouter: 'personnages/senami/video-ecouter' } },
   /* Maman n'a pas encore de 3D : sa vidéo remplace sa silhouette de maquette (même repli « écouter » qu'Afi) */
@@ -1834,4 +1835,4 @@ if (mondePhoto) {
 }
 
 /* pour les contrôles automatiques */
-window.__monde = { soleilVitrine, faisceauxVus, persoVideos, mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { etatWax, soleilVitrine, faisceauxVus, persoVideos, mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

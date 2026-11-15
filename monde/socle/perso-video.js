@@ -103,7 +103,7 @@ export function creerPersoVideo({ moteur, perso, sources, taille, actif = () => 
 
   /* « saluer » se joue UNE fois, en entier, quand le personnage salue (Hillary, à l'arrivée du visiteur au comptoir),
      sauf si elle se met à parler ; puis on revient à « écouter » */
-  let salut = false, gestePrec = null;
+  let salut = false, gestePrec = null, parlePrec = false, parleChoisi = null, changeA = 0;
   function voulue() {
     const st = perso.st || {}, s = clips.saluer;
     if (s) {
@@ -112,7 +112,17 @@ export function creerPersoVideo({ moteur, perso, sources, taille, actif = () => 
       if (salut && (st.parle || s.video.ended || (courant === 'saluer' && s.video.currentTime >= s.video.duration - 0.12))) salut = false;
       if (salut) return 'saluer';
     }
-    if (!st.parle && clips.ecouter) return 'ecouter';
+    if (!st.parle && clips.ecouter) { parlePrec = false; return 'ecouter'; }
+    /* plusieurs vidéos pour parler (« parler », « parler-2 »…) : une autre à chaque prise de parole, et toutes les 8 s
+       d'une longue réplique : jamais le même geste en boucle */
+    const variantes = Object.keys(clips).filter(k => k.startsWith('parler'));
+    if (variantes.length > 1 && (!parlePrec || temps > changeA)) {
+      const autres = variantes.filter(k => k !== parleChoisi && aUneImage(clips[k]));
+      if (autres.length && (!parlePrec || parleChoisi)) parleChoisi = autres[Math.floor(Math.random() * autres.length)];
+      changeA = temps + 8;
+    }
+    parlePrec = !!st.parle;
+    if (parleChoisi && clips[parleChoisi]) return parleChoisi;
     return clips.parler ? 'parler' : Object.keys(clips)[0];
   }
   /* celle qu'on veut si elle a une image ; sinon on la demande, et on prend en attendant une autre qui en a une */

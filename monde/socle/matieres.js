@@ -65,17 +65,74 @@ export function wax(seed = 1, palette = null, taille = 512) {
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
   cache.set(cle, t);
+  /* le décor (graines ≥ 40) recevra un vrai imprimé ; les vêtements des silhouettes gardent leur dessin */
+  if (seed >= 40) waxDecor.push({ g, W, t, seed });
   return t;
 }
 
+/* LES WAX PHOTOGRAPHIQUES (vague 3, 2026-11-15) : les rouleaux, les piles et les coupons du décor étaient DESSINÉS par
+   le code (cercles, feuilles, losanges) : ça se voyait. Après le premier écran, chaque dessin est remplacé par un vrai
+   imprimé (`ressources/wax/wax-N.webp`, huit motifs originaux, 344 Ko en tout). Le motif est dessiné dans le même canevas et la
+   texture se répète EN MIROIR : il se raccorde tout seul sur un rouleau, sans couture. Une image qui ne vient pas
+   laisse le dessin. ⛔ Matière de décor, jamais le catalogue (`ressources/wax/LICENCE.md`). */
+/* ⚠️ Chaque matière porte une COPIE de la texture (pour sa propre répétition). Redessiner le canevas et prévenir l'ORIGINAL
+   ne suffit pas : three.js ne renvoie une texture à la carte graphique que si SA version change, et l'original n'est
+   porté par aucune matière (vu le 2026-11-15 : les rouleaux gardaient leur dessin). On prévient donc chaque copie. */
+const waxDecor = [], copiesWax = new Map();
+export const etatWax = { poses: 0, attendus: 0 };   /* pour les contrôles */
+export function chargerWaxPhotos(base, n = 8) {
+  const images = {};
+  etatWax.attendus += waxDecor.length;
+  for (const w of waxDecor.splice(0)) {
+    const k = 1 + (w.seed % n);
+    (images[k] ||= new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `${base}wax-${k}.webp`; }))
+      .then((img) => {
+        if (!img) return;
+        /* l'imprimé en entier dans le canevas (motifs lisibles de loin : en mosaïque 2 × 2 ils devenaient une bouillie
+           pastel) ; le raccord se fait par la répétition EN MIROIR de la texture */
+        w.g.drawImage(img, 0, 0, w.W, w.W);
+        for (const x of [w.t, ...(copiesWax.get(w.t) || [])]) x.wrapS = x.wrapT = THREE.MirroredRepeatWrapping;
+        w.t.needsUpdate = true; for (const c of copiesWax.get(w.t) || []) c.needsUpdate = true; etatWax.poses++;
+      });
+  }
+}
+
 export function matWax(seed, palette, repeat = [1, 1], options = {}) {
-  const t = wax(seed, palette).clone(); t.needsUpdate = true; t.repeat.set(repeat[0], repeat[1]);
+  const origine = wax(seed, palette), t = origine.clone(); t.needsUpdate = true; t.repeat.set(repeat[0], repeat[1]);
+  (copiesWax.get(origine) || copiesWax.set(origine, []).get(origine)).push(t);
   return new THREE.MeshStandardMaterial({ map: t, roughness: 0.82, ...options });
 }
 
+/* LES SURFACES VRAIES (vague 3, 2026-11-14) : un bruit doux calculé sur place, partagé (une texture par usage),
+   qui sert de relief ou de rugosité. Le réel vient de l'imperfection : aucune grande surface parfaitement unie. */
+const surfaces = new Map();
+function bruitDoux(nom, { taille = 256, echelles = [32, 12, 4], forces = [0.55, 0.3, 0.15], base = 0.5, contraste = 1, graineN = 3 } = {}) {
+  if (surfaces.has(nom)) return surfaces.get(nom);
+  const c = document.createElement('canvas'); c.width = c.height = taille; const g = c.getContext('2d');
+  const img = g.createImageData(taille, taille), r = graine(graineN);
+  /* des couches de bruit de valeur lissé, raccordées (la texture se répète sans couture) */
+  const couches = echelles.map((e) => { const n = Math.max(2, Math.round(taille / e)); return { n, v: Array.from({ length: n * n }, () => r()) }; });
+  const lisse = (x) => x * x * (3 - 2 * x);
+  for (let y = 0; y < taille; y++) for (let x = 0; x < taille; x++) {
+    let v = 0;
+    couches.forEach(({ n, v: tab }, k) => {
+      const fx = x / taille * n, fy = y / taille * n, ix = Math.floor(fx), iy = Math.floor(fy), tx = lisse(fx - ix), ty = lisse(fy - iy);
+      const at = (i, j) => tab[((j % n) * n + (i % n))];
+      const a = at(ix, iy) + (at(ix + 1, iy) - at(ix, iy)) * tx, b = at(ix, iy + 1) + (at(ix + 1, iy + 1) - at(ix, iy + 1)) * tx;
+      v += (a + (b - a) * ty - 0.5) * forces[k];
+    });
+    const o = Math.max(0, Math.min(255, Math.round((base + v * contraste) * 255))), i = (y * taille + x) * 4;
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = o; img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  const tx = new THREE.CanvasTexture(c); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.colorSpace = THREE.NoColorSpace;
+  surfaces.set(nom, tx); return tx;
+}
+const repete = (tx, x, y) => { const c = tx.clone(); c.repeat.set(x, y); c.needsUpdate = true; return c; };
+
 export const MATIERES = {
-  creme: () => new THREE.MeshStandardMaterial({ color: 0xf4efe6, roughness: 0.92 }),
-  platre: () => new THREE.MeshStandardMaterial({ color: 0xf7f3ec, roughness: 0.96 }),
+  creme: () => new THREE.MeshStandardMaterial({ color: 0xf4efe6, roughness: 0.92, bumpMap: repete(bruitDoux('enduit'), 3, 3), bumpScale: 0.6 }),
+  platre: () => new THREE.MeshStandardMaterial({ color: 0xf7f3ec, roughness: 0.96, bumpMap: repete(bruitDoux('enduit'), 4, 4), bumpScale: 0.7 }),
   laque: () => new THREE.MeshStandardMaterial({ color: 0xfbf8f3, roughness: 0.28, metalness: 0 }),
   chene: () => {
     const c = document.createElement('canvas'); c.width = 256; c.height = 512; const g = c.getContext('2d');
@@ -83,12 +140,16 @@ export const MATIERES = {
     for (let i = 0; i < 90; i++) { g.strokeStyle = `rgba(${120 + r() * 40},${84 + r() * 30},${50 + r() * 20},${0.12 + r() * 0.2})`; g.lineWidth = 1 + r() * 3;
       const x = r() * 256; g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + r() * 20 - 10, 170, x + r() * 20 - 10, 340, x + r() * 16 - 8, 512); g.stroke(); }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55 });
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55, bumpMap: t, bumpScale: 0.8 });
   },
-  laiton: () => new THREE.MeshStandardMaterial({ color: 0xc9a254, roughness: 0.3, metalness: 1 }),
+  /* le laiton patiné : une rugosité qui varie À PEINE (0,22 à 0,38 : traces, poli inégal), jamais un chrome parfait.
+     ⚠️ À 0,9 de contraste il paraissait TACHÉ, sali (gros plan du 2026-11-15) */
+  laiton: () => new THREE.MeshStandardMaterial({ color: 0xc9a254, roughness: 1, roughnessMap: repete(bruitDoux('patine', { base: 0.3, contraste: 0.3, echelles: [48, 16, 6] }), 2, 2), metalness: 1 }),
   encre: () => new THREE.MeshStandardMaterial({ color: 0x141215, roughness: 0.5 }),
   magenta: () => new THREE.MeshStandardMaterial({ color: 0xe6007e, roughness: 0.6 }),
-  velours: (couleur = 0xb0105f) => new THREE.MeshStandardMaterial({ color: couleur, roughness: 0.95 }),
+  /* le velours boit la lumière de face et la renvoie sur ses bords (le « sheen ») : c'est ce qui le fait velours */
+  velours: (couleur = 0xb0105f) => new THREE.MeshPhysicalMaterial({ color: couleur, roughness: 0.9, sheen: 1, sheenRoughness: 0.42,
+    sheenColor: new THREE.Color(couleur).lerp(new THREE.Color(0xffe0ee), 0.45), bumpMap: repete(bruitDoux('enduit'), 6, 6), bumpScale: 0.25 }),
   verre: () => new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.05, metalness: 0, transmission: 0, transparent: true, opacity: 0.12, depthWrite: false }),
   porcelaine: () => new THREE.MeshStandardMaterial({ color: 0xefe8dc, roughness: 0.38 }),
   /* le sol crème poli : sa brillance vient de l'environnement ; au niveau haut, un vrai reflet s'y ajoute */
@@ -100,7 +161,8 @@ export const MATIERES = {
     g.strokeStyle = 'rgba(160,140,115,.35)'; g.lineWidth = 2;
     for (let k = 0; k <= 1024; k += 512) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, 1024); g.stroke(); g.beginPath(); g.moveTo(0, k); g.lineTo(1024, k); g.stroke(); }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(8, 6); t.anisotropy = 8;
-    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.16, metalness: 0, envMapIntensity: 1.3 });
+    /* la rugosité varie (passage, cire inégale) : le reflet se trouble par endroits, comme un vrai sol poli */
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 1, roughnessMap: repete(bruitDoux('cire', { base: 0.17, contraste: 0.32, echelles: [64, 20, 6] }), 3, 2), metalness: 0, envMapIntensity: 1.3 });
   },
 };
 

@@ -308,6 +308,14 @@ def main():
         except Exception as e:
             ok(False, "un long trajet se coupe d'un fondu au noir et arrive au bon endroit", str(e)[:160])
 
+        # 15 · LES TISSUS DU DÉCOR (vague 3, 2026-11-15) : les rouleaux, piles et coupons portent de vrais imprimés (plus les
+        #      motifs dessinés par le code). Un imprimé qui ne vient pas laisse le dessin : on compte ceux qui sont posés.
+        try:
+            jusqua(pg, "__monde.etatWax.attendus > 0 && __monde.etatWax.poses >= __monde.etatWax.attendus", 60)
+            w = pg.evaluate("__monde.etatWax")
+            ok(w["poses"] >= 8, "les tissus du décor portent de vrais imprimés wax", str(w))
+        except Exception as e:
+            ok(False, "les tissus du décor portent de vrais imprimés wax", str(e)[:160] + " " + str(pg.evaluate("__monde.etatWax")))
         # 13 · LE RENDU (vague 2, 2026-11-15) : l'étalonnage de film est dans le tone mapping (toutes qualités), les
         #      faisceaux et la brume existent, et sous la pluie le soleil n'entre pas par la vitrine.
         try:
