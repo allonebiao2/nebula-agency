@@ -27,9 +27,11 @@ void main() {
   /* l'épaisseur traversée : de face au centre du cône, presque rien sur le bord vu de biais */
   float epais = pow(abs(dot(normalize(vN), normalize(vV))), 1.6);
   /* plus dense à la source, qui s'efface en arrivant au sol (sans ligne dure) */
-  float long = smoothstep(0.0, 0.35, vH) * mix(0.55, 1.0, vH);
+  /* dense à la source, DISSOUS avant la pièce éclairée (elle est dans le tiers bas du cône) : le faisceau se voit
+     tomber du plafond, il ne voile pas la robe. ⚠️ « long » est un mot réservé de GLSL */
+  float duHaut = smoothstep(0.12, 0.78, vH);
   float brume = 0.75 + 0.25 * bruit(vP * 2.3 + vec3(0.0, -temps * 0.06, temps * 0.03));
-  float a = epais * long * brume * force;
+  float a = epais * duHaut * brume * force;
   gl_FragColor = vec4(couleur * a, 1.0);
 }`;
 const VS_GRAINS = `attribute float graine; uniform float temps, taille; varying float vScint;
@@ -46,7 +48,7 @@ void main() { vec2 d = gl_PointCoord - 0.5; float r = dot(d, d); if (r > 0.25) d
 /* `projecteurs` : [{ lumiere (SpotLight), base (sa pleine intensité, avant l'allumage), sol (hauteur du sol, 0) }] ; `nuit()` : 0 le jour → 1 le soir ;
    `densite` : grains par projecteur (0 = aucune poussière) */
 export function creerFaisceaux({ moteur, projecteurs, nuit = () => 1, densite = 60, forceMax = 0.22 }) {
-  const { scene } = moteur;
+  const { scene, camera } = moteur;
   const groupe = new THREE.Group(); groupe.userData.garder = true; scene.add(groupe);
   const liste = [];
   const haut = new THREE.Vector3(0, 1, 0), dir = new THREE.Vector3(), q = new THREE.Quaternion();
@@ -85,16 +87,22 @@ export function creerFaisceaux({ moteur, projecteurs, nuit = () => 1, densite = 
       groupe.add(grains);
       grains.userData = { base, graine, L, R };
     }
-    liste.push({ l, base: p.base || l.intensity || 1, cone, mat, grains });
+    liste.push({ l, base: p.base || l.intensity || 1, cone, mat, grains, src: src.clone(), axe: dir.clone(), L });
   }
 
-  let temps = 0;
+  let temps = 0; const vCam = new THREE.Vector3();
   moteur.chaqueImage((dt) => {
     temps += dt;
     const n = THREE.MathUtils.clamp(nuit(), 0, 1), k = 0.18 + 0.82 * n;   /* de jour, un souffle ; le soir, pleinement */
     for (const f of liste) {
       const allume = THREE.MathUtils.clamp(f.l.intensity / Math.max(1e-6, f.base), 0, 1);
-      const force = forceMax * k * allume;
+      /* DE PRÈS, un faisceau ne se voit pas (on est dedans) et il voilerait ce qu'on regarde : il s'efface à moins de
+         1,2 m de son axe et n'est plein qu'au-delà de 4,5 m (vu à l'ordinateur le 2026-11-15 : un voile blanc sur la
+         robe du premier plan) */
+      vCam.copy(camera.position).sub(f.src); const le = THREE.MathUtils.clamp(vCam.dot(f.axe), 0, f.L);
+      const dAxe = vCam.addScaledVector(f.axe, -le).length();
+      const pres = THREE.MathUtils.smoothstep(dAxe, 1.2, 4.5);
+      const force = forceMax * k * allume * pres;
       f.mat.uniforms.force.value = force; f.mat.uniforms.temps.value = temps;
       f.cone.visible = force > 0.002;
       if (f.grains) {

@@ -23,6 +23,7 @@ import { creerRessources } from '../../socle/ressources.js';
 import { MATIERES, matWax, flaqueLumiere, ombreRonde, PALETTES_WAX } from '../../socle/matieres.js';
 import { creerMondePhoto } from '../../socle/monde-photo.js';
 import { creerPersoVideo } from '../../socle/perso-video.js';
+import { creerFaisceaux } from '../../socle/faisceaux.js';
 import { DONNEES } from './donnees.js';
 import { PERSONNES, faitsMaison, dialoguesHillary, dialoguesVisiteuses, conversations, savoirsMaison } from './textes.js';
 
@@ -252,7 +253,8 @@ for (let i = 0; i < 14; i++) {
 const lampes = [new THREE.PointLight(0xffc98a, 0, 11, 2), new THREE.PointLight(0xffc488, 0, 9, 2)];
 lampes[0].position.set(0, 3.5, 0.4); lampes[1].position.set(0, 3.2, -3.8);
 scene.add(lampes[0]); if (q.nom !== 'basse') scene.add(lampes[1]);
-const TAMISE = 0.45;   /* la force des lampes le soir, rapportée à celle du jour (les projecteurs sur les créations, eux, restent) */
+/* 0,34 depuis la vague 2 (avant 0,45) : la pièce baisse davantage, les projecteurs et leurs faisceaux « découpent » les créations */
+const TAMISE = 0.34;   /* la force des lampes le soir, rapportée à celle du jour (les projecteurs sur les créations, eux, restent) */
 interieurs.push({ maj: (n) => { const k = melanger(1, TAMISE, n); lampes[0].intensity = 9 * k; lampes[1].intensity = 7 * k; } });
 
 /* ================================================================
@@ -798,6 +800,24 @@ function allumerFaisceaux() {
     if (!params.has('direct')) faisceau.intensity = 0;
   }
 }
+/* LES FAISCEAUX QU'ON VOIT (vague 2, 2026-11-14, Mongazi : « le soir, des spots qui découpent les robes dans la
+   pénombre, la poussière qui danse dans les faisceaux ») : le cône de chaque projecteur des créations, et des
+   grains de poussière qui dérivent dedans (aucun en « basse »). Ils suivent l'allumage un à un et l'heure (un
+   souffle le jour, pleinement le soir). */
+/* 0 le jour → 1 le soir (mis à jour avec le ciel, plus bas). ⚠️ Déclaré ICI, avant son premier usage dans une fonction
+   appelée à chaque image : le module attend des chargements (`await`) pendant que des images sont déjà rendues, et
+   une variable `let` lue avant sa ligne lève « Cannot access before initialization » à chaque image (2026-11-15). */
+let nuitCuite = 1;
+/* LA PROFONDEUR DE L'AIR (vague 2) : une brume très légère, le lointain s'adoucit comme sur une photo (à 20 m, 6 % le
+   jour, 12 % le soir ; presque rien à 5 m). Chaude le jour, sombre et chaude le soir. */
+const brume = new THREE.FogExp2(0xd8c9b2, 0.012); scene.fog = brume;
+{
+  const jour = new THREE.Color(0xd8c9b2), soir = new THREE.Color(0x1c130d);
+  moteur.chaqueImage(() => { brume.color.copy(jour).lerp(soir, nuitCuite); brume.density = melanger(0.012, 0.018, nuitCuite); });
+}
+const faisceauxVus = creerFaisceaux({ moteur, projecteurs: faisceauxCreations.map(f => ({ lumiere: f.l, base: f.base, sol: 0 })),
+  /* en qualité haute le halo (bloom) amplifie tout ce qui est clair : faisceaux deux fois plus doux */
+  nuit: () => nuitCuite, densite: q.nom === 'haute' ? 70 : q.nom === 'moyenne' ? 36 : 0, forceMax: q.nom === 'haute' ? 0.15 : 0.32 });
 
 const son = creerSon();
 deplacement.surPas.push(() => son.pas());
@@ -1246,7 +1266,8 @@ moteur.chaqueImage((dt) => {
   for (const i of interieurs) i.maj(e.nuit, e.pluie);
   /* LE JOUR DE SES IMAGES, LE SOIR TAMISÉ (2026-11-13) : de jour, la pièce est claire et la lumière du ciel
      entre par la vitrine ; le soir, elle baisse et se réchauffe. (Avant : tamisée jour et nuit.) */
-  moteur.renderer.toneMappingExposure = melanger(1.04, 0.84, e.nuit) * (1 - e.pluie * 0.06) * oeil;
+  /* le soir : 0,92 (avant 0,84) depuis que l'étalonnage creuse les ombres (vague 2) : les personnes restent lisibles */
+  moteur.renderer.toneMappingExposure = melanger(1.04, 0.92, e.nuit) * (1 - e.pluie * 0.06) * oeil;
   scene.environmentIntensity = melanger(0.5, 0.15, e.nuit);
   if (cielHemi) cielHemi.intensity *= melanger(0.75, 0.42, e.nuit);
   ciel3d.uniforms.haut.value.copy(CIEL.jourH).lerp(CIEL.nuitH, e.nuit); ciel3d.uniforms.horizon.value.copy(CIEL.jourB).lerp(CIEL.nuitB, e.nuit);
@@ -1651,7 +1672,7 @@ async function appliquerCuisson() {
   }
   document.body.classList.add('cuit');
 }
-let nuitCuite = 1;
+/* (`nuitCuite` est déclaré plus haut, avant la brume : des images sont rendues PENDANT le chargement) */
 interieurs.push({ maj: (n, pluie) => { nuitCuite = Math.max(n, pluie * 0.5); } });
 const cuitsLumiere = new Set();
 const DEBUT_LAMPES = '#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )', FIN_LAMPES = '#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )';
@@ -1800,4 +1821,4 @@ if (mondePhoto) {
 }
 
 /* pour les contrôles automatiques */
-window.__monde = { persoVideos, mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };
+window.__monde = { faisceauxVus, persoVideos, mondePhoto, son, monde, exporterDecor, clesCuisson, cuisson, refletSol, fusionDecor, sol, moteur, deplacement, dialogue, boutique, pnj, ciel, ctx, totems, hillary, plan, F, D, carnet, options, toucherPnj, toucherHillary };

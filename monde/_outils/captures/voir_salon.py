@@ -40,7 +40,9 @@ with sync_playwright() as pw:
                 if p != "entree":
                     pg.evaluate(f"__monde.deplacement.allerA('{p}')"); time.sleep(5)
                 f = V + f"{nom}-salon-{p}-{h}h-{suffixe}.png"
-                pg.screenshot(path=f); print("→", os.path.basename(f))
+                # 2 min : en qualité haute, le soir, la carte du PC de Mongazi met plus de 30 s à rendre une image
+                try: pg.screenshot(path=f, timeout=120000); print("→", os.path.basename(f))
+                except Exception as e: print("⛔ capture manquée :", os.path.basename(f), str(e)[:80])
             print(nom, h + "h", "qualité", pg.evaluate("__monde.moteur.qualite.nom"), "· erreurs :", err or "aucune")
             ctx.close()
     b.close()

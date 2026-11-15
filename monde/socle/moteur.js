@@ -19,6 +19,49 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 export { THREE };
 
+/* L'ÉTALONNAGE DE FILM, DANS LE TONE MAPPING (vague 2, 2026-11-14). Avant : seule la qualité « haute » avait un
+   étalonnage (une passe d'image en plus) ; le PC de Mongazi et tous les téléphones (« moyenne », « basse ») n'en
+   avaient AUCUN. Ici : l'AgX de three.js (r180) recopié, avec un « look » posé là où Blender pose les siens, dans le
+   domaine encodé d'AgX, après la courbe de contraste (ASC CDL : pente, puissance, saturation). Le « Punchy » de
+   Blender (1,35 et 1,4) brûle le crème et sature le wax ; dosage plus doux, réglé sur les captures. Coût : quelques
+   opérations par pixel dans chaque matière, aucune passe d'image. La passe de sortie de la haute l'utilise aussi. */
+/* réglé sur les captures du 2026-11-15 : à [1,03 ; 1 ; 0,955] les murs crème viraient au pêche, et à 1,16 de puissance les
+   personnages du soir devenaient noirs */
+export const LOOK = { pente: [1.018, 1.0, 0.975], puissance: 1.11, saturation: 1.12 };
+{
+  const v = (a) => `vec3(${a.map(x => x.toFixed(4)).join(', ')})`;
+  const C = THREE.ShaderChunk, vide = 'vec3 CustomToneMapping( vec3 color ) { return color; }';
+  if (C.tonemapping_pars_fragment.includes(vide)) C.tonemapping_pars_fragment = C.tonemapping_pars_fragment.replace(vide, `
+vec3 nebulaLook( vec3 val ) {
+  float luma = dot( val, vec3( 0.2126, 0.7152, 0.0722 ) );
+  val = pow( max( val * ${v(LOOK.pente)}, 0.0 ), vec3( ${LOOK.puissance.toFixed(4)} ) );
+  return luma + ${LOOK.saturation.toFixed(4)} * ( val - luma );
+}
+vec3 CustomToneMapping( vec3 color ) {
+  const mat3 AgXInsetMatrix = mat3(
+    vec3( 0.856627153315983, 0.137318972929847, 0.11189821299995 ),
+    vec3( 0.0951212405381588, 0.761241990602591, 0.0767994186031903 ),
+    vec3( 0.0482516061458583, 0.101439036467562, 0.811302368396859 ) );
+  const mat3 AgXOutsetMatrix = mat3(
+    vec3( 1.1271005818144368, - 0.1413297634984383, - 0.14132976349843826 ),
+    vec3( - 0.11060664309660323, 1.157823702216272, - 0.11060664309660294 ),
+    vec3( - 0.016493938717834573, - 0.016493938717834257, 1.2519364065950405 ) );
+  const float AgxMinEv = - 12.47393; const float AgxMaxEv = 4.026069;
+  color *= toneMappingExposure;
+  color = LINEAR_SRGB_TO_LINEAR_REC2020 * color;
+  color = AgXInsetMatrix * color;
+  color = max( color, 1e-10 ); color = log2( color );
+  color = ( color - AgxMinEv ) / ( AgxMaxEv - AgxMinEv );
+  color = clamp( color, 0.0, 1.0 );
+  color = agxDefaultContrastApprox( color );
+  color = nebulaLook( color );
+  color = AgXOutsetMatrix * color;
+  color = pow( max( vec3( 0.0 ), color ), vec3( 2.2 ) );
+  color = LINEAR_REC2020_TO_LINEAR_SRGB * color;
+  return clamp( color, 0.0, 1.0 );
+}`);
+}
+
 const PRESETS = {
   basse:   { nom: 'basse',   dpr: 0.8,  halo: false, reflets: false, pluie: 350,  ombres: false },
   moyenne: { nom: 'moyenne', dpr: 1.0,  halo: false, reflets: false, pluie: 800,  ombres: false },
@@ -47,7 +90,8 @@ export function creerMoteur(conteneur) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: false });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   /* AgX : les hautes lumières se désaturent comme sur une vraie caméra (ACES « brûle » les blancs crème) */
-  renderer.toneMapping = THREE.AgXToneMapping;
+  /* `?sans-look` : l'AgX nu d'avant (pour comparer) */
+  renderer.toneMapping = new URLSearchParams(location.search).has('sans-look') ? THREE.AgXToneMapping : THREE.CustomToneMapping;
   renderer.toneMappingExposure = 1.0;
   conteneur.appendChild(renderer.domElement);
   renderer.domElement.setAttribute('aria-label', 'Le salon en 3D');
@@ -74,10 +118,7 @@ export function creerMoteur(conteneur) {
       float bruit(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233)) + temps) * 43758.5453); }
       void main() {
         vec4 c = texture2D(tDiffuse, vUv); vec3 col = c.rgb;
-        float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
-        col = mix(vec3(l), col, 1.06);
-        col = (col - 0.5) * 1.05 + 0.5;
-        col *= vec3(1.02, 1.0, 0.975);
+        /* le contraste, la saturation et la chaleur sont DANS le tone mapping (LOOK) : ici, vignettage et grain */
         vec2 d = vUv - 0.5; col *= 1.0 - vignette * dot(d, d) * 1.6;
         col += (bruit(vUv * 997.0) - 0.5) * grain;
         gl_FragColor = vec4(clamp(col, 0.0, 1.0), c.a);
@@ -108,6 +149,11 @@ export function creerMoteur(conteneur) {
     }
   }
   if (qualite.halo) monterHalo();
+  if (!qualite.cinema) {
+    const vignette = document.createElement('div'); vignette.className = 'vignette-film'; vignette.setAttribute('aria-hidden', 'true');
+    vignette.style.cssText = 'position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 46%, rgba(0,0,0,0) 58%, rgba(10,6,3,.28) 100%)';
+    conteneur.appendChild(vignette);
+  }
 
   let dpr = Math.min(window.devicePixelRatio || 1, qualite.dpr);
   function redimensionner() {
