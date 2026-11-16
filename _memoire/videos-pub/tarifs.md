@@ -19,7 +19,10 @@ client : 0 à 1 000 F et environ une heure ; il reste 9 000 à 10 000 F par vent
   restaurant…), puis une nouvelle histoire de temps en temps.
 - À 10 000 F, le commerçant dit oui sans réfléchir, et la pub appelle le catalogue à 50 000 F : c'est une porte
   d'entrée.
-- Le sur-mesure (une histoire écrite pour un seul client) reste à part : au moins 30 000 F, à trancher par Mongazi.
+- Le sur-mesure (une histoire écrite pour un seul client) reste à part : 25 000 F pour 30 s, 35 000 F pour 1 min
+  (proposé une fois le filigrane réglé, à trancher par Mongazi).
+- Le lot : catalogue + pub modèle à 55 000 F au lieu de 60 000 F ; la pub envoie les clients vers le catalogue.
+- La pub modèle se paie d'avance (Mobile Money), livrée en 48 h.
 
 ## 1. La première grille proposée (rejetée le 2026-11-16)
 
