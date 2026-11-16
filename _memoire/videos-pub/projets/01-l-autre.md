@@ -585,8 +585,11 @@ Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son
 - **Musique 2 sur la carte** : un afrobeat léger et joyeux. Les deux musiques depuis Pixabay, lien de la page gardé.
 - **Les candidates sont téléchargées** (2026-11-16), hors dépôt, dans `_studio-video/public/pub-l-autre/musique/` :
   trois pour le drame (violon d'émotion, violon de film indien, piano), deux pour la carte (afro house VibeHorn, et
-  celle de la vidéo de marque). Toutes **sans Content ID** ; pages et licence dans `SOURCES.md`. Mongazi choisit à
-  l'oreille.
+  celle de la vidéo de marque, et des percussions africaines). Toutes **sans Content ID** ; pages et licence dans
+  `_studio-video/public/pub-l-autre/SOURCES.md`. Mongazi choisit à l'oreille.
+- **Les bruitages sont téléchargés** aussi (12, sans Content ID), dans `_studio-video/public/pub-l-autre/bruitages/` :
+  tic-tac, ding, sting dramatique, timbale, verre brisé, cymbale, disque rayé, néon, interrupteur, deux whoosh, pop.
+  Le plan où chacun sert est dans `SOURCES.md`.
 - Voix nettoyées et égalisées, −14 LUFS, crête à −1 dBTP.
 
 ### Texte et dessins, plan par plan

@@ -67,3 +67,7 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
   trois pour le drame, une afro house pour la carte, plus celle de la vidéo de marque. Rangées hors dépôt dans
   `_studio-video/public/pub-l-autre/musique/` avec `SOURCES.md`. Le 5e morceau (percussions africaines) a bloqué : Chrome
   a cessé de répondre. Les bruitages seront synthétisés au montage.
+- **Les bruitages** (« n'oublie pas les bruitages ») : 12 téléchargés sur Pixabay, sans Content ID, plus le morceau de
+  percussions. ⚠️ **Piège de Chrome** : changer de page pendant qu'un téléchargement Pixabay se prépare l'ANNULE ;
+  seul le dernier de chaque série arrivait. Attendre une dizaine de secondes après chaque clic, puis vérifier le dossier
+  Téléchargements.
