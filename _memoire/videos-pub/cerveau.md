@@ -40,10 +40,13 @@ les voix sont générés ; le produit du client, lui, est le vrai.
 8. **Aucun chiffre promis à l'écran** (ventes, clients gagnés) : une pub montre, elle ne garantit rien.
 9. **On livre le MP4, jamais le projet** (licence Remotion, `CLAUDE.md`).
 10. Aucun tiret cadratin dans les textes à l'écran.
-11. **Un style qui rappelle une œuvre connue se décrit par ses ingrédients, jamais par son nom** (Mongazi veut celui
-    d'« Aya de Yopougon ») : trait d'encre expressif, visages un peu caricaturaux, couleurs chaudes en aplats, texture
-    de papier. On ne reprend ni ses personnages, ni ses décors, ni son nom : l'œuvre est protégée, et le modèle suit
-    mieux une description qu'un titre.
+11. **Un style qui rappelle une œuvre connue** : Mongazi a tranché le 2026-11-16, le nom du film (« Aya de Yopougon »)
+    est cité dans les prompts, avec ses ingrédients (trait d'encre expressif, visages un peu caricaturaux, couleurs
+    chaudes en aplats, texture de papier) et toujours la consigne « personnages originaux, pas ceux du film ». On ne
+    reprend jamais ses personnages ni ses décors : l'œuvre est protégée. Si Flow refuse un prompt à cause du titre, on
+    retire le titre, la description suffit.
+12. **Une seule voix par clip Veo** (Mongazi, 2026-11-16) : jamais deux personnes qui parlent dans le même clip, sinon
+    Veo mélange les voix. Le prompt le dit en toutes lettres.
 
 ## Les fichiers
 

@@ -977,3 +977,6 @@ MD5, 53 plats balisés, fichier absent → 404).
   le dit pas.
 - **Le style de « L'AUTRE »** : dessin animé 2D, celui d'« Aya de Yopougon » (Mongazi : « je veux exactement ce style »).
   Les prompts le décrivent par ses ingrédients, sans jamais nommer l'œuvre.
+- **Le nom du film dans les prompts** (Mongazi : « mentionner exactement l'animation d'Aya de Yopougon ») : fait, avec
+  la consigne « personnages originaux, pas ceux du film ».
+- **Une seule voix par clip** (Mongazi : « pour éviter que Veo ne se perde dans la voix »).

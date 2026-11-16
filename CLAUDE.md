@@ -480,7 +480,7 @@
   `_studio-video/`, ultra dynamique (texte animé, dessins SVG, bruitages).
 - **Le cerveau de l'offre** : `_memoire/videos-pub/` (`cerveau.md`, `methode.md`, `tarifs.md`, `projets/`).
 - **1re pub : « L'AUTRE »** (une dispute de couple à 3 h du matin qui finit sur un catalogue), **en dessin animé 2D**
-  (le style d'« Aya de Yopougon », décrit sans le nommer) · validée par Mongazi, dossier prêt, rien de généré ·
+  (le style d'« Aya de Yopougon », nommé dans les prompts avec « personnages originaux » ; une seule voix par clip) · validée par Mongazi, dossier prêt, rien de généré ·
   `_memoire/videos-pub/projets/01-l-autre.md`.
 - **Deux consignes de Mongazi** : la pub **ne dit pas** qu'elle est faite avec l'IA ; le **français reste très simple**
   (phrases courtes, mots de la rue).

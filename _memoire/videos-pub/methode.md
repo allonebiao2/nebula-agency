@@ -65,7 +65,7 @@ tient dans un clip de 8 s, donc 15 mots au plus.
 | Veo rajoute des mots pour remplir 8 s | finir la consigne par « then stays silent » ; couper au montage |
 | Des sous-titres incrustés | la phrase « No subtitles » ; sinon regénérer, jamais recadrer |
 | L'écran du téléphone (interface illisible, qui trahit l'IA) | toujours dos à la caméra ; un vrai écran s'incruste au montage |
-| La mauvaise personne parle | une seule personne parle par plan (champ, contrechamp), et le prompt le dit : « Only Afi speaks in this shot » |
+| La mauvaise personne parle, ou deux voix se mélangent | **une seule voix par clip, toujours** (consigne de Mongazi) : champ, contrechamp, et le prompt le dit en toutes lettres (« One single voice in this clip: only Afi speaks ») |
 | Des mains qui se passent un objet | le plan le plus risqué : 3 à 4 prises |
 | La pièce change d'un plan à l'autre | joindre l'image du décor à chaque image de plan |
 

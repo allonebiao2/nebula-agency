@@ -59,3 +59,7 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
   personnages créés d'abord, pour la constance. Les prompts décrivent le style sans nommer l'œuvre (elle est protégée,
   et le modèle suit mieux une description) ; une image de style R0 est jointe partout ; les fiches d'Afi et de Koffi
   montrent trois angles et six expressions. Les 45 prompts réalistes sont passés en 2D, un de plus (R0).
+- **Le nom du film** : Mongazi veut que les prompts citent « Aya de Yopougon ». Fait partout (images et animations),
+  avec « personnages originaux, pas ceux du film ».
+- **Une seule voix par clip** : P07 (seule la tantie parle, les autres se taisent) et P11 (seul le jeune voisin crie
+  « Waaaah ! ») réécrits ; chaque prompt d'animation dit qui parle, et que personne d'autre ne fait de bruit de voix.

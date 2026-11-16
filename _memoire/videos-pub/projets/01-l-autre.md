@@ -4,7 +4,7 @@
 > la pub vidéo elle-même (« Une pub comme ça pour ton commerce ? On la fait aussi. »).
 > **Format** : 9:16, environ 1 min · version courte de 30 s au § 7.
 > **Style** : dessin animé 2D, façon bande dessinée ouest-africaine (Mongazi : le style d'« Aya de Yopougon »). Les
-> prompts décrivent ce style sans jamais le nommer (`../cerveau.md`, règle 11).
+> prompts nomment le film et précisent toujours « personnages originaux » (`../cerveau.md`, règle 11).
 > **Qui fait quoi** : Mongazi génère les images et les vidéos dans Google Flow · Claude fait le montage.
 > **État au 2026-11-16** : scénario validé par Mongazi (« j'adore le scénario »), dossier prêt, rien n'est généré.
 > **Ses deux consignes** : la pub ne dit **pas** qu'elle est faite avec l'IA ; le français reste **très simple**.
@@ -44,7 +44,7 @@ Puis elle nous regarde, nous : « Et toi ? Ta boutique, elle dort quand tu dors 
 | P08 | Koffi | Il a quoi de plus que moi ? |
 | P09 | Afi | Lui, il dort jamais. Il répond à tout le monde. Même à Lomé, on le connaît. |
 | P10 | Afi | Et lui, au moins… il travaille. |
-| P11 | les voisins | Waaaah ! |
+| P11 | le jeune voisin | Waaaah ! |
 | P11b | Afi, **à nous** | Toi aussi, tu crois que c'est un homme ? |
 | P13 | Koffi | … Des pagnes ? C'est quoi ça ? |
 | P14 | Afi | Mon catalogue. Ma boutique dans le téléphone. Il vend même quand je dors. |
@@ -71,8 +71,9 @@ Pour changer une réplique : ne toucher qu'au texte entre guillemets, dans le pr
 ## 3. Les références (Nano Banana Pro, une seule fois)
 
 **Le style** : un dessin animé 2D, façon bande dessinée ouest-africaine (la référence de Mongazi : « Aya de Yopougon »).
-On ne nomme jamais l'œuvre dans un prompt : le modèle suit mieux une description qu'un titre, et on n'emprunte ni ses
-personnages ni ses décors.
+Les prompts nomment le film (choix de Mongazi) et disent toujours « personnages originaux » : on prend le style,
+jamais ses personnages ni ses décors. Si Flow refuse un prompt à cause du titre, retire le titre : la description
+suffit.
 
 **L'ordre** :
 1. **R0, l'image de style**, en premier. On la joint ensuite à TOUT : c'est elle qui garde le même trait et les mêmes
@@ -88,38 +89,38 @@ mieux), les répliques restent en français.
 ### R0 · La maison, la nuit (image de style, format 9:16)
 
 ```
-Vertical frame, 9:16, establishing shot from a 2D hand-drawn animated film in the style of West African bande dessinée. A working-class neighborhood of Cotonou, Benin, at night: a small one-storey house with a corrugated iron roof, pale green walls and louvered glass windows with white wrought-iron bars; one window glows with warm lamp light and the cool cyan light of a phone. A sandy street, a parked motorbike, a mango tree, electric wires, a small shop with its metal shutter closed.
+Vertical frame, 9:16, establishing shot from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée. A working-class neighborhood of Cotonou, Benin, at night: a small one-storey house with a corrugated iron roof, pale green walls and louvered glass windows with white wrought-iron bars; one window glows with warm lamp light and the cool cyan light of a phone. A sandy street, a parked motorbike, a mango tree, electric wires, a small shop with its metal shutter closed.
 Expressive ink outlines of varying thickness, flat warm colors with soft painted shading, light paper grain. Night palette of deep indigo, teal and warm amber. A tender, funny mood. No people, no text, no captions, no watermark.
 ```
 
 ### R1 · Afi (fiche personnage, format 16:9, joindre R0)
 
 ```
-Character model sheet for a 2D hand-drawn animated film in the style of West African bande dessinée, 16:9, plain off-white background. The SAME woman, shown on the left in three full-body views (front, three-quarter, profile) and on the right in six head close-ups with different expressions: neutral, tender smile, caught and guilty, tearful, cold and proud with one eyebrow raised, amused.
+Character model sheet for a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée, 16:9, plain off-white background. The SAME woman, shown on the left in three full-body views (front, three-quarter, profile) and on the right in six head close-ups with different expressions: neutral, tender smile, caught and guilty, tearful, cold and proud with one eyebrow raised, amused.
 The character, Afi: a Beninese woman, 33 years old, dark brown skin, round face, high cheekbones, big expressive almond-shaped eyes, full lips, small gold stud earrings. She wears a burgundy satin sleep bonnet that covers all her hair, and a loose sleeveless nightdress in indigo and orange wax-print fabric. A clever, proud businesswoman.
-Expressive ink outlines, slightly caricatural but warm and dignified features, flat colors with soft painted shading, light paper texture. Match the drawing style and colors of the attached style frame exactly. No text, no labels, no watermark.
+Expressive ink outlines, slightly caricatural but warm and dignified features, flat colors with soft painted shading, light paper texture. Original characters, not characters from the film. Match the drawing style and colors of the attached style frame exactly. No text, no labels, no watermark.
 ```
 
 ### R2 · Koffi (fiche personnage, format 16:9, joindre R0)
 
 ```
-Character model sheet for a 2D hand-drawn animated film in the style of West African bande dessinée, 16:9, plain off-white background. The SAME man, shown on the left in three full-body views (front, three-quarter, profile) and on the right in six head close-ups with different expressions: suspicious, devastated with trembling lips, heartbroken in tears, totally confused, humble like a scolded child, deadpan stare at the viewer.
+Character model sheet for a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée, 16:9, plain off-white background. The SAME man, shown on the left in three full-body views (front, three-quarter, profile) and on the right in six head close-ups with different expressions: suspicious, devastated with trembling lips, heartbroken in tears, totally confused, humble like a scolded child, deadpan stare at the viewer.
 The character, Koffi: a Beninese man, 42 years old, dark skin, slightly round belly, short greying beard, receding hairline, thick eyebrows, a very expressive face. He wears a slightly yellowed white sleeveless undershirt and a green and yellow wax-print cloth wrapped around his waist like a sarong. Barefoot. A big-hearted, very dramatic husband.
-Expressive ink outlines, slightly caricatural but warm and dignified features, flat colors with soft painted shading, light paper texture. Match the drawing style and colors of the attached style frame exactly. No text, no labels, no watermark.
+Expressive ink outlines, slightly caricatural but warm and dignified features, flat colors with soft painted shading, light paper texture. Original characters, not characters from the film. Match the drawing style and colors of the attached style frame exactly. No text, no labels, no watermark.
 ```
 
 ### R3 · La chambre vide (format 9:16, joindre R0)
 
 ```
-Vertical frame, 9:16, background painting from a 2D hand-drawn animated film in the style of West African bande dessinée. An empty, modest bedroom in a family house in Cotonou at night: a double bed with a wax-print bedsheet, a white mosquito net knotted above the bed, a ceiling fan, louvered glass windows with white wrought-iron burglar bars, pale green walls with faint water stains, a small bedside lamp. Clues of a small business, half hidden in the shadows: a white plastic chair piled with neatly folded wax-print fabrics, more stacks of folded fabrics on top of a wooden wardrobe, a canvas delivery bag hanging on the door. A fluorescent tube light on the wall above the door, switched off, and a light switch next to the door.
-Night palette: deep indigo and teal shadows, warm amber light from the lamp, faint blue moonlight through the louvers. Expressive ink outlines, flat colors with soft painted shading, light paper texture. Match the drawing style and colors of the attached style frame exactly. No people, no text, no watermark.
+Vertical frame, 9:16, background painting from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée. An empty, modest bedroom in a family house in Cotonou at night: a double bed with a wax-print bedsheet, a white mosquito net knotted above the bed, a ceiling fan, louvered glass windows with white wrought-iron burglar bars, pale green walls with faint water stains, a small bedside lamp. Clues of a small business, half hidden in the shadows: a white plastic chair piled with neatly folded wax-print fabrics, more stacks of folded fabrics on top of a wooden wardrobe, a canvas delivery bag hanging on the door. A fluorescent tube light on the wall above the door, switched off, and a light switch next to the door.
+Night palette: deep indigo and teal shadows, warm amber light from the lamp, faint blue moonlight through the louvers. Expressive ink outlines, flat colors with soft painted shading, light paper texture. Original characters, not characters from the film. Match the drawing style and colors of the attached style frame exactly. No people, no text, no watermark.
 ```
 
 ### R4 · La fenêtre, la nuit (format 9:16, joindre R0)
 
 ```
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée. View from inside a dark bedroom toward louvered glass windows with white wrought-iron burglar bars, the glass slats half open. From outside, four neighbors press their faces into the gaps between the slats, eyes wide, spying on the room: in front, an elderly woman in a bright orange headwrap, the most curious; a young man in a football jersey; a teenage girl with braids; a bald middle-aged man in a sleeveless undershirt. Comic, caricatural expressions, played completely seriously.
-Night palette: deep indigo and teal, faint blue moonlight, a cool glow coming from inside the room. Expressive ink outlines, flat colors, light paper texture. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée. View from inside a dark bedroom toward louvered glass windows with white wrought-iron burglar bars, the glass slats half open. From outside, four neighbors press their faces into the gaps between the slats, eyes wide, spying on the room: in front, an elderly woman in a bright orange headwrap, the most curious; a young man in a football jersey; a teenage girl with braids; a bald middle-aged man in a sleeveless undershirt. Comic, caricatural expressions, played completely seriously.
+Night palette: deep indigo and teal, faint blue moonlight, a cool glow coming from inside the room. Expressive ink outlines, flat colors, light paper texture. Original characters, not characters from the film. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 ### R5 · La fenêtre, au néon (format 9:16, en MODIFIANT R4)
@@ -142,6 +143,9 @@ No text, no captions, no watermark.
 
 « Garder » = la durée gardée au montage ; le reste des 8 s est coupé.
 
+**Une seule voix par clip** (consigne de Mongazi) : chaque prompt d'animation le dit en toutes lettres, pour que Veo
+ne mélange pas les voix.
+
 ### Acte 1 · le soupçon (lumière de film)
 
 #### P01 · Le sourire · garder 2 s
@@ -151,12 +155,12 @@ Afi sourit à son téléphone dans le noir ; derrière elle, les yeux de Koffi s
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Extreme close-up: Afi lies on her side in bed in the dark, her face lit only by the smartphone she holds close to her face; we see only the back of the phone. She smiles tenderly at the screen. Behind her, out of focus, Koffi lies asleep with his eyes closed, under the white mosquito net.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 [00:00-00:03] Extreme close-up. Afi, lit only by her phone, smiles tenderly at the screen and bites her lower lip. SFX: a soft phone notification chime.
 [00:03-00:06] Behind her, out of focus, Koffi's eyes snap open in the dark. He does not move.
 [00:06-00:08] Afi keeps smiling at her phone; she has noticed nothing.
@@ -170,14 +174,15 @@ Références : R0, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Koffi's character sheet (same face, same undershirt and waist cloth) and the bedroom (same room).
 Close-up: Koffi lies in bed in the dark, his head on the pillow, eyes wide open and suspicious, staring at his wife's back (she is off-screen, in front of him). His face is half lit by the cold blue glow of her phone.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Close-up. In the dark, Koffi raises his head slightly from the pillow, narrows his eyes and says slowly, in a deep, raspy male voice, speaking French with a West African accent from Benin: "Afi... C'est qui ?"
 Then he stays silent and keeps staring.
+One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside, a distant motorbike. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -188,14 +193,15 @@ Références : R0, R1, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Medium close-up: Afi in bed, caught, presses her glowing smartphone flat against her chest with both hands; the light leaks between her fingers. Her eyes avoid her husband. Koffi is blurred in the background.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Medium close-up. Afi presses the glowing phone against her chest, avoids her husband's eyes and says quickly, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Personne. Dors."
-She pulls the wax-print sheet up to her chin and stays silent. Only Afi speaks in this shot.
+She pulls the wax-print sheet up to her chin and stays silent.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside, a distant motorbike. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -206,15 +212,16 @@ Références : R0, R1, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Medium two-shot: in the foreground, Afi lies on her side clutching the phone to her chest, eyes wide open. Behind her, Koffi is propped up on one elbow, looking down at her, his face lit by the glow.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 [00:00-00:02] The phone vibrates against Afi's chest. SFX: a muffled vibration and three notification chimes in a row.
 [00:02-00:06] Behind her, Koffi sits up slowly and says with controlled anger, in a deep, raspy male voice, speaking French with a West African accent from Benin: "À trois heures du matin, personne t'écrit ?"
-[00:06-00:08] Silence. Afi closes her eyes. Only Koffi speaks in this shot.
+[00:06-00:08] Silence. Afi closes her eyes.
+One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -227,14 +234,15 @@ Références : R0, R1, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Afi's character sheet (same face, same satin bonnet and nightdress) and the bedroom (same room).
 Close-up: Afi sits up in bed, turned toward her husband (off-screen, on the left), eyes wet with tears, jaw set, lit from below by the glow of the phone in her lap.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Close-up. Afi takes a deep breath, tears in her eyes, looks straight at her husband (off-screen) and confesses slowly, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Bon... Oui. Il y a quelqu'un. Depuis trois mois."
 Then she holds his gaze in silence.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -245,14 +253,15 @@ Références : R0, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Koffi's character sheet (same face, same undershirt and waist cloth) and the bedroom (same room).
 Close-up: Koffi sits up in bed in the dark, frozen in shock, one hand pressed on his heart over his white undershirt, mouth slightly open.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Slow dolly-in on Koffi's face. He is devastated, his lips tremble, and he says in a broken whisper, in a deep, raspy male voice, speaking French with a West African accent from Benin: "Trois mois ?!"
 He presses his hand harder on his heart and stays silent.
+One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -261,9 +270,10 @@ Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
-Static shot. The four neighbors spying through the window gasp at the same time. The elderly woman in the orange headwrap covers her mouth and cries out, in a high-pitched old woman's voice, speaking French with a West African accent from Benin: "Eeeh Dieu !"
-The others press closer to the glass slats, eyes wide. Only the elderly woman speaks.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
+Static shot. The four neighbors spying through the window look shocked. The elderly woman in the orange headwrap covers her mouth and cries out, in a high-pitched old woman's voice, speaking French with a West African accent from Benin: "Eeeh Dieu !"
+The others press closer to the glass slats, eyes wide, in total silence.
+One single voice in this clip: only the elderly woman in the orange headwrap speaks; nobody else talks or makes any vocal sound.
 Ambient noise: crickets, the night outside. Audio: only the dialogue and the night sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -274,14 +284,15 @@ Références : R0, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Koffi's character sheet (same face, same undershirt and waist cloth) and the bedroom (same room).
 Medium shot: Koffi sits on the edge of the bed in the dark, shoulders slumped, turning his head toward Afi (off-screen), eyes glistening, the white mosquito net hanging behind him.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Medium shot. Koffi turns toward his wife and asks with a broken voice, in a deep, raspy male voice, speaking French with a West African accent from Benin: "Il a quoi de plus que moi ?"
 Then he waits, breathing heavily.
+One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -292,14 +303,15 @@ Références : R0, R1, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Afi's character sheet (same face, same satin bonnet and nightdress) and the bedroom (same room).
 Medium close-up: Afi sits up in bed, glowing with pride and passion, raising three fingers of one hand as if counting, the phone glowing in her other hand on the sheet.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Medium close-up. Afi, passionate and proud, counts on her fingers and says, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Lui, il dort jamais. Il répond à tout le monde. Même à Lomé, on le connaît."
 Then she smiles dreamily and stays silent.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -310,14 +322,15 @@ Références : R0, R1, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Afi's character sheet (same face, same satin bonnet and nightdress) and the bedroom (same room).
 Close-up: Afi turns her face toward Koffi (off-screen) with a cold half-smile, one eyebrow raised.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Close-up. Afi leans toward her husband (off-screen) and says slowly and coldly, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Et lui, au moins... il travaille."
 She raises an eyebrow and stays silent.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -326,7 +339,7 @@ Koffi s'effondre sur le lit, la moustiquaire lui tombe dessus comme un voile de 
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Medium shot. Koffi slowly falls backward onto the bed as if his heart has just broken, and the white mosquito net comes loose and slowly falls over him like a bridal veil. Slow, tragic, completely serious.
 No dialogue. Ambient noise: a ceiling fan humming, crickets outside. Audio: only the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
@@ -336,9 +349,10 @@ No dialogue. Ambient noise: a ceiling fan humming, crickets outside. Audio: only
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
-Static shot. The four neighbors at the window react to an outrageous insult and all cry out together: "Waaaah !" The young man in the football jersey covers his mouth with his fist, the elderly woman shakes her head, the teenage girl slaps the bald man's shoulder.
-Ambient noise: crickets, the night outside. Audio: only the voices and the night sounds, no music. No subtitles, no captions, no on-screen text.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
+Static shot. The four neighbors at the window react to an outrageous insult. Only the young man in the football jersey cries out, in a young man's voice, speaking French with a West African accent from Benin: "Waaaah !" Then he covers his mouth with his fist. The others react in silence: the elderly woman shakes her head, the teenage girl slaps the bald man's shoulder.
+One single voice in this clip: only the young man in the football jersey speaks; nobody else talks or makes any vocal sound.
+Ambient noise: crickets, the night outside. Audio: only the dialogue and the night sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
 #### P11b · L'aparté : elle nous parle · garder 3 s · LE 4e MUR
@@ -348,14 +362,15 @@ Tout le monde se fige, sauf Afi, qui se tourne vers nous. Références : R0, R1,
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Medium close-up: Afi sits in bed and looks straight into the camera lens with a mischievous half-smile, as if she knows someone is watching. Behind her, slightly out of focus, Koffi is frozen like a statue, mouth open, one hand on his heart.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Medium close-up. Afi breaks the fourth wall: she slowly turns her face to the camera, looks straight into the lens and says to the viewer with a mischievous smile, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Toi aussi, tu crois que c'est un homme ?"
-Behind her, Koffi stays completely frozen like a statue, mouth open, not moving at all. Then Afi turns back toward her husband. Only Afi speaks in this shot.
+Behind her, Koffi stays completely frozen like a statue, mouth open, not moving at all. Then Afi turns back toward her husband.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -368,7 +383,7 @@ Références : R0, R1, R2, R3. Deux images : A (dans le noir) puis B (au néon),
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Wide shot, static and centered: the dark bedroom at night. Koffi stands by the door in his white undershirt and waist cloth, holding Afi's glowing phone in one hand, his other hand on the light switch. Afi sits in bed in the background. Above the door, the fluorescent tube light is switched off.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces with big expressive eyes, flat warm colors with soft painted shading, light paper texture. Original characters, not characters from the film. Night palette: deep indigo and teal shadows, warm amber light from the bedside lamp, the cool cyan glow of the phone on the faces. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **IMAGE B (dernière image : joindre A et la modifier)**
@@ -380,7 +395,7 @@ No text, no captions, no watermark.
 
 **ANIMATION** (Frames to Video : A en première image, B en dernière)
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static wide shot. Koffi slaps the light switch. SFX: a loud plastic switch click, then the fluorescent tube flickers twice with a tinkling sound and buzzes on. The room goes from dark cinematic night light to flat, harsh fluorescent light. Afi squints and shields her eyes with her hand.
 No dialogue. Ambient noise: the steady buzz of the neon tube. Audio: no music. No subtitles, no captions, no on-screen text.
 ```
@@ -392,13 +407,14 @@ Références : R0, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Koffi's character sheet (same face, same undershirt and waist cloth) and the bedroom (same room).
 Medium shot: Koffi stands in the middle of the room in his white undershirt and waist cloth, holding the phone with both hands close to his face (the screen faces him, we only see the back of the phone), frowning, confused. Behind him, stacks of folded wax-print fabrics.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Original characters, not characters from the film. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static medium shot under flat fluorescent light. Koffi scrolls on the phone with his thumb; his angry face slowly turns into total confusion. He looks up and says, completely lost, in a deep, raspy male voice, speaking French with a West African accent from Benin: "... Des pagnes ? C'est quoi ça ?"
+One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -409,14 +425,15 @@ Références : R0, R1, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Afi's character sheet (same face, same satin bonnet and nightdress) and the bedroom (same room).
 Medium shot: Afi sits very straight in the bed, arms crossed, chin up, dignified like a queen, satin bonnet on.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Original characters, not characters from the film. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static medium shot under flat fluorescent light. Afi, arms crossed and chin up, says calmly and proudly, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Mon catalogue. Ma boutique dans le téléphone. Il vend même quand je dors."
 Then she stares at her husband without blinking.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -429,13 +446,14 @@ Références : R0, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), Koffi's character sheet (same face, same undershirt and waist cloth) and the bedroom (same room).
 Medium close-up: Koffi holds the phone against his belly with both hands, humbled, shoulders low, eyes down like a scolded child.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Original characters, not characters from the film. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. Match the drawing style and colors of the attached style frame exactly. The phone screen always faces away from the camera. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static medium close-up under flat fluorescent light. A long silence. Koffi swallows, then asks in a tiny, humble voice, the same deep, raspy male voice but very soft, speaking French with a West African accent from Benin: "... Il livre aussi ?"
+One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the steady buzz of the neon tube, a cricket outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -446,14 +464,15 @@ Références : R0, R1, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Medium two-shot: Afi sits in bed and holds out a black motorcycle helmet toward Koffi at arm's length; Koffi stands beside the bed and stares at the helmet.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Original characters, not characters from the film. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static two-shot under flat fluorescent light. Afi holds out the motorcycle helmet and says flatly, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Non. Ça, c'est toi."
-Koffi slowly takes the helmet with both hands, then turns his head and stares straight into the camera, deadpan. Only Afi speaks in this shot.
+Koffi slowly takes the helmet with both hands, then turns his head and stares straight into the camera, deadpan.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -462,9 +481,10 @@ Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only t
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static shot under flat fluorescent light. The elderly woman in the orange headwrap waves her phone at the window and shouts, excited, in a high-pitched old woman's voice, speaking French with a West African accent from Benin: "Afi ! Envoie-moi le lien !"
-The three other neighbors raise their phones and nod eagerly. Only the elderly woman speaks.
+The three other neighbors raise their phones and nod eagerly.
+One single voice in this clip: only the elderly woman in the orange headwrap speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the buzz of a neon tube, crickets outside. Audio: only the dialogue and the night sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -475,14 +495,15 @@ Références : R0, R1, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Medium two-shot: Koffi stands beside the bed wearing the black motorcycle helmet with the visor up, looking at Afi with hope; Afi sits in bed and looks back at him, unimpressed.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Original characters, not characters from the film. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. The stacks of folded wax-print fabrics and the delivery bag on the door are clearly visible. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static two-shot under flat fluorescent light. Koffi, wearing the helmet with the visor up, asks hopefully, in a deep, raspy male voice, speaking French with a West African accent from Benin: "Et moi, on me paie combien ?"
-Then he waits. Afi does not answer. Only Koffi speaks in this shot.
+Then he waits. Afi does not answer.
+One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -491,9 +512,10 @@ Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only t
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Static two-shot under flat fluorescent light. Afi lies back down, turns her back to her husband and says flatly, without even looking at him, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Dors."
-She pulls the sheet up over her shoulder. Koffi stands frozen beside the bed, helmet on. Only Afi speaks in this shot.
+She pulls the sheet up over her shoulder. Koffi stands frozen beside the bed, helmet on.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -504,14 +526,15 @@ Elle s'est recouchée face à nous. Références : R0, R1, R2, R3.
 ```
 Use the attached reference images: the style frame (same drawing style and colors), the character sheets of Afi and Koffi (same faces, same satin bonnet, same clothes) and the bedroom (same room).
 Close-up: Afi lies in bed on her side, her head on the pillow, facing the camera, and looks straight into the lens, calm and amused. Behind her, out of focus, Koffi still stands beside the bed with the motorcycle helmet on.
-Vertical frame, 9:16, from a 2D hand-drawn animated film in the style of West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
+Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City), West African bande dessinée: expressive ink outlines, slightly caricatural faces, flat colors, light paper texture. Original characters, not characters from the film. Static, centered, deadpan comic framing. Neon palette: flat, pale, slightly greenish fluorescent light from the neon tube on the wall, almost no shadows, washed-out colors, banal like a sitcom. Match the drawing style and colors of the attached style frame exactly. No text, no captions, no watermark.
 ```
 
 **ANIMATION**
 ```
-2D hand-drawn animation: keep exactly the drawing style and colors of the first frame (expressive ink outlines, flat warm colors), with lively, slightly exaggerated cartoon acting.
+Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 Close-up under flat fluorescent light. Afi, lying on her pillow, looks straight into the camera lens and speaks directly to the viewer, calm and amused, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Et toi ? Ta boutique, elle dort quand tu dors ?"
-Then she raises an eyebrow and keeps looking at the viewer. Behind her, out of focus, Koffi does not move. Only Afi speaks in this shot.
+Then she raises an eyebrow and keeps looking at the viewer. Behind her, out of focus, Koffi does not move.
+One single voice in this clip: only Afi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
