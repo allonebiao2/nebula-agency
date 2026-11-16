@@ -15,16 +15,16 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 - [ ] A1 · Le décor vidé : consigne 5 sur `salon-vue-comptoir-arche.jpg` → `salon\salon-a-vide-16x9.jpg`
 - [ ] A2 · Marble, compte gratuit : un monde depuis A1, le regarder dans leur visionneuse, dire « ça vaut » ou non
 - [ ] A3 · Si ça vaut : Marble Standard 20 $ (export) ou Pro 35 $/mois (droits commerciaux), carte bancaire : SA décision. Sinon : me laisser chercher une voie gratuite
-- [ ] A4 · Les images de départ (consigne 1) : `afi-depart.jpg`, `senami-depart.jpg`, `maman-depart.jpg`
-- [ ] A5 · Les vidéos en boucle (consignes 2 et 3) : écouter + parler pour Afi, Sènami, Maman (6 vidéos)
-- [ ] A6 · Hillary : 2 ou 3 vraies photos de son visage, `hillary-depart.jpg` (consigne 4), puis écouter, parler, accueillir, conseiller (4 vidéos)
+- [-] A4 · ⛔ **SANS OBJET depuis le 2026-11-16** (G2 : Hillary seule, plus de visiteuses) : Les images de départ (consigne 1) : `afi-depart.jpg`, `senami-depart.jpg`, `maman-depart.jpg`
+- [-] A5 · ⛔ **SANS OBJET depuis le 2026-11-16** (G2 : Hillary seule, plus de visiteuses) : Les vidéos en boucle (consignes 2 et 3) : écouter + parler pour Afi, Sènami, Maman (6 vidéos)
+- [ ] A6 · 🟡 **fait AUTREMENT le 2026-11-15** : ses vidéos fabriquées par Claude avec Wan 2.2, gratuit, depuis son image (`personnages/CONSIGNES.md`) ; ses vraies photos du visage et des vidéos Flow en 1080p restent un MIEUX : Hillary : 2 ou 3 vraies photos de son visage, `hillary-depart.jpg` (consigne 4), puis écouter, parler, accueillir, conseiller (4 vidéos)
 - [x] A7 (parole de Mongazi notée le 2026-11-14 dans `hillary/ACCORD.md` ; une preuve d'Hillary elle-même reste à déposer avant la mise en ligne) · La trace écrite de l'accord d'Hillary (visage, et voix si un jour) dans `hillary\`
 
 ### B · Les questions en attente depuis le 13
 - [ ] B1 · Le jour clair comme ses images, le soir tamisé : oui ou non
 - [ ] B2 · `robe-inconnue` : une création d'Hillary absente du site, ou une image ratée ?
 - [ ] B3 · L'ensemble Mira (h2) : son dos est-il ouvert ? (à demander à Hillary)
-- [ ] B4 · Les six expressions du visage d'Hillary : plus nécessaires si la vidéo est retenue
+- [x] B4 · ✅ **sans objet** (la vidéo est retenue) : Les six expressions du visage d'Hillary : plus nécessaires si la vidéo est retenue
 - [ ] B5 · Le commercial NEBULA : les 5 questions ouvertes de `COMMERCIAL.md`
 
 ### C · Plus tard
@@ -46,7 +46,7 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 - [ ] D5 · Vidéo → mouvement 3D : 🔎 **piste trouvée le 2026-11-14 : NVIDIA GEM-X** (code Apache 2.0, poids sous « NVIDIA Open Model License », la fiche du modèle le dit prêt pour un usage commercial ; corps SOMA-X annoncé Apache 2.0 ; mouvement complet du corps depuis une seule vidéo). ⚠️ À faire avant de s'en servir : lire le texte entier de la licence NVIDIA, et il faut une carte NVIDIA (ce PC n'en a pas : Colab ou un Space Hugging Face), puis recibler son squelette SOMA sur celui de Mixamo (Blender). Écartés : FrankMocap et tout ce qui passe par SMPL (corps sous licence non commerciale). Sources : github.com/NVlabs/gem-x, huggingface.co/nvidia/GEM-X
 - [ ] D6 · Voie gratuite pour le décor en splats : ⛔ **vérifié le 2026-11-14 à la source** : **Apple SHARP = poids sous licence « apple-amlr », recherche seulement** (le Space ZeroGPU qui l'enrobe est MIT, pas le modèle) ; **NVIDIA Lyra 2.0 = poids sous licence « Internal Scientific Research and Development », recherche seulement** (le code est Apache 2.0, les articles qui disent « Apache, commercial » se trompent). ✅ **Reste : NVIDIA Lyra 1.0, poids sous « NVIDIA Open Model License », prêt pour un usage commercial** (fiche huggingface.co/nvidia/Lyra), mais très lourd (Cosmos) : à éprouver. Notes d'origine : des articles) : **NVIDIA Lyra 2.0** (une image → un monde 3D navigable, annoncé Apache 2.0), **Apple SHARP** (une image → des splats en moins d'une seconde, annoncé MIT ; vérifier les POIDS). TripoSplat, Idol et TRELLIS 2 font des OBJETS, pas des pièces. Toutes demandent une carte NVIDIA : Space Hugging Face (clé `secrets/huggingface.env`) ou Colab. ⛔ Partir d'une vue vidée de ses robes générées
 
-- [ ] D7 · **De VRAIES vidéos « écouter » pour Afi et Maman, sans payer** : Wan 2.2 « première et dernière image » sur ZeroGPU (Space `multimodalart/wan-2-2-first-last-frame` ; poids annoncés Apache 2.0, À VÉRIFIER sur la fiche officielle Wan-AI). Donner la 1re image de sa vidéo « parler » (bras le long du corps) en première ET en dernière image : une boucle parfaite où elle écoute. Quota ZeroGPU : épuisé à 2 h le 2026-11-14, retour vers 16 h 20. En attendant : le passage calme de « parler » (`--calme`).
+- [-] D7 · ⛔ **SANS OBJET depuis le 2026-11-16** (G2 : Hillary seule, plus de visiteuses) : **De VRAIES vidéos « écouter » pour Afi et Maman, sans payer** : Wan 2.2 « première et dernière image » sur ZeroGPU (Space `multimodalart/wan-2-2-first-last-frame` ; poids annoncés Apache 2.0, À VÉRIFIER sur la fiche officielle Wan-AI). Donner la 1re image de sa vidéo « parler » (bras le long du corps) en première ET en dernière image : une boucle parfaite où elle écoute. Quota ZeroGPU : épuisé à 2 h le 2026-11-14, retour vers 16 h 20. En attendant : le passage calme de « parler » (`--calme`).
 
 - [x] D8 · **Vague 2, le rendu** : ✅ 2026-11-15, QC **66/66**. Étalonnage de film dans le tone mapping (toutes qualités), vignettage, faisceaux visibles et poussière, brume de profondeur, soir plus tamisé, **le soleil qui entre par la vitrine** (façade au sud-ouest). 53 i/s immobile, 44 en marchant au téléphone. ⛔ Notes : lumière 7 à 7,5, étalonnage 7,5 à 8, « waouh » 6,5 à 7 : le seuil de 8 n'est pas atteint partout, ce sont les matières (vague 3) et le décor (vague 4) qui retiennent. Détail : `_memoire/apprentissages/2026-11-15-rendu-film-sans-passe.md`
 
@@ -54,8 +54,13 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 
 - [x] D10 · **Vague 6, la 3G (première partie)** : ✅ 2026-11-16, QC **68/68**. Une version légère de chaque vidéo (11,6 → 4,7 Mo, `_outils/alleger_videos.py`), prise hors qualité « haute » ; les vidéos d'une visiteuse ne se chargent que lorsqu'on lui parle. ⚠️ La cadence mesurée sur ce PC varie de 28 à 44 i/s d'un essai à l'autre (le temps de chargement aussi, du simple au double) : l'instrument ne distingue pas un écart de 20 %. `?sans-relief` (matières d'avant la vague 3) a été PLUS lent que la version normale : les reliefs ne coûtent rien de mesurable. Reste : GLB + meshopt + KTX2 (les deux FBX pèsent 7,7 Mo)
 
+- [x] D11 · **Treg, analysé** (Mongazi, 2026-11-15 : « utilise un agent qui va analyser Treg… qu'on l'intègre à nos travaux ») : rapport complet `_knowledge/treg-decortique.md`. **Verdict : ne pas intégrer maintenant** (rien en image vers 3D ni en monde en splats ; carte bancaire dès le 2e dollar, 10 $ minimum ; service compromis le 23 octobre 2026). Essai borné au dollar offert si Mongazi le décide
+
 ### G · LE NOUVEAU CAP (Mongazi, 2026-11-16) : Hillary seule, des robes en volume, un salon qui vend
-- [ ] G1 · La netteté des expositions (« ultra floues, on ne voit pas très bien les images »)
+
+> « deja les correctiona a faire les expositions sont ulta flou on ne voit pas tres bien les images les expos transformes les robes en 3d  lesgens pourront toucher et avoir les details et son images etc.. finalememnt il y ,aura juste hillary dans le salon et je vexu qu"lle est plus d'animation plus relle que nature et etre plus optimiser a la vente de ces  produit » (puis « vas y », « continu »). **Ce cap passe AVANT les vagues 4 à 7 de `PROMPT-FABLE.md`.** Détail de chaque chantier : `REPRENDRE-ICI.md`, sections C et D du 2026-11-16.
+
+- [ ] G1 · ⏭️ **LA PROCHAINE ACTION** · La netteté des expositions (« ultra floues, on ne voit pas très bien les images »). Suspect n° 1 à MESURER : la résolution de rendu (`moteur.js` : `dpr` 1,0 en « moyenne », donc le tiers de l'écran d'un iPhone)
 - [ ] G2 · Hillary SEULE dans le salon : plus de visiteuses (gardées dans le code, `?visiteuses` pour les revoir)
 - [ ] G3 · Les robes en volume, touchables : détails, fiche, vraie photo. ⛔ La fiche garde la vraie photo ; un modèle 3D généré d'une pièce est validé par Hillary pièce par pièce avant d'être mis en ligne
 - [ ] G4 · Hillary plus animée (« plus réelle que nature ») : d'autres vidéos (quota gratuit : 3 à 4 par jour), plus de variété au repos
@@ -63,10 +68,10 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 
 ### E · Dès que ses fichiers arrivent
 - [ ] E1 · Le monde Marble : le caler sur le salon (`?calage`), mesurer poids et images/s au téléphone, retirer le décor modélisé du dedans, poser par-dessus le vrai logo et ses pièces
-- [ ] E2 · Ses vidéos : détourer, boucler, brancher Afi, Sènami, Maman
+- [x] E2 · ✅ **fait le 2026-11-15** (vague 1) ; ⛔ **SANS OBJET depuis le 2026-11-16** (G2 : Hillary seule, plus de visiteuses) : Ses vidéos : détourer, boucler, brancher Afi, Sènami, Maman
 - [x] E3 · Hillary au comptoir : ✅ en vidéo (2026-11-15) ; ⏳ Mongazi confirme la ressemblance
-- [ ] E4 · Maman en 3D pour la marche de loin (quota TRELLIS, `en_3d.py … --faces 100000`)
-- [ ] E5 · Les robes : planche → 3D → validation d'Hillary pièce par pièce ; la fiche garde la vraie photo
+- [-] E4 · ⛔ **SANS OBJET depuis le 2026-11-16** (G2 : Hillary seule, plus de visiteuses) : Maman en 3D pour la marche de loin (quota TRELLIS, `en_3d.py … --faces 100000`)
+- [ ] E5 · ➡️ **devient G3** : Les robes : planche → 3D → validation d'Hillary pièce par pièce ; la fiche garde la vraie photo
 
 ### F · La 3G et la finition
 - [ ] F1 · Compression (meshopt + KTX2), personnages allégés, chargement par étapes (`REPRENDRE-ICI.md` § 4)

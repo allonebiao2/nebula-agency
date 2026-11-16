@@ -157,3 +157,37 @@ Keep this boutique interior identical: same architecture, same oval ceiling with
 Fichier : `salon\salon-a-vide-16x9.jpg`, puis dans Marble (compte gratuit) : « créer un monde » depuis cette image.
 ⚠️ Vérifié le 2026-11-14 (docs.worldlabs.ai) : **le gratuit permet de REGARDER le monde, pas de l'exporter** ;
 l'export demande Standard (20 $), les droits commerciaux demandent Pro (35 $/mois).
+
+
+## HILLARY : SES VIDÉOS FAITES PAR WAN 2.2 (2026-11-15), consignes exactes
+
+> Accord : Mongazi, 2026-11-13 et 2026-11-14 (« Elle est d'accord donc t'inquiètes fais ce que tu as à faire »), noté dans
+> `_partage/immersive  store 3D/hillary/ACCORD.md`. Outil : `monde/_outils/en_video.py` (Wan 2.2, Apache 2.0, ZeroGPU,
+> gratuit). Tout vit dans `_partage/immersive  store 3D/hillary/` (hors dépôt).
+
+**1 · Le buste** : `hillary-buste-apose.jpg` = `hillary-corps-face.jpg` (1536 × 2752, pose A, robe noire) recadré à
+`(150, 43, 1426, 1745)` → 1276 × 1702 (3:4) : de 12 cm au-dessus de la tête jusqu'à 0,62 m du sol, soit **1,18 m de haut**
+(le comptoir fait 1,05 m). Calcul : `PX_M = (2640 − 216) / 1,68` (haut de la tête à y = 216, pieds à y = 2640, elle mesure
+1,68 m), centre x = 788.
+
+**2 · La pose de repos** (toutes les autres vidéos en PARTENT, donc s'enchaînent sans saut) : `hillary-2-repos.mp4`
+(`--duree 3 --graine 11`, depuis le buste en pose A), sa dernière image (`f_049`) = **`hillary-buste-repos.png`**.
+```
+The young woman slowly lowers both arms and lets them hang naturally along her body, shoulders relaxed, standing still and calm, looking at the camera with a soft closed-mouth smile. Her hands stay down at her sides. Static locked-off camera, no zoom, no camera movement, plain light grey studio background, soft even lighting, subtle realistic human motion, photorealistic.
+```
+(Un premier essai, `hillary-1-bras.mp4`, `--graine 7`, finissait mains jointes « namaste » : écarté.)
+
+**3 · Les vidéos, toutes depuis `hillary-buste-repos.png`** :
+
+| Fichier | Réglages | Consigne |
+|---|---|---|
+| `hillary-ecouter-boucle.mp4` | `--fin` = la même image (boucle parfaite), `--duree 5.1 --graine 21` | `The young woman listens attentively to a person standing in front of her, looking into the camera. She nods slowly twice with a small warm smile, blinks naturally and breathes calmly. Her arms stay relaxed along her body. Static locked-off camera, no zoom, no camera movement, plain light grey studio background, soft even lighting, subtle realistic human motion, photorealistic.` |
+| `hillary-parler.mp4` | `--duree 5 --etapes 4 --graine 33` | `The young woman talks warmly to a person standing in front of her, looking into the camera. Her lips move naturally as she speaks, she raises her hands and makes small expressive gestures at chest height close to her body, gentle head movements and a friendly smile. She stays in place. Static locked-off camera, no zoom, no camera movement, plain light grey studio background, soft even lighting, realistic natural human motion, photorealistic.` |
+| `hillary-ecouter-2.mp4` | `--duree 4 --etapes 4 --graine 52 --sans-jeton` | `The young woman listens attentively to a person standing in front of her, looking into the camera. She nods gently twice, blinks naturally, tilts her head slightly and keeps a small warm smile. Her arms stay relaxed along her body, she stays in place. Static locked-off camera, no zoom, no camera movement, plain light grey studio background, soft even lighting, subtle realistic human motion, photorealistic.` |
+| `hillary-accueillir.mp4` | `--duree 4 --etapes 4 --graine 64 --sans-jeton` | `The young woman welcomes a client who just walked into her boutique: a bright sincere smile, she raises her right hand in a small friendly wave at shoulder height, then opens her hand toward the camera in an inviting gesture and lowers her arm back along her body. She stays in place. Static locked-off camera, no zoom, no camera movement, plain light grey studio background, soft even lighting, realistic natural human motion, photorealistic.` |
+| `hillary-conseiller.mp4` | `--duree 4 --etapes 4 --graine 77 --sans-jeton` | `The young woman advises a client about a dress, confident and professional, speaking with a warm smile. Her hands describe a fitted waist and then a long flowing skirt with graceful gestures close to her body, then she lowers her arms back along her body. She stays in place. Static locked-off camera, no zoom, no camera movement, plain light grey studio background, soft even lighting, realistic natural human motion, photorealistic.` |
+
+Ce qu'on en a vu : le visage reste fidèle (comparé agrandi à l'image d'origine) ; la boucle « première = dernière image »
+bouge à peine (d'où le montage de 23 s : calme, calme, `ecouter-2` aller-retour, calme) ; « parler » à 4 pas de calcul a un
+flou de mouvement sur les mains (le détourage par la couleur le garde transparent, c'est juste). Puis : section F de
+`monde/REPRENDRE-ICI.md` (détourer, monter, alléger).

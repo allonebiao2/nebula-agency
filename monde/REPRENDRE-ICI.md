@@ -16,6 +16,213 @@
 
 ---
 
+## ⚡⚡ ÉTAT DU 2026-11-16, 7 h · LE PLUS RÉCENT : LIRE CECI D'ABORD (tout ce qui suit cette section est l'histoire)
+
+> Mongazi, 2026-11-16 : « METS TOUT EN MEMOIRE A LA LETTRE PRES. VAIS METTRE EN MEMOIRE ET FAIT CLEAR ».
+> Cette section est complète à elle seule. Les sections « ÉTAT DU 2026-11-14 », « ÉTAT DU 2026-11-13 » et suivantes
+> racontent ce qui a mené ici ; on ne les exécute pas.
+
+### A · En arrivant, dans cet ordre
+
+1. `git fetch` puis `git status -sb`. ⚠️ `python scripts/rapatrier.py` REFUSE tant que `.codex/hooks.json` est modifié :
+   c'est l'installation d'Impeccable (crochets Codex), PAS notre travail. Ne jamais le commiter, ne jamais le défaire.
+2. Relancer le serveur du salon en tâche de fond : `python monde/_servir.py --sans-construire`
+   → `http://localhost:8765/lieux/hillary-m-styl/` (téléphone, même Wi-Fi : `http://192.168.100.203:8765/lieux/hillary-m-styl/`,
+   adresse relevée le 2026-11-15 par `ipconfig`, elle peut changer).
+   ⚠️ **Claude Code TUE ce serveur dès que la session est en pause et que la mémoire manque** (cinq fois les 15 et 16 novembre,
+   message « stopped because the system is running low on memory »). Le relancer à chaque reprise. Pour l'en empêcher, il
+   faudrait lancer Claude Code avec la variable `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1` : décision de Mongazi, pas faite.
+3. Lire `monde/A-FAIRE.md` § G (le nouveau cap), puis la section B ci-dessous.
+
+### B · LE NOUVEAU CAP (Mongazi, 2026-11-16, ses mots exacts, fautes comprises)
+
+> « deja les correctiona a faire les expositions sont ulta flou on ne voit pas tres bien les images les expos transformes les
+> robes en 3d  lesgens pourront toucher et avoir les details et son images etc.. finalememnt il y ,aura juste hillary dans le
+> salon et je vexu qu"lle est plus d'animation plus relle que nature et etre plus optimiser a la vente de ces  produit »
+> puis « vas y », « continu ».
+
+Cinq chantiers, dans SON ordre (suivi : `monde/A-FAIRE.md` § G) :
+
+| | Chantier | État |
+|---|---|---|
+| **G1** | **La netteté des expositions** (« ultra floues, on ne voit pas très bien les images ») | ⏭️ **LA PROCHAINE ACTION, pas commencée** |
+| G2 | **Hillary SEULE dans le salon** : plus de visiteuses | ⏳ |
+| G3 | **Les robes en volume, touchables** : les détails, la fiche, sa vraie photo | ⏳ |
+| G4 | **Hillary plus animée**, « plus réelle que nature » | ⏳ |
+| G5 | **Hillary qui VEND** ses produits | ⏳ |
+
+⚠️ **Ce cap remplace l'ordre des vagues de `monde/PROMPT-FABLE.md`** (vagues 4 « décor en splats », 5 « Maman en 3D »,
+6 « la 3G », 7 « l'interface »). La consigne de Fable reste la LOI pour la qualité (barre « 100 000 dollars », 7 critères
+notés sur des captures, aucune question, rien d'acheté, un seul travail lourd à la fois). **Maman en 3D devient inutile**
+(G2 : plus de visiteuses). Le décor photographique (Marble) et la 3G restent à faire APRÈS G1 à G5.
+
+### C · LA PROCHAINE ACTION EXACTE : G1, la netteté des expositions
+
+Rien n'est écrit. **MESURER d'abord, corriger ensuite**, dans cet ordre :
+
+1. **La résolution de rendu** (le suspect n° 1) : `monde/socle/moteur.js`, `PRESETS` : basse `dpr: 0.8`, moyenne `dpr: 1.0`,
+   haute `dpr: 1.6`, et `dpr = Math.min(window.devicePixelRatio || 1, qualite.dpr)`. Un iPhone a un `devicePixelRatio` de 3 :
+   en « moyenne » (tous les téléphones, et le PC de Mongazi), le salon est rendu au TIERS de la résolution de l'écran, puis
+   agrandi : tout est flou, d'abord les photos et le texte des panneaux. Mesurer `__monde.moteur.renderer.getPixelRatio()`
+   au format téléphone. Piste : un `dpr` qui MONTE (1,5 à 2) tant que la cadence tient ; `surveiller()` (moteur.js) redescend
+   déjà d'un cran quand les images/s tombent.
+2. **Les photos des pièces** : `monde/lieux/hillary-m-styl/img/` (fabriquées par `monde/_construire.py` depuis la vitrine
+   d'Hillary, dossier ignoré par git) : mesurer leurs pixels et leur poids ; et le filtrage des textures des panneaux
+   (« totems », `lieu.js`) : `anisotropy`, mipmaps. Piste : une version plus fine chargée APRÈS le premier écran.
+3. **Les voiles de la vague 2** : brume `FogExp2` (0,012 le jour, 0,018 le soir), halo `UnrealBloomPass` (qualité haute),
+   profondeur de champ `BokehPass` (haute, conversations seulement), faisceaux (`socle/faisceaux.js`) : vérifier qu'aucun ne
+   voile un panneau. L'étalonnage (`LOOK`) n'adoucit rien.
+4. Captures « avant/après » des panneaux DE PRÈS, au téléphone ET à l'ordinateur : `GL=gpu python
+   monde/_outils/captures/voir_salon.py g1avant creations expo_g expo_d` (puis `g1apres`), les REGARDER, QC, commit.
+
+### D · Ce qu'on sait déjà de G2 à G5
+
+- **G2, Hillary seule.** Les visiteuses passent par : `visiteuses` et `creerPnj` (lieu.js, `socle/pnj.js`), leurs
+  conversations `conversations(D, F)` et `dialoguesVisiteuses` (`lieux/hillary-m-styl/textes.js`), l'accroche de la vague D
+  (Sènami filme sa mère à l'entrée), Afi qui aborde le visiteur (`pnj.aborder('afi', 'afi_course')`, lieu.js vers la ligne
+  1242), les réactions au tonnerre (`TONNERRE`), leurs vidéos (`VIDEOS` dans lieu.js). **Décision proposée : ne RIEN
+  supprimer** (la marche et les vidéos resserviront au 2e lieu, Grain d'Esthétique) ; un paramètre `?visiteuses` pour les
+  revoir. ⚠️ Le QC porte sur Afi aux §§ 10 (le fondu attend son abordage), 11 (sa marche) et 12 (ses vidéos) : à adapter.
+- **G3, les robes en volume, touchables.** Il y a : les 19 pièces (`donnees.js`, construit depuis la vitrine), leurs photos
+  face et dos (`lieux/hillary-m-styl/img/`), les planches h1 et h2 (`_partage/immersive  store 3D/robes/robe-h1-face.jpg`,
+  `robe-h2-face.jpg`, bijoux de h1 effacés), les consignes des 18 planches (`monde/PROMPTS-ROBES-3D.md`), l'outil image
+  vers 3D `monde/_outils/en_3d.py` (TRELLIS.2, MIT, ZeroGPU ; `--deja-detoure` évite rembg). « Toucher et avoir les détails et
+  son image » : la fiche (`.fiche`) existe et garde la VRAIE photo ; il faut la robe en volume sur son podium, qu'on touche,
+  et un mode « examiner » (tourner autour, s'approcher). ⛔ **Un modèle 3D généré d'une pièce est VALIDÉ PAR HILLARY pièce
+  par pièce avant toute mise en ligne** ; la fiche garde la vraie photo ; aucune pièce absente du catalogue.
+- **G4, Hillary plus animée.** Elle a quatre vidéos (section F) ; en fabriquer d'autres avec `monde/_outils/en_video.py`
+  depuis `_partage/immersive  store 3D/hillary/hillary-buste-repos.png` (idées : rire, montrer une robe à sa gauche ou à sa
+  droite, plier un tissu, écrire dans un carnet, regarder son téléphone, dérouler le mètre ruban, accueillir de nouveau).
+  Quota : 3 à 4 vidéos par jour sur le compte, quelques-unes de plus en anonyme (`--sans-jeton`). Puis les brancher dans
+  `VIDEOS.hillary.sources` (lieu.js) et dans `voulue()` (`socle/perso-video.js`).
+- **G5, Hillary qui vend.** Existent : `dialoguesHillary` (textes.js), `presenterCarte` (lieu.js : elle lève la carte du
+  lookbook), le conseil (« Conseille-moi » → cérémonie), le sac qui se remplit, le cadran de commande en trois étapes,
+  WhatsApp. À faire : quand le visiteur regarde ou touche une pièce, elle la commente ; elle propose, rassure (délais,
+  sur-mesure, express, Mobile Money), mène au sac puis à la commande. ⛔ **Rien d'inventé** : les seuls faits sont ceux du
+  catalogue (nom, prix, délais, express, mesures) et de la maison (`faits.json`, vide tant qu'Hillary n'a rien dit).
+
+### E · Ce qui a été fait du 2026-11-14 au 2026-11-16 (commits sur `main`, dans l'ordre)
+
+| Commit | Quoi | QC |
+|---|---|---|
+| `a4a22cc` | `monde/A-FAIRE.md` (la liste complète, Mongazi / Claude), consignes vidéo des personnages, départ d'Hillary, décor pour Marble | |
+| `4dd7b7f` | **Le monde photographique** (Gaussian splat, Spark 2.4, `?monde=`, `?calage`) ; le saut du fondu attend l'écran noir ; deux faux rouges du QC réparés | 58/58 |
+| `4ee9453` | **La marche qui ne glisse plus** (patinage 34 → 9 cm/s) | 59/59 |
+| `c9f3c02`, `3f96a89` | La consigne pour Fable (`monde/PROMPT-FABLE.md`) ; pistes GEM-X, Lyra, SHARP | |
+| `9db7a3b`, `bd141a3` | **Vague 1 : les quatre personnages en vidéo** (Hillary en buste à son comptoir, en permanence) | 62/62 |
+| `10c3abc`, `0a49568` | **Vague 2 : le rendu** (étalonnage de film pour toutes les qualités, vignettage, faisceaux et poussière, brume, soir plus tamisé, **le soleil qui entre par la vitrine**) | 66/66 |
+| `5ea69a0` | **Vague 3 : les matières** (vrais imprimés wax sur les tissus du décor, velours, laiton, enduit ; seconde vidéo de parole d'Hillary) | 67/67 |
+| `defc888` | **Vague 6, première partie : la 3G** (vidéos légères au téléphone, chargées à la demande) ; le nouveau cap inscrit | **68/68** |
+| (ce commit) | La mémoire « à la lettre près » | |
+
+Les notes honnêtes (sur 10, vague 2) : lumière 7 à 7,5 · étalonnage 7,5 à 8 · « waouh » 6,5 à 7. **Le seuil de 8 n'est pas
+atteint partout** ; ce qui retient : le décor en boîtes, les robes en photos sur des panneaux, les expositions floues (G1).
+
+### F · Les vidéos des personnages : elles ne sont PAS dans git, voici comment tout refaire
+
+Elles vivent dans `monde/lieux/hillary-m-styl/personnages/<prénom>/video-<nom>.mp4` + `.json` + `-tel.mp4` (ignorés par
+git : Hillary est une personne réelle, le dépôt est public). Les sources sont dans `_partage/immersive  store 3D/` (ignoré).
+⚠️ Dans un dossier de travail passé à `monter_video.py`, écrire le chemin **`C:/Users/...`**, jamais `/c/Users/...` (il ne
+le trouve pas).
+
+```bash
+P="_partage/immersive  store 3D/personnages"; O=monde/lieux/hillary-m-styl/personnages; V=monde/_outils/perso_video.py
+# Afi (« écouter » = le passage de 3 s au visage le plus calme de « parler », rejoué à 0,85)
+python $V "$P/afi/videos/afi-parler.mp4" $O/afi/video-parler --fin 7.6 --garder          # note le dossier de travail
+python $V "$P/afi/videos/afi-parler.mp4" $O/afi/video-ecouter --fin 7.6 --calme 3 --vitesse 0.85 --reprendre <ce dossier>
+# Sènami (coupure de sa vidéo « parler » à 7,6 s)
+python $V "$P/senami/videos/senami-parler.mp4" $O/senami/video-parler --fin 7.5
+python $V "$P/senami/videos/senami-ecouter.mp4" $O/senami/video-ecouter --fin 7.85 --pas 2
+# Maman (« écouter » choisi À L'ŒIL : mains jointes, elle sourit)
+python $V "$P/maman/videos/maman-parler.mp4" $O/maman/video-parler --fin 7.85 --garder
+python $V "$P/maman/videos/maman-parler.mp4" $O/maman/video-ecouter --fin 7.85 --plage 4.8-7.4 --vitesse 0.85 --reprendre <ce dossier>
+# Hillary (en buste, détourage par la couleur du fond)
+H="_partage/immersive  store 3D/hillary/videos"; C="--fond-uni --buste 1.18 --tete-m 1.68 --hauteur 832"; T="C:/Users/USER/AppData/Local/Temp"
+mkdir -p "$T/hms_calme" "$T/hms_vie" "$T/hms_salut"
+python $V "$H/hillary-ecouter-boucle.mp4" $O/hillary/_calme $C --boucle directe --reprendre "$T/hms_calme"
+python $V "$H/hillary-ecouter-2.mp4" $O/hillary/_vie $C --boucle directe --reprendre "$T/hms_vie"
+python $V "$H/hillary-accueillir.mp4" $O/hillary/_salut $C --boucle directe --reprendre "$T/hms_salut"
+python $V "$H/hillary-parler.mp4" $O/hillary/video-parler $C --fin 4.55 --boucle allerretour
+python $V "$H/hillary-conseiller.mp4" $O/hillary/video-parler-2 $C --boucle allerretour
+python monde/_outils/monter_video.py $O/hillary/video-ecouter --modele $O/hillary/_calme.json "$T/hms_calme:0-80" "$T/hms_calme:0-80" "$T/hms_vie:0-64" "$T/hms_vie:63-1" "$T/hms_calme:0-80"
+python monde/_outils/monter_video.py $O/hillary/video-saluer --modele $O/hillary/_salut.json --une-fois "$T/hms_salut:0-64"
+rm -f $O/hillary/_calme.* $O/hillary/_vie.* $O/hillary/_salut.*
+# les versions légères pour le téléphone (11,6 → 4,7 Mo)
+python monde/_outils/alleger_videos.py
+```
+
+**Comment les vidéos d'Hillary ont été fabriquées** (Wan 2.2, gratuit, `monde/_outils/en_video.py`), consignes exactes dans
+`monde/lieux/hillary-m-styl/personnages/CONSIGNES.md`, section « HILLARY : SES VIDÉOS FAITES PAR WAN 2.2 ».
+
+### G · La carte du code ajoutée les 14, 15 et 16 novembre
+
+- `socle/monde-photo.js` (+ `socle/vendor/spark/`, Spark 2.4.0, MIT) : un monde en Gaussian splat (`?monde=<.spz>`,
+  `?calage` = le pupitre, M = comparer) remplace le décor du dedans, en fondu, après le premier écran. Essayé avec un monde
+  d'exemple (500 000 points, `monde/_cuisson/essai-monde.spz`, ignoré par git).
+- `socle/perso-video.js` : le personnage-vidéo (couleur à gauche, opacité à droite, H.264 ; fondu entre vidéos ; salut joué
+  une fois ; plusieurs vidéos « parler » qui alternent ; version légère `-tel.mp4` hors qualité haute ; la vidéo est LANCÉE,
+  jamais attendue ; `etat.charge`).
+- `socle/faisceaux.js` (cônes visibles + poussière, s'effacent près du visiteur) · `socle/soleil-vitrine.js` (le soleil
+  projeté par chaque ouverture de la façade) · `socle/ressources/wax/` (8 imprimés originaux, 344 Ko, `LICENCE.md`).
+- `socle/moteur.js` : `LOOK` (AgX + look dans `CustomToneMapping`, `?sans-look`), vignettage `.vignette-film`,
+  `composition()`. `socle/ciel.js` : `capFacade` (degrés de boussole ; l'azimut de Meeus part du SUD). `socle/matieres.js` :
+  `bruitDoux`, `relief()` (`?sans-relief`), `chargerWaxPhotos`, `etatWax`, velours à sheen. `socle/pnj.js` : `MARCHE`,
+  `pasDeCote`, `pousser`, `envoyer()`. `socle/habiller.js` : `mesurerMarche`, `perso.modele3d`. `socle/deplacement.js` : le
+  fondu attend `transitionend`.
+- `lieux/hillary-m-styl/lieu.js` : `VIDEOS` + `creerVideo` (Hillary `toujours`, les visiteuses à la demande), brume,
+  `faisceauxVus`, `soleilVitrine` (`capFacade: 215`, façade au sud-ouest), `TAMISE` 0,34, exposition du soir 0,92 et −10 %
+  quand le soleil entre, `nuitCuite` déclaré AVANT la brume, `chargerWaxPhotos` dans `embellir()`.
+- Outils : `_outils/perso_video.py` (`--fond-uni --buste --calme --plage --pas --reprendre --garder --vitesse`),
+  `monter_video.py`, `en_video.py`, `alleger_videos.py`, `mesurer_marche.py`, `mesurer.py` (`CAS="tel:moyenne"`,
+  `EXTRA="&sans-relief"`), `en_3d.py` (`--deja-detoure`) ; captures : `voir_perso_video.py` (`--nuit --tel --ordi`),
+  `voir_soleil.py`, `voir_salon.py` (`GL=gpu`, `EXTRA`, capture de 2 min).
+- `_qc.py` : **68 contrôles**. `toucher_dialogue()` (la fiche peut s'ouvrir par-dessus), le fondu jugé à l'opacité réelle,
+  § 11 la marche, § 12 les vidéos (Sènami pas chargée avant qu'on lui parle ; Afi retenue = vidéo, relâchée = 3D), § 13 le
+  rendu, § 14 le soleil à 16 h, § 15 les imprimés.
+- Apprentissages : `_memoire/apprentissages/2026-11-14-marche-qui-ne-glisse-pas.md`, `2026-11-14-personnage-video.md`,
+  `2026-11-15-rendu-film-sans-passe.md`.
+
+### H · Les pièges de ces jours-ci (en plus des apprentissages)
+
+- **Claude Code tue les tâches de fond** quand la session est en pause et que la mémoire manque : le serveur (5 fois), deux
+  détourages. Un détourage long se lance en tâche de fond, mais il faut rester actif.
+- **rembg prend 6 à 10 s par image** quand la mémoire manque (1,6 Go) : pour un buste de studio, `--fond-uni` (0,25 s).
+- **Une capture en qualité haute, le soir, dépasse 30 s** sur ce PC (`timeout=120000`).
+- **La cadence mesurée varie de 28 à 44 i/s** d'un essai à l'autre sur ce PC : `mesurer.py` ne distingue pas un écart de 20 %.
+- **Le quota ZeroGPU** : le compte a quelques minutes de carte graphique par jour (« 180s requested vs. 109s left » ;
+  le message dit que PRO en donne 40 min) ; une vidéo Wan de 5 s en réserve 100 à 180 s (moins avec `--etapes 4`) ; le
+  quota anonyme (`--sans-jeton`) est compté à part. Le 2026-11-15 au soir, le quota anonyme restant ne suffisait plus pour
+  TRELLIS (« 120s requested vs. 89s left »).
+- **Le filtre de Cloudflare Workers AI** a refusé un prompt d'imprimé (« NSFW » sur des losanges bruns) : reformuler.
+- **`.codex/hooks.json` modifié** par Impeccable : il bloque `rapatrier.py`, ne pas y toucher.
+
+### I · Treg (Mongazi, 2026-11-15 : « utilise un agent qui va analyser Treg… qu'on l'intègre à nos travaux »)
+
+Rapport complet : **`_knowledge/treg-decortique.md`** (lecture seule, dépôt lu au commit `6ffe8df712` du 15 novembre).
+**Verdict : ne pas intégrer maintenant.** C'est un proxy à clés + un catalogue d'API payées à l'appel (licence « Apache 2.0
++ termes additionnels », PAS de l'AGPL : interdit de l'offrir en service à des tiers) ; **rien en image vers 3D ni en monde
+en splats** (nos deux vrais manques) ; paiement par **Stripe (carte)**, 1 $ offert puis recharge de 10 $ minimum ; **le
+service hébergé a été compromis le 23 octobre 2026** (post-mortem non publié). Essai possible, borné au dollar offert, si
+Mongazi le décide (compte dédié, sans carte, serveur MCP seul, un clip comparé à Wan 2.2). L'agent a été coupé trois fois par
+les limites d'utilisation ; son rapport est complet.
+
+### J · Les modèles et la signature des commits
+
+Le 2026-11-16, la limite de Fable était atteinte (jusqu'au 22 novembre à 12 h) : Mongazi a passé Claude Code sur
+**Opus 5.5**, par défaut pour les nouvelles sessions. Les commits se signent `Co-Authored-By: Claude Opus 5.5
+<noreply@anthropic.com>` (suivre le rappel de signature de la session).
+
+### K · Ce qui attend Mongazi (rien ne bloque G1)
+
+- Regarder et juger : la ressemblance d'Hillary dans ses vidéos (envoyée le 2026-11-15), les planches des vagues.
+- Avant toute mise en ligne : **une preuve écrite de l'accord d'Hillary** dans `_partage/immersive  store 3D/hillary/`
+  (`ACCORD.md` ne porte que sa parole à lui) ; **la validation de chaque robe 3D par Hillary**.
+- À trancher : Marble (A1 à A3 de `A-FAIRE.md`), un essai Treg ou non, la variable qui empêche Claude Code de tuer le serveur.
+
+---
+
+# L'HISTOIRE (sections écrites avant le 2026-11-16)
+
 ## 0 · En arrivant, dans cet ordre
 
 1. `python scripts/rapatrier.py` (règle du dépôt), puis `git pull` si `main` est en retard.
