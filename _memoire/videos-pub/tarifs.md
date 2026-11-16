@@ -1,7 +1,8 @@
 # PUBS VIDÉO IA · les prix
 
-> Proposition de Claude du 2026-11-16, **pas encore validée par Mongazi**. Une fois validée, elle entre au socle
-> commercial (`_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`), qui reste la source de vérité des prix.
+> ✅ **Validé par Mongazi le 2026-11-16** : pub modèle **10 000 F** (la pub annonce « dès 10 000 F »), sur mesure
+> **25 000 F** (30 s) et **35 000 F** (1 min). Inscrit au socle commercial (`00-SOCLE-COMMERCIAL.md`, § 1.4), qui reste
+> la source de vérité des prix. Ce qui suit garde le chemin : la première grille, rejetée, puis le calcul.
 
 ## ⚠️ 2026-11-16 · Mongazi rejette la grille du § 1
 

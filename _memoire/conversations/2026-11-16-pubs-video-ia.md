@@ -77,3 +77,5 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
 - **Le motion design** (Mongazi) : la fin devient une séquence de 9 s (le téléphone et les vrais produits, le film qui se
   replie en planche de story-board, la signature), pour faire comprendre « ta pub peut être de cette qualité ». Prix
   affiché : « Dès 10 000 F ». La pub fait environ 1 min 05.
+- **Les prix validés** (« oui oui ») : dès 10 000 F (pub modèle), 25 000 F / 35 000 F sur mesure. Inscrits au socle
+  commercial, § 1.4 (vendus par NEBULA seulement).

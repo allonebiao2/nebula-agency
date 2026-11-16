@@ -982,3 +982,5 @@ MD5, 53 plats balisés, fichier absent → 404).
 - **Une seule voix par clip** (Mongazi : « pour éviter que Veo ne se perde dans la voix »).
 - **Motion design au montage** (Mongazi) : la fin de « L'AUTRE » doit faire comprendre que le spectateur peut avoir des
   vidéos de cette qualité. Le prix affiché proposé : « Dès 10 000 F ».
+- **Les prix sont validés** (Mongazi : « oui oui ») : pub modèle 10 000 F, affichée « dès 10 000 F » ; sur mesure
+  25 000 F (30 s), 35 000 F (1 min). Inscrits au socle commercial, § 1.4, hors contrat partenaire.

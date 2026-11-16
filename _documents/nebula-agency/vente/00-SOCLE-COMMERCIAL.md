@@ -90,6 +90,21 @@ Un partenaire qui attaque au prix fort brûle son prospect et ne revient jamais.
 
 ---
 
+### 1.4 Les pubs vidéo · vendues par NEBULA seulement *(validé par Mongazi le 2026-11-16)*
+
+Une pub vidéo pour TikTok, Reels, les statuts WhatsApp et Facebook, en dessin animé, sans tournage. Le produit montré
+est toujours le vrai produit du client. Méthode, règles et dossiers : `_memoire/videos-pub/`.
+
+| Offre | Ce que le client reçoit | Prix |
+|---|---|---|
+| **Pub modèle** | une de nos histoires, adaptée à son commerce : ses vrais produits, son nom, son numéro · 30 s à 1 min · livrée en 48 h | **10 000 F**, payés d'avance |
+| **Pub sur mesure** | son histoire à lui | **25 000 F** (30 s) · **35 000 F** (1 min) |
+
+- Ce que la pub de NEBULA annonce : « **dès 10 000 F** ».
+- Le client qui achète sait que c'est de l'IA (pas de tournage, des personnages inventés). La pub elle-même ne le dit pas.
+- Aucun abonnement : la pub est livrée en MP4, une fois.
+- ⚠️ **Hors contrat partenaire** : l'article 4.4 limite les partenaires aux offres du tableau 4.1, « et elles seules ».
+
 ## 2. Comment le client paie
 
 **Toujours à NEBULA, jamais au partenaire. Le partenaire ne touche jamais d'argent,
