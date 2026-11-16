@@ -73,3 +73,4 @@ bout en bout. Le partenaire **vend et rapporte le brief**, NEBULA produit tout.
 | Vocabulaire | `_memoire/vocabulaire-metier.md` |
 | Templates projet | `_templates/` |
 | Connaissances spécialisées | `_knowledge/` |
+| Pubs vidéo IA (branche, 2026-11-16) | `_memoire/videos-pub/cerveau.md` |

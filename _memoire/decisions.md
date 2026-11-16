@@ -958,3 +958,15 @@ MD5, 53 plats balisés, fichier absent → 404).
   +1 000 F. Le prix se calcule au serveur, jamais dans le navigateur.
 - **À traiter plus tard** : la capture d'écran de l'aperçu dans le constructeur (on peut photographier la lettre et
   l'envoyer sans payer). Rien de tranché.
+
+## 2026-11-16 · PUBS VIDÉO IA : une nouvelle offre, et qui fait quoi (Mongazi)
+
+- **L'offre** : des pubs vidéo générées par IA pour les commerçants. Branche du cerveau : `_memoire/videos-pub/`.
+- **Qui fait quoi** : le scénario se construit ensemble, en conversation, court ; Mongazi génère les images (Nano Banana
+  Pro) et les anime (Veo 3.1) dans Google Flow ; Claude écrit le dossier de production et fait le montage, ultra
+  dynamique (texte, dessins, bruitages).
+- **La pub ne dit pas qu'elle est faite avec l'IA** (Mongazi : « j'ai pas envie qu'on leur dise que ça a été créé avec
+  l'IA »). Le client qui achète, lui, le sait toujours.
+- **Le français reste très simple** (Mongazi : « quand le français est trop soutenu, ils ne comprennent pas »).
+- **Pas encore tranché** : les prix (grille proposée dans `_memoire/videos-pub/tarifs.md`) et l'étiquette IA des
+  réseaux (conseillée par Claude).

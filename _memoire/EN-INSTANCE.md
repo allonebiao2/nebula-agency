@@ -9,7 +9,7 @@
 >
 > 🙋 attend une réponse ou un geste de Mongazi · 🤖 Claude peut le faire · 🕰️ plus tard, exprès
 >
-> Dernière mise à jour : **2026-11-13**.
+> Dernière mise à jour : **2026-11-16**.
 
 ---
 
@@ -17,6 +17,10 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
+| **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt. Avant de générer : le filigrane « Veo » (Pro ou Ultra), puis UN plan d'essai (P02 : voix, accent). Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
+| **PUBS VIDÉO IA · le montage de « L'AUTRE »**, dès que les prises sont dans `_partage/pub-l-autre/` (`P01.mp4`…) | 🤖 | `videos-pub/methode.md` § 3 |
+| **PUBS VIDÉO IA · les prix** proposés (flash 40 000 F, dialoguée 125 000, mini-film 250 000, série, abonnement) : à valider, puis à inscrire au socle commercial | 🙋 puis 🤖 | `videos-pub/tarifs.md` |
+| **PUBS VIDÉO IA · l'étiquette IA** sur TikTok et Facebook (conseillée : sinon retrait possible) et **le contrat partenaire**, qui ne couvre pas l'offre (art. 4.4) | 🙋 | `videos-pub/cerveau.md` règle 5 · `tarifs.md` § 4 |
 | **Treg** (« OpenRouter des outils », `superdesigndev/treg`) : analysé le 2026-11-15/16, **pas maintenant** (rien pour la 3D, carte bancaire, service compromis le 23 octobre). Essai borné au dollar offert, si Mongazi le veut | 🙋 | `_knowledge/treg-decortique.md` |
 | **NEBULA REC** : premier vrai usage par Mongazi (raccourci sur le Bureau), dire ce qui manque | 🙋 | `conversations/2026-11-11-nebula-rec.md` |
 | **VIDÉO HD** : premier passage sur Colab (cocher ESSAI_10_SECONDES), mesurer le temps par minute de vidéo, vérifier NVENC et `zscale` | 🙋 puis 🤖 | `conversations/2026-11-11-video-hd.md` |

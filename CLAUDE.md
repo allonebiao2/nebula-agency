@@ -471,6 +471,25 @@
   Le calcul GPU pour les clients sera payant.
 - ⏳ crédit de l'API Anthropic épuisé (Gemini prend le relais : clé rangée, éprouvée sur `gemini-3.8-flash`) · `gh` accepté, à installer à la reprise · ⏸️ **en pause depuis le 2026-11-12** (Mongazi).
 
+### PUBS VIDÉO IA · les pubs générées pour les commerçants  *(offre, branche ouverte le 2026-11-16)*
+- **Ce que c'est** : des pubs vidéo pour TikTok, Reels, statuts WhatsApp et Facebook, **sans tournage** : personnages,
+  décors et voix générés (Nano Banana Pro puis Veo 3.1, dans **Google Flow**). **Le produit montré est le vrai**
+  (photos ou vidéos du client, incrustées au montage).
+- **Qui fait quoi** (Mongazi, 2026-11-16) : le scénario se construit **en conversation, court, d'abord** ; Claude écrit
+  le dossier de production quand Mongazi le demande ; **Mongazi génère** les plans et les anime ; **Claude monte** dans
+  `_studio-video/`, ultra dynamique (texte animé, dessins SVG, bruitages).
+- **Le cerveau de l'offre** : `_memoire/videos-pub/` (`cerveau.md`, `methode.md`, `tarifs.md`, `projets/`).
+- **1re pub : « L'AUTRE »** (une dispute de couple à 3 h du matin qui finit sur un catalogue) · validée par Mongazi,
+  dossier prêt, rien de généré · `_memoire/videos-pub/projets/01-l-autre.md`.
+- **Deux consignes de Mongazi** : la pub **ne dit pas** qu'elle est faite avec l'IA ; le **français reste très simple**
+  (phrases courtes, mots de la rue).
+- ⛔ Jamais un produit généré présenté comme celui du client, jamais un faux témoignage, aucun visage réel sans accord
+  écrit, **le client qui achète sait que c'est de l'IA**, on livre le MP4.
+- ⚠️ **Filigrane « Veo » visible avec Google AI Pro** (pas avec Ultra) : jamais masqué ; une pub livrée sans filigrane =
+  Ultra, ou les prises finales par l'API.
+- ⏳ **Prix proposés, pas validés** (flash 40 000 F · dialoguée 125 000 · mini-film 250 000) : validés, ils entrent au
+  socle. ⚠️ **Les partenaires ne peuvent pas la vendre** (contrat art. 4.4).
+
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
 - 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé
   « à part » par Mongazi). **Lire son `CLAUDE.md` et `00 Accueil/REPRENDRE-ICI.md` en arrivant.**
