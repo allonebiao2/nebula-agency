@@ -1,7 +1,7 @@
 # PUBS VIDÉO IA · les prix
 
-> ✅ **Validé par Mongazi le 2026-11-16** : pub modèle **10 000 F** (la pub annonce « dès 10 000 F »), sur mesure
-> **25 000 F** (30 s) et **35 000 F** (1 min). Inscrit au socle commercial (`00-SOCLE-COMMERCIAL.md`, § 1.4), qui reste
+> ✅ **Validé par Mongazi le 2026-11-16** : pub modèle **20 000 F**, le plus petit prix (Mongazi :
+> « 20 000 F le plus petit » ; la pub annonce « dès 20 000 F ») ; sur mesure **25 000 F** (30 s) et **35 000 F** (1 min). Inscrit au socle commercial (`00-SOCLE-COMMERCIAL.md`, § 1.4), qui reste
 > la source de vérité des prix. Ce qui suit garde le chemin : la première grille, rejetée, puis le calcul.
 
 ## ⚠️ 2026-11-16 · Mongazi rejette la grille du § 1
@@ -22,9 +22,9 @@ client : 0 à 1 000 F et environ une heure ; il reste 9 000 à 10 000 F par vent
   d'entrée.
 - Le sur-mesure (une histoire écrite pour un seul client) reste à part : 25 000 F pour 30 s, 35 000 F pour 1 min
   (proposé une fois le filigrane réglé, à trancher par Mongazi).
-- Le lot : catalogue + pub modèle à 55 000 F au lieu de 60 000 F ; la pub envoie les clients vers le catalogue.
+- Le lot : catalogue + pub modèle à 65 000 F au lieu de 70 000 F ; la pub envoie les clients vers le catalogue.
 - La pub modèle se paie d'avance (Mobile Money), livrée en 48 h.
-- **Ce que la pub annonce** : « Dès 10 000 F ». Le « dès » couvre le client qui voudra sa propre histoire (sur mesure).
+- **Ce que la pub annonce** : « Dès 20 000 F ». Le « dès » couvre le client qui voudra sa propre histoire (sur mesure).
 
 ## 1. La première grille proposée (rejetée le 2026-11-16)
 

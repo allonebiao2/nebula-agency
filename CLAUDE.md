@@ -487,8 +487,8 @@
 - ⛔ Jamais un produit généré présenté comme celui du client, jamais un faux témoignage, aucun visage réel sans accord
   écrit, **le client qui achète sait que c'est de l'IA**, on livre le MP4.
 - ✅ **Aucun filigrane visible** sur les générations Flow de Mongazi (vérifié par lui le 2026-11-16, boutique 3D).
-- ✅ **Prix validés le 2026-11-16** : **pub modèle 10 000 F** (une histoire fabriquée une fois, déclinée à chaque client ;
-  la pub annonce « dès 10 000 F »), **sur mesure 25 000 F (30 s) ou 35 000 F (1 min)**. Inscrits au socle, § 1.4.
+- ✅ **Prix validés le 2026-11-16** : **pub modèle 20 000 F** (une histoire fabriquée une fois, déclinée à chaque client ;
+  la pub annonce « dès 20 000 F »), **sur mesure 25 000 F (30 s) ou 35 000 F (1 min)**. Inscrits au socle, § 1.4.
 
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
 - 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé

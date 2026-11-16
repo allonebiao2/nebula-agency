@@ -984,3 +984,5 @@ MD5, 53 plats balisés, fichier absent → 404).
   vidéos de cette qualité. Le prix affiché proposé : « Dès 10 000 F ».
 - **Les prix sont validés** (Mongazi : « oui oui ») : pub modèle 10 000 F, affichée « dès 10 000 F » ; sur mesure
   25 000 F (30 s), 35 000 F (1 min). Inscrits au socle commercial, § 1.4, hors contrat partenaire.
+- **Le plus petit prix passe à 20 000 F** (Mongazi : « non, 20 000 F le plus petit ») : pub modèle 20 000 F, la pub
+  annonce « dès 20 000 F ». Socle § 1.4 mis à jour.

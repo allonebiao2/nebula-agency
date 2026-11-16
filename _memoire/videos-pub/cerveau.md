@@ -51,7 +51,7 @@ les voix sont générés ; le produit du client, lui, est le vrai.
 ## Les fichiers
 
 - [`methode.md`](methode.md) : écrire une pub décalée, générer dans Flow, ce que Mongazi me remet, le montage, publier.
-- [`tarifs.md`](tarifs.md) : les prix validés (dès 10 000 F), ce que coûte une pub, les conditions de vente.
+- [`tarifs.md`](tarifs.md) : les prix validés (dès 20 000 F), ce que coûte une pub, les conditions de vente.
 - `projets/` : un dossier par pub.
 
 ## Les pubs

@@ -97,10 +97,10 @@ est toujours le vrai produit du client. Méthode, règles et dossiers : `_memoir
 
 | Offre | Ce que le client reçoit | Prix |
 |---|---|---|
-| **Pub modèle** | une de nos histoires, adaptée à son commerce : ses vrais produits, son nom, son numéro · 30 s à 1 min · livrée en 48 h | **10 000 F**, payés d'avance |
+| **Pub modèle** | une de nos histoires, adaptée à son commerce : ses vrais produits, son nom, son numéro · 30 s à 1 min · livrée en 48 h | **20 000 F**, payés d'avance |
 | **Pub sur mesure** | son histoire à lui | **25 000 F** (30 s) · **35 000 F** (1 min) |
 
-- Ce que la pub de NEBULA annonce : « **dès 10 000 F** ».
+- Ce que la pub de NEBULA annonce : « **dès 20 000 F** ».
 - Le client qui achète sait que c'est de l'IA (pas de tournage, des personnages inventés). La pub elle-même ne le dit pas.
 - Aucun abonnement : la pub est livrée en MP4, une fois.
 - ⚠️ **Hors contrat partenaire** : l'article 4.4 limite les partenaires aux offres du tableau 4.1, « et elles seules ».

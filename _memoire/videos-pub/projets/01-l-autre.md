@@ -1,7 +1,7 @@
 # « L'AUTRE » · pub vidéo IA n° 01
 
 > **Pour** : NEBULA Agency. La pub vend le Catalogue digital (la porte d'entrée, 50 000 F) et, dans la fin en motion design,
-> la pub vidéo elle-même (« Et ta pub vidéo, comme celle-ci ? Dès 10 000 F. »).
+> la pub vidéo elle-même (« Et ta pub vidéo, comme celle-ci ? Dès 20 000 F. »).
 > **Format** : 9:16, environ 1 min · version courte de 30 s au § 7.
 > **Style** : dessin animé 2D, façon bande dessinée ouest-africaine (Mongazi : le style d'« Aya de Yopougon »). Les
 > prompts nomment le film et précisent toujours « personnages originaux » (`../cerveau.md`, règle 11).
@@ -630,7 +630,7 @@ texture de papier.
    produits y défilent (jamais des produits générés). Texte : « **Ton catalogue vend même quand tu dors.** » puis
    « Catalogue digital : 50 000 F ».
 2. **La vidéo (4 s)** : la dernière image se fige, se plie comme une page de BD et rejoint les autres plans du film, qui
-   s'assemblent en planche de story-board. Texte : « **Et ta pub vidéo, comme celle-ci ?** » puis « Dès 10 000 F ».
+   s'assemblent en planche de story-board. Texte : « **Et ta pub vidéo, comme celle-ci ?** » puis « Dès 20 000 F ».
 3. **La signature (2 s)** : le logo NEBULA (en couches, comme dans la vidéo de marque) et « WhatsApp +229 96 74 07 32 ».
 
 Facebook (on vouvoie) : « Votre catalogue vend même quand vous dormez. » · « Et votre pub vidéo, comme celle-ci ? »
@@ -643,7 +643,7 @@ la forme affichée. Le lien du site, lui, ne change pas.
 ## 7. La version courte (30 s)
 
 P02 · P03 · P05 · P09 (ses deux premières phrases) · P12 · P13 · P14 · P16 · P20 · une fin raccourcie de 5 s
-(« Ton catalogue : 50 000 F » · « Ta pub vidéo comme celle-ci : dès 10 000 F » · la signature). Pour les statuts
+(« Ton catalogue : 50 000 F » · « Ta pub vidéo comme celle-ci : dès 20 000 F » · la signature). Pour les statuts
 WhatsApp.
 
 ---

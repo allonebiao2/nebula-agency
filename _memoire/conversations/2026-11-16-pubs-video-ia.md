@@ -79,3 +79,5 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
   affiché : « Dès 10 000 F ». La pub fait environ 1 min 05.
 - **Les prix validés** (« oui oui ») : dès 10 000 F (pub modèle), 25 000 F / 35 000 F sur mesure. Inscrits au socle
   commercial, § 1.4 (vendus par NEBULA seulement).
+- **Le plus petit prix passe à 20 000 F** (Mongazi). La pub annonce « dès 20 000 F ». Le sur-mesure (25 000 / 35 000 F)
+  devient presque le même prix : question posée.
