@@ -53,7 +53,9 @@ function boiteVideos() {
 
 /* `teinte()` : un nombre (gris) ou { r, g, b, chute } donné par le lieu (le soir : plus bas, plus chaud, la lumière
    qui tombe d'en haut) */
-export function creerPersoVideo({ moteur, perso, sources, taille, actif = () => false, teinte = () => 1 }) {
+/* `leger` : prendre la version légère de chaque vidéo (`…-tel.mp4`, `_outils/alleger_videos.py`) : le téléphone, la 3G.
+   Si elle n'existe pas, on retombe sur la version pleine. */
+export function creerPersoVideo({ moteur, perso, sources, taille, actif = () => false, teinte = () => 1, leger = false }) {
   if (new URLSearchParams(location.search).has('sans-video')) return null;
   const { scene, camera } = moteur;
   const clips = {};
@@ -75,9 +77,13 @@ export function creerPersoVideo({ moteur, perso, sources, taille, actif = () => 
     const video = Object.assign(document.createElement('video'), { muted: true, loop: !meta.une_fois, playsInline: true, preload: 'auto', crossOrigin: 'anonymous', disableRemotePlayback: true });
     video.setAttribute('playsinline', ''); video.setAttribute('webkit-playsinline', ''); video.setAttribute('muted', '');
     video.defaultPlaybackRate = meta.vitesse || 1; video.playbackRate = meta.vitesse || 1;
-    video.addEventListener('error', () => { etat.erreur = 'vidéo illisible : ' + base; });
+    let replie = !leger;
+    video.addEventListener('error', () => {
+      if (!replie) { replie = true; video.src = base + '.mp4'; return; }   /* pas de version légère : la pleine */
+      etat.erreur = 'vidéo illisible : ' + base;
+    });
     boiteVideos().appendChild(video);
-    video.src = base + '.mp4';
+    video.src = base + (leger ? '-tel.mp4' : '.mp4');
     const tex = new THREE.VideoTexture(video); tex.colorSpace = THREE.NoColorSpace; tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
     const mat = new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: FS, transparent: true, depthWrite: false, toneMapped: false,
       uniforms: { carte: { value: tex }, teinte: { value: new THREE.Color(1, 1, 1) }, opacite: { value: 0 }, chute: { value: 0 }, fonduBas: { value: meta.fondu_bas || 0 } } });

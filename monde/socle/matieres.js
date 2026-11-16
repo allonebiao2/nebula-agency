@@ -129,10 +129,14 @@ function bruitDoux(nom, { taille = 256, echelles = [32, 12, 4], forces = [0.55, 
   surfaces.set(nom, tx); return tx;
 }
 const repete = (tx, x, y) => { const c = tx.clone(); c.repeat.set(x, y); c.needsUpdate = true; return c; };
+/* `?sans-relief` : les matières d'avant la vague 3 (sans reliefs ni rugosités calculés, velours simple), pour MESURER ce
+   qu'ils coûtent : un relief sur un grand mur est une lecture de texture et une dérivée par pixel */
+const SANS_RELIEF = typeof location !== 'undefined' && new URLSearchParams(location.search).has('sans-relief');
+const relief = (f) => SANS_RELIEF ? {} : f();
 
 export const MATIERES = {
-  creme: () => new THREE.MeshStandardMaterial({ color: 0xf4efe6, roughness: 0.92, bumpMap: repete(bruitDoux('enduit'), 3, 3), bumpScale: 0.6 }),
-  platre: () => new THREE.MeshStandardMaterial({ color: 0xf7f3ec, roughness: 0.96, bumpMap: repete(bruitDoux('enduit'), 4, 4), bumpScale: 0.7 }),
+  creme: () => new THREE.MeshStandardMaterial({ color: 0xf4efe6, roughness: 0.92, ...relief(() => ({ bumpMap: repete(bruitDoux('enduit'), 3, 3), bumpScale: 0.6 })) }),
+  platre: () => new THREE.MeshStandardMaterial({ color: 0xf7f3ec, roughness: 0.96, ...relief(() => ({ bumpMap: repete(bruitDoux('enduit'), 4, 4), bumpScale: 0.7 })) }),
   laque: () => new THREE.MeshStandardMaterial({ color: 0xfbf8f3, roughness: 0.28, metalness: 0 }),
   chene: () => {
     const c = document.createElement('canvas'); c.width = 256; c.height = 512; const g = c.getContext('2d');
@@ -140,16 +144,17 @@ export const MATIERES = {
     for (let i = 0; i < 90; i++) { g.strokeStyle = `rgba(${120 + r() * 40},${84 + r() * 30},${50 + r() * 20},${0.12 + r() * 0.2})`; g.lineWidth = 1 + r() * 3;
       const x = r() * 256; g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + r() * 20 - 10, 170, x + r() * 20 - 10, 340, x + r() * 16 - 8, 512); g.stroke(); }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55, bumpMap: t, bumpScale: 0.8 });
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55, ...relief(() => ({ bumpMap: t, bumpScale: 0.8 })) });
   },
   /* le laiton patiné : une rugosité qui varie À PEINE (0,22 à 0,38 : traces, poli inégal), jamais un chrome parfait.
      ⚠️ À 0,9 de contraste il paraissait TACHÉ, sali (gros plan du 2026-11-15) */
-  laiton: () => new THREE.MeshStandardMaterial({ color: 0xc9a254, roughness: 1, roughnessMap: repete(bruitDoux('patine', { base: 0.3, contraste: 0.3, echelles: [48, 16, 6] }), 2, 2), metalness: 1 }),
+  laiton: () => new THREE.MeshStandardMaterial({ color: 0xc9a254, roughness: 0.3, metalness: 1, ...relief(() => ({ roughness: 1, roughnessMap: repete(bruitDoux('patine', { base: 0.3, contraste: 0.3, echelles: [48, 16, 6] }), 2, 2) })) }),
   encre: () => new THREE.MeshStandardMaterial({ color: 0x141215, roughness: 0.5 }),
   magenta: () => new THREE.MeshStandardMaterial({ color: 0xe6007e, roughness: 0.6 }),
   /* le velours boit la lumière de face et la renvoie sur ses bords (le « sheen ») : c'est ce qui le fait velours */
-  velours: (couleur = 0xb0105f) => new THREE.MeshPhysicalMaterial({ color: couleur, roughness: 0.9, sheen: 1, sheenRoughness: 0.42,
-    sheenColor: new THREE.Color(couleur).lerp(new THREE.Color(0xffe0ee), 0.45), bumpMap: repete(bruitDoux('enduit'), 6, 6), bumpScale: 0.25 }),
+  velours: (couleur = 0xb0105f) => SANS_RELIEF ? new THREE.MeshStandardMaterial({ color: couleur, roughness: 0.95 })
+    : new THREE.MeshPhysicalMaterial({ color: couleur, roughness: 0.9, sheen: 1, sheenRoughness: 0.42,
+      sheenColor: new THREE.Color(couleur).lerp(new THREE.Color(0xffe0ee), 0.45), bumpMap: repete(bruitDoux('enduit'), 6, 6), bumpScale: 0.25 }),
   verre: () => new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.05, metalness: 0, transmission: 0, transparent: true, opacity: 0.12, depthWrite: false }),
   porcelaine: () => new THREE.MeshStandardMaterial({ color: 0xefe8dc, roughness: 0.38 }),
   /* le sol crème poli : sa brillance vient de l'environnement ; au niveau haut, un vrai reflet s'y ajoute */
@@ -162,7 +167,7 @@ export const MATIERES = {
     for (let k = 0; k <= 1024; k += 512) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, 1024); g.stroke(); g.beginPath(); g.moveTo(0, k); g.lineTo(1024, k); g.stroke(); }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(8, 6); t.anisotropy = 8;
     /* la rugosité varie (passage, cire inégale) : le reflet se trouble par endroits, comme un vrai sol poli */
-    return new THREE.MeshStandardMaterial({ map: t, roughness: 1, roughnessMap: repete(bruitDoux('cire', { base: 0.17, contraste: 0.32, echelles: [64, 20, 6] }), 3, 2), metalness: 0, envMapIntensity: 1.3 });
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.16, metalness: 0, envMapIntensity: 1.3, ...relief(() => ({ roughness: 1, roughnessMap: repete(bruitDoux('cire', { base: 0.17, contraste: 0.32, echelles: [64, 20, 6] }), 3, 2) })) });
   },
 };
 

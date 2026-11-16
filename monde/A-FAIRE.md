@@ -52,6 +52,15 @@ sont ses vidéos** détourées, la 3D ne sert plus qu'à marcher de loin, la mar
 
 - [x] D9 · **Vague 3, la vie et les matières** : ✅ 2026-11-15, QC **67/67**. Les tissus du décor portent de VRAIS imprimés wax (8 motifs originaux générés gratuitement, 344 Ko, posés après le premier écran ; avant : motifs dessinés par le code). Velours à reflet de velours, laiton à peine patiné, grain d'enduit. Hillary a une seconde vidéo de parole (« conseiller »). ℹ️ Le sol, les murs, le chêne et le velours portaient DÉJÀ des matières scannées (Poly Haven) : le gain des matières est faible, celui des imprimés est net. ⛔ Reste pour atteindre 8 : Maman en 3D (quota ZeroGPU), les robes en 3D (planches), le décor photographique (Marble)
 
+- [x] D10 · **Vague 6, la 3G (première partie)** : ✅ 2026-11-16, QC **68/68**. Une version légère de chaque vidéo (11,6 → 4,7 Mo, `_outils/alleger_videos.py`), prise hors qualité « haute » ; les vidéos d'une visiteuse ne se chargent que lorsqu'on lui parle. ⚠️ La cadence mesurée sur ce PC varie de 28 à 44 i/s d'un essai à l'autre (le temps de chargement aussi, du simple au double) : l'instrument ne distingue pas un écart de 20 %. `?sans-relief` (matières d'avant la vague 3) a été PLUS lent que la version normale : les reliefs ne coûtent rien de mesurable. Reste : GLB + meshopt + KTX2 (les deux FBX pèsent 7,7 Mo)
+
+### G · LE NOUVEAU CAP (Mongazi, 2026-11-16) : Hillary seule, des robes en volume, un salon qui vend
+- [ ] G1 · La netteté des expositions (« ultra floues, on ne voit pas très bien les images »)
+- [ ] G2 · Hillary SEULE dans le salon : plus de visiteuses (gardées dans le code, `?visiteuses` pour les revoir)
+- [ ] G3 · Les robes en volume, touchables : détails, fiche, vraie photo. ⛔ La fiche garde la vraie photo ; un modèle 3D généré d'une pièce est validé par Hillary pièce par pièce avant d'être mis en ligne
+- [ ] G4 · Hillary plus animée (« plus réelle que nature ») : d'autres vidéos (quota gratuit : 3 à 4 par jour), plus de variété au repos
+- [ ] G5 · Hillary qui VEND : elle parle de la pièce qu'on regarde, propose, rassure, mène à la commande. ⛔ Rien d'inventé : seulement les faits du catalogue et de la maison
+
 ### E · Dès que ses fichiers arrivent
 - [ ] E1 · Le monde Marble : le caler sur le salon (`?calage`), mesurer poids et images/s au téléphone, retirer le décor modélisé du dedans, poser par-dessus le vrai logo et ses pièces
 - [ ] E2 · Ses vidéos : détourer, boucler, brancher Afi, Sènami, Maman

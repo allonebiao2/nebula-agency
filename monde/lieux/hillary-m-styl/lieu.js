@@ -1497,15 +1497,24 @@ const VIDEOS = {
 };
 function creerVideo(id) {
   const v = VIDEOS[id], p = personnes[id] && personnes[id].perso; if (!v || !p || persoVideos[id]) return;
-  persoVideos[id] = creerPersoVideo({ moteur, perso: p, taille: v.taille, sources: v.sources,
+  persoVideos[id] = creerPersoVideo({ moteur, perso: p, taille: v.taille, sources: v.sources, leger: q.nom !== 'haute',
     actif: v.toujours ? () => true : () => { const n = pnj.parId[id]; return !!n && (n.etat === 'joueur' || n.etat === 'retenue'); },
     /* le jour : la lumière neutre de la vitrine ; le soir : plus bas et plus chaud (mesuré sur les captures du
        2026-11-14 : le manteau rejoint la teinte du sol), et la lumière qui tombe des spots */
     teinte: () => ({ r: melanger(1, 0.6, nuitCuite), g: melanger(0.985, 0.53, nuitCuite), b: melanger(0.955, 0.44, nuitCuite), chute: melanger(0.06, 0.3, nuitCuite) }) });
 }
-/* Hillary d'abord (on la voit dès l'entrée), les visiteuses ensuite (on ne les voit en vidéo qu'en leur parlant) */
+/* LA RÈGLE 3G (vague 6, 2026-11-15) : Hillary d'abord (on la voit dès l'entrée) ; les vidéos d'une visiteuse ne se
+   chargent QUE lorsqu'on va lui parler (on la touche, ou elle vient vers nous) : avant, les dix vidéos (11,6 Mo)
+   partaient toutes à la 9e seconde, qu'on parle à quelqu'un ou non. Hors qualité « haute », la version légère
+   (4,7 Mo pour les dix). Le temps qu'elle arrive, la 3D reste, puis la vidéo prend sa place en fondu. */
 setTimeout(() => creerVideo('hillary'), params.has('direct') ? 400 : 2800);
-setTimeout(() => { for (const id of Object.keys(VIDEOS)) creerVideo(id); }, params.has('direct') ? 1500 : 9000);
+moteur.chaqueImage(() => {
+  for (const id in VIDEOS) {
+    if (persoVideos[id] || VIDEOS[id].toujours) continue;
+    const n = pnj.parId[id];
+    if (n && (n.etat === 'retenue' || n.etat === 'joueur' || n.etat === 'aborde')) creerVideo(id);
+  }
+});
 
 
 /* LA CLÉ DE CUISSON : un nom STABLE pour chaque maillage du décor, le même à chaque chargement et à

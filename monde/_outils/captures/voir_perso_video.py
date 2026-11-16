@@ -53,7 +53,7 @@ with sync_playwright() as pw:
             pg.wait_for_function("document.body.classList.contains('embelli')", timeout=150000)
             pg.wait_for_function("(() => { const n = __monde.pnj.parId.afi; return n && n.perso.modele3d; })()", timeout=120000)
             if mode == "video":
-                for qui in QUI:
+                for qui in [x for x in QUI if x == "hillary"]:   # les visiteuses ne chargent leurs vidéos qu'en leur parlant
                     try:
                         pg.wait_for_function(f"__monde.persoVideos['{qui}'] && __monde.persoVideos['{qui}'].etat.charge >= 1", timeout=90000)
                     except Exception:

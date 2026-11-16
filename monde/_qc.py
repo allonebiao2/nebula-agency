@@ -330,10 +330,12 @@ def main():
         # 12 · LES PERSONNAGES EN VIDÉO (2026-11-14) : retenue par le visiteur, Afi passe en VIDÉO (son modèle 3D se
         #      cache), puis revient en 3D quand on la relâche. Une vidéo absente ou illisible laisse la 3D, sans erreur.
         try:
+            # (Sènami : Afi, elle, vient d'elle-même vers le visiteur dans les premières secondes, ce qui charge les siennes)
+            ok(pg.evaluate("!__monde.persoVideos.senami"), "les vidéos d'une visiteuse ne se chargent pas tant qu'on ne lui parle pas (3G)")
+            pg.evaluate("__monde.pnj.retenir('afi')")
             jusqua(pg, "__monde.persoVideos.afi && __monde.persoVideos.afi.etat.charge >= 2", 90)
             clips = pg.evaluate("Object.keys(__monde.persoVideos.afi.clips).sort().join(',')")
             ok(clips == "ecouter,parler", "Afi a ses deux vidéos (parler, écouter)", clips)
-            pg.evaluate("__monde.pnj.retenir('afi')")
             jusqua(pg, "__monde.persoVideos.afi.montre === 1", 15)
             ok(pg.evaluate("!__monde.pnj.parId.afi.perso.modele3d.visible"), "retenue, Afi est en vidéo (sa 3D est cachée)")
             pg.evaluate("__monde.pnj.relacher('afi')")

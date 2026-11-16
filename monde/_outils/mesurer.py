@@ -25,6 +25,9 @@ VUES = os.path.join(ICI, "..", "_vues")
 suffixe = sys.argv[1] if len(sys.argv) > 1 else "mesure"
 URL = "http://localhost:8765/lieux/hillary-m-styl/?direct=1&meteo=clair&heure=14"
 CAS = [("tel", "basse"), ("tel", "moyenne"), ("tel", "haute"), ("ordi", "haute")]
+# CAS="tel:moyenne" pour ne mesurer qu'un cas (une mesure complète prend 8 min) ; EXTRA="&sans-relief" pour comparer
+if os.environ.get("CAS"): CAS = [tuple(c.split(":")) for c in os.environ["CAS"].split()]
+URL += os.environ.get("EXTRA", "")
 VP = {"tel": ({"width": 390, "height": 844}, True), "ordi": ({"width": 1440, "height": 900}, False)}
 
 CADENCE = """async (duree) => {
