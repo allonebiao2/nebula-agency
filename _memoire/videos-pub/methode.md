@@ -85,7 +85,9 @@ concrètement :
 - **Zooms secs** sur les réactions, transitions en coup de fouet, léger ralenti sur le moment tragique.
 - **Bruitages** synthétisés (comme ceux de la vidéo de marque) : fouet, tambour, ding, cymbale.
 - **La musique** : une pour le drame, coupée net à la bascule ; une autre pour la carte. Pixabay, lien de la page gardé
-  (preuve de licence).
+  (preuve de licence). ⛔ **Jamais un morceau « Content ID Registered »** : la pub serait réclamée ou coupée sur YouTube
+  et Facebook. Le 2026-11-16, 32 morceaux de violon triste sur 40 et les 20 premiers « afrobeat » l'étaient. La page
+  le dit dans son JSON-LD (`"name":"Content ID Registered","value":true`), ce qui se vérifie par script.
 - **La carte de fin** aux couleurs de NEBULA (le logo en couches de la vidéo de marque).
 - **Le son** : voix nettoyées et égalisées, −14 LUFS, crête à −1 dBTP.
 - **Les livrables** : `out/<Pub>-9x16.mp4`, plus la version courte et le 16:9 si commandés. Rendu à un seul onglet, par

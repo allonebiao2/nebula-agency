@@ -583,6 +583,10 @@ Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son
   vers Koffi, juste avant le néon.
 - Après « Et toi ? » (P20) : noir, et on entend seulement Koffi éteindre la lumière (« clac »). Puis la carte.
 - **Musique 2 sur la carte** : un afrobeat léger et joyeux. Les deux musiques depuis Pixabay, lien de la page gardé.
+- **Les candidates sont téléchargées** (2026-11-16), hors dépôt, dans `_studio-video/public/pub-l-autre/musique/` :
+  trois pour le drame (violon d'émotion, violon de film indien, piano), deux pour la carte (afro house VibeHorn, et
+  celle de la vidéo de marque). Toutes **sans Content ID** ; pages et licence dans `SOURCES.md`. Mongazi choisit à
+  l'oreille.
 - Voix nettoyées et égalisées, −14 LUFS, crête à −1 dBTP.
 
 ### Texte et dessins, plan par plan

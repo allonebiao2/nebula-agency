@@ -63,3 +63,7 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
   avec « personnages originaux, pas ceux du film ».
 - **Une seule voix par clip** : P07 (seule la tantie parle, les autres se taisent) et P11 (seul le jeune voisin crie
   « Waaaah ! ») réécrits ; chaque prompt d'animation dit qui parle, et que personne d'autre ne fait de bruit de voix.
+- **La musique** : téléchargée par Chrome sur Pixabay, toutes **sans Content ID** (la plupart des morceaux le sont) :
+  trois pour le drame, une afro house pour la carte, plus celle de la vidéo de marque. Rangées hors dépôt dans
+  `_studio-video/public/pub-l-autre/musique/` avec `SOURCES.md`. Le 5e morceau (percussions africaines) a bloqué : Chrome
+  a cessé de répondre. Les bruitages seront synthétisés au montage.
