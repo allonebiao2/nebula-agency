@@ -6,7 +6,8 @@
 > **Style** : dessin animé 2D, façon bande dessinée ouest-africaine (Mongazi : le style d'« Aya de Yopougon »). Les
 > prompts nomment le film et précisent toujours « personnages originaux » (`../cerveau.md`, règle 11).
 > **Qui fait quoi** : Mongazi génère les images et les vidéos dans Google Flow · Claude fait le montage.
-> **État au 2026-11-16** : scénario validé par Mongazi (« j'adore le scénario »), dossier prêt, rien n'est généré.
+> **État au 2026-11-16** : scénario validé par Mongazi (« j'adore le scénario ») ; **R0, R1, R2 générées et validées**
+> (la maison, Afi, Koffi : copies dans `_partage/pub-l-autre/references/`) ; reste R3 à R5 et les plans.
 > **Ses deux consignes** : la pub ne dit **pas** qu'elle est faite avec l'IA ; le français reste **très simple**.
 > La méthode et les pièges : [`../methode.md`](../methode.md) · les prix : [`../tarifs.md`](../tarifs.md).
 

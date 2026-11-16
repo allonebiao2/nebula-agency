@@ -17,7 +17,7 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
-| **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt, en dessin animé 2D. Avant de tout générer : R0 à R3, puis UN plan d'essai (P02 : voix, accent, le dessin en mouvement). Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
+| **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt, en dessin animé 2D. R0, R1, R2 faites et validées ; reste R3, puis UN plan d'essai (P02 : voix, accent, le dessin en mouvement). Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
 | **PUBS VIDÉO IA · le montage de « L'AUTRE »**, dès que les prises sont dans `_partage/pub-l-autre/` (`P01.mp4`…) | 🤖 | `videos-pub/methode.md` § 3 |
 | **PUBS VIDÉO IA · l'étiquette IA** sur TikTok et Facebook (conseillée : sinon retrait possible ; rien dans la vidéo elle-même) | 🙋 | `videos-pub/cerveau.md` règle 5 |
 | **Treg** (« OpenRouter des outils », `superdesigndev/treg`) : analysé le 2026-11-15/16, **pas maintenant** (rien pour la 3D, carte bancaire, service compromis le 23 octobre). Essai borné au dollar offert, si Mongazi le veut | 🙋 | `_knowledge/treg-decortique.md` |
