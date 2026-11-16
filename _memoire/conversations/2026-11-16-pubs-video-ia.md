@@ -74,3 +74,6 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
 - **La durée des clips** (Mongazi) : dans son Flow, Veo 3.1 fait des clips de **6 s, durée fixe**, qu'on ne peut ni
   raccourcir ni allonger à la génération. Les minutages de P01 et P04 sont refaits en 6 s ; P09, la plus longue
   réplique, peut se couper en deux clips.
+- **Le motion design** (Mongazi) : la fin devient une séquence de 9 s (le téléphone et les vrais produits, le film qui se
+  replie en planche de story-board, la signature), pour faire comprendre « ta pub peut être de cette qualité ». Prix
+  affiché : « Dès 10 000 F ». La pub fait environ 1 min 05.

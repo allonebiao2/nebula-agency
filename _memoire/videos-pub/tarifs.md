@@ -23,6 +23,7 @@ client : 0 à 1 000 F et environ une heure ; il reste 9 000 à 10 000 F par vent
   (proposé une fois le filigrane réglé, à trancher par Mongazi).
 - Le lot : catalogue + pub modèle à 55 000 F au lieu de 60 000 F ; la pub envoie les clients vers le catalogue.
 - La pub modèle se paie d'avance (Mobile Money), livrée en 48 h.
+- **Ce que la pub annonce** : « Dès 10 000 F ». Le « dès » couvre le client qui voudra sa propre histoire (sur mesure).
 
 ## 1. La première grille proposée (rejetée le 2026-11-16)
 

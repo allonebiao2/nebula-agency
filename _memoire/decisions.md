@@ -980,3 +980,5 @@ MD5, 53 plats balisés, fichier absent → 404).
 - **Le nom du film dans les prompts** (Mongazi : « mentionner exactement l'animation d'Aya de Yopougon ») : fait, avec
   la consigne « personnages originaux, pas ceux du film ».
 - **Une seule voix par clip** (Mongazi : « pour éviter que Veo ne se perde dans la voix »).
+- **Motion design au montage** (Mongazi) : la fin de « L'AUTRE » doit faire comprendre que le spectateur peut avoir des
+  vidéos de cette qualité. Le prix affiché proposé : « Dès 10 000 F ».

@@ -1,7 +1,7 @@
 # « L'AUTRE » · pub vidéo IA n° 01
 
-> **Pour** : NEBULA Agency. La pub vend le Catalogue digital (la porte d'entrée, 50 000 F) et, sur la carte de fin,
-> la pub vidéo elle-même (« Une pub comme ça pour ton commerce ? On la fait aussi. »).
+> **Pour** : NEBULA Agency. La pub vend le Catalogue digital (la porte d'entrée, 50 000 F) et, dans la fin en motion design,
+> la pub vidéo elle-même (« Et ta pub vidéo, comme celle-ci ? Dès 10 000 F. »).
 > **Format** : 9:16, environ 1 min · version courte de 30 s au § 7.
 > **Style** : dessin animé 2D, façon bande dessinée ouest-africaine (Mongazi : le style d'« Aya de Yopougon »). Les
 > prompts nomment le film et précisent toujours « personnages originaux » (`../cerveau.md`, règle 11).
@@ -572,7 +572,7 @@ Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son
 | P19 | 2 s | 0:52 |
 | P20 · à nous | 3 s | 0:55 |
 | noir + « clac » | 0,5 s | 0:55,5 |
-| carte | 4 s | 0:59,5 |
+| fin en motion design (§ 6) | 9 s | 1:04,5 |
 
 ### Le son
 
@@ -620,17 +620,20 @@ Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son
 
 ---
 
-## 6. La carte de fin (4 s)
+## 6. La fin en motion design (environ 9 s)
 
-TikTok, Reels, statut WhatsApp (on tutoie) :
+Consigne de Mongazi : du motion design au montage, pour bien faire comprendre que **le spectateur peut avoir des vidéos
+de cette qualité**, sans jamais dire « IA » (règle 4 de la branche). Même univers que le film : trait d'encre, aplats,
+texture de papier.
 
-> **Ton catalogue vend même quand tu dors.**
-> Catalogue digital : 50 000 F
-> Une pub comme ça pour ton commerce ? On la fait aussi.
-> NEBULA Agency · WhatsApp +229 96 74 07 32
+1. **Le catalogue (3 s)** : le téléphone d'Afi, dessiné, pivote vers nous ; son écran s'allume et de **vraies** photos de
+   produits y défilent (jamais des produits générés). Texte : « **Ton catalogue vend même quand tu dors.** » puis
+   « Catalogue digital : 50 000 F ».
+2. **La vidéo (4 s)** : la dernière image se fige, se plie comme une page de BD et rejoint les autres plans du film, qui
+   s'assemblent en planche de story-board. Texte : « **Et ta pub vidéo, comme celle-ci ?** » puis « Dès 10 000 F ».
+3. **La signature (2 s)** : le logo NEBULA (en couches, comme dans la vidéo de marque) et « WhatsApp +229 96 74 07 32 ».
 
-Facebook (on vouvoie) : « Votre catalogue vend même quand vous dormez. » · « Une pub comme ça pour votre commerce ? On
-la fait aussi. »
+Facebook (on vouvoie) : « Votre catalogue vend même quand vous dormez. » · « Et votre pub vidéo, comme celle-ci ? »
 
 ⚠️ Le numéro est celui du site (`wa.me/22996740732`). À 10 chiffres, il s'écrit 01 96 74 07 32 : à Mongazi de choisir
 la forme affichée. Le lien du site, lui, ne change pas.
@@ -639,7 +642,8 @@ la forme affichée. Le lien du site, lui, ne change pas.
 
 ## 7. La version courte (30 s)
 
-P02 · P03 · P05 · P09 (ses deux premières phrases) · P12 · P13 · P14 · P16 · P20 · la carte. Pour les statuts
+P02 · P03 · P05 · P09 (ses deux premières phrases) · P12 · P13 · P14 · P16 · P20 · une fin raccourcie de 5 s
+(« Ton catalogue : 50 000 F » · « Ta pub vidéo comme celle-ci : dès 10 000 F » · la signature). Pour les statuts
 WhatsApp.
 
 ---
