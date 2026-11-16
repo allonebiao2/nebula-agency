@@ -972,3 +972,6 @@ MD5, 53 plats balisés, fichier absent → 404).
   réseaux (conseillée par Claude).
 - **Les prix, plus tard le même jour** : Mongazi rejette la grille de 40 000 à 250 000 F (« trop cher pour le
   Bénin ») et vise environ 10 000 F pour une vidéo de 30 s à 1 min. Piste « pub modèle » proposée, pas encore validée.
+- **Les partenaires** : sujet laissé de côté (Mongazi : « on zappe les partenaires »).
+- **Le client qui achète sait que c'est de l'IA** (Mongazi : « oui ils doivent savoir, c'est clair »), mais la vidéo ne
+  le dit pas.

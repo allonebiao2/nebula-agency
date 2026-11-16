@@ -91,8 +91,8 @@ pubs par mois sont vendues.
 - Il reçoit **le MP4** (et le 16:9 s'il l'a commandé), libre d'usage pour sa communication ; NEBULA garde les fichiers
   de travail et peut montrer la pub dans son portfolio.
 - **Délai** : 3 jours pour une pub flash, 5 à 7 jours pour les autres, comptés après la validation du scénario.
-- ⚠️ **Les partenaires ne peuvent pas la vendre aujourd'hui** : le contrat (art. 4.4) limite leur vente aux offres du
-  tableau 4.1, « et elles seules ». L'ajouter demande un avenant.
+- Les partenaires : sujet laissé de côté par Mongazi (2026-11-16, « on zappe les partenaires »). Pour mémoire, le
+  contrat (art. 4.4) ne couvre pas cette offre.
 
 ## Sources (relevées le 2026-11-16)
 

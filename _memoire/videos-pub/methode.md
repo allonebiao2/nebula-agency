@@ -17,6 +17,9 @@
 6. **Une fin en boucle** : la dernière réplique rappelle la première (« Dors. »).
 7. **Des indices cachés** pour ceux qui revoient (les piles de pagnes dans la chambre).
 8. **Le produit n'arrive qu'à la fin**, et il est vrai.
+9. **Briser le 4e mur** (Mongazi, 2026-11-16) : un personnage se tourne vers le spectateur et lui parle. Au milieu,
+   pour relancer l'attention (« Toi aussi, tu crois que c'est un homme ? ») ; à la fin, pour l'appel (« Et toi ? Ta
+   boutique, elle dort quand tu dors ? »). Sur TikTok, on tutoie.
 
 ### Le français (consigne de Mongazi, 2026-11-16)
 

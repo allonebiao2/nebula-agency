@@ -489,7 +489,7 @@
   Ultra, ou les prises finales par l'API.
 - ⏳ **Prix** : la grille de 40 000 à 250 000 F est **rejetée** (« trop cher pour le Bénin ») ; Mongazi vise **environ
   10 000 F pour 30 s à 1 min**. Piste à valider : **la pub modèle** (une histoire fabriquée une fois, déclinée à chaque
-  client). ⚠️ **Les partenaires ne peuvent pas la vendre** (contrat art. 4.4).
+  client).
 
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
 - 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé

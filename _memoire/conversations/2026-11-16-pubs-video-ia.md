@@ -43,3 +43,13 @@ Voir `_memoire/decisions.md` (2026-11-16).
 ## Ce qui attend
 
 Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/projets/01-l-autre.md` § 9.
+
+## Plus tard le même jour
+
+- **Les prix** : Mongazi rejette la grille (« trop cher pour le Bénin ») et vise environ 10 000 F pour 30 s à 1 min.
+  Piste proposée : la pub modèle, fabriquée une fois puis déclinée à chaque client (`videos-pub/tarifs.md`).
+- **Les partenaires** : laissés de côté (« on zappe les partenaires »).
+- **Le client qui achète sait** que c'est de l'IA (« oui ils doivent savoir, c'est clair »), rien ne le dit dans la vidéo.
+- **Le 4e mur** : Mongazi veut qu'à un moment le scénario s'adresse aux spectateurs. Ajoutés : P11b (« Toi aussi, tu
+  crois que c'est un homme ? ») au milieu, P20 (« Et toi ? Ta boutique, elle dort quand tu dors ? ») à la fin. La pub
+  passe à environ 1 min, la version de 30 s garde P20.

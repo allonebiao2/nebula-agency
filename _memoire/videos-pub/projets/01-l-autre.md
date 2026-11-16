@@ -2,7 +2,7 @@
 
 > **Pour** : NEBULA Agency. La pub vend le Catalogue digital (la porte d'entrée, 50 000 F) et, sur la carte de fin,
 > la pub vidéo elle-même (« Une pub comme ça pour ton commerce ? On la fait aussi. »).
-> **Format** : 9:16, environ 53 s · version courte de 30 s au § 7.
+> **Format** : 9:16, environ 1 min · version courte de 30 s au § 7.
 > **Qui fait quoi** : Mongazi génère les images et les vidéos dans Google Flow · Claude fait le montage.
 > **État au 2026-11-16** : scénario validé par Mongazi (« j'adore le scénario »), dossier prêt, rien n'est généré.
 > **Ses deux consignes** : la pub ne dit **pas** qu'elle est faite avec l'IA ; le français reste **très simple**.
@@ -16,6 +16,7 @@
 trois mois. » Tout le quartier écoute à la fenêtre. Koffi allume le néon et regarde le téléphone : ce n'est pas un
 amant, c'est le catalogue d'Afi, sa boutique dans le téléphone, qui vend même quand elle dort. « Il livre aussi ? »
 « Non. Ça, c'est toi. » Elle lui tend un casque de moto. « Et moi, on me paie combien ? » Elle se recouche : « Dors. »
+Puis elle nous regarde, nous : « Et toi ? Ta boutique, elle dort quand tu dors ? »
 
 - **On ne voit pas la fin venir** : chaque réplique d'Afi marche pour un amant ET pour un catalogue (« il dort
   jamais », « il répond à tout le monde », « même à Lomé, on le connaît », « lui, au moins, il travaille »).
@@ -24,6 +25,9 @@ amant, c'est le catalogue d'Afi, sa boutique dans le téléphone, qui vend même
 - **La fin en boucle** : le « Dors. » de la fin répond au « Personne. Dors. » du début.
 - **L'indice caché** : des piles de pagnes pliés et un sac de livraison sont dans la chambre dès le premier plan. Dans
   le noir on ne les voit pas ; au néon, si.
+- **Le 4e mur** (demandé par Mongazi) : deux fois, Afi se tourne vers nous. Au milieu, pour relancer l'attention
+  (« Toi aussi, tu crois que c'est un homme ? »). À la fin, pour l'appel (« Et toi ? Ta boutique, elle dort quand tu
+  dors ? »). Entre les deux, Koffi nous fixe en silence, le casque à la main (P16).
 
 ### Les répliques (à relire par Mongazi)
 
@@ -39,6 +43,7 @@ amant, c'est le catalogue d'Afi, sa boutique dans le téléphone, qui vend même
 | P09 | Afi | Lui, il dort jamais. Il répond à tout le monde. Même à Lomé, on le connaît. |
 | P10 | Afi | Et lui, au moins… il travaille. |
 | P11 | les voisins | Waaaah ! |
+| P11b | Afi, **à nous** | Toi aussi, tu crois que c'est un homme ? |
 | P13 | Koffi | … Des pagnes ? C'est quoi ça ? |
 | P14 | Afi | Mon catalogue. Ma boutique dans le téléphone. Il vend même quand je dors. |
 | P15 | Koffi | … Il livre aussi ? |
@@ -46,6 +51,7 @@ amant, c'est le catalogue d'Afi, sa boutique dans le téléphone, qui vend même
 | P17 | la tantie | Afi ! Envoie-moi le lien ! |
 | P18 | Koffi | Et moi, on me paie combien ? |
 | P19 | Afi | Dors. |
+| P20 | Afi, **à nous** | Et toi ? Ta boutique, elle dort quand tu dors ? |
 
 Pour changer une réplique : ne toucher qu'au texte entre guillemets, dans le prompt d'ANIMATION du plan.
 
@@ -309,6 +315,23 @@ Static shot. The four neighbors at the window react to an outrageous insult and 
 Ambient noise: crickets, the night outside. Audio: only the voices and the night sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
+#### P11b · L'aparté : elle nous parle · garder 3 s · LE 4e MUR
+Tout le monde se fige, sauf Afi, qui se tourne vers nous. Références : R1, R2, R3.
+
+**IMAGE**
+```
+Use the attached reference images for Afi, Koffi and the bedroom: same faces, same satin bonnet, same clothes, same room.
+Medium close-up: Afi sits in bed and looks straight into the camera lens with a mischievous half-smile, as if she knows someone is watching. Behind her, slightly out of focus, Koffi is frozen like a statue, mouth open, one hand on his heart.
+Cinematic vertical film still, 9:16. Shot on a 35mm lens at f/1.8, shallow depth of field, subtle film grain, Kodak Vision3 500T color. Low-key night lighting: the cold blue-white glow of a smartphone, warm amber light from the bedside lamp, faint blue moonlight through the louvers, deep shadows. Realistic skin texture, natural West African features. No text, no captions, no watermark.
+```
+
+**ANIMATION**
+```
+Medium close-up. Afi breaks the fourth wall: she slowly turns her face to the camera, looks straight into the lens and says to the viewer with a mischievous smile, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Toi aussi, tu crois que c'est un homme ?"
+Behind her, Koffi stays completely frozen like a statue, mouth open, not moving at all. Then Afi turns back toward her husband. Only Afi speaks in this shot.
+Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
+```
+
 ### Acte 3 · le néon (lumière plate)
 
 #### P12 · Le néon · garder 2,5 s · PREMIÈRE ET DERNIÈRE IMAGE
@@ -439,6 +462,23 @@ She pulls the sheet up over her shoulder. Koffi stands frozen beside the bed, he
 Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
+#### P20 · « Et toi ? » : elle nous parle encore · garder 3 s · LE 4e MUR, L'APPEL
+Elle s'est recouchée face à nous. Références : R1, R2, R3.
+
+**IMAGE**
+```
+Use the attached reference images for Afi, Koffi and the bedroom: same faces, same satin bonnet, same clothes, same room.
+Close-up: Afi lies in bed on her side, her head on the pillow, facing the camera, and looks straight into the lens, calm and amused. Behind her, out of focus, Koffi still stands beside the bed with the motorcycle helmet on.
+Vertical film still, 9:16. Static, centered, symmetrical framing. Flat, harsh, cold white fluorescent light from the neon tube on the wall, almost no shadows, slightly greenish, banal and unflattering like a low-budget sitcom. Realistic skin texture, natural West African features. No text, no captions, no watermark.
+```
+
+**ANIMATION**
+```
+Close-up under flat fluorescent light. Afi, lying on her pillow, looks straight into the camera lens and speaks directly to the viewer, calm and amused, in a warm, slightly husky female voice, speaking French with a West African accent from Benin: "Et toi ? Ta boutique, elle dort quand tu dors ?"
+Then she raises an eyebrow and keeps looking at the viewer. Behind her, out of focus, Koffi does not move. Only Afi speaks in this shot.
+Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
+```
+
 ---
 
 ## 5. Le montage (la part de Claude)
@@ -446,7 +486,7 @@ Ambient noise: the steady buzz of the neon tube, crickets outside. Audio: only t
 Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son numéro (`P01.mp4`…), téléchargée en
 1080p, son de Veo compris. Je la range dans le studio, hors dépôt (`_studio-video/public/`).
 
-### Le minutage (environ 53 s)
+### Le minutage (environ 1 min)
 
 | Plan | Garder | Fin à |
 |---|---|---|
@@ -462,23 +502,27 @@ Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son
 | P10 | 2,5 s | 0:25,5 |
 | (P10 bis) | (2 s) | (facultatif) |
 | P11 | 1,5 s | 0:27 |
-| P12 | 2,5 s | 0:29,5 |
-| P13 | 3 s | 0:32,5 |
-| P14 | 4,5 s | 0:37 |
-| P15 | 2 s | 0:39 |
-| P16 | 3 s | 0:42 |
-| P17 | 2,5 s | 0:44,5 |
-| P18 | 2,5 s | 0:47 |
-| P19 | 2 s | 0:49 |
-| noir + « clac » | 0,5 s | 0:49,5 |
-| carte | 4 s | 0:53,5 |
+| P11b · à nous | 3 s | 0:30 |
+| P12 | 2,5 s | 0:32,5 |
+| P13 | 3 s | 0:35,5 |
+| P14 | 4,5 s | 0:40 |
+| P15 | 2 s | 0:42 |
+| P16 | 3 s | 0:45 |
+| P17 | 2,5 s | 0:47,5 |
+| P18 | 2,5 s | 0:50 |
+| P19 | 2 s | 0:52 |
+| P20 · à nous | 3 s | 0:55 |
+| noir + « clac » | 0,5 s | 0:55,5 |
+| carte | 4 s | 0:59,5 |
 
 ### Le son
 
 - **Musique 1, de P01 à P11** : cordes ou piano de mélodrame, très sérieux.
-- **Coupure sèche au « clac » du néon (P12)** : plus de musique, seulement le bourdonnement du néon jusqu'à P19. Ce
+- **Coupure sèche au « clac » du néon (P12)** : plus de musique, seulement le bourdonnement du néon jusqu'à P20. Ce
   silence est la blague.
-- Après « Dors. » : noir, et on entend seulement Koffi éteindre la lumière (« clac »). Puis la carte.
+- **P11b, l'aparté** : l'image et la musique se figent, seule Afi bouge ; la musique repart quand elle se retourne
+  vers Koffi, juste avant le néon.
+- Après « Et toi ? » (P20) : noir, et on entend seulement Koffi éteindre la lumière (« clac »). Puis la carte.
 - **Musique 2 sur la carte** : un afrobeat léger et joyeux. Les deux musiques depuis Pixabay, lien de la page gardé.
 - Voix nettoyées et égalisées, −14 LUFS, crête à −1 dBTP.
 
@@ -495,6 +539,7 @@ Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son
 | P09 | les doigts d'Afi comptés à l'écran : 1, 2, 3 |
 | P10 | la phrase tombe lettre par lettre · coup de cymbale |
 | P11 | « WAAAH » en onomatopée de bande dessinée |
+| P11b | tout se fige et grisonne, sauf Afi · un petit « ⏸ » en coin · son sous-titre plus gros : elle nous parle |
 | P12 | « CLAC » · flash blanc · la musique se coupe net |
 | P13 | un cercle rouge dessiné sur les piles de pagnes et le sac de livraison |
 | P14 | « MA BOUTIQUE DANS LE TÉLÉPHONE » plein écran |
@@ -502,7 +547,8 @@ Mongazi dépose une prise par plan dans `_partage/pub-l-autre/`, nommée par son
 | P16 | arrêt sur image sur son regard caméra : « KOFFI · livreur depuis 3 h 16 » |
 | P17 | une pluie de bulles de notification |
 | P18 | un « ? » qui clignote au-dessus du casque |
-| P19 | des « Zzz » dessinés · noir · « clac » |
+| P19 | des « Zzz » dessinés au-dessus d'elle |
+| P20 | elle nous regarde : sous-titre plus gros · puis noir, « clac », la carte |
 
 **Sous-titres** : toutes les répliques, gros, blancs cernés de noir, dans le tiers haut de l'image.
 
@@ -527,7 +573,7 @@ la forme affichée. Le lien du site, lui, ne change pas.
 
 ## 7. La version courte (30 s)
 
-P02 · P03 · P05 · P09 (ses deux premières phrases) · P12 · P13 · P14 · P16 · P17 · la carte. Pour les statuts
+P02 · P03 · P05 · P09 (ses deux premières phrases) · P12 · P13 · P14 · P16 · P20 · la carte. Pour les statuts
 WhatsApp.
 
 ---
