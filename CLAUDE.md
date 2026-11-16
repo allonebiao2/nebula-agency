@@ -485,8 +485,7 @@
   (phrases courtes, mots de la rue).
 - ⛔ Jamais un produit généré présenté comme celui du client, jamais un faux témoignage, aucun visage réel sans accord
   écrit, **le client qui achète sait que c'est de l'IA**, on livre le MP4.
-- ⚠️ **Filigrane « Veo » visible avec Google AI Pro** (pas avec Ultra) : jamais masqué ; une pub livrée sans filigrane =
-  Ultra, ou les prises finales par l'API.
+- ✅ **Aucun filigrane visible** sur les générations Flow de Mongazi (vérifié par lui le 2026-11-16, boutique 3D).
 - ⏳ **Prix** : la grille de 40 000 à 250 000 F est **rejetée** (« trop cher pour le Bénin ») ; Mongazi vise **environ
   10 000 F pour 30 s à 1 min**. Piste à valider : **la pub modèle** (une histoire fabriquée une fois, déclinée à chaque
   client).

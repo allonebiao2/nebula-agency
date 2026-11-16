@@ -33,8 +33,9 @@ les voix sont générés ; le produit du client, lui, est le vrai.
 5. **Les réseaux** : TikTok et Facebook demandent de cocher « contenu généré par IA » pour une vidéo réaliste faite par
    IA, sinon ils peuvent la retirer. C'est une petite mention sous la vidéo, pas dans l'image. (Conseil de Claude, à
    trancher par Mongazi.)
-6. **Le filigrane « Veo »** (abonnement Google AI Pro) ne se masque pas et ne se recadre pas : conditions de Google. Une
-   pub livrée sans filigrane = Ultra, ou les prises finales passées par l'API ([`tarifs.md`](tarifs.md) § 3).
+6. **Le filigrane** : les générations Flow de Mongazi n'en portent aucun de visible (vérifié par lui le 2026-11-16, sur
+   les images et vidéos de la boutique 3D). Si un jour un compte en pose un, on ne le masque pas et on ne le recadre pas
+   (conditions de Google).
 7. **Le français reste très simple** (Mongazi, 2026-11-16) : [`methode.md`](methode.md) § 1.
 8. **Aucun chiffre promis à l'écran** (ventes, clients gagnés) : une pub montre, elle ne garantit rien.
 9. **On livre le MP4, jamais le projet** (licence Remotion, `CLAUDE.md`).

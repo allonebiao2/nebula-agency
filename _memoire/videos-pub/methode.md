@@ -68,7 +68,6 @@ tient dans un clip de 8 s, donc 15 mots au plus.
 | La mauvaise personne parle | une seule personne parle par plan (champ, contrechamp), et le prompt le dit : « Only Afi speaks in this shot » |
 | Des mains qui se passent un objet | le plan le plus risqué : 3 à 4 prises |
 | La pièce change d'un plan à l'autre | joindre l'image du décor à chaque image de plan |
-| Le filigrane « Veo » (Google AI Pro) | Ultra, ou les finales par l'API ; jamais masqué |
 
 ## 3. Ce que Mongazi me remet, et le montage (ma part)
 

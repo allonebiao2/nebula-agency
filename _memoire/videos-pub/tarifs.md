@@ -7,14 +7,14 @@
 
 « C'est trop cher pour le Bénin. » Sa cible : **environ 10 000 F pour une vidéo de 30 s à 1 min**.
 
-À ce prix, une pub faite de zéro perd de l'argent : environ 6 500 F de crédits pour 1 min, et environ 10 000 F de plus
-pour des prises sans filigrane (API), sans compter une journée de travail.
+À ce prix, une pub faite de zéro rapporte peu : environ 6 500 F de crédits pour 1 min (moins si l'abonnement inclut
+des crédits), plus une journée de travail.
 
-**La piste de Claude, à valider : la pub modèle.** Une histoire fabriquée une seule fois (environ 17 000 F, remboursés
-dès la 2e vente), puis vendue à beaucoup de commerçants. Pour chacun, on change seulement : ses vraies photos de
+**La piste de Claude, à valider : la pub modèle.** Une histoire fabriquée une seule fois (environ 11 000 F de crédits,
+remboursés dès la 2e vente), puis vendue à beaucoup de commerçants. Pour chacun, on change seulement : ses vraies photos de
 produits, montrées sur l'écran du téléphone au moment de la chute ; son nom et son numéro sur la carte ; au besoin 2 ou
-3 plans refaits (environ 1 500 F). Le montage est un modèle : Claude change les infos du client et relance. Coût par
-client : 0 à 1 500 F et environ une heure ; il reste 8 500 à 10 000 F par vente.
+3 plans refaits (environ 1 000 F). Le montage est un modèle : Claude change les infos du client et relance. Coût par
+client : 0 à 1 000 F et environ une heure ; il reste 9 000 à 10 000 F par vente.
 - Le défaut : deux voisins auraient la même histoire. La parade : une version par secteur (pagnes, gâteaux, coiffure,
   restaurant…), puis une nouvelle histoire de temps en temps.
 - À 10 000 F, le commerçant dit oui sans réfléchir, et la pub appelle le catalogue à 50 000 F : c'est une porte
@@ -66,18 +66,12 @@ Quality ≈ 1 $ ≈ 570 F (à 1 $ ≈ 570 F).
 Le vrai coût, c'est **le temps**. Estimation à mesurer sur « L'AUTRE » : une demi-journée pour une pub flash, une
 journée pour une dialoguée, deux pour un mini-film (générer, choisir les prises, les allers-retours avec le client).
 
-**L'abonnement, c'est la vraie question :**
-- **Google AI Pro** : environ 1 000 crédits par mois (un article de mai 2026 dit que Google les retire : vérifier), soit
-  une pub dialoguée par mois. **Filigrane « Veo » visible** : comme nos pubs ne disent pas « IA », ça ne va pas pour une
-  pub livrée.
-- **Google AI Ultra** : 25 000 crédits par mois, Fast à 10 crédits, **pas de filigrane visible**, 4K. Entre 200 et 250 $
-  par mois selon les sources (≈ 115 000 à 145 000 F). Rentable dès **deux pubs dialoguées par mois**.
-- **Sans Ultra et sans filigrane** : les essais dans Flow, les **prises finales par l'API** de Veo 3.1 (WaveSpeed,
-  compte ouvert à recharger, ou Google) : environ 0,12 $ la seconde en Fast 1080p avec le son, soit ≈ 550 F le clip de
-  8 s. Pour un mini-film : 19 finales ≈ 10 000 F de plus.
+**Le filigrane : aucun.** Les générations Flow de Mongazi n'en portent aucun de visible (vérifié par lui le
+2026-11-16, sur la boutique 3D) : ni Ultra ni l'API ne sont nécessaires pour livrer.
 
-**Le conseil** : commencer en Pro avec les finales par l'API pour les premières ventes ; passer à Ultra dès que deux
-pubs par mois sont vendues.
+**L'abonnement décide du coût réel** : avec Google AI Pro, environ 1 000 crédits par mois (un article de mai 2026 dit
+que Google les retire : vérifier), puis des recharges ; avec Ultra, 25 000 crédits par mois et le Fast à 10 crédits,
+soit environ 40 pubs d'une minute comprises.
 
 ## 4. Les conditions (à écrire sur chaque devis)
 

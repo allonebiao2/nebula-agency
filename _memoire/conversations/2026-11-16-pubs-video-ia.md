@@ -53,3 +53,5 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
 - **Le 4e mur** : Mongazi veut qu'à un moment le scénario s'adresse aux spectateurs. Ajoutés : P11b (« Toi aussi, tu
   crois que c'est un homme ? ») au milieu, P20 (« Et toi ? Ta boutique, elle dort quand tu dors ? ») à la fin. La pub
   passe à environ 1 min, la version de 30 s garde P20.
+- **Le filigrane** : Mongazi n'en a aucun sur ses générations Flow (preuve : les images et vidéos de la boutique 3D).
+  Ni Ultra ni l'API ne sont nécessaires ; une FAQ générale ne dit pas ce que fait un compte précis.

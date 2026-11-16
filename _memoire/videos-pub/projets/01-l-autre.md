@@ -59,10 +59,7 @@ Pour changer une réplique : ne toucher qu'au texte entre guillemets, dans le pr
 
 ## 2. Avant de générer
 
-1. **Le filigrane.** Avec l'abonnement Google AI Pro, Flow pose un filigrane « Veo » **visible** sur chaque vidéo ; avec
-   Ultra, non (FAQ de Flow). Comme la pub ne dit pas qu'elle est faite avec l'IA, il ne faut pas de filigrane. Ne jamais
-   le masquer ni le recadrer (conditions de Google) : soit Ultra, soit les prises finales par l'API
-   ([`../tarifs.md`](../tarifs.md) § 3). Regarde d'abord un clip que tu as déjà téléchargé.
+1. **Le filigrane** : réglé, les générations Flow de Mongazi n'en portent aucun (vérifié par lui le 2026-11-16).
 2. **Un seul plan d'essai.** Fais R1, R2, R3, puis **P02 seulement**. Écoute : l'accent est-il d'ici ou de Paris ? Les
    lèvres suivent-elles ? Ce plan décide de la suite.
 3. **Tout en 9:16**, images et vidéos.
@@ -598,7 +595,6 @@ l'histoire. (À trancher par Mongazi, cf. `../cerveau.md` règle 5.)
 
 ## 9. Ce qui attend
 
-- [ ] 🙋 Le filigrane : Pro ou Ultra ? (§ 2)
 - [ ] 🙋 Le plan d'essai P02 : la voix, l'accent, les lèvres
 - [ ] 🙋 Relire les répliques (§ 1)
 - [ ] 🙋 La forme du numéro sur la carte (§ 6)
