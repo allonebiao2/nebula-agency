@@ -17,7 +17,7 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
-| **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt. Avant de tout générer : UN plan d'essai (P02 : voix, accent). Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
+| **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt, en dessin animé 2D. Avant de tout générer : R0 à R3, puis UN plan d'essai (P02 : voix, accent, le dessin en mouvement). Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
 | **PUBS VIDÉO IA · le montage de « L'AUTRE »**, dès que les prises sont dans `_partage/pub-l-autre/` (`P01.mp4`…) | 🤖 | `videos-pub/methode.md` § 3 |
 | **PUBS VIDÉO IA · les prix** : Mongazi vise environ 10 000 F pour 30 s à 1 min (grille de 40 000 à 250 000 F rejetée). Valider la piste « pub modèle » (une histoire fabriquée une fois, déclinée à chaque client), puis l'inscrire au socle | 🙋 puis 🤖 | `videos-pub/tarifs.md` |
 | **PUBS VIDÉO IA · l'étiquette IA** sur TikTok et Facebook (conseillée : sinon retrait possible ; rien dans la vidéo elle-même) | 🙋 | `videos-pub/cerveau.md` règle 5 |

@@ -975,3 +975,5 @@ MD5, 53 plats balisés, fichier absent → 404).
 - **Les partenaires** : sujet laissé de côté (Mongazi : « on zappe les partenaires »).
 - **Le client qui achète sait que c'est de l'IA** (Mongazi : « oui ils doivent savoir, c'est clair »), mais la vidéo ne
   le dit pas.
+- **Le style de « L'AUTRE »** : dessin animé 2D, celui d'« Aya de Yopougon » (Mongazi : « je veux exactement ce style »).
+  Les prompts le décrivent par ses ingrédients, sans jamais nommer l'œuvre.

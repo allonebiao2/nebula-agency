@@ -38,8 +38,8 @@ tient dans un clip de 8 s, donc 15 mots au plus.
 
 ### La chaîne
 
-1. **Les références** (Nano Banana Pro) : une fiche par personnage (trois vues sur fond gris, 16:9) et une image du
-   décor vide (9:16). Faites une fois, jointes ensuite à chaque image de plan.
+1. **Les références** (Nano Banana Pro), faites une fois : d'abord une **image de style** (R0), jointe ensuite à TOUT ;
+   puis une fiche par personnage (trois angles et six expressions, 16:9) et une image du décor vide (9:16).
 2. **L'image de chaque plan** (Nano Banana Pro, 9:16), références jointes. On garde la meilleure.
 3. **L'animation** (Veo 3.1, mode **Frames to Video**) : l'image du plan en première image, 8 s, **2 à 3 prises en
    Fast**, la meilleure refaite en Quality si elle le mérite.

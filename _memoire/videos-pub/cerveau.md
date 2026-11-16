@@ -32,7 +32,7 @@ les voix sont générés ; le produit du client, lui, est le vrai.
    inventés. Il ne doit pas croire qu'il paie des acteurs.
 5. **Les réseaux** : TikTok et Facebook demandent de cocher « contenu généré par IA » pour une vidéo réaliste faite par
    IA, sinon ils peuvent la retirer. C'est une petite mention sous la vidéo, pas dans l'image. (Conseil de Claude, à
-   trancher par Mongazi.)
+   trancher par Mongazi.) En dessin animé, la vidéo n'est plus réaliste : la question ne se pose presque plus.
 6. **Le filigrane** : les générations Flow de Mongazi n'en portent aucun de visible (vérifié par lui le 2026-11-16, sur
    les images et vidéos de la boutique 3D). Si un jour un compte en pose un, on ne le masque pas et on ne le recadre pas
    (conditions de Google).
@@ -40,6 +40,10 @@ les voix sont générés ; le produit du client, lui, est le vrai.
 8. **Aucun chiffre promis à l'écran** (ventes, clients gagnés) : une pub montre, elle ne garantit rien.
 9. **On livre le MP4, jamais le projet** (licence Remotion, `CLAUDE.md`).
 10. Aucun tiret cadratin dans les textes à l'écran.
+11. **Un style qui rappelle une œuvre connue se décrit par ses ingrédients, jamais par son nom** (Mongazi veut celui
+    d'« Aya de Yopougon ») : trait d'encre expressif, visages un peu caricaturaux, couleurs chaudes en aplats, texture
+    de papier. On ne reprend ni ses personnages, ni ses décors, ni son nom : l'œuvre est protégée, et le modèle suit
+    mieux une description qu'un titre.
 
 ## Les fichiers
 

@@ -55,3 +55,7 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
   passe à environ 1 min, la version de 30 s garde P20.
 - **Le filigrane** : Mongazi n'en a aucun sur ses générations Flow (preuve : les images et vidéos de la boutique 3D).
   Ni Ultra ni l'API ne sont nécessaires ; une FAQ générale ne dit pas ce que fait un compte précis.
+- **Le style** : Mongazi veut « exactement » le style d'« Aya de Yopougon » (le film d'animation ivoirien) et des
+  personnages créés d'abord, pour la constance. Les prompts décrivent le style sans nommer l'œuvre (elle est protégée,
+  et le modèle suit mieux une description) ; une image de style R0 est jointe partout ; les fiches d'Afi et de Koffi
+  montrent trois angles et six expressions. Les 45 prompts réalistes sont passés en 2D, un de plus (R0).
