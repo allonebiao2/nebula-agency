@@ -137,11 +137,11 @@ No text, no captions, no watermark.
 
 **Pour chaque plan :**
 1. **IMAGE** : Nano Banana Pro, format 9:16, avec les références indiquées jointes. Garder la meilleure.
-2. **ANIMATION** : Veo 3.1, mode **Frames to Video**, l'image en première image, 8 s, 2 à 3 prises en Fast. Refaire la
+2. **ANIMATION** : Veo 3.1, mode **Frames to Video**, l'image en première image, 6 s (la durée fixe de Veo dans Flow), 2 à 3 prises en Fast. Refaire la
    meilleure en Quality si elle le mérite.
 3. **Remettre** la prise retenue sous le nom du plan (`P01.mp4`…) dans `_partage/pub-l-autre/`.
 
-« Garder » = la durée gardée au montage ; le reste des 8 s est coupé.
+« Garder » = la durée gardée au montage ; le reste des 6 s est coupé.
 
 **Une seule voix par clip** (consigne de Mongazi) : chaque prompt d'animation le dit en toutes lettres, pour que Veo
 ne mélange pas les voix.
@@ -161,9 +161,9 @@ Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of t
 **ANIMATION**
 ```
 Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
-[00:00-00:03] Extreme close-up. Afi, lit only by her phone, smiles tenderly at the screen and bites her lower lip. SFX: a soft phone notification chime.
-[00:03-00:06] Behind her, out of focus, Koffi's eyes snap open in the dark. He does not move.
-[00:06-00:08] Afi keeps smiling at her phone; she has noticed nothing.
+[00:00-00:02] Extreme close-up. Afi, lit only by her phone, smiles tenderly at the screen and bites her lower lip. SFX: a soft phone notification chime.
+[00:02-00:04] Behind her, out of focus, Koffi's eyes snap open in the dark. He does not move.
+[00:04-00:06] Afi keeps smiling at her phone; she has noticed nothing.
 No dialogue. Ambient noise: a ceiling fan humming, crickets outside, a distant motorbike. Audio: only the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
 
@@ -219,8 +219,8 @@ Vertical frame, 9:16, from a 2D hand-drawn animated film in the exact style of t
 ```
 Animation style: exactly like the 2013 Ivorian animated film Aya de Yopougon (Aya of Yop City): 2D hand-drawn animation, expressive ink outlines, flat warm colors, soft painted shading, lively and slightly exaggerated acting. Keep exactly the drawing and colors of the first frame. Original characters only, not characters from the film.
 [00:00-00:02] The phone vibrates against Afi's chest. SFX: a muffled vibration and three notification chimes in a row.
-[00:02-00:06] Behind her, Koffi sits up slowly and says with controlled anger, in a deep, raspy male voice, speaking French with a West African accent from Benin: "À trois heures du matin, personne t'écrit ?"
-[00:06-00:08] Silence. Afi closes her eyes.
+[00:02-00:05] Behind her, Koffi sits up slowly and says with controlled anger, in a deep, raspy male voice, speaking French with a West African accent from Benin: "À trois heures du matin, personne t'écrit ?"
+[00:05-00:06] Silence. Afi closes her eyes.
 One single voice in this clip: only Koffi speaks; nobody else talks or makes any vocal sound.
 Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue and the room sounds, no music. No subtitles, no captions, no on-screen text.
 ```
@@ -297,7 +297,7 @@ Ambient noise: a ceiling fan humming, crickets outside. Audio: only the dialogue
 ```
 
 #### P09 · La liste (la réplique à deux sens) · garder 5 s
-Références : R0, R1, R3.
+Références : R0, R1, R3. C'est la réplique la plus longue : si Veo la dit trop vite dans ses 6 s, fais-en deux clips (P09a : les deux premières phrases, P09b : « Même à Lomé, on le connaît. »), toujours Afi seule.
 
 **IMAGE**
 ```

@@ -32,7 +32,8 @@ l'école :
 - le test : quelqu'un qui n'est pas allé loin à l'école comprend-il l'idée du premier coup ?
 
 Et aussi : on rit de la situation, jamais d'un peuple ; pas de religion, pas de deuil, aucun chef d'État ; une réplique
-tient dans un clip de 8 s, donc 15 mots au plus.
+tient dans un clip de **6 s** (la durée fixe de Veo 3.1 dans Flow, ni plus ni moins), donc 12 à 15 mots au plus,
+silences compris.
 
 ## 2. Générer dans Google Flow (la part de Mongazi)
 
@@ -41,7 +42,7 @@ tient dans un clip de 8 s, donc 15 mots au plus.
 1. **Les références** (Nano Banana Pro), faites une fois : d'abord une **image de style** (R0), jointe ensuite à TOUT ;
    puis une fiche par personnage (trois angles et six expressions, 16:9) et une image du décor vide (9:16).
 2. **L'image de chaque plan** (Nano Banana Pro, 9:16), références jointes. On garde la meilleure.
-3. **L'animation** (Veo 3.1, mode **Frames to Video**) : l'image du plan en première image, 8 s, **2 à 3 prises en
+3. **L'animation** (Veo 3.1, mode **Frames to Video**) : l'image du plan en première image, **6 s, durée fixe**, **2 à 3 prises en
    Fast**, la meilleure refaite en Quality si elle le mérite.
 4. **Un changement de lumière ou un geste précis** : première ET dernière image. La dernière se fait **en modifiant** la
    première dans Nano Banana Pro (même cadre), jamais en la refaisant.
@@ -62,7 +63,7 @@ tient dans un clip de 8 s, donc 15 mots au plus.
 |---|---|
 | La voix change d'un plan à l'autre | la même description de voix, mot pour mot, dans chaque prompt ; 2 à 3 prises, garder celles qui se ressemblent ; sinon ElevenLabs « Voice Changer » (voix vers voix) avec une voix fixe : le rythme reste celui de Veo, les lèvres restent calées |
 | Un accent de France au lieu d'ici | tester UN plan avant les autres ; le Voice Changer change le timbre, pas vraiment l'accent ; au pire, doubler avec de vraies voix |
-| Veo rajoute des mots pour remplir 8 s | finir la consigne par « then stays silent » ; couper au montage |
+| Veo rajoute des mots pour remplir ses 6 s | finir la consigne par « then stays silent » ; couper au montage |
 | Des sous-titres incrustés | la phrase « No subtitles » ; sinon regénérer, jamais recadrer |
 | L'écran du téléphone (interface illisible, qui trahit l'IA) | toujours dos à la caméra ; un vrai écran s'incruste au montage |
 | La mauvaise personne parle, ou deux voix se mélangent | **une seule voix par clip, toujours** (consigne de Mongazi) : champ, contrechamp, et le prompt le dit en toutes lettres (« One single voice in this clip: only Afi speaks ») |

@@ -71,3 +71,6 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
   percussions. ⚠️ **Piège de Chrome** : changer de page pendant qu'un téléchargement Pixabay se prépare l'ANNULE ;
   seul le dernier de chaque série arrivait. Attendre une dizaine de secondes après chaque clic, puis vérifier le dossier
   Téléchargements.
+- **La durée des clips** (Mongazi) : dans son Flow, Veo 3.1 fait des clips de **6 s, durée fixe**, qu'on ne peut ni
+  raccourcir ni allonger à la génération. Les minutages de P01 et P04 sont refaits en 6 s ; P09, la plus longue
+  réplique, peut se couper en deux clips.
