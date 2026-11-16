@@ -487,8 +487,9 @@
   écrit, **le client qui achète sait que c'est de l'IA**, on livre le MP4.
 - ⚠️ **Filigrane « Veo » visible avec Google AI Pro** (pas avec Ultra) : jamais masqué ; une pub livrée sans filigrane =
   Ultra, ou les prises finales par l'API.
-- ⏳ **Prix proposés, pas validés** (flash 40 000 F · dialoguée 125 000 · mini-film 250 000) : validés, ils entrent au
-  socle. ⚠️ **Les partenaires ne peuvent pas la vendre** (contrat art. 4.4).
+- ⏳ **Prix** : la grille de 40 000 à 250 000 F est **rejetée** (« trop cher pour le Bénin ») ; Mongazi vise **environ
+  10 000 F pour 30 s à 1 min**. Piste à valider : **la pub modèle** (une histoire fabriquée une fois, déclinée à chaque
+  client). ⚠️ **Les partenaires ne peuvent pas la vendre** (contrat art. 4.4).
 
 ### PALABRE · le jeu de cartes de la francophonie  *(produit interne, 2026-10-15)*
 - 🔴 **Il vit HORS de ce dépôt** : `C:\Users\USER\NEBULA AGENCY GAME` (coffre Obsidian ET dépôt git local, demandé

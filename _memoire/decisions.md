@@ -970,3 +970,5 @@ MD5, 53 plats balisés, fichier absent → 404).
 - **Le français reste très simple** (Mongazi : « quand le français est trop soutenu, ils ne comprennent pas »).
 - **Pas encore tranché** : les prix (grille proposée dans `_memoire/videos-pub/tarifs.md`) et l'étiquette IA des
   réseaux (conseillée par Claude).
+- **Les prix, plus tard le même jour** : Mongazi rejette la grille de 40 000 à 250 000 F (« trop cher pour le
+  Bénin ») et vise environ 10 000 F pour une vidéo de 30 s à 1 min. Piste « pub modèle » proposée, pas encore validée.

@@ -3,7 +3,25 @@
 > Proposition de Claude du 2026-11-16, **pas encore validée par Mongazi**. Une fois validée, elle entre au socle
 > commercial (`_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`), qui reste la source de vérité des prix.
 
-## 1. La grille proposée (commerçants et PME)
+## ⚠️ 2026-11-16 · Mongazi rejette la grille du § 1
+
+« C'est trop cher pour le Bénin. » Sa cible : **environ 10 000 F pour une vidéo de 30 s à 1 min**.
+
+À ce prix, une pub faite de zéro perd de l'argent : environ 6 500 F de crédits pour 1 min, et environ 10 000 F de plus
+pour des prises sans filigrane (API), sans compter une journée de travail.
+
+**La piste de Claude, à valider : la pub modèle.** Une histoire fabriquée une seule fois (environ 17 000 F, remboursés
+dès la 2e vente), puis vendue à beaucoup de commerçants. Pour chacun, on change seulement : ses vraies photos de
+produits, montrées sur l'écran du téléphone au moment de la chute ; son nom et son numéro sur la carte ; au besoin 2 ou
+3 plans refaits (environ 1 500 F). Le montage est un modèle : Claude change les infos du client et relance. Coût par
+client : 0 à 1 500 F et environ une heure ; il reste 8 500 à 10 000 F par vente.
+- Le défaut : deux voisins auraient la même histoire. La parade : une version par secteur (pagnes, gâteaux, coiffure,
+  restaurant…), puis une nouvelle histoire de temps en temps.
+- À 10 000 F, le commerçant dit oui sans réfléchir, et la pub appelle le catalogue à 50 000 F : c'est une porte
+  d'entrée.
+- Le sur-mesure (une histoire écrite pour un seul client) reste à part : au moins 30 000 F, à trancher par Mongazi.
+
+## 1. La première grille proposée (rejetée le 2026-11-16)
 
 | Offre | Ce que le client reçoit | Prix |
 |---|---|---|
