@@ -606,3 +606,17 @@ indisponible avec le Chrome de la 4.0.512.
   enregistrer la variante sans la plume (`VOIX.md`).
 - La licence Remotion : **on livre le MP4, jamais le projet**.
 - ⏳ La version anglaise attend ses deux voix (`VOIX.md`, partie anglaise).
+
+## Les outils de motion graphics ajoutés le 2026-11-17
+
+- **`@react-three/postprocessing` 3.2.2 + `postprocessing` 6.39.6** : halo, flou de profondeur, grain, glitch sur les
+  scènes Three.js. ⚠️ Mesurer le temps par image au premier usage : l'Intel HD 5500 paie chaque effet.
+- **`@react-three/rapier` 2.2.0** : la physique (chutes, collisions, dominos). ⚠️ **Précalculer la simulation image par
+  image** : Remotion rend dans le désordre et sur plusieurs onglets, une physique en temps réel change à chaque rendu.
+- **Librosa 1.0.1** (Python, hors de ce dossier) : les temps forts d'une musique (`beat_track`, `onset_detect`) écrits
+  dans un JSON que la composition lit, comme `minutage.json`.
+- **Compétences de Claude Code**, installées hors du dépôt : Video Shotcraft (124 fiches de plans, son gabarit est en
+  Remotion 4.0.484 : on applique ses fiches ICI, en 4.0.512), Lemo Opuscar (99 styles), Pixel FX (244 effets).
+  ⛔ **Les fiches de Lemo Opuscar ne vont jamais dans ce dépôt, qui est public** (licence : nos films et ceux des clients
+  oui, partager les fiches non). ⛔ **Clawd, la mascotte d'Anthropic, n'apparaît jamais dans nos vidéos.**
+- Licences, contrôles et pièges : `_memoire/apprentissages/2026-11-17-dix-outils-motion-graphics.md`.
