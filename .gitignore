@@ -175,3 +175,7 @@ monde/lieux/*/personnages/*/video-*.json
 
 # Les images de l'avatar de Mongazi (son visage) : jamais sur GitHub, le dépôt est public (2026-11-17)
 _partage/avatar/
+
+# Les plans des pubs vidéo (gros médias générés dans Flow) : jamais sur GitHub (2026-11-17)
+_partage/pub-nebula/
+_partage/pub-l-autre/

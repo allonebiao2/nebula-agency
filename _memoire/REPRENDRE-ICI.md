@@ -7,6 +7,21 @@
 
 ---
 
+## 0 sexquadragies. LE 2026-11-17 · LA PUB NEBULA D'ABORD, PUIS L'AVATAR
+
+- **La priorité de Mongazi** : une vidéo publicitaire « concernant les vidéos et NEBULA Agency », **avant** l'avatar
+  (« avant de créer tout ça »). Il génère les plans dans Flow et m'envoie images et vidéos ; je fais un montage
+  « magistral », qui « doit coûter 10 000 dollars », en améliorant et en corrigeant les erreurs quand c'est possible.
+- ⏳ **Son scénario, fait avec ChatGPT, n'est jamais arrivé** : son message décrivait la méthode, pas l'idée. Le
+  demander en premier, puis valider la liste des plans AVANT qu'il génère.
+- **La remise** : `_partage/pub-nebula/` (exclu de GitHub), une prise par plan nommée `P01.mp4`…, en 1080p depuis Flow,
+  jamais un export WhatsApp. Le dossier : `videos-pub/projets/02-pub-nebula.md`.
+- **Le studio vidéo a de nouveaux outils** (Video Shotcraft, Lemo Opuscar, Pixel FX, effets de lumière, physique,
+  calage sur le rythme) : `apprentissages/2026-11-17-dix-outils-motion-graphics.md`.
+- **Ensuite, l'avatar** (bloc suivant) : A00 et D00 à générer, fiche https://claude.ai/artifact/FJRogAtCUgXEi4NCNHLN6H.
+
+---
+
 ## 0 quinquadragies. LE 2026-11-17 · LE TIKTOK DE MONGAZI : DEVENIR LA RÉFÉRENCE DE L'IA
 
 - **Le but de Mongazi** : devenir la référence de l'IA et du digital en Afrique de l'Ouest francophone, mettre en avant
