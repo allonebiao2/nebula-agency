@@ -172,3 +172,6 @@ monde/_generation/
 monde/lieux/*/personnages/hillary/
 monde/lieux/*/personnages/*/video-*.mp4
 monde/lieux/*/personnages/*/video-*.json
+
+# Les images de l'avatar de Mongazi (son visage) : jamais sur GitHub, le dépôt est public (2026-11-17)
+_partage/avatar/

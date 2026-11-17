@@ -142,3 +142,21 @@ jamais écrire à une IA · « L'IA ne va pas prendre ton travail. Quelqu'un qui
 
 **Prochaine étape** : son avis sur l'analyse et la vague 1 ; ses liens YouTube pour les 3 ACTU ; puis les scripts dans
 `_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`, et le montage.
+
+## L'avatar (même jour) : 3D, 31 images, la fiche des prompts
+
+- Mongazi, mot pour mot : *« c'est un style 3D oui, donc vas-y »*. Le plan validé : la fiche du personnage (A00), 12
+  poses (A01 à A12), puis la bouche ouverte (M1) et les yeux fermés (M2) des 9 poses où il parle : **31 images**. En 3D,
+  la planche de bouches (une technique de 2D) est remplacée par une version bouche ouverte de chaque pose. Au montage :
+  bouche fermée ou ouverte selon le volume de sa voix, avec un fondu de deux images, et un clignement des yeux.
+- **Changé en route, et dit** : le fond est **gris clair** et non vert, car en 3D le vert laisse des reflets sur le
+  personnage. Seul l'écran du téléphone (A05) reste vert, pour y incruster les vraies démos.
+- **La tenue signature**, proposée par Claude et acceptée avec le « vas-y » : sweat à capuche violet NEBULA (#9333EA),
+  casque noir autour du cou. Elle n'est écrite que dans A00 : les poses copient la fiche.
+- **L'ordre** : A00 validée avant tout ; A01, la pose de base, fixe le cadrage et se joint à A02-A12 ; M1 et M2
+  modifient une pose, ils ne la refont jamais.
+- **La fiche** : https://claude.ai/artifact/FJRogAtCUgXEi4NCNHLN6H, fabriquée par
+  `python _studio-video/_outils/avatar_fiche_prompts.py <sortie.html>` à partir de
+  `_documents/nebula-agency/marketing/TIKTOK-MONGAZI-AVATAR.md` (la source de vérité). Les images vont dans
+  `_partage/avatar/`, ajouté au `.gitignore` (le dépôt est public).
+- **Prochaine étape** : Mongazi génère A00 avec 2 ou 3 photos de lui et son image de style, et me l'envoie.
