@@ -7,6 +7,23 @@
 
 ---
 
+## 0 quinquadragies. LE 2026-11-17 · LE TIKTOK DE MONGAZI : 6 VIDÉOS, UN AVATAR QUI PARLE
+
+- **L'objectif de Mongazi** : il n'a pas de communauté ; il partage ce qu'il sait sur son nouveau TikTok pour créer de la
+  valeur et trouver des clients. **6 vidéos, une par jour.** **Il enregistre ses voix off**, Claude écrit les scripts et
+  fait tout le reste (montage Remotion, motion design, bruitages, musique).
+- **Validé** : un **mini-Mongazi dessiné** dans le style de « L'AUTRE », qui apparaît quand il parle, à côté des
+  animations, et **parle avec sa voix** (bouche au rythme de la voix off, clignements) ; 12 poses détourées. Koffi pose
+  les questions naïves, Afi montre l'exemple. Format fixe : générique sonore de 2 s, avatar à gauche, gros texte au
+  centre, 30 à 45 s, « Écris [un mot] en commentaire » à la fin.
+- **Le ton exigé** : très drôle et taquin ; des accroches qui sortent de nulle part ; on ne devine le sujet qu'à la fin.
+  Les 6 accroches proposées sont dans `conversations/2026-11-17-tiktok-mongazi.md` (à valider).
+- **Prochaine action** : écrire les 6 scripts complets dans ce ton → `_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`.
+- **Attend Mongazi** : son accord sur les accroches ; 2 ou 3 photos de lui pour l'avatar ; pour le jour 5, la cliente à
+  montrer et son accord.
+
+---
+
 ## 0 quaterquadragies. LES 2026-11-16 ET 17 · PUBS VIDÉO IA, LA PREMIÈRE PUB « L'AUTRE »
 
 - **Nouvelle offre** : des pubs vidéo générées par IA. Mongazi génère les plans (Nano Banana Pro) et les anime (Veo 3.1)

@@ -35,3 +35,34 @@ Gratuit, accessible sans compte, mais **ni le Bénin ni l'Afrique de l'Ouest** (
 ## Ce qui attend Mongazi
 Son accord sur les 6 sujets · 2 ou 3 photos de lui pour l'avatar · pour le jour 5, quel client montrer et son accord.
 Ensuite : les scripts des voix off, puis le prompt de la fiche de l'avatar.
+
+## La suite (même jour) : l'avatar validé, le ton des scripts
+
+- **L'avatar est validé** : mini-Mongazi apparaît quand Mongazi parle, à côté des animations et du motion design.
+- **Le ton des scripts**, mot pour mot : *« assez humoristiques et taquins pour changer un peu de ce qui se voit
+  actuellement, ça doit être très taquin et drôle, et les accroches doivent être encore plus accrocheuses, sortir de
+  nulle part ; on ne doit pas pouvoir saisir la finalité au départ mais plutôt vers la fin »*. C'est la grammaire de
+  « L'AUTRE » appliquée aux vidéos qui apprennent quelque chose.
+- **La structure de chaque script** (environ 40 s) :
+  1. de 0 à 2 s : une accroche qui sort de nulle part (un aveu, un crime, un drame, de l'absurde), sans qu'on puisse
+     deviner le sujet ;
+  2. jusqu'à 15 s : la fausse piste qui monte, taquine (Koffi y croit, mini-Mongazi en rajoute) ;
+  3. jusqu'à 30 s : la révélation du vrai sujet, puis la leçon en 2 ou 3 points très simples ;
+  4. la fin : une chute drôle, puis « Écris [le mot] en commentaire ».
+  On taquine le spectateur (« avoue, toi aussi tu fais ça »), on ne le rabaisse jamais ; aucun chiffre inventé ;
+  français très simple.
+- **Les nouvelles accroches proposées par Claude** (à valider par Mongazi) :
+
+| Jour | Sujet caché | L'accroche (elle ne dit pas le sujet) | La révélation, à la fin | Mot à commenter |
+|---|---|---|---|---|
+| 1 | le prix caché | « Il y a une phrase qui fait fermer plus de boutiques que le loyer. » | la phrase, c'est « C'est combien ? » : mets tes prix là où on les voit | PRIX |
+| 2 | les photos | « J'ai vu un crime ce matin. Sur le statut d'une vendeuse de pagnes. » | le crime, c'est la photo (floue, sombre, au flash) : 3 règles | PHOTO |
+| 3 | le statut WhatsApp | « Ton statut WhatsApp te trompe. Et tout le quartier le sait. » | tout le monde le voit, et il ne te ramène personne : 3 règles | STATUT |
+| 4 | Google | « Mauvaise nouvelle : ta boutique est un fantôme. » | invisible sur Google Maps : la fiche gratuite | GOOGLE |
+| 5 | l'avant / après | « J'ai volé le travail d'une pâtissière. Et elle m'a dit merci. » | le travail volé, c'est répondre « c'est combien ? » à minuit : son catalogue le fait (vraie cliente, avec son accord) | BOUTIQUE |
+| 6 | qui je suis | « Au quartier, on croit que je répare des téléphones. » | je fabrique des boutiques dans les téléphones, et voilà pourquoi ce compte | ce que tu vends |
+
+- **Prochaine étape après le clear** : écrire les 6 scripts complets dans ce ton (la voix off de Mongazi, ce qu'on voit
+  à l'écran, les poses de l'avatar, les passages de Koffi et d'Afi), à ranger dans
+  `_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`. Puis le prompt de la fiche de l'avatar (12 poses, avec R0
+  en style), dès que Mongazi envoie 2 ou 3 photos de lui (hors dépôt : `_partage/`).
