@@ -66,3 +66,79 @@ Ensuite : les scripts des voix off, puis le prompt de la fiche de l'avatar.
   à l'écran, les poses de l'avatar, les passages de Koffi et d'Afi), à ranger dans
   `_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`. Puis le prompt de la fiche de l'avatar (12 poses, avec R0
   en style), dès que Mongazi envoie 2 ou 3 photos de lui (hors dépôt : `_partage/`).
+
+## Le virage (même jour) : une série qui APPREND, pour devenir la référence de l'IA
+
+Le script du jour 1 en sketch (Koffi devine « la phrase qui tue », chute sur « c'est combien, ton travail ? ») est
+**refusé**, mot pour mot : *« non il faut que ce soit plus accessible plus compréhensible pour tout le monde vois tu. et je
+veux que les 7 vidéos d'aujourd'hui soient des vidéos éducatives, pas scénaristiques »*.
+
+- **Le but** : *« devenir celui qui va pouvoir porter le plus de connaissance sur l'IA en Afrique de l'Ouest et
+  francophone »*, une référence du digital et de l'IA, en mettant en avant ses services et ses compétences, et en
+  développant sa communauté. La vague 1 doit suivre les codes de TikTok, capter l'attention et apprendre quelque chose.
+- **Sa règle** : *« ils doivent dormir moins bêtes une fois qu'ils regardent une de mes vidéos »*.
+- **Deux valeurs** : les nouvelles des avancées de la tech et de l'IA (ACTU) ; la valeur, astuces et réalités, sur le
+  digital et l'IA (ASTUCE). Pour les actus, **il donnera des références YouTube** dont on tirera les infos.
+- **Puis son idée des ÉPISODES** : *« des fois je pourrais faire des animations IA en mode un peu sur ma vie, j'aurai mon
+  personnage déjà créé [...] chaque épisode une nouvelle réalité autour de ma vie de vibe codeur, ça doit être archi
+  drôle »*.
+- **Et sa demande** : *« analyse chaque idée que je t'ai apportée et dis ce que tu comprends, améliore et dis-moi »*.
+
+## L'analyse de Claude (ce que je comprends · ce que j'améliore), en attente de sa réaction
+
+1. **La référence de l'IA en Afrique de l'Ouest francophone** : la place à prendre, « l'IA expliquée pour nous »
+   (chaque vidéo répond à « et pour nous, ici, ça change quoi ? ») ; une réponse en vidéo à un commentaire chaque
+   semaine ; la même vidéo aussi sur Facebook, Instagram et YouTube.
+2. **Des vidéos qui apprennent** : « Ce soir, tu dors moins bête » comme signature ; le test du petit frère (un enfant
+   de 12 ans comprend du premier coup, sinon on réécrit).
+3. **ACTU et ASTUCE** : un habit fixe par format (bandeau, son, couleur) ; l'ACTU toujours en trois temps (ce qui sort ·
+   ce que ça change ici · ce que tu fais ce soir) ; les réalités en « Vrai ou faux ? ».
+4. **Les références YouTube** : les infos oui, les images non (c'est leur travail, et TikTok écarte du fil « Pour toi »
+   le contenu repris sans apport) ; nos images à nous (motion design, l'outil filmé en vrai, l'avatar devant la page
+   officielle) ; chaque info vérifiée à la source officielle.
+5. **Les ÉPISODES de sa vie de vibe codeur** : un par semaine, le même jour ; un 2e personnage, son assistant IA trop
+   sûr de lui (« C'est corrigé ! » pendant que tout brûle) ; ses vraies histoires d'abord (GTA 6 sur un PC de 8 Go, le
+   crédit de l'IA épuisé en plein travail, le PC éteint en plein calcul, « un petit scénario, l'IA m'a écrit un
+   livre ») ; une leçon en une phrase à la fin ; sa voix pour le personnage, d'un épisode à l'autre ; on rit de lui et
+   de l'IA, jamais d'un client. **Pilote conseillé** : « Mon IA allait vendre la grande glace au prix de la petite » :
+   le vrai piège qu'a déjoué LE STANDARD (une glace à trois prix, 1 000, 1 500 et 2 500 F ; une IA naïve encaisse la
+   grande au prix de la petite). C'est un piège déjoué en fabrication, pas un incident chez un client : ne jamais
+   nommer le client.
+
+### La vague 1 proposée (en attente de son accord)
+
+| Jour | Format | La 1re seconde | Ce qu'on apprend |
+|---|---|---|---|
+| 1 | ASTUCE | « L'IA ne réfléchit pas comme toi. Elle devine. » | comment marche l'IA, pourquoi elle se trompe parfois |
+| 2 | ACTU | tirée de ses liens YouTube | ce qui vient de sortir, ce que ça change ici |
+| 3 | ASTUCE | « Tu parles à l'IA comme à Google. C'est pour ça qu'elle te répond mal. » | la formule pour bien lui parler (avant / après) |
+| 4 | ACTU | tirée de ses liens | |
+| 5 | ASTUCE | « Ta maman t'appelle. C'est sa voix. Mais ce n'est pas elle. » | l'arnaque à la voix copiée, le mot secret de famille |
+| 6 | ACTU | tirée de ses liens | |
+| 7 | ÉPISODE 1 | « Mon IA allait vendre la grande glace au prix de la petite. » | une IA doit lire tes vrais prix, et c'est lui qui fabrique ces agents |
+
+En réserve : l'agent WhatsApp qui répond à 3 h du matin (démo) · l'assistant gratuit dans la poche · 3 choses à ne
+jamais écrire à une IA · « L'IA ne va pas prendre ton travail. Quelqu'un qui sait l'utiliser, oui. »
+
+**Le jour 1 écrit en entier** (environ 35 s, voix de Mongazi) :
+1. « L'IA ne réfléchit pas comme toi. Elle devine. »
+2. « Je te montre. Je commence : "Poisson braisé avec de l'…" »
+3. « Tu as pensé "attiéké" ? Ou "alloco" ? Bravo : tu viens de faire comme l'IA. » (les deux mots arrivent, « ding »)
+4. « Elle a lu plus de textes que n'importe quel humain. Alors elle choisit le mot qu'on dit le plus souvent. Et elle
+   recommence, mot après mot. »
+5. « Mais quand elle ne sait pas, elle ne dit pas "je ne sais pas". Elle devine quand même. Et elle a l'air très sûre
+   d'elle. » (l'IA dit une bêtise avec un grand sourire)
+6. « Retiens ça : l'IA t'aide, elle ne décide pas pour toi. Si c'est important, tu vérifies. »
+7. « Abonne-toi : demain, ce qui vient de sortir dans l'IA. Et ce soir, tu dors moins bête. »
+
+**Les règles posées** :
+- la phrase choc dès la 1re seconde ; le générique sonore passe à la fin (au début, il fait partir les gens) ;
+- une idée par vidéo, 25 à 40 s, sous-titres en gros mot par mot ; on montre l'IA qui répond en vrai ;
+- un bandeau par format ; la même phrase de fin, « Ce soir, tu dors moins bête » (proposée) ;
+- l'avatar mini-Mongazi présente les ACTU et ASTUCE, et joue les ÉPISODES ; Koffi et Afi sortent de la série ;
+- la vente reste discrète (un compte qui vend trop tôt grandit mal) : son service passe dans l'ÉPISODE 1 et en fond ;
+- pour tenir le rythme : ASTUCE et ÉPISODE préparés d'avance, ses voix de la semaine enregistrées en une fois, les ACTU
+  écrites la veille (une actu vieillit vite).
+
+**Prochaine étape** : son avis sur l'analyse et la vague 1 ; ses liens YouTube pour les 3 ACTU ; puis les scripts dans
+`_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`, et le montage.

@@ -7,20 +7,21 @@
 
 ---
 
-## 0 quinquadragies. LE 2026-11-17 · LE TIKTOK DE MONGAZI : 6 VIDÉOS, UN AVATAR QUI PARLE
+## 0 quinquadragies. LE 2026-11-17 · LE TIKTOK DE MONGAZI : DEVENIR LA RÉFÉRENCE DE L'IA
 
-- **L'objectif de Mongazi** : il n'a pas de communauté ; il partage ce qu'il sait sur son nouveau TikTok pour créer de la
-  valeur et trouver des clients. **6 vidéos, une par jour.** **Il enregistre ses voix off**, Claude écrit les scripts et
-  fait tout le reste (montage Remotion, motion design, bruitages, musique).
-- **Validé** : un **mini-Mongazi dessiné** dans le style de « L'AUTRE », qui apparaît quand il parle, à côté des
-  animations, et **parle avec sa voix** (bouche au rythme de la voix off, clignements) ; 12 poses détourées. Koffi pose
-  les questions naïves, Afi montre l'exemple. Format fixe : générique sonore de 2 s, avatar à gauche, gros texte au
-  centre, 30 à 45 s, « Écris [un mot] en commentaire » à la fin.
-- **Le ton exigé** : très drôle et taquin ; des accroches qui sortent de nulle part ; on ne devine le sujet qu'à la fin.
-  Les 6 accroches proposées sont dans `conversations/2026-11-17-tiktok-mongazi.md` (à valider).
-- **Prochaine action** : écrire les 6 scripts complets dans ce ton → `_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`.
-- **Attend Mongazi** : son accord sur les accroches ; 2 ou 3 photos de lui pour l'avatar ; pour le jour 5, la cliente à
-  montrer et son accord.
+- **Le but de Mongazi** : devenir la référence de l'IA et du digital en Afrique de l'Ouest francophone, mettre en avant
+  ses services et ses compétences, bâtir sa communauté. **Des vidéos qui apprennent, pas de sketch**, comprises par
+  tout le monde, dans les codes de TikTok. Sa règle : « ils doivent dormir moins bêtes ». **Il enregistre ses voix off**,
+  Claude écrit et monte (Remotion).
+- **Trois formats** : ACTU (les nouvelles de l'IA et de la tech, tirées de **ses liens YouTube**, vérifiées à la source
+  officielle, sans reprendre leurs images) · ASTUCE (astuces et réalités du digital et de l'IA) · ÉPISODE (son idée : sa
+  vie de vibe codeur animée par IA, son personnage en héros, « archi drôle »).
+- **Vague 1 proposée, 7 vidéos** (3 ASTUCE + 3 ACTU + l'ÉPISODE 1), avec l'analyse de chacune de ses idées et le jour 1
+  écrit : `conversations/2026-11-17-tiktok-mongazi.md`, sections « Le virage » et « L'analyse ». L'avatar
+  mini-Mongazi reste, Koffi et Afi sortent.
+- **Attend Mongazi** : son avis sur l'analyse et la vague 1 ; ses liens YouTube pour les ACTU ; 2 ou 3 photos de lui
+  pour l'avatar.
+- **Ensuite** : les scripts dans `_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`, puis le montage.
 
 ---
 
