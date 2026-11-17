@@ -53,12 +53,15 @@ les voix sont générés ; le produit du client, lui, est le vrai.
 - [`methode.md`](methode.md) : écrire une pub décalée, générer dans Flow, ce que Mongazi me remet, le montage, publier.
 - [`tarifs.md`](tarifs.md) : les prix validés (dès 20 000 F), ce que coûte une pub, les conditions de vente.
 - `projets/` : un dossier par pub.
+- **La fiche des prompts** (un bouton Copier par prompt) : https://claude.ai/artifact/GTZdNfrpwPfQXsXNEpLEc5 (privée).
+  Elle se refait par `python _studio-video/_outils/pub_fiche_prompts.py <sortie.html>`, qui LIT le dossier, puis se
+  republie à la même adresse (outil Artifact, `url`, après l'avoir lue).
 
 ## Les pubs
 
 | N° | Pub | Pour | État |
 |---|---|---|---|
-| 01 | [« L'AUTRE »](projets/01-l-autre.md) | NEBULA : le catalogue, et la pub vidéo sur la carte | scénario validé, dossier prêt, rien de généré (2026-11-16) |
+| 01 | [« L'AUTRE »](projets/01-l-autre.md) | NEBULA : le catalogue, et la pub vidéo sur la carte | R0 à R3 et l'image de P02 validées ; prochaine étape : P02 animé, le test (2026-11-17) |
 
 ## Idées pour la suite (même format, mêmes règles)
 

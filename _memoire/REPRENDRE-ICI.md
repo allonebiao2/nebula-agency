@@ -1,9 +1,29 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-11-13
+## Point de reprise pour une session terminal · dernière mise à jour 2026-11-17
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 quaterquadragies. LES 2026-11-16 ET 17 · PUBS VIDÉO IA, LA PREMIÈRE PUB « L'AUTRE »
+
+- **Nouvelle offre** : des pubs vidéo générées par IA. Mongazi génère les plans (Nano Banana Pro) et les anime (Veo 3.1)
+  dans **Google Flow** ; Claude écrit le dossier et **fait le montage** (Remotion, motion design). Tout est dans
+  **`_memoire/videos-pub/`** : lire `cerveau.md` (les règles), puis `projets/01-l-autre.md` (le dossier complet).
+- **État de « L'AUTRE »** : scénario validé ; R0 (la maison), R1 (Afi), R2 (Koffi), R3 (la chambre) et l'image de P02
+  **générées et validées** (copies dans `_partage/pub-l-autre/`). **Prochaine action** : Mongazi anime P02 (le test de la
+  voix, de l'accent et du dessin en mouvement) et dépose `_partage/pub-l-autre/P02.mp4` ; Claude le juge, puis Mongazi
+  génère R4, R5 et les autres plans.
+- **La fiche des prompts** (un bouton Copier par prompt) : https://claude.ai/artifact/GTZdNfrpwPfQXsXNEpLEc5 (privée),
+  refaite par `python _studio-video/_outils/pub_fiche_prompts.py <sortie.html>`.
+- **Les sons sont prêts** : 6 musiques et 12 bruitages sans Content ID dans `_studio-video/public/pub-l-autre/` (hors
+  dépôt, preuves dans `SOURCES.md`). **Mongazi doit choisir** la musique du drame et celle de la carte.
+- **Les règles qui ont mordu** : une seule voix par clip ; clips de 6 s fixes ; la pub ne dit jamais « IA » ; français
+  très simple ; le nom du film dans les prompts, avec « personnages originaux » ; sur Pixabay, la plupart des musiques
+  sont « Content ID » (le vérifier) ; dans Chrome, changer de page annule un téléchargement Pixabay en cours.
+- **Prix** : dès 20 000 F (socle § 1.4) ; sur-mesure à 35 000 / 50 000 F proposé, pas tranché.
 
 ---
 

@@ -480,7 +480,8 @@
   `_studio-video/`, ultra dynamique (texte animé, dessins SVG, bruitages).
 - **Le cerveau de l'offre** : `_memoire/videos-pub/` (`cerveau.md`, `methode.md`, `tarifs.md`, `projets/`).
 - **1re pub : « L'AUTRE »** (une dispute de couple à 3 h du matin qui finit sur un catalogue), **en dessin animé 2D**
-  (le style d'« Aya de Yopougon », nommé dans les prompts avec « personnages originaux » ; une seule voix par clip) · validée par Mongazi, dossier prêt, rien de généré ·
+  (le style d'« Aya de Yopougon », nommé dans les prompts avec « personnages originaux » ; une seule voix par clip) · R0 à R3 et l'image de P02 validées (2026-11-17), **prochaine étape : Mongazi anime P02** (le test) · fiche des
+  prompts : https://claude.ai/artifact/GTZdNfrpwPfQXsXNEpLEc5, refaite par `python _studio-video/_outils/pub_fiche_prompts.py` ·
   `_memoire/videos-pub/projets/01-l-autre.md`.
 - **Deux consignes de Mongazi** : la pub **ne dit pas** qu'elle est faite avec l'IA ; le **français reste très simple**
   (phrases courtes, mots de la rue).

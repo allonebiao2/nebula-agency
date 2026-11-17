@@ -81,3 +81,6 @@ Voir `_memoire/EN-INSTANCE.md` (lignes PUBS VIDÉO IA) et `_memoire/videos-pub/p
   commercial, § 1.4 (vendus par NEBULA seulement).
 - **Le plus petit prix passe à 20 000 F** (Mongazi). La pub annonce « dès 20 000 F ». Le sur-mesure (25 000 / 35 000 F)
   devient presque le même prix : question posée.
+- **Fin de session (2026-11-17)** : R0, R1, R2, R3 et l'image de P02 générées par Mongazi et validées (P02 corrigée :
+  un 2e lit retiré, la fenêtre passée en bleu nuit ; R3 : le mot « Delivery » retiré du sac). Le générateur de la fiche
+  des prompts est rangé dans `_studio-video/_outils/pub_fiche_prompts.py`. Prochaine étape : P02 animé.
