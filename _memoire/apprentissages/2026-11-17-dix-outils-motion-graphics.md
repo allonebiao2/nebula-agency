@@ -43,6 +43,9 @@ session. Aucun des deux n'a de crochet, de serveur MCP ou d'agent.
   - `setup.sh deps` installe ses paquets : Node, le navigateur de rendu de Playwright, Python.
   - ⚠️ Le contrôle automatique a refusé que Claude lance seul ce script tiers. **Mongazi l'a autorisé** le 2026-11-17
     (« oui j'autorise »).
+  - **Résultat, le même jour** : le niveau `core` est installé (paquets Node, Chrome Headless Shell 153 dans
+    `AppData\Local\ms-playwright`, Python). La bibliothèque pèse 315 Mo. Les niveaux `voice` et `music` s'installent
+    quand un film en a besoin : `sh setup.sh deps voice music`.
 - Il exige ffmpeg 7 ou plus : le PC a ffmpeg 9.0.2.
 
 ## Video Shotcraft
