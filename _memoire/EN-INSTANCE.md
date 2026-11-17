@@ -17,6 +17,7 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
+| **TIKTOK DE MONGAZI** : 6 vidéos (une par jour) avec un mini-Mongazi dessiné qui parle avec sa voix off. Proposition faite, attend son accord sur les 6 sujets, 2 ou 3 photos de lui, et le client à montrer le jour 5 | 🙋 | `conversations/2026-11-17-tiktok-mongazi.md` |
 | **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt, en dessin animé 2D. R0 à R3 faites et validées ; image de P02 corrigée et validée ; reste son animation, le test de la voix et de l'accent. Sur-mesure à 35 000 / 50 000 F : proposé, pas tranché. Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
 | **PUBS VIDÉO IA · le montage de « L'AUTRE »**, dès que les prises sont dans `_partage/pub-l-autre/` (`P01.mp4`…) | 🤖 | `videos-pub/methode.md` § 3 |
 | **PUBS VIDÉO IA · l'étiquette IA** sur TikTok et Facebook (conseillée : sinon retrait possible ; rien dans la vidéo elle-même) | 🙋 | `videos-pub/cerveau.md` règle 5 |
