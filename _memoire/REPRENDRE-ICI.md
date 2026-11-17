@@ -19,12 +19,13 @@
 - **Vague 1 proposée, 7 vidéos** (3 ASTUCE + 3 ACTU + l'ÉPISODE 1), avec l'analyse de chacune de ses idées et le jour 1
   écrit : `conversations/2026-11-17-tiktok-mongazi.md`, sections « Le virage » et « L'analyse ». L'avatar
   mini-Mongazi reste, Koffi et Afi sortent.
-- **L'avatar (3D, dans son style)** : 31 images à générer dans Flow, prompts dans la fiche
+- **L'avatar (3D, dans son style)** : 32 images à générer dans Flow, dont D00, son studio NEBULA par défaut
+  (lumière tamisée orange, le nom posé au montage par Claude), prompts dans la fiche
   https://claude.ai/artifact/FJRogAtCUgXEi4NCNHLN6H (source : `_documents/nebula-agency/marketing/TIKTOK-MONGAZI-AVATAR.md`,
   refaite par `python _studio-video/_outils/avatar_fiche_prompts.py <sortie.html>`). L'ordre : A00 (la fiche du
   personnage) validée d'abord, puis A01 (la pose de base), puis A02 à A12, puis M1 et M2 sur A01 à A09. Les images
   vont dans `_partage/avatar/` (exclu de GitHub).
-- **Attend Mongazi** : A00 générée, avec 2 ou 3 photos de lui et son image de style ; son avis sur l'analyse et la
+- **Attend Mongazi** : A00 et D00 générées, avec 2 ou 3 photos de lui et son image de style ; son avis sur l'analyse et la
   vague 1 ; ses liens YouTube pour les ACTU.
 - **Ensuite** : les scripts dans `_documents/nebula-agency/marketing/TIKTOK-MONGAZI.md`, puis le montage.
 

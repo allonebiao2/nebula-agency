@@ -27,7 +27,7 @@ for l in SRC.read_text(encoding="utf-8").splitlines():
     if l.startswith("## "):
         section, cur = l[3:].strip(), None
         continue
-    m = re.match(r"^### ([AM]\d+) · (.+)$", l)
+    m = re.match(r"^### ([ADM]\d+) · (.+)$", l)
     if m:
         cur = {"code": m.group(1), "titre": m.group(2), "meta": {}, "prompt": None}
         items.append(cur)
@@ -43,11 +43,13 @@ for l in SRC.read_text(encoding="utf-8").splitlines():
         cur["meta"][m.group(1)] = m.group(2)
 
 poses = [i for i in items if i["code"].startswith("A") and i["code"] != "A00"]
+decors = [i for i in items if i["code"].startswith("D")]
 modifs = [i for i in items if i["code"].startswith("M")]
-assert len(items) == 15 and len(poses) == 12 and len(modifs) == 2, [i["code"] for i in items]
+assert items[0]["code"] == "A00" and len(items) == 16 and len(poses) == 12 and len(decors) == 1 and len(modifs) == 2, \
+    [i["code"] for i in items]
 assert all(i["prompt"] for i in items), [i["code"] for i in items if not i["prompt"]]
 PARLE = [p["code"] for p in poses][:9]  # A01 à A09 : les poses où il parle (bouche ouverte et yeux fermés)
-TOTAL = 1 + len(poses) + len(PARLE) * len(modifs)
+TOTAL = 1 + len(decors) + len(poses) + len(PARLE) * len(modifs)
 
 
 def fmt(t):
@@ -196,6 +198,7 @@ page = ("<title>Prompts du mini-Mongazi</title>\n"
         f'<nav class="saut" aria-label="Aller à une image">{sauts}</nav>'
         "</header>"
         + groupe("La fiche", "d'abord, une seule fois", [items[0]])
+        + groupe("Le studio", "ton plateau par défaut", decors)
         + groupe("Les 12 poses", "A01 d'abord, puis les autres", poses)
         + groupe("La bouche et les yeux", "sur A01 à A09", modifs)
         + "<footer>Source : <code>_documents/nebula-agency/marketing/TIKTOK-MONGAZI-AVATAR.md</code>. "

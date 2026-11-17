@@ -160,3 +160,17 @@ jamais écrire à une IA · « L'IA ne va pas prendre ton travail. Quelqu'un qui
   `_documents/nebula-agency/marketing/TIKTOK-MONGAZI-AVATAR.md` (la source de vérité). Les images vont dans
   `_partage/avatar/`, ajouté au `.gitignore` (le dépôt est public).
 - **Prochaine étape** : Mongazi génère A00 avec 2 ou 3 photos de lui et son image de style, et me l'envoie.
+
+## Le studio (même jour) : NEBULA AGENCY derrière lui, lumière tamisée orange
+
+- Mongazi, mot pour mot : *« il doit être dans un studio NEBULA AGENCY marqué derrière de base, bien lumineux »*, puis
+  *« tamisé, un peu sombre, tamisé, couleur orange »*. Compris : la pièce dans la pénombre, éclairée en orange
+  (#FF8A1E), et lui bien éclairé au premier plan.
+- **Ajouté à la fiche** : D00, le studio vide (9:16, mur anthracite, bandes LED orange, étagères tech, un grand espace
+  vide au mur pour le nom). Les 12 poses gardent leur fond gris, avec une lumière chaude de face et un contour orange
+  pour se fondre dans ce studio. **32 images** au lieu de 31. La fiche est republiée à la même adresse (version 2).
+- **Choix de Claude, et dit** : le nom NEBULA AGENCY est posé au montage, pas généré. Ainsi l'orthographe est sûre, la
+  police est celle du site, le nom est identique dans toutes les vidéos et il peut s'allumer comme un néon. Le studio
+  avec le nom (`D01-studio-nebula.png`) lui sera renvoyé pour ses plans Veo.
+- **Les poses restent détourées puis posées dans le studio** : refait à chaque pose, le décor changerait un peu et
+  sauterait à chaque changement de pose.

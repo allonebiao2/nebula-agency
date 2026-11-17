@@ -7,22 +7,25 @@
 L'avatar de Mongazi, en **3D**, dans le style de l'image que Mongazi joint lui-même. Il présente les vidéos ACTU et
 ASTUCE de son TikTok, et il est le héros des ÉPISODES. Mongazi génère les images dans Google Flow (Nano Banana Pro) ;
 Claude les détoure et les anime au rythme de sa voix dans `_studio-video/` : bouche fermée ou ouverte selon le volume de
-la voix, avec un fondu de deux images, et clignement des yeux. **31 images** : la fiche, 12 poses, puis la bouche ouverte
-et les yeux fermés des 9 poses où il parle. Les prompts sont en anglais, parce que le modèle les suit mieux.
+la voix, avec un fondu de deux images, et clignement des yeux. **Par défaut, il est dans son studio NEBULA AGENCY, le nom écrit
+derrière lui, dans une lumière tamisée, un peu sombre et orange, et lui bien éclairé** (Mongazi, 2026-11-17). **32 images** : la fiche, le studio, 12 poses, puis la
+bouche ouverte et les yeux fermés des 9 poses où il parle. Les prompts sont en anglais, parce que le modèle les suit mieux.
 
 ## La marche à suivre
 
 1. **A00, la fiche** : joins 2 ou 3 photos de toi et ton image de style. Génère 2 à 4 essais, garde celui qui te ressemble le plus et envoie-le-moi **avant de continuer** : tout le reste copie cette fiche.
-2. **A01, la pose de base** : joins la fiche et ton image de style. Elle fixe le cadrage de toutes les autres. Envoie-la-moi avant de continuer.
-3. **A02 à A12** : joins la fiche, ton image de style et A01.
-4. **M1 et M2** sur chacune des poses A01 à A09 : joins seulement la pose à modifier.
-5. Enregistre chaque image sous son nom dans `_partage/avatar/`. Ce dossier ne part jamais sur GitHub.
+2. **D00, le studio** : joins seulement ton image de style. Tu peux le faire en même temps que A00.
+3. **A01, la pose de base** : joins la fiche et ton image de style. Elle fixe le cadrage de toutes les autres. Envoie-la-moi avant de continuer.
+4. **A02 à A12** : joins la fiche, ton image de style et A01.
+5. **M1 et M2** sur chacune des poses A01 à A09 : joins seulement la pose à modifier.
+6. Enregistre chaque image sous son nom dans `_partage/avatar/`. Ce dossier ne part jamais sur GitHub.
 
 ## Bon à savoir
 
 - **Tes photos restent chez toi** : tu les joins dans Flow, je n'en ai pas besoin.
 - **La tenue n'est écrite que dans A00** (sweat à capuche violet NEBULA, casque noir autour du cou). Pour la changer, modifie la ligne OUTFIT de A00 : les poses copient la fiche.
-- **Fond gris clair, pas vert** : en 3D, un fond vert laisse des reflets verts sur le personnage. Je détoure le gris aussi bien.
+- **Les poses restent sur fond gris clair** : je les détoure et je te pose dans ton studio au montage. Le décor est donc identique dans toutes tes vidéos, au pixel près, alors que s'il était refait à chaque pose, il changerait un peu et sauterait à chaque changement de pose. (Et en 3D, un fond vert laisserait des reflets verts sur toi.)
+- **Le nom NEBULA AGENCY, c'est moi qui le pose** sur le mur du studio, au montage : orthographe parfaite, la police de ton site, le même dans toutes tes vidéos, et il peut s'allumer comme un néon au début. Une IA n'écrit jamais deux fois un nom de la même façon. Je te renvoie le studio avec le nom (`D01-studio-nebula.png`) pour tes plans animés dans Flow.
 - **L'écran du téléphone (A05) est vert exprès** : c'est là que j'incruste tes vraies démos.
 
 ## Les images
@@ -49,6 +52,26 @@ BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow.
 No text, no labels, no letters, no logo, no watermark.
 ```
 
+### D00 · Le studio NEBULA (le décor, sans personne)
+- À joindre : ton image de style
+- Format : 9:16
+- Fichier : `D00-studio.png`
+- Note : ton plateau, par défaut, dans toutes tes vidéos. Le grand espace vide sur le mur, c'est là que je pose « NEBULA AGENCY ».
+
+```text
+An empty 3D studio for a tech and AI channel. Vertical 9:16 image. No people.
+
+STYLE: use the attached STYLE image only for the art style: copy its 3D rendering, materials, shading and level of detail. Do not copy its characters, its objects or its background.
+
+CAMERA: eye-level, straight-on view of the back wall, as if a presenter stood in the foreground at the bottom center of the image (the presenter is NOT in the image). The back wall is about three meters behind that spot.
+
+SET: a modern creator studio, cozy and a bit dark, in the evening. A smooth back wall in dark charcoal, with warm orange LED light strips (#FF8A1E). In the upper part of the back wall, centered, a large clean and EMPTY area, ready for a sign: leave it completely empty. On the left and right sides: a few shelves with tech objects (a podcast microphone on an arm, a small glowing monitor, a laptop, a warm desk lamp, green plants) catching the warm orange light, tidy, not cluttered. The bottom center of the image stays simple and uncluttered: the presenter will stand there.
+
+LIGHT: dim and warm, low-key: a soft orange glow (#FF8A1E) from the LED strips and the lamps, gentle shadows in the corners, a cozy and slightly dark mood, never black.
+
+Everything in focus. No people, no text, no letters, no logo, no watermark.
+```
+
 ### A01 · Il explique, mains ouvertes (la pose de base)
 - À joindre : la fiche A00 validée · ton image de style
 - Format : 3:4
@@ -64,7 +87,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he explains something to the viewer, both hands open in front of his chest, palms slightly up, fingers relaxed, as if presenting an idea.
 EXPRESSION: friendly and confident. Mouth closed and relaxed. Eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -85,7 +108,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he raises his right hand to shoulder height and waves at the viewer, palm open toward the camera. His left arm rests relaxed along his body.
 EXPRESSION: warm, welcoming smile. Mouth closed and relaxed. Eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -106,7 +129,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he points straight up with the index finger of his right hand, arm raised, the hand above the level of his head but fully inside the frame, as if pointing at a title written above him. His left arm rests relaxed.
 EXPRESSION: enthusiastic, eyebrows slightly raised. Mouth closed and relaxed. Eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -127,7 +150,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he points down with the index finger of his right hand, his arm stretched diagonally down in front of his body, toward the bottom of the image, as if pointing at the comments below. His left hand rests on his hip.
 EXPRESSION: playful, a small knowing smile. Mouth closed and relaxed. Eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -148,7 +171,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he holds a smartphone upright in his right hand at chest height and turns its screen toward the camera to show it to the viewer. His left index finger points at the phone. The phone screen is a perfectly flat, uniform bright green rectangle (#00FF00): no interface, no icons, no reflection, no glare, fully visible, not covered by his fingers.
 EXPRESSION: excited, as if showing something great. Mouth closed and relaxed. Eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -169,7 +192,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he thinks: his right hand under his chin, thumb and index finger resting on the chin, his left arm folded across his body under the right elbow.
 EXPRESSION: thoughtful, one eyebrow raised, eyes looking up to the side, away from the camera. Mouth closed and relaxed.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -190,7 +213,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: arms crossed firmly over his chest, shoulders straight, standing tall.
 EXPRESSION: serious and calm, a slight frown. Mouth closed and relaxed. Eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -211,7 +234,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he raises his right index finger at the height of his face and wags it as if saying "no, no, no", the palm facing the camera. His left arm rests relaxed.
 EXPRESSION: amused but firm, eyebrows raised. Mouth closed and relaxed. Eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -232,7 +255,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he gives a big thumbs-up with his right hand at chest height, toward the camera. His left arm rests relaxed.
 EXPRESSION: big satisfied smile. Mouth closed and relaxed. Both eyes open, looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -253,7 +276,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he laughs out loud, his head tilted slightly back, one hand on his belly.
 EXPRESSION: big genuine laugh, mouth wide open, eyes squinting with joy.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -274,7 +297,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: both hands on his cheeks, shoulders raised, leaning slightly back.
 EXPRESSION: shocked and amazed, eyes wide open, eyebrows high, mouth open in a round "O". Looking straight into the camera.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```
@@ -295,7 +318,7 @@ FRAMING: vertical 3:4 image. Waist-up medium shot, from the top of the head down
 POSE: he slaps his forehead with the palm of his right hand, head slightly down, as if he just realized a silly mistake. His left arm rests relaxed.
 EXPRESSION: funny embarrassed "oops" face, eyes shut tight, teeth clenched in a grimace.
 
-LIGHT: soft, even studio lighting from the front left.
+LIGHT: his face and body are well lit by a soft, warm key light from the front left. A warm orange rim light (#FF8A1E) from behind outlines his shoulders and hair, as in a dim studio lit in orange. The same lighting in every image.
 BACKGROUND: plain, flat light grey (#D9D9D9). No gradient, no floor, no shadow, no props.
 No text, no letters, no logo, no watermark.
 ```

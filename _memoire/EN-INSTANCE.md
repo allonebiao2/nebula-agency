@@ -17,7 +17,7 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
-| **TIKTOK DE MONGAZI** : devenir la référence de l'IA en Afrique de l'Ouest francophone · vague 1 de 7 vidéos (3 ASTUCE + 3 ACTU + 1 ÉPISODE de sa vie de vibe codeur) · avatar 3D : 31 images, fiche des prompts https://claude.ai/artifact/FJRogAtCUgXEi4NCNHLN6H. Attend : A00 (la fiche du personnage) générée, son avis sur l'analyse et la vague 1, ses liens YouTube pour les ACTU | 🙋 | `conversations/2026-11-17-tiktok-mongazi.md` |
+| **TIKTOK DE MONGAZI** : devenir la référence de l'IA en Afrique de l'Ouest francophone · vague 1 de 7 vidéos (3 ASTUCE + 3 ACTU + 1 ÉPISODE de sa vie de vibe codeur) · avatar 3D : 32 images (dont son studio NEBULA, lumière orange tamisée), fiche des prompts https://claude.ai/artifact/FJRogAtCUgXEi4NCNHLN6H. Attend : A00 (la fiche) et D00 (le studio) générées, son avis sur l'analyse et la vague 1, ses liens YouTube pour les ACTU | 🙋 | `conversations/2026-11-17-tiktok-mongazi.md` |
 | **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt, en dessin animé 2D. R0 à R3 faites et validées ; image de P02 corrigée et validée ; reste son animation, le test de la voix et de l'accent. Sur-mesure à 35 000 / 50 000 F : proposé, pas tranché. Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
 | **PUBS VIDÉO IA · le montage de « L'AUTRE »**, dès que les prises sont dans `_partage/pub-l-autre/` (`P01.mp4`…) | 🤖 | `videos-pub/methode.md` § 3 |
 | **PUBS VIDÉO IA · l'étiquette IA** sur TikTok et Facebook (conseillée : sinon retrait possible ; rien dans la vidéo elle-même) | 🙋 | `videos-pub/cerveau.md` règle 5 |
