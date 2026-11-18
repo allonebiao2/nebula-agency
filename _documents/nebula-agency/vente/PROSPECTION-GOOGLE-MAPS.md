@@ -73,6 +73,9 @@ au-delà de 20, QR Code Google Review, vidéo des fêtes, Vitrine s'il a besoin 
 
 ## 4. Les règles qui protègent le numéro et la maison
 
+- **La fenêtre des nouveaux prospects : de 9 h à 16 h** (Mongazi, 19/11). Les réponses aux conversations en cours
+  continuent ensuite, jamais la nuit : ce qui est prêt à minuit part à 7 h 45. **Aucun client n'attend sans
+  annonce** : chaque demande dit ce qui suit et quand.
 - **Le rythme est décidé par Mongazi** : 30 par jour le 18/11 à 15 h, puis **40 par jour** à 16 h 20 (« on doit
   atteindre l'objectif »), en connaissant le risque : au-delà d'une quinzaine, WhatsApp peut bannir le numéro si des
   gens le signalent, et c'est le numéro de travail de NEBULA. D'où : chaque message personnalisé, envois espacés.

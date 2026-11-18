@@ -53,6 +53,13 @@ Le **QR Code Google Review** est sans abonnement.
 - **Au-delà de 20 produits : 15 000 F par lot de 10 produits supplémentaires**
   *(un client à 35 produits paie 50 000 + 30 000 = 80 000 F)*
 
+**Catalogue immersif 3D · 100 000 F** *(ajouté le 2026-11-19 : Mongazi a délégué les prix pendant le sprint des fêtes)*
+- Le même catalogue (20 produits, commande WhatsApp, QR Code), monté dans **une scène 3D au défilement conçue
+  pour son métier** : le studio d'une pâtisserie, la marmite d'une cuisine, l'écrin d'une bijouterie
+- Ses vraies photos ; ce qui est généré n'est que décor, matière ou lumière, jamais un produit
+- Au-delà de 20 produits : comme le Catalogue, 15 000 F par lot de 10
+- **On le montre en premier** (l'aperçu 3D fait la vente) ; le Catalogue classique reste la porte d'entrée
+
 **Vitrine Digitale · 150 000 F**
 - **Une page complète**, avec toutes les sections : accueil, présentation, services ou
   produits, galerie photos et vidéos, avis clients, contact, carte, bouton WhatsApp
@@ -112,7 +119,7 @@ même liquide, même « pour rendre service ».**
 
 | Offre | Modalité |
 |---|---|
-| **Catalogue** | **Paiement intégral**, pas d'acompte |
+| **Catalogue** (classique ou 3D) | **50 % au démarrage, 50 % à la validation**, avant la mise en ligne (Mongazi, 2026-11-19) |
 | **Vitrine** | **70 % au démarrage, 30 % à la mise en ligne.** Paiement intégral encouragé |
 | **Outil métier** | **70 % au démarrage, 30 % à la livraison.** Paiement intégral encouragé |
 | **QR Google Review** | Paiement intégral |
