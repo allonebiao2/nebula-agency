@@ -12,8 +12,9 @@
 - **La priorité de Mongazi** : une vidéo publicitaire « concernant les vidéos et NEBULA Agency », **avant** l'avatar
   (« avant de créer tout ça »). Il génère les plans dans Flow et m'envoie images et vidéos ; je fais un montage
   « magistral », qui « doit coûter 10 000 dollars », en améliorant et en corrigeant les erreurs quand c'est possible.
-- ⏳ **Son scénario, fait avec ChatGPT, n'est jamais arrivé** : son message décrivait la méthode, pas l'idée. Le
-  demander en premier, puis valider la liste des plans AVANT qu'il génère.
+- ⏳ **Son scénario, fait avec ChatGPT, n'est jamais arrivé**. Le 2026-11-18, il a dit qu'il enverra « les plans,
+  l'histoire, pour que tu puisses bien t'imprégner ». À la réception : lire toute l'histoire et regarder chaque plan
+  en planches AVANT de proposer, puis dire ce que je comprends, ce que j'améliore et quels plans regénérer.
 - **La remise** : `_partage/pub-nebula/` (exclu de GitHub), une prise par plan nommée `P01.mp4`…, en 1080p depuis Flow,
   jamais un export WhatsApp. Le dossier : `videos-pub/projets/02-pub-nebula.md`.
 - **Le studio vidéo a de nouveaux outils** (Video Shotcraft, Lemo Opuscar, Pixel FX, effets de lumière, physique,

@@ -74,5 +74,14 @@ humaine forte. Ici, la direction vient du scénario validé ensemble et du monta
 
 ## Prochaine étape
 
-Mongazi colle le scénario de ChatGPT. Claude dit ce qu'il comprend et ce qu'il améliore, en peu de mots ; on valide la
-liste des plans ; **ensuite seulement** il génère.
+Le 2026-11-18, Mongazi, mot pour mot : *« je t'enverrai tout ça, les plans, l'histoire, pour que tu puisses bien
+t'imprégner et tout »*. Il enverra donc **l'histoire et les plans ensemble**.
+
+**À la réception, s'imprégner de tout avant de proposer quoi que ce soit** :
+1. lire l'histoire en entier ;
+2. regarder chaque plan, en planches d'images, en notant ce qui est réussi et ce qui est à corriger ou à regénérer ;
+3. lui dire en peu de mots ce que je comprends de l'histoire, ce que j'améliore, et quels plans posent problème ;
+4. seulement ensuite, le montage.
+
+S'il envoie d'abord l'histoire seule, on valide la liste des plans avant qu'il génère : chaque plan raté coûte des
+crédits.
