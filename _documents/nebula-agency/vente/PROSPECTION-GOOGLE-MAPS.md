@@ -109,7 +109,7 @@ Le tableau de suivi (chaque fiche, sa relance, son historique) : `python scripts
 | « J'ai déjà payé quelqu'un qui n'a rien fait » | Empathie d'abord, puis l'**aperçu avec ses vrais produits**, et le paiement seulement s'il lui plaît |
 | Il tente un **appel vidéo** ou vocal | C'est le plus chaud : **alerter Mongazi** pour qu'il rappelle ; en attendant, exemple et prix par écrit |
 | Il a un catalogue WhatsApp Business (`wa.me/c/…`) | Le saluer, puis le vrai manque : il ne se voit que si on a déjà son numéro, pas sur Google où cherchent les nouveaux clients |
-| Message automatique (« Merci d'avoir contacté… ») | Ce n'est pas une réponse : on attend, relance à J+2 |
+| Message automatique (« Merci d'avoir contacté… ») | **On répond quand même, une fois** (Mongazi, 18/11 : il les compte comme des réponses) : une phrase écrite sur SON message (« vous proposez votre catalogue WhatsApp… », « vous dites de passer en boutique… »), puis « je vous montre un exemple ? ». S'il ne renvoie encore que de l'automatique : relance unique à J+2 |
 | L'assistant IA de Meta (« je vous ai connecté à notre équipe ») | Envoyer l'exemple quand même : l'équipe le lira |
 | Il répond au 1er message sans avoir vu l'exemple | Renvoyer le lien en une ligne, et proposer l'aperçu avec ses photos |
 | « Non » | Remercier, statut `ne_plus_contacter`, plus jamais |

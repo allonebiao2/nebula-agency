@@ -84,3 +84,19 @@
   en attendant, exemple concret et prix par écrit.
 - **Un catalogue WhatsApp Business existe parfois** (`wa.me/c/…`). **Comment** : le saluer, puis le vrai manque :
   il ne se voit que si on a déjà le numéro, pas sur Google où les nouveaux clients cherchent.
+
+## La veille du soir (18/11)
+
+- **Un message automatique compte comme une réponse pour Mongazi.** Le 18/11 au soir, trois prospects n'avaient
+  envoyé que leur accueil automatique ; la méthode disait d'attendre, Mongazi les a vus « sans réponse ».
+  **Comment** : répondre une fois à chaque message automatique, en rebondissant sur ce qu'il dit, puis
+  « je vous montre un exemple ? » (méthode § 6).
+- **Vérifier chaque discussion, pas la liste.** La liste de WhatsApp Web est virtualisée et le statut « non lu »
+  disparaît dès que Mongazi lit sur son téléphone. **Comment** : ouvrir chaque prospect de la base par la barre de
+  recherche (les 8 derniers chiffres) et regarder qui a écrit le DERNIER message.
+- **Un seul gros onglet à la fois dans Chrome.** Un onglet Pinterest ouvert pendant la veille a fait tomber la
+  mémoire du PC à 1,1 Go et déconnecté l'extension (22 h 58). **Comment** : la recherche d'images attend que la
+  veille soit finie, et on vérifie un aperçu avec un Chromium sans fenêtre (`_socle/regarder.py`, hors dépôt).
+- **Deepgram décroche sur un vocal qui mêle le français et les noms des plats du pays** (53 s, arrêt à 12,9 s,
+  « Souris, yogourt » pour « riz, igname »). **Comment** : `scripts/transcrire.py` passe seul à Gemini quand le texte
+  est trop court pour la durée ; `gemini-2.5-flash` a tout rendu, `gemini-3.8-flash` a dépassé 90 s.
