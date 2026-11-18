@@ -7,6 +7,8 @@
 
 ---
 
+> 🔴 **SPRINT DES FÊTES EN COURS (18-22/11/2026)** : lire d'abord `_memoire/prospection/CERVEAU.md` (le but, la chaîne, les commandes, les consignes de Mongazi, les promesses datées).
+
 ## 0 sexquadragies. LE 2026-11-17 · LA PUB NEBULA D'ABORD, PUIS L'AVATAR
 
 - **La priorité de Mongazi** : une vidéo publicitaire « concernant les vidéos et NEBULA Agency », **avant** l'avatar

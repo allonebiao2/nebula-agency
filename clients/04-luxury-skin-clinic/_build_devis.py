@@ -43,6 +43,9 @@ def trouver_chrome() -> str:
 
 
 def main() -> int:
+    # La console Windows (cp1252) ne sait pas écrire « ✓ » : sans ça, le script
+    # sortait en erreur APRÈS avoir fabriqué le PDF (vu le 2026-11-18).
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     if not SOURCE.exists():
         raise SystemExit(f"⛔ Source introuvable : {SOURCE}")
     SORTIE.parent.mkdir(parents=True, exist_ok=True)

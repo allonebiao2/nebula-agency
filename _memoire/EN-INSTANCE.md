@@ -9,7 +9,7 @@
 >
 > 🙋 attend une réponse ou un geste de Mongazi · 🤖 Claude peut le faire · 🕰️ plus tard, exprès
 >
-> Dernière mise à jour : **2026-11-16**.
+> Dernière mise à jour : **2026-11-18**.
 
 ---
 
@@ -17,6 +17,7 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
+| **SPRINT DES FÊTES · PROSPECTION WHATSAPP** (ouvert le 2026-11-18) : 1 000 000 F CFA visés avant la fin de la semaine (posé en `/goal`) · 40 premiers messages par jour depuis son WhatsApp Web · ⏰ aperçu promis à une pâtisserie le jeudi 19 au matin · relances dues le 19 et le 20 · statuts WhatsApp et TikTok chaque jour (Google Flow) · 0 F encaissé au 18/11 au soir | 🤖 · 🙋 vocaux, appels, paiements | `prospection/CERVEAU.md` |
 | **TIKTOK DE MONGAZI** : devenir la référence de l'IA en Afrique de l'Ouest francophone · vague 1 de 7 vidéos (3 ASTUCE + 3 ACTU + 1 ÉPISODE de sa vie de vibe codeur) · avatar 3D : 32 images (dont son studio NEBULA, lumière orange tamisée), fiche des prompts https://claude.ai/artifact/FJRogAtCUgXEi4NCNHLN6H. Attend : A00 (la fiche) et D00 (le studio) générées, son avis sur l'analyse et la vague 1, ses liens YouTube pour les ACTU | 🙋 | `conversations/2026-11-17-tiktok-mongazi.md` |
 | **PUB NEBULA** (« les vidéos et NEBULA Agency », avant l'avatar) : Mongazi génère les plans, Claude monte « à 10 000 $ » et corrige ce qui peut l'être. Attend : le scénario fait avec ChatGPT (jamais reçu), puis ses images et vidéos dans `_partage/pub-nebula/` | 🙋 | `videos-pub/projets/02-pub-nebula.md` |
 | **PUBS VIDÉO IA · « L'AUTRE »** : dossier prêt, en dessin animé 2D. R0 à R3 faites et validées ; image de P02 corrigée et validée ; reste son animation, le test de la voix et de l'accent. Sur-mesure à 35 000 / 50 000 F : proposé, pas tranché. Relire les répliques | 🙋 | `videos-pub/projets/01-l-autre.md` |
@@ -69,7 +70,7 @@ D'après `CLAUDE.md` et la mémoire de Claude au 2026-11-11 : l'état exact est 
 | Projet | Où il en est | Ce qui le débloque | Renvoi |
 |---|---|---|---|
 | **LE MONDE** (salon 3D d'Hillary, nom provisoire) | jouable en local, **pas en ligne**, QC 68/68 ; fait du 14 au 16 novembre : les personnages en vidéo (Hillary en permanence à son comptoir), la marche, le rendu de film, le soleil par la vitrine, de vrais imprimés wax, des vidéos légères | 🤖 **le NOUVEAU CAP du 2026-11-16 (Mongazi)** : (G1) expositions nettes, (G2) Hillary SEULE, (G3) robes en volume touchables, (G4) Hillary plus animée, (G5) Hillary qui vend ; **prochaine action : G1** ; 🙋 la preuve écrite de l'accord d'Hillary et sa validation de chaque robe 3D avant la mise en ligne | `monde/REPRENDRE-ICI.md` (§ 2026-11-16), `monde/A-FAIRE.md` § G |
-| **NEBULA VOIX** | lancé le 2026-11-05, prototype « Awa » essayé à la voix | la suite du plan ; ⛔ aucun appel à un particulier sans accord préalable prouvé | `nebula-voix/docs/PLAN.md` (dépôt privé) |
+| **NEBULA VOIX** | lancé le 2026-11-05, prototype « Awa » essayé à la voix · **1er déploiement décidé le 2026-11-18 : la vendeuse du site nebula-agency.online** (NOVA, le chat texte du site, + la voix d'Awa), puis mobile, puis appels sortants | vérifier que NOVA répond encore (crédit API) ; la suite du plan ; ⛔ aucun appel à un particulier sans accord préalable prouvé | `nebula-voix/docs/PLAN.md` (dépôt privé) |
 | **MA LETTRE À…** | en ligne ; la plume est coupée ; le film n'est pas publiable tant qu'elle l'est ; ouvertures 3D sans constructeur, serveur ni caisse | 🙋 **le premier franc** (La Carte, 1 000 F) ; critères d'arrêt 1er ou 16 décembre | `malettre/CONTEXT.md` |
 | **PISTE** | encaisse et livre tout seul | 🙋 **le premier paiement réel** n'a jamais eu lieu | `piste/PAIEMENT.md` |
 | **LE STANDARD** | prêt, pas en ligne | 🙋 le numéro d'Au Braisé d'Or, le numéro d'alerte par maison ; 🤖 le premier appel réel au modèle | `whatsapp-agent/README.md` |
@@ -89,7 +90,7 @@ D'après `CLAUDE.md` et la mémoire de Claude au 2026-11-11 : l'état exact est 
 |---|---|---|
 | **Au Braisé d'Or** | ⛔ **deux numéros WhatsApp** dans le site (`index.html` et `dishes.ts`) à trancher ; photo de l'attiéké ; salle, avis, adresse, logo | `clients/09-au-braise-dor/CONTEXT.md` |
 | **Hillary M. Styl** | ✅ jeu « jupe » et « haut + jupe » en ligne le 2026-11-13 (ses mots ; l'union haut + jupe et le cas de Mira à lui faire confirmer) · les 11 mesures de la robe ovale et le jeu `haut_pantalon` (Hillary) ; prix en dollar de la Robe de ville bleue ; l'adresse (fiche Google) | `clients/10-hillary-m-styl/CONTEXT.md` |
-| **Luxury Club 229** | images de soins (recharger WaveSpeed, `_gen_soins.py`) ; devis tablette 420 000 F à envoyer à Gloria (au 2026-09) ; fiche Google, adresse | `clients/04-luxury-skin-clinic/CONTEXT.md` |
+| **Luxury Club 229** | images de soins (recharger WaveSpeed, `_gen_soins.py`) ; ⛔ devis tablette 420 000 F : envoyé, **Gloria a dit non** (Mongazi, 2026-11-18), ne plus le proposer ; fiche Google, adresse | `clients/04-luxury-skin-clinic/CONTEXT.md` |
 | **Angy Art** | photos des œuvres seules, adresse, avis, tester le numéro ; trancher l'e-mail masqué et les tranches de budget | `clients/11-angy-art/CONTEXT.md` |
 | **Miss cakes** | confirmer le numéro WhatsApp ; logo, photos, avis | `CLAUDE.md` |
 | **HH Design** | confirmer le numéro ; logo, Instagram, adresse, prix | `CLAUDE.md` |

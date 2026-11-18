@@ -794,6 +794,8 @@ cliente choisit assise, l'assistante encaisse et emballe, la maison suit son sto
 Livrable : `assets/docs/Devis_Vitrine_Tablette_LUXURY_CLUB_229.pdf` (4 pages), source
 `devis-vitrine-tablette.html`, fabriqué par `_build_devis.py`.
 
+⛔ **ENVOYÉ, PUIS REFUSÉ : Gloria ne le voulait plus** (Mongazi, 2026-11-18). Ne plus le proposer.
+
 **PRIX PROPOSÉ : 420 000 F** (formule « Maison ») · fourchette **320 000 à 480 000 F**
 · abonnement 20 000 F / 6 mois, 1er semestre offert · 70 % / 30 %.
 
