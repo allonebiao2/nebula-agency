@@ -27,3 +27,13 @@ Tout cela est **coché d'office** sur toutes les prochaines réalisations : `_me
 - dépôt : `_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md` (§ 0 ter ajouté), ce journal
 - hors dépôt : `nebula-apercus/omani/{etiquettes.py, construire.py, site/app.js, site/index.html, site/son.js,
   site/sequence.js, site/panier.js, site/film/ouverture/*}`, `nebula-apercus/_socle/{son.js, sequence.js, panier.js}`
+
+## Ensuite, ADEMAR (vers 20 h)
+- Son offre de 12 h 45 (35 000 F en deux fois) et le vocal de 12 h 47 étaient encore NON LUS à 19 h 46 (coches grises) :
+  rien ce soir (service du dîner), relance courte demain 9 h 30-10 h, une seule question facile.
+- ⛔ J'avais rédigé « je passe moi-même au restaurant prendre vos plats en photo » : Mongazi ne se déplace pas. Règle
+  ajoutée à `prospection/VENDEUR.md` § 6 et à la mémoire : aucune visite promise sans lui en parler.
+- Son aperçu reçoit le standard coché d'office (panier de plusieurs plats sans prix, musique au 1er glissé, braises de
+  profondeur par-dessus le film du téléphone, film 1080 refait depuis `recadre.mp4`). **Testé, pas publié** : le
+  déploiement attend son accord.
+- Omani republié avec deux corrections du panier (intitulé de date, boutons d'une fiche cachée rendus inertes).

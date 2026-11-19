@@ -66,3 +66,10 @@ vendredi » que rater une livraison.
 
 Quand il a vu et aimé : **dire le prix simplement, dire ce qu'il reçoit, dire la prochaine action, se taire.** Puis le paiement
 expliqué pas à pas (Mobile Money, moitié pour démarrer), et les 48 h qui commencent à ce moment-là.
+
+## 6. Ce qu'on ne promet jamais sans demander à Mongazi (2026-11-19)
+
+- **Un déplacement** : passer au restaurant, prendre les photos sur place, un rendez-vous. Mongazi : « j'ai pas envie
+  d'aller voir quelqu'un, limite note vocal ou parler au téléphone, pas forcément envie d'y aller, donc ne jamais faire
+  cette promesse sans m'en parler ». Pour lever la difficulté des photos : « 3 photos prises vite au téléphone suffisent ».
+- **Un appel ou une note vocale de sa part** : c'est une suggestion qu'on lui fait à lui, jamais une promesse faite au client.
