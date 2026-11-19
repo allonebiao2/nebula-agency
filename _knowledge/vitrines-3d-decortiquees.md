@@ -1,8 +1,10 @@
 # Les vitrines « 3D au défilement » décortiquées (19/11/2026)
 
 Demandé par Mongazi après avoir vu nos premiers aperçus : « la 3D ne se ressent pas, on dirait des vidéos qui tournent en
-boucle, un travail de 300 euros ; l'objectif c'est 10 000 euros ». Neuf vidéos Pinterest à étudier « à 99 % ». Sept ont pu
-être téléchargées et analysées image par image ; deux ne s'ouvrent pas sans compte Pinterest (à reprendre dans Chrome).
+boucle, un travail de 300 euros ; l'objectif c'est 10 000 euros ». Neuf vidéos Pinterest à étudier « à 99 % ». Huit ont été
+téléchargées et analysées image par image (la huitième le 19/11 à 10 h 53, par le Chrome de Mongazi connecté à
+Pinterest). ⚠️ La neuvième (`pin.it/zl6lmLOe`) renvoie à l'accueil de Pinterest : le lien compte 8 caractères au lieu
+de 9, il a été tronqué au copier-coller. À redemander à Mongazi.
 Vidéos, planches et pages brutes hors dépôt : `C:\Users\USER\nebula-apercus\pinterest\etude-3d\`.
 
 ## 1. Ce que montre chaque vidéo, et comment c'est fait
@@ -18,6 +20,7 @@ Vidéos, planches et pages brutes hors dépôt : `C:\Users\USER\nebula-apercus\p
 | 5 | **Effet portail** (modèle Slider Revolution) | Une arche de pierre dans un paysage ; on **traverse l'arche** et l'on se retrouve dans un autre monde (désert, nuit, orage, aurore boréale), l'arche restant le cadre. | **Déduit** : 2,5D en couches : arche en PNG transparent au premier plan, décor derrière ; la transition agrandit l'arche jusqu'à la traverser (flou de premier plan) pendant que le monde suivant apparaît dans l'ouverture. |
 | 6 | **Soin VERA** (concept Figma) | Le mot géant « NOURISH » derrière des feuilles d'aloès ; **le pot tombe en tournant** jusqu'au centre, ses ingrédients s'allument autour ; puis **le même pot** glisse dans un cercle, tenu par une main. | **Déduit** : produit détouré animé au défilement (translation, rotation, échelle), section épinglée, **le même objet traverse les sections** (transition d'élément partagé). |
 | 7 | **Argon 18** (vélos) | Titre géant et vélo sur fond sombre ; **le vélo glisse et tourne** jusqu'à la fiche produit (fond clair), puis rejoint une rangée de modèles. | **Déduit** : même principe d'objet partagé (FLIP) : un seul vélo voyage de section en section. |
+| 8 | **Système solaire** (concept Dribbble, 10,7 s) | La Terre se lève en bas de l'écran, ses voisines (Vénus, Mars) **dépassent des bords** ; au défilement la planète **glisse vers la droite** pendant que le titre passe à gauche ; puis **la caméra plonge dans la planète** (continents, lumières des villes) ; un clic sur une voisine la fait **venir au centre**, le titre change par un fondu flou. | **Déduit** : un seul objet qui voyage (bas → côté → gros plan dans sa matière), un **carrousel horizontal dont les voisins restent visibles aux bords** (on voit qu'il y a une suite), les textes qui s'échangent par **flou + fondu** (filter: blur). Chez nous : le produit est la planète, ses voisins de rubrique dépassent des bords, et le gros plan plonge dans sa matière (la crème, le glaçage, l'or). |
 
 ## 2. La grammaire commune : ce qui sépare 300 € de 10 000 €
 
