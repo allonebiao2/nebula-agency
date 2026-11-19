@@ -66,10 +66,21 @@ réponses sur 18 envois le 18/11 ; elle est dans l'historique git.)*
 WhatsApp de NEBULA (« NOUVELLE COMMANDE »). Ensuite : encore des questions, et ce qui complète sa commande (produits
 au-delà de 20, QR Code Google Review, vidéo des fêtes, Vitrine s'il a besoin de crédibilité).
 
-**Relance, une seule, deux jours après** :
+**Les relances : qui, quand, comment** (`python scripts/prospection.py relances - <fichier hors dépôt>` sort la liste
+du jour avec les messages ; après chaque envoi, `fait <id>` note la relance et pose la suivante) :
 
-> Bonjour, je reviens vers vous pour le catalogue des fêtes 🙂
-> Si ce n'est pas le moment, dites-le-moi simplement, je ne vous dérangerai plus.
+| Où il en est | Relance 1 | Ensuite | Le message |
+|---|---|---|---|
+| **Aucune réponse** | J+2 | 1 seule relance. Sans réponse 3 jours après : on clôt | « Si je vous montre ce que ça donnerait avec vos [produits], sans que vous payiez quoi que ce soit, ça vous intéresse ? Un oui ou un non me suffit. » |
+| **Seulement son message automatique** | J+2 (le jour même si Mongazi le signale) | Dernier message 3 jours après, puis on clôt | L'exemple de son métier + « Je vous prépare un essai gratuit ? » |
+| **Il a parlé, puis plus rien** | J+1 | Dernier message 2 jours après | **Sur mesure**, à partir de ce qu'il a dit |
+| **Intéressé** | J+1 | J+3, puis J+6, puis appel de Mongazi | **Sur mesure, et toujours du neuf** : son aperçu, une réponse, une proposition. Jamais « avez-vous vu mon message ? » |
+
+**Les heures** (toujours entre 9 h et 16 h) : pâtisserie 9 h-11 h · traiteur 9 h 30-11 h, avant le service de midi ·
+boutiques, bijouterie, parfumerie 10 h 30-12 h 30, après l'ouverture · pas de relance le dimanche.
+
+**Chaque personne contactée est enregistrée** dans les contacts WhatsApp (« Prospect + nom »), et chaque discussion
+de prospect est **ouverte et relue**, pas seulement regardée dans la liste.
 
 ## 4. Les règles qui protègent le numéro et la maison
 
@@ -79,7 +90,8 @@ au-delà de 20, QR Code Google Review, vidéo des fêtes, Vitrine s'il a besoin 
 - **Le rythme est décidé par Mongazi** : 30 par jour le 18/11 à 15 h, puis **40 par jour** à 16 h 20 (« on doit
   atteindre l'objectif »), en connaissant le risque : au-delà d'une quinzaine, WhatsApp peut bannir le numéro si des
   gens le signalent, et c'est le numéro de travail de NEBULA. D'où : chaque message personnalisé, envois espacés.
-- **Une seule relance.** Un « non », ou un silence après la relance : statut `ne_plus_contacter`, pour toujours.
+- **Des relances comptées** (le tableau du § 3). Un « non », ou le silence après la dernière relance : statut
+  `ne_plus_contacter`, pour toujours.
 - **Les prix sont ceux du socle** (`00-SOCLE-COMMERCIAL.md`) : Catalogue 50 000 F, abonnement 20 000 F tous les
   six mois. Aucune remise sans Mongazi. **Paiement** : Mongazi a dit le 18/11 « en deux tranches » (une partie pour
   démarrer, le reste à la validation sans correction, puis la mise en ligne), alors que le socle dit « paiement

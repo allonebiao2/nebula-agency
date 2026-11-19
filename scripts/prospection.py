@@ -14,6 +14,8 @@ Méthode et messages : `_documents/nebula-agency/vente/PROSPECTION-GOOGLE-MAPS.m
     python scripts/prospection.py relance <id> AAAA-MM-JJ [note]
     python scripts/prospection.py vcf <fichier.vcf>      # tous les prospects contactés, à importer sur le téléphone
     python scripts/prospection.py statut <id> <statut> [note]
+    python scripts/prospection.py relances [AAAA-MM-JJ|-] [fichier.md]  # qui relancer, quand, avec quel message
+    python scripts/prospection.py fait <id> [note]       # relance envoyée : la note et pose la suivante
 
 LA NOTE DE BESOIN (sur 10) : pas de site +3 (une simple page Facebook : +2),
 vend des produits +2, actif (10 avis ou plus +2, 3 ou plus +1), bonne note
@@ -280,6 +282,130 @@ def statut(ident, nouveau, note=None):
     print(f"{r['nom']} → {nouveau}" if r else f"aucune fiche {ident}")
 
 
+# ---------- LES RELANCES : qui, quand, comment ----------
+# Fenêtre de Mongazi pour les nouveaux contacts et les relances : 9 h à 16 h (2026-11-19). Le créneau suit le métier :
+# un traiteur est pris par le service de midi, une boutique ouvre vers 10 h.
+CRENEAUX = {"traiteur": "09 h 30 - 11 h", "pâtisserie": "09 h - 11 h", "décoration événementielle": "10 h - 12 h",
+            "fleuriste": "09 h - 11 h", "boutique de vêtements": "10 h 30 - 12 h 30",
+            "boutique de chaussures": "10 h 30 - 12 h 30", "boutique cosmétiques": "10 h 30 - 12 h 30",
+            "parfumerie": "10 h 30 - 12 h 30", "bijouterie": "10 h 30 - 12 h 30"}
+EXEMPLES = {"pâtisserie": "https://aubraisedor.com", "traiteur": "https://aubraisedor.com",
+            "boutique cosmétiques": "https://luxuryclub229.com", "parfumerie": "https://luxuryclub229.com",
+            "bijouterie": "https://djambarteam.com/bijouterie", "cave à vin": "https://speed-weinkeller.pages.dev"}
+EXEMPLE_DEFAUT = "https://hillary-m-styl.pages.dev"
+# situation : (nombre de relances au plus, jours d'attente après chacune)
+CADENCE = {"silence": (1, [3]), "auto": (2, [3, 4]), "echange": (2, [2, 5]), "interesse": (3, [2, 3, 5])}
+TITRES = {"silence": "Aucune réponse depuis le premier message", "auto": "Seulement leur message automatique",
+          "echange": "Ils ont parlé, puis plus rien (message sur mesure)",
+          "interesse": "Intéressés (chaque contact apporte du neuf)"}
+
+
+def rang(notes):
+    """Combien de relances cette fiche a déjà reçues (marque ⟲R dans les notes)."""
+    return len(re.findall(r"⟲R\d", notes or ""))
+
+
+def situation(r):
+    n = r["notes"] or ""
+    if "MONGAZI s" in n:
+        return "mongazi"
+    if r["statut"] == "contacte":
+        return "silence"
+    if r["statut"] == "interesse":
+        return "interesse"
+    return "auto" if "⟦auto⟧" in n else "echange"
+
+
+def texte_relance(r, sit, k):
+    """Le message de la relance n° k+1, ou None quand il doit être écrit sur mesure (celui qui a parlé mérite mieux
+    qu'un modèle). Toujours court, une seule question, facile à répondre, jamais de fausse urgence."""
+    vos = MOTS.get(r["metier"], ("", "vos produits"))[1]
+    if sit == "silence":
+        return (f"Bonjour 🙂 C'est encore Mongazi.\nUne question simple : si je vous montre ce que ça donnerait avec "
+                f"{vos}, sans que vous payiez quoi que ce soit, ça vous intéresse ?\nUn oui ou un non me suffit.")
+    if sit == "auto" and k == 0:
+        ex = EXEMPLES.get(r["metier"], EXEMPLE_DEFAUT)
+        return (f"Bonjour 🙂 Pour ne pas vous faire perdre de temps, voici l'exemple dont je vous parlais :\n{ex}\n"
+                f"Imaginez la même chose avec {vos} et vos prix, visible sur Google jour et nuit.\n"
+                "Je vous prépare un essai gratuit ?")
+    if sit in ("auto", "echange") and k >= 1:
+        return ("Bonjour 🙂 C'est mon dernier message, je ne veux pas vous déranger.\n"
+                f"Les commandes des fêtes arrivent vite. Si vous voulez voir un essai gratuit avec {vos}, répondez "
+                "juste « oui ». Sinon, je vous souhaite de très belles fêtes 🙏")
+    return None
+
+
+def jour_ouvre(d):
+    """Pas de relance le dimanche : on passe au lundi."""
+    from datetime import timedelta
+    return d + timedelta(days=1) if d.weekday() == 6 else d
+
+
+def relances(jour=None, sortie=None):
+    """Qui relancer ce jour-là, à quelle heure et avec quel message, puis le calendrier des jours suivants."""
+    from collections import Counter
+    from datetime import date
+    j = date.fromisoformat(jour) if jour else date.today()
+    with connexion() as c:
+        rows = c.execute("""select id, nom, metier, telephone, statut, relance_le, notes from piste.prospection
+                            where statut in ('contacte','repondu','interesse') and relance_le is not null
+                            order by relance_le, nom""").fetchall()
+    dus = [r for r in rows if r["relance_le"].date() <= j]
+    l = [f"# Relances du {j:%d/%m/%Y}", "",
+         "Fenêtre : 9 h à 16 h. Après l'envoi : `python scripts/prospection.py fait <id>` "
+         "(note la relance et pose la suivante).", ""]
+    a_toi = [r for r in dus if situation(r) == "mongazi"]
+    a_clore, total = [], 0
+    for sit in ("interesse", "echange", "auto", "silence"):
+        groupe = []
+        for r in dus:
+            if situation(r) == sit:
+                (a_clore if rang(r["notes"]) >= CADENCE[sit][0] else groupe).append(r)
+        if not groupe:
+            continue
+        l += [f"## {TITRES[sit]} ({len(groupe)})", ""]
+        for r in sorted(groupe, key=lambda x: CRENEAUX.get(x["metier"], "10 h - 12 h")):
+            k = rang(r["notes"])
+            m = texte_relance(r, sit, k)
+            total += 1
+            l += [f"### {r['nom']} · +229 {r['telephone']} · relance {k + 1} · "
+                  f"{CRENEAUX.get(r['metier'], '10 h - 12 h')}", f"`{r['id']}`", ""]
+            l += ["> " + x for x in m.split("\n")] if m else [f"✍️ Sur mesure. Où on en est : {(r['notes'] or '')[-320:]}"]
+            l.append("")
+    if a_toi:
+        l += ["## À toi, Mongazi", ""]
+        l += [f"- **{r['nom']}** · +229 {r['telephone']} · {(r['notes'] or '')[-160:]}" for r in a_toi] + [""]
+    if a_clore:
+        l += ["## Relances épuisées : à clore (`statut <id> ne_plus_contacter`)", ""]
+        l += [f"- {r['nom']} · `{r['id']}`" for r in a_clore] + [""]
+    a_venir = Counter(r["relance_le"].date() for r in rows if r["relance_le"].date() > j)
+    if a_venir:
+        l += ["## Les jours suivants", ""] + [f"- {d:%d/%m} : {n} relance(s)" for d, n in sorted(a_venir.items())]
+    if sortie:
+        with open(sortie, "w", encoding="utf-8", newline="\n") as f:
+            f.write("\n".join(l) + "\n")
+    print(f"{j:%d/%m} : {total} relance(s) à faire · {len(a_toi)} pour Mongazi · {len(a_clore)} à clore · ensuite "
+          + " · ".join(f"{d:%d/%m} : {n}" for d, n in sorted(a_venir.items())))
+    if sortie:
+        print(f"→ {sortie}")
+
+
+def fait(ident, note=None):
+    """À appeler après l'envoi d'une relance : la note, et pose la date de la suivante selon la cadence."""
+    from datetime import date, datetime, timedelta
+    with connexion() as c:
+        r = c.execute("select nom, statut, notes from piste.prospection where id = %s", (ident,)).fetchone()
+        if not r:
+            raise SystemExit(f"aucune fiche {ident}")
+        k = rang(r["notes"]) + 1
+        attente = CADENCE.get(situation(r), (1, [3]))[1]
+        suivante = jour_ouvre(date.today() + timedelta(days=attente[min(k - 1, len(attente) - 1)]))
+        marque = f"⟲R{k} {datetime.now():%d/%m %Hh%M}" + (f" {note}" if note else "")
+        c.execute("""update piste.prospection set relance_le = %s::date, notes = coalesce(notes || ' · ', '') || %s
+                     where id = %s""", (suivante.isoformat(), marque, ident))
+    print(f"{r['nom']} → relance {k} notée · prochaine échéance le {suivante:%d/%m}")
+
+
 if __name__ == "__main__":
     a = sys.argv[1:]
     if not a:
@@ -298,6 +424,10 @@ if __name__ == "__main__":
         suivi(a[1] if len(a) > 1 else None)
     elif a[0] == "relance":
         relance(a[1], a[2], a[3] if len(a) > 3 else None)
+    elif a[0] == "relances":
+        relances(a[1] if len(a) > 1 and a[1] != "-" else None, a[2] if len(a) > 2 else None)
+    elif a[0] == "fait":
+        fait(a[1], a[2] if len(a) > 2 else None)
     elif a[0] == "statut":
         statut(a[1], a[2], a[3] if len(a) > 3 else None)
     else:
