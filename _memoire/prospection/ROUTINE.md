@@ -42,3 +42,21 @@
 - [ ] Supprimer les vocaux téléchargés une fois transcrits (on garde le texte, pas la voix).
 - [ ] Mémoire : `CERVEAU.md` § 6 et § 7 (chiffres agrégés seulement), `LECONS.md` si quelque chose a mordu,
       le journal du jour dans `_memoire/conversations/`, et `_memoire/EN-INSTANCE.md`.
+
+---
+
+## Les règles permanentes de Mongazi (19/11, à ne plus lui faire répéter)
+
+- **Nouveaux prospects : de 9 h à 16 h.** Les réponses continuent ensuite, et celui qui vient d'écrire reçoit sa réponse
+  tout de suite, même la nuit.
+- **Étudier la fiche Google AVANT d'écrire** : note, nombre d'avis, ce que disent les clients, photos, horaires, site,
+  réponses aux avis. Le message part de ce qu'on y a trouvé.
+- **Proposer le service NEBULA qui lui va**, et tout faire pour qu'il en prenne un : soulever ses **vrais** défauts et
+  l'**urgence réelle** (les fêtes), toujours **poli, chaleureux et surtout professionnel**. Rien d'inventé.
+- **Répondre à tout**, messages automatiques compris, et **transcrire tous les vocaux**.
+- **Ne jamais laisser quelqu'un attendre sans annonce** : chaque demande dit ce qui suit et quand.
+- **Ouvrir et relire chaque discussion de prospect**, ne pas se fier à la liste ni au « non lu ».
+- **Enregistrer chaque personne contactée** (« Prospect + nom », synchronisé sur le téléphone).
+- **WhatsApp vérifié chaque minute** : `veille.js` dans l'onglet + Renn qui relève (hors dépôt, `nebula-apercus/`).
+- **Relances** : `python scripts/prospection.py relances - <fichier>` puis `fait <id>` (cadence : méthode § 3).
+- **Des points réguliers à Mongazi**, et un travail digne de NEBULA à chaque livraison.

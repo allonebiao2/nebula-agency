@@ -21,6 +21,23 @@ C'est **trouver l'idée**.
 
 ---
 
+## 0 bis. Le standard depuis le 2026-11-19 : un voyage, pas une page
+
+Décision de Mongazi pour **toutes** les réalisations : « ils ne viennent pas lire du texte, ils viennent vivre une
+expérience progressive et ils viennent pour passer à l'action ».
+
+1. **On avance quelque part** : le défilement fait la caméra, avec de la profondeur, en vertical et en horizontal selon le
+   sujet. Plans vidéo Veo 3.1 joués au doigt, partis d'images Nano Banana Pro (image de début, image de fin : la même pour
+   une boucle, une autre pour se déplacer ; la fin d'un plan devient le début du suivant).
+2. **Un cadrage pour le PC, un pour le téléphone.**
+3. **Les vraies informations du client, dans son style.** Rien de généré ne se présente comme son produit.
+4. **Peu de texte, l'action toujours à portée** : commander en un geste.
+5. **Aucune réalisation ne ressemble à une autre** : mécanique de défilement, mise en page, navigation, typographie, bouton.
+6. **Rien ne doit faire « IA »** : regarder chaque plan (mains parasites, formes qui changent, surfaces trop lisses, symétrie
+   parfaite) avant de livrer.
+
+---
+
 ## 1. D'abord l'idée, sinon rien ne tient
 
 Avant toute chose, écrire **une phrase** qui dit ce qu'est ce métier, vu de l'intérieur.

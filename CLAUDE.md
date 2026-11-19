@@ -848,6 +848,7 @@ finir**, et retire ce qu'elle a terminé.
 ## 🎨 STANDARD OBLIGATOIRE — toute vitrine, tout client, à partir du 2026-08-01
 **Avant d'écrire une ligne de CSS : lire `_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`.**
 
+- ⛔ **DEPUIS LE 2026-11-19, TOUTE RÉALISATION EST UN VOYAGE EN 3D AU DÉFILEMENT** (vertical et horizontal, profondeur, plans Veo joués au doigt), faite pour passer à l'action, unique par client, qui ne fait jamais IA : § 0 bis du document ci-dessus.
 - **Une vitrine n'est pas finie quand elle marche. Elle est finie quand elle impressionne.**
   Le QC vert et la beauté sont **deux** critères de sortie, pas un.
 - **La phrase d'abord** : ce qu'est ce métier vu de l'intérieur, en une ligne, avec un
