@@ -20,8 +20,8 @@ conçoit l'outil digital dont un métier a besoin. Trois offres phares, plus un 
 
 | # | Service | Ce que le client achète vraiment | Mise en service | Délai |
 |---|---|---|---|---|
-| 1 | **Catalogue Digital + QR Code** | Ses produits présentés une bonne fois pour toutes, commandables sur WhatsApp | **50 000 F** | 5 à 7 jours |
-| 2 | **Vitrine Digitale + QR Code** | Sa crédibilité, son existence sur Google, son image de maison sérieuse | **150 000 F** | 5 à 7 jours |
+| 1 | **Catalogue Digital + QR Code** | Ses produits présentés une bonne fois pour toutes, commandables sur WhatsApp | **50 000 F** | 48 h (dès photos, prix et 1er versement) |
+| 2 | **Vitrine Digitale + QR Code** | Sa crédibilité, son existence sur Google, son image de maison sérieuse | **150 000 F** | 48 h (dès contenus et 1er versement) |
 | 3 | **Outil Digital sur mesure** | Le contrôle de son activité : suivi, commandes, stock, équipe, factures | **55 000 à 500 000 F** | selon projet |
 | + | **QR Code Google Review** | Les avis Google de ses clients, sans effort | **30 000 F** | quelques jours |
 

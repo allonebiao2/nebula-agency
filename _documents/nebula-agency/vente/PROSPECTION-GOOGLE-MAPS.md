@@ -59,7 +59,7 @@ réponses sur 18 envois le 18/11 ; elle est dans l'historique git.)*
 | bijoux | https://djambarteam.com/bijouterie |
 | restaurant, traiteur, pâtisserie | https://aubraisedor.com |
 
-> Pour vous, c'est 50 000 F, et c'est prêt en une semaine au plus dès que j'ai vos photos et vos prix.
+> Pour vous, c'est 50 000 F, et c'est prêt en 48 h dès que j'ai vos photos, vos prix et le premier versement.
 > Ensuite, 20 000 F tous les six mois pour l'hébergement, et vos changements de prix sont compris.
 
 **Quand il est intéressé** : il remplit la fiche **https://www.nebula-agency.online/#order** ; elle arrive sur le
@@ -98,8 +98,8 @@ de prospect est **ouverte et relue**, pas seulement regardée dans la liste.
   intégral, pas d'acompte » : ⏳ à trancher par lui, et la répartition à fixer. Le QR code sur une affiche carrée
   est compris, la carte de visite à imprimer aussi si le client la veut ; le nom de domaine (30 000 F) se propose
   après la livraison.
-- **On ne promet que ce qu'on sait livrer** : « une semaine au plus » (le socle dit 5 à 7 jours), compté à partir
-  des photos et des prix, pas de la signature. Le « 48 h » des premiers messages du 18/11 n'est plus dit.
+- **On ne promet que ce qu'on sait livrer** : **48 h**, comptées à partir des photos, des prix et du premier versement, et
+  seulement pour ce que Claude produit seul en superbe qualité (`_memoire/prospection/VENDEUR.md`). Vérifier la charge d'abord.
 - **Plus de 20 produits** : 15 000 F par lot de 10 en plus (socle §1.2), annoncé avant le paiement, jamais après.
 - **On ne réécrit jamais à une fiche vendue en exclusivité par PISTE** (90 jours).
 
