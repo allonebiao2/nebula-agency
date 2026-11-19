@@ -9,7 +9,7 @@
 >
 > 🙋 attend une réponse ou un geste de Mongazi · 🤖 Claude peut le faire · 🕰️ plus tard, exprès
 >
-> Dernière mise à jour : **2026-11-18**.
+> Dernière mise à jour : **2026-11-19**.
 
 ---
 
@@ -17,6 +17,11 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
+| **ESPACE DE SUIVI** (`suivi/`, https://nebula-suivi.pages.dev, ouvert le 19/11) : Mongazi s'y connecte avec le compte de TES Alertes, l'ajoute à l'écran d'accueil, active les notifications. Puis je pousse chaque travail fini et chaque « besoin de toi » | 🙋 puis 🤖 | `suivi/suivi.py` |
+| **ATELIER IA** (le plus gros levier rapide, vidéos du 19/11) : format, date, prix à décider ; je prépare affiche, inscription Mobile Money, support | 🙋 | `nebula-apercus/ATELIER-IA-PROPOSITION.md` (hors dépôt) |
+| **DÉPÔT PRIVÉ ?** Passer `nebula-agency` en privé : possible, relier d'abord Render à GitHub (sinon le Bureau des partenaires ne se redéploie plus) ; les automatismes consomment ~1 000 min/mois, sous les 2 000 gratuites | 🙋 | conversation du 19/11 |
+| **Posts quotidiens** : 2 par jour (statuts 13 h et 17 h, repris sur son TikTok) ; ceux du 19/11 sont en ligne sur `nebula-statuts.pages.dev` ; à publier en statut à 13 h et 17 h | 🤖 | mémoire `project_statuts-quotidiens` |
+| **Crédits Flow** : le compte de Chrome n'a plus de crédits vidéo (Veo) après les films de PURETHNIK ; images gratuites. Recharge vers 23 h 47 | 🕰️ | |
 | **SPRINT DES FÊTES · PROSPECTION WHATSAPP** (ouvert le 2026-11-18) : 1 000 000 F CFA visés avant la fin de la semaine (posé en `/goal`) · 40 premiers messages par jour depuis son WhatsApp Web · ⏰ aperçu promis à une pâtisserie le jeudi 19 au matin · relances dues le 19 et le 20 · statuts WhatsApp et TikTok chaque jour (Google Flow) · 0 F encaissé au 18/11 au soir | 🤖 · 🙋 vocaux, appels, paiements | `prospection/CERVEAU.md` |
 | **TIKTOK DE MONGAZI** : devenir la référence de l'IA en Afrique de l'Ouest francophone · vague 1 de 7 vidéos (3 ASTUCE + 3 ACTU + 1 ÉPISODE de sa vie de vibe codeur) · avatar 3D : 32 images (dont son studio NEBULA, lumière orange tamisée), fiche des prompts https://claude.ai/artifact/FJRogAtCUgXEi4NCNHLN6H. Attend : A00 (la fiche) et D00 (le studio) générées, son avis sur l'analyse et la vague 1, ses liens YouTube pour les ACTU | 🙋 | `conversations/2026-11-17-tiktok-mongazi.md` |
 | **PUB NEBULA** (« les vidéos et NEBULA Agency », avant l'avatar) : Mongazi génère les plans, Claude monte « à 10 000 $ » et corrige ce qui peut l'être. Attend : le scénario fait avec ChatGPT (jamais reçu), puis ses images et vidéos dans `_partage/pub-nebula/` | 🙋 | `videos-pub/projets/02-pub-nebula.md` |

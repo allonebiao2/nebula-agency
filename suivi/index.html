@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#060713">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEBULA Suivi">
+<title>NEBULA Suivi</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --nuit:#060713; --nuit2:#0d1024; --carte:#11152e; --ligne:rgba(160,175,255,.14); --bleu:#4f6fff; --violet:#9333ea; --cyan:#22d3ee;
+         --texte:#eef0ff; --doux:#a9b0d6; --vert:#34d399; --rouge:#fb7185; --or:#fbbf24; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{background:var(--nuit);color:var(--texte);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 92px);
+       background:radial-gradient(120% 60% at 80% -10%,rgba(147,51,234,.28),transparent 60%),radial-gradient(90% 50% at 0% 0%,rgba(79,111,255,.22),transparent 60%),var(--nuit)}
+  h1,h2,h3{font-family:Syne,sans-serif;font-weight:800;letter-spacing:-.01em}
+  .tete{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .tete h1{font-size:22px}.tete h1 span{color:var(--cyan)}
+  .maj{font-size:12px;color:var(--doux)}
+  .carte{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--ligne);border-radius:20px;padding:16px;margin-bottom:12px}
+  .objectif .chiffre{font-family:Syne;font-size:32px;font-weight:800}
+  .objectif .sur{color:var(--doux);font-size:14px}
+  .barre{height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:12px 0 10px}
+  .barre i{display:block;height:100%;background:linear-gradient(90deg,var(--violet),var(--bleu),var(--cyan));border-radius:99px;transition:width .8s}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .stats b{display:block;font-family:Syne;font-size:20px}.stats small{font-size:11px;color:var(--doux)}
+  .titre-bloc{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin:18px 2px 10px}
+  .ligne{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--ligne)}
+  .ligne:first-child{border-top:0;padding-top:0}
+  .pastille{flex:0 0 34px;height:34px;border-radius:12px;display:grid;place-items:center;font-size:17px;background:rgba(79,111,255,.16)}
+  .pastille.besoin{background:rgba(251,113,133,.18)}.pastille.lien{background:rgba(34,211,238,.16)}.pastille.vente{background:rgba(52,211,153,.18)}.pastille.point{background:rgba(147,51,234,.2)}
+  .corps{flex:1;min-width:0}
+  .corps h3{font-family:Inter;font-weight:700;font-size:15px;line-height:1.3}
+  .corps p{font-size:14px;color:var(--doux);line-height:1.45;margin-top:3px;white-space:pre-line;overflow-wrap:anywhere}
+  .corps .quand{font-size:11.5px;color:#7f87b8;margin-top:5px}
+  .boutons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .btn{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 15px;border-radius:99px;border:1px solid var(--ligne);background:rgba(255,255,255,.06);
+       color:var(--texte);font:600 13.5px Inter,sans-serif;text-decoration:none;cursor:pointer}
+  .btn.plein{border:0;background:linear-gradient(100deg,var(--violet),var(--bleu) 60%,var(--cyan));color:#fff}
+  .btn.vert{border:0;background:#1fa855;color:#fff}
+  .etiquette{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.08);color:var(--doux)}
+  .etiquette.interesse{background:rgba(52,211,153,.18);color:var(--vert)}.etiquette.repondu{background:rgba(34,211,238,.16);color:var(--cyan)}
+  .etiquette.paye{background:rgba(251,191,36,.2);color:var(--or)}.etiquette.refus,.etiquette.ne_plus_contacter{background:rgba(251,113,133,.16);color:var(--rouge)}
+  .filtres{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px;scrollbar-width:none}.filtres::-webkit-scrollbar{display:none}
+  .filtres button{flex:0 0 auto;border:1px solid var(--ligne);background:none;color:var(--doux);font:600 13px Inter;padding:8px 13px;border-radius:99px}
+  .filtres button[aria-pressed="true"]{background:var(--texte);color:var(--nuit);border-color:var(--texte)}
+  .vide{color:var(--doux);font-size:14px;text-align:center;padding:24px 0}
+  nav.bas{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 10px);display:grid;grid-template-columns:repeat(5,1fr);
+          background:rgba(13,16,36,.96);border:1px solid var(--ligne);border-radius:22px;padding:6px;z-index:10}
+  nav.bas button{border:0;background:none;color:var(--doux);font:600 11px Inter;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0;border-radius:16px}
+  nav.bas button b{font-size:19px;line-height:1}
+  nav.bas button[aria-current="true"]{color:#fff;background:rgba(79,111,255,.22)}
+  .badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--rouge);color:#fff;font-size:11px;font-weight:700;margin-left:4px}
+  .connexion{max-width:420px;margin:12vh auto 0}
+  .connexion input{width:100%;min-height:48px;margin-top:10px;padding:0 14px;border-radius:14px;border:1px solid var(--ligne);background:rgba(255,255,255,.05);color:var(--texte);font:500 16px Inter}
+  .connexion .btn{width:100%;justify-content:center;min-height:50px;margin-top:14px}
+  [hidden]{display:none!important}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 96px);background:#1b2148;border:1px solid var(--ligne);padding:12px 16px;border-radius:14px;font-size:14px;z-index:20}
+</style>
+</head>
+<body>
+<div id="chargement" class="vide">Chargement…</div>
+
+<section id="connexion" class="connexion" hidden>
+  <h1 style="font-size:30px">NEBULA <span style="color:var(--cyan)">Suivi</span></h1>
+  <p style="color:var(--doux);margin-top:8px">Tout ce que fait ton assistant, en direct : les travaux finis, les clients, ce qui attend ta décision.</p>
+  <form id="form">
+    <input id="email" type="email" autocomplete="username" placeholder="Ton e-mail" required>
+    <input id="pass" type="password" autocomplete="current-password" placeholder="Ton mot de passe (le même que TES Alertes)" required>
+    <button class="btn plein" type="submit">Entrer</button>
+  </form>
+  <p id="etat-connexion" style="color:var(--rouge);margin-top:10px;font-size:14px"></p>
+</section>
+
+<main id="app" hidden>
+  <div class="tete"><h1>NEBULA <span>Suivi</span></h1><span class="maj" id="maj"></span></div>
+
+  <section data-onglet="jour">
+    <div class="carte objectif">
+      <div class="sur">Encaissé cette semaine</div>
+      <div class="chiffre" id="encaisse">0 F</div>
+      <div class="barre"><i id="barre" style="width:0"></i></div>
+      <div class="stats">
+        <div><b id="s-contactes">–</b><small>contactés</small></div>
+        <div><b id="s-reponses">–</b><small>réponses</small></div>
+        <div><b id="s-interesses">–</b><small>intéressés</small></div>
+        <div><b id="s-payes">–</b><small>payés</small></div>
+      </div>
+    </div>
+    <div class="titre-bloc">Besoin de toi</div>
+    <div class="carte" id="besoins"></div>
+    <div class="titre-bloc">Les derniers travaux</div>
+    <div class="carte" id="liens"></div>
+  </section>
+
+  <section data-onglet="journal" hidden>
+    <div class="titre-bloc">Tout ce que j'ai fait</div>
+    <div class="carte" id="journal"></div>
+  </section>
+
+  <section data-onglet="clients" hidden>
+    <div class="filtres" id="filtres"></div>
+    <div class="carte" id="clients"></div>
+  </section>
+
+  <section data-onglet="envois" hidden>
+    <div class="titre-bloc">Messages prêts à partir</div>
+    <p style="color:var(--doux);font-size:13.5px;margin:-4px 2px 10px">Si je ne peux pas les envoyer moi-même : un toucher ouvre WhatsApp avec le message écrit.</p>
+    <div class="carte" id="envois"></div>
+  </section>
+
+  <section data-onglet="reglages" hidden>
+    <div class="titre-bloc">Notifications</div>
+    <div class="carte">
+      <p id="notif-texte" style="color:var(--doux);font-size:14px">…</p>
+      <div class="boutons"><button class="btn plein" id="activer" hidden>Activer les notifications</button><button class="btn" id="essai" hidden>Essayer</button></div>
+    </div>
+    <div class="titre-bloc">Compte</div>
+    <div class="carte"><p id="compte" style="color:var(--doux);font-size:14px"></p><div class="boutons"><button class="btn" id="sortir">Se déconnecter</button></div></div>
+  </section>
+</main>
+
+<nav class="bas" id="nav" hidden>
+  <button data-aller="jour" aria-current="true"><b>✦</b>Aujourd'hui</button>
+  <button data-aller="journal"><b>☰</b>Journal</button>
+  <button data-aller="clients"><b>◎</b>Clients</button>
+  <button data-aller="envois"><b>➤</b>À envoyer<span class="badge" id="b-envois" hidden></span></button>
+  <button data-aller="reglages"><b>⚙</b>Réglages</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://xukduhqqfzogisoimhyo.supabase.co";
+const SUPABASE_ANON_KEY = "__ANON__";
+const VAPID_PUBLIC = "__VAPID__";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, detectSessionInUrl: false } });
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const F = n => (n || 0).toLocaleString("fr-FR").replace(/ | /g, " ") + " F";
+const ICONES = { action: "⚙️", lien: "🔗", alerte: "🔔", besoin: "🙋", point: "📋", vente: "💰" };
+const quand = t => { const d = new Date(t); return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" }) + " · " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); };
+const lienTexte = u => u ? `<a class="btn plein" href="${esc(u)}" target="_blank" rel="noopener">Ouvrir</a>` : "";
+let EMAIL = null, ONGLET = "jour", FILTRE = "interesse";
+function toast(t) { const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
+
+async function charger() {
+  const [ch, jr, pr, en] = await Promise.all([
+    sb.from("nebula_suivi_chiffres").select("*").order("jour", { ascending: false }).limit(7),
+    sb.from("nebula_suivi_journal").select("*").order("quand", { ascending: false }).limit(150),
+    sb.from("nebula_suivi_prospects").select("*"),
+    sb.from("nebula_suivi_envois").select("*").eq("envoye", false).order("id"),
+  ]);
+  const c = (ch.data || [])[0] || {};
+  const total = (ch.data || []).reduce((a, x) => a + (x.encaisse || 0), 0);
+  $("#encaisse").textContent = F(total) + " / " + F(c.objectif || 1000000);
+  $("#barre").style.width = Math.min(100, 100 * total / (c.objectif || 1000000)).toFixed(1) + "%";
+  for (const k of ["contactes", "reponses", "interesses", "payes"]) $("#s-" + k).textContent = c[k] ?? "–";
+  const J = jr.data || [];
+  const besoins = J.filter(x => x.genre === "besoin" && !x.fait);
+  $("#besoins").innerHTML = besoins.length ? besoins.map(x => `<div class="ligne"><div class="pastille besoin">🙋</div><div class="corps"><h3>${esc(x.titre)}</h3>${x.texte ? `<p>${esc(x.texte)}</p>` : ""}
+    <div class="quand">${quand(x.quand)}</div><div class="boutons">${lienTexte(x.lien)}<button class="btn" data-fait="${x.id}">C'est fait</button></div></div></div>`).join("")
+    : `<div class="vide">Rien ne t'attend. Je continue.</div>`;
+  const liens = J.filter(x => x.genre === "lien").slice(0, 6);
+  $("#liens").innerHTML = liens.length ? liens.map(ligneJ).join("") : `<div class="vide">Les liens des travaux finis arriveront ici.</div>`;
+  $("#journal").innerHTML = J.length ? J.map(ligneJ).join("") : `<div class="vide">Le journal est vide.</div>`;
+  window.__P = pr.data || [];
+  dessinerClients();
+  const E = en.data || [];
+  $("#b-envois").hidden = !E.length; $("#b-envois").textContent = E.length;
+  $("#envois").innerHTML = E.length ? E.map(x => { const n = x.telephone.replace(/\D/g, ""), autre = n.length === 10 ? n.slice(2) : "01" + n;
+    return `<div class="ligne"><div class="pastille">💬</div><div class="corps"><h3>${esc(x.pour)}</h3><p>${esc(x.message)}</p><div class="quand">${esc(x.heure || "")}</div>
+    <div class="boutons"><a class="btn vert" href="https://wa.me/229${n}?text=${encodeURIComponent(x.message)}" target="_blank" rel="noopener">Ouvrir WhatsApp</a>
+    <a class="btn" href="https://wa.me/229${autre}?text=${encodeURIComponent(x.message)}" target="_blank" rel="noopener">Autre forme du numéro</a>
+    <button class="btn" data-envoye="${x.id}">Envoyé ✓</button></div></div></div>`; }).join("") : `<div class="vide">Aucun message en attente.</div>`;
+  $("#maj").textContent = "à jour " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+function ligneJ(x) {
+  return `<div class="ligne"><div class="pastille ${x.genre}">${ICONES[x.genre] || "•"}</div><div class="corps"><h3>${esc(x.titre)}</h3>${x.texte ? `<p>${esc(x.texte)}</p>` : ""}
+    <div class="quand">${quand(x.quand)}</div>${x.lien ? `<div class="boutons">${lienTexte(x.lien)}</div>` : ""}</div></div>`;
+}
+const ORDRE = [["interesse", "Intéressés"], ["repondu", "Ont répondu"], ["contacte", "Contactés"], ["a_contacter", "À contacter"], ["paye", "Payés"], ["refus", "Non"]];
+function dessinerClients() {
+  const P = window.__P || [];
+  $("#filtres").innerHTML = ORDRE.map(([k, l]) => `<button data-filtre="${k}" aria-pressed="${k === FILTRE}">${l} · ${P.filter(p => p.statut === k || (k === "refus" && p.statut === "ne_plus_contacter")).length}</button>`).join("");
+  const L = P.filter(p => p.statut === FILTRE || (FILTRE === "refus" && p.statut === "ne_plus_contacter")).sort((a, b) => (b.score || 0) - (a.score || 0));
+  $("#clients").innerHTML = L.length ? L.map(p => { const n = (p.telephone || "").replace(/\D/g, "");
+    return `<div class="ligne"><div class="pastille">🏪</div><div class="corps"><h3>${esc(p.nom)} <span class="etiquette ${p.statut}">${esc(p.statut.replace(/_/g, " "))}</span></h3>
+    <p>${esc(p.metier || "")}${p.montant ? " · proposé : " + F(p.montant) : ""}</p>${p.dernier ? `<p>${esc(p.dernier)}</p>` : ""}${p.prochaine ? `<div class="quand">${esc(p.prochaine)}</div>` : ""}
+    ${n ? `<div class="boutons"><a class="btn vert" href="https://wa.me/229${n}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="tel:+229${n}">Appeler</a></div>` : ""}</div></div>`; }).join("")
+    : `<div class="vide">Personne dans cette case.</div>`;
+}
+document.addEventListener("click", async e => {
+  const f = e.target.closest("[data-filtre]"); if (f) { FILTRE = f.dataset.filtre; dessinerClients(); return; }
+  const a = e.target.closest("[data-aller]"); if (a) { montrerOnglet(a.dataset.aller); return; }
+  const fa = e.target.closest("[data-fait]"); if (fa) { await sb.from("nebula_suivi_journal").update({ fait: true }).eq("id", fa.dataset.fait); toast("Noté, merci."); charger(); return; }
+  const en = e.target.closest("[data-envoye]"); if (en) { await sb.from("nebula_suivi_envois").update({ envoye: true }).eq("id", en.dataset.envoye); toast("Marqué comme envoyé."); charger(); }
+});
+function montrerOnglet(o) {
+  ONGLET = o; document.querySelectorAll("[data-onglet]").forEach(s => s.hidden = s.dataset.onglet !== o);
+  document.querySelectorAll("[data-aller]").forEach(b => b.setAttribute("aria-current", b.dataset.aller === o ? "true" : "false"));
+  try { localStorage.setItem("suivi-onglet", o); } catch (e) {}
+  scrollTo(0, 0);
+}
+
+// notifications (même recette que TES Alertes)
+function b64(u) { const p = "=".repeat((4 - u.length % 4) % 4), s = atob((u + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from([...s].map(c => c.charCodeAt(0))); }
+async function etatNotif() {
+  const ios = /iPhone|iPad/.test(navigator.userAgent), installee = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    $("#notif-texte").innerHTML = ios && !installee ? "Sur iPhone : bouton <b>Partager</b> de Safari, puis <b>Sur l'écran d'accueil</b>. Ouvre ensuite l'application depuis son icône, et reviens ici." : "Ce navigateur ne reçoit pas les notifications.";
+    return;
+  }
+  const reg = await navigator.serviceWorker.register("sw.js");
+  const abo = await reg.pushManager.getSubscription();
+  if (abo && Notification.permission === "granted") {
+    const j = abo.toJSON();
+    const { error } = await sb.from("nebula_suivi_abonnements").upsert({ endpoint: j.endpoint, email: EMAIL, p256dh: j.keys.p256dh, auth: j.keys.auth, appareil: navigator.userAgent.slice(0, 120) });
+    $("#notif-texte").textContent = error ? "Notifications autorisées, mais l'enregistrement a échoué : " + error.message : "✅ Notifications activées sur cet appareil.";
+    $("#activer").hidden = true; $("#essai").hidden = false;
+  } else { $("#notif-texte").textContent = "Active les notifications : je te préviens dès qu'un client répond, qu'un travail est fini, ou que j'ai besoin de toi."; $("#activer").hidden = false; }
+}
+$("#activer").onclick = async () => {
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") { $("#notif-texte").textContent = "Notifications refusées : autorise-les dans les réglages du téléphone."; return; }
+  const reg = await navigator.serviceWorker.ready;
+  try { await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(VAPID_PUBLIC) }); } catch (e) { $("#notif-texte").textContent = "Abonnement refusé : " + e.message; return; }
+  etatNotif();
+};
+$("#essai").onclick = async () => { const reg = await navigator.serviceWorker.ready; reg.showNotification("NEBULA · essai", { body: "Voilà à quoi ressemble une alerte.", tag: "essai-" + Date.now(), icon: "icone-192.png" }); };
+
+// connexion
+async function montrer(session) {
+  $("#chargement").hidden = true;
+  if (!session) { $("#connexion").hidden = false; $("#app").hidden = true; $("#nav").hidden = true; return; }
+  const { data: u } = await sb.auth.getUser();
+  if (!u || !u.user) { $("#connexion").hidden = false; return; }
+  EMAIL = u.user.email; $("#compte").textContent = "Connecté : " + EMAIL;
+  $("#connexion").hidden = true; $("#app").hidden = false; $("#nav").hidden = false;
+  let o = "jour"; try { o = localStorage.getItem("suivi-onglet") || "jour"; } catch (e) {}
+  montrerOnglet(o); await charger(); etatNotif();
+}
+$("#form").onsubmit = async e => { e.preventDefault(); $("#etat-connexion").textContent = "Connexion…";
+  const { error } = await sb.auth.signInWithPassword({ email: $("#email").value.trim(), password: $("#pass").value });
+  $("#etat-connexion").textContent = error ? "Échec : " + error.message : ""; };
+$("#sortir").onclick = async () => { try { await sb.auth.signOut({ scope: "local" }); } catch (e) {} location.reload(); };
+let MONTRE = null;
+const montrerSur = s => { const k = s ? s.user.id : "aucune"; if (MONTRE === k) return; MONTRE = k; montrer(s).catch(err => { MONTRE = null; $("#etat-connexion").textContent = "Problème : " + err.message; $("#connexion").hidden = false; }); };
+sb.auth.getSession().then(({ data }) => montrerSur(data.session));
+sb.auth.onAuthStateChange((_e, s) => setTimeout(() => montrerSur(s), 0));
+setInterval(() => { if (EMAIL && document.visibilityState === "visible") charger(); }, 30000);
+document.addEventListener("visibilitychange", () => { if (EMAIL && document.visibilityState === "visible") charger(); });
+</script>
+</body>
+</html>
