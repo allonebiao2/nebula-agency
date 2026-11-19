@@ -7,6 +7,12 @@
 > ⛔ **Ce dépôt est PUBLIC** : aucun numéro, aucun nom de prospect associé à ce qu'il a dit. L'état réel vit dans
 > Supabase (`piste.prospection`) et dans le suivi privé **hors dépôt** (voir « Les fichiers »). Ici : des chiffres
 > agrégés et des renvois, rien d'autre.
+>
+> ⚡ **REPRISE (état du 19/11 au soir)** : lire d'abord le fichier privé **`C:\Users\USER\nebula-apercus\REPRENDRE-ICI.md`**
+> (hors dépôt) : les prospects chauds, la prochaine action de chacun avec son message déjà rédigé, la liste du 20/11 et
+> l'avatar. ⛔ **Depuis le 19/11 à 10 h 25, WhatsApp a détecté l'automatisation** : WhatsApp Web est bloqué sur le PC
+> (temporairement) et on ne le pilote plus sans un nouveau feu vert de Mongazi. Il m'envoie les captures ou les vocaux,
+> je rédige, il envoie de son téléphone. Aucun nouveau numéro pendant le blocage, puis peu par jour et à la main.
 
 ---
 
