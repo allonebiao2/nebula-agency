@@ -37,3 +37,21 @@ Tout cela est **coché d'office** sur toutes les prochaines réalisations : `_me
   profondeur par-dessus le film du téléphone, film 1080 refait depuis `recadre.mp4`). **Testé, pas publié** : le
   déploiement attend son accord.
 - Omani republié avec deux corrections du panier (intitulé de date, boutons d'une fiche cachée rendus inertes).
+
+## La nuit : le son partout, les rappels, ADEMAR v2, la Maison des bijoux v2
+- **Le son** : sur iPhone la musique était inaudible (fichier à -20 LUFS joué à 0,26, soit -32 LUFS). Recette d'Angy Art
+  reprise (lancée au doigt posé), musiques normalisées à -12 LUFS, volume 0,66, bruitages rangés avec la musique
+  (`navigator.audioSession.type = "playback"`). Les 4 aperçus corrigés, et `nebula-apercus/_socle/verifier_son.py`
+  arrête désormais toute publication dont le son n'est pas au standard. Mongazi : « le son marche sur mon iPhone ».
+- **Les rappels** : 38 messages du 20/11 dans « À envoyer » de NEBULA Suivi, tâche Windows « NEBULA rappels envois »
+  (toutes les 20 min, alerte qui insiste). Son iPhone est abonné, l'essai est arrivé.
+- **ADEMAR v2 « La cour de la cuisine »** EN LIGNE : vraie 3D au téléphone (fini la vidéo en boucle), on descend sur
+  les toits de Cotonou, on longe 7 foyers de côté, on remonte. Mongazi : « j'aime bien comment t'as fait, c'est beau ».
+- **Flow pour la 3D ?** Réponse donnée : possible (Veo fait les mouvements de caméra, joués au doigt), mais Veo
+  invente (plats, bijoux), pèse lourd (50 Mo pour 10 plans) et manque de précision ; le MÉLANGE est retenu : Flow pour
+  l'entrée (aucun produit), 3D codée pour les produits.
+- **Maison des bijoux v2 « La galerie des écrins »** : galerie 3D écrite (rideau de velours, lustre, 5 vitrines de
+  verre et laiton, dessins des familles en fil d'or qui se tracent, écrin final) ; entrée Flow à générer (prompts :
+  `nebula-apercus/bijoux/PROMPTS-FLOW.md`, aussi dans le Journal du suivi). Corrections de la dernière passe NON
+  vérifiées : le PC était saturé (Chrome avec Flow, 1 Go libre), rien n'est publié.
+- **Règle ajoutée** : jamais promettre un déplacement de Mongazi sans lui demander (`prospection/VENDEUR.md` § 6).
