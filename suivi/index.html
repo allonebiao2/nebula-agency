@@ -204,6 +204,7 @@ document.addEventListener("click", async e => {
   const fa = e.target.closest("[data-fait]"); if (fa) { await sb.from("nebula_suivi_journal").update({ fait: true }).eq("id", fa.dataset.fait); toast("Noté, merci."); charger(); return; }
   const en = e.target.closest("[data-envoye]"); if (en) { await sb.from("nebula_suivi_envois").update({ envoye: true }).eq("id", en.dataset.envoye); toast("Marqué comme envoyé."); charger(); }
 });
+addEventListener("hashchange", () => { const v = location.hash.slice(1); if (EMAIL && document.querySelector(`[data-onglet="${v}"]`)) { montrerOnglet(v); charger(); } });
 function montrerOnglet(o) {
   ONGLET = o; document.querySelectorAll("[data-onglet]").forEach(s => s.hidden = s.dataset.onglet !== o);
   document.querySelectorAll("[data-aller]").forEach(b => b.setAttribute("aria-current", b.dataset.aller === o ? "true" : "false"));
@@ -246,6 +247,8 @@ async function montrer(session) {
   EMAIL = u.user.email; $("#compte").textContent = "Connecté : " + EMAIL;
   $("#connexion").hidden = true; $("#app").hidden = false; $("#nav").hidden = false;
   let o = "jour"; try { o = localStorage.getItem("suivi-onglet") || "jour"; } catch (e) {}
+  // une alerte touchée ouvre directement l'onglet qu'elle annonce (« #envois »)
+  const voulu = location.hash.slice(1); if (document.querySelector(`[data-onglet="${voulu}"]`)) o = voulu;
   montrerOnglet(o); await charger(); etatNotif();
 }
 $("#form").onsubmit = async e => { e.preventDefault(); $("#etat-connexion").textContent = "Connexion…";

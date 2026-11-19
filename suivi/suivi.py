@@ -44,14 +44,14 @@ def env():
     return dict(re.findall(r"^([A-Z_0-9]+)=(.+)$", ENV.read_text(encoding="utf-8"), re.M))
 
 
-def push(titre, texte, cle="nebula", url="./"):
+def push(titre, texte, cle="nebula", url="./", insiste=False):
     from pywebpush import WebPushException, webpush
     e, n = env(), 0
     with connexion() as c:
         for r in c.execute("select endpoint, p256dh, auth from public.nebula_suivi_abonnements").fetchall():
             try:
                 webpush({"endpoint": r["endpoint"], "keys": {"p256dh": r["p256dh"], "auth": r["auth"]}},
-                        json.dumps({"titre": titre, "texte": texte, "tag": cle, "url": url}, ensure_ascii=False),
+                        json.dumps({"titre": titre, "texte": texte, "tag": cle, "url": url, "insiste": insiste}, ensure_ascii=False),
                         vapid_private_key=str(PEM), vapid_claims={"sub": e["VAPID_SUB"].strip()}, ttl=3600,
                         headers={"Urgency": "high"}, timeout=10)
                 n += 1
