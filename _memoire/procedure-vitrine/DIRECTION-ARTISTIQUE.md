@@ -36,6 +36,26 @@ expérience progressive et ils viennent pour passer à l'action ».
 6. **Rien ne doit faire « IA »** : regarder chaque plan (mains parasites, formes qui changent, surfaces trop lisses, symétrie
    parfaite) avant de livrer.
 
+### 0 ter. Coché d'office dès la première version (Mongazi, 2026-11-19, chantier Omani)
+
+« Ces modifications sont à garder en mémoire pour tous les prochains travaux : elles doivent toutes être cochées aux
+créations suivantes. » Aucune ne doit plus être réclamée par le client ou par Mongazi.
+
+- [ ] **Les infos du support du client, à leur place** : ce que son catalogue écrit à côté d'un produit (les couches d'un
+      gâteau, une matière, une contenance) est repris au même endroit, même côté, même hauteur, lu dans son fichier. Animé
+      (point d'or sur l'objet, trait, nom dans une pastille sombre) et lisible sur tous les fonds.
+- [ ] **Pleine définition** : images à la résolution de leur source, sans réduction ; scène rendue à la finesse de
+      l'écran (Retina, 4K) avec repli automatique si l'appareil peine ; film en 1080. On ne dépasse pas la source : le dire.
+- [ ] **La musique part au premier glissé du doigt**, pas seulement au toucher (module `son.js`, glissé pris à la main).
+      Au PC, la molette ne débloque jamais le son : premier clic ou première touche.
+- [ ] **Lueurs et profondeur** : faisceau de lumière, flaque dorée, bokehs devant et derrière qui défilent à des vitesses
+      différentes, poussière lumineuse, flou de premier plan, éclat quand le produit se pose, caméra qui s'avance.
+- [ ] **Commande multiple** : un panier (quantités, minimum du client, date, prénom, total) et un seul message WhatsApp
+      récapitulatif ; le bouton « commander celui-ci seul » reste à côté.
+
+Modules prêts, hors dépôt (ils servent aux aperçus) : `C:\Users\USER\nebula-apercus\_socle\` (`son.js`, `sequence.js`,
+`panier.js`). Exemple complet : l'aperçu d'Omani (`nebula-apercus/omani/`).
+
 ---
 
 ## 1. D'abord l'idée, sinon rien ne tient
