@@ -50,6 +50,8 @@ créations suivantes. » Aucune ne doit plus être réclamée par le client ou p
       Au PC, la molette ne débloque jamais le son : premier clic ou première touche.
       Même moteur qu'Angy Art et NEBULA Agency : une `<audio>` dans la page, lancée dès que le doigt se pose. ⛔ Le
       fichier à **-12 LUFS**, joué à 0,66 au téléphone (0,57 au PC) : à -20 LUFS joué à 0,26, on n'entend rien.
+      Les bruitages (Web Audio) rangés avec la musique sur iPhone (`navigator.audioSession.type = "playback"`), sinon le
+      mode silencieux les coupe. **`_socle/verifier_son.py` arrête toute publication dont le son n'est pas au standard.**
 - [ ] **Lueurs et profondeur** : faisceau de lumière, flaque dorée, bokehs devant et derrière qui défilent à des vitesses
       différentes, poussière lumineuse, flou de premier plan, éclat quand le produit se pose, caméra qui s'avance.
 - [ ] **Commande multiple** : un panier (quantités, minimum du client, date, prénom, total) et un seul message WhatsApp
