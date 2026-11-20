@@ -64,6 +64,11 @@
   .connexion input{width:100%;min-height:48px;margin-top:10px;padding:0 14px;border-radius:14px;border:1px solid var(--ligne);background:rgba(255,255,255,.05);color:var(--texte);font:500 16px Inter}
   .connexion .btn{width:100%;justify-content:center;min-height:50px;margin-top:14px}
   [hidden]{display:none!important}
+  .voile{position:fixed;inset:0;background:rgba(3,3,12,.7);z-index:30;overflow:auto;padding:6vh 12px 30px}
+  .feuille-l{max-width:620px;margin:0 auto;background:#12163a;border:1px solid var(--ligne);border-radius:22px;padding:16px}
+  pre.livrable{white-space:pre-wrap;word-break:break-word;font:400 14px/1.5 Inter,system-ui,sans-serif;background:rgba(255,255,255,.05);border:1px solid var(--ligne);border-radius:14px;padding:12px;margin-top:12px;max-height:50vh;overflow:auto;user-select:text;-webkit-user-select:text}
+  .fichier{margin-top:12px}.fichier img,.fichier video{display:block;width:100%;max-height:60vh;object-fit:contain;border-radius:14px;background:#000}
+  .tag{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:6px;background:rgba(255,255,255,.1)}.tag.retard{background:var(--rouge);color:#fff}
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 96px);background:#1b2148;border:1px solid var(--ligne);padding:12px 16px;border-radius:14px;font-size:14px;z-index:20}
 </style>
 </head>
@@ -96,14 +101,14 @@
         <div><b id="s-payes">–</b><small>payés</small></div>
       </div>
     </div>
-    <div class="titre-bloc">Besoin de toi</div>
-    <div class="carte" id="besoins"></div>
-    <div class="titre-bloc">Les derniers travaux</div>
-    <div class="carte" id="liens"></div>
+    <div class="titre-bloc">À faire maintenant</div>
+    <div class="carte" id="afaire"></div>
+    <div class="titre-bloc">Fait récemment</div>
+    <div class="carte" id="faits"></div>
   </section>
 
   <section data-onglet="journal" hidden>
-    <div class="titre-bloc">Tout ce que j'ai fait</div>
+    <div class="titre-bloc">Les dernières 24 heures</div>
     <div class="carte" id="journal"></div>
   </section>
 
@@ -129,6 +134,9 @@
   </section>
 </main>
 
+<div class="voile" id="voile" hidden><div class="feuille-l"><div id="voile-corps"></div>
+  <div class="boutons"><button class="btn" data-fermer-voile style="flex:1;justify-content:center">Fermer</button></div></div></div>
+
 <nav class="bas" id="nav" hidden>
   <button data-aller="jour" aria-current="true"><b>✦</b>Aujourd'hui</button>
   <button data-aller="journal"><b>☰</b>Journal</button>
@@ -153,25 +161,51 @@ let EMAIL = null, ONGLET = "jour", FILTRE = "apercu";
 function toast(t) { const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
 
 async function charger() {
-  const [ch, jr, pr, en] = await Promise.all([
+  const jourB = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Porto-Novo" });
+  const [ch, jr, pr, en, dc, ac, tc] = await Promise.all([
     sb.from("nebula_suivi_chiffres").select("*").order("jour", { ascending: false }).limit(7),
-    sb.from("nebula_suivi_journal").select("*").order("quand", { ascending: false }).limit(150),
+    sb.from("nebula_suivi_journal").select("*").order("quand", { ascending: false }).limit(60),
     sb.from("nebula_suivi_prospects").select("*"),
     sb.from("nebula_suivi_envois").select("*").eq("envoye", false).order("id"),
+    sb.from("nebula_cap_decisions").select("id,question,reponse").is("reponse", null).order("id"),
+    sb.from("nebula_cap_activite").select("*").order("id", { ascending: false }).limit(60),
+    sb.from("nebula_cap_taches").select("*").eq("jour", jourB).order("ordre"),
   ]);
   const c = (ch.data || [])[0] || {};
   const total = (ch.data || []).reduce((a, x) => a + (x.encaisse || 0), 0);
   $("#encaisse").textContent = F(total) + " / " + F(c.objectif || 1000000);
   $("#barre").style.width = Math.min(100, 100 * total / (c.objectif || 1000000)).toFixed(1) + "%";
   for (const k of ["contactes", "reponses", "interesses", "payes"]) $("#s-" + k).textContent = c[k] ?? "–";
-  const J = jr.data || [];
-  const besoins = J.filter(x => x.genre === "besoin" && !x.fait);
-  $("#besoins").innerHTML = besoins.length ? besoins.map(x => `<div class="ligne"><div class="pastille besoin">🙋</div><div class="corps"><h3>${esc(x.titre)}</h3>${x.texte ? `<p>${esc(x.texte)}</p>` : ""}
-    <div class="quand">${quand(x.quand)}</div><div class="boutons">${lienTexte(x.lien)}<button class="btn" data-fait="${x.id}">C'est fait</button></div></div></div>`).join("")
-    : `<div class="vide">Rien ne t'attend. Je continue.</div>`;
-  const liens = J.filter(x => x.genre === "lien").slice(0, 6);
-  $("#liens").innerHTML = liens.length ? liens.map(ligneJ).join("") : `<div class="vide">Les liens des travaux finis arriveront ici.</div>`;
-  $("#journal").innerHTML = J.length ? J.map(ligneJ).join("") : `<div class="vide">Le journal est vide.</div>`;
+  const J = jr.data || [], E0 = en.data || [];
+  window.__A = ac.data || [];
+  // À FAIRE MAINTENANT (Mongazi, 20/11 : « juste voir concrètement ce qui reste à faire au T ») : ce qui est fait disparaît
+  const mn = h => { const m = /(\d{1,2})\s*h\s*(\d{1,2})?/.exec(h || ""); return m ? +m[1] * 60 + (+m[2] || 0) : null; };
+  const now = (() => { const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Porto-Novo" })); return d.getHours() * 60 + d.getMinutes(); })();
+  const T = tc.data || [], restantes = T.filter(x => !x.fait && mn(x.heure) !== null).sort((a, b) => mn(a.heure) - mn(b.heure));
+  const dues = restantes.filter(x => mn(x.heure) <= now + 30), suivante = restantes.find(x => mn(x.heure) > now + 30);
+  const A = [];
+  for (const d of dc.data || []) A.push(`<div class="ligne"><div class="pastille">❓</div><div class="corps"><h3>Décision à prendre</h3><p>${esc(d.question)}</p>
+    <div class="boutons"><a class="btn plein" href="https://nebula-cap.pages.dev/#jour" target="_blank" rel="noopener">Répondre dans CAP</a></div></div></div>`);
+  for (const x of window.__A.filter(a => a.a_valider && a.valide === null)) A.push(`<div class="ligne"><div class="pastille">🌟</div><div class="corps"><h3>${esc(x.agent)} attend ta validation</h3><p>${esc(x.quoi)}</p>
+    <div class="boutons">${voirBtn(x)}${x.lien ? lienTexte(x.lien) : ""}<button class="btn vert" data-valider="${x.id}" data-v="1">Valider</button><button class="btn" data-valider="${x.id}" data-v="0">Refuser</button></div></div></div>`);
+  if (E0.length) A.push(`<div class="ligne"><div class="pastille">💬</div><div class="corps"><h3>${E0.length} message${E0.length > 1 ? "s" : ""} à envoyer</h3><p>${esc(E0.slice(0, 3).map(x => x.pour.split(" (")[0]).join(", "))}${E0.length > 3 ? "…" : ""}</p>
+    <div class="boutons"><button class="btn plein" data-aller="envois">Voir les messages</button></div></div></div>`);
+  for (const x of dues) { const retard = mn(x.heure) < now - 30;
+    A.push(`<div class="ligne"><div class="pastille">⏰</div><div class="corps"><h3>${esc(x.titre)}<span class="tag ${retard ? "retard" : ""}">${esc(x.heure)}${retard ? " · en retard" : ""}</span></h3>${x.detail ? `<p>${esc(x.detail)}</p>` : ""}
+    <div class="boutons">${x.lien ? lienTexte(x.lien) : ""}<button class="btn" data-tache="${x.id}">C'est fait</button></div></div></div>`); }
+  for (const x of J.filter(x => x.genre === "besoin" && !x.fait)) A.push(`<div class="ligne"><div class="pastille besoin">🙋</div><div class="corps"><h3>${esc(x.titre)}</h3>${x.texte ? `<p>${esc(x.texte)}</p>` : ""}
+    <div class="boutons">${lienTexte(x.lien)}<button class="btn" data-fait="${x.id}">C'est fait</button></div></div></div>`);
+  $("#afaire").innerHTML = (A.length ? A.join("") : `<div class="vide">Rien à faire pour l'instant.</div>`)
+    + (suivante ? `<div class="quand" style="padding:10px 4px 2px">Ensuite, à ${esc(suivante.heure)} : ${esc(suivante.titre)}</div>` : "");
+  // FAIT RÉCEMMENT : les 3 dernières choses faites (tâches cochées, travaux des étoiles, journal)
+  const faits = [
+    ...T.filter(x => x.fait && x.fait_quand).map(x => ({ t: x.fait_quand, html: `<div class="ligne"><div class="pastille">✅</div><div class="corps"><h3>${esc(x.titre)}</h3><div class="quand">${quand(x.fait_quand)}</div></div></div>` })),
+    ...window.__A.filter(a => !(a.a_valider && a.valide === null)).map(x => ({ t: x.quand, html: ligneA(x) })),
+    ...J.filter(x => x.genre !== "besoin").map(x => ({ t: x.quand, html: ligneJ(x) })),
+  ].sort((a, b) => Date.parse(b.t) - Date.parse(a.t));
+  $("#faits").innerHTML = faits.length ? faits.slice(0, 3).map(x => x.html).join("") : `<div class="vide">Rien encore aujourd'hui.</div>`;
+  const recents = faits.filter(x => Date.now() - Date.parse(x.t) < 24 * 3600e3).slice(0, 12);
+  $("#journal").innerHTML = recents.length ? recents.map(x => x.html).join("") : `<div class="vide">Rien dans les dernières 24 heures.</div>`;
   window.__P = pr.data || [];
   dessinerClients();
   const E = en.data || [];
@@ -182,6 +216,30 @@ async function charger() {
     <a class="btn" href="https://wa.me/229${autre}?text=${encodeURIComponent(x.message)}" target="_blank" rel="noopener">Autre forme du numéro</a>
     <button class="btn" data-envoye="${x.id}">Envoyé ✓</button></div></div></div>`; }).join("") : `<div class="vide">Aucun message en attente.</div>`;
   $("#maj").textContent = "à jour " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+const voirBtn = x => (x.contenu || (x.fichiers || []).length) ? `<button class="btn plein" data-voir="${x.id}">Voir</button>` : "";
+function ligneA(x) {
+  const b = voirBtn(x) + lienTexte(x.lien);
+  return `<div class="ligne"><div class="pastille">🌟</div><div class="corps"><h3>${esc(x.agent)} : ${esc(x.quoi)}</h3><div class="quand">${quand(x.quand)}${x.valide === true ? " · validé" : x.valide === false ? " · refusé" : ""}</div>
+    ${b ? `<div class="boutons">${b}</div>` : ""}</div></div>`;
+}
+async function voirLivrable(id) {
+  const x = (window.__A || []).find(a => a.id === id); if (!x) return;
+  const L = x.fichiers || [];
+  $("#voile-corps").innerHTML = `<div class="quand">${esc(x.agent)} · ${quand(x.quand)}</div><h3 style="font-size:18px;margin-top:4px">${esc(x.quoi)}</h3>
+    ${x.lien ? `<div class="boutons">${lienTexte(x.lien)}</div>` : ""}
+    ${x.contenu ? `<pre class="livrable">${esc(x.contenu)}</pre><div class="boutons"><button class="btn" data-copier="${x.id}">Copier le texte</button></div>` : ""}
+    ${L.map((f, i) => `<div class="fichier" id="lf-${i}"><span class="quand">${esc(f.nom)} · chargement…</span></div>`).join("")}`;
+  $("#voile").hidden = false;
+  L.forEach(async (f, i) => {
+    const { data, error } = await sb.storage.from("cap-livrables").createSignedUrl(f.chemin, 3600);
+    const el = $("#lf-" + i); if (!el) return;
+    if (error || !data) { el.innerHTML = `<span class="quand">${esc(f.nom)} : introuvable</span>`; return; }
+    const u = data.signedUrl, ty = f.type || "";
+    let vue = ty.startsWith("image/") ? `<img src="${esc(u)}" alt="${esc(f.nom)}">` : ty.startsWith("video/") ? `<video src="${esc(u)}" controls playsinline preload="metadata"></video>` : "";
+    if (/^text\//.test(ty)) { try { vue = `<pre class="livrable">${esc(await (await fetch(u)).text())}</pre>`; } catch (e) {} }
+    el.innerHTML = vue + `<div class="boutons"><a class="btn" href="${esc(u)}" target="_blank" rel="noopener" download="${esc(f.nom)}">Ouvrir ${esc(f.nom)}</a></div>`;
+  });
 }
 function ligneJ(x) {
   return `<div class="ligne"><div class="pastille ${x.genre}">${ICONES[x.genre] || "•"}</div><div class="corps"><h3>${esc(x.titre)}</h3>${x.texte ? `<p>${esc(x.texte)}</p>` : ""}
@@ -202,7 +260,12 @@ document.addEventListener("click", async e => {
   const f = e.target.closest("[data-filtre]"); if (f) { FILTRE = f.dataset.filtre; dessinerClients(); return; }
   const a = e.target.closest("[data-aller]"); if (a) { montrerOnglet(a.dataset.aller); return; }
   const fa = e.target.closest("[data-fait]"); if (fa) { await sb.from("nebula_suivi_journal").update({ fait: true }).eq("id", fa.dataset.fait); toast("Noté, merci."); charger(); return; }
-  const en = e.target.closest("[data-envoye]"); if (en) { await sb.from("nebula_suivi_envois").update({ envoye: true }).eq("id", en.dataset.envoye); toast("Marqué comme envoyé."); charger(); }
+  const en = e.target.closest("[data-envoye]"); if (en) { await sb.from("nebula_suivi_envois").update({ envoye: true }).eq("id", en.dataset.envoye); toast("Marqué comme envoyé."); charger(); return; }
+  const tf = e.target.closest("[data-tache]"); if (tf) { const { error } = await sb.from("nebula_cap_taches").update({ fait: true, fait_quand: new Date().toISOString() }).eq("id", tf.dataset.tache); toast(error ? "Échec : " + error.message : "Bravo, c'est coché."); charger(); return; }
+  const va = e.target.closest("[data-valider]"); if (va) { const { error } = await sb.from("nebula_cap_activite").update({ valide: va.dataset.v === "1" }).eq("id", va.dataset.valider); toast(error ? "Échec : " + error.message : va.dataset.v === "1" ? "Validé." : "Refusé."); charger(); return; }
+  const vo = e.target.closest("[data-voir]"); if (vo) { voirLivrable(+vo.dataset.voir); return; }
+  if (e.target.closest("[data-fermer-voile]") || e.target.id === "voile") { $("#voile").hidden = true; return; }
+  const cp = e.target.closest("[data-copier]"); if (cp) { const x = (window.__A || []).find(a => a.id === +cp.dataset.copier); if (x) navigator.clipboard.writeText(x.contenu).then(() => toast("Texte copié."), () => toast("Copie impossible : sélectionne le texte à la main.")); }
 });
 addEventListener("hashchange", () => { const v = location.hash.slice(1); if (EMAIL && document.querySelector(`[data-onglet="${v}"]`)) { montrerOnglet(v); charger(); } });
 function montrerOnglet(o) {
