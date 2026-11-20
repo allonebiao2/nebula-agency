@@ -9,6 +9,7 @@ Plus un message est en retard, plus l'alerte insiste (titre, vibration, elle res
 
     python suivi/rappels.py              # une passe
     python suivi/rappels.py --voir       # dit ce qu'il enverrait, sans rien envoyer
+    python suivi/rappels.py --message N  # le rappel d'UN message précis, tant qu'il n'est pas envoyé
 
 L'heure d'un message est lue dans son champ `heure` : « Ven. 20/11 · 9 h 30 (…) », « 14 h - 16 h », « CE SOIR ».
 Un message d'un jour à venir attend son jour. Ce fichier ne contient aucune donnée.
@@ -73,5 +74,21 @@ def passe(voir=False):
     return len(dus)
 
 
+def un_message(id_):
+    """Le rappel d'UN message précis (une réponse qui compte) : il insiste tant que « Envoyé ✓ » n'est pas touché."""
+    with connexion() as c:
+        r = c.execute("select pour, envoye from public.nebula_suivi_envois where id = %s", (id_,)).fetchone()
+    if not r or r["envoye"]:
+        print(f"{datetime.now(BENIN):%H:%M} · message {id_} : déjà envoyé (ou retiré), rien à rappeler")
+        return 0
+    nom = re.sub(r"\s*\(.*?\)", "", r["pour"])
+    push(f"⏰ {nom} attend ta réponse", "Le message est prêt dans « À envoyer » : un toucher, puis « Envoyé ✓ ».",
+         cle=f"rappel-message-{id_}", url="./#envois", insiste=True)
+    return 1
+
+
 if __name__ == "__main__":
-    passe("--voir" in sys.argv)
+    if "--message" in sys.argv:
+        un_message(int(sys.argv[sys.argv.index("--message") + 1]))
+    else:
+        passe("--voir" in sys.argv)
