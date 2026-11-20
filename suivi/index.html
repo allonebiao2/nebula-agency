@@ -48,7 +48,7 @@
   .btn.plein{border:0;background:linear-gradient(100deg,var(--violet),var(--bleu) 60%,var(--cyan));color:#fff}
   .btn.vert{border:0;background:#1fa855;color:#fff}
   .etiquette{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.08);color:var(--doux)}
-  .etiquette.interesse{background:rgba(52,211,153,.18);color:var(--vert)}.etiquette.repondu{background:rgba(34,211,238,.16);color:var(--cyan)}
+  .etiquette.interesse,.etiquette.apercu{background:rgba(52,211,153,.18);color:var(--vert)}.etiquette.repondu{background:rgba(34,211,238,.16);color:var(--cyan)}
   .etiquette.paye{background:rgba(251,191,36,.2);color:var(--or)}.etiquette.refus,.etiquette.ne_plus_contacter{background:rgba(251,113,133,.16);color:var(--rouge)}
   .filtres{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px;scrollbar-width:none}.filtres::-webkit-scrollbar{display:none}
   .filtres button{flex:0 0 auto;border:1px solid var(--ligne);background:none;color:var(--doux);font:600 13px Inter;padding:8px 13px;border-radius:99px}
@@ -149,7 +149,7 @@ const F = n => (n || 0).toLocaleString("fr-FR").replace(/ | /g, " ") + " F";
 const ICONES = { action: "⚙️", lien: "🔗", alerte: "🔔", besoin: "🙋", point: "📋", vente: "💰" };
 const quand = t => { const d = new Date(t); return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" }) + " · " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); };
 const lienTexte = u => u ? `<a class="btn plein" href="${esc(u)}" target="_blank" rel="noopener">Ouvrir</a>` : "";
-let EMAIL = null, ONGLET = "jour", FILTRE = "interesse";
+let EMAIL = null, ONGLET = "jour", FILTRE = "apercu";
 function toast(t) { const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
 
 async function charger() {
@@ -187,13 +187,13 @@ function ligneJ(x) {
   return `<div class="ligne"><div class="pastille ${x.genre}">${ICONES[x.genre] || "•"}</div><div class="corps"><h3>${esc(x.titre)}</h3>${x.texte ? `<p>${esc(x.texte)}</p>` : ""}
     <div class="quand">${quand(x.quand)}</div>${x.lien ? `<div class="boutons">${lienTexte(x.lien)}</div>` : ""}</div></div>`;
 }
-const ORDRE = [["interesse", "Intéressés"], ["repondu", "Ont répondu"], ["contacte", "Contactés"], ["a_contacter", "À contacter"], ["paye", "Payés"], ["refus", "Non"]];
+const ORDRE = [["apercu", "Aperçu envoyé"], ["interesse", "Intéressés"], ["repondu", "Ont répondu"], ["contacte", "Contactés"], ["a_contacter", "À contacter"], ["paye", "Payés"], ["refus", "Non"]];
 function dessinerClients() {
   const P = window.__P || [];
   $("#filtres").innerHTML = ORDRE.map(([k, l]) => `<button data-filtre="${k}" aria-pressed="${k === FILTRE}">${l} · ${P.filter(p => p.statut === k || (k === "refus" && p.statut === "ne_plus_contacter")).length}</button>`).join("");
   const L = P.filter(p => p.statut === FILTRE || (FILTRE === "refus" && p.statut === "ne_plus_contacter")).sort((a, b) => (b.score || 0) - (a.score || 0));
   $("#clients").innerHTML = L.length ? L.map(p => { const n = (p.telephone || "").replace(/\D/g, "");
-    return `<div class="ligne"><div class="pastille">🏪</div><div class="corps"><h3>${esc(p.nom)} <span class="etiquette ${p.statut}">${esc(p.statut.replace(/_/g, " "))}</span></h3>
+    return `<div class="ligne"><div class="pastille">🏪</div><div class="corps"><h3>${esc(p.nom)} <span class="etiquette ${p.statut}">${esc(p.statut === "apercu" ? "aperçu envoyé" : p.statut.replace(/_/g, " "))}</span></h3>
     <p>${esc(p.metier || "")}${p.montant ? " · proposé : " + F(p.montant) : ""}</p>${p.dernier ? `<p>${esc(p.dernier)}</p>` : ""}${p.prochaine ? `<div class="quand">${esc(p.prochaine)}</div>` : ""}
     ${n ? `<div class="boutons"><a class="btn vert" href="https://wa.me/229${n}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="tel:+229${n}">Appeler</a></div>` : ""}</div></div>`; }).join("")
     : `<div class="vide">Personne dans cette case.</div>`;

@@ -104,8 +104,8 @@ def chiffres(encaisse=None):
                      values (%s, coalesce(%s, 0), %s, %s, %s, %s)
                      on conflict (jour) do update set encaisse = coalesce(%s, nebula_suivi_chiffres.encaisse), contactes = excluded.contactes,
                        reponses = excluded.reponses, interesses = excluded.interesses, payes = excluded.payes, maj = now()""",
-                  (date.today(), encaisse, contactes, s.get("repondu", 0) + s.get("interesse", 0) + s.get("paye", 0),
-                   s.get("interesse", 0), s.get("paye", 0), encaisse))
+                  (date.today(), encaisse, contactes, s.get("repondu", 0) + s.get("interesse", 0) + s.get("apercu", 0) + s.get("paye", 0),
+                   s.get("interesse", 0) + s.get("apercu", 0), s.get("paye", 0), encaisse))
     print("chiffres du jour à jour", s)
 
 
