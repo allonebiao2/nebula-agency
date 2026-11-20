@@ -43,24 +43,46 @@ k = im.width / 1080
 import json
 C = json.load(open(os.path.join(LOGO, "couches.json"), encoding="utf-8"))
 boite = C["logo"]
-logo = Image.new("RGBA", (boite["w"], boite["h"]), (0, 0, 0, 0))
-for nom in ("marque", "nebula", "trait-g", "agency", "trait-d"):
-    c = C[nom]
-    logo.alpha_composite(Image.open(os.path.join(LOGO, c["fichier"])).convert("RGBA"), (c["x"] - boite["x"], c["y"] - boite["y"]))
 largeur = round(520 * k)                              # 520 px sur 1080 ; sous les onglets de TikTok (haut ~100 px)
-logo = logo.resize((largeur, round(logo.height * largeur / logo.width)), Image.LANCZOS)
-enseigne = Image.new("RGBA", im.size, (0, 0, 0, 0))
-enseigne.alpha_composite(logo, ((im.width - logo.width) // 2, round(84 * k)))
+echelle = largeur / boite["w"]
+pos = ((im.width - largeur) // 2, round(84 * k))
 
-# halo : l'enseigne éclaire un peu le mur autour d'elle (lumière additive, douce)
-halo = enseigne.filter(ImageFilter.GaussianBlur(28 * k))
+
+def couche(noms):
+    """Les pièces demandées, à leur place d'origine, mises à l'échelle et posées dans l'image (fond transparent)."""
+    L = Image.new("RGBA", (boite["w"], boite["h"]), (0, 0, 0, 0))
+    for nom in noms:
+        c = C[nom]
+        L.alpha_composite(Image.open(os.path.join(LOGO, c["fichier"])).convert("RGBA"), (c["x"] - boite["x"], c["y"] - boite["y"]))
+    L = L.resize((largeur, round(boite["h"] * echelle)), Image.LANCZOS)
+    out_ = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    out_.alpha_composite(L, pos)
+    return np.asarray(out_).astype(np.float32)
+
+
+def flou(x, r):
+    return np.asarray(Image.fromarray(np.clip(x, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(r))).astype(np.float32)
+
+
+# 4. LES NÉONS (Mongazi, 20/11 : « Nebula doit être incrusté comme si c'était des lumières néon ») : le tube (un cœur
+#    éclairci), puis des halos de plus en plus larges dans la couleur du logo, saturée, AJOUTÉS à la lumière du mur (un
+#    néon éclaire, il ne recouvre pas), jusqu'à une lueur très large qui teinte le panneau.
+#    Les lettres sont des tubes presque blancs ; la planète garde ses couleurs (blanchie, elle devenait pastel).
+def neon(base, E, blanc, force):
+    a = E[..., 3:4] / 255
+    rgb = E[..., :3]
+    gris = rgb.mean(-1, keepdims=True)
+    lumiere = np.clip(gris + (rgb - gris) * 1.8, 0, 255) * a  # la couleur du gaz, plus franche que le logo imprimé
+    for r, poids in ((3 * k, 0.9), (10 * k, 0.85), (26 * k, 0.7), (70 * k, 0.45), (160 * k, 0.25)):
+        base += flou(lumiere, r) * poids * force
+    coeur = np.clip(rgb * (1 - blanc) * 1.15 + 255 * blanc, 0, 255)
+    return base * (1 - a) + np.maximum(base, coeur) * a
+
+
 base = np.asarray(im).astype(np.float32)
-h = np.asarray(halo).astype(np.float32)
-base += h[..., :3] * (h[..., 3:4] / 255) * 0.55
+base = neon(base, couche(["marque"]), blanc=0.18, force=0.65)
+base = neon(base, couche(["nebula", "trait-g", "agency", "trait-d"]), blanc=0.62, force=1.0)
 im = Image.fromarray(np.clip(base, 0, 255).astype(np.uint8)).convert("RGBA")
-ens = np.asarray(enseigne).astype(np.float32)
-ens[..., 3] *= 0.92                                   # une enseigne au mur, pas un autocollant collé sur l'écran
-im.alpha_composite(Image.fromarray(ens.astype(np.uint8)))
 
 im = im.convert("RGB").resize((1080, 1920), Image.LANCZOS)
 im.save(out, quality=94)
