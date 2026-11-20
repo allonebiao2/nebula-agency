@@ -18,8 +18,12 @@ from PIL import Image, ImageFilter
 ICI = os.path.dirname(os.path.abspath(__file__))
 LOGO = os.path.join(ICI, "..", "public", "nebula30", "logo")
 AV = os.path.join(ICI, "..", "..", "_partage", "avatar")
-src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(AV, "S3-cadre-table-2k.jpg")
-out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(AV, "STUDIO-NEBULA.jpg")
+ARGS = [x for x in sys.argv[1:] if not x.startswith("--")]
+src = ARGS[0] if len(ARGS) > 0 else os.path.join(AV, "S3-cadre-table-2k.jpg")
+out = ARGS[1] if len(ARGS) > 1 else os.path.join(AV, "STUDIO-NEBULA.jpg")
+# Par défaut (Mongazi, 20/11, vidéo de référence à l'appui) : l'ENSEIGNE NÉON en lettres-tubes, NEBULA rose et AGENCY
+# cyan, sans la planète. `--logo` remet l'ancien logo complet (planète + mots) éclairé.
+STYLE_LOGO = "--logo" in sys.argv
 
 im = Image.open(src).convert("RGB")
 W, H = im.size                                       # 1536 x 2752 (Flow, « 2K »)
@@ -79,9 +83,57 @@ def neon(base, E, blanc, force):
     return base * (1 - a) + np.maximum(base, coeur) * a
 
 
+from PIL import ImageDraw, ImageFont
+
+POLICE = os.path.join(os.environ.get("WINDIR", "C:/Windows"), "Fonts", "ariblk.ttf")  # Arial Black : large et grasse, comme la référence
+
+
+def tubes_texte(texte, hauteur, centre):
+    """Les lettres en TUBES : le contour de chaque lettre (une bande de ~6 px), pas la lettre pleine, comme une
+    enseigne néon de la référence. Rendu à 4x puis réduit, pour des tubes lisses. Renvoie (tube, intérieur) en 0..1."""
+    s = 4
+    f = ImageFont.truetype(POLICE, round(hauteur * s * 1.32))
+    l, t, r, b = f.getbbox(texte)
+    m = Image.new("L", (r - l + 40 * s, b - t + 40 * s), 0)
+    ImageDraw.Draw(m).text((20 * s - l, 20 * s - t), texte, font=f, fill=255)
+    ep = max(3, round(3.4 * k * s))                   # demi-épaisseur du tube
+    dedans = m.filter(ImageFilter.MinFilter(2 * ep + 1))
+    tube = np.clip(np.asarray(m).astype(np.float32) - np.asarray(dedans).astype(np.float32), 0, 255)
+    tube = Image.fromarray(tube.astype(np.uint8)).filter(ImageFilter.GaussianBlur(s * 0.9))
+    w_, h_ = m.width // s, m.height // s
+    tube = np.asarray(tube.resize((w_, h_), Image.LANCZOS)).astype(np.float32) / 255
+    plein = np.asarray(m.resize((w_, h_), Image.LANCZOS)).astype(np.float32) / 255
+    T = np.zeros((im.height, im.width), np.float32)
+    P = np.zeros_like(T)
+    x, y = round(centre[0] - w_ / 2), round(centre[1] - h_ / 2)
+    T[y:y + h_, x:x + w_] = tube
+    P[y:y + h_, x:x + w_] = plein
+    return T, P
+
+
+def neon_tubes(base, T, P, coeur, gaz):
+    """Un néon : l'intérieur des lettres faiblement teinté, des halos additifs de plus en plus larges, puis le tube
+    lui-même, presque blanc au centre et coloré au bord."""
+    gaz = np.array(gaz, np.float32)
+    lum = T[..., None] * gaz
+    base += P[..., None] * gaz * 0.16
+    for r, poids in ((2 * k, 1.1), (6 * k, 0.95), (15 * k, 0.75), (38 * k, 0.5), (95 * k, 0.28), (200 * k, 0.14)):
+        base += flou(lum, r) * poids
+    c = np.array(coeur, np.float32)
+    t = T[..., None]
+    return base * (1 - t) + np.maximum(base, c * t + gaz * (1 - t) * 0.6) * t
+
+
 base = np.asarray(im).astype(np.float32)
-base = neon(base, couche(["marque"]), blanc=0.18, force=0.65)
-base = neon(base, couche(["nebula", "trait-g", "agency", "trait-d"]), blanc=0.62, force=1.0)
+if STYLE_LOGO:
+    base = neon(base, couche(["marque"]), blanc=0.18, force=0.65)
+    base = neon(base, couche(["nebula", "trait-g", "agency", "trait-d"]), blanc=0.62, force=1.0)
+else:
+    cx = im.width / 2                                  # centré sur le panneau sombre au-dessus de sa tête
+    T, P = tubes_texte("NEBULA", 112 * k, (cx, 222 * k))
+    base = neon_tubes(base, T, P, coeur=(244, 228, 255), gaz=(172, 82, 255))      # violet néon (la référence)
+    T, P = tubes_texte("AGENCY", 78 * k, (cx, 350 * k))
+    base = neon_tubes(base, T, P, coeur=(228, 255, 255), gaz=(40, 222, 255))      # cyan néon
 im = Image.fromarray(np.clip(base, 0, 255).astype(np.uint8)).convert("RGBA")
 
 im = im.convert("RGB").resize((1080, 1920), Image.LANCZOS)
