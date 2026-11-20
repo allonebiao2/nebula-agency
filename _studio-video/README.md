@@ -113,6 +113,7 @@ npm run rendu:nebula30  # la vidéo de marque NEBULA, par morceaux, puis le mast
 npm run rendu:grain35   # la pub Grain d'Esthétique, par morceaux, mastering, vérification
 npm run rendu:malettre  # MA LETTRE À… : les six versions, UN onglet (⛔ pas avant la voix et le site)
 npm run rendu:minuit    # MA LETTRE À… · « Minuit pile » : par morceaux (UN onglet), puis la vérification
+npm run rendu:tiktok1120 # le TikTok du 20/11 (les deux statuts du jour), UN onglet, ~28 s de film
 npm run verifier        # contrôle TypeScript, sans rien rendre
 ```
 
@@ -606,6 +607,29 @@ indisponible avec le Chrome de la 4.0.512.
   enregistrer la variante sans la plume (`VOIX.md`).
 - La licence Remotion : **on livre le MP4, jamais le projet**.
 - ⏳ La version anglaise attend ses deux voix (`VOIX.md`, partie anglaise).
+
+## TIKTOK DU 20/11 · les deux statuts du jour (`tiktok-2026-11-20`, 28 s)
+
+Décision de Mongazi : le TikTok du soir, ce sont les deux statuts du jour animés, **sans sa voix**. Le texte porte
+tout, les bruitages de NEBULA (synthétisés, `public/nebula30/sfx/`) donnent le rythme, une nappe d'espace en fond.
+TikTok tutoie : « ton client ».
+
+| Temps | Contenu |
+|---|---|
+| 0 → 2,3 s | l'accroche : « C'est combien ? », l'heure file, pas de réponse, « Ton client est parti. » |
+| 2,3 → 12,9 s | le conseil (statut de 13 h) : le 3 qui arrive de face, puis la photo, le prix, le bouton qui s'allument sur un téléphone **dessiné** et se cochent ; le revers (« il va voir ailleurs ») ; « Même la nuit. » |
+| 12,9 → 22,3 s | la leçon (statut de 17 h) : le PDF de 50 Mo qui tombe comme une pierre, la 3G qui rampe, puis le fond du statut (le rocher contre le téléphone léger) et la plongée dans sa lumière |
+| 22,3 → 28 s | « Ton catalogue en lien, prêt en 48 h », NEBULA naît de l'étoile, « Écris-nous sur WhatsApp » et le numéro du site |
+
+- ⚠️ Le téléphone généré du statut de 13 h (prix illisibles « 100.00 ») n'est **pas** repris (remarque de Polaris) :
+  la carte est redessinée, nette, en francs, et c'est un exemple, jamais le catalogue d'un client.
+- Le seul fond repris (`public/tiktok-20-11/lourd-leger.jpg`, hors dépôt) est l'ambiance du statut de 17 h.
+- Instants et textes : `src/tiktok-20-11/donnees.ts`. Regarder avant de rendre :
+  `node _outils/planches.mjs tiktok-2026-11-20 1.6 4.2 7.3 10.6 12.4 14.0 16.9 19.9 23.0 27.5`.
+- ⚠️ Vu sur la planche du 20/11 : le « 3 » à 400 px et « choses. » sortaient du cadre (Syne 800 est très large) ;
+  le PDF qui tombe traversait le titre (blanc sur blanc : illisible), il sort désormais de SOUS le « 50 Mo ? »
+  par une fenêtre qui le cache tant qu'il est plus haut ; les textes du haut
+  descendent à 240 px, sous les onglets de TikTok.
 
 ## Les outils de motion graphics ajoutés le 2026-11-17
 

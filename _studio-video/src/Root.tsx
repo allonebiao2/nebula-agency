@@ -21,6 +21,8 @@ import {VERSIONS as MALETTRE_VERSIONS, type VersionId as MalettreVersion} from '
 import {Pub as MalettrePub} from './malettre/Pub';
 import {MinuitFilm} from './malettre-minuit/Minuit';
 import {DUREE as MINUIT_DUREE, FPS as MINUIT_FPS, HAUTEUR as MINUIT_H, LARGEUR as MINUIT_L} from './malettre-minuit/donnees';
+import {Tiktok2011} from './tiktok-20-11/Tiktok';
+import {DUREE as TK2011_DUREE, FPS as TK2011_FPS, HAUTEUR as TK2011_H, LARGEUR as TK2011_L} from './tiktok-20-11/donnees';
 
 /** TikTok : vertical plein cadre, 1080x1920. */
 const LARGEUR = 1080;
@@ -62,6 +64,10 @@ export const Racine: React.FC = () => (
 			height={NEBULA30_H}
 			defaultProps={{registre: 'vous' as const}}
 		/>
+
+		{/* Le TikTok du 20/11/2026 : les deux statuts du jour (le conseil, puis la leçon) en vidéo,
+		    sans voix, texte animé et bruitages. Rendu à UN onglet : `npm run rendu:tiktok1120`. */}
+		<Composition id="tiktok-2026-11-20" component={Tiktok2011} durationInFrames={TK2011_DUREE} fps={TK2011_FPS} width={TK2011_L} height={TK2011_H} />
 
 		{/* La publicité de Grain d'Esthétique, l'institut de Jocelyne : 35 s, le grain qui révèle. */}
 		<Composition
