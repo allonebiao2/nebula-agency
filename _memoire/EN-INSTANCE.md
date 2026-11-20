@@ -14,6 +14,8 @@
 ---
 
 ## 1. À reprendre bientôt
+- ⚡ **LE CAP (2026-11-20)** : le plan verrouillé et l'appli quotidienne de Mongazi. **L'appli CAP est à construire** (prochaine action), puis les notifications, le bureau pixel des agents et la fiche de personnage. Tout est dans le dépôt PRIVÉ `C:\Users\USER\nebula-cap` (`REPRENDRE-ICI.md`).
+- ⏳ **Abonnement client à 5 000 F / mois** (décidé le 2026-11-20, remplace 20 000 F / 6 mois) : pas encore reporté dans `00-SOCLE-COMMERCIAL.md` ni dans les documents des partenaires (20 % de récurrent). À soumettre à Mongazi avant de toucher aux documents des partenaires.
 
 | Point | Qui | Renvoi |
 |---|---|---|

@@ -741,6 +741,8 @@ pour qu'une erreur en cache ne survive jamais à une publication : à reprendre
 sur les autres sites s'ils subissent la même panne.
 
 ## 🔴 REPRENDRE UNE SESSION
+⚡ **DEPUIS LE 2026-11-20, LE CAP EST LE CHEMIN À SUIVRE** (Mongazi : « je veux que tu diriges tout, moi je serai celui qui appliquera et corrigera »). Il vit dans le **dépôt PRIVÉ `C:\Users\USER\nebula-cap`** (jamais recopié ici : il porte des données personnelles) : **lire son `REPRENDRE-ICI.md` EN PREMIER**, avant toute autre chose. Gelés par ce cap : Palabre, LE MONDE, LE MONTEUR ; le trading est mis de côté (pas enterré).
+
 **Lire `_memoire/REPRENDRE-ICI.md` en premier.** Il dit où on en est, ce qui bloque,
 et par quoi commencer. Mis à jour à chaque fin de session importante.
 
