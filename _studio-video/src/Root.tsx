@@ -23,6 +23,8 @@ import {MinuitFilm} from './malettre-minuit/Minuit';
 import {DUREE as MINUIT_DUREE, FPS as MINUIT_FPS, HAUTEUR as MINUIT_H, LARGEUR as MINUIT_L} from './malettre-minuit/donnees';
 import {Tiktok2011} from './tiktok-20-11/Tiktok';
 import {DUREE as TK2011_DUREE, FPS as TK2011_FPS, HAUTEUR as TK2011_H, LARGEUR as TK2011_L} from './tiktok-20-11/donnees';
+import {PubEcranNebula169Film, PubEcranNebulaTikTokPiece} from './pub-ecran-nebula/PubEcran';
+import {DUREE as PUBECRAN_DUREE, ECRAN as PUBECRAN_169, FPS as PUBECRAN_FPS, TIKTOK as PUBECRAN_916} from './pub-ecran-nebula/donnees';
 
 /** TikTok : vertical plein cadre, 1080x1920. */
 const LARGEUR = 1080;
@@ -68,6 +70,11 @@ export const Racine: React.FC = () => (
 		{/* Le TikTok du 20/11/2026 : les deux statuts du jour (le conseil, puis la leçon) en vidéo,
 		    sans voix, texte animé et bruitages. Rendu à UN onglet : `npm run rendu:tiktok1120`. */}
 		<Composition id="tiktok-2026-11-20" component={Tiktok2011} durationInFrames={TK2011_DUREE} fps={TK2011_FPS} width={TK2011_L} height={TK2011_H} />
+
+		{/* La pub « écran filmé, motion design » (21/11/2026) : le film 16:9, puis le même film sur un moniteur dans
+		    une pièce sombre, en 9:16. Tout le minutage vient de `pub-ecran-nebula/minutage.json` (`_outils/caler_voix.py`). */}
+		<Composition id="PubEcranNebula169" component={PubEcranNebula169Film} defaultProps={{musique: true}} durationInFrames={PUBECRAN_DUREE} fps={PUBECRAN_FPS} width={PUBECRAN_169.l} height={PUBECRAN_169.h} />
+		<Composition id="PubEcranNebulaTikTok" component={PubEcranNebulaTikTokPiece} defaultProps={{musique: true}} durationInFrames={PUBECRAN_DUREE} fps={PUBECRAN_FPS} width={PUBECRAN_916.l} height={PUBECRAN_916.h} />
 
 		{/* La publicité de Grain d'Esthétique, l'institut de Jocelyne : 35 s, le grain qui révèle. */}
 		<Composition

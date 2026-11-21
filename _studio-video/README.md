@@ -631,6 +631,25 @@ TikTok tutoie : « ton client ».
   par une fenêtre qui le cache tant qu'il est plus haut ; les textes du haut
   descendent à 240 px, sous les onglets de TikTok.
 
+## PUB ÉCRAN NEBULA · « écran filmé, motion design » (`PubEcranNebula169` et `PubEcranNebulaTikTok`, 21/11, 42,7 s)
+
+D'après deux références décortiquées (`references/PUB-ECRAN-MOTION.md`) ; la barre de qualité est la B : un seul
+élément par phrase sur la nuit, un halo violet qui respire, des entrées douces. La voix de Mongazi (texte DIT dans
+`src/pub-ecran-nebula/script.json`), le film 16:9, puis le même film sur un moniteur dans une pièce sombre (9:16) :
+la lumière de l'écran sur le mur et la table, l'enseigne néon au mur qui s'allume sur « NEBULA Agency » (l'écran
+s'éteint alors), l'accroche « Tu vends sur WhatsApp ? 😳 », les sous-titres mot à mot. Tout le détail, la chaîne et
+la licence de la musique : `src/pub-ecran-nebula/README.md`.
+
+- **Le minutage ne s'écrit jamais à la main** : `_outils/caler_voix.py <voix>` (nettoyage, -16 LUFS, Deepgram nova-3
+  mot à mot, alignement souple sur le texte dit) écrit `src/pub-ecran-nebula/minutage.json`. Outil réutilisable :
+  `--projet <dossier>`, `--provisoire` (minutage estimé), `--sortie` (essai sans écraser).
+- Regarder : `python _outils/pub_ecran_planche.py` · rendre : `npm run rendu:pubecran` (le son une fois, l'image par
+  morceaux, UN onglet) → `out/NEBULA-Pub-Ecran-16x9.mp4` et `out/NEBULA-Pub-Ecran-TikTok.mp4`.
+- ⚠️ Vu sur les planches du 21/11 : un texte de 30 px dans le 16:9 tombe à 14 px dans la pièce (l'écran y fait la
+  moitié de sa taille) ; chaque élément occupe donc 55 à 65 % de la hauteur, un texte qui compte fait 50 px au moins.
+  Le reflet de l'écran dans la table se mêlait aux sous-titres : flou de 10 px, 0,2 au plus, et un fond sombre sous
+  les mots. Deux éléments ne se croisent jamais : la sortie finit quand l'entrée suivante commence.
+
 ## Les outils de motion graphics ajoutés le 2026-11-17
 
 - **`@react-three/postprocessing` 3.2.2 + `postprocessing` 6.39.6** : halo, flou de profondeur, grain, glitch sur les

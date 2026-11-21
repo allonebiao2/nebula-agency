@@ -9,7 +9,7 @@
 >
 > 🙋 attend une réponse ou un geste de Mongazi · 🤖 Claude peut le faire · 🕰️ plus tard, exprès
 >
-> Dernière mise à jour : **2026-11-19**.
+> Dernière mise à jour : **2026-11-21**.
 
 ---
 
@@ -19,6 +19,10 @@
 
 | Point | Qui | Renvoi |
 |---|---|---|
+| **PUB « Chaque nuit, tu perds des clients »** (21/11) : finie, contrôlée par Polaris. À publier à 17 h, sur TikTok (avec musique) puis sur Facebook (sans musique), puis **créer l'Instagram de NEBULA depuis la page Facebook** (Mongazi tape le mot de passe et les codes) | 🙋 | `_studio-video/src/pub-ecran-nebula/README.md` |
+| **3 pubs « histoires »** (thriller, drame de famille, mystère ; fin imprévisible ; aucun prix) : les voix sont à générer sur ElevenLabs dans le Chrome de Mongazi, une fois l'extension Claude reconnectée au bon compte. Ensuite, Rigel monte | 🙋🤖 | `_documents/nebula-agency/marketing/pubs-nebula/2026-11-21-trois-histoires.md` |
+| **3 FLASH IA** (Haru-4B, Live 3, Pi-H3 ; vérifiés à la source) : Mongazi enregistre les 3 voix d'un coup, puis Rigel monte en style écran. Ensuite, la série passe à son avatar (ses 2 images Flow, bouche ouverte et yeux fermés, à générer) | 🙋 | `_documents/nebula-agency/marketing/flash-ia/2026-11-21-trois-infos.md` |
+| **Content ID** de la musique « Piano Jazz Rainy Night » (Pixabay n° 564276), à vérifier avant YouTube ou Facebook avec musique | 🤖 | `_studio-video/src/pub-ecran-nebula/README.md` |
 | **ESPACE DE SUIVI** (`suivi/`, https://nebula-suivi.pages.dev, ouvert le 19/11) : Mongazi s'y connecte avec le compte de TES Alertes, l'ajoute à l'écran d'accueil, active les notifications. Puis je pousse chaque travail fini et chaque « besoin de toi » | 🙋 puis 🤖 | `suivi/suivi.py` |
 | **ATELIER IA** (le plus gros levier rapide, vidéos du 19/11) : format, date, prix à décider ; je prépare affiche, inscription Mobile Money, support | 🙋 | `nebula-apercus/ATELIER-IA-PROPOSITION.md` (hors dépôt) |
 | **DÉPÔT PRIVÉ ?** Passer `nebula-agency` en privé : possible, relier d'abord Render à GitHub (sinon le Bureau des partenaires ne se redéploie plus) ; les automatismes consomment ~1 000 min/mois, sous les 2 000 gratuites | 🙋 | conversation du 19/11 |

@@ -1,0 +1,704 @@
+{
+ "note": "Écrit par _outils/caler_voix.py : ne pas éditer à la main, relancer l'outil.",
+ "source": "voix",
+ "voix": "pub-ecran-nebula/voix.wav",
+ "decalage": 0.35,
+ "duree_voix": 41.672,
+ "fin_voix": 41.25,
+ "lignes": [
+  {
+   "n": 1,
+   "texte": "Chaque nuit, tu perds des clients",
+   "debut": 0.35,
+   "fin": 2.75,
+   "mots": [
+    {
+     "m": "Chaque",
+     "a": 0.35,
+     "b": 0.91
+    },
+    {
+     "m": "nuit,",
+     "a": 0.91,
+     "b": 1.55
+    },
+    {
+     "m": "tu",
+     "a": 1.55,
+     "b": 1.71
+    },
+    {
+     "m": "perds",
+     "a": 1.71,
+     "b": 1.95
+    },
+    {
+     "m": "des",
+     "a": 1.95,
+     "b": 2.19
+    },
+    {
+     "m": "clients",
+     "a": 2.19,
+     "b": 2.75
+    }
+   ],
+   "entendu": "Chaque nuit, tu perds des clients"
+  },
+  {
+   "n": 2,
+   "texte": "et tu ne le sais même pas, en vrai.",
+   "debut": 2.75,
+   "fin": 5.15,
+   "mots": [
+    {
+     "m": "et",
+     "a": 2.75,
+     "b": 2.99
+    },
+    {
+     "m": "tu",
+     "a": 2.99,
+     "b": 3.23
+    },
+    {
+     "m": "ne",
+     "a": 3.23,
+     "b": 3.39
+    },
+    {
+     "m": "le",
+     "a": 3.39,
+     "b": 3.55
+    },
+    {
+     "m": "sais",
+     "a": 3.55,
+     "b": 3.79
+    },
+    {
+     "m": "même",
+     "a": 3.79,
+     "b": 4.11
+    },
+    {
+     "m": "pas,",
+     "a": 4.11,
+     "b": 4.35
+    },
+    {
+     "m": "en",
+     "a": 4.35,
+     "b": 4.51
+    },
+    {
+     "m": "vrai.",
+     "a": 4.51,
+     "b": 5.15
+    }
+   ],
+   "entendu": "et tu ne le sais même pas en vrai."
+  },
+  {
+   "n": 3,
+   "texte": "Minuit. Quelqu'un voit ton statut,",
+   "debut": 5.39,
+   "fin": 7.79,
+   "mots": [
+    {
+     "m": "Minuit.",
+     "a": 5.39,
+     "b": 6.11
+    },
+    {
+     "m": "Quelqu'un",
+     "a": 6.11,
+     "b": 6.59
+    },
+    {
+     "m": "voit",
+     "a": 6.59,
+     "b": 6.91
+    },
+    {
+     "m": "ton",
+     "a": 6.91,
+     "b": 7.15
+    },
+    {
+     "m": "statut,",
+     "a": 7.15,
+     "b": 7.79
+    }
+   ],
+   "entendu": "Minuit, quelqu'un voit ton statut,"
+  },
+  {
+   "n": 4,
+   "texte": "il t'écrit : « C'est combien ? »",
+   "debut": 7.79,
+   "fin": 9.87,
+   "mots": [
+    {
+     "m": "il",
+     "a": 7.79,
+     "b": 7.95
+    },
+    {
+     "m": "t'écrit :",
+     "a": 7.95,
+     "b": 8.67
+    },
+    {
+     "m": "« C'est",
+     "a": 8.75,
+     "b": 9.31
+    },
+    {
+     "m": "combien ? »",
+     "a": 9.31,
+     "b": 9.87
+    }
+   ],
+   "entendu": "il t'écrit, c'est combien?"
+  },
+  {
+   "n": 5,
+   "texte": "Tu dors… il va aller acheter ailleurs.",
+   "debut": 9.87,
+   "fin": 11.87,
+   "mots": [
+    {
+     "m": "Tu",
+     "a": 9.87,
+     "b": 10.03
+    },
+    {
+     "m": "dors…",
+     "a": 10.03,
+     "b": 10.51
+    },
+    {
+     "m": "il",
+     "a": 10.51,
+     "b": 10.59
+    },
+    {
+     "m": "va",
+     "a": 10.59,
+     "b": 10.83
+    },
+    {
+     "m": "aller",
+     "a": 10.83,
+     "b": 10.99
+    },
+    {
+     "m": "acheter",
+     "a": 10.99,
+     "b": 11.31
+    },
+    {
+     "m": "ailleurs.",
+     "a": 11.31,
+     "b": 11.87
+    }
+   ],
+   "entendu": "Tu dors, il va aller acheter ailleurs."
+  },
+  {
+   "n": 6,
+   "texte": "Retiens bien ça :",
+   "debut": 12.35,
+   "fin": 13.23,
+   "mots": [
+    {
+     "m": "Retiens",
+     "a": 12.35,
+     "b": 12.75
+    },
+    {
+     "m": "bien",
+     "a": 12.75,
+     "b": 12.99
+    },
+    {
+     "m": "ça :",
+     "a": 12.99,
+     "b": 13.23
+    }
+   ],
+   "entendu": "Retiens bien ça,"
+  },
+  {
+   "n": 7,
+   "texte": "le client, il achète chez celui qui lui montre tout, tout de suite.",
+   "debut": 13.495,
+   "fin": 17.975,
+   "mots": [
+    {
+     "m": "le",
+     "a": 13.495,
+     "b": 13.735
+    },
+    {
+     "m": "client,",
+     "a": 13.735,
+     "b": 14.135
+    },
+    {
+     "m": "il",
+     "a": 14.135,
+     "b": 14.295
+    },
+    {
+     "m": "achète",
+     "a": 14.295,
+     "b": 14.775
+    },
+    {
+     "m": "chez",
+     "a": 14.775,
+     "b": 15.015
+    },
+    {
+     "m": "celui",
+     "a": 15.015,
+     "b": 15.495
+    },
+    {
+     "m": "qui",
+     "a": 15.495,
+     "b": 15.735
+    },
+    {
+     "m": "lui",
+     "a": 15.735,
+     "b": 15.975
+    },
+    {
+     "m": "montre",
+     "a": 15.975,
+     "b": 16.215
+    },
+    {
+     "m": "tout,",
+     "a": 16.215,
+     "b": 16.855
+    },
+    {
+     "m": "tout",
+     "a": 16.935,
+     "b": 17.175
+    },
+    {
+     "m": "de",
+     "a": 17.175,
+     "b": 17.335
+    },
+    {
+     "m": "suite.",
+     "a": 17.335,
+     "b": 17.975
+    }
+   ],
+   "entendu": "le client, il achète chez celui qui lui montre tout, tout de suite."
+  },
+  {
+   "n": 8,
+   "texte": "Mais ta boutique dans son téléphone, faut la mettre :",
+   "debut": 18.215,
+   "fin": 21.095,
+   "mots": [
+    {
+     "m": "Mais",
+     "a": 18.215,
+     "b": 18.455
+    },
+    {
+     "m": "ta",
+     "a": 18.455,
+     "b": 18.615
+    },
+    {
+     "m": "boutique",
+     "a": 18.615,
+     "b": 19.255
+    },
+    {
+     "m": "dans",
+     "a": 19.255,
+     "b": 19.495
+    },
+    {
+     "m": "son",
+     "a": 19.495,
+     "b": 19.735
+    },
+    {
+     "m": "téléphone,",
+     "a": 19.735,
+     "b": 20.215
+    },
+    {
+     "m": "faut",
+     "a": 20.215,
+     "b": 20.375
+    },
+    {
+     "m": "la",
+     "a": 20.375,
+     "b": 20.535
+    },
+    {
+     "m": "mettre :",
+     "a": 20.535,
+     "b": 21.095
+    }
+   ],
+   "entendu": "Mais ta boutique dans son téléphone, faut le mettre,"
+  },
+  {
+   "n": 9,
+   "texte": "tes produits, tes prix, juste en un seul lien.",
+   "debut": 21.255,
+   "fin": 24.215,
+   "mots": [
+    {
+     "m": "tes",
+     "a": 21.255,
+     "b": 21.495
+    },
+    {
+     "m": "produits,",
+     "a": 21.495,
+     "b": 21.975
+    },
+    {
+     "m": "tes",
+     "a": 21.975,
+     "b": 22.135
+    },
+    {
+     "m": "prix,",
+     "a": 22.135,
+     "b": 22.695
+    },
+    {
+     "m": "juste",
+     "a": 22.695,
+     "b": 23.015
+    },
+    {
+     "m": "en",
+     "a": 23.015,
+     "b": 23.255
+    },
+    {
+     "m": "un",
+     "a": 23.255,
+     "b": 23.415
+    },
+    {
+     "m": "seul",
+     "a": 23.415,
+     "b": 23.655
+    },
+    {
+     "m": "lien.",
+     "a": 23.655,
+     "b": 24.215
+    }
+   ],
+   "entendu": "tes produits, tes prix juste en un seul lien."
+  },
+  {
+   "n": 10,
+   "texte": "Il choisit, il appuie.",
+   "debut": 24.375,
+   "fin": 25.495,
+   "mots": [
+    {
+     "m": "Il",
+     "a": 24.375,
+     "b": 24.535
+    },
+    {
+     "m": "choisit,",
+     "a": 24.535,
+     "b": 25.015
+    },
+    {
+     "m": "il",
+     "a": 25.015,
+     "b": 25.175
+    },
+    {
+     "m": "appuie.",
+     "a": 25.175,
+     "b": 25.495
+    }
+   ],
+   "entendu": "Il choisit, il appuie."
+  },
+  {
+   "n": 11,
+   "texte": "Et là, la commande arrive sur ton WhatsApp, elle est déjà écrite, en vrai.",
+   "debut": 25.89,
+   "fin": 30.05,
+   "mots": [
+    {
+     "m": "Et",
+     "a": 25.89,
+     "b": 26.13
+    },
+    {
+     "m": "là,",
+     "a": 26.13,
+     "b": 26.37
+    },
+    {
+     "m": "la",
+     "a": 26.37,
+     "b": 26.45
+    },
+    {
+     "m": "commande",
+     "a": 26.45,
+     "b": 26.77
+    },
+    {
+     "m": "arrive",
+     "a": 26.77,
+     "b": 27.17
+    },
+    {
+     "m": "sur",
+     "a": 27.17,
+     "b": 27.49
+    },
+    {
+     "m": "ton",
+     "a": 27.49,
+     "b": 27.65
+    },
+    {
+     "m": "WhatsApp,",
+     "a": 27.65,
+     "b": 28.21
+    },
+    {
+     "m": "elle",
+     "a": 28.21,
+     "b": 28.37
+    },
+    {
+     "m": "est",
+     "a": 28.37,
+     "b": 28.61
+    },
+    {
+     "m": "déjà",
+     "a": 28.61,
+     "b": 28.85
+    },
+    {
+     "m": "écrite,",
+     "a": 28.85,
+     "b": 29.17
+    },
+    {
+     "m": "en",
+     "a": 29.17,
+     "b": 29.49
+    },
+    {
+     "m": "vrai.",
+     "a": 29.49,
+     "b": 30.05
+    }
+   ],
+   "entendu": "Et là, la commande arrive sur ton WhatsApp, elle est déjà écrite en vrai."
+  },
+  {
+   "n": 12,
+   "texte": "Même à minuit.",
+   "debut": 30.05,
+   "fin": 31.09,
+   "mots": [
+    {
+     "m": "Même",
+     "a": 30.05,
+     "b": 30.37
+    },
+    {
+     "m": "à",
+     "a": 30.37,
+     "b": 30.53
+    },
+    {
+     "m": "minuit.",
+     "a": 30.53,
+     "b": 31.09
+    }
+   ],
+   "entendu": "Même à minuit,"
+  },
+  {
+   "n": 13,
+   "texte": "Noël, c'est dans un mois :",
+   "debut": 31.17,
+   "fin": 32.85,
+   "mots": [
+    {
+     "m": "Noël,",
+     "a": 31.17,
+     "b": 31.73
+    },
+    {
+     "m": "c'est",
+     "a": 31.73,
+     "b": 31.97
+    },
+    {
+     "m": "dans",
+     "a": 31.97,
+     "b": 32.13
+    },
+    {
+     "m": "un",
+     "a": 32.13,
+     "b": 32.29
+    },
+    {
+     "m": "mois :",
+     "a": 32.29,
+     "b": 32.85
+    }
+   ],
+   "entendu": "Noël, c'est dans un mois,"
+  },
+  {
+   "n": 14,
+   "texte": "ta boutique dans le téléphone, prête en 48 heures.",
+   "debut": 32.85,
+   "fin": 36.53,
+   "mots": [
+    {
+     "m": "ta",
+     "a": 32.85,
+     "b": 33.09
+    },
+    {
+     "m": "boutique",
+     "a": 33.09,
+     "b": 33.89
+    },
+    {
+     "m": "dans",
+     "a": 33.89,
+     "b": 34.13
+    },
+    {
+     "m": "le",
+     "a": 34.13,
+     "b": 34.37
+    },
+    {
+     "m": "téléphone,",
+     "a": 34.37,
+     "b": 35.25
+    },
+    {
+     "m": "prête",
+     "a": 35.25,
+     "b": 35.57
+    },
+    {
+     "m": "en",
+     "a": 35.57,
+     "b": 35.73
+    },
+    {
+     "m": "48",
+     "a": 35.73,
+     "b": 36.29
+    },
+    {
+     "m": "heures.",
+     "a": 36.29,
+     "b": 36.53
+    }
+   ],
+   "entendu": "ta boutique dans le téléphone, prêt en 48 heures."
+  },
+  {
+   "n": 15,
+   "texte": "Écris-moi « CATALOGUE » sur WhatsApp.",
+   "debut": 36.53,
+   "fin": 38.45,
+   "mots": [
+    {
+     "m": "Écris-moi",
+     "a": 36.53,
+     "b": 37.09
+    },
+    {
+     "m": "« CATALOGUE »",
+     "a": 37.09,
+     "b": 37.41
+    },
+    {
+     "m": "sur",
+     "a": 37.41,
+     "b": 37.73
+    },
+    {
+     "m": "WhatsApp.",
+     "a": 37.73,
+     "b": 38.45
+    }
+   ],
+   "entendu": "Écris-moi catalogue sur WhatsApp,"
+  },
+  {
+   "n": 16,
+   "texte": "NEBULA Agency, c'est la meilleure équipe.",
+   "debut": 38.69,
+   "fin": 41.25,
+   "mots": [
+    {
+     "m": "NEBULA",
+     "a": 38.69,
+     "b": 39.25
+    },
+    {
+     "m": "Agency,",
+     "a": 39.25,
+     "b": 40.13
+    },
+    {
+     "m": "c'est",
+     "a": 40.13,
+     "b": 40.37
+    },
+    {
+     "m": "la",
+     "a": 40.37,
+     "b": 40.53
+    },
+    {
+     "m": "meilleure",
+     "a": 40.53,
+     "b": 40.85
+    },
+    {
+     "m": "équipe.",
+     "a": 40.85,
+     "b": 41.25
+    }
+   ],
+   "entendu": "Nebulla Agency, c'est la meilleure équipe."
+  }
+ ]
+}

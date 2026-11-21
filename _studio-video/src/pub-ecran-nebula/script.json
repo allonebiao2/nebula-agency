@@ -1,0 +1,22 @@
+{
+  "titre": "Pub écran NEBULA : le texte DIT par Mongazi (21/11), qui fait foi pour l'alignement et les sous-titres",
+  "note": "Un mot = un bloc entre deux espaces ordinaires. Les espaces insécables collent la ponctuation à son mot. On change une ligne ici, on relance _outils/caler_voix.py, et la vidéo suit.",
+  "lignes": [
+    "Chaque nuit, tu perds des clients",
+    "et tu ne le sais même pas, en vrai.",
+    "Minuit. Quelqu'un voit ton statut,",
+    "il t'écrit : « C'est combien ? »",
+    "Tu dors… il va aller acheter ailleurs.",
+    "Retiens bien ça :",
+    "le client, il achète chez celui qui lui montre tout, tout de suite.",
+    "Mais ta boutique dans son téléphone, faut la mettre :",
+    "tes produits, tes prix, juste en un seul lien.",
+    "Il choisit, il appuie.",
+    "Et là, la commande arrive sur ton WhatsApp, elle est déjà écrite, en vrai.",
+    "Même à minuit.",
+    "Noël, c'est dans un mois :",
+    "ta boutique dans le téléphone, prête en 48 heures.",
+    "Écris-moi « CATALOGUE » sur WhatsApp.",
+    "NEBULA Agency, c'est la meilleure équipe."
+  ]
+}

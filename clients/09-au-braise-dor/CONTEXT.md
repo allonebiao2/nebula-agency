@@ -1068,3 +1068,9 @@ et quelle viande · la rubrique (Grillades, faute d'une meilleure).
 `llms.txt` + `carte.md`, IndexNow (202). Contrôles : `_qc_seo.py` 126 · `_qc_pages.py` 88 · `_qc_partage.py` 38 · `_qc.py` 117.
 Publier reste : `npm run build` + `cp -r ../assets/docs out/` + deploy, puis **lancer les 4 QC**.
 Détail : `_memoire/conversations/2026-09-24-au-braise-dor-passe-seo.md`.
+
+## Accord pour paraître dans les pubs NEBULA (2026-11-21)
+Mongazi, 21/11 vers 4 h, à la question de Polaris (règle 14 de l'organisation des étoiles) : **« J'ai leur accord, on
+garde »**. Le vrai catalogue (aubraisedor.com) peut donc servir de preuve dans les pubs de NEBULA. ⛔ Ne jamais montrer
+les photos de plats générées comme des produits dans une pub de NEBULA. On s'arrête sur leurs vraies photos, celles des
+sauces (Mongazi les a gardées sur leur site, pas sur les autres surfaces).
