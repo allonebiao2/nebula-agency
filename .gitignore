@@ -179,3 +179,6 @@ _partage/avatar/
 # Les plans des pubs vidéo (gros médias générés dans Flow) : jamais sur GitHub (2026-11-17)
 _partage/pub-nebula/
 _partage/pub-l-autre/
+
+# étiquettes et affiches à imprimer (refaites par _outils/_etiquettes_jus.py)
+clients/09-au-braise-dor/imprimer/
