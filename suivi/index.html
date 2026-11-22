@@ -211,9 +211,12 @@ async function charger() {
   const E = en.data || [];
   $("#b-envois").hidden = !E.length; $("#b-envois").textContent = E.length;
   $("#envois").innerHTML = E.length ? E.map(x => { const n = x.telephone.replace(/\D/g, ""), autre = n.length === 10 ? n.slice(2) : "01" + n;
+    // Un numéro étranger est rangé avec son indicatif (225 Côte d'Ivoire, 228 Togo) : on ne lui ajoute pas 229.
+    const etranger = /^(225\d{10}|228\d{8})$/.test(n);
+    const plein = etranger ? n : "229" + n;
     return `<div class="ligne"><div class="pastille">💬</div><div class="corps"><h3>${esc(x.pour)}</h3><p>${esc(x.message)}</p><div class="quand">${esc(x.heure || "")}</div>
-    <div class="boutons"><a class="btn vert" href="https://wa.me/229${n}?text=${encodeURIComponent(x.message)}" target="_blank" rel="noopener">Ouvrir WhatsApp</a>
-    <a class="btn" href="https://wa.me/229${autre}?text=${encodeURIComponent(x.message)}" target="_blank" rel="noopener">Autre forme du numéro</a>
+    <div class="boutons"><a class="btn vert" href="https://wa.me/${plein}?text=${encodeURIComponent(x.message)}" target="_blank" rel="noopener">Ouvrir WhatsApp</a>
+    ${etranger ? "" : `<a class="btn" href="https://wa.me/229${autre}?text=${encodeURIComponent(x.message)}" target="_blank" rel="noopener">Autre forme du numéro</a>`}
     <button class="btn" data-envoye="${x.id}">Envoyé ✓</button></div></div></div>`; }).join("") : `<div class="vide">Aucun message en attente.</div>`;
   $("#maj").textContent = "à jour " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
@@ -253,7 +256,8 @@ function dessinerClients() {
   $("#clients").innerHTML = L.length ? L.map(p => { const n = (p.telephone || "").replace(/\D/g, "");
     return `<div class="ligne"><div class="pastille">🏪</div><div class="corps"><h3>${esc(p.nom)} <span class="etiquette ${p.statut}">${esc(p.statut === "apercu" ? "aperçu envoyé" : p.statut.replace(/_/g, " "))}</span></h3>
     <p>${esc(p.metier || "")}${p.montant ? " · proposé : " + F(p.montant) : ""}</p>${p.dernier ? `<p>${esc(p.dernier)}</p>` : ""}${p.prochaine ? `<div class="quand">${esc(p.prochaine)}</div>` : ""}
-    ${n ? `<div class="boutons"><a class="btn vert" href="https://wa.me/229${n}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="tel:+229${n}">Appeler</a></div>` : ""}</div></div>`; }).join("")
+    ${n ? (() => { const plein = /^(225\d{10}|228\d{8})$/.test(n) ? n : "229" + n;
+      return `<div class="boutons"><a class="btn vert" href="https://wa.me/${plein}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="tel:+${plein}">Appeler</a></div>`; })() : ""}</div></div>`; }).join("")
     : `<div class="vide">Personne dans cette case.</div>`;
 }
 document.addEventListener("click", async e => {

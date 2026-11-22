@@ -9,11 +9,17 @@
 >
 > 🙋 attend une réponse ou un geste de Mongazi · 🤖 Claude peut le faire · 🕰️ plus tard, exprès
 >
-> Dernière mise à jour : **2026-11-21**.
+> Dernière mise à jour : **2026-11-22**.
 
 ---
 
 ## 1. À reprendre bientôt
+- 🕰️🙋 **Refonte de la vitrine nebula-agency.online (décidée le 22/11, REPORTÉE par Mongazi : « tu feras les ajouts plus tard, rappelle-moi »)** : voyage 3D, tous les prix, services = catalogue express 25 000 F · catalogue 3D 50 000 F · vitrine 3D 150 000 F · portfolio digital 50 000 F · expérience d'événement dès 75 000 F · faire-part 35 000 F · QR avis Google 30 000 F · domaine 30 000 F + 20 000 F/an ; abonnement 5 000 F/mois ; logiciel métier RETIRÉ ; portfolio Au Braisé d'Or, Hillary, Angy Art, Luxury Club 229, Djambar. **Le lui rappeler.** Renvoi : `nebula-cap/cerveau/Décisions/2026-11-22 · offres, pub, vitrine.md`.
+- 🤖 **Vidéo du Père Noël personnalisée (OUI le 22/11)** : 3 000 F, payée en ligne (caisse SasPay de MA LETTRE À), fabriquée automatiquement (Remotion + voix), livrée par lien, avant le 24/12. Renvoi : `nebula-cap/cerveau/Recherche du 22-11 (notes brutes).md` § Père Noël.
+- 🤖 **Catalogue express 25 000 F (OUI le 22/11)** : construire la base commune (20 produits, 24 h). Abidjan +20 %.
+- 🤖 **PISTE** : la page d'accueil dit encore « aucun paiement sur ce site » (`piste/src/composants/Vitrine.jsx:238`) alors que SasPay est ouvert ; corriger, QC, déployer, puis envoyer les e-mails B2B avec 20 fiches offertes (`nebula-cap/cerveau/Brouillons B2B PISTE (22-11).md`).
+- 🙋 **Première pub Meta** : 3 000 F/jour × 7 (validé 22/11) ; Mongazi ajoute sa carte MoMo Mastercard dans Meta, Claude monte la campagne, Mongazi publie. Kit : `nebula-cap/cerveau/Première pub payante NEBULA (kit).md`.
+- 🤖 **`_memoire/prospection/VENDEUR.md`** : sa grille (3D 100 000 F, 20 000 F/6 mois) est périmée, la grille du CAP du 20/11 fait foi (décision du 22/11).
 - ⚡ **LE CAP (2026-11-20)** : le plan verrouillé et l'appli quotidienne de Mongazi. **L'appli CAP est à construire** (prochaine action), puis les notifications, le bureau pixel des agents et la fiche de personnage. Tout est dans le dépôt PRIVÉ `C:\Users\USER\nebula-cap` (`REPRENDRE-ICI.md`).
 - ⏳ **Abonnement client à 5 000 F / mois** (décidé le 2026-11-20, remplace 20 000 F / 6 mois) : pas encore reporté dans `00-SOCLE-COMMERCIAL.md` ni dans les documents des partenaires (20 % de récurrent). À soumettre à Mongazi avant de toucher aux documents des partenaires.
 
