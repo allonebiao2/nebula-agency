@@ -390,42 +390,43 @@ h1{{margin-top:8mm;font-weight:900;font-size:33pt;line-height:1.02;letter-spacin
 </div></body></html>'''
 
 # ---------------------------------------------------------------- rendu
-DPI = 300 / 96
-with sync_playwright() as pw:
-    nav = pw.chromium.launch()
-    def charger(html, w, h, echelle=1):
-        pg = nav.new_page(viewport={"width": w, "height": h}, device_scale_factor=echelle)
-        pg.set_content(html, wait_until="networkidle"); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
-        return pg
-    pg = charger(page_unitaires(), 246, 341)
-    pg.pdf(path=str(OUT / "etiquettes-unitaires.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
-    pg = charger(page_unitaires(), 246, 341, DPI)
-    for i, j in enumerate(JUS):
-        pg.locator(".lab").nth(i).screenshot(path=str(OUT / "png" / f"{j[0]}.png"))
-    pg.close()
-    pg = charger(page_apercu(), 1300, 900, 1.6)
-    pg.screenshot(path=str(OUT / "apercu.png"), full_page=True); pg.close()
-    pg = charger(page_affiche(), 794, 1123)
-    pg.pdf(path=str(OUT / "affiche-casse-A4.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
-    pg = charger(page_affiche(), 794, 1123, DPI)
-    pg.locator(".a4").screenshot(path=str(OUT / "affiche-casse-A4.png")); pg.close()
-    nav.close()
+if __name__ == "__main__":
+    DPI = 300 / 96
+    with sync_playwright() as pw:
+        nav = pw.chromium.launch()
+        def charger(html, w, h, echelle=1):
+            pg = nav.new_page(viewport={"width": w, "height": h}, device_scale_factor=echelle)
+            pg.set_content(html, wait_until="networkidle"); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
+            return pg
+        pg = charger(page_unitaires(), 246, 341)
+        pg.pdf(path=str(OUT / "etiquettes-unitaires.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
+        pg = charger(page_unitaires(), 246, 341, DPI)
+        for i, j in enumerate(JUS):
+            pg.locator(".lab").nth(i).screenshot(path=str(OUT / "png" / f"{j[0]}.png"))
+        pg.close()
+        pg = charger(page_apercu(), 1300, 900, 1.6)
+        pg.screenshot(path=str(OUT / "apercu.png"), full_page=True); pg.close()
+        pg = charger(page_affiche(), 794, 1123)
+        pg.pdf(path=str(OUT / "affiche-casse-A4.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
+        pg = charger(page_affiche(), 794, 1123, DPI)
+        pg.locator(".a4").screenshot(path=str(OUT / "affiche-casse-A4.png")); pg.close()
+        nav.close()
 
-# planches A4 : composées à partir des PNG à 300 DPI (le PDF vectoriel de Chromium pesait 31 Mo,
-# il rastérise chaque ombre portée) · un fichier par jus, pour imprimer jus par jus
-from PIL import Image, ImageDraw, ImageFont
-(OUT / "planches").mkdir(exist_ok=True)
-(OUT / "planches-A4.pdf").unlink(missing_ok=True)
-MM = 300 / 25.4
-for j in JUS:
-    lab = Image.open(OUT / "png" / f"{j[0]}.png").convert("RGB").resize((round(65 * MM), round(90 * MM)), Image.LANCZOS)
-    a4 = Image.new("RGB", (round(210 * MM), round(297 * MM)), "white")
-    x0, y0, g = round(5.5 * MM), round(10 * MM), round(2 * MM)
-    for r in range(3):
-        for c in range(3):
-            a4.paste(lab, (x0 + c * (lab.width + g), y0 + r * (lab.height + g)))
-    ImageDraw.Draw(a4).text((a4.width // 2, round(289 * MM)), f"Au Braisé d'Or · étiquette {j[2].title()} · 6,5 × 9 cm · découper sur le blanc",
-                            fill=(150, 150, 150), anchor="mm", font=ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 26))
-    a4.save(OUT / "planches" / f"planche-A4-{j[0]}.pdf", "PDF", resolution=300.0, quality=92)
-for p in sorted(OUT.rglob("*.*")):
-    print(f"{p.relative_to(CL)}  {p.stat().st_size // 1024} Ko")
+    # planches A4 : composées à partir des PNG à 300 DPI (le PDF vectoriel de Chromium pesait 31 Mo,
+    # il rastérise chaque ombre portée) · un fichier par jus, pour imprimer jus par jus
+    from PIL import Image, ImageDraw, ImageFont
+    (OUT / "planches").mkdir(exist_ok=True)
+    (OUT / "planches-A4.pdf").unlink(missing_ok=True)
+    MM = 300 / 25.4
+    for j in JUS:
+        lab = Image.open(OUT / "png" / f"{j[0]}.png").convert("RGB").resize((round(65 * MM), round(90 * MM)), Image.LANCZOS)
+        a4 = Image.new("RGB", (round(210 * MM), round(297 * MM)), "white")
+        x0, y0, g = round(5.5 * MM), round(10 * MM), round(2 * MM)
+        for r in range(3):
+            for c in range(3):
+                a4.paste(lab, (x0 + c * (lab.width + g), y0 + r * (lab.height + g)))
+        ImageDraw.Draw(a4).text((a4.width // 2, round(289 * MM)), f"Au Braisé d'Or · étiquette {j[2].title()} · 6,5 × 9 cm · découper sur le blanc",
+                                fill=(150, 150, 150), anchor="mm", font=ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 26))
+        a4.save(OUT / "planches" / f"planche-A4-{j[0]}.pdf", "PDF", resolution=300.0, quality=92)
+    for p in sorted(OUT.rglob("*.*")):
+        print(f"{p.relative_to(CL)}  {p.stat().st_size // 1024} Ko")
