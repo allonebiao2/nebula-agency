@@ -129,6 +129,12 @@ def ruban(y, texte, fruit, ink):
             f'<text x="325" y="{y+h/2+8}" text-anchor="middle" class="rub" data-max="{x1-x0-22}" fill="{CREME}">{texte}</text>')
 
 
+# Mongazi, 22/11 : « mets les deux numéros » (celui de l'affiche A4 et celui du menu, en 10 chiffres)
+NUMEROS = "01 56 05 71 57 · 01 43 99 29 29"
+# Mongazi, 22/11 : « le jus bien-être, laisse de côté d'abord, le temps que je lui demande »
+EN_ATTENTE = {"carotte-betterave"}
+JUS = [j for j in B.JUS if j[0] not in EN_ATTENTE]
+
 ENCRE_MARQUE, BRAISE_MARQUE = "#1d1a17", "#d66a2a"   # le mot-symbole du catalogue (_og.py)
 
 
@@ -182,7 +188,7 @@ def etiquette(j):
         s += [f'<text x="325" y="510" text-anchor="middle" class="petit" fill="{fruit}">{petit.strip()}</text>',
               f'<text x="325" y="590" text-anchor="middle" class="nom" data-max="460" fill="{ink}">{nom}</text>',
               ruban(606, mention.upper(), fruit, ink), socle(682, fruit, acc),
-              f'<text x="325" y="730" text-anchor="middle" class="gout" data-max="320" fill="{ink}">{gout}</text>',
+              f'<text x="325" y="730" text-anchor="middle" class="gout" data-max="290" fill="{ink}">{gout}</text>',
               arc_bas(f"b{uid}", 360, "Préparé le ...../..... · Au frais", "arcbas", ink)]
     else:
         l1, l2 = nom.split(" ")
@@ -195,7 +201,7 @@ def etiquette(j):
             s.append(f'<text x="325" y="{640+i*25}" text-anchor="middle" class="bien" data-max="{460 - i*30}" fill="{ink}">{b}</text>')
         s += [f'<text x="325" y="{718}" text-anchor="middle" class="bien" data-max="380" fill="{ink}"><tspan class="tit2" fill="{fruit}">INGRÉDIENTS · </tspan>carotte, betterave</text>',
               arc_bas(f"b{uid}", 342, "Préparé le ...../..... · Au frais", "arcbas", ink)]
-    s.append(arc_bas(f"c{uid}", 388, f"COMMANDES WHATSAPP {B.WHATSAPP}", "arcwa", fruit))
+    s.append(arc_bas(f"c{uid}", 388, f"COMMANDES · {NUMEROS}", "arcwa", fruit))
     s.append("</svg>")
     return "".join(s)
 
@@ -214,7 +220,7 @@ svg.lab{width:65mm;height:90mm;display:block}
 .rub{font:800 21px Montserrat,sans-serif;letter-spacing:3px}
 .gout{font:italic 500 28px Fraunces,serif}
 .arcbas{font:600 16px Montserrat,sans-serif;letter-spacing:.8px}
-.arcwa{font:800 16px Montserrat,sans-serif;letter-spacing:2.5px}
+.arcwa{font:800 16px Montserrat,sans-serif;letter-spacing:1.6px}
 .tit{font:800 19px Montserrat,sans-serif;letter-spacing:5px}
 .tit2{font:800 17px Montserrat,sans-serif;letter-spacing:2px}
 .bien{font:600 19px Montserrat,sans-serif}
@@ -231,7 +237,7 @@ def doc(corps, extra=""):
 
 
 def unitaires():
-    return doc("".join(f'<div class="pg">{etiquette(j)}</div>' for j in B.JUS),
+    return doc("".join(f'<div class="pg">{etiquette(j)}</div>' for j in JUS),
                "@page{size:65mm 90mm;margin:0} .pg{width:65mm;height:90mm;page-break-after:always}")
 
 
@@ -244,7 +250,7 @@ def planche(j):
 
 
 def apercu():
-    return doc('<div class="g">' + "".join(etiquette(j) for j in B.JUS) + "</div>",
+    return doc('<div class="g">' + "".join(etiquette(j) for j in JUS) + "</div>",
                "body{background:#2a1a10;padding:8mm} .g{display:grid;grid-template-columns:repeat(5,65mm);gap:7mm}"
                "svg.lab{filter:drop-shadow(0 1.2mm 2mm rgba(0,0,0,.5))}")
 
@@ -261,10 +267,10 @@ if __name__ == "__main__":
         pg = charger(unitaires(), 246, 341)
         pg.pdf(path=str(OUT / "etiquettes-unitaires.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
         pg = charger(unitaires(), 246, 341, DPI)
-        for i, j in enumerate(B.JUS):
+        for i, j in enumerate(JUS):
             pg.locator("svg.lab").nth(i).screenshot(path=str(OUT / "png" / f"{j[0]}.png"), omit_background=True)
         pg.close()
-        for j in B.JUS:
+        for j in JUS:
             pg = charger(planche(j), 794, 1123)
             pg.pdf(path=str(OUT / "planches" / f"planche-A4-{j[0]}.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
         pg = charger(apercu(), 1400, 900, 1.6)
