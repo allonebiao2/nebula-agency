@@ -129,14 +129,26 @@ def ruban(y, texte, fruit, ink):
             f'<text x="325" y="{y+h/2+8}" text-anchor="middle" class="rub" data-max="{x1-x0-22}" fill="{CREME}">{texte}</text>')
 
 
+ENCRE_MARQUE, BRAISE_MARQUE = "#1d1a17", "#d66a2a"   # le mot-symbole du catalogue (_og.py)
+
+
+def mot_symbole(y1, taille, devise_y=None, devise_cls="devise", devise_fill=None):
+    """Le logo du catalogue aubraisedor.com : « AU BRAISÉ » en encre, « D'OR » en braise,
+    Segoe UI Black, un filet de braise devant la première ligne. Le bloc est centré par CENTRE."""
+    t = taille
+    s = (f'<g class="marqueC"><rect x="{-t*0.36:.1f}" y="{y1-t*0.72:.1f}" width="{t*0.1:.1f}" height="{t*0.74:.1f}" fill="{BRAISE_MARQUE}"/>'
+         f'<text x="0" y="{y1}" class="motS" style="font-size:{t}px" fill="{ENCRE_MARQUE}">AU BRAISÉ</text>'
+         f'<text x="0" y="{y1 + t*1.06:.1f}" class="motS" style="font-size:{t}px" fill="{BRAISE_MARQUE}">D\'OR</text></g>')
+    if devise_y:
+        s += f'<text x="325" y="{devise_y}" text-anchor="middle" class="{devise_cls}" fill="{devise_fill}">DE PARIS À COTONOU</text>'
+    return s
+
+
 def marque(ink, fruit, uid):
-    """La marque en arc (un grand cercle, plus plat que le bord) puis la devise, droite, dessous."""
     if B.LOGO_FICHIER:
         b = base64.b64encode(Path(B.LOGO_FICHIER).read_bytes()).decode()
         return f'<image href="data:image/png;base64,{b}" x="190" y="72" width="270" height="128" preserveAspectRatio="xMidYMid meet"/>'
-    return (f'<path id="arcH{uid}" d="M25 420 A300 300 0 0 1 625 420" fill="none"/>'
-            f'<text class="arc" fill="{ink}"><textPath href="#arcH{uid}" startOffset="50%" text-anchor="middle">AU BRAISÉ D\'OR</textPath></text>'
-            f'<text x="325" y="194" text-anchor="middle" class="devise" fill="{fruit}">DE PARIS À COTONOU</text>')
+    return mot_symbole(140, 41, 214, "devise", fruit)
 
 
 def arc_bas(uid, ry, texte, cls, fill):
@@ -193,6 +205,7 @@ CSS = """
 *{box-sizing:border-box;margin:0;padding:0}
 body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 svg.lab{width:65mm;height:90mm;display:block}
+.motS{font-family:'Segoe UI Black','Segoe UI',Arial Black,sans-serif;font-weight:900;letter-spacing:.06em}
 .arc{font:800 38px Fraunces,serif;letter-spacing:2px;font-variation-settings:"opsz" 144}
 .devise{font:700 15px Montserrat,sans-serif;letter-spacing:7px}
 .petit{font:800 23px Montserrat,sans-serif;letter-spacing:9px}
@@ -206,6 +219,8 @@ svg.lab{width:65mm;height:90mm;display:block}
 .tit2{font:800 17px Montserrat,sans-serif;letter-spacing:2px}
 .bien{font:600 19px Montserrat,sans-serif}
 """
+CENTRE = """() => { for (const g of document.querySelectorAll('g.marqueC')) {
+  const b = g.getBBox(); g.setAttribute('transform', `translate(${325 - (b.x + b.width / 2)} 0)`); } }"""
 AJUSTE = """() => { for (const t of document.querySelectorAll('text[data-max]')) {
   const max = +t.dataset.max; let fs = parseFloat(getComputedStyle(t).fontSize);
   while (t.getComputedTextLength() > max && fs > 10) { fs -= 1; t.style.fontSize = fs + 'px'; } } }"""
@@ -242,7 +257,7 @@ if __name__ == "__main__":
         def charger(html, w, h, e=1):
             pg = nav.new_page(viewport={"width": w, "height": h}, device_scale_factor=e)
             pg.set_content(html, wait_until="networkidle"); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
-            pg.evaluate(AJUSTE); return pg
+            pg.evaluate(AJUSTE); pg.evaluate(CENTRE); return pg
         pg = charger(unitaires(), 246, 341)
         pg.pdf(path=str(OUT / "etiquettes-unitaires.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
         pg = charger(unitaires(), 246, 341, DPI)

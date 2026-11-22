@@ -52,11 +52,11 @@ def rameau(x, y, miroir=False):
 
 
 def affiche():
-    my, mr = 452, 146                                   # médaillon
+    my, mr = 468, 138                                   # médaillon
     picto = B.page_affiche().split('<svg viewBox="0 0 400 400" class="picto"', 1)[1].split("</svg>", 1)[0]
     picto = '<svg viewBox="0 0 400 400"' + picto + "</svg>"
     picto = picto.replace("<svg viewBox", f'<svg x="{325-mr*0.86:.1f}" y="{my-mr*0.86:.1f}" width="{mr*1.72:.1f}" height="{mr*1.72:.1f}" viewBox', 1)
-    ruban = F.ruban(240, "ATTENTION", ROUGE, ENCRE).replace('class="rub"', 'class="rubA"')
+    ruban = F.ruban(250, "ATTENTION", ROUGE, ENCRE).replace('class="rub"', 'class="rubA"')
     s = [f'<svg class="a4" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg"><defs>{B.DEFS}'
          f'<radialGradient id="fondA" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#7a1222"/><stop offset="1" stop-color="#3a0710"/></radialGradient></defs>',
          f'<rect width="{W}" height="{H}" fill="url(#fondA)"/>',
@@ -64,9 +64,7 @@ def affiche():
          f'<rect x="40" y="40" width="570" height="839" rx="14" fill="none" stroke="{ROUGE}" stroke-width="5"/>',
          f'<rect x="51" y="51" width="548" height="817" rx="9" fill="none" stroke="{ROUGE}" stroke-width="2.6" stroke-dasharray="0.1 9" stroke-linecap="round"/>',
          coin(70, 70, 1, 1), coin(580, 70, -1, 1), coin(70, 849, 1, -1), coin(580, 849, -1, -1),
-         '<path id="arcA" d="M-235 700 A560 560 0 0 1 885 700" fill="none"/>',
-         f'<text class="arcA" fill="{ENCRE}"><textPath href="#arcA" startOffset="50%" text-anchor="middle">AU BRAISÉ D\'OR</textPath></text>',
-         f'<text x="325" y="216" text-anchor="middle" class="deviseA" fill="{ROUGE}">DE PARIS À COTONOU</text>',
+         F.mot_symbole(132, 60, 232, "deviseA", ROUGE),
          ruban,
          rameau(150, my), rameau(500, my, True),
          f'<circle cx="325" cy="{my}" r="{mr}" fill="#fffaf0" stroke="{ROUGE}" stroke-width="10"/>',
@@ -99,7 +97,7 @@ if __name__ == "__main__":
         for e, sortie in [(1, "pdf"), (300 / 96, "png")]:
             pg = nav.new_page(viewport={"width": 794, "height": 1123}, device_scale_factor=e)
             pg.set_content(affiche(), wait_until="networkidle"); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
-            pg.evaluate(F.AJUSTE)
+            pg.evaluate(F.AJUSTE); pg.evaluate(F.CENTRE)
             if sortie == "pdf":
                 pg.pdf(path=str(OUT / "affiche-casse-A4.pdf"), prefer_css_page_size=True, print_background=True)
             else:
