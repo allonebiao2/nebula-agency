@@ -1074,3 +1074,22 @@ Mongazi, 21/11 vers 4 h, à la question de Polaris (règle 14 de l'organisation 
 garde »**. Le vrai catalogue (aubraisedor.com) peut donc servir de preuve dans les pubs de NEBULA. ⛔ Ne jamais montrer
 les photos de plats générées comme des produits dans une pub de NEBULA. On s'arrête sur leurs vraies photos, celles des
 sauces (Mongazi les a gardées sur leur site, pas sur les autres surfaces).
+
+
+## 🍹 ÉTIQUETTES DE JUS + AFFICHE « CASSE » (2026-11-22)
+Commande de la patronne, par Mongazi (prix proposé : **10 000 F**). Elle lance des **jus naturels** en bouteille.
+- **9 étiquettes autocollantes** de 6,5 × 9 cm : orange, mangue, **ananas (au miel)**, passion, pastèque, corossol,
+  **bissap (au miel)**, gingembre, cocktail de fruits ; tous les autres sont « 100 % naturel ».
+- ⏳ **Le jus bien-être carotte-betterave est MIS DE CÔTÉ** (`EN_ATTENTE`) : ingrédients exacts à confirmer par elle.
+  Bienfaits écrits sans promesse de soin (vitamine A, antioxydants, énergie) : ne jamais écrire qu'un jus « soigne ».
+- **Style « médaillon festonné »**, d'après la référence Pinterest ROOT & PRESS demandée par Mongazi (« ça doit valoir
+  10 000 € ») : forme découpée crème, double cadre, rameaux fleuris, médaillon du fruit, ruban plié, Fraunces + Montserrat,
+  une palette par fruit. La v1 (fond sombre or) est abandonnée.
+- **Logo = le mot-symbole du catalogue** (« version du catalogue », Mongazi) : AU BRAISÉ `#1d1a17` + D'OR `#d66a2a`,
+  Segoe UI Black, filet de braise devant, comme `_outils/_og.py`. Le vrai logo de l'enseigne (un chef dans un rond orange,
+  vu sur le menu dans Google Maps) n'existe qu'en photo floue.
+- **Deux numéros** sur chaque étiquette : 01 56 05 71 57 · 01 43 99 29 29 (celui du menu, passé en 10 chiffres).
+- **Affiche A4 « Vous cassez, vous remboursez. »** (verres et chichas), même style, panneau d'interdiction.
+- Fabriquer : `python clients/09-au-braise-dor/_outils/_etiquettes_folk.py` puis `_affiche_folk.py` · sorties dans
+  `imprimer/` (**hors git**, pas dans `assets/docs/` qui part en ligne) : planches A4 vectorielles (~1 Mo), PNG 300 DPI.
+- Impression : papier autocollant, **découpe à la forme** au traceur chez l'imprimeur (sinon aux ciseaux sur le feston).
