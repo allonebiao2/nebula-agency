@@ -10,17 +10,26 @@ qualité, et que tu sois réellement capable de faire seule », « savoir rebond
 **Seulement ce que je livre seul, en 48 h au plus, en superbe qualité.** Les 48 h comptent à partir des photos, des prix
 et du premier versement. Si je ne peux pas tenir, je ne le vends pas, ou je donne une date vraie avant de prendre l'argent.
 
-| Offre | Prix | Je la livre seul en 48 h ? |
+**Grille du CAP (décisions de Mongazi du 2026-11-22, elles font foi).** Ensuite, partout : **5 000 F par mois**
+(hébergement et modifications), sauf mention contraire.
+
+| Offre | Premier paiement | Je la livre seul en 48 h ? |
 |---|---|---|
-| Catalogue immersif 3D | 100 000 F (20 produits) | Oui, **quelques-uns à la fois** : les films dépendent des crédits Flow du jour |
-| Catalogue classique | 50 000 F (20 produits) | Oui |
+| **Catalogue express** (une même belle base, ses photos et ses prix, 20 produits) | **25 000 F** | Oui, **en 24 h** |
+| Catalogue 3D (20 produits, voyage au défilement) | 50 000 F | Oui, **quelques-uns à la fois** : les films dépendent des crédits Flow du jour |
 | Produits en plus | 15 000 F par lot de 10 | Oui |
-| Vitrine | 150 000 F | Oui, si le client a donné ses contenus |
-| QR Code Google Review | 30 000 F | Oui, avec le lien de sa fiche Google |
+| Vitrine 3D | 150 000 F | Oui, si le client a donné ses contenus |
+| Portfolio digital (artistes, MC, photographes, stylistes) | 50 000 F | Oui |
+| Expérience d'événement (affiche animée, programme, compte à rebours, plan, réponses sur WhatsApp, vidéo d'annonce) | dès 75 000 F, ensuite selon l'événement | Oui, si le programme est donné |
+| Faire-part de mariage | 35 000 F, rien ensuite | Oui |
+| QR Code avis Google | 30 000 F, rien ensuite | Oui, avec le lien de sa fiche Google |
 | Affiche carrée + QR, carte de visite | compris | Oui |
 | Pub vidéo des fêtes | 20 000 F | Oui, dans la limite des crédits Flow |
-| Nom de domaine | 30 000 F, après la livraison | L'achat passe par Mongazi |
+| Nom de domaine | 30 000 F (achat + branchement), puis 20 000 F par an | L'achat passe par Mongazi · ⛔ jamais offert |
 | Outil métier | sur devis | **Pas en 48 h** : on n'en parle que si le client le demande, avec un vrai délai |
+
+- **Abidjan et Lomé : +20 %** (catalogue 60 000 F, express 30 000 F, 3D 120 000 F, vitrine 180 000 F).
+- **Black Friday jusqu'au 30/11 : −20 %** (catalogue 3D 40 000 F). Jamais plus de −20 %.
 
 **La charge** : avant de promettre 48 h, compter ce qui est déjà en cours. Mieux vaut annoncer « je peux commencer
 vendredi » que rater une livraison.
@@ -44,10 +53,10 @@ vendredi » que rater une livraison.
 3. **Si c'est le budget : étaler d'abord.** La moitié pour démarrer, le reste à la validation.
 4. **Si le doute porte sur le retour : calculer avec SES chiffres.** « Votre plat est à X F : combien de commandes en plus pour
    rembourser le catalogue ? » On fait le calcul avec lui, sans promettre de résultat.
-5. **Ramener à la durée, si c'est vrai pour lui.** L'abonnement : 20 000 F pour six mois, environ 110 F par jour.
+5. **Ramener à la durée, si c'est vrai pour lui.** L'abonnement : 5 000 F par mois, moins de 170 F par jour.
 6. **Enlever le risque.** « Regardez d'abord l'essai avec vos produits. Vous décidez après. »
-7. **Si le budget reste trop court : réduire, pas brader.** Moins de produits pour commencer (10 produits, 35 000 F), le reste
-   ajouté plus tard. **Jamais le même travail moins cher** : ce serait dire que le premier prix était faux.
+7. **Si le budget reste trop court : réduire, pas brader.** Proposer le **catalogue express (25 000 F)** : la base commune
+   au lieu du voyage 3D sur mesure, le 3D plus tard. **Jamais le même travail moins cher** : ce serait dire que le premier prix était faux.
 8. **Si c'est toujours non** : remercier, proposer une date pour reparler, et la noter.
 
 ## 4. Les autres objections
