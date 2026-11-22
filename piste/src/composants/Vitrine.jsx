@@ -235,8 +235,8 @@ const ENGAGEMENTS = [
     d: "Vous l'avez payé, vous le gardez. Six mois plus tard vous le rouvrez et vous retrouvez votre avancement là où vous l'aviez laissé. Perdu ? Un message sur WhatsApp et il repart.",
   },
   {
-    t: 'Vous payez par Mobile Money, à la main',
-    d: "MTN MoMo, au Bénin. Aucun paiement ne se fait sur ce site : on vous donne le numéro de dépôt et le montant exact dans la conversation WhatsApp, vous envoyez, on vérifie. Une commande non payée reste valable 24 heures, ensuite les fiches retournent au stock.",
+    t: 'Vous payez en ligne, par Mobile Money ou par carte',
+    d: "MTN, Moov ou Celtiis au Bénin ; Wave, Orange, MTN ou Moov en Côte d'Ivoire ; Mixx ou Moov au Togo ; ou une carte bancaire. Dès que le paiement est confirmé, votre carnet arrive tout seul, de jour comme de nuit. Une commande non payée reste valable 24 heures, ensuite les fiches retournent au stock.",
   },
 ]
 
