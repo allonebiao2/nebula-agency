@@ -331,7 +331,9 @@ em{font-style:italic;font-weight:400}
   text-transform:uppercase;color:#fff;white-space:nowrap;
   box-shadow:0 8px 30px rgba(0,0,0,.12)}
 .bdg--1{background:var(--terre);top:12%;right:6%;   animation:flot 4s ease-in-out infinite}
-.bdg--2{background:var(--rose); top:44%;left:4%;    animation:flot 5s ease-in-out infinite}
+/* 23/11 : à top:44 % la pastille recouvrait le nom de la pièce (.hdes, centré à 56 %) sur un écran de moins de
+   ~900 px de haut. Elle se place désormais à une distance FIXE au-dessus du bloc de texte. */
+.bdg--2{background:var(--rose); top:calc(56% - 9rem);left:4%;    animation:flot 5s ease-in-out infinite}
 .bdg--3{background:var(--vert); bottom:20%;right:9%;animation:flot 6s ease-in-out infinite}
 .bdg--4{background:var(--indigo);bottom:9%;left:11%;animation:flot 4.6s ease-in-out infinite}
 @keyframes flot{0%,100%{transform:translateY(-10px)}50%{transform:translateY(10px)}}
