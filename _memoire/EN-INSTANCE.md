@@ -59,6 +59,7 @@
 | **LE MONTEUR** (nom provisoire), l'agent de montage : Mongazi a choisi **B** (l'appli). Dépôt **privé** `allonebiao2/nebula-montage`, page de reprise `REPRENDRE-ICI.md` dans ce dépôt. Pub sans rush rendue (banc 16/16) mais jugée < 500 $ par Mongazi : plan en 4 phases (pub v2, images animées, concept et story-board, appli). ✅ Gemini en secours, clé rangée et éprouvée. 🙋 recharger le crédit Anthropic · répondre au relecteur (1 000 F CFA ? 7 jours ? vraies captures ? logo) · sa voix (option) · ⏸️ en pause depuis le 2026-11-12 · plus tard Pexels, le nom, un vrai rush. 🤖 à la reprise : relecture par Gemini, installer `gh` (accepté), puis phase 1 | 🙋 puis 🤖 | `nebula-montage/REPRENDRE-ICI.md`, `_knowledge/montage-ia-decortique.md`, mémoire `project_agent-montage` |
 
 ---
+- **Royaltech** (26 tablettes, 25 000 F pour lancer) : il a dit « laissez-moi vous relancer » le 21/11. Mongazi, 23/11 : plus de message pour l'instant, peut-être d'ici quelques jours, en douceur et sans prix. Message adouci prêt : `nebula-agency/_memoire/prospection/VENDEUR.md` § « Le ton et le prix ».
 
 ## 2. Améliorations possibles
 

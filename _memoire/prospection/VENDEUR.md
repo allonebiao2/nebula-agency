@@ -82,3 +82,8 @@ expliqué pas à pas (Mobile Money, moitié pour démarrer), et les 48 h qui com
   d'aller voir quelqu'un, limite note vocal ou parler au téléphone, pas forcément envie d'y aller, donc ne jamais faire
   cette promesse sans m'en parler ». Pour lever la difficulté des photos : « 3 photos prises vite au téléphone suffisent ».
 - **Un appel ou une note vocale de sa part** : c'est une suggestion qu'on lui fait à lui, jamais une promesse faite au client.
+
+## Le ton et le prix (Mongazi, 23/11)
+Le prix se dit au bon moment, avec la force tranquille d'un vieux vendeur, jamais en pression. Un prospect qui a dit
+« je vous reviens » : en douceur, sans prix ni numéro MoMo, une raison d'agir et la porte ouverte. Le paiement se
+demande quand il revient. Exemple : la relance de Royaltech du 22/11, jugée « trop agressive », réécrite le 23/11.
