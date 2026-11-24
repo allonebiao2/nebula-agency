@@ -1093,4 +1093,5 @@ Commande de la patronne, par Mongazi (prix proposé : **10 000 F**). Elle lance 
 - Fabriquer : `python clients/09-au-braise-dor/_outils/_etiquettes_folk.py` puis `_affiche_folk.py` · sorties dans
   `imprimer/` (**hors git**, pas dans `assets/docs/` qui part en ligne) : planches A4 vectorielles (~1 Mo), PNG 300 DPI.
 - **24/11 : la ligne « Préparé le ...../..... · Au frais » est RETIRÉE** (Mongazi : « pas besoin de mettre de date de péremption »).
+- **24/11 : VERSION CARRÉE 6,5 × 6,5 cm** (Mongazi : « mets ça en format carré aussi ») : `_outils/_etiquettes_carre.py`, mêmes dessins que l'ovale, coins arrondis, fleurs aux coins, numéros en ligne droite · sorties `imprimer/carre/` (planches A4 de 12).
 - Impression : papier autocollant, **découpe à la forme** au traceur chez l'imprimeur (sinon aux ciseaux sur le feston).
