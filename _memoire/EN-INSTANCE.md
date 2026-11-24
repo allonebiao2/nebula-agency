@@ -14,6 +14,15 @@
 ---
 
 ## 1. À reprendre bientôt
+- ⚡ **File des aperçus (24/11)** : `nebula-apercus/PLAN-APERCUS-25-11.md`. Prochain : Semelle Dafrik (5 captures de son
+  catalogue WhatsApp), puis BIMF Store (attend ses photos), Max · OVRSZ (vitrine offerte, attend ses pièces sur cintre).
+  Quesiah a répondu « mais ce prix » : paiement étalé proposé. Promos -20 % jusqu'au vendredi 27/11 au soir.
+- 🤖 **Remplacer les produits d'exemple de Highgameshop** par les siens dès qu'il les envoie.
+- 🤖 **Retirer jeudi 26/11 au matin** les aperçus sans réponse (maison-des-bijoux, ecrin-vert, purethnik, ademar) :
+  page « Aperçu terminé » + bouton WhatsApp, jamais une suppression sèche.
+- 🤖 **Relancer les 34 prospects dormants**, 3 par jour dès le jeudi 26/11 (« vous n'avez rien à envoyer »).
+- 🙋 **Appels dès la semaine prochaine** : fiches d'appel des 58 annonceurs de la bibliothèque Meta, par lots de 15.
+- 🤖 **Option IA du vendeur (+25 000 F)** : brancher le moteur de LE STANDARD sur les `conseil.json` des aperçus.
 - 🕰️🙋 **Refonte de la vitrine nebula-agency.online (décidée le 22/11, REPORTÉE par Mongazi : « tu feras les ajouts plus tard, rappelle-moi »)** : voyage 3D, tous les prix, services = catalogue express 25 000 F · catalogue 3D 50 000 F · vitrine 3D 150 000 F · portfolio digital 50 000 F · expérience d'événement dès 75 000 F · faire-part 35 000 F · QR avis Google 30 000 F · domaine 30 000 F + 20 000 F/an ; abonnement 5 000 F/mois ; logiciel métier RETIRÉ ; portfolio Au Braisé d'Or, Hillary, Angy Art, Luxury Club 229, Djambar. **Le lui rappeler.** Renvoi : `nebula-cap/cerveau/Décisions/2026-11-22 · offres, pub, vitrine.md`.
 - 🤖 **Vidéo du Père Noël personnalisée (OUI le 22/11)** : 3 000 F, payée en ligne (caisse SasPay de MA LETTRE À), fabriquée automatiquement (Remotion + voix), livrée par lien, avant le 24/12. Renvoi : `nebula-cap/cerveau/Recherche du 22-11 (notes brutes).md` § Père Noël.
 - 🤖 **Catalogue express 25 000 F (OUI le 22/11)** : construire la base commune (20 produits, 24 h). Abidjan +20 %.
