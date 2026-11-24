@@ -188,8 +188,7 @@ def etiquette(j):
         s += [f'<text x="325" y="510" text-anchor="middle" class="petit" fill="{fruit}">{petit.strip()}</text>',
               f'<text x="325" y="590" text-anchor="middle" class="nom" data-max="460" fill="{ink}">{nom}</text>',
               ruban(606, mention.upper(), fruit, ink), socle(682, fruit, acc),
-              f'<text x="325" y="730" text-anchor="middle" class="gout" data-max="290" fill="{ink}">{gout}</text>',
-              arc_bas(f"b{uid}", 360, "Préparé le ...../..... · Au frais", "arcbas", ink)]
+              f'<text x="325" y="730" text-anchor="middle" class="gout" data-max="290" fill="{ink}">{gout}</text>']
     else:
         l1, l2 = nom.split(" ")
         s += [f'<text x="325" y="414" text-anchor="middle" class="petit" fill="{fruit}">{petit}</text>',
@@ -199,8 +198,7 @@ def etiquette(j):
               f'<text x="325" y="612" text-anchor="middle" class="tit" fill="{fruit}">LES BIENFAITS</text>']
         for i, b in enumerate(["Vitamine A : bon pour la vue et la peau", "Plein d'antioxydants naturels", "Un coup d'énergie, sans sucre ajouté"]):
             s.append(f'<text x="325" y="{640+i*25}" text-anchor="middle" class="bien" data-max="{460 - i*30}" fill="{ink}">{b}</text>')
-        s += [f'<text x="325" y="{718}" text-anchor="middle" class="bien" data-max="380" fill="{ink}"><tspan class="tit2" fill="{fruit}">INGRÉDIENTS · </tspan>carotte, betterave</text>',
-              arc_bas(f"b{uid}", 342, "Préparé le ...../..... · Au frais", "arcbas", ink)]
+        s += [f'<text x="325" y="{718}" text-anchor="middle" class="bien" data-max="380" fill="{ink}"><tspan class="tit2" fill="{fruit}">INGRÉDIENTS · </tspan>carotte, betterave</text>']
     s.append(arc_bas(f"c{uid}", 388, f"COMMANDES · {NUMEROS}", "arcwa", fruit))
     s.append("</svg>")
     return "".join(s)

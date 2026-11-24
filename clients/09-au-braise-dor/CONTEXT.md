@@ -1092,4 +1092,5 @@ Commande de la patronne, par Mongazi (prix proposé : **10 000 F**). Elle lance 
 - **Affiche A4 « Vous cassez, vous remboursez. »** (verres et chichas), même style, panneau d'interdiction.
 - Fabriquer : `python clients/09-au-braise-dor/_outils/_etiquettes_folk.py` puis `_affiche_folk.py` · sorties dans
   `imprimer/` (**hors git**, pas dans `assets/docs/` qui part en ligne) : planches A4 vectorielles (~1 Mo), PNG 300 DPI.
+- **24/11 : la ligne « Préparé le ...../..... · Au frais » est RETIRÉE** (Mongazi : « pas besoin de mettre de date de péremption »).
 - Impression : papier autocollant, **découpe à la forme** au traceur chez l'imprimeur (sinon aux ciseaux sur le feston).
