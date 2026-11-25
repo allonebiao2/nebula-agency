@@ -36,7 +36,7 @@ dans `nebula-apercus/PLAN-APERCUS-25-11.md`.
 |---|---|---|---|---|
 | 4 | Aperçu 3D, PC | Yaz computer | 5 PC pris sur sa page Facebook | ven. 27/11 fin de journée |
 | 5 | Aperçu 3D, ensembles montre | BIMF Store | ses photos si elles arrivent ; sinon ensembles d'EXEMPLE marqués comme tels, remplacés ensuite | sous 48 h après son oui |
-| 6 | Étiquettes de jus en format RECTANGULAIRE | Au Braisé d'Or (Maman Djibom) | ses dimensions ; sinon une taille standard proposée. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais » |  |
+| 6 | Étiquettes de jus en format RECTANGULAIRE | Au Braisé d'Or (Maman Djibom) | format RECTANGLE (pas carré). Ses dimensions si elle les donne, sinon 9 × 6 cm à l'horizontale, ajustable. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais » |  |
 
 ## 🔜 Vague 3
 

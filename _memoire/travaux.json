@@ -33,7 +33,7 @@
   {
    "client": "Au Braisé d'Or (Maman Djibom)",
    "travail": "Étiquettes de jus en format RECTANGULAIRE",
-   "besoin": "ses dimensions ; sinon une taille standard proposée. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais »",
+   "besoin": "format RECTANGLE (pas carré). Ses dimensions si elle les donne, sinon 9 × 6 cm à l'horizontale, ajustable. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais »",
    "echeance": ""
   },
   {
