@@ -1,16 +1,16 @@
 {
  "file": [
   {
+   "client": "Luxury Skin Clinic (Mme Sabrina, Luxury Club 229)",
+   "travail": "Refonte de sa vitrine ENTIÈREMENT en 3D au défilement : un salon de beauté beau et lumineux, tout son contenu intégré à l'intérieur (soins, tarifs, rendez-vous)",
+   "besoin": "Les ajouts de Sabrina (Mongazi les envoie) ; en attendant, on part du contenu actuel de luxuryclub229.com (11 soins, horaires lundi-samedi 10h-17h, consultation capillaire premium) ; ambiances générées autorisées, jamais un faux soin ni une fausse cliente ; publier par _dist (règles du site)",
+   "echeance": "À enchaîner tout de suite après les étiquettes d'Au Braisé d'Or (Mongazi, 26/11)"
+  },
+  {
    "client": "Nouva Meubles",
    "travail": "Aperçu 3D, meubles en « prix sur demande »",
    "besoin": "5 meubles pris sur ses pages (ou 5 captures de son catalogue WhatsApp par Mongazi)",
    "echeance": "⚠️ en retard (promis « sous 24 h » le 24/11)"
-  },
-  {
-   "client": "Dayday's Fancy Accessories",
-   "travail": "Aperçu 3D, un seul catalogue pour ses 3 pubs (montres connectées, tablettes, ventilateurs solaires)",
-   "besoin": "ses produits, que Mongazi me transfère (sinon : ses pages Facebook)",
-   "echeance": "ven. 27/11 après-midi"
   },
   {
    "client": "ABD SHOP CHIC",
@@ -29,12 +29,6 @@
    "travail": "Aperçu 3D, ensembles montre",
    "besoin": "ses photos si elles arrivent ; sinon ensembles d'EXEMPLE marqués comme tels, remplacés ensuite",
    "echeance": "sous 48 h après son oui"
-  },
-  {
-   "client": "Au Braisé d'Or (Maman Djibom)",
-   "travail": "Étiquettes de jus en format RECTANGULAIRE",
-   "besoin": "format RECTANGLE (pas carré). Ses dimensions si elle les donne, sinon 9 × 6 cm à l'horizontale, ajustable. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais »",
-   "echeance": ""
   },
   {
    "client": "Max · OVRSZ",
@@ -79,6 +73,18 @@
    "client": "Max · OVRSZ",
    "travail": "Vitrine 3D offerte (pièces d'exemple)",
    "lien": "https://ovrsz.pages.dev"
+  },
+  {
+   "date": "25/11",
+   "client": "Dayday's Fancy Accessories",
+   "travail": "Aperçu 3D, un seul catalogue pour ses 3 pubs (montres connectées, tablettes, ventilateurs solaires)",
+   "lien": "https://daydays-fancy.pages.dev"
+  },
+  {
+   "date": "25/11",
+   "client": "Au Braisé d'Or (Maman Djibom)",
+   "travail": "Étiquettes de jus en format RECTANGULAIRE",
+   "lien": ""
   }
  ]
 }

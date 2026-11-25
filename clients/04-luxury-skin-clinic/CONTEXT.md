@@ -849,3 +849,6 @@ désormais **par son nom, à tout niveau** (`devis-`, `Devis_`, `_build_devis.py
 vérifié sur un `_dist` réel : 157 fichiers, aucun devis. Le site n'a pas été
 redéployé : rien n'y a changé. Les polices `assets/fonts/` (celles du devis)
 partiront au prochain déploiement, sans conséquence.
+
+## ⏳ 26/11 : REFONTE EN 3D DEMANDÉE (zone travaux, rang 1)
+- Mongazi : la vitrine de la clinique (Mme Sabrina) ENTIÈREMENT en 3D au défilement, dans un salon de beauté beau et lumineux, avec tout son contenu à l'intérieur. Sabrina a des ajouts (Mongazi les envoie). Règles du site inchangées : publier par `_dist`, aucun visage ni soin inventé, contraste mesuré sur les pixels.

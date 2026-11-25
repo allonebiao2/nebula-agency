@@ -26,8 +26,8 @@ dans `nebula-apercus/PLAN-APERCUS-25-11.md`.
 
 | Rang | Travail | Client | Ce qu'il faut | Échéance |
 |---|---|---|---|---|
-| 1 | Aperçu 3D, meubles en « prix sur demande » | Nouva Meubles | 5 meubles pris sur ses pages (ou 5 captures de son catalogue WhatsApp par Mongazi) | ⚠️ en retard (promis « sous 24 h » le 24/11) |
-| 2 | Aperçu 3D, un seul catalogue pour ses 3 pubs (montres connectées, tablettes, ventilateurs solaires) | Dayday's Fancy Accessories | ses produits, que Mongazi me transfère (sinon : ses pages Facebook) | ven. 27/11 après-midi |
+| 1 | Refonte de sa vitrine ENTIÈREMENT en 3D au défilement : un salon de beauté beau et lumineux, tout son contenu intégré à l'intérieur (soins, tarifs, rendez-vous) | Luxury Skin Clinic (Mme Sabrina, Luxury Club 229) | Les ajouts de Sabrina (Mongazi les envoie) ; en attendant, on part du contenu actuel de luxuryclub229.com (11 soins, horaires lundi-samedi 10h-17h, consultation capillaire premium) ; ambiances générées autorisées, jamais un faux soin ni une fausse cliente ; publier par _dist (règles du site) | À enchaîner tout de suite après les étiquettes d'Au Braisé d'Or (Mongazi, 26/11) |
+| 2 | Aperçu 3D, meubles en « prix sur demande » | Nouva Meubles | 5 meubles pris sur ses pages (ou 5 captures de son catalogue WhatsApp par Mongazi) | ⚠️ en retard (promis « sous 24 h » le 24/11) |
 | 3 | Aperçu 3D, prêt-à-porter, baskets, montres | ABD SHOP CHIC | 5 modèles pris sur sa page Facebook | ven. 27/11 après-midi |
 
 ## 🔜 Vague 2
@@ -36,17 +36,13 @@ dans `nebula-apercus/PLAN-APERCUS-25-11.md`.
 |---|---|---|---|---|
 | 4 | Aperçu 3D, PC | Yaz computer | 5 PC pris sur sa page Facebook | ven. 27/11 fin de journée |
 | 5 | Aperçu 3D, ensembles montre | BIMF Store | ses photos si elles arrivent ; sinon ensembles d'EXEMPLE marqués comme tels, remplacés ensuite | sous 48 h après son oui |
-| 6 | Étiquettes de jus en format RECTANGULAIRE | Au Braisé d'Or (Maman Djibom) | format RECTANGLE (pas carré). Ses dimensions si elle les donne, sinon 9 × 6 cm à l'horizontale, ajustable. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais » |  |
-
-## 🔜 Vague 3
-
-| Rang | Travail | Client | Ce qu'il faut | Échéance |
-|---|---|---|---|---|
-| 7 | Remplacer les pièces d'exemple de la vitrine par ses vraies pièces | Max · OVRSZ | ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut |  |
+| 6 | Remplacer les pièces d'exemple de la vitrine par ses vraies pièces | Max · OVRSZ | ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut |  |
 
 ## ✅ Livrés
 | Date | Client | Travail | Lien |
 |---|---|---|---|
+| 25/11 | Au Braisé d'Or (Maman Djibom) | Étiquettes de jus en format RECTANGULAIRE |  |
+| 25/11 | Dayday's Fancy Accessories | Aperçu 3D, un seul catalogue pour ses 3 pubs (montres connectées, tablettes, ventilateurs solaires) | https://daydays-fancy.pages.dev |
 | 25/11 | Max · OVRSZ | Vitrine 3D offerte (pièces d'exemple) | https://ovrsz.pages.dev |
 | 25/11 | Semelle Dafrik | Aperçu 3D | https://semelle-dafrik.pages.dev |
 | 24/11 | Highgameshop | Aperçu 3D (produits d'exemple) | https://highgameshop.pages.dev |
