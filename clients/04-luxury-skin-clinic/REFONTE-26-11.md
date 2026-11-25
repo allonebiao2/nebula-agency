@@ -56,8 +56,27 @@ commence à prendre de l'âge. »
    déjà branché sur PISTE et MA LETTRE À…, Mobile Money et carte, 61 réseaux, minimum 200 XOF).
 
 ## 3. Le plan (dans cet ordre)
-- [ ] A1 · Cozy → INA : tous les produits et toutes les catégories de Cozy dans INA Luxury (aucun produit perdu :
-      compter avant / après). `cozy.html` ne vend plus rien.
+**Les références (26/11)** : FIRST PAGE 3D (le parcours de clinique, pour la STRUCTURE) + Vibrant Wellness (la zone
+qui s'allume sur un buste, pour l'EFFET), détail Facework (la fiche de soin). Décorticage et prompt complet :
+`C:/Users/USER/nebula-apercus/_socle/references/FIRSTPAGE-VIBRANT-clinique-PROMPT.md` (hors dépôt, registre des
+références). ⏳ **À faire valider par Mongazi avant la construction (B).** Décidé dans le prompt :
+- la clinique est un voyage en 10 stations, de la porte au bureau des rendez-vous ;
+- l'harmonisation faciale est une page à part (`harmonisation-faciale.html`, l'ex-Cozy) : le « cabinet privé »
+  encre et or, où l'on touche les zones sur **SES visuels de flyers** ;
+- le buste de Poly Haven est écarté (un Romain au visage sévère) ;
+- tout le décor est fait en code, sans GLB lourd.
+
+- [x] A1 · Cozy → INA (26/11), par `python _outils/_cozy_vers_ina.py`, idempotent :
+  - les 7 produits sont LUS dans `cozy.html` et entrent dans une 6e famille « Intime & bien-être », avec ses 3
+    catégories sous leurs libellés exacts (Hygiène intime 1, Selfcare 4, Produits raffermissants 2) ;
+  - **INA passe de 49 à 56 produits**, et le script refuse d'écrire si un nom manque ou se double ;
+  - les besoins de Cozy (libellés en clair) sont devenus des clés de `CONCERNS`, avec ses mots ;
+  - `important` est devenu `warn` ;
+  - la variante (« Fraise Sucrée ») s'affiche en or clair `#c9a84c` sur la carte noire (l'or foncé ne se lisait pas).
+  - Vérifié dans le navigateur : la famille, les 7 cartes, les photos, les badges, la variante.
+  - ⚠️ Le QC (`_qc.py --page ina-luxury.html`) n'a pas pu tourner le 26/11 : le PC manquait de mémoire et la page
+    ne chargeait pas en 30 s. À relancer seul, sans Chrome ouvert.
+  - Reste : `cozy.html` ne doit plus rien vendre (A2).
 - [ ] A2 · La nouvelle rubrique (ex-Cozy) : « Harmonisation faciale » (Facial Balancing, Genesis Hollywood, Genesis
       Soft), même principe que la clinique : protocoles, indications, tarifs, les visuels de ses flyers (zones du
       visage), prise de rendez-vous. Le hub (index.html) remplace l'univers Cozy par cette rubrique.
