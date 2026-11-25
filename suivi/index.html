@@ -54,9 +54,9 @@
   .filtres button{flex:0 0 auto;border:1px solid var(--ligne);background:none;color:var(--doux);font:600 13px Inter;padding:8px 13px;border-radius:99px}
   .filtres button[aria-pressed="true"]{background:var(--texte);color:var(--nuit);border-color:var(--texte)}
   .vide{color:var(--doux);font-size:14px;text-align:center;padding:24px 0}
-  nav.bas{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 10px);display:grid;grid-template-columns:repeat(5,1fr);
+  nav.bas{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 10px);display:grid;grid-template-columns:repeat(6,1fr);
           background:rgba(13,16,36,.96);border:1px solid var(--ligne);border-radius:22px;padding:6px;z-index:10}
-  nav.bas button{border:0;background:none;color:var(--doux);font:600 11px Inter;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0;border-radius:16px}
+  nav.bas button{border:0;background:none;color:var(--doux);font:600 10.5px Inter;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0;border-radius:16px}
   nav.bas button b{font-size:19px;line-height:1}
   nav.bas button[aria-current="true"]{color:#fff;background:rgba(79,111,255,.22)}
   .badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--rouge);color:#fff;font-size:11px;font-weight:700;margin-left:4px}
@@ -70,6 +70,14 @@
   .fichier{margin-top:12px}.fichier img,.fichier video{display:block;width:100%;max-height:60vh;object-fit:contain;border-radius:14px;background:#000}
   .tag{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:6px;background:rgba(255,255,255,.1)}.tag.retard{background:var(--rouge);color:#fff}
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 96px);background:#1b2148;border:1px solid var(--ligne);padding:12px 16px;border-radius:14px;font-size:14px;z-index:20}
+  .periode{display:flex;gap:8px;margin-bottom:10px}
+  .periode button{flex:1;border:1px solid var(--ligne);background:none;color:var(--doux);font:600 13px Inter;padding:9px 0;border-radius:99px}
+  .periode button[aria-pressed="true"]{background:var(--texte);color:var(--nuit);border-color:var(--texte)}
+  .etage{margin:10px 0}.etage:first-child{margin-top:0}.etage .lib{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;margin-bottom:5px}
+  .etage .lib b{font-family:Syne;font-size:17px}.etage .barre{margin:0}
+  .rang{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 0;border-top:1px solid var(--ligne);font-size:14px}.rang:first-child{border-top:0;padding-top:0}
+  .rang small{grid-column:1/-1;color:var(--doux);font-size:12px}.rang .taux{font-family:Syne;font-weight:800;color:var(--cyan)}
+  .rang .barre{grid-column:1/-1;height:6px;margin:4px 0 2px}
 </style>
 </head>
 <body>
@@ -117,6 +125,11 @@
     <div class="carte" id="clients"></div>
   </section>
 
+  <section data-onglet="chiffres" hidden>
+    <div class="periode"><button data-periode="1">Aujourd'hui</button><button data-periode="7" aria-pressed="true">7 jours</button><button data-periode="30">30 jours</button></div>
+    <div id="chiffres"><div class="vide">Chargement…</div></div>
+  </section>
+
   <section data-onglet="envois" hidden>
     <div class="titre-bloc">Messages prêts à partir</div>
     <p style="color:var(--doux);font-size:13.5px;margin:-4px 2px 10px">Si je ne peux pas les envoyer moi-même : un toucher ouvre WhatsApp avec le message écrit.</p>
@@ -141,6 +154,7 @@
   <button data-aller="jour" aria-current="true"><b>✦</b>Aujourd'hui</button>
   <button data-aller="journal"><b>☰</b>Journal</button>
   <button data-aller="clients"><b>◎</b>Clients</button>
+  <button data-aller="chiffres"><b>◔</b>Chiffres</button>
   <button data-aller="envois"><b>➤</b>À envoyer<span class="badge" id="b-envois" hidden></span></button>
   <button data-aller="reglages"><b>⚙</b>Réglages</button>
 </nav>
@@ -262,6 +276,7 @@ function dessinerClients() {
 }
 document.addEventListener("click", async e => {
   const f = e.target.closest("[data-filtre]"); if (f) { FILTRE = f.dataset.filtre; dessinerClients(); return; }
+  const pe = e.target.closest("[data-periode]"); if (pe) { PERIODE = +pe.dataset.periode; dessinerChiffres(); return; }
   const a = e.target.closest("[data-aller]"); if (a) { montrerOnglet(a.dataset.aller); return; }
   const fa = e.target.closest("[data-fait]"); if (fa) { await sb.from("nebula_suivi_journal").update({ fait: true }).eq("id", fa.dataset.fait); toast("Noté, merci."); charger(); return; }
   const en = e.target.closest("[data-envoye]"); if (en) { await sb.from("nebula_suivi_envois").update({ envoye: true }).eq("id", en.dataset.envoye); toast("Marqué comme envoyé."); charger(); return; }
@@ -276,7 +291,33 @@ function montrerOnglet(o) {
   ONGLET = o; document.querySelectorAll("[data-onglet]").forEach(s => s.hidden = s.dataset.onglet !== o);
   document.querySelectorAll("[data-aller]").forEach(b => b.setAttribute("aria-current", b.dataset.aller === o ? "true" : "false"));
   try { localStorage.setItem("suivi-onglet", o); } catch (e) {}
+  if (o === "chiffres") { STATS = null; dessinerChiffres(); }
   scrollTo(0, 0);
+}
+
+// LES CHIFFRES (Mongazi, 25/11 : « des statistiques claires qui nous permettront de constamment nous améliorer »).
+// Calculés sur le PC par suivi/carnet.py publier, à partir du carnet (une ligne par événement avec chaque client).
+let PERIODE = 7, STATS = null;
+async function dessinerChiffres() {
+  if (!STATS) {
+    const { data, error } = await sb.from("nebula_suivi_stats").select("*");
+    if (error) { $("#chiffres").innerHTML = `<div class="vide">${esc(error.message)}</div>`; return; }
+    STATS = Object.fromEntries((data || []).map(r => [r.jours, r]));
+  }
+  document.querySelectorAll("[data-periode]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.periode === PERIODE ? "true" : "false"));
+  const r = STATS[PERIODE]; if (!r) { $("#chiffres").innerHTML = `<div class="vide">Pas encore de chiffres pour cette période.</div>`; return; }
+  const s = r.donnees, pc = (a, b) => b ? Math.round(100 * a / b) + " %" : "–";
+  const E = [["Contactés", s.contactes], ["Ont répondu", s.repondu], ["Ont dit oui", s.oui], ["Aperçus livrés", s.apercu], ["Ont payé", s.paye]];
+  const max = Math.max(1, ...E.map(x => x[1]));
+  const tableau = (t, L) => L && L.length ? `<div class="titre-bloc">${t}</div><div class="carte">${L.map(g => `<div class="rang"><span>${esc(g.nom)}</span><span class="taux">${pc(g.repondu, g.contactes)}</span>
+    <div class="barre"><i style="width:${g.contactes ? (100 * g.repondu / g.contactes).toFixed(1) : 0}%"></i></div><small>${g.contactes} contactés · ${g.repondu} réponses · ${g.oui} oui · ${g.paye} payés</small></div>`).join("")}</div>` : "";
+  $("#chiffres").innerHTML = `<div class="carte">${E.map(([l, n]) => `<div class="etage"><div class="lib"><span>${l}</span><b>${n}</b></div><div class="barre"><i style="width:${(100 * n / max).toFixed(1)}%"></i></div></div>`).join("")}
+    <div class="stats" style="margin-top:16px"><div><b>${F(s.encaisse)}</b><small>encaissé</small></div><div><b>${pc(s.cohorte_repondu, s.cohorte)}</b><small>répondent</small></div>
+    <div><b>${s.delai_h != null ? s.delai_h + " h" : "–"}</b><small>pour répondre</small></div><div><b>${s.non}</b><small>non</small></div></div></div>
+    ${tableau("D'où viennent ceux qui répondent", (s.sources || []).map(g => ({ ...g, nom: ({ google: "Google Maps", meta: "Pubs Facebook", tiktok: "TikTok", annuaire: "Annuaire", inconnue: "Autre" })[g.nom] || g.nom })))}${tableau("Par métier", s.secteurs)}${tableau("Par accroche", s.accroches)}
+    ${s.bloque.length ? `<div class="titre-bloc">Ce qui bloque</div><div class="carte">${s.bloque.map(b => `<div class="ligne"><div class="pastille besoin">✋</div><div class="corps"><p>${esc(b.texte)}${b.n > 1 ? " · " + b.n + " fois" : ""}</p></div></div>`).join("")}</div>` : ""}
+    ${s.lecons.length ? `<div class="titre-bloc">Ce qu'on change</div><div class="carte">${s.lecons.slice().reverse().map(l => `<div class="ligne"><div class="pastille point">💡</div><div class="corps"><h3>${esc(l.nom)}</h3><p>${esc(l.lecon)}</p><div class="quand">${quand(l.quand)}</div></div></div>`).join("")}</div>` : ""}
+    <p class="maj" style="text-align:center;margin-top:6px">Mis à jour le ${quand(r.maj)}</p>`;
 }
 
 // notifications (même recette que TES Alertes)

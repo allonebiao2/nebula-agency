@@ -10,10 +10,12 @@ chaque capture de réponse. Les données vivent dans Supabase (RLS), ce script n
     python suivi/carnet.py fiche <tél>                 # l'histoire d'un client, dans l'ordre
     python suivi/carnet.py stats [--jours 7]           # l'entonnoir, par source, par métier, par accroche
     python suivi/carnet.py remplir                     # reprend l'historique (file d'envois + portefeuille)
+    python suivi/carnet.py publier                     # remplir + les chiffres de 1, 7 et 30 jours pour l'onglet « Chiffres »
 
 Événements : contact · relance · reponse · oui · non · objection · apercu · paiement · silence · note
 Sources    : meta (annonceur Facebook) · tiktok · annuaire · google · facebook · instagram · recommandation · autre
 """
+import json
 import re
 import sys
 from collections import Counter, defaultdict
@@ -46,6 +48,16 @@ create policy "Mongazi seul" on public.nebula_suivi_carnet for all to authentica
   using ((auth.jwt() ->> 'email') in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'))
   with check ((auth.jwt() ->> 'email') in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'));
 grant select on public.nebula_suivi_carnet to authenticated;
+"""
+
+SCHEMA_STATS = """
+create table if not exists public.nebula_suivi_stats (jours int primary key, donnees jsonb not null, maj timestamptz not null default now());
+alter table public.nebula_suivi_stats enable row level security;
+drop policy if exists "Mongazi seul" on public.nebula_suivi_stats;
+create policy "Mongazi seul" on public.nebula_suivi_stats for all to authenticated
+  using ((auth.jwt() ->> 'email') in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'))
+  with check ((auth.jwt() ->> 'email') in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'));
+grant select on public.nebula_suivi_stats to authenticated;
 """
 
 
@@ -132,55 +144,78 @@ def fiche(c, tel):
         print(f"{r['quand']:%d/%m %H:%M}  {r['evenement']:<9} {r['nom'] or ''}  {bout}")
 
 
-def stats(c, jours):
+def calcul(c, jours):
+    """Les chiffres d'une période. Le haut de l'entonnoir compte les personnes à qui c'est ARRIVÉ dans la période ;
+    les tableaux par source, métier et accroche suivent les personnes CONTACTÉES dans la période, jusqu'où elles sont allées."""
     depuis = datetime.now(timezone.utc) - timedelta(days=jours)
-    lignes = c.execute("select * from public.nebula_suivi_carnet where quand >= %s order by quand", (depuis,)).fetchall()
+    toutes = c.execute("select * from public.nebula_suivi_carnet order by quand").fetchall()
     par_tel = defaultdict(list)
-    for r in lignes:
+    for r in toutes:
         par_tel[r["telephone"]].append(r)
-    profil = {}   # un client = sa source, son métier, sa première accroche, et jusqu'où il est allé
+    dans = [r for r in toutes if r["quand"] >= depuis]
+    qui = lambda evs: len({r["telephone"] for r in dans if r["evenement"] in evs})
+    cohorte = []
     for tel, ev in par_tel.items():
-        noms = {e["evenement"] for e in ev}
         premier = next((e for e in ev if e["evenement"] == "contact"), None)
-        rep = next((e for e in ev if e["evenement"] in REPOND), None)
-        profil[tel] = dict(
+        if not premier or premier["quand"] < depuis:
+            continue
+        noms = {e["evenement"] for e in ev}
+        rep = next((e for e in ev if e["evenement"] in REPOND and e["quand"] >= premier["quand"]), None)
+        cohorte.append(dict(
             source=next((e["source"] for e in ev if e["source"]), "inconnue"),
             secteur=next((e["secteur"] for e in ev if e["secteur"]), "inconnu"),
             accroche=next((e["accroche"] for e in ev if e["accroche"]), None),
-            contacte=bool(premier), repondu=bool(noms & REPOND), oui=bool(noms & {"oui", "apercu", "paiement"}),
-            apercu="apercu" in noms, paye="paiement" in noms, non="non" in noms,
-            delai=(rep["quand"] - premier["quand"]).total_seconds() / 3600 if premier and rep and rep["quand"] > premier["quand"] else None)
-    P = list(profil.values())
-    pc = lambda a, b: f"{100 * a / b:.0f} %" if b else "-"
-    print(f"\n== LE CARNET · {jours} derniers jours · {len(P)} personnes ==")
-    nb = {k: sum(p[k] for p in P) for k in ("contacte", "repondu", "oui", "apercu", "paye", "non")}
-    rc = sum(p["repondu"] for p in P if p["contacte"])
-    print(f"Entonnoir : {nb['contacte']} contactés → {rc} ont répondu ({pc(rc, nb['contacte'])})"
-          f" → {nb['oui']} oui → {nb['apercu']} aperçus → {nb['paye']} payés · {nb['non']} non")
-    print(f"Encaissé : {sum(r['montant'] or 0 for r in lignes if r['evenement'] == 'paiement'):,} F".replace(",", " "))
-    delais = sorted(p["delai"] for p in P if p["delai"] is not None)
-    if delais:
-        print(f"Délai de réponse médian : {delais[len(delais) // 2]:.1f} h (sur {len(delais)} réponses)")
-    for axe in ("source", "secteur", "accroche"):
+            repondu=bool(noms & REPOND), oui=bool(noms & {"oui", "apercu", "paiement"}), paye="paiement" in noms,
+            delai=(rep["quand"] - premier["quand"]).total_seconds() / 3600 if rep else None))
+    def groupes(axe):
         g = defaultdict(list)
-        for p in P:
-            if p["contacte"] and p[axe]:
-                g[p[axe]].append(p)
-        if not g: continue
-        print(f"\nPar {axe} (premiers contacts → réponse → oui → payé) :")
-        for k, v in sorted(g.items(), key=lambda kv: -len(kv[1]))[:12]:
-            r_, o_, y_ = sum(p["repondu"] for p in v), sum(p["oui"] for p in v), sum(p["paye"] for p in v)
-            print(f"  {k[:34]:<34} {len(v):>3} → {r_:>3} ({pc(r_, len(v)):>4}) → {o_:>3} → {y_}")
-    obj = [r for r in lignes if r["evenement"] in ("objection", "non") and r["detail"]]
-    if obj:
-        print("\nCe qui bloque (objections et refus, les plus fréquents) :")
-        for k, n in Counter(r["detail"].strip().lower()[:70] for r in obj).most_common(10):
-            print(f"  {n} × {k}")
-    lec = [r for r in lignes if r["lecon"]]
-    if lec:
-        print("\nLeçons de la période :")
-        for r in lec[-10:]:
-            print(f"  {r['quand']:%d/%m} {r['nom'] or r['telephone']} : {r['lecon']}")
+        for p in cohorte:
+            if p[axe]: g[p[axe]].append(p)
+        return [dict(nom=k, contactes=len(v), repondu=sum(p["repondu"] for p in v), oui=sum(p["oui"] for p in v),
+                     paye=sum(p["paye"] for p in v)) for k, v in sorted(g.items(), key=lambda kv: -len(kv[1]))[:10]]
+    delais = sorted(p["delai"] for p in cohorte if p["delai"] is not None)
+    bloque = Counter(r["detail"].strip()[:90] for r in dans if r["evenement"] in ("objection", "non") and r["detail"])
+    return dict(
+        jours=jours, maj=datetime.now(timezone.utc).isoformat(),
+        contactes=qui({"contact"}), relances=sum(r["evenement"] == "relance" for r in dans), repondu=qui(REPOND),
+        oui=qui({"oui"}), apercu=qui({"apercu"}), paye=qui({"paiement"}), non=qui({"non"}),
+        encaisse=sum(r["montant"] or 0 for r in dans if r["evenement"] == "paiement"),
+        cohorte=len(cohorte), cohorte_repondu=sum(p["repondu"] for p in cohorte),
+        delai_h=round(delais[len(delais) // 2], 1) if delais else None,
+        sources=groupes("source"), secteurs=groupes("secteur"), accroches=groupes("accroche"),
+        bloque=[dict(texte=k, n=n) for k, n in bloque.most_common(8)],
+        lecons=[dict(quand=r["quand"].isoformat(), nom=r["nom"] or r["telephone"], lecon=r["lecon"]) for r in dans if r["lecon"]][-10:])
+
+
+def stats(c, jours):
+    s = calcul(c, jours)
+    pc = lambda a, b: f"{100 * a / b:.0f} %" if b else "-"
+    print(f"\n== LE CARNET · {jours} derniers jours ==")
+    print(f"Personnes : {s['contactes']} contactées · {s['relances']} relances · {s['repondu']} réponses · {s['oui']} oui"
+          f" · {s['apercu']} aperçus · {s['paye']} payées · {s['non']} non · encaissé {s['encaisse']:,} F".replace(",", " "))
+    print(f"Contactés dans la période qui ont répondu : {s['cohorte_repondu']} sur {s['cohorte']} ({pc(s['cohorte_repondu'], s['cohorte'])})"
+          + (f" · délai médian {s['delai_h']} h" if s["delai_h"] is not None else ""))
+    for axe in ("sources", "secteurs", "accroches"):
+        if s[axe]:
+            print(f"\nPar {axe[:-1]} (contactés → réponse → oui → payé) :")
+            for g in s[axe]:
+                print(f"  {g['nom'][:34]:<34} {g['contactes']:>3} → {g['repondu']:>3} ({pc(g['repondu'], g['contactes']):>4}) → {g['oui']:>3} → {g['paye']}")
+    if s["bloque"]:
+        print("\nCe qui bloque :")
+        for b in s["bloque"]: print(f"  {b['n']} × {b['texte']}")
+    if s["lecons"]:
+        print("\nLeçons :")
+        for l in s["lecons"]: print(f"  {l['quand'][5:10]} {l['nom']} : {l['lecon']}")
+
+
+def publier(c):
+    """Reprend l'historique puis écrit les chiffres de 1, 7 et 30 jours pour l'onglet « Chiffres » de NEBULA Suivi."""
+    c.execute(SCHEMA_STATS)
+    remplir(c)
+    for j in (1, 7, 30):
+        c.execute("""insert into public.nebula_suivi_stats (jours, donnees, maj) values (%s, %s, now())
+                     on conflict (jours) do update set donnees = excluded.donnees, maj = now()""", (j, json.dumps(calcul(c, j), ensure_ascii=False)))
+    print("chiffres publiés (1, 7 et 30 jours)")
 
 
 if __name__ == "__main__":
@@ -199,3 +234,5 @@ if __name__ == "__main__":
             stats(c, int(opt("--jours") or 30))
         elif a[0] == "remplir":
             remplir(c)
+        elif a[0] == "publier":
+            publier(c)
