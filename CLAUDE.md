@@ -751,6 +751,9 @@ reprendre, améliorations possibles par outil, projets en instance, vagues futur
 point avec son renvoi. ⚡ Toute session qui laisse quelque chose en suspens **l'y ajoute avant de
 finir**, et retire ce qu'elle a terminé.
 
+**Ce qu'on fabrique pour un client vit dans `_memoire/TRAVAUX.md`**, en vagues de 3 au plus, une à la fois
+(Mongazi, 2026-11-25). À lire en arrivant, à mettre à jour à chaque travail commencé, livré ou bloqué.
+
 ## Force de vente & partenaires (chantier 2026-07-30/31)
 - **Source de vérité des prix et des règles : `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`.**
   En cas de différence avec un autre fichier, c'est lui qui a raison.

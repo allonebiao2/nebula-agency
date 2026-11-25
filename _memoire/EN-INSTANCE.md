@@ -14,6 +14,7 @@
 ---
 
 ## 1. À reprendre bientôt
+- 🔨 **Ce qu'on fabrique pour un client** (aperçus, étiquettes, affiches) vit désormais dans **`_memoire/TRAVAUX.md`**, en vagues (25/11).
 - ⏳ **Aperçus promis pour ven. 27/11 après-midi au plus tard** : Dayday's Fancy Accessories (ses produits sont chez Mongazi, à me transmettre) et ABD SHOP CHIC (5 modèles pris sur sa page), puis Yaz computer (5 PC pris sur sa page, fin de journée). Nouva Meubles attend toujours le sien (promis le 24/11). File : `nebula-apercus/PLAN-APERCUS-25-11.md`. Renvoi : `_memoire/conversations/2026-11-25-envois-carnet-chiffres.md`.
 - ⏳ **Promos qui finissent** : Quesiah, ARIO, Highgameshop vendredi 27/11 au soir ; Semelle Dafrik samedi 28/11 au soir.
 - ⚡ **File des aperçus (24/11)** : `nebula-apercus/PLAN-APERCUS-25-11.md`. Prochain : Semelle Dafrik (5 captures de son
