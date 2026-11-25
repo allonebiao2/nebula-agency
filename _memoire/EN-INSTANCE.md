@@ -14,6 +14,8 @@
 ---
 
 ## 1. À reprendre bientôt
+- ⏳ **Aperçus promis pour ven. 27/11 après-midi au plus tard** : Dayday's Fancy Accessories (ses produits sont chez Mongazi, à me transmettre) et ABD SHOP CHIC (5 modèles pris sur sa page). Nouva Meubles attend toujours le sien (promis le 24/11). File : `nebula-apercus/PLAN-APERCUS-25-11.md`. Renvoi : `_memoire/conversations/2026-11-25-envois-carnet-chiffres.md`.
+- ⏳ **Promos qui finissent** : Quesiah, ARIO, Highgameshop vendredi 27/11 au soir ; Semelle Dafrik samedi 28/11 au soir.
 - ⚡ **File des aperçus (24/11)** : `nebula-apercus/PLAN-APERCUS-25-11.md`. Prochain : Semelle Dafrik (5 captures de son
   catalogue WhatsApp), puis BIMF Store (attend ses photos), Max · OVRSZ (vitrine offerte, attend ses pièces sur cintre).
   Quesiah a répondu « mais ce prix » : paiement étalé proposé. Promos -20 % jusqu'au vendredi 27/11 au soir.
@@ -71,6 +73,7 @@
 - **Royaltech** (26 tablettes, 25 000 F pour lancer) : il a dit « laissez-moi vous relancer » le 21/11. Mongazi, 23/11 : plus de message pour l'instant, peut-être d'ici quelques jours, en douceur et sans prix. Message adouci prêt : `nebula-agency/_memoire/prospection/VENDEUR.md` § « Le ton et le prix ».
 
 ## 2. Améliorations possibles
+- 📊 **Le carnet** : étiqueter chaque premier message par son accroche (pour comparer les accroches), et relancer `carnet.py publier` tout seul avant le bilan de 20 h (tâche planifiée). Renvoi : `suivi/carnet.py`.
 
 ### NEBULA REC (`scripts/nebula-rec/`)
 
