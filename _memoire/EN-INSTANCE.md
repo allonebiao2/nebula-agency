@@ -158,3 +158,10 @@ D'après `CLAUDE.md` et la mémoire de Claude au 2026-11-11 : l'état exact est 
   - Renvoi : mémoire de Claude `project_obsidian-maison`.
 - 🕰️ **L'annuaire d'entreprises** de MON BÉNIN (un second objet, pas une couche du voyage) : une note est
   due à Mongazi sur ce que perdrait PISTE.
+- 🕰️ **NUANCE LABS** (étudié le 2026-11-25) : une IA à qui on parle en visio, avec un visage qui réagit
+  (API « Nuance Live », en préversion). **Pas utilisable pour nous aujourd'hui** : anglais seulement, trois
+  visages imposés, et une clé API exige un numéro vérifié dans **18 pays (Europe, Canada, États-Unis), ni le
+  Bénin ni l'Afrique**. Compte gratuit ouvert par Mongazi avec Google : 10 crédits par jour, une conversation
+  à la fois, aucun prix publié. ⛔ Ne pas contourner la règle du pays. **À revoir quand le français ET le
+  Bénin arrivent** : vendeuse en visio sur les vitrines, coach d'anglais pour AXIO IA. Tout de suite :
+  sujet de flash info TikTok (la démo Emma est gratuite).
