@@ -95,10 +95,24 @@ def note(c, tel, ev, detail=None, **k):
                detail, k.get("lecon"), k.get("montant"), k.get("origine")))
 
 
+ENVOYE_LE = """
+alter table public.nebula_suivi_envois add column if not exists envoye_le timestamptz;
+create or replace function public.nebula_suivi_envoye_le() returns trigger language plpgsql as $$
+begin
+  if new.envoye and (tg_op = 'INSERT' or not coalesce(old.envoye, false)) and new.envoye_le is null then new.envoye_le := now(); end if;
+  return new;
+end $$;
+drop trigger if exists nebula_suivi_envoye_le on public.nebula_suivi_envois;
+create trigger nebula_suivi_envoye_le before insert or update on public.nebula_suivi_envois
+  for each row execute function public.nebula_suivi_envoye_le();
+"""
+
+
 def remplir(c):
     """Reprend l'historique : la file d'envois (1er message = contact, puis relances et réponses) et le portefeuille.
     Relançable : les lignes reprises sont effacées puis réécrites ; les notes écrites à la main ne sont jamais touchées."""
     c.execute(SCHEMA)
+    c.execute(ENVOYE_LE)   # l'heure où un message est coché envoyé : c'est elle qui date le contact, pas sa création
     c.execute("delete from public.nebula_suivi_carnet where origine like 'envoi:%%' or origine like 'portefeuille:%%'")
     porte = {cle(r["telephone"]): r for r in c.execute(
         "select id, nom, telephone, metier, raison, statut, contacte_le, relance_le from piste.prospection where telephone is not null").fetchall()}
@@ -108,7 +122,7 @@ def remplir(c):
         r = porte.get(k)
         return "google" if r and (str(r["id"]).startswith("ChIJ") or "avis" in (r["raison"] or "")) else None
     vus, n = set(), 0
-    for r in c.execute("select id, quand, pour, telephone, heure from public.nebula_suivi_envois where envoye order by quand, id").fetchall():
+    for r in c.execute("select id, coalesce(envoye_le, quand) quand, pour, telephone, heure from public.nebula_suivi_envois where envoye order by 2, id").fetchall():
         pour, heure, k = r["pour"], r["heure"] or "", cle(r["telephone"])
         if "PAS SUR WHATSAPP" in heure.upper():
             continue
@@ -122,7 +136,7 @@ def remplir(c):
         else:
             ev = "relance" if (k in vus or "RELANCE" in heure.upper()) else "contact"
             note(c, r["telephone"], ev, None, origine=f"envoi:{r['id']}", **base); n += 1
-        if re.search(r"APERÇU.*LIVRÉ|DÉMO.*LIVRÉE", pour):
+        if re.search(r"APERÇU.*LIVRÉ|DÉMO.*LIVRÉE|VITRINE.*LIVRÉE", pour):
             note(c, r["telephone"], "apercu", None, origine=f"envoi:{r['id']}:apercu", **base); n += 1
         vus.add(k)
     etapes = {"refus": "non", "ne_plus_contacter": "non", "interesse": "oui", "apercu": "apercu", "repondu": "reponse"}
