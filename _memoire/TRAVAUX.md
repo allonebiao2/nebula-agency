@@ -36,17 +36,12 @@ dans `nebula-apercus/PLAN-APERCUS-25-11.md`.
 |---|---|---|---|---|
 | 4 | Aperçu 3D, PC | Yaz computer | 5 PC pris sur sa page Facebook | ven. 27/11 fin de journée |
 | 5 | Aperçu 3D, ensembles montre | BIMF Store | ses photos si elles arrivent ; sinon ensembles d'EXEMPLE marqués comme tels, remplacés ensuite | sous 48 h après son oui |
-| 6 | Étiquettes de jus en format RECTANGULAIRE | Au Braisé d'Or (Maman Djibom) | format RECTANGLE (pas carré). Ses dimensions si elle les donne, sinon 9 × 6 cm à l'horizontale, ajustable. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais » |  |
-
-## 🔜 Vague 3
-
-| Rang | Travail | Client | Ce qu'il faut | Échéance |
-|---|---|---|---|---|
-| 7 | Remplacer les pièces d'exemple de la vitrine par ses vraies pièces | Max · OVRSZ | ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut |  |
+| 6 | Remplacer les pièces d'exemple de la vitrine par ses vraies pièces | Max · OVRSZ | ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut |  |
 
 ## ✅ Livrés
 | Date | Client | Travail | Lien |
 |---|---|---|---|
+| 26/11 | Au Braisé d'Or (Maman Djibom) | Étiquettes de jus en format RECTANGULAIRE | clients/09-au-braise-dor/imprimer/tour-50cl/ |
 | 25/11 | Max · OVRSZ | Vitrine 3D offerte (pièces d'exemple) | https://ovrsz.pages.dev |
 | 25/11 | Semelle Dafrik | Aperçu 3D | https://semelle-dafrik.pages.dev |
 | 24/11 | Highgameshop | Aperçu 3D (produits d'exemple) | https://highgameshop.pages.dev |

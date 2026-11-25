@@ -31,12 +31,6 @@
    "echeance": "sous 48 h après son oui"
   },
   {
-   "client": "Au Braisé d'Or (Maman Djibom)",
-   "travail": "Étiquettes de jus en format RECTANGULAIRE",
-   "besoin": "format RECTANGLE (pas carré). Ses dimensions si elle les donne, sinon 9 × 6 cm à l'horizontale, ajustable. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais »",
-   "echeance": ""
-  },
-  {
    "client": "Max · OVRSZ",
    "travail": "Remplacer les pièces d'exemple de la vitrine par ses vraies pièces",
    "besoin": "ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut",
@@ -79,6 +73,12 @@
    "client": "Max · OVRSZ",
    "travail": "Vitrine 3D offerte (pièces d'exemple)",
    "lien": "https://ovrsz.pages.dev"
+  },
+  {
+   "date": "26/11",
+   "client": "Au Braisé d'Or (Maman Djibom)",
+   "travail": "Étiquettes de jus en format RECTANGULAIRE",
+   "lien": "clients/09-au-braise-dor/imprimer/tour-50cl/"
   }
  ]
 }
