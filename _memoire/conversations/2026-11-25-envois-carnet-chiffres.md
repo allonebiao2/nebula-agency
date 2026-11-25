@@ -56,6 +56,34 @@ et dans la fiche de Véga.
   0 payé. Google Maps 37 % de réponses, annonceurs Facebook 31 %. Les deux fuites : des oui sans aperçu, et des
   aperçus sans paiement.
 
+## Le soir (17 h → 19 h)
+- **Yaz computer** (annonceur, PC) : « D'accord ». C'est le **3e oui sur les 5 annonceurs** contactés à midi. Aperçu
+  promis vendredi en fin de journée.
+- **CICA FOOD** : sa réponse du lundi (« Vous proposez mercredi. Je vous reviens ») est restée deux jours **non lue**.
+  On lui a proposé un appel **jeudi 26/11 à 10 h**, et c'est Mongazi qui appelle (il avait dit « appelez-moi »). Le
+  rendez-vous n° 2 est dans CAP.
+- **Fab au Micro** : il n'a pas encore parcouru son portfolio et revient « d'ici demain soir ». Une relance est prête
+  dans Suivi pour vendredi 10 h, à envoyer seulement s'il n'est pas revenu.
+- **Semelle Dafrik** : le message de livraison a été complété avec 20 000 + 20 000 et le MoMo, puis donné en lien.
+  ⚠️ Je l'avais coché « envoyé » trop tôt : « j'ai tout envoyé » voulait dire les liens donnés dans le chat, pas les
+  messages qu'une autre session avait posés dans Suivi.
+- **Max · OVRSZ** : message prêt mais pas envoyé. **À trancher** : le domaine à 20 000 F (décision du 24/11 pour Max)
+  ou à 30 000 F (tarif normal).
+- **Omani, pourquoi 80 000 F** : 40 000 F de mise en place + 40 000 F pour la première année payée d'avance (2 × 20 000
+  F). C'est eux qui ont demandé « la facture pour les 80 000 », le 20/11 à 8 h 57. **Sans avance**, le client paie
+  40 000 F (ou 20 000 + 20 000), puis 20 000 F tous les 6 mois : le même total sur un an. Une proposition est en
+  attente de Mongazi : une formule « l'année d'un coup » à 80 000 F pour ceux que l'abonnement fait reculer.
+- **Maman Djibom** veut ses étiquettes de jus **RECTANGULAIRES**. Les dimensions sont à demander, sinon on propose
+  une taille standard.
+- **LA ZONE TRAVAUX est créée** (`_memoire/TRAVAUX.md`, construite par `scripts/travaux.py` depuis
+  `_memoire/travaux.json`) :
+  - des vagues de 3, une à la fois ;
+  - **rien n'est bloqué** (Mongazi : « ne bloque rien ») ;
+  - deux commandes : **`/vague`** ajoute un ou plusieurs travaux, **`/rang`** change leur place (compétences locales
+    dans `.claude/skills/`).
+
+  Vague 1 : Nouva (en retard), Dayday's, ABD SHOP. Vague 2 : Yaz, BIMF, étiquettes de Djibom. Vague 3 : Max.
+
 ## Leçons
 1. **« Par mois » fait peur** : annoncer 20 000 F tous les 6 mois, qui reviennent moins cher que 6 × 5 000 F.
 2. **Une relance « seulement s'il n'a pas répondu » se vérifie avant de partir** (Highgameshop).
@@ -63,3 +91,6 @@ et dans la fiche de Véga.
 4. **Expliquer par « aujourd'hui / avec le catalogue » + un exemple qu'on peut toucher** : en une minute, le doute
    de Dayday's est devenu « au top ».
 5. **Les annonceurs Facebook répondent vite** : 2 oui sur 5 nouveaux en moins de 10 minutes.
+6. **« J'ai tout envoyé » = les liens donnés dans CE chat.** Ne jamais cocher un message posé par une autre session
+   sans en avoir donné le lien à Mongazi.
+7. **Une réponse non lue coûte deux jours** (CICA FOOD) : ouvrir chaque discussion chaude une fois par jour.

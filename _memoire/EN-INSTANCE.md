@@ -14,6 +14,11 @@
 ---
 
 ## 1. À reprendre bientôt
+- ❓ **À trancher par Mongazi (25/11)** :
+  - le domaine de Max (OVRSZ), 20 000 F (sa décision du 24/11) ou 30 000 F (tarif normal) : son message de livraison attend ;
+  - la formule « l'année d'un coup » à 80 000 F, comme Omani, pour ceux que l'abonnement fait reculer ;
+  - les dimensions des étiquettes rectangulaires de Maman Djibom (sinon une taille standard).
+- 📞 **CICA FOOD** : appel jeudi 26/11 à 10 h (rendez-vous n° 2 dans CAP), c'est Mongazi qui appelle.
 - 🔨 **Ce qu'on fabrique pour un client** (aperçus, étiquettes, affiches) vit désormais dans **`_memoire/TRAVAUX.md`**, en vagues (25/11).
 - ⏳ **Aperçus promis pour ven. 27/11 après-midi au plus tard** : Dayday's Fancy Accessories (ses produits sont chez Mongazi, à me transmettre) et ABD SHOP CHIC (5 modèles pris sur sa page), puis Yaz computer (5 PC pris sur sa page, fin de journée). Nouva Meubles attend toujours le sien (promis le 24/11). File : `nebula-apercus/PLAN-APERCUS-25-11.md`. Renvoi : `_memoire/conversations/2026-11-25-envois-carnet-chiffres.md`.
 - ⏳ **Promos qui finissent** : Quesiah, ARIO, Highgameshop vendredi 27/11 au soir ; Semelle Dafrik samedi 28/11 au soir.
