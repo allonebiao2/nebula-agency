@@ -1,0 +1,84 @@
+{
+ "file": [
+  {
+   "client": "Nouva Meubles",
+   "travail": "Aperçu 3D, meubles en « prix sur demande »",
+   "besoin": "5 meubles pris sur ses pages (ou 5 captures de son catalogue WhatsApp par Mongazi)",
+   "echeance": "⚠️ en retard (promis « sous 24 h » le 24/11)"
+  },
+  {
+   "client": "Dayday's Fancy Accessories",
+   "travail": "Aperçu 3D, un seul catalogue pour ses 3 pubs (montres connectées, tablettes, ventilateurs solaires)",
+   "besoin": "ses produits, que Mongazi me transfère (sinon : ses pages Facebook)",
+   "echeance": "ven. 27/11 après-midi"
+  },
+  {
+   "client": "ABD SHOP CHIC",
+   "travail": "Aperçu 3D, prêt-à-porter, baskets, montres",
+   "besoin": "5 modèles pris sur sa page Facebook",
+   "echeance": "ven. 27/11 après-midi"
+  },
+  {
+   "client": "Yaz computer",
+   "travail": "Aperçu 3D, PC",
+   "besoin": "5 PC pris sur sa page Facebook",
+   "echeance": "ven. 27/11 fin de journée"
+  },
+  {
+   "client": "BIMF Store",
+   "travail": "Aperçu 3D, ensembles montre",
+   "besoin": "ses photos si elles arrivent ; sinon ensembles d'EXEMPLE marqués comme tels, remplacés ensuite",
+   "echeance": "sous 48 h après son oui"
+  },
+  {
+   "client": "Au Braisé d'Or (Maman Djibom)",
+   "travail": "Étiquettes de jus en format RECTANGULAIRE",
+   "besoin": "ses dimensions ; sinon une taille standard proposée. Partir de `clients/09-au-braise-dor/_outils/_etiquettes_carre.py`, sans « Préparé le … Au frais »",
+   "echeance": ""
+  },
+  {
+   "client": "Max · OVRSZ",
+   "travail": "Remplacer les pièces d'exemple de la vitrine par ses vraies pièces",
+   "besoin": "ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut",
+   "echeance": ""
+  }
+ ],
+ "livres": [
+  {
+   "date": "24/11",
+   "client": "Au Braisé d'Or",
+   "travail": "Étiquettes de jus carrées 6,5 × 6,5 cm et ovales",
+   "lien": "`clients/09-au-braise-dor/imprimer/`"
+  },
+  {
+   "date": "24/11",
+   "client": "Quesiah (Benin Beni)",
+   "travail": "Aperçu 3D",
+   "lien": "https://quesiah.pages.dev"
+  },
+  {
+   "date": "24/11",
+   "client": "ARIO Cadeaux",
+   "travail": "Démo 3D",
+   "lien": "https://ario-cadeaux.pages.dev"
+  },
+  {
+   "date": "24/11",
+   "client": "Highgameshop",
+   "travail": "Aperçu 3D (produits d'exemple)",
+   "lien": "https://highgameshop.pages.dev"
+  },
+  {
+   "date": "25/11",
+   "client": "Semelle Dafrik",
+   "travail": "Aperçu 3D",
+   "lien": "https://semelle-dafrik.pages.dev"
+  },
+  {
+   "date": "25/11",
+   "client": "Max · OVRSZ",
+   "travail": "Vitrine 3D offerte (pièces d'exemple)",
+   "lien": "https://ovrsz.pages.dev"
+  }
+ ]
+}

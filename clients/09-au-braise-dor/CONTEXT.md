@@ -1098,4 +1098,4 @@ Commande de la patronne, par Mongazi (prix proposé : **10 000 F**). Elle lance 
 
 
 ## 2026-11-25 · Étiquettes de jus : Maman Djibom les veut RECTANGULAIRES
-Elle ne veut ni des carrées 6,5 × 6,5 cm (24/11) ni des ovales : elle veut un format **rectangulaire**. Les dimensions sont à confirmer avec elle. On part de `_outils/_etiquettes_carre.py`, toujours sans la ligne « Préparé le … Au frais ». Le travail est en vague 2 de `_memoire/TRAVAUX.md`.
+Elle ne veut ni des carrées 6,5 × 6,5 cm (24/11) ni des ovales : elle veut un format **rectangulaire**. Les dimensions sont à confirmer avec elle ; sans réponse, on propose une taille standard (rien n'est bloqué). On part de `_outils/_etiquettes_carre.py`, toujours sans la ligne « Préparé le … Au frais ». Le travail est dans `_memoire/TRAVAUX.md`.
