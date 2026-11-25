@@ -16,6 +16,8 @@ Si sa bouteille est différente, mesurer le tour avec une ficelle et relancer av
 Sorties : imprimer/tour-50cl/ (png 300 DPI, unitaires, planches A4 paysage de 2 par jus, A3 de 5 pour l'imprimeur,
 aperçu).
 """
+import io
+import re
 import sys
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -148,16 +150,91 @@ def apercu():
                "svg.lab{filter:drop-shadow(0 1.2mm 2mm rgba(0,0,0,.5))}")
 
 
+def polices_embarquees(textes):
+    """Les polices DANS le fichier : Fraunces et Montserrat (sous-ensembles latins de Google Fonts, en base64) et
+    Segoe UI Black (fsType 8 : intégration permise), réduite aux seules lettres du mot-symbole."""
+    import base64, urllib.request
+    from fontTools import subset
+    from fontTools.ttLib import TTFont
+    ua = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36"}
+    url = re.search(r"@import url\('([^']+)'\)", F.CSS).group(1)
+    css = urllib.request.urlopen(urllib.request.Request(url, headers=ua), timeout=30).read().decode()
+    blocs = []
+    for sub, bloc in re.findall(r"/\* ([\w-]+) \*/\s*(@font-face\s*\{[^}]+\})", css):
+        if sub not in ("latin", "latin-ext"):
+            continue
+        u = re.search(r"url\((https://[^)]+)\)", bloc).group(1)
+        b = base64.b64encode(urllib.request.urlopen(urllib.request.Request(u, headers=ua), timeout=30).read()).decode()
+        blocs.append(bloc.replace(f"url({u})", f"url(data:font/woff2;base64,{b})"))
+    f = TTFont(r"C:\Windows\Fonts\seguibl.ttf")
+    o = subset.Options(); o.flavor = "woff2"; o.name_IDs = []
+    sb = subset.Subsetter(o); sb.populate(text=textes); sb.subset(f)
+    tampon = io.BytesIO(); f.flavor = "woff2"; f.save(tampon)
+    blocs.append("@font-face{font-family:'Segoe UI Black';font-weight:900;src:url(data:font/woff2;base64,"
+                 + base64.b64encode(tampon.getvalue()).decode() + ")}")
+    return "\n".join(blocs)
+
+
+def en_svg(nav, charger):
+    """Mongazi, 26/11 : « elle imprime chez elle, il faut même que ce soit du SVG pour que la qualité reste ».
+    Les SVG sont pris DANS la page, après les ajustements : tout reste vectoriel (dégradés compris) et les polices
+    voyagent dans le fichier. ⚠️ Ne pas les tirer du PDF avec PyMuPDF : il change les dégradés des fruits en petites
+    images de 73 px, floues à l'impression (essayé le 26/11). S'ouvrent et s'impriment dans Chrome, Edge ou Safari,
+    à 100 %. Plus un PDF A4 unique de toutes les planches (impression maison)."""
+    import pymupdf
+    S = OUT / "svg"
+    for d in ("etiquette-seule", "planche-A4"):
+        (S / d).mkdir(parents=True, exist_ok=True)
+    pg = charger(unitaires(), 900, 400)
+    labs = pg.evaluate("() => [...document.querySelectorAll('svg.lab')].map(s => s.outerHTML)"); pg.close()
+    css = re.sub(r"@import url\([^)]+\);", "", F.CSS + EXTRA)
+    css = re.sub(r"svg\.lab\{[^}]*\}", "", css)
+    style = "<style>" + polices_embarquees("AU BRAISÉD'O") + css + "</style>"
+    ns = 'xmlns="http://www.w3.org/2000/svg"'
+
+    def nu(lab, x=0, y=0):
+        lab = lab.replace(' class="lab"', "").replace(f" {ns}", "")
+        return lab.replace("<svg ", f'<svg x="{x}" y="{y}" width="{W}" height="{H}" ', 1)
+    for j, lab in zip(F.JUS, labs):
+        (S / "etiquette-seule" / f"{j[0]}-tour-50cl-{L_MM/10:g}x{H_MM/10:g}cm.svg").write_text(
+            f'<svg {ns} width="{L_MM:g}mm" height="{H_MM:g}mm" viewBox="0 0 {W} {H}">{style}{nu(lab)}</svg>', encoding="utf-8")
+        k = 10 / K                                         # unités de l'étiquette par mm
+        PW_, PH_ = 297 * k, 210 * k
+        x0, ys = (PW_ - W) / 2, [(PH_ - 2 * H - 50 * k / 10) / 2, (PH_ - 2 * H - 50 * k / 10) / 2 + H + 50 * k / 10]
+        cadres = "".join(f'<rect x="{x0:.1f}" y="{y:.1f}" width="{W}" height="{H}" fill="none" stroke="#b9b9b9" stroke-width="{1.5*k/10:.2f}"/>' for y in ys)
+        txt = (f'<text x="{PW_/2:.1f}" y="{ys[1] + H + 60*k/10:.1f}" text-anchor="middle" '
+               f'style="font:600 {25*k/10:.1f}px Montserrat,sans-serif" fill="#999">Au Braisé d\'Or · {j[1].strip()} {j[2].title()} · '
+               f'{L_MM/10:g} × {H_MM/10:g} cm · imprimer à 100 % (taille réelle) · découper sur le trait gris</text>')
+        (S / "planche-A4" / f"planche-A4-{j[0]}.svg").write_text(
+            f'<svg {ns} width="297mm" height="210mm" viewBox="0 0 {PW_:.1f} {PH_:.1f}">{style}'
+            f'<rect width="{PW_:.1f}" height="{PH_:.1f}" fill="#fff"/>'
+            + "".join(nu(lab, f"{x0:.1f}", f"{y:.1f}") for y in ys) + cadres + txt + "</svg>", encoding="utf-8")
+    tout = pymupdf.open()
+    for j in F.JUS:
+        tout.insert_pdf(pymupdf.open(OUT / "planches" / f"planche-A4-tour-50cl-{j[0]}.pdf"))
+    tout.save(OUT / "planches-A4-tour-50cl-maison.pdf", garbage=3, deflate=True)
+
+
+def ouvrir(pw):
+    nav = pw.chromium.launch()
+
+    def charger(html, w, h, e=1):
+        pg = nav.new_page(viewport={"width": w, "height": h}, device_scale_factor=e)
+        pg.set_content(html, wait_until="networkidle"); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
+        pg.evaluate(F.AJUSTE); pg.evaluate(CENTRE); return pg
+    return nav, charger
+
+
+if __name__ == "__main__" and "--svg" in a:
+    with sync_playwright() as pw:
+        nav, charger = ouvrir(pw); en_svg(nav, charger); nav.close()
+    sys.exit()
+
 if __name__ == "__main__":
     DPI = 300 / 96
     px = lambda mm: round(mm / 25.4 * 96)
     with sync_playwright() as pw:
-        nav = pw.chromium.launch()
-
-        def charger(html, w, h, e=1):
-            pg = nav.new_page(viewport={"width": w, "height": h}, device_scale_factor=e)
-            pg.set_content(html, wait_until="networkidle"); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
-            pg.evaluate(F.AJUSTE); pg.evaluate(CENTRE); return pg
+        nav, charger = ouvrir(pw)
         pg = charger(unitaires(), px(L_MM) + 2, px(H_MM) + 2)
         pg.pdf(path=str(OUT / "etiquettes-tour-50cl-unitaires.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
         pg = charger(unitaires(), px(L_MM) + 2, px(H_MM) + 2, DPI)
@@ -171,6 +248,7 @@ if __name__ == "__main__":
         pg.pdf(path=str(OUT / "planches-A3-tour-50cl-imprimeur.pdf"), prefer_css_page_size=True, print_background=True); pg.close()
         pg = charger(apercu(), px(L_MM) * 2 + 160, 900, 1.2)
         pg.screenshot(path=str(OUT / "apercu-tour-50cl.png"), full_page=True); pg.close()
+        en_svg(nav, charger)
         nav.close()
     print(f"étiquette {L_MM/10:g} × {H_MM/10:g} cm (tour {TOUR:g} cm + {RECOUVRE:g} cm de recouvrement)")
     for p in sorted(OUT.rglob("*.*")):

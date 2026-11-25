@@ -1111,3 +1111,9 @@ Maman Djibom veut des étiquettes RECTANGULAIRES, posées autour de bouteilles d
   (fruit dans son médaillon, JUS DE …, ruban, goût) · commandes (les deux numéros, grillades, traiteur, aubraisedor.com).
 - Le format 9 × 5,5 cm d'une autre session (`imprimer/rectangle/`) ne couvre que le devant : gardé, pas effacé.
 - Carotte-betterave toujours en attente (comme pour les autres formats).
+- **Elle imprime CHEZ ELLE, en SVG** (Mongazi, 26/11 : « pour que la qualité reste ») : `svg/etiquette-seule/` (21 × 7 cm)
+  et `svg/planche-A4/` (2 par feuille, A4 paysage), plus `planches-A4-tour-50cl-maison.pdf` (9 pages). Les SVG sont pris
+  DANS la page : tout vectoriel, polices intégrées (Fraunces et Montserrat en base64, Segoe UI Black réduite au
+  mot-symbole, fsType 8). À ouvrir dans Chrome, Edge ou Safari et imprimer à **100 %**. Refaire les SVG seuls :
+  `_etiquettes_tour.py --svg`. ⚠️ **Ne pas tirer les SVG du PDF avec PyMuPDF** : il change les dégradés des fruits en
+  images de 73 px, floues à l'impression.
