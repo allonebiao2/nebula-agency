@@ -754,7 +754,7 @@ finir**, et retire ce qu'elle a terminé.
 **Ce qu'on fabrique pour un client vit dans `_memoire/TRAVAUX.md`**, en vagues de 3 au plus, une à la fois
 (Mongazi, 2026-11-25). **Rien n'y est jamais bloqué** : on avance avec ce qu'on a. La page est construite par
 `python scripts/travaux.py` (source `_memoire/travaux.json`, commandes `voir`, `ajouter`, `livrer`, `rang`) ; Mongazi
-change l'ordre avec **`/rang <travail> <position>`**. À lire en arrivant.
+ajoute avec **`/vague <client> : <travail> ; …`** et change l'ordre avec **`/rang <travail> <position>`**. À lire en arrivant.
 
 ## Force de vente & partenaires (chantier 2026-07-30/31)
 - **Source de vérité des prix et des règles : `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`.**

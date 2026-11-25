@@ -1,7 +1,8 @@
 # ZONE TRAVAUX · ce qui est à fabriquer, en vagues
 
 > ⚙️ Page CONSTRUITE par `python scripts/travaux.py` à partir de `_memoire/travaux.json` : ne pas l'éditer à la main.
-> Pour changer la place d'un travail, Mongazi tape **`/rang <travail> <position>`** (exemple : `/rang djibom 2`).
+> Mongazi ajoute des travaux avec **`/vague <client> : <travail> ; …`** et change leur place avec
+> **`/rang <travail> <position>`** (exemple : `/rang djibom 2`).
 
 Créée le 2026-11-25 à la demande de Mongazi : « crée cette zone, et elle doit fonctionner en vagues ». On y met **ce
 qu'on fabrique pour un client** : aperçu, catalogue, vitrine, étiquette, affiche, vidéo. Ce qui attend une décision
