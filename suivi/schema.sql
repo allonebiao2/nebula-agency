@@ -56,3 +56,6 @@ grant select, update on public.nebula_suivi_envois to authenticated;
 grant update (fait) on public.nebula_suivi_journal to authenticated;
 grant select, insert, update, delete on public.nebula_suivi_abonnements to authenticated;
 grant usage, select on sequence public.nebula_suivi_journal_id_seq, public.nebula_suivi_envois_id_seq to authenticated;
+
+-- LE CARNET (2026-11-25) : une ligne par événement avec un prospect ou un client.
+-- Le schéma complet (table, RLS, droits) est écrit et appliqué par suivi/carnet.py (constante SCHEMA, commande « remplir »).
