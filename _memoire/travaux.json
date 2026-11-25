@@ -3,7 +3,7 @@
   {
    "client": "Luxury Skin Clinic (Mme Sabrina, Luxury Club 229)",
    "travail": "Refonte de sa vitrine ENTIÈREMENT en 3D au défilement : un salon de beauté beau et lumineux, tout son contenu intégré à l'intérieur (soins, tarifs, rendez-vous)",
-   "besoin": "Les ajouts de Sabrina (Mongazi les envoie) ; en attendant, on part du contenu actuel de luxuryclub229.com (11 soins, horaires lundi-samedi 10h-17h, consultation capillaire premium) ; ambiances générées autorisées, jamais un faux soin ni une fausse cliente ; publier par _dist (règles du site)",
+   "besoin": "TOUT est dans clients/04-luxury-skin-clinic/REFONTE-26-11.md (ses 3 flyers d'harmonisation faciale avec tarifs, Cozy fusionné dans INA, l'espace Cozy devient la rubrique Harmonisation faciale, ses vocaux transcrits, le plan A1 → C). ⏳ À venir d'elle : les suppressions dans INA et les nouveaux soins visage. ⏳ Mongazi : le prix du paiement Mobile Money.",
    "echeance": "À enchaîner tout de suite après les étiquettes d'Au Braisé d'Or (Mongazi, 26/11)"
   },
   {

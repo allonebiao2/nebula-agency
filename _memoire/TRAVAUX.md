@@ -26,7 +26,7 @@ dans `nebula-apercus/PLAN-APERCUS-25-11.md`.
 
 | Rang | Travail | Client | Ce qu'il faut | Échéance |
 |---|---|---|---|---|
-| 1 | Refonte de sa vitrine ENTIÈREMENT en 3D au défilement : un salon de beauté beau et lumineux, tout son contenu intégré à l'intérieur (soins, tarifs, rendez-vous) | Luxury Skin Clinic (Mme Sabrina, Luxury Club 229) | Les ajouts de Sabrina (Mongazi les envoie) ; en attendant, on part du contenu actuel de luxuryclub229.com (11 soins, horaires lundi-samedi 10h-17h, consultation capillaire premium) ; ambiances générées autorisées, jamais un faux soin ni une fausse cliente ; publier par _dist (règles du site) | À enchaîner tout de suite après les étiquettes d'Au Braisé d'Or (Mongazi, 26/11) |
+| 1 | Refonte de sa vitrine ENTIÈREMENT en 3D au défilement : un salon de beauté beau et lumineux, tout son contenu intégré à l'intérieur (soins, tarifs, rendez-vous) | Luxury Skin Clinic (Mme Sabrina, Luxury Club 229) | TOUT est dans clients/04-luxury-skin-clinic/REFONTE-26-11.md (ses 3 flyers d'harmonisation faciale avec tarifs, Cozy fusionné dans INA, l'espace Cozy devient la rubrique Harmonisation faciale, ses vocaux transcrits, le plan A1 → C). ⏳ À venir d'elle : les suppressions dans INA et les nouveaux soins visage. ⏳ Mongazi : le prix du paiement Mobile Money. | À enchaîner tout de suite après les étiquettes d'Au Braisé d'Or (Mongazi, 26/11) |
 | 2 | Aperçu 3D, meubles en « prix sur demande » | Nouva Meubles | 5 meubles pris sur ses pages (ou 5 captures de son catalogue WhatsApp par Mongazi) | ⚠️ en retard (promis « sous 24 h » le 24/11) |
 | 3 | Aperçu 3D, prêt-à-porter, baskets, montres | ABD SHOP CHIC | 5 modèles pris sur sa page Facebook | ven. 27/11 après-midi |
 
