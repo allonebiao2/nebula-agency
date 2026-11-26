@@ -1990,5 +1990,15 @@ window.LCMusique=(function(){
 })();
 </script>
 <!--/MUS-->
+<!--FLUIDE--><style id="lc-fluide">
+/* FLUIDITÉ (26/11, Mongazi : « le plus fluide possible ») : posé à la fin de la page, APRÈS les règles qu il corrige.
+   · l'égaliseur du bouton son animait `height` (mise en page à chaque image, tant que la musique joue) : même geste
+     en `transform`, que la carte graphique fait seule ;
+   · les pulsations animaient `box-shadow` sans fin (la page repeinte à chaque image ; sur INA, 34 boutons) : trois
+     battements, puis le calme, comme les points de la visite. */
+@keyframes lcEq{0%,100%{transform:scaleY(.29);}50%{transform:scaleY(1);}}
+.lc-eq i{height:17px;transform:scaleY(.29);}
+.lc-social a,.btn-add.wa,.cart-wa{animation-iteration-count:3;}
+</style><!--/FLUIDE-->
 </body>
 </html>

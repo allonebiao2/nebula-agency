@@ -13,3 +13,10 @@
 # Une heure suffit à soulager la 3G de Cotonou sans rien piéger.
 /assets/*
   Cache-Control: public, max-age=3600
+
+# LA VISITE 3D (26/11) : ses modules s'importent entre eux SANS `?v=` (moteur.js, matieres.js, monde-*.js). Seul le
+# module de démarrage est versionné : en cache une heure, un moteur ancien rejoindrait un démarrage neuf. Ici le
+# navigateur redemande à chaque visite, et un fichier inchangé répond 304 (rien n'est retéléchargé).
+/assets/js/salon3d/*
+  ! Cache-Control
+  Cache-Control: no-cache

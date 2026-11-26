@@ -195,7 +195,7 @@ export function boutique({ ina, lien, quand }) {
       qualite(q) {
         if (q !== "basse") return;
         qualiteBasse = true;
-        spot.castShadow = false;
+        // (26/11) les ombres restent : figées, elles ne coûtent presque plus rien, et les couper recompilait toutes les matières (la 3D gelée)
         scene.remove(pous);
       },
       anime(t, dt, etat) {

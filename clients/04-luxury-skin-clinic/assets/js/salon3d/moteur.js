@@ -8,8 +8,17 @@
 // Vibrant Wellness (toucher une zone, la caméra s'approche). Voir REFONTE-26-11.md.
 //
 // Règles de la maison tenues ici :
-//  · netteté NATIVE de l'écran (jusqu'à 3x), plancher à 2x jamais franchi ; si l'appareil peine, on coupe d'abord
-//    les ombres et la poussière, puis on descend vers le plancher, jamais en dessous ;
+//  · 4K (Mongazi, 26/11) : jamais sous 2x, même sur un écran de PC ordinaire (1x) : un écran 1920 est rendu en
+//    3840 px de large. Le plafond est le natif de l'écran (jusqu'à 3x) ET un budget de 3840 × 2160 pixels : un grand
+//    écran atteint la 4K sans la dépasser. Sur grand rendu, les matières sont dessinées en double définition et les
+//    produits détourés viennent en 2x ;
+//  · LA FLUIDITÉ D'ABORD (Mongazi, 26/11 : « le plus fluide possible ») : 60 images/s visées, aucun plafond (un
+//    écran 120 Hz en reçoit 120). Sous 55, on coupe la poussière et les rais (jamais les ombres : les couper
+//    recompile toutes les matières et gèle la 3D), puis on descend vers la 4K plancher
+//    (2x), puis jusqu'à la netteté NATIVE de l'écran, jamais en dessous. Une définition baissée ne remonte pas sur un
+//    écran 60 Hz (pas d'aller-retour, chacun est un à-coup) ;
+//  · les ombres ne bougent pas (aucun objet qui en porte ne se déplace) : calculées au départ et à chaque étape,
+//    jamais à chaque image ;
 //  · on ne rend rien quand la scène est hors de l'écran ; on ne rend pas quand rien ne bouge ;
 //  · `prefers-reduced-motion` : la caméra saute d'une station à l'autre, aucun effet continu ;
 //  · sans WebGL : la section se retire et la page d'origine reste entière.
@@ -26,30 +35,62 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
   const canvas = racine.querySelector("canvas");
 
   // ---------- le rendu ----------
+  // ---------- la définition : 4K ----------
+  const natif = Math.min(devicePixelRatio || 1, 3);
+  const BUDGET = 3840 * 2160;
+  const plafondEcran = () => {
+    const w = scene3.clientWidth || innerWidth, h = scene3.clientHeight || innerHeight;
+    return +Math.min(Math.max(natif, 2), Math.max(1, Math.sqrt(BUDGET / (w * h)))).toFixed(2);
+  };
+  let plafond = plafondEcran();
+  let plancher = Math.min(2, plafond);
+  // le dernier recours de la fluidité : la netteté native de l'écran (un PC 1x : 1x ; un iPhone 3x : 2x)
+  let plancherFluide = Math.min(plancher, Math.max(1, natif));
+  // un grand rendu (un PC, un écran 4K) : matières en double définition, produits en 2x
+  let grand = (scene3.clientWidth || innerWidth) * plafond >= 2600;
+  // UNE CARTE GRAPHIQUE FAIBLE (Intel HD/UHD intégrée, Mali, PowerVR, Adreno d'entrée de gamme : la plupart des
+  // portables et des téléphones de Cotonou) ne tient pas 60 images/s en 4K quand la caméra bouge (Intel HD 5500
+  // mesurée à 40 i/s en 2x, 26/11). Elle démarre à la netteté native de l'écran, sans double définition, avec
+  // l'anticrénelage (qui se décide à la création du contexte : d'où la toile d'essai, lue puis rendue) ; une carte
+  // forte (iPhone, Mac, PC de jeu) démarre en 4K. L'adaptation corrige ensuite dans les deux sens.
+  let gpu = "";
+  try {
+    const essai = document.createElement("canvas").getContext("webgl2") || document.createElement("canvas").getContext("webgl");
+    const dbg = essai && essai.getExtension("WEBGL_debug_renderer_info");
+    gpu = String((essai && ((dbg && essai.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) || essai.getParameter(essai.RENDERER))) || "");
+    const perte = essai && essai.getExtension("WEBGL_lose_context");
+    if (perte) perte.loseContext();
+  } catch (e) {}
+  const faible = /Intel.*(HD|UHD) Graphics|Mali|PowerVR|Adreno \(TM\) [1-6]\d\d|SwiftShader|llvmpipe|Basic Render/i.test(gpu);
+  if (faible) { grand = false; plancherFluide = Math.min(plancherFluide, Math.max(1, Math.min(natif, 1.5))); }
+  window.S3D_FINESSE = grand ? 2 : 1;
+  let dpr = faible ? Math.min(plafond, Math.max(plancherFluide, Math.min(natif, 2))) : plafond;
   let renderer;
   try {
-    const natifTest = Math.min(devicePixelRatio || 1, 3);
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: natifTest < 2, powerPreference: "high-performance", alpha: false });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: dpr < 2, powerPreference: "high-performance", alpha: false });
   } catch (e) {
     racine.classList.add("s3d-sans");
     return null;
   }
-  const natif = Math.min(devicePixelRatio || 1, 3);
-  const plancher = Math.min(natif, 2);
-  let dpr = natif;
   renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // au téléphone, l'ombre douce coûte trop de lectures par pixel : la même ombre, filtrée plus simplement
+  renderer.shadowMap.type = mobile || faible ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
+  // les ombres sont figées : on les recalcule seulement quand on le demande (voir « ombres » dans la boucle)
+  renderer.shadowMap.autoUpdate = false;
+  let ombres = 90;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(mobile ? 62 : 48, 1, 0.05, 220);
   const anis = renderer.capabilities.getMaxAnisotropy();
-  const outils = { anis, natif, plancher, charger: chargeur(anis) };
+  const outils = { anis, natif, plancher, faible, finesse: window.S3D_FINESSE, charger: chargeur(anis, grand, renderer) };
 
+  const tMonde = performance.now();
   const M = await monde({ THREE, scene, renderer, camera, mobile, calme, outils });
+  const tempsMonde = Math.round(performance.now() - tMonde);
   const stations = M.stations;
   const N = stations.length;
 
@@ -181,6 +222,13 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
   // ---------- taille ----------
   function taille() {
     const w = scene3.clientWidth, h = scene3.clientHeight;
+    // l'écran a changé de taille (rotation, fenêtre) : le budget 4K se recalcule
+    const p = plafondEcran();
+    if (p !== plafond) {
+      plafond = p; plancher = Math.min(2, plafond); plancherFluide = Math.min(plancher, Math.max(1, natif));
+      plancherFluide = faible ? Math.min(plancherFluide, Math.max(1, Math.min(natif, 1.5))) : plancherFluide;
+      dpr = borne(dpr, plancherFluide, plafond); renderer.setPixelRatio(dpr);
+    }
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -199,21 +247,51 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
     if (visible) { horloge = performance.now(); requestAnimationFrame(boucle); }
   }, { rootMargin: "120px" }).observe(racine);
 
+  // LA COMPILATION SANS GEL : la carte graphique compile les matières en parallèle (KHR_parallel_shader_compile) ;
+  // pendant ce temps on ne dessine pas (l'image précédente reste), mais la page continue de défiler. Sans cela, la
+  // première image et le passage en qualité basse gelaient tout (2 s mesurées sur une Intel HD 5500, 26/11).
+  let compilation = null;
+  function recompiler() {
+    if (!renderer.compileAsync) return Promise.resolve();
+    const t = performance.now();
+    const p = renderer.compileAsync(scene, camera).catch(() => {}).then(() => {
+      if (compilation === p) compilation = null;   // l'envoi des textures du démarrage peut être encore en cours
+      sale = true;
+      if (window.S3D) (S3D.temps = S3D.temps || {}).compilation_ms = Math.round(performance.now() - t);
+    });
+    compilation = p;
+    return p;
+  }
   const tampon = new THREE.Vector3();
   let vitesseDite = 0;
-  const lent = { n: 0, s: 0, palier: 0 };
-  function ajuster(dt) {
-    // on mesure 50 images d'affilée ; sous 45 i/s, on allège d'un cran
+  // ce que le moteur rend vraiment, lisible dans la console (et par le QC) : window.S3D
+  const S3D = window.S3D = { dpr, plafond, rendu: [canvas.width, canvas.height], ips: null, finesse: window.S3D_FINESSE, gpu, faible,
+    temps: { monde_ms: tempsMonde } };
+  const lent = { n: 0, s: 0, palier: 0, chauffe: 45, baisse: 0, debut: 0 };
+  function ajuster(dt, maintenant) {
+    // les premières secondes montent les textures et les photos : elles ne disent rien de l'appareil
+    if (!lent.debut) lent.debut = maintenant;
+    if (lent.chauffe > 0 || maintenant - lent.debut < 2500) { if (lent.chauffe > 0) lent.chauffe--; return; }
+    // on mesure 40 images RENDUES d'affilée ; sous 55 i/s, on allège d'un cran
     lent.n++; lent.s += dt;
-    if (lent.n < 50) return;
+    if (lent.n < 40) return;
     const moy = lent.s / lent.n;
     lent.n = 0; lent.s = 0;
-    if (moy > 0.022) {
-      if (lent.palier === 0 && M.qualite) { M.qualite("basse"); lent.palier = 1; return; }
-      if (dpr > plancher) { dpr = Math.max(plancher, +(dpr - 0.25).toFixed(2)); renderer.setPixelRatio(dpr); taille(); }
-    } else if (moy < 0.0135 && dpr < natif) {
-      dpr = Math.min(natif, +(dpr + 0.25).toFixed(2)); renderer.setPixelRatio(dpr); taille();
+    S3D.ips = Math.round(1 / moy);
+    if (moy > 1 / 55) {
+      lent.baisse = maintenant;
+      if (lent.palier === 0 && M.qualite) { M.qualite("basse"); lent.palier = 1; lent.chauffe = 20; }
+      else if (dpr > plancherFluide) {
+        // l'appareil peine vraiment (sous 45 i/s) : un grand pas ; sinon un petit. D'abord vers la 4K plancher, puis
+        // jusqu'à la netteté native
+        const pas = moy > 1 / 45 ? 0.5 : 0.25, bas = dpr > plancher ? plancher : plancherFluide;
+        dpr = Math.max(bas, +(dpr - pas).toFixed(2)); renderer.setPixelRatio(dpr); taille(); lent.chauffe = 10;
+      }
+    } else if (moy < 1 / 80 && dpr < plafond && maintenant - lent.baisse > 10000) {
+      // un écran 120 Hz qui a de la marge remonte vers la 4K, pas plus d'un cran toutes les 10 s après une baisse
+      dpr = Math.min(plafond, +(dpr + 0.25).toFixed(2)); renderer.setPixelRatio(dpr); taille(); lent.chauffe = 10;
     }
+    S3D.dpr = dpr; S3D.rendu = [renderer.domElement.width, renderer.domElement.height]; S3D.qualite = lent.palier ? "basse" : "pleine";
   }
 
   function boucle(maintenant) {
@@ -234,6 +312,7 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
       blocs.forEach((b, j) => { b.classList.toggle("on", j === k); b.setAttribute("aria-hidden", j === k ? "false" : "true"); });
       pastilles.forEach((b, j) => b.classList.toggle("on", j === k));
       racine.dataset.station = stations[k].id || k;
+      ombres = Math.max(ombres, 2);   // une étape neuve : les ombres se refont une fois (un décor chargé entre-temps)
       if (M.surStation) M.surStation(k);
       if (surStation) surStation(k, stations[k]);
     }
@@ -256,9 +335,11 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
 
     const vivant = M.anime ? M.anime((maintenant - t0) / 1000, dt, { k: kActif, f, camera }) : false;
     if (!(bouge || vivant || sale)) return;
+    if (compilation) return;
     sale = false;
+    if (ombres > 0) { renderer.shadowMap.needsUpdate = true; ombres--; }
     renderer.render(scene, camera);
-    ajuster(dt);
+    ajuster(dt, maintenant);
 
     // les points de la station, projetés sur l'écran
     const w = scene3.clientWidth, h = scene3.clientHeight;
@@ -273,6 +354,23 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
   }
 
   taille();
+  recompiler();
+  // les textures du décor partent vers la carte graphique UNE PAR IMAGE, pendant que les matières se compilent :
+  // la première image n'a plus rien à envoyer (tout d'un coup, c'était le gel du démarrage)
+  const aEnvoyer = new Set();
+  scene.traverse((o) => {
+    const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+    for (const m of ms) for (const k of ["map", "normalMap", "roughnessMap", "alphaMap", "emissiveMap", "bumpMap"]) if (m[k] && m[k].isTexture) aEnvoyer.add(m[k]);
+  });
+  const avantPremiere = compilation;
+  compilation = (async () => {
+    for (const t of aEnvoyer) {
+      try { renderer.initTexture(t); } catch (e) {}
+      await new Promise((r) => requestAnimationFrame(r));
+    }
+    if (avantPremiere) await avantPremiere;
+    compilation = null; sale = true;
+  })();
   requestAnimationFrame(boucle);
   racine.classList.add("s3d-pret");
 
@@ -285,17 +383,46 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
       else { decal.pV.set(...dp); decal.cV.set(...(dc || dp)); }
       sale = true;
     },
-    rafraichir() { sale = true; },
+    rafraichir() { sale = true; ombres = Math.max(ombres, 2); },
     renderer, scene, camera,
   };
 }
 
-// Un chargeur d'images en textures : la variante du srcset juste assez grande pour l'écran, jamais 4K entière.
-function chargeur(anis) {
-  const charge = new THREE.TextureLoader();
-  return (src) => new Promise((ok) => charge.load(src, (t) => {
+// Un chargeur d'images en textures. Sur grand rendu, un produit détouré vient en 2x (`_detoures/2x/`, agrandi par
+// `_outils/_agrandir_detoures.py`) ; s'il manque, l'original prend sa place sans un mot.
+// Chaque photo est DÉCODÉE hors du fil principal (decode()) puis envoyée à la carte graphique dès son arrivée
+// (initTexture) : sans cela, le décodage et l'envoi tombaient sur l'image où la caméra arrive devant le produit.
+// Hors Safari, createImageBitmap décode ET retourne l'image hors du fil principal, et l'envoi d'un ImageBitmap est
+// direct. Safari (iPhone) garde l'image classique : ses options de createImageBitmap ne sont pas fiables partout.
+function chargeur(anis, grand, renderer) {
+  const safari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const bitmap = !safari && typeof createImageBitmap === "function" && THREE.ImageBitmapLoader;
+  const charge = bitmap ? new THREE.ImageBitmapLoader() : new THREE.TextureLoader();
+  if (bitmap) charge.setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" });
+  const pret = (t) => {
     t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = anis;
-    ok(t);
+    try { if (renderer) renderer.initTexture(t); } catch (e) {}
+    return t;
+  };
+  const une = (src) => new Promise((ok) => charge.load(src, async (x) => {
+    if (bitmap) { const t = new THREE.Texture(x); t.flipY = false; t.needsUpdate = true; return ok(pret(t)); }
+    try { if (x.image && x.image.decode) await x.image.decode(); } catch (e) {}
+    ok(pret(x));
   }, undefined, () => ok(null)));
+  // la liste des produits déjà agrandis (`2x/liste.json`, écrite par l'agrandisseur) : on ne demande jamais un
+  // fichier absent
+  let liste = null;
+  const lire = (dossier) => liste || (liste = fetch(dossier + "2x/liste.json").then((r) => (r.ok ? r.json() : []))
+    .catch(() => []).then((a) => new Set(a)));
+  return async (src) => {
+    if (grand && src && src.includes("/_detoures/") && !src.includes("/2x/")) {
+      const i = src.indexOf("/_detoures/") + 11, nom = src.slice(i).split("?")[0];
+      if ((await lire(src.slice(0, i))).has(nom)) {
+        const t = await une(src.slice(0, i) + "2x/" + src.slice(i));
+        if (t) return t;
+      }
+    }
+    return une(src);
+  };
 }

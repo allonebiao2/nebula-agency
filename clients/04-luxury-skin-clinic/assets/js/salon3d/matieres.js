@@ -8,10 +8,16 @@ export function graine(s) {
   return () => ((x = (x * 1664525 + 1013904223) >>> 0) / 4294967296);
 }
 
-function toile(w, h) {
+// Sur grand rendu (4K), une toile qui le DEMANDE est en double définition : on dessine dans le même repère, l'échelle
+// fait le reste. Seuls les panneaux posés d'un seul tenant le demandent : un sol ou un mur où la matière se répète 6 à
+// 14 fois a déjà plus de détail que l'écran, et doubler ses 16 millions de pixels gelait le démarrage (2,5 s mesurées).
+function toile(w, h, fin = false) {
+  const F = (fin && typeof window !== "undefined" && window.S3D_FINESSE) || 1;
   const c = document.createElement("canvas");
-  c.width = w; c.height = h;
-  return [c, c.getContext("2d")];
+  c.width = w * F; c.height = h * F;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  if (F !== 1) g.scale(F, F);
+  return [c, g];
 }
 
 function tex(c, anis, rep = 1) {
@@ -23,7 +29,8 @@ function tex(c, anis, rep = 1) {
 }
 
 function grain(g, w, h, amp, r) {
-  const d = g.getImageData(0, 0, w, h), a = d.data;
+  // le grain se pose sur les VRAIS pixels de la toile (getImageData ignore l'échelle)
+  const d = g.getImageData(0, 0, g.canvas.width, g.canvas.height), a = d.data;
   for (let i = 0; i < a.length; i += 4) {
     const n = (r() - 0.5) * amp;
     a[i] += n; a[i + 1] += n; a[i + 2] += n;
@@ -54,7 +61,7 @@ export function terrazzo(anis, { base = "#ece6da", eclats = ["#c9c2b4", "#a9c7bb
 
 // marbre sombre veiné d'or (le cabinet privé, la boutique INA)
 export function marbre(anis, { base = "#14110d", veine = "rgba(201,168,76,", rep = 2, taille = 1024, n = 18 } = {}) {
-  const [c, g] = toile(taille, taille), r = graine(1806);
+  const [c, g] = toile(taille, taille, rep <= 1), r = graine(1806);
   g.fillStyle = base; g.fillRect(0, 0, taille, taille);
   for (let i = 0; i < n; i++) {
     let x = r() * taille, y = r() * taille, a = r() * 6.283;

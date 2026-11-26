@@ -239,6 +239,41 @@ propre expérience 3D immersive et interactive** (une visite de salon, l'exposit
   Il faut REMPLACER (jamais deux musiques à la fois), avec une seule piste pour les 4 pages, à -12 LUFS, et proposer 2
   ou 3 pistes à Mongazi avant de poser.
 
+## 3 ter. Le 26/11 au soir : la 4K et la fluidité
+Deux demandes de Mongazi : « la vitrine en 4K » et « le plus fluide possible ». Tout est dans
+`assets/js/salon3d/moteur.js` ; `window.S3D` dit dans la console ce que le moteur rend vraiment (définition, images
+par seconde, carte graphique, temps de compilation).
+- **La définition** : jamais sous 2x, même sur un écran de PC ordinaire, donc un écran 1920 est rendu en 3840 px.
+  Le plafond est le natif de l'écran (jusqu'à 3x) ET un budget de 3840 × 2160 pixels.
+- **Une carte graphique faible** (Intel HD/UHD intégrée, Mali, PowerVR, petit Adreno : la plupart des portables et
+  des téléphones de Cotonou) démarre à la netteté native, avec l'anticrénelage. Mesuré ici : une Intel HD 5500 tient
+  40 images/s en 2x quand la caméra bouge. Une carte forte démarre en 4K.
+- **La fluidité d'abord** : 60 images/s visées, sans plafond (un écran 120 Hz en reçoit 120). Sous 55, on coupe la
+  poussière et les rais, puis on descend vers 2x, puis jusqu'au natif, jamais en dessous. Une définition baissée ne
+  remonte pas sur un écran 60 Hz (chaque aller-retour est un à-coup).
+- **Les ombres sont figées** : aucun objet qui en porte ne bouge, donc elles se calculent au départ et à chaque
+  étape, jamais à chaque image. ⚠️ **Couper les ombres recompilait toutes les matières et gelait la 3D** : la qualité
+  basse les garde.
+- **Plus de gel au démarrage** : les matières se compilent en parallèle (`compileAsync`), les textures partent vers
+  la carte graphique une par image, et chaque photo est décodée hors du fil principal (`ImageBitmapLoader`, sauf
+  Safari).
+- **Les matières** posées d'un seul tenant sont dessinées en double définition sur grand rendu (un sol qui se répète
+  6 à 14 fois, non : doubler ses 16 millions de pixels gelait le démarrage 2,5 s).
+- **Les produits d'INA en 2x sur grand rendu** : `_outils/_agrandir_detoures.py` (Real-ESRGAN x4plus sur le
+  processeur, qui affine la vraie photo sans rien inventer ; la transparence suit en Lanczos). Le moteur ne demande
+  que les produits de `2x/liste.json` ; le téléphone garde les originaux.
+  - ⚠️ Le PC a tué l'agrandisseur en pleine écriture : `bonbon-scrub.webp` faisait 0 octet et figurait dans la liste.
+    Il écrit maintenant à côté puis renomme, et un fichier vide ne compte plus.
+  - Environ 2 à 3 minutes par produit sur ce PC, 33 produits : il se relance et reprend où il s'est arrêté.
+- **Le verre dépoli allégé** : flou 22 → 16 px (12 px au téléphone). Une étiquette cachée passe en `visibility:hidden`,
+  pour que son flou ne se calcule plus.
+- **La page** (bloc `<!--FLUIDE-->` en fin des 4 pages) : l'égaliseur du bouton son anime `transform` au lieu de
+  `height`, et les pulsations (`box-shadow`, 34 boutons sur INA) battent trois fois puis s'arrêtent.
+- **Le cache** : les modules 3D s'importent entre eux sans `?v=`. Ils sont donc en `no-cache` dans `_headers` (un
+  fichier inchangé répond 304), et le `?v=` du démarrage et de la feuille passe à `20261126u`.
+  ⚠️ `_salon3d_poser.py` a pour version par défaut `20261126a` : toujours lui passer `--version`.
+- QC vert sur les 4 pages aux deux largeurs : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18, hub 15 + 14.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après

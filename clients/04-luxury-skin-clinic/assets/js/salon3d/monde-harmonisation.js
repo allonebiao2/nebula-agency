@@ -280,8 +280,8 @@ export function cabinet({ donnees, prix, forfait = () => "", lien, quand }) {
       qualite(q) {
         if (q !== "basse") return;
         qualiteBasse = true;
+        // (26/11) les ombres restent : figées, elles ne coûtent presque plus rien, et les couper recompilait toutes les matières (la 3D gelée)
         scene.remove(pous);
-        scene.traverse((o) => { if (o.isSpotLight) o.castShadow = false; });
       },
       anime(t, dt) {
         let vivant = false;

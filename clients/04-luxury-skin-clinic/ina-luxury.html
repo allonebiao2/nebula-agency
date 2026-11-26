@@ -727,7 +727,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 .sr-titre{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
 </style>
 <!--S3D-CSS-->
-<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126t">
+<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126u">
 <!--/S3D-CSS-->
 </head>
 <body>
@@ -3032,7 +3032,7 @@ window.LC_INA={produits:PRODUCTS,img:IMG,familles:FAMILIES,sous:SUBCATS,
 /* une famille ouverte par l'adresse (ina-luxury.html#intime-bien-etre : les anciens liens de Cozy y arrivent) */
 (function(){var k=decodeURIComponent((location.hash||'').slice(1));if(k&&FAMILIES.some(function(f){return f.key===k;})){select(k,null,null);setTimeout(function(){var m=document.querySelector('.layout');if(m)m.scrollIntoView();},400);}})();
 </script>
-<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261126t"></script>
+<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261126u"></script>
 <!--/S3D-FIN-->
 <!--LM-->
 <script>window.LC_MENU={"familles": true, "raccourcis": [{"t": "Tous les produits", "h": ".layout"}, {"t": "Mon panier", "clic": "#cartBtn"}, {"t": "Faire ma consultation", "clic": "#consultBtn"}]};</script>
@@ -3058,5 +3058,15 @@ window.LCMusique=(function(){
 })();
 </script>
 <!--/MUS-->
+<!--FLUIDE--><style id="lc-fluide">
+/* FLUIDITÉ (26/11, Mongazi : « le plus fluide possible ») : posé à la fin de la page, APRÈS les règles qu il corrige.
+   · l'égaliseur du bouton son animait `height` (mise en page à chaque image, tant que la musique joue) : même geste
+     en `transform`, que la carte graphique fait seule ;
+   · les pulsations animaient `box-shadow` sans fin (la page repeinte à chaque image ; sur INA, 34 boutons) : trois
+     battements, puis le calme, comme les points de la visite. */
+@keyframes lcEq{0%,100%{transform:scaleY(.29);}50%{transform:scaleY(1);}}
+.lc-eq i{height:17px;transform:scaleY(.29);}
+.lc-social a,.btn-add.wa,.cart-wa{animation-iteration-count:3;}
+</style><!--/FLUIDE-->
 </body>
 </html>
