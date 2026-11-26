@@ -96,11 +96,12 @@ export function chene(anis, { base = "#c9a57b", fonce = "#a88158", w = 256, h = 
 }
 
 // plâtre chaulé : un blanc qui respire
-export function platre(anis, { base = "#f3efe6", amp = 9, taille = 512, rep = 3 } = {}) {
+// `taches` règle la force des nuages du plâtre (1 = d'origine ; 0,3 = une chaux lisse, cf. la clinique du 26/11)
+export function platre(anis, { base = "#f3efe6", amp = 9, taille = 512, rep = 3, taches = 1 } = {}) {
   const [c, g] = toile(taille, taille), r = graine(31);
   g.fillStyle = base; g.fillRect(0, 0, taille, taille);
   for (let i = 0; i < 260; i++) {
-    g.fillStyle = r() > 0.5 ? "rgba(255,255,255,.05)" : "rgba(120,100,70,.035)";
+    g.fillStyle = r() > 0.5 ? `rgba(255,255,255,${0.05 * taches})` : `rgba(120,100,70,${0.035 * taches})`;
     g.beginPath(); g.arc(r() * taille, r() * taille, 8 + r() * 40, 0, 6.283); g.fill();
   }
   grain(g, taille, taille, amp, r);

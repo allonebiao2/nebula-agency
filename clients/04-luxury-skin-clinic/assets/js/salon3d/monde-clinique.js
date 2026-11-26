@@ -22,8 +22,11 @@ export function clinique({ services, art = {}, artFamille = {}, lien, quand }) {
     renderer.toneMappingExposure = 1.0;
 
     // ---------- les matières ----------
-    const mTerrazzo = new THREE.MeshStandardMaterial({ map: terrazzo(anis, { rep: 14 }), roughness: 0.36, envMapIntensity: 0.55 });
-    const mPlatre = new THREE.MeshStandardMaterial({ map: platre(anis, { rep: 6 }), roughness: 0.95 });
+    // LA LUMIÈRE, VAGUE 3 (26/11, « 10 000 $ ») : un terrazzo fin (éclats proches du fond, moins nombreux), des murs à la
+    // chaux (les nuages du plâtre, vus en grand, faisaient des taches), un plafond blanc chaud au lieu d'un béton gris
+    const mTerrazzo = new THREE.MeshStandardMaterial({ map: terrazzo(anis, { rep: 14, n: 1700,
+      eclats: ["#dcd4c6", "#cbdad2", "#e2d3b0", "#f7f4ee", "#d3c8b8", "#bcd0c6"] }), roughness: 0.36, envMapIntensity: 0.55 });
+    const mPlatre = new THREE.MeshStandardMaterial({ map: platre(anis, { rep: 6, amp: 5, taches: 0.4 }), roughness: 0.95 });
     const mChene = new THREE.MeshStandardMaterial({ map: chene(anis), roughness: 0.62 });
     const mBlanc = new THREE.MeshStandardMaterial({ color: 0xf7f3ec, roughness: 0.4 });
     const mLaiton = new THREE.MeshStandardMaterial({ color: 0xc9a24e, metalness: 1, roughness: 0.32, envMapIntensity: 1.2 });
@@ -44,7 +47,7 @@ export function clinique({ services, art = {}, artFamille = {}, lien, quand }) {
     const sol = new THREE.Mesh(new THREE.PlaneGeometry(80, 34), mTerrazzo);
     sol.rotation.x = -Math.PI / 2; sol.position.set(22, 0, -1); sol.receiveShadow = true; scene.add(sol);
     // le plafond reçoit peu de lumière directe : une pointe d'émission le garde clair, comme un plafond blanc de jour
-    const plafond = new THREE.Mesh(new THREE.PlaneGeometry(80, 34), new THREE.MeshStandardMaterial({ map: platre(anis, { rep: 6 }), roughness: 0.95, emissive: 0x6b665c, emissiveIntensity: 0.55 }));
+    const plafond = new THREE.Mesh(new THREE.PlaneGeometry(80, 34), new THREE.MeshStandardMaterial({ map: platre(anis, { rep: 6, base: "#f7f2e9", amp: 3, taches: 0.25 }), roughness: 0.95, emissive: 0xe4dac8, emissiveIntensity: 0.56 }));
     plafond.rotation.x = Math.PI / 2; plafond.position.set(22, 3.6, -1); scene.add(plafond);
     const mur = (w, x, z, ry = 0) => {
       const mat = mPlatre.clone(); mat.map = mPlatre.map.clone(); mat.map.repeat.set(Math.max(1, w / 3), 1.2); mat.map.needsUpdate = true;

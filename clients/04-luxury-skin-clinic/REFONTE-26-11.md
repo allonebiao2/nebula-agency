@@ -319,8 +319,17 @@ Avant : huit fois le même couloir, un grand panneau de bois vide et une plaque 
   plus, sans aucune erreur visible dans le QC. Vérifier avec `node --input-type=module --check < fichier.js`.
 - QC clinique vert : 90 + 90.
 
-### Vague 3 · la lumière (à faire)
-La 3D est plate et pâle (« décor de jeu simple ») : reflets, profondeur, éclairage.
+### Vague 3 · la lumière (faite, première passe)
+Vu en grand au PC, trois matières faisaient bon marché : un plafond de béton gris taché (un tiers de l'écran), des murs
+marbrés de taches, un terrazzo aux éclats trop contrastés. Et une lumière plate.
+- **Plafond blanc chaud et lisse** ; **murs à la chaux** (`platre()` prend un réglage `taches`, 1 = d'origine) ;
+  **terrazzo fin** (éclats proches du fond, 1 700 au lieu de 2 600).
+- **Le vignettage** : les bords de l'image s'assombrissent à peine (`.s3d-scene::after`, `--s3d-vignette`, plus fort sur
+  les fonds sombres d'INA et du cabinet). Un dégradé FIXE, sans mélange ni flou, que la carte graphique compose sans
+  rien recalculer. Les points et les fiches passent au-dessus (`z-index:2`).
+- QC vert : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18.
+- ⏳ **Ce qui irait plus loin** (à mesurer sur un vrai téléphone avant) : un éclairage précalculé, des reflets au sol,
+  une profondeur de champ. Chacun coûte des images par seconde sur les cartes graphiques faibles de Cotonou.
 
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
