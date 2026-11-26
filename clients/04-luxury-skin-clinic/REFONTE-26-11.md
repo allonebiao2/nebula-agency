@@ -175,6 +175,12 @@ propre expérience 3D immersive et interactive** (une visite de salon, l'exposit
 - QC vert (une largeur à la fois) : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18, hub 15 + 14.
   - La sonde des recouvrements est corrigée : un tiroir fermé, hors de l'écran, ne recouvre rien.
 
+- ⏳ **LA MUSIQUE** (Mongazi, /vague du 26/11) : remplacer l'ambiance actuelle par une musique de relaxation, **une fois
+  toutes les modifications finies**. Zone travaux, rang 7. L'ambiance actuelle est synthétisée en Web Audio
+  (bouton `#lcMute`, sur le hub, la clinique et INA) ; la page d'harmonisation joue `assets/audio/luxury-ambiance.mp3`.
+  Il faut REMPLACER (jamais deux musiques à la fois), avec une seule piste pour les 4 pages, à -12 LUFS, et proposer 2
+  ou 3 pistes à Mongazi avant de poser.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après

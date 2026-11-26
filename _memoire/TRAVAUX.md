@@ -38,6 +38,12 @@ dans `nebula-apercus/PLAN-APERCUS-25-11.md`.
 | 5 | Aperçu 3D, ensembles montre | BIMF Store | ses photos si elles arrivent ; sinon ensembles d'EXEMPLE marqués comme tels, remplacés ensuite | sous 48 h après son oui |
 | 6 | Remplacer les pièces d'exemple de la vitrine par ses vraies pièces | Max · OVRSZ | ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut |  |
 
+## 🔜 Vague 3
+
+| Rang | Travail | Client | Ce qu'il faut | Échéance |
+|---|---|---|---|---|
+| 7 | Changer la musique d'ambiance du site : une musique de relaxation (spa), à la place de l'ambiance synthétisée actuelle | Luxury Club 229 | À faire APRÈS toutes les modifications en cours (photos avant/après, réouverture). Une piste Pixabay de relaxation (licence notée, Content ID vérifié), normalisée à -12 LUFS, jouée au premier toucher sur les 4 pages, en remplaçant l'ambiance Web Audio actuelle (bouton #lcMute) au lieu de l'ajouter ; proposer 2 ou 3 pistes à Mongazi avant de poser. Sans choix de sa part : spa doux, piano et nappes, sans voix. | après les modifications en cours de la cliente |
+
 ## ✅ Livrés
 | Date | Client | Travail | Lien |
 |---|---|---|---|

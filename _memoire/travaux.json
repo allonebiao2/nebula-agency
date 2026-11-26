@@ -35,6 +35,12 @@
    "travail": "Remplacer les pièces d'exemple de la vitrine par ses vraies pièces",
    "besoin": "ses pièces sur cintre, noms, prix, tailles ; en attendant, améliorer ce qu'on peut",
    "echeance": ""
+  },
+  {
+   "client": "Luxury Club 229",
+   "travail": "Changer la musique d'ambiance du site : une musique de relaxation (spa), à la place de l'ambiance synthétisée actuelle",
+   "besoin": "À faire APRÈS toutes les modifications en cours (photos avant/après, réouverture). Une piste Pixabay de relaxation (licence notée, Content ID vérifié), normalisée à -12 LUFS, jouée au premier toucher sur les 4 pages, en remplaçant l'ambiance Web Audio actuelle (bouton #lcMute) au lieu de l'ajouter ; proposer 2 ou 3 pistes à Mongazi avant de poser. Sans choix de sa part : spa doux, piano et nappes, sans voix.",
+   "echeance": "après les modifications en cours de la cliente"
   }
  ],
  "livres": [
