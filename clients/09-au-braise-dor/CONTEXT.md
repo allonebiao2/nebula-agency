@@ -1099,3 +1099,21 @@ Commande de la patronne, par Mongazi (prix proposé : **10 000 F**). Elle lance 
 
 ## 2026-11-25 · Étiquettes de jus : Maman Djibom les veut RECTANGULAIRES
 Elle ne veut ni des carrées 6,5 × 6,5 cm (24/11) ni des ovales : elle veut un format **rectangulaire**. Les dimensions sont à confirmer avec elle ; sans réponse, on propose une taille standard (rien n'est bloqué). On part de `_outils/_etiquettes_carre.py`, toujours sans la ligne « Préparé le … Au frais ». Le travail est dans `_memoire/TRAVAUX.md`.
+
+## 2026-11-26 · Étiquettes qui font le TOUR d'une bouteille de 50 cl (rectangle 21 × 7 cm)
+Maman Djibom veut des étiquettes RECTANGULAIRES, posées autour de bouteilles de 50 cl (Mongazi, 25/11 au soir).
+- `python clients/09-au-braise-dor/_outils/_etiquettes_tour.py [--tour 20.2] [--haut 7]` → `imprimer/tour-50cl/`
+  (9 jus, PNG 300 DPI, unitaires à la taille exacte, planches A4 paysage de 2 par jus, A3 de 5 pour l'imprimeur, aperçu).
+- Taille : tour d'une bouteille ronde de 50 cl ≈ 20,2 cm (6,4 cm de diamètre) + 8 mm de recouvrement = **21 × 7 cm**.
+  Le bout gauche (9 mm sans texte) passe sous le bout droit. **À vérifier sur SA bouteille** (ficelle autour) : si le
+  tour diffère, relancer avec `--tour <cm>`, tout se recalcule.
+- Déroulé : la maison (AU BRAISÉ D'OR, « De Paris à Cotonou », 50 cl, « Bien agiter avant de servir ») · le devant
+  (fruit dans son médaillon, JUS DE …, ruban, goût) · commandes (les deux numéros, grillades, traiteur, aubraisedor.com).
+- Le format 9 × 5,5 cm d'une autre session (`imprimer/rectangle/`) ne couvre que le devant : gardé, pas effacé.
+- Carotte-betterave toujours en attente (comme pour les autres formats).
+- **Elle imprime CHEZ ELLE, en SVG** (Mongazi, 26/11 : « pour que la qualité reste ») : `svg/etiquette-seule/` (21 × 7 cm)
+  et `svg/planche-A4/` (2 par feuille, A4 paysage), plus `planches-A4-tour-50cl-maison.pdf` (9 pages). Les SVG sont pris
+  DANS la page : tout vectoriel, polices intégrées (Fraunces et Montserrat en base64, Segoe UI Black réduite au
+  mot-symbole, fsType 8). À ouvrir dans Chrome, Edge ou Safari et imprimer à **100 %**. Refaire les SVG seuls :
+  `_etiquettes_tour.py --svg`. ⚠️ **Ne pas tirer les SVG du PDF avec PyMuPDF** : il change les dégradés des fruits en
+  images de 73 px, floues à l'impression.

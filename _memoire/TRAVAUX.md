@@ -41,8 +41,8 @@ dans `nebula-apercus/PLAN-APERCUS-25-11.md`.
 ## ✅ Livrés
 | Date | Client | Travail | Lien |
 |---|---|---|---|
+| 26/11 | Au Braisé d'Or (Maman Djibom) | Étiquettes de jus en format RECTANGULAIRE | clients/09-au-braise-dor/imprimer/tour-50cl/ |
 | 26/11 | Luxury Club 229 | Changer la musique d'ambiance du site : une musique de relaxation (spa), à la place de l'ambiance synthétisée actuelle | https://apercu.luxury-club-229.pages.dev |
-| 25/11 | Au Braisé d'Or (Maman Djibom) | Étiquettes de jus en format RECTANGULAIRE |  |
 | 25/11 | Dayday's Fancy Accessories | Aperçu 3D, un seul catalogue pour ses 3 pubs (montres connectées, tablettes, ventilateurs solaires) | https://daydays-fancy.pages.dev |
 | 25/11 | Max · OVRSZ | Vitrine 3D offerte (pièces d'exemple) | https://ovrsz.pages.dev |
 | 25/11 | Semelle Dafrik | Aperçu 3D | https://semelle-dafrik.pages.dev |

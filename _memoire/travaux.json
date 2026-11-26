@@ -81,16 +81,16 @@
    "lien": "https://daydays-fancy.pages.dev"
   },
   {
-   "date": "25/11",
-   "client": "Au Braisé d'Or (Maman Djibom)",
-   "travail": "Étiquettes de jus en format RECTANGULAIRE",
-   "lien": ""
-  },
-  {
    "date": "26/11",
    "client": "Luxury Club 229",
    "travail": "Changer la musique d'ambiance du site : une musique de relaxation (spa), à la place de l'ambiance synthétisée actuelle",
    "lien": "https://apercu.luxury-club-229.pages.dev"
+  },
+  {
+   "date": "26/11",
+   "client": "Au Braisé d'Or (Maman Djibom)",
+   "travail": "Étiquettes de jus en format RECTANGULAIRE",
+   "lien": "clients/09-au-braise-dor/imprimer/tour-50cl/"
   }
  ]
 }
