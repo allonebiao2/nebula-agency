@@ -1,12 +1,14 @@
 // Démarrage du cabinet privé (harmonisation-faciale.html).
 // Le premier écran est la porte, en HTML : rien de lourd. three.js ne se charge qu'au premier geste,
 // ou quand le navigateur est libre après le chargement. La fiche (zone, tarif, consultation) est tenue ici.
-import { installerSon, bruit } from "./son.js";
+import { installerSon, bruit, mouvement } from "./son.js";
 
 const racine = document.getElementById("cabinet");
 const H = window.LC_HARMO;
 if (racine && H) {
   installerSon({ bouton: racine.querySelector(".s3d-son") });
+  // le toucher, dans la scène : une goutte d'eau (26/11)
+  racine.querySelector(".s3d-scene").addEventListener("pointerdown", () => bruit.goutte(), { passive: true });
   const porte = racine.querySelector(".s3d-porte");
   let ouverte = false, moteurP = null;
   const lien = {};
@@ -78,7 +80,7 @@ if (racine && H) {
         porteOuverte: () => ouverte,
       },
     });
-    const m = await lancer({ racine, monde });
+    const m = await lancer({ racine, monde, surStation: (k) => { if (k > 0) bruit.bol(); }, surMouvement: mouvement, surSurvol: () => bruit.tinte() });
     if (!m) return;
     lien.moteur = m;
     racine.s3d = lien;

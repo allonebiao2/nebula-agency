@@ -19,7 +19,7 @@ export { THREE };
 const lisse = (t) => t * t * (3 - 2 * t);
 const borne = (x, a, b) => Math.max(a, Math.min(b, x));
 
-export async function lancer({ racine, monde, surStation = null }) {
+export async function lancer({ racine, monde, surStation = null, surMouvement = null, surSurvol = null }) {
   const mobile = matchMedia("(max-width: 760px)").matches;
   const calme = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const scene3 = racine.querySelector(".s3d-scene");
@@ -163,6 +163,7 @@ export async function lancer({ racine, monde, surStation = null }) {
     const o = viser3D(e);
     if (o) o.userData.act();
   });
+  let survolDernier = null;
   if (!mobile) {
     let att = 0;
     scene3.addEventListener("pointermove", (e) => {
@@ -171,6 +172,8 @@ export async function lancer({ racine, monde, surStation = null }) {
       att = t;
       const o = viser3D(e);
       scene3.style.cursor = o ? "pointer" : "";
+      if (o && o !== survolDernier && surSurvol) surSurvol(o);
+      survolDernier = o;
       if (M.survol) M.survol(o);
     });
   }
@@ -197,6 +200,7 @@ export async function lancer({ racine, monde, surStation = null }) {
   }, { rootMargin: "120px" }).observe(racine);
 
   const tampon = new THREE.Vector3();
+  let vitesseDite = 0;
   const lent = { n: 0, s: 0, palier: 0 };
   function ajuster(dt) {
     // on mesure 50 images d'affilée ; sous 45 i/s, on allège d'un cran
@@ -215,6 +219,8 @@ export async function lancer({ racine, monde, surStation = null }) {
   function boucle(maintenant) {
     if (!visible) return;
     requestAnimationFrame(boucle);
+    // le menu recouvre la page : on ne dessine rien (menu.js pose la classe)
+    if (document.documentElement.classList.contains("lm-ouvert")) { horloge = maintenant; sale = true; return; }
     const dt = Math.min(0.05, (maintenant - horloge) / 1000);
     horloge = maintenant;
     const fAvant = f;
@@ -240,6 +246,11 @@ export async function lancer({ racine, monde, surStation = null }) {
     camPos.lerp(visePos, a);
     camCib.lerp(viseCib, a);
     const bouge = camPos.distanceToSquared(visePos) > 1e-7 || camCib.distanceToSquared(viseCib) > 1e-7;
+    // la vitesse de la caméra (m/s, ramenée à 0-1) : le souffle du mouvement la suit
+    if (surMouvement) {
+      const v = dt > 0 ? Math.min(1, camera.position.distanceTo(camPos) / dt / 7) : 0;
+      if (Math.abs(v - vitesseDite) > 0.03 || (v === 0 && vitesseDite !== 0)) { vitesseDite = v; surMouvement(v); }
+    }
     camera.position.copy(camPos);
     camera.lookAt(camCib);
 

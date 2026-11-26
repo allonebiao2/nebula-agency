@@ -2,12 +2,14 @@
 // La porte est en HTML (premier écran léger) ; three.js ne se charge qu'au premier geste ou quand le navigateur est
 // libre. Les actions de la scène appellent les moteurs DÉJÀ dans la page : startBooking (avec son « J'ai lu et
 // compris »), les cartes de soins de #soins, la réservation #rdv-booking. Rien n'est dupliqué.
-import { installerSon, bruit } from "./son.js";
+import { installerSon, bruit, mouvement } from "./son.js";
 
 const racine = document.getElementById("visite");
 const C = window.LC_CLINIC;
 if (racine && C) {
   installerSon({ bouton: racine.querySelector(".s3d-son") });
+  // le toucher, dans la scène : une goutte d'eau (26/11)
+  racine.querySelector(".s3d-scene").addEventListener("pointerdown", () => bruit.goutte(), { passive: true });
   const porte = racine.querySelector(".s3d-porte");
   const lien = {};
   let ouverte = false, moteurP = null;
@@ -69,7 +71,7 @@ if (racine && C) {
         son: (nom) => bruit[nom] && bruit[nom](),
       },
     });
-    const m = await lancer({ racine, monde });
+    const m = await lancer({ racine, monde, surStation: (k) => { if (k > 0) bruit.bol(); }, surMouvement: mouvement, surSurvol: () => bruit.tinte() });
     if (!m) return;
     lien.moteur = m;
     racine.s3d = lien;

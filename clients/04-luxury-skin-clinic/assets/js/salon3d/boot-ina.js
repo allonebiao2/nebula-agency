@@ -1,12 +1,14 @@
 // Démarrage de la boutique INA Luxury en 3D (ina-luxury.html).
 // INA a déjà son écran d'accueil : pas de porte ici. three.js se charge au premier geste ou quand le navigateur est
 // libre. Les actions de la scène appellent le catalogue de la page (select, panier, consultation) : rien n'est refait.
-import { installerSon, bruit } from "./son.js";
+import { installerSon, bruit, mouvement } from "./son.js";
 
 const racine = document.getElementById("boutique");
 const I = window.LC_INA;
 if (racine && I) {
   installerSon({ bouton: racine.querySelector(".s3d-son") });
+  // le toucher, dans la scène : une goutte d'eau (26/11)
+  racine.querySelector(".s3d-scene").addEventListener("pointerdown", () => bruit.goutte(), { passive: true });
   const lien = {};
   let moteurP = null;
   const calme = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -57,7 +59,7 @@ if (racine && I) {
       ina: { produits: I.produits, img: I.img, familles: I.familles, sous: I.sous, detoures }, lien,
       quand: { produit, catalogue, panier },
     });
-    const m = await lancer({ racine, monde, surStation: (k) => { if (k > 0) bruit.or(); } });
+    const m = await lancer({ racine, monde, surStation: (k) => { if (k > 0) bruit.bol(); }, surMouvement: mouvement, surSurvol: () => bruit.tinte() });
     if (!m) return;
     lien.moteur = m;
     racine.s3d = lien;

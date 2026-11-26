@@ -206,7 +206,34 @@ propre expérience 3D immersive et interactive** (une visite de salon, l'exposit
   - « Oui » mène à l'aide de chaque univers : un conseil sur WhatsApp (clinique), « Faire ma consultation » (INA),
     la demande de consultation (harmonisation) ;
   - le QC la tient à l'écart de sa mesure (message passager) ; elle se vérifie en photographies.
-- ⏳ **LA MUSIQUE** (Mongazi, /vague du 26/11) : remplacer l'ambiance actuelle par une musique de relaxation, **une fois
+- **LE MENU MÈNE AU SITE NORMAL** (vocal de la cliente, 26/11 : « la nouvelle interface, c'est une sorte d'accueil
+  pour chaque espace ; quand ils ne se retrouvent pas, ils cliquent sur Menu et ça les amène dans un espace normal ») :
+  - le menu ne liste plus les étapes 3D. Il liste, au téléphone comme au PC : à INA les familles et leurs
+    catégories (le catalogue classique) ; à la clinique les soins par famille (leur carte dans la liste) ; à
+    l'harmonisation les techniques (la liste écrite) ;
+  - au-delà de 2,5 écrans il SAUTE au lieu de glisser (on ne traverse pas toute la 3D), et il s'arrête sous les
+    barres collantes (`scroll-margin-top`) ;
+  - la 3D se met en pause tant que le menu est ouvert ;
+  - ⚠️ **défaut d'INA trouvé et corrigé** : chaque rayon touché remontait la page à 0, donc DANS la boutique 3D posée
+    au-dessus ; il remonte maintenant au début du catalogue.
+- **L'harmonisation en liste écrite** : la section des techniques n'a plus de flyers (ils restent dans le cabinet 3D).
+- **LA MUSIQUE DE SPA** (Mongazi : « un son apaisant, relaxant, qui donne l'impression d'être dans un spa », choisie
+  sur Pixabay dans Chrome), par `_outils/_musique_poser.py` :
+  - la piste : « Spa » de leberch (Pixabay, 4:56) → `assets/audio/luxury-spa.mp3`, -12,3 LUFS, 96 kb/s, fondus de
+    boucle ;
+  - ⚠️ elle est **Content ID Registered**, comme les 12 pistes de spa vérifiées : sans effet sur un site, mais une
+    vidéo du site publiée sur YouTube ou Facebook peut être réclamée ;
+  - elle REMPLACE l'ambiance synthétisée (musicStart/musicStop de la maison la jouent ; le bouton de la barre du bas
+    la commande) et l'ancienne piste de l'harmonisation, retirée.
+- **LES BRUITAGES** (« au toucher, au mouvement, tout ») :
+  - une goutte d'eau au toucher dans la scène ;
+  - un souffle d'air qui suit la vitesse de la caméra ;
+  - un bol chantant à chaque étape ;
+  - une note de verre au survol d'un objet qu'on peut toucher ;
+  - un souffle à l'ouverture du menu ;
+  - tout se tait avec le son.
+- QC vert sur les 4 pages, aux deux largeurs. Aperçu publié ; la production reste en maintenance.
+- ✅ **LA MUSIQUE** (Mongazi, /vague du 26/11), livrée le 26/11 (ci-dessus) : remplacer l'ambiance actuelle par une musique de relaxation, **une fois
   toutes les modifications finies**. Zone travaux, rang 7. L'ambiance actuelle est synthétisée en Web Audio
   (bouton `#lcMute`, sur le hub, la clinique et INA) ; la page d'harmonisation joue `assets/audio/luxury-ambiance.mp3`.
   Il faut REMPLACER (jamais deux musiques à la fois), avec une seule piste pour les 4 pages, à -12 LUFS, et proposer 2

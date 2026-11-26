@@ -70,7 +70,6 @@ def tableau(d):
                 f'<button type="button" data-consult data-t="{i}" data-z="{j}">Demander</button></td></tr>')
         note = f'\n      <p class="note">{e(t["note"])}</p>' if t.get("note") else ""
         out.append(f'''    <article class="tech" id="{e(t["id"])}">
-      <img src="{e(t["flyer"])}" alt="{e(t["nom"])} : les zones du visage et leurs tarifs, sur le visuel de Luxury Skin Clinic" width="900" height="1600" loading="lazy" decoding="async">
       <div>
         <div class="famille">{e(t.get("famille", "Harmonisation faciale"))}</div>
         <h3>{e(t["nom"])}</h3>

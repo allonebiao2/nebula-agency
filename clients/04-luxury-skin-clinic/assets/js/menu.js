@@ -32,6 +32,8 @@
   css.id = 'lm-css';
   css.textContent = [
     '.lm-gauche{display:flex;align-items:center;gap:6px;}',
+    /* les destinations du menu s'arrêtent SOUS les barres collantes (INA : 143 px ; clinique : 79 ; harmonisation : 64) */
+    '.layout{scroll-margin-top:150px;}#soins,#rdv-booking,#questions,#techniques,.tech{scroll-margin-top:86px;}',
     /* « Accueil » perd son mot au téléphone : la flèche garde une cible de 44 px */
     '.lm-gauche .back-hub,.lm-gauche .retour{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;}',
     '.lm-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;min-width:44px;padding:0 14px;border-radius:999px;cursor:pointer;',
@@ -50,6 +52,8 @@
     /* « Sur cette page » : des boutons qui ont l'allure des liens du tiroir */
     '.lm-sec{padding:4px 0 6px;border-bottom:1px solid rgba(201,168,76,.16);margin-bottom:4px;}',
     '.lm-sec .lc-cat-cat{padding-top:12px;}',
+    'button.lc-cat-sub.lm-tete{padding-left:22px;margin-top:8px;color:#ead9a6;font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:600;}',
+    'button.lc-cat-sub.lm-tete::before{content:none;}',
     'button.lc-cat-sub{background:none;border:0;width:100%;text-align:left;cursor:pointer;font:inherit;font-size:13px;min-height:40px;}',
     'a.lc-cat-sub.lm-l,button.lc-cat-sub{font-size:13px;color:#cfc2a3;}',
     'a.lc-cat-sub.lm-l:hover,button.lc-cat-sub:hover{color:#fff3cf;}',
@@ -101,19 +105,31 @@
   var sec = doc.createElement('div');
   sec.className = 'lm-sec';
   body.insertBefore(sec, body.firstChild);
+  /* La cliente, 26/11 : « la nouvelle interface, c'est une sorte d'accueil pour chaque espace ; quand ils ne se
+     retrouvent pas, ils cliquent sur Menu et ça les amène dans un espace normal, comme un site internet normal ».
+     Le menu ne mène donc JAMAIS dans la visite 3D : il mène aux listes de la page (catalogue, soins, techniques). */
+  var GROUPES = { visage: 'Soins du visage', corps: 'Soins du corps', capillaires: 'Soins capillaires', complet: 'Expérience VIP' };
   function remplir() {
     var h = '';
-    var etapes = [].slice.call(doc.querySelectorAll('.s3d-pastilles button'));
-    if (etapes.length) {
-      h += '<div class="lc-cat-cat">' + esc(CFG.titreVisite || 'La visite') + '</div>';
-      h += etapes.map(function (b) {
-        return '<button type="button" class="lc-cat-sub" data-lm-etape="' + b.dataset.k + '">' + esc(b.getAttribute('aria-label')) + '</button>';
-      }).join('');
-    }
     if (CFG.familles && window.LC_INA) {
-      h += '<div class="lc-cat-cat">Les rayons</div>';
-      h += window.LC_INA.familles.filter(function (f) { return window.LC_INA.produits.some(function (p) { return p.f === f.key; }); })
-        .map(function (f) { return '<button type="button" class="lc-cat-sub" data-lm-famille="' + esc(f.key) + '">' + esc(f.label) + '</button>'; }).join('');
+      var I = window.LC_INA;
+      I.familles.filter(function (f) { return I.produits.some(function (p) { return p.f === f.key; }); }).forEach(function (f) {
+        h += '<button type="button" class="lc-cat-sub lm-tete" data-lm-famille="' + esc(f.key) + '">' + esc(f.label) + '</button>';
+        (I.sous[f.key] || []).filter(function (s) { return I.produits.some(function (p) { return p.f === f.key && p.s === s.key; }); })
+          .forEach(function (s) { h += '<button type="button" class="lc-cat-sub" data-lm-famille="' + esc(f.key) + '" data-lm-sous="' + esc(s.key) + '">' + esc(s.label) + '</button>'; });
+      });
+    }
+    if (CFG.soins && window.LC_CLINIC) {
+      var S = window.LC_CLINIC.services, vus = {};
+      S.forEach(function (s) { vus[s.g] = 1; });
+      Object.keys(vus).forEach(function (g) {
+        h += '<div class="lc-cat-cat">' + esc(GROUPES[g] || g) + '</div>';
+        S.forEach(function (s, i) { if (s.g === g) h += '<button type="button" class="lc-cat-sub" data-lm-soin="' + i + '">' + esc(s.n) + '</button>'; });
+      });
+    }
+    if (CFG.techniques && window.LC_HARMO) {
+      h += '<div class="lc-cat-cat">Les techniques</div>';
+      h += window.LC_HARMO.donnees.map(function (t) { return '<button type="button" class="lc-cat-sub" data-lm-ancre="#' + esc(t.id) + '">' + esc(t.nom) + '</button>'; }).join('');
     }
     if (CFG.raccourcis && CFG.raccourcis.length) {
       h += '<div class="lc-cat-cat">Raccourcis</div>';
@@ -129,32 +145,51 @@
   function ouvrir() {
     remplir();
     panel.classList.add('open'); scrim.classList.add('open');
-    if (window.LCAudio) window.LCAudio.play('menuOpen');
+    if (window.LCAudio) window.LCAudio.play('menuOpen'); else if (window.LCBruit) window.LCBruit('menu');
     var c = panel.querySelector('.lc-cat-close'); if (c) c.focus();
     cacherBulle();
   }
   function fermer() {
     panel.classList.remove('open'); scrim.classList.remove('open');
-    if (window.LCAudio) window.LCAudio.play('menuClose');
+    if (window.LCAudio) window.LCAudio.play('menuClose'); else if (window.LCBruit) window.LCBruit('menu');
   }
   window.LCMenu = { ouvrir: ouvrir, fermer: fermer };
+  // tant que le menu recouvre la page, la visite 3D se met en pause (quel que soit le bouton qui l'a ouvert) :
+  // le tiroir glisse sans à-coup et le téléphone ne dessine pas une scène cachée (26/11)
+  new MutationObserver(function () { doc.documentElement.classList.toggle('lm-ouvert', panel.classList.contains('open')); })
+    .observe(panel, { attributes: true, attributeFilter: ['class'] });
   if (!existait) {
     panel.querySelector('.lc-cat-close').addEventListener('click', fermer);
     scrim.addEventListener('click', fermer);
     doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && panel.classList.contains('open')) fermer(); });
   }
+  // Celui qui ouvre le menu s'est perdu : il ARRIVE. Au-delà de deux écrans et demi (toute la visite 3D à traverser),
+  // on saute ; en dessous, on glisse (26/11).
+  function glisser(el, bloc) {
+    var loin = Math.abs(el.getBoundingClientRect().top) > innerHeight * 2.5;
+    el.scrollIntoView({ behavior: calme || loin ? 'auto' : 'smooth', block: bloc || 'start' });
+  }
+  window.LCGlisser = glisser;
   var aller = function (sel) {
     var el = doc.querySelector(sel);
-    if (el) el.scrollIntoView({ behavior: calme ? 'auto' : 'smooth', block: 'start' });
+    if (el) glisser(el, 'start');
   };
   sec.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     fermer();
-    if (b.dataset.lmEtape != null) {
-      var p = doc.querySelector('.s3d-pastilles button[data-k="' + b.dataset.lmEtape + '"]');
-      if (p) setTimeout(function () { p.click(); }, 60);
-    } else if (b.dataset.lmFamille && window.LC_INA) {
-      window.LC_INA.ouvrir(b.dataset.lmFamille, null);
+    if (b.dataset.lmFamille && window.LC_INA) {
+      window.LC_INA.ouvrir(b.dataset.lmFamille, b.dataset.lmSous || null);
+    } else if (b.dataset.lmSoin != null) {
+      // le soin, dans la liste des soins (le site « comme avant »), mis en lumière un instant
+      var bk = doc.querySelector('#svcSections [data-book="' + b.dataset.lmSoin + '"]');
+      var carte = bk && (bk.closest('.svc') || bk.parentElement);
+      if (carte) {
+        glisser(carte, 'center');
+        carte.style.transition = 'box-shadow .4s ease'; carte.style.boxShadow = '0 0 0 3px #c9a84c';
+        setTimeout(function () { carte.style.boxShadow = ''; }, 2200);
+      } else aller('#soins');
+    } else if (b.dataset.lmAncre) {
+      aller(b.dataset.lmAncre);
     } else if (b.dataset.lmR != null) {
       var r = CFG.raccourcis[+b.dataset.lmR];
       if (r.clic) { var c = doc.querySelector(r.clic); if (c) setTimeout(function () { c.click(); }, 60); }

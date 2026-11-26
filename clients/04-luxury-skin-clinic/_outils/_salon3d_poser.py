@@ -60,7 +60,7 @@ window.LC_CLINIC={services:SERVICES,book:function(i){startBooking(SERVICES[i]);}
         "pont": """<script>
 /* LA PASSERELLE de la vitrine 3D : les produits, les photos et les familles sont LUS ici, jamais recopiés. */
 window.LC_INA={produits:PRODUCTS,img:IMG,familles:FAMILIES,sous:SUBCATS,
-  ouvrir:function(f,s){select(f,s||null,null);var m=document.querySelector('.layout');if(m)m.scrollIntoView({behavior:'smooth'});}};
+  ouvrir:function(f,s){select(f,s||null,null);var m=document.querySelector('.layout');if(m){if(window.LCGlisser)window.LCGlisser(m,'start');else m.scrollIntoView();}}};
 /* une famille ouverte par l'adresse (ina-luxury.html#intime-bien-etre : les anciens liens de Cozy y arrivent) */
 (function(){var k=decodeURIComponent((location.hash||'').slice(1));if(k&&FAMILIES.some(function(f){return f.key===k;})){select(k,null,null);setTimeout(function(){var m=document.querySelector('.layout');if(m)m.scrollIntoView();},400);}})();
 </script>""",

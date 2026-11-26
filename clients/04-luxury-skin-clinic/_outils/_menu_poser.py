@@ -14,13 +14,13 @@ V = sys.argv[sys.argv.index("--version") + 1] if "--version" in sys.argv else "2
 PAGES = {
     "index.html": {"hub": True, "raccourcis": [
         {"t": "Nos univers", "h": "#brands"}, {"t": "Mme Sabrina", "h": "#bio"}, {"t": "Nos résultats", "h": "#temoignages"}]},
-    "luxury-skin-clinic.html": {"titreVisite": "La visite de la clinique", "raccourcis": [
+    "luxury-skin-clinic.html": {"soins": True, "raccourcis": [
         {"t": "Tous les soins et leurs tarifs", "h": "#soins"}, {"t": "Réserver un rendez-vous", "h": "#rdv-booking"},
         {"t": "Questions fréquentes", "h": "#questions"}]},
-    "ina-luxury.html": {"titreVisite": "La visite de la boutique", "familles": True, "raccourcis": [
+    "ina-luxury.html": {"familles": True, "raccourcis": [
         {"t": "Tous les produits", "h": ".layout"}, {"t": "Mon panier", "clic": "#cartBtn"},
         {"t": "Faire ma consultation", "clic": "#consultBtn"}]},
-    "harmonisation-faciale.html": {"titreVisite": "Le cabinet", "raccourcis": [
+    "harmonisation-faciale.html": {"techniques": True, "raccourcis": [
         {"t": "Toutes les techniques et leurs tarifs", "h": "#techniques"},
         {"t": "Demander ma consultation", "clic": ".consult [data-consult]"}]},
 }
