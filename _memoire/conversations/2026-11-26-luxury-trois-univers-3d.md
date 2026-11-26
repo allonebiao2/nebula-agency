@@ -78,3 +78,14 @@ Rang 1 de la zone travaux. Détail complet et pièges : `clients/04-luxury-skin-
 - `main` fusionné dans la branche (conflit sur la liste des travaux, les deux côtés gardés).
 - La ligne du client 04 dans `CLAUDE.md` est résumée (6 455 → environ 2 000 caractères), l'ancienne est archivée
   telle quelle à la fin du `CONTEXT.md`.
+
+## Le soir du 26/11, suite : « le travail doit valoir 10 000 $ », par vagues
+- Méthode : tout photographier d'abord (chaque étape des visites, chaque écran, téléphone ET PC), juger, puis trois
+  vagues. Détail : `REFONTE-26-11.md` § 3 quater.
+- **Vague 1** (`11dd017`) : l'hôtesse ne recouvre plus la visite ; étiquettes des points sans coupure ni collision ;
+  fiches compactes et produits plus grands au téléphone ; sous-navigation d'INA calée sur l'en-tête mesuré.
+- **Vague 2** (`f2a4b3c`) : un caisson lumineux par soin du visage (croquis, nom, prix, durée) au lieu de huit fois le
+  même panneau de bois ; trois croquis neufs (Cosmelan, Melan 2, Perfect Derma).
+- **Vague 3** (`0aee101`) : plafond blanc chaud au lieu du béton gris taché, murs à la chaux, terrazzo fin, vignettage.
+- ⚠️ `node --check` ne voit pas une variable déclarée deux fois dans un module : `node --input-type=module --check`.
+- Aperçu `a23ccbcc`, poussé dans `main`. La production reste en maintenance.
