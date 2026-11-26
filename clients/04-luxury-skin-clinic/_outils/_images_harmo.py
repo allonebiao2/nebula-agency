@@ -9,7 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 ICI = Path(__file__).resolve().parent.parent
-FLYERS = ["flyer-facial-balancing.jpg", "flyer-genesis-hollywood.jpg", "flyer-genesis-soft.jpg"]
+FLYERS = ["flyer-facial-balancing.jpg", "flyer-genesis-hollywood.jpg", "flyer-genesis-soft.jpg", "flyer-mesotherapie-amincissante.jpg"]
 
 
 def fond(w, h):
@@ -29,10 +29,12 @@ def fond(w, h):
 def triptyque(w, h, haut):
     im = fond(w, h)
     fl = [Image.open(ICI / "assets" / "harmonisation" / f).convert("RGB") for f in FLYERS]
-    hh = int(h * haut)
-    ww = int(hh * fl[0].width / fl[0].height)
-    ecart = int(w * 0.035)
-    x0 = (w - (3 * ww + 2 * ecart)) // 2
+    n = len(fl)
+    ecart = int(w * (0.035 if n <= 3 else 0.02))
+    ratio = fl[0].width / fl[0].height
+    hh = int(min(h * haut, (w * 0.94 - (n - 1) * ecart) / n / ratio))
+    ww = int(hh * ratio)
+    x0 = (w - (n * ww + (n - 1) * ecart)) // 2
     y0 = (h - hh) // 2
     for i, f in enumerate(fl):
         f = f.resize((ww, hh), Image.LANCZOS)

@@ -96,6 +96,14 @@ Le Genesis Soft est une technique qui va permettre de modifier le volume et d'am
 
 Si vous désirez un volume vraiment plus grand, des frais supplémentaires pourraient être appliqués.
 
+### Mésothérapie amincissante
+
+Une technique qui élimine de façon saine les excès de gras au niveau des joues, du double menton et de la ligne de mâchoire, afin de réduire jusqu'à 80 % la masse graisseuse et d'affiner le visage, sans régime ni perte de poids.
+
+- Double menton : 160 000 FCFA la séance, ou 544 000 FCFA le forfait de 4 séances
+- Joues : 160 000 FCFA la séance, ou 544 000 FCFA le forfait de 4 séances
+- Combo joues et menton : 300 000 FCFA la séance, ou 1 020 000 FCFA le forfait de 4 séances
+
 ---
 
 Dernière mise à jour : 2026-11-26.

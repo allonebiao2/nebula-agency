@@ -912,7 +912,7 @@ html body .lc-mute{-webkit-backdrop-filter:none;backdrop-filter:none;
 }
 </style>
 <!--S3D-CSS-->
-<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126n">
+<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126p">
 <!--/S3D-CSS-->
 </head>
 <body>
@@ -2461,10 +2461,12 @@ if(mute){
 'use strict';
 var ARCH=[
   {b:'INA LUXURY',href:'ina-luxury.html',cats:[
-    {n:'Visage',subs:['Gel Nettoyants','Sérums','Crèmes','Masques']},
-    {n:'Corps',subs:['Beauty Bar','Crème corps','Gommage','Huile corps']},
-    {n:'Capillaires',subs:['Shampoing','Après-shampoing','Masque','Sérum','Huile / Beurre']},
-    {n:'Enfant (0-16 ans)',subs:['Gel Lavant','Crème','Crème Lavante']}
+    {n:"Visage",subs:["Gel Nettoyants", "Démaquillants", "Sérums", "Crèmes"]},
+    {n:"Corps",subs:["Beauty Bar", "Crème corps", "Gommage", "Huile corps", "Savon Noir"]},
+    {n:"Capillaires",subs:["Sérum"]},
+    {n:"Enfant (0-16 ans)",subs:["Crème", "Crème Lavante", "Pain de Savon"]},
+    {n:"Soin Lèvres",subs:["Baume", "Gloss / Jelly", "Rituel & Kits"]},
+    {n:"Intime & bien-être",subs:["Hygiène intime", "Selfcare", "Produits raffermissants"]}
   ]},
   {b:'Luxury Skin Clinic',href:'luxury-skin-clinic.html#soins',cats:[
     {n:'Soins du visage',subs:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel','Cosmelan Peel','Melan 2 Peel','Perfect Derma Peel']},
@@ -2474,7 +2476,8 @@ var ARCH=[
   {b:'Harmonisation faciale',href:'harmonisation-faciale.html',cats:[
     {n:'Facial Balancing',subs:['Zone supérieure','Milieu du visage','Zone inférieure','Genesis Face']},
     {n:'Genesis Hollywood',subs:['Frontalis + zone glabellaire','Rhinoplastie','Affiner le bas du visage','Visage complet']},
-    {n:'Genesis Soft',subs:['Creux infraorbitaire','Sillon nasogénien','Restructuration labiale','Mâchoire et joues']}
+    {n:'Genesis Soft',subs:['Creux infraorbitaire','Sillon nasogénien','Restructuration labiale','Mâchoire et joues']},
+    {n:'Mésothérapie amincissante',subs:['Double menton','Joues','Combo joues et menton']}
   ]}
 ];
 var body=document.getElementById('lcCatBody');
@@ -2906,11 +2909,11 @@ addEventListener('load', mesureBarre);
 /* LA PASSERELLE de la visite 3D : la scène appelle les moteurs de cette page, elle ne les refait pas. */
 window.LC_CLINIC={services:SERVICES,book:function(i){startBooking(SERVICES[i]);}};
 </script>
-<script type="module" src="assets/js/salon3d/boot-clinique.js?v=20261126n"></script>
+<script type="module" src="assets/js/salon3d/boot-clinique.js?v=20261126p"></script>
 <!--/S3D-FIN-->
 <!--LM-->
 <script>window.LC_MENU={"titreVisite": "La visite de la clinique", "raccourcis": [{"t": "Tous les soins et leurs tarifs", "h": "#soins"}, {"t": "Réserver un rendez-vous", "h": "#rdv-booking"}, {"t": "Questions fréquentes", "h": "#questions"}]};</script>
-<script src="assets/js/menu.js?v=20261126o"></script>
+<script src="assets/js/menu.js?v=20261126p"></script>
 <!--/LM-->
 </body>
 </html>

@@ -175,6 +175,23 @@ propre expérience 3D immersive et interactive** (une visite de salon, l'exposit
 - QC vert (une largeur à la fois) : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18, hub 15 + 14.
   - La sonde des recouvrements est corrigée : un tiroir fermé, hors de l'écran, ne recouvre rien.
 
+- **INA, 22 produits retirés** (liste de Mme Sabrina, 26/11), par `_outils/_ina_retirer_2611.py` :
+  - **56 → 34 produits**, photos et détourages compris ;
+  - routines : Éclat / Pigmentation et Boosters n'ont plus de produit, donc disparaissent ; Acné ne garde que
+    l'Acné Control Crème. ⏳ **à faire revoir par Sabrina** ;
+  - 7 sous-catégories vidées : les masques visage, le gel lavant enfant, 4 rubriques capillaires, l'exfoliant lèvres ;
+  - les descriptions des familles Visage, Capillaires et Soin Lèvres sont ajustées ;
+  - le bloc INA du menu du hub et de la clinique est désormais RÉGÉNÉRÉ depuis les données (il était recopié, et
+    en retard) ;
+  - le Lip Kit nomme encore le Lactic Lip Scrub dans son rituel : c'est le contenu du coffret, laissé tel quel.
+- **Mésothérapie amincissante**, 4e technique du cabinet (son flyer, oublié de la grille), par
+  `_outils/_harmo_meso_2611.py` :
+  - zones : double menton, joues, combo ;
+  - prix à la SÉANCE + **forfait 4 séances** (ancien prix barré), dans une case neuve `forfait` ;
+  - 4 cadres sur l'arc 3D ;
+  - tableau, JSON-LD (une offre de plus par forfait), `llms.txt`, `tarifs.md`, menus, hub et image de partage
+    (4 flyers) suivent.
+- QC vert sur les 4 pages, aux deux largeurs. Aperçu `be619b9b`. La production reste en maintenance.
 - ⏳ **LA MUSIQUE** (Mongazi, /vague du 26/11) : remplacer l'ambiance actuelle par une musique de relaxation, **une fois
   toutes les modifications finies**. Zone travaux, rang 7. L'ambiance actuelle est synthétisée en Web Audio
   (bouton `#lcMute`, sur le hub, la clinique et INA) ; la page d'harmonisation joue `assets/audio/luxury-ambiance.mp3`.

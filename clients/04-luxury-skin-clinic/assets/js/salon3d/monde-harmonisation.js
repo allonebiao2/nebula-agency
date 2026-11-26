@@ -7,11 +7,11 @@ import { marbre, plaque, poussiere, ambiance, boiteArrondie, degrade } from "./m
 
 const FW = 1.62, FH = 2.88;            // le flyer (900 × 1600)
 const R = 5.6, CENTRE = [0, 0, 1];     // l'arc des trois cadres
-const ANGLES = [-0.62, 0, 0.62];
+const PAS_ARC = 0.62;                // l'écart entre deux cadres sur l'arc (3,5 m)
 
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-export function cabinet({ donnees, prix, lien, quand }) {
+export function cabinet({ donnees, prix, forfait = () => "", lien, quand }) {
   return async ({ scene, renderer, camera, mobile, calme, outils }) => {
     const { anis, charger } = outils;
     scene.background = new THREE.Color(0x0c0a07);
@@ -46,6 +46,8 @@ export function cabinet({ donnees, prix, lien, quand }) {
     const orMetal = new THREE.MeshStandardMaterial({ color: 0xb48c3c, metalness: 0.95, roughness: 0.3, envMapIntensity: 1.3 });
     const socleMat = new THREE.MeshStandardMaterial({ map: marbre(anis, { rep: 1, base: "#1d1812" }), roughness: 0.25, metalness: 0.1 });
     const cadres = [];
+    // les cadres se répartissent sur l'arc, autant qu'il y a de techniques (4 depuis le 26/11)
+    const ANGLES = donnees.map((_, i) => (i - (donnees.length - 1) / 2) * PAS_ARC);
     for (let i = 0; i < donnees.length; i++) {
       const a = ANGLES[i];
       const P = new THREE.Vector3(CENTRE[0] + R * Math.sin(a), 1.95, CENTRE[2] - R * Math.cos(a));
@@ -216,13 +218,13 @@ export function cabinet({ donnees, prix, lien, quand }) {
     const ficheTech = (t, i) => {
       const z = t.zones[0];
       return `<div class="s3d-panneau hz-fiche" data-t="${i}">
-        <div class="s3d-etiq"><b>0${i + 1} / 03</b> Cabinet privé</div>
+        <div class="s3d-etiq"><b>0${i + 1} / 0${donnees.length}</b> Cabinet privé</div>
         <h2 class="hz-titre" style="font-size:clamp(30px,3.2vw,46px)">${esc(t.nom)}</h2>
         <p class="hz-texte">${esc(t.texte)}</p>
         <div class="hz-zones" role="tablist" aria-label="Les zones de ${esc(t.nom)}">${t.zones.map((zz, j) =>
           `<button type="button" role="tab" data-t="${i}" data-z="${j}" aria-selected="${j ? "false" : "true"}">${esc(zz.nom)}</button>`).join("")}</div>
         <div class="s3d-prix"><span>Zone<b class="hz-zone-nom">${esc(z.nom)}</b><span class="hz-zone-detail">${esc(z.detail || "")}</span></span>
-          <span>Tarif<b class="hz-prix">${esc(prix(z))}</b></span></div>
+          <span>Tarif<b class="hz-prix">${esc(prix(z))}</b></span>${t.zones.some((x) => x.forfait) ? `<span>Forfait<b class="hz-forfait">${esc(forfait(z))}</b></span>` : ""}</div>
         ${t.note ? `<p class="hz-note">${esc(t.note)}</p>` : ""}
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-consult data-t="${i}" data-z="0">Demander ma consultation</button>
           <button type="button" class="s3d-btn" data-suivante="${i}">Zone suivante</button></div>
@@ -233,7 +235,7 @@ export function cabinet({ donnees, prix, lien, quand }) {
       { id: "entree", nom: "Entrée", cote: "a-gauche",
         cam: { p: [0, 1.62, 8.6], c: [0, 1.55, 2.4] }, camM: { p: [0, 1.5, 9.8], c: [0, 1.35, 2.4] },
         calque: `<div class="s3d-panneau"><div class="s3d-etiq"><b>Cabinet privé</b></div>
-          <h2>Trois techniques.<br>Une lecture, zone par zone.</h2>
+          <h2>${["", "Une technique", "Deux techniques", "Trois techniques", "Quatre techniques", "Cinq techniques"][donnees.length] || donnees.length + " techniques"}.<br>Une lecture, zone par zone.</h2>
           <p>Touchez une zone sur le visuel : elle s'allume, et son tarif s'affiche.</p>
           <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-aller="1">Entrer dans le cabinet</button>
           <a class="s3d-btn" href="#techniques">Voir tous les tarifs</a></div></div>` },

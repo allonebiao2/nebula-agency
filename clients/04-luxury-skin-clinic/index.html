@@ -446,7 +446,7 @@ button,select,input[type=text],a[class*="-btn"],a[class*="-wa"],a[class*="chip"]
       <div class="brand-emblem em-cozy"><span>LS</span></div>
       <div class="brand-kicker">Cabinet de soins privés</div>
       <h2>Harmonisation faciale</h2>
-      <p class="brand-desc">Facial Balancing, Genesis Hollywood, Genesis Soft : chaque zone du visage, et son tarif.</p>
+      <p class="brand-desc">Facial Balancing, Genesis, Mésothérapie amincissante : chaque zone du visage, et son tarif.</p>
       <div class="brand-line"></div>
       <span class="brand-enter"><span>Entrer</span>
         <svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 6h21M17 1l5 5-5 5"/></svg>
@@ -1421,10 +1421,12 @@ if(mute){
 'use strict';
 var ARCH=[
   {b:'INA LUXURY',href:'ina-luxury.html',cats:[
-    {n:'Visage',subs:['Gel Nettoyants','Sérums','Crèmes','Masques']},
-    {n:'Corps',subs:['Beauty Bar','Crème corps','Gommage','Huile corps','Savon Noir']},
-    {n:'Capillaires',subs:['Shampoing','Après-shampoing','Masque','Sérum','Huile / Beurre']},
-    {n:'Enfant (0-16 ans)',subs:['Gel Lavant','Crème','Crème Lavante']}
+    {n:"Visage",subs:["Gel Nettoyants", "Démaquillants", "Sérums", "Crèmes"]},
+    {n:"Corps",subs:["Beauty Bar", "Crème corps", "Gommage", "Huile corps", "Savon Noir"]},
+    {n:"Capillaires",subs:["Sérum"]},
+    {n:"Enfant (0-16 ans)",subs:["Crème", "Crème Lavante", "Pain de Savon"]},
+    {n:"Soin Lèvres",subs:["Baume", "Gloss / Jelly", "Rituel & Kits"]},
+    {n:"Intime & bien-être",subs:["Hygiène intime", "Selfcare", "Produits raffermissants"]}
   ]},
   {b:'Luxury Skin Clinic',href:'luxury-skin-clinic.html#soins',cats:[
     {n:'Soins du visage',subs:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel','Cosmelan Peel','Melan 2 Peel','Perfect Derma Peel']},
@@ -1434,7 +1436,8 @@ var ARCH=[
   {b:'Harmonisation faciale',href:'harmonisation-faciale.html',cats:[
     {n:'Facial Balancing',subs:['Zone supérieure','Milieu du visage','Zone inférieure','Genesis Face']},
     {n:'Genesis Hollywood',subs:['Frontalis + zone glabellaire','Rhinoplastie','Affiner le bas du visage','Visage complet']},
-    {n:'Genesis Soft',subs:['Creux infraorbitaire','Sillon nasogénien','Restructuration labiale','Mâchoire et joues']}
+    {n:'Genesis Soft',subs:['Creux infraorbitaire','Sillon nasogénien','Restructuration labiale','Mâchoire et joues']},
+    {n:'Mésothérapie amincissante',subs:['Double menton','Joues','Combo joues et menton']}
   ]}
 ];
 var body=document.getElementById('lcCatBody');
@@ -1967,7 +1970,7 @@ html body .lc-cat-btn{min-height:44px;bottom:calc((var(--dock-h) - 46px) / 2);
 <div class="lc-dock" aria-hidden="true"></div>
 <!--LM-->
 <script>window.LC_MENU={"hub": true, "raccourcis": [{"t": "Nos univers", "h": "#brands"}, {"t": "Mme Sabrina", "h": "#bio"}, {"t": "Nos résultats", "h": "#temoignages"}]};</script>
-<script src="assets/js/menu.js?v=20261126o"></script>
+<script src="assets/js/menu.js?v=20261126p"></script>
 <!--/LM-->
 </body>
 </html>

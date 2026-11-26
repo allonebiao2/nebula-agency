@@ -113,6 +113,8 @@ def main():
             t += ["### " + tech["nom"], "", tech["texte"], ""]
             for z in tech["zones"]:
                 pz = ("de %s à %s FCFA" % (fmt(z["pMin"]), fmt(z["pMax"]))) if "pMin" in z else "%s FCFA" % fmt(z["p"])
+                if z.get("forfait"):
+                    pz += " la séance, ou %s FCFA le forfait de %d séances" % (fmt(z["forfait"]["p"]), z["forfait"]["seances"])
                 t.append("- %s%s : %s" % (z["nom"], (" (%s)" % z["detail"]) if z.get("detail") else "", pz))
             if tech.get("note"):
                 t += ["", tech["note"]]
@@ -134,7 +136,7 @@ def main():
          "## Les trois univers", "",
          "- [Luxury Skin Clinic](%s/luxury-skin-clinic) : %d soins en institut, de %s à %s FCFA — visage, corps, capillaires et une expérience complète." % (DOMAINE, len(s), fmt(prix[0]), fmt(prix[-1])),
          "- [INA Luxury](%s/ina-luxury) : cosmétiques et soins capillaires, par famille (visage, corps, capillaires, enfant, lèvres, intime et bien-être) et par routine." % DOMAINE,
-         "- [Harmonisation faciale](%s/harmonisation-faciale) : Facial Balancing, Genesis Hollywood et Genesis Soft, %d zones du visage et leurs tarifs." % (DOMAINE, sum(len(x["zones"]) for x in harmo)), "",
+         "- [Harmonisation faciale](%s/harmonisation-faciale) : %s, %d zones du visage et leurs tarifs." % (DOMAINE, ", ".join(x["nom"] for x in harmo), sum(len(x["zones"]) for x in harmo)), "",
          "## Fichiers utiles", "",
          "- [Tarifs des soins](%s/tarifs.md) : les %d soins et leurs prix, en markdown." % (DOMAINE, len(s)),
          "- [Plan du site](%s/sitemap.xml)" % DOMAINE, ""]

@@ -42,13 +42,15 @@ if (racine && H) {
       fiche.querySelector(".hz-zone-nom").textContent = z.nom;
       fiche.querySelector(".hz-zone-detail").textContent = z.detail || "";
       fiche.querySelector(".hz-prix").textContent = H.prix(z);
+      const fo = fiche.querySelector(".hz-forfait");
+      if (fo) fo.textContent = H.forfait ? H.forfait(z) : "";
       fiche.querySelectorAll(".hz-zones button").forEach((b) => b.setAttribute("aria-selected", +b.dataset.z === zi ? "true" : "false"));
       const c = fiche.querySelector("[data-consult]");
       c.dataset.t = ti; c.dataset.z = zi;
     }
     racine.querySelectorAll(".s3d-pt").forEach((p) => p.classList.toggle("choisi", p.dataset.id === `${ti}-${zi}`));
     const recap = racine.querySelector(".hz-recap");
-    if (recap) recap.textContent = `Votre choix : ${t.nom} · ${z.nom}, ${H.prix(z)}. Nous vous répondons sur WhatsApp pour fixer le rendez-vous.`;
+    if (recap) recap.textContent = `Votre choix : ${t.nom} · ${z.nom}, ${H.prix(z)}${z.forfait && H.forfait ? " (ou " + H.forfait(z) + ")" : ""}. Nous vous répondons sur WhatsApp pour fixer le rendez-vous.`;
   }
 
   racine.addEventListener("click", (e) => {
@@ -68,7 +70,7 @@ if (racine && H) {
   async function charger() {
     const [{ lancer }, { cabinet }] = await Promise.all([import("./moteur.js"), import("./monde-harmonisation.js")]);
     const monde = cabinet({
-      donnees: H.donnees, prix: H.prix, lien,
+      donnees: H.donnees, prix: H.prix, forfait: H.forfait, lien,
       quand: {
         choix: majFiche,
         son: () => bruit.or(),

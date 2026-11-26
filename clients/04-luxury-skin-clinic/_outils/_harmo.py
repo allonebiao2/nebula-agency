@@ -32,7 +32,13 @@ def fcfa(n):
 def prix(z):
     if "pMin" in z:
         return f"{z['pMin']:,}".replace(",", " ") + " à " + fcfa(z["pMax"])
-    return fcfa(z["p"])
+    return fcfa(z["p"]) + (" la séance" if "forfait" in z else "")
+
+
+def forfait(z):
+    """Le forfait (Mésothérapie amincissante, 26/11) : sa propre case, jamais confondue avec la séance."""
+    f = z.get("forfait")
+    return f"Forfait {f['seances']} séances : {fcfa(f['p'])}" if f else ""
 
 
 def lire(s):
@@ -56,8 +62,11 @@ def tableau(d):
         lignes = []
         for j, z in enumerate(t["zones"]):
             det = f"<small>{e(z['detail'])}</small>" if z.get("detail") else ""
+            ff = z.get("forfait")
+            fo = (f"<small>{e(forfait(z))} <s>{e(fcfa(ff['avant']))}</s></small>" if ff and ff.get("avant")
+                  else (f"<small>{e(forfait(z))}</small>" if ff else ""))
             lignes.append(
-                f'        <tr><th scope="row">{e(z["nom"])}{det}</th><td>{e(prix(z))}'
+                f'        <tr><th scope="row">{e(z["nom"])}{det}</th><td>{e(prix(z))}{fo}'
                 f'<button type="button" data-consult data-t="{i}" data-z="{j}">Demander</button></td></tr>')
         note = f'\n      <p class="note">{e(t["note"])}</p>' if t.get("note") else ""
         out.append(f'''    <article class="tech" id="{e(t["id"])}">
@@ -91,6 +100,9 @@ def jsonld(d):
             else:
                 o["price"] = z["p"]
             offres.append(o)
+            if z.get("forfait"):
+                offres.append({"@type": "Offer", "priceCurrency": "XOF", "price": z["forfait"]["p"],
+                               "itemOffered": {"@type": "Service", "name": f"{t['nom']} · {z['nom']} · forfait {z['forfait']['seances']} séances"}})
         cat.append({"@type": "OfferCatalog", "name": t["nom"], "description": t["texte"], "itemListElement": offres})
     tous = [z.get("p", z.get("pMin")) for t in d for z in t["zones"]] + [z["pMax"] for t in d for z in t["zones"] if "pMax" in z]
     doc = {
