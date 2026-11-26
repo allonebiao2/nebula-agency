@@ -331,6 +331,28 @@ marbrés de taches, un terrazzo aux éclats trop contrastés. Et une lumière pl
 - ⏳ **Ce qui irait plus loin** (à mesurer sur un vrai téléphone avant) : un éclairage précalculé, des reflets au sol,
   une profondeur de champ. Chacun coûte des images par seconde sur les cartes graphiques faibles de Cotonou.
 
+### Vague 4 · la boutique INA : détourages et étalage (Mongazi, photos de son écran : « de mauvais détourages, très mauvais »)
+Ce que montraient ses photos : un « rectangle de bruit » (le Lip Kit), un pot sur fond blanc carré, des produits
+géants qui se chevauchaient, passaient par la tranche en tournant, et des blancs brûlés en rectangles vides.
+- **Les détourages** (`_outils/_detours_affiner.py`, à lancer après `_detourer_ina.py`) : repartir de la PHOTO
+  D'ORIGINE, garder le produit (pas les débris), BOUCHER LES TROUS (un flacon est plein), rendre l'intérieur opaque,
+  rogner le bord d'un pixel et le recolorer avec la couleur du produit (fini le liseré blanc sur le noir).
+  - ⛔ **Le Lip Kit était troué à 18 %** : ses lèvres blanches et roses avaient été prises pour du fond, et la 3D
+    montrait le noir à travers. Bouché avec ses vraies couleurs.
+  - **Une boîte est convexe** (`CONVEXE`, Lip Kit) : là où l'imprimé clair touche le fond blanc de la photo, aucun
+    modèle ne les sépare ; la silhouette est complétée par son enveloppe convexe, limitée à la hauteur de la boîte
+    (le ruban n'est pas touché).
+  - Contrôlés un par un sur magenta ET sur noir. Les 32 autres n'avaient pas de trou.
+- **L'étalage** (`monde-ina.js`) : fini le carrousel de douze produits de 90 cm. Deux gradins (une marche de marbre
+  filetée d'or) : les grands flacons derrière, les pots et les petits devant ; une hauteur selon le type (pots et
+  boîtes bas, sérums moyens, flacons hauts) ; un espacement calculé, sans chevauchement ; une ombre de contact sous
+  chacun ; une teinte chaude (les blancs ne brûlent plus). Jusqu'à trois produits : une rangée, sur la marche, plus
+  grande. Rien ne tourne : la 3D se repose quand rien ne bouge.
+- Seuls les produits DÉTOURÉS montent sur l'étalage : la Crème au Lait de Chèvre (photo coupée) reste au catalogue.
+- Les détourages portent un `?v=` (manifeste, `boot-ina.js`, l'étagère de la clinique) : le cache d'une heure aurait
+  montré l'ancien Lip Kit. Les agrandis 2x faits sur les anciens détourages sont supprimés et refaits.
+- QC vert : INA 18 + 18, clinique 90 + 90.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après

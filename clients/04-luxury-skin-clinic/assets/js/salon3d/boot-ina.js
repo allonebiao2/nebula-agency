@@ -54,7 +54,7 @@ if (racine && I) {
 
   async function charger() {
     const [{ lancer }, { boutique }, detoures] = await Promise.all([import("./moteur.js"), import("./monde-ina.js"),
-      fetch("assets/images/ina-luxury/_detoures/detoures.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}))]);
+      fetch("assets/images/ina-luxury/_detoures/detoures.json?v=20261126y").then((r) => (r.ok ? r.json() : {})).catch(() => ({}))]);
     const monde = boutique({
       ina: { produits: I.produits, img: I.img, familles: I.familles, sous: I.sous, detoures }, lien,
       quand: { produit, catalogue, panier },

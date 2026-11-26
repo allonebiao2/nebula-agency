@@ -284,7 +284,7 @@ export function clinique({ services, art = {}, artFamille = {}, lien, quand }) {
         const h = await (await fetch("ina-luxury.html", { credentials: "same-origin" })).text();
         const img = JSON.parse(h.match(/const IMG=(\{[\s\S]*?\n\});/)[1]);
         // les produits détourés (cliente, 26/11 : « les mettre en fond noir ») ; sans détourage, la photo garde sa carte
-        const det = await fetch("assets/images/ina-luxury/_detoures/detoures.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+        const det = await fetch("assets/images/ina-luxury/_detoures/detoures.json?v=20261126y").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
         // les meilleures ventes d'abord (best:1), puis les nouveautés, dans l'ordre du catalogue
         const prods = [...h.matchAll(/\{f:'([^']+)',s:'[^']+',n:(['"])((?:(?!\2).)+)\2,p:\d+[^\n]*/g)].map((m) => ({ f: m[1], n: m[3], best: /best:1/.test(m[0]) }));
         const choix = [...prods.filter((p) => p.best), ...prods.filter((p) => !p.best)].filter((p) => img[p.n]).slice(0, 9);

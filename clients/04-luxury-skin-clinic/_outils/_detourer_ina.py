@@ -9,6 +9,8 @@
   · fait une planche de CONTRÔLE sur fond magenta (_vues/detoures-magenta.jpg) : à REGARDER avant de publier
     (règle de la maison) ; un produit raté se retire du manifeste par --ecarter "Nom du produit".
 Les originaux ne sont jamais touchés.
+⚠️ ENSUITE, TOUJOURS : python _outils/_detours_affiner.py (trous bouchés, débris retirés, bord rogné et recoloré ;
+   le détourage brut trouait la boîte du Lip Kit, 26/11), puis monter le ?v= du manifeste et de boot-ina.js.
     python _outils/_detourer_ina.py            (ne refait que ce qui manque)
     python _outils/_detourer_ina.py --tout     (refait tout)
     python _outils/_detourer_ina.py --ecarter "Nom exact"
