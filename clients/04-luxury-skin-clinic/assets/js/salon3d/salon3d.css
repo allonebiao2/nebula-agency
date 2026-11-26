@@ -37,7 +37,10 @@
   animation:s3dPulse 2.4s ease-out 3;}   /* trois battements, pas une boucle : rien d'infini sous le verre */
 .s3d-pt span{background:var(--s3d-verre); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
   border:1px solid var(--s3d-verre-bord); padding:7px 11px; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.14);
-  white-space:nowrap; max-width:min(56vw,320px); overflow:hidden; text-overflow:ellipsis;}
+  white-space:nowrap; max-width:min(var(--dispo,56vw),320px); overflow:hidden; text-overflow:ellipsis;}
+.s3d-pt.a-gauche{flex-direction:row-reverse;}
+.s3d-pt.dessous{flex-direction:column; align-items:center; gap:6px;}   /* sous le point, centrée : deux étiquettes qui se toucheraient */
+.s3d-pt.muet span{display:none;}   /* une étiquette qui en recouvrirait une autre : le point reste, sans texte */   /* l'étiquette à gauche du point (moitié droite de l'écran) */
 @keyframes s3dPulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.5);opacity:0}}
 
 /* ---------- les calques de texte, un par station ---------- */
@@ -184,4 +187,19 @@
   .s3d-etapes{grid-template-columns:1fr;}
   .s3d{--s3d-verre:rgba(251,250,247,.8); --s3d-flou:12px;}
   .s3d.ina,.s3d.hz{--s3d-verre:rgba(14,12,9,.74);}
+}
+
+/* ---------- au téléphone, la fiche laisse voir le décor (26/11, « 10 000 $ ») ----------
+   Les fiches d'INA et du cabinet montaient jusqu'à la moitié de l'écran et cachaient les produits : les puces
+   (sous-catégories, zones) tiennent sur UNE ligne qu'on fait glisser, la description sur deux lignes. Posé en fin de
+   feuille, APRÈS les règles qu'il corrige. */
+@media (max-width:760px){
+  .s3d .hz-zones{flex-wrap:nowrap; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none;
+    margin:2px -16px 12px 0; padding-right:16px; -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);
+    mask-image:linear-gradient(90deg,#000 82%,transparent);}
+  .s3d .hz-zones::-webkit-scrollbar{display:none;}
+  .s3d .hz-zones button{flex:none;}
+  .s3d.ina .s3d-calque p,.s3d.hz .s3d-calque p{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .s3d.ina .s3d-prix,.s3d.hz .s3d-prix{margin-bottom:8px;}
+  .s3d.ina .s3d-prix b{font-size:18px;}
 }

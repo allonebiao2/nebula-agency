@@ -251,7 +251,7 @@ export function cabinet({ donnees, prix, forfait = () => "", lien, quand }) {
       }),
       { id: "consultation", nom: "Consultation", cote: "a-gauche",
         cam: { p: [0, 2.35, 6.4], c: [0, 1.35, -2.2] }, camM: { p: [0, 2.6, 8.2], c: [0, 1.1, -2.2] },
-        calque: `<div class="s3d-panneau"><div class="s3d-etiq"><b>04</b> Votre consultation</div>
+        calque: `<div class="s3d-panneau"><div class="s3d-etiq"><b>${String(donnees.length + 1).padStart(2, "0")}</b> Votre consultation</div>
           <h2>Une zone vous parle&nbsp;?</h2>
           <p class="hz-recap">Choisissez une zone, puis écrivez-nous : nous vous répondons sur WhatsApp pour fixer le rendez-vous.</p>
           <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-consult>Demander ma consultation</button>

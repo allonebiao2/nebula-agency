@@ -281,6 +281,33 @@ par seconde, carte graphique, temps de compilation).
 - Aperçu publié le 26/11 au soir : `09125167` (https://apercu.luxury-club-229.pages.dev), vérifié en lisant le corps
   des fichiers servis. La production reste en maintenance (503).
 
+## 3 quater. « Le travail doit valoir 10 000 $ » (Mongazi, 26/11 au soir) : par vagues
+Méthode : tout photographier d'abord, au téléphone et au PC, chaque étape des visites et chaque écran des pages
+(script d'audit, planches réduites), juger comme un client exigeant, puis corriger par vagues de trois au plus.
+
+### Vague 1 · ce qui gênait le visiteur (faite)
+- ⛔ **L'hôtesse recouvrait la visite** : à 18 s elle se posait sur la fiche de chaque soin (au téléphone, un quart de
+  l'écran, de l'étape 1 à l'étape 10). Elle ne vient plus jamais pendant la visite : seulement quand la visite est
+  derrière le visiteur, ou après 18 s passées hors d'elle (`assets/js/invite.js`).
+- **Les étiquettes des points** étaient coupées au bord (« Le protoco… »). Elles se posent maintenant là où il y a
+  de la place : à droite du point, à gauche s'il déborde, sinon sous le point. Les points de l'étape sont des
+  obstacles : à l'accueil, « Sur rendez-vous » ne se pose plus sur « Lundi au samedi » (`moteur.js`, en deux passes).
+- **Au téléphone, les fiches d'INA et du cabinet cachaient les produits** : les sous-catégories et les zones tiennent
+  sur une ligne qu'on fait glisser, la description sur deux lignes, et la caméra d'INA s'approche et vise plus bas.
+  Les produits sont grands, au-dessus de la fiche.
+- **INA : une bande de texte coupé sous l'en-tête** : la sous-navigation était collée à 60 px sous un en-tête de 80.
+  Elle se cale sur l'en-tête MESURÉ, et la visite passe par-dessus elle (« Menu » est déjà dans l'en-tête) : la 3D
+  gagne 50 px (`<!--ENTETE-->` en fin de `ina-luxury.html`).
+- Le cabinet : la dernière étape se numérotait « 04 » après « 04 / 04 » ; elle suit maintenant le nombre de techniques.
+- QC vert : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18, hub 14 + 15.
+
+### Vague 2 · les 8 soins du visage (à faire)
+Huit fois le même couloir : un grand panneau de bois vide et une plaque de prix illisible. Chaque soin doit avoir sa
+scène, son nom et son prix lisibles.
+
+### Vague 3 · la lumière (à faire)
+La 3D est plate et pâle (« décor de jeu simple ») : reflets, profondeur, éclairage.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après

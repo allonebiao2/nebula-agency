@@ -342,14 +342,44 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
     ajuster(dt, maintenant);
 
     // les points de la station, projetés sur l'écran
-    const w = scene3.clientWidth, h = scene3.clientHeight;
+    const w = scene3.clientWidth, h = scene3.clientHeight, vus = [];
     for (const p of points) {
       const on = p.k === kActif;
       if (!on) { if (p.el.classList.contains("on")) p.el.classList.remove("on"); continue; }
       tampon.copy(p.v).project(camera);
       const dedans = tampon.z < 1 && Math.abs(tampon.x) < 0.96 && Math.abs(tampon.y) < 0.92;
       p.el.classList.toggle("on", dedans);
-      if (dedans) p.el.style.transform = `translate3d(${((tampon.x + 1) / 2) * w}px, ${((1 - tampon.y) / 2) * h}px, 0)`;
+      if (dedans) vus.push({ p, x: ((tampon.x + 1) / 2) * w, y: ((1 - tampon.y) / 2) * h });
+    }
+    // L'ÉTIQUETTE SE POSE OÙ IL Y A DE LA PLACE (26/11 : « Le protoco… » coupé au bord du téléphone, « Sur
+    // rendez-vous » posé sur « Lundi au samedi »). Les points de la station sont des obstacles ; chaque étiquette
+    // essaie, dans l'ordre : à droite de son point, à gauche (si elle déborde à droite), SOUS son point, centrée.
+    // Si rien ne va, le point reste, sans texte.
+    const poses = vus.map((v) => ({ g: v.x - 16, d: v.x + 16, y: v.y, p: v.p }));
+    const touche = (g0, g1, yy, moi) => poses.some((q) => q.p !== moi && Math.abs(q.y - yy) < 34 && g0 < q.d && g1 > q.g);
+    for (const { p, x, y } of vus) {
+      // la largeur du texte, mesurée une fois (le bouton est en page même caché : visibility, pas display)
+      if (!(p.larg > 24) && !p.muet) p.larg = Math.min(320, p.el.lastElementChild.scrollWidth + 2);
+      const placeD = w - x - 52, placeG = x - 52;
+      let mode = placeD < p.larg && placeG > placeD ? "g" : "d";
+      let dispo = Math.round(Math.max(90, mode === "g" ? placeG : placeD));
+      let l = Math.min(p.larg, dispo) + 32, g0 = mode === "g" ? x - l : x + 12, g1 = mode === "g" ? x - 12 : x + l, yy = y;
+      if (touche(g0, g1, yy, p)) {
+        mode = "s"; dispo = Math.round(Math.max(90, 2 * Math.min(x, w - x) - 16));
+        l = Math.min(p.larg, dispo) + 22; g0 = x - l / 2; g1 = x + l / 2; yy = y + 36;
+        if (touche(g0, g1, yy, p)) mode = "m";
+      }
+      if (mode !== "m") poses.push({ g: g0, d: g1, y: yy, p: null });
+      if (mode !== p.mode) {
+        p.mode = mode;
+        p.el.classList.toggle("a-gauche", mode === "g");
+        p.el.classList.toggle("dessous", mode === "s");
+        p.el.classList.toggle("muet", mode === "m");
+        p.muet = mode === "m";
+      }
+      if (dispo !== p.dispo) { p.dispo = dispo; p.el.style.setProperty("--dispo", dispo + "px"); }
+      const decale = mode === "g" ? " translateX(calc(44px - 100%))" : mode === "s" ? " translateX(calc(22px - 50%))" : "";
+      p.el.style.transform = `translate3d(${x}px, ${y}px, 0)${decale}`;
     }
   }
 

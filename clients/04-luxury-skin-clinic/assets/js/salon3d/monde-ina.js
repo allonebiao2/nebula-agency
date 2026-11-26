@@ -154,7 +154,8 @@ export function boutique({ ina, lien, quand }) {
       stations.push({
         id: v.f.key, nom: v.f.label, cote: v.cote < 0 ? "a-droite" : "a-gauche",
         cam: { p: [cx - v.cote * 3.15, 1.6, v.z + 1.45], c: [cx, 1.2, v.z - 0.95] },
-        camM: { p: [cx - v.cote * 4.3, 1.6, v.z + 0.9], c: [cx, -0.2, v.z] },
+        // au téléphone (26/11) : plus près, et visée plus basse, pour que les produits montent au-dessus de la fiche
+        camM: { p: [cx - v.cote * 3.75, 1.55, v.z + 0.8], c: [cx, -0.5, v.z] },
         calque: `<div class="s3d-panneau">${etiq(k + 1, "Vitrine")}<h3>${esc(v.f.label)}</h3><p>${esc(v.f.desc || "")}</p>
           <div class="s3d-prix"><span>Produits<b>${v.total}</b></span>${isFinite(prixMin) ? `<span>À partir de<b>${fcfa(prixMin)}</b></span>` : ""}</div>
           ${sous.length ? `<div class="hz-zones">${sous.map((s) => `<button type="button" data-famille="${esc(v.f.key)}" data-sous="${esc(s.key)}">${esc(s.label)}</button>`).join("")}</div>` : ""}

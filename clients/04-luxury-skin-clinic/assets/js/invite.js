@@ -89,14 +89,20 @@
     b.querySelector('.iv-x').addEventListener('click', partir);
     setTimeout(function () { if (b.isConnected && !b.matches(':hover')) partir(); }, 30000);
   }
-  // quand ? à la fin de la visite 3D, ou au plus tard 18 s après l'arrivée (jamais avant 6 s)
+  // quand ? JAMAIS PENDANT LA VISITE 3D (26/11 : à 18 s elle venait se poser sur la fiche de chaque soin, au
+  // téléphone sur un quart de l'écran) : dès que la visite est derrière le visiteur, ou après 18 s passées hors de la
+  // visite (au-dessus d'elle, ou sur une page sans 3D). Jamais avant 6 s.
   function verifier() {
     if (montre) return;
     var dt = Date.now() - t0; if (dt < 6000) return;
     var v = document.querySelector('.s3d');
-    var finVisite = v ? (scrollY + innerHeight * 0.9 >= v.getBoundingClientRect().top + scrollY + v.offsetHeight - innerHeight)
-                      : scrollY > innerHeight * 1.5;
-    if (finVisite || dt > 18000) montrer();
+    if (v && v.offsetHeight > innerHeight && !v.classList.contains('s3d-sans')) {
+      var r = v.getBoundingClientRect(), mi = innerHeight * 0.5;
+      if (r.top < mi && r.bottom > mi) return;          // la visite remplit l'écran : on ne la recouvre pas
+      if (r.bottom <= mi || dt > 18000) montrer();       // la visite est finie, ou on est ailleurs depuis 18 s
+      return;
+    }
+    if (scrollY > innerHeight * 1.5 || dt > 18000) montrer();
   }
   addEventListener('scroll', verifier, { passive: true });
   setInterval(verifier, 1000);
