@@ -192,6 +192,20 @@ propre expérience 3D immersive et interactive** (une visite de salon, l'exposit
   - tableau, JSON-LD (une offre de plus par forfait), `llms.txt`, `tarifs.md`, menus, hub et image de partage
     (4 flyers) suivent.
 - QC vert sur les 4 pages, aux deux largeurs. Aperçu `be619b9b`. La production reste en maintenance.
+- **Le verre dépoli** (Mongazi : « ajoute du glassmorphism ») :
+  - les fiches de la visite, les étiquettes, les pastilles, le bouton son et les enseignes des portes ;
+  - un voile, un flou de 22 px, un reflet en haut et un liseré : crème pour la clinique, fumé et or pour INA et le
+    cabinet ; voile plus dense au téléphone ;
+  - sans `backdrop-filter`, le voile redevient plein ;
+  - les points ne pulsent plus que trois fois (rien d'infini sous un verre).
+- **L'hôtesse qui vient saluer** (« comme les autres »), par `assets/js/invite.js` et `_outils/_invite_poser.py` :
+  - un portrait DESSINÉ par le dessinateur commun des aperçus (`_outils/avatar.mjs`) : peau ouest-africaine,
+    tunique menthe, foulard d'or ;
+  - elle vient à la fin de la visite 3D, ou au plus tard à 18 s, une fois par visite, jamais par-dessus la porte,
+    l'accueil, le menu ou une réservation ;
+  - « Oui » mène à l'aide de chaque univers : un conseil sur WhatsApp (clinique), « Faire ma consultation » (INA),
+    la demande de consultation (harmonisation) ;
+  - le QC la tient à l'écart de sa mesure (message passager) ; elle se vérifie en photographies.
 - ⏳ **LA MUSIQUE** (Mongazi, /vague du 26/11) : remplacer l'ambiance actuelle par une musique de relaxation, **une fois
   toutes les modifications finies**. Zone travaux, rang 7. L'ambiance actuelle est synthétisée en Web Audio
   (bouton `#lcMute`, sur le hub, la clinique et INA) ; la page d'harmonisation joue `assets/audio/luxury-ambiance.mp3`.

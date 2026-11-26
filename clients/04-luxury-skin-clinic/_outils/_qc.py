@@ -437,6 +437,11 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
             ctx = b.new_context(viewport={"width": w, "height": 844 if mobile else 900},
                                 is_mobile=mobile, has_touch=mobile,
                                 device_scale_factor=1)
+            # l'hôtesse qui vient saluer et la bulle du menu sont des messages PASSAGERS (une fois par visite) : on les
+            # tient à l'écart de la mesure de la page, sinon la sonde les prend pour des instruments fixes (26/11).
+            # Ils se vérifient à part, en photographies (_outils/_vues_3d.py).
+            ctx.add_init_script("try{sessionStorage.setItem('invite-vue:'+location.pathname,'1');"
+                                "sessionStorage.setItem('lmBulle:'+location.pathname,'1');}catch(e){}")
             page = ctx.new_page()
             erreurs, echecs = [], []
             page.on("pageerror", lambda e: erreurs.append(str(e)))
