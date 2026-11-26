@@ -77,13 +77,53 @@ références). ⏳ **À faire valider par Mongazi avant la construction (B).** D
   - ⚠️ Le QC (`_qc.py --page ina-luxury.html`) n'a pas pu tourner le 26/11 : le PC manquait de mémoire et la page
     ne chargeait pas en 30 s. À relancer seul, sans Chrome ouvert.
   - Reste : `cozy.html` ne doit plus rien vendre (A2).
-- [ ] A2 · La nouvelle rubrique (ex-Cozy) : « Harmonisation faciale » (Facial Balancing, Genesis Hollywood, Genesis
-      Soft), même principe que la clinique : protocoles, indications, tarifs, les visuels de ses flyers (zones du
-      visage), prise de rendez-vous. Le hub (index.html) remplace l'univers Cozy par cette rubrique.
-- [ ] A3 · Mettre à jour `llms.txt` / `tarifs.md` (`_outils/_llms.py`) et le balisage (`_outils/_jsonld.py`) : nouveaux tarifs.
-- [ ] B · LA REFONTE 3D : la vitrine de la clinique ENTIÈREMENT en 3D au défilement, dans un salon de beauté beau et
-      lumineux, tout le contenu dedans (soins, tarifs, rendez-vous). Moteur commun des aperçus (`voyage3d.js`, 4K natif,
-      plancher 2x, 60 i/s) + l'assistant qui vient saluer (`invite.js`).
+**Mongazi a validé le 26/11** (« continue et finalise ») en précisant : **les TROIS univers restent, et chacun a sa
+propre expérience 3D immersive et interactive** (une visite de salon, l'exposition des produits).
+
+- [x] A2 · `harmonisation-faciale.html` (26/11), l'ex-Cozy :
+  - **les données** : un bloc JSON `harmo-donnees` dans la page, seule source des 3 techniques et des 12 tarifs
+    (textes et prix de ses flyers mot pour mot, la fourchette 2 100 000 à 2 400 000 F gardée en `pMin`/`pMax`, jamais
+    aplatie). `python _outils/_harmo.py` en tire le tableau visible (lisible sans JavaScript) et le JSON-LD (12 `Offer`) ;
+  - **la consultation** : un dialogue avec « J'ai lu et compris » obligatoire, puis WhatsApp pré-rempli au numéro de la
+    maison ;
+  - **le site entier suit** (`python _outils/_cozy_vers_harmo.py`, idempotent) :
+    - le hub : la carte, les balises et les filtres d'avis ;
+    - le menu « Catalogue » des trois pages ;
+    - la recherche commune : Cozy ne s'y charge plus ;
+    - le sitemap ;
+    - `cozy.html` devient une redirection vers `ina-luxury.html#intime-bien-etre`, doublée dans `_redirects`. La
+      page d'origine reste récupérable dans git (commit `a72f21e`).
+  - Images faites avec SES flyers (`_outils/_images_harmo.py`) : `hub-harmonisation.webp`, `og-harmonisation.jpg`.
+- [x] A3 · `_llms.py` lit aussi l'harmonisation : `llms.txt` et `tarifs.md` portent les 12 tarifs.
+- [x] B · **LES TROIS UNIVERS EN 3D** (26/11), socle commun `assets/js/salon3d/` :
+  - **le moteur** (three r180 en local, aucune autre bibliothèque) : rendu natif jusqu'à 3x, plancher 2x, ombres puis
+    netteté baissées seulement si l'appareil peine, rendu suspendu hors écran et quand rien ne bouge ;
+  - **les matières** (terrazzo, marbre, chêne, plâtre, plaques de laiton gravées) sont dessinées en code ;
+  - **le son** : bruitages Web Audio ; aucune seconde musique là où la maison a déjà la sienne (bouton `#lcMute`) ;
+  - **les trois mondes** :
+    - **la clinique** (`#visite`) : 14 stations, de la porte en verre à l'accueil (comptoir en demi-lune, lattes de
+      chêne, enseigne LS rétroéclairée), le couloir des 5 soins visage qu'on longe (une porte et une plaque de
+      laiton par soin, prix LUS dans `SERVICES`), la cabine (la lampe descend, la vapeur, les 8 étapes du Classic
+      qui s'allument), le corps, les cheveux, le VIP, l'étagère INA (les vraies photos LUES dans la page INA), la
+      porte dorée du cabinet privé et le carnet de rendez-vous. « Réserver » appelle `startBooking`, avec son
+      règlement et sa case.
+    - **INA Luxury** (`#boutique`) : une galerie d'arches d'or en tunnel, une vitrine par famille (6), et dans chacune
+      un carrousel 3D des vraies photos (meilleures ventes d'abord). Toucher un produit ouvre sa carte dans le
+      catalogue ; le comptoir du fond mène au panier et à la consultation.
+    - **le cabinet privé** : ses trois flyers dans des cadres dorés. On touche une zone : elle s'allume SUR SON
+      VISUEL, la caméra s'approche, et la fiche donne la zone et le tarif. Un profil au fil d'or se trace à l'entrée.
+  - `python _outils/_salon3d_poser.py --version <v>` pose la visite dans la clinique et dans INA, avec une passerelle
+    vers leurs moteurs. **Bumper la version à chaque modification du socle.**
+  - ⚠️ **PIÈGES qui ont mordu** :
+    - une apostrophe écrite dans une chaîne JavaScript (« d'INA ») a cassé tout le script de la clinique →
+      `python _outils/_syntaxe.py` compile chaque script de chaque page ;
+    - une règle CSS posée AVANT celle qu'elle corrige ne sert à rien (encore) ;
+    - les pages donnent une marge à toutes leurs sections ;
+    - l'en-tête collant décale la scène : `--s3d-haut` et `--s3d-bas` la calent entre les barres ;
+    - le biseau de `boiteArrondie` épaissit les plateaux de 3 cm ;
+    - Chrome refuse les modules JavaScript en `file://` : le QC sert maintenant les pages en HTTP ;
+    - un rendu 3D continu, en logiciel, empêchait le QC de finir : on ne redessine en continu que là où quelque
+      chose bouge.
 - [ ] C · Publier : `python _outils/_dist.py` puis `wrangler pages deploy _dist --project-name luxury-club-229 --branch main`
       (⛔ jamais le dossier entier), QC `python _outils/_qc.py` vert, contraste mesuré sur les pixels.
 

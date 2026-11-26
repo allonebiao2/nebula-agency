@@ -3051,3 +3051,11 @@ deux webhooks SasPay = deux secrets, alors que les secrets Supabase valent pour 
   (instant où le doigt se pose, instant où il se lève).
 - Un reflet est sous la surface : une eau opaque le cache par la profondeur ; le peindre par-dessus.
 
+## 2026-11-26 · Un remplacement de texte peut écrire DANS une chaîne JavaScript (Luxury Club 229)
+« (chargement d'INA…) », posé à la place de « (chargement INA & Cozy…) », vivait entre apostrophes dans un script :
+**tout le script de la clinique est tombé** (soins, réservation, visite 3D). Le QC a alors accusé 60 contrastes faux,
+puisque plus rien ne s'animait. Un texte remplacé dans une page se vérifie en COMPILANT chaque script, pas en le
+relisant : `python clients/04-luxury-skin-clinic/_outils/_syntaxe.py` (node --check sur chaque script de chaque
+page). Même famille : Chrome refuse les modules JavaScript en `file://`, et un QC qui ouvre la page en `file://`
+accuse à tort une page faite de modules. Il faut la servir en HTTP.
+

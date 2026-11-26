@@ -34,6 +34,14 @@ EXCLUS_ASSETS = {"_inbox", "og-source"}
 #    (`devis-vitrine-tablette.html` a la racine, `assets/docs/Devis_*.pdf`) et
 #    serait parti en ligne au deploiement suivant. Exclu par son nom, a tout niveau.
 EXCLUS_PREFIXES = ("devis-", "Devis_")
+# ⚠️ LES NOTES DE TRAVAIL NE SE PUBLIENT PAS (2026-11-26) : `REFONTE-26-11.md` (le chantier, ses prix, ses pièges)
+#    serait parti en ligne comme `CONTEXT.md` l'avait fait. Règle générale : aucun .md de la racine ne part, sauf
+#    `tarifs.md`, public par choix (il est écrit pour les agents d'IA, cf. _llms.py).
+MD_PUBLICS = {"tarifs.md"}
+
+
+def note_interne(nom):
+    return nom.endswith(".md") and nom not in MD_PUBLICS
 
 
 def main():
@@ -43,7 +51,7 @@ def main():
 
     poids, fichiers = 0, 0
     for nom in sorted(os.listdir(RACINE)):
-        if nom in EXCLUS_RACINE or nom.startswith(EXCLUS_PREFIXES):
+        if nom in EXCLUS_RACINE or nom.startswith(EXCLUS_PREFIXES) or note_interne(nom):
             continue
         src = os.path.join(RACINE, nom)
         dst = os.path.join(DIST, nom)
@@ -70,7 +78,7 @@ def main():
             if d in EXCLUS_RACINE or (rel == "assets" and d in EXCLUS_ASSETS):
                 fuites.append(os.path.join(rel, d))
         for n in noms:
-            if n in EXCLUS_RACINE:
+            if n in EXCLUS_RACINE or (rel == "." and note_interne(n)):
                 fuites.append(os.path.join(rel, n))
     if fuites:
         sys.exit("⛔ des fichiers exclus ont suivi : " + ", ".join(fuites))

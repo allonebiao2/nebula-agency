@@ -99,8 +99,26 @@ def main():
             if x["d"]:
                 t.append("- Description : %s" % x["d"])
             t.append("")
+    # l'harmonisation faciale : LUE dans le bloc harmo-donnees de sa page (les textes et prix de ses flyers)
+    import json, re as _re
+    hp = os.path.join(RACINE, "harmonisation-faciale.html")
+    harmo = []
+    if os.path.exists(hp):
+        m = _re.search(r'<script id="harmo-donnees" type="application/json">(.*?)</script>',
+                       io.open(hp, encoding="utf-8").read(), _re.S)
+        harmo = json.loads(m.group(1)) if m else []
+    if harmo:
+        t += ["## Harmonisation faciale (cabinet de soins privés)", ""]
+        for tech in harmo:
+            t += ["### " + tech["nom"], "", tech["texte"], ""]
+            for z in tech["zones"]:
+                pz = ("de %s à %s FCFA" % (fmt(z["pMin"]), fmt(z["pMax"]))) if "pMin" in z else "%s FCFA" % fmt(z["p"])
+                t.append("- %s%s : %s" % (z["nom"], (" (%s)" % z["detail"]) if z.get("detail") else "", pz))
+            if tech.get("note"):
+                t += ["", tech["note"]]
+            t.append("")
     t += ["---", "", "Dernière mise à jour : %s." % jour,
-          "Source : %s/luxury-skin-clinic" % DOMAINE, ""]
+          "Source : %s/luxury-skin-clinic et %s/harmonisation-faciale" % (DOMAINE, DOMAINE), ""]
     io.open(os.path.join(RACINE, "tarifs.md"), "w", encoding="utf-8", newline="\n").write("\n".join(t))
 
     # ------------------------------------------------------------- llms.txt
@@ -108,15 +126,15 @@ def main():
          "> Maison de beauté à Cotonou, Bénin, réunissant trois marques :",
          "> **Luxury Skin Clinic** (clinique esthétique, soins en institut),",
          "> **INA Luxury** (cosmétiques et soins capillaires) et",
-         "> **Cozy** (hygiène intime et bien-être).", "",
+         "> l'**Harmonisation faciale** (cabinet de soins privés).", "",
          "Fondée et dirigée par Ahouangnimon Gloria. Les soins en institut sont",
          "réalisés par Mme Sabrina, esthéticienne diplômée en esthétique médicale",
          "et spécialiste en cosmétologie avancée. Les commandes et les",
          "réservations passent par WhatsApp (+229 01 67 97 56 26).", "",
          "## Les trois univers", "",
          "- [Luxury Skin Clinic](%s/luxury-skin-clinic) : %d soins en institut, de %s à %s FCFA — visage, corps, capillaires et une expérience complète." % (DOMAINE, len(s), fmt(prix[0]), fmt(prix[-1])),
-         "- [INA Luxury](%s/ina-luxury) : cosmétiques et soins capillaires, par famille (visage, corps, capillaires, enfant, lèvres) et par routine." % DOMAINE,
-         "- [Cozy](%s/cozy) : hygiène intime et bien-être féminin." % DOMAINE, "",
+         "- [INA Luxury](%s/ina-luxury) : cosmétiques et soins capillaires, par famille (visage, corps, capillaires, enfant, lèvres, intime et bien-être) et par routine." % DOMAINE,
+         "- [Harmonisation faciale](%s/harmonisation-faciale) : Facial Balancing, Genesis Hollywood et Genesis Soft, %d zones du visage et leurs tarifs." % (DOMAINE, sum(len(x["zones"]) for x in harmo)), "",
          "## Fichiers utiles", "",
          "- [Tarifs des soins](%s/tarifs.md) : les %d soins et leurs prix, en markdown." % (DOMAINE, len(s)),
          "- [Plan du site](%s/sitemap.xml)" % DOMAINE, ""]

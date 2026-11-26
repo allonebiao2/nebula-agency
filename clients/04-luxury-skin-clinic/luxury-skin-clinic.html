@@ -912,7 +912,7 @@ html body .lc-mute{-webkit-backdrop-filter:none;backdrop-filter:none;
 }
 </style>
 <!--S3D-CSS-->
-<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126c">
+<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126d">
 <!--/S3D-CSS-->
 </head>
 <body>
@@ -1816,7 +1816,7 @@ function render(){
     return a.name.localeCompare(b.name,'fr');
   });
   metaEl.innerHTML=`<b>${results.length}</b> résultat${results.length>1?'s':''} pour « ${curQuery} »`+
-    (loading?' <span style="opacity:.6;font-style:italic">(chargement INA &amp; Cozy…)</span>':'');
+    (loading?' <span style="opacity:.6;font-style:italic">(chargement INA Luxury…)</span>':'');
   resultsEl.innerHTML='';
   if(!results.length){
     resultsEl.innerHTML=`<div class="search-empty"><h3>Aucun résultat</h3>
@@ -1840,7 +1840,7 @@ function render(){
   });
   if(loading){
     const l=document.createElement('div');l.className='search-loading';
-    l.textContent='Chargement des catalogues INA Luxury et Cozy…';
+    l.textContent='Chargement du catalogue INA Luxury…';
     container.appendChild(l);
   }
   resultsEl.appendChild(container);
@@ -2472,10 +2472,10 @@ var ARCH=[
     {n:'Soins capillaires',subs:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
     {n:'Expérience VIP',subs:['Le Soin Complet VIP']}
   ]},
-  {b:'Cozy',href:'cozy.html',cats:[
-    {n:'Hygiène intime',subs:['Gel Nettoyant Intime']},
-    {n:'SELFCARE',subs:['Huile Intime','Body Butter Baiser Nocturne','Crème Mains','Baume Pailleté']},
-    {n:'Produits raffermissants',subs:['Maca Cream','Le Boost Fermeté']}
+  {b:'Harmonisation faciale',href:'harmonisation-faciale.html',cats:[
+    {n:'Facial Balancing',subs:['Zone supérieure','Milieu du visage','Zone inférieure','Genesis Face']},
+    {n:'Genesis Hollywood',subs:['Frontalis + zone glabellaire','Rhinoplastie','Affiner le bas du visage','Visage complet']},
+    {n:'Genesis Soft',subs:['Creux infraorbitaire','Sillon nasogénien','Restructuration labiale','Mâchoire et joues']}
   ]}
 ];
 var body=document.getElementById('lcCatBody');
@@ -2907,7 +2907,7 @@ addEventListener('load', mesureBarre);
 /* LA PASSERELLE de la visite 3D : la scène appelle les moteurs de cette page, elle ne les refait pas. */
 window.LC_CLINIC={services:SERVICES,book:function(i){startBooking(SERVICES[i]);}};
 </script>
-<script type="module" src="assets/js/salon3d/boot-clinique.js?v=20261126c"></script>
+<script type="module" src="assets/js/salon3d/boot-clinique.js?v=20261126d"></script>
 <!--/S3D-FIN-->
 </body>
 </html>

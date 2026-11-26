@@ -194,7 +194,9 @@ export function boutique({ ina, lien, quand }) {
       anime(t, dt) {
         if (calme) return false;
         // les carrousels tournent doucement ; celui qu'on regarde un peu plus vite
-        vitrines.forEach((v, j) => { if (v.charge) v.ronde.rotation.y += dt * (j === kActif - 1 ? 0.22 : 0.08); });
+        const v = vitrines[kActif - 1];
+        if (!v || !v.charge) return false;
+        v.ronde.rotation.y += dt * 0.22;
         if (!qualiteBasse) pous.userData.animer(dt);
         return true;
       },

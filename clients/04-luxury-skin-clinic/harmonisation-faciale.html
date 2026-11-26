@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126a">
+<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126d">
 <script type="application/ld+json" id="jsonld-harmo">{"@context":"https://schema.org","@type":"HealthAndBeautyBusiness","name":"Luxury Skin Clinic · Harmonisation faciale","url":"https://luxuryclub229.com/harmonisation-faciale","image":"https://luxuryclub229.com/assets/images/og-harmonisation.jpg","telephone":"+2290167975626","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"},"sameAs":["https://www.instagram.com/luxuryclub229"],"priceRange":"200 000 - 2 400 000 FCFA","parentOrganization":{"@type":"Organization","name":"Luxury Club 229","url":"https://luxuryclub229.com/"},"hasOfferCatalog":{"@type":"OfferCatalog","name":"Harmonisation faciale","itemListElement":[{"@type":"OfferCatalog","name":"Facial Balancing","description":"Le facial balancing est la combinaison de ces différentes techniques pour rajeunir votre visage et le rendre plus frais et beau.","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Facial Balancing · Zone supérieure","description":"Front + cerne"},"priceCurrency":"XOF","price":500000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Facial Balancing · Milieu du visage","description":"Pommette + nez"},"priceCurrency":"XOF","price":1000000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Facial Balancing · Zone inférieure","description":"Lèvre, mâchoire, joue et menton"},"priceCurrency":"XOF","price":800000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Facial Balancing · Genesis Face","description":"Tout le visage"},"priceCurrency":"XOF","price":2200000}]},{"@type":"OfferCatalog","name":"Genesis Hollywood","description":"Le Genesis Hollywood est une technique qui va permettre de relifter votre peau et votre visage, d'affiner votre visage et d'adoucir vos traits, et de traiter tout ce qui est rides dynamiques.","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Hollywood · Frontalis + zone glabellaire","description":"Rides du front et entre les sourcils"},"priceCurrency":"XOF","price":300000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Hollywood · Rhinoplastie","description":"Non chirurgicale"},"priceCurrency":"XOF","price":600000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Hollywood · Affiner le bas du visage"},"priceCurrency":"XOF","price":200000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Hollywood · Visage complet"},"priceCurrency":"XOF","price":1000000}]},{"@type":"OfferCatalog","name":"Genesis Soft","description":"Le Genesis Soft est une technique qui va permettre de modifier le volume et d'améliorer son aspect visuel. La perte de volume est très fréquente dès qu'on commence à prendre de l'âge.","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Soft · Creux infraorbitaire"},"priceCurrency":"XOF","price":300000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Soft · Sillon nasogénien","description":"Ride du sourire"},"priceCurrency":"XOF","price":600000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Soft · Restructuration labiale","description":"Lèvres"},"priceCurrency":"XOF","price":300000},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Genesis Soft · Redéfinition de la mâchoire et des joues"},"priceCurrency":"XOF","priceSpecification":{"@type":"PriceSpecification","minPrice":2100000,"maxPrice":2400000,"priceCurrency":"XOF"}}]}]}}</script>
 <style>
 :root{--nuit:#100f0c;--encre:#16130e;--or:#c9a84c;--or-clair:#e2c47a;--creme:#f3eadb;--doux:#cfc3ad;--trait:rgba(201,168,76,.24);}
@@ -44,9 +44,9 @@ a{color:inherit;}
 .tete{position:fixed;inset:0 0 auto;z-index:40;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:0 clamp(12px,3vw,32px);background:#0d0c09;border-bottom:1px solid var(--trait);}
 .tete a{text-decoration:none;}
-.retour{display:inline-flex;align-items:center;gap:8px;min-height:44px;font:500 12px/1 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--doux);}
+.retour{display:inline-flex;align-items:center;gap:8px;min-height:44px;min-width:44px;font:500 12px/1 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--doux);}
 .retour svg{width:22px;height:12px;stroke:currentColor;fill:none;stroke-width:1.6;}
-.marque{display:flex;flex-direction:column;align-items:center;line-height:1;}
+.marque{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;min-height:44px;}
 .marque b{font:500 clamp(15px,2vw,19px)/1 'Cormorant Garamond',serif;letter-spacing:.28em;text-transform:uppercase;color:var(--or-clair);}
 .marque span{font:500 9.5px/1 'DM Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--doux);margin-top:6px;}
 .rdv-haut{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;background:var(--or);color:#1a140a;
@@ -76,12 +76,12 @@ a{color:inherit;}
 .hz-fiche{width:min(430px,40vw);}
 .hz-fiche .hz-texte{font-size:14.5px;}
 .hz-zones{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px;}
-.hz-zones button{min-height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--s3d-trait);background:transparent;color:var(--s3d-texte);
+.hz-zones button{min-height:44px;padding:0 12px;border-radius:999px;border:1px solid var(--s3d-trait);background:transparent;color:var(--s3d-texte);
   font:400 13px/1.2 'Jost',sans-serif;cursor:pointer;text-align:left;}
 .hz-zones button[aria-selected="true"]{background:var(--s3d-accent);border-color:var(--s3d-accent);color:#1a140a;}
 .hz-zone-nom{display:block;font:500 clamp(22px,2.2vw,28px)/1.1 'Cormorant Garamond',serif;color:var(--s3d-texte);}
 .hz-zone-detail{display:block;font:400 14px/1.4 'Jost',sans-serif;color:var(--s3d-doux);margin-top:3px;}
-.hz-note{font-size:13.5px !important;border-left:2px solid var(--s3d-accent);padding-left:10px;}
+.hz-note{font-size:13.5px !important;border-left:2px solid var(--s3d-accent);padding-left:14px;}
 .s3d-pt.choisi i{background:#f4dd9e;box-shadow:0 0 0 5px rgba(201,168,76,.45);}
 
 /* ---------- les techniques, lisibles sans la 3D ---------- */
@@ -100,10 +100,10 @@ a{color:inherit;}
 .tarifs th{font:500 17px/1.3 'Jost',sans-serif;color:var(--creme);}
 .tarifs th small{display:block;font:400 13.5px/1.4 'Jost',sans-serif;color:var(--doux);margin-top:3px;}
 .tarifs td{text-align:right;font:600 17px/1.3 'Jost',sans-serif;color:var(--or-clair);white-space:nowrap;padding-left:14px;}
-.tarifs td button{display:block;margin:8px 0 0 auto;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--trait);background:transparent;
+.tarifs td button{display:block;margin:8px 0 0 auto;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--trait);background:transparent;
   color:var(--creme);font:400 13px/1 'Jost',sans-serif;cursor:pointer;}
 .tarifs td button:hover{background:var(--or);color:#1a140a;border-color:var(--or);}
-.tech .note{font-size:14.5px;color:var(--doux);border-left:2px solid var(--or);padding-left:12px;margin-top:16px;}
+.tech .note{font-size:14.5px;color:var(--doux);border-left:2px solid var(--or);padding-left:14px;margin-top:16px;}
 .consult{margin:30px auto 0;max-width:1240px;padding:0 clamp(16px,5vw,72px) 80px;}
 .consult .carte{border:1px solid var(--trait);border-radius:24px;padding:clamp(24px,4vw,44px);display:flex;flex-wrap:wrap;gap:18px 40px;align-items:center;justify-content:space-between;
   background:linear-gradient(135deg,#1a160f,#120f0b);}
@@ -351,6 +351,6 @@ a{color:inherit;}
   window.LC_HARMO.ouvrir=ouvrir;
 })();
 </script>
-<script type="module" src="assets/js/salon3d/boot-harmonisation.js?v=20261126a"></script>
+<script type="module" src="assets/js/salon3d/boot-harmonisation.js?v=20261126d"></script>
 </body>
 </html>

@@ -3,7 +3,8 @@
 _qc.py — la suite de controle de la vitrine Luxury Skin Clinic.
 
     python _outils/_qc.py
-    python _outils/_qc.py --page cozy.html
+    python _outils/_qc.py --page harmonisation-faciale.html
+    python _outils/_qc.py --page ina-luxury.html
 
 Ce que ce controle sait faire, et que les autres ne savaient pas :
 
@@ -189,11 +190,11 @@ ZONES = {
     (".fam-cards", [(".fam-card h3", "nom d'une famille"), (".fam-card p", "texte d'une famille"),
                     (".fam-card .fc-k", "compte d'une famille"), (".fam-card .fc-go", "lien Decouvrir")]),
   ],
-  "cozy.html": [
-    (".hero", [(".hero h1", "titre du heros"), (".hero p", "accroche du heros"),
-               (".hero-tag", "etiquette du heros"), (".hero-note", "note du heros")]),
-    (".cat-band", [(".cb-mot", "phrase de la bande"), (".fpill", "pastille de filtre")]),
-    (".grid", [(".card h3", "nom d'un produit"), (".card .price", "prix d'un produit")]),
+  # cozy.html n'est plus qu'une redirection (26/11) : ses produits sont dans INA, sa place est a l'harmonisation
+  "harmonisation-faciale.html": [
+    (".techniques", [(".tech h3", "nom d'une technique"), (".tech p", "texte d'une technique"),
+                     (".tarifs th", "zone d'un tarif"), (".tarifs td", "tarif d'une zone"), (".tech .famille", "famille")]),
+    (".consult", [(".consult h2", "titre de la consultation"), (".consult .bouton-or", "bouton de consultation")]),
   ],
 }
 
@@ -404,10 +405,25 @@ def recouvrements(page):
     }""")
 
 
+def servir():
+    """Un serveur HTTP local pour la duree du controle. La visite 3D est faite de modules JavaScript, et Chrome
+    refuse les modules en file:// (26/11) : sans serveur, le controle accuserait la page d'une panne qu'elle n'a pas."""
+    import functools, http.server, socketserver, threading
+    class Muet(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+    class Serveur(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+    srv = Serveur(("127.0.0.1", 0), functools.partial(Muet, directory=RACINE))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv
+
+
 def controles_navigateur(chemin, largeurs=(390, 1440)):
-    url = "file:///" + chemin.replace("\\", "/")
+    srv = servir()
+    url = "http://127.0.0.1:%d/%s" % (srv.server_address[1], os.path.basename(chemin))
     with sync_playwright() as pw:
-        b = pw.chromium.launch()
+        b = pw.chromium.launch(args=["--use-angle=d3d11", "--ignore-gpu-blocklist", "--enable-gpu-rasterization"])
         for w in largeurs:
             mobile = w < 700
             ctx = b.new_context(viewport={"width": w, "height": 844 if mobile else 900},
@@ -427,6 +443,23 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
 
             att(not erreurs, "%d px : aucune erreur JavaScript%s" % (w, (" — " + erreurs[0][:90]) if erreurs else ""))
             att(not echecs, "%d px : aucune ressource en echec%s" % (w, (" — " + ", ".join(echecs[:3])) if echecs else ""))
+
+            # la visite 3D (26/11) : elle se lance, et chaque station a son calque
+            if page.evaluate("() => !!document.querySelector('.s3d')"):
+                page.evaluate("() => { const p = document.querySelector('.s3d-porte'); if (p) p.click(); }")
+                try:
+                    page.wait_for_selector(".s3d.s3d-pret, .s3d.s3d-sans", timeout=20000)
+                except Exception:
+                    pass
+                v = page.evaluate("""() => { const s = document.querySelector('.s3d');
+                    return {pret: s.classList.contains('s3d-pret'), sans: s.classList.contains('s3d-sans'),
+                            calques: s.querySelectorAll('.s3d-calque').length,
+                            pastilles: s.querySelectorAll('.s3d-pastilles button').length}; }""")
+                att(v["pret"] and not v["sans"], "%d px : la visite 3D se lance" % w)
+                att(v["calques"] > 1 and v["calques"] == v["pastilles"],
+                    "%d px : chaque station a son calque (%d stations)" % (w, v["calques"]))
+                page.evaluate("() => scrollTo({top:0, behavior:'instant'})")
+                page.wait_for_timeout(400)
 
             m = page.evaluate(JS_MESURES)
             att(m["debordDoc"] <= 1, "%d px : la page ne deborde pas (%d px)" % (w, m["debordDoc"]))
@@ -529,7 +562,7 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
 
             # la bande de bord doit etre VRAIMENT opaque
             opac = page.evaluate("""() => {
-                const d = document.querySelector('.lc-dock');
+                const d = document.querySelector('.lc-dock') || document.querySelector('header.tete');
                 if (!d) return null;
                 const s = getComputedStyle(d);
                 const m = (s.backgroundColor.match(/[\\d.]+/g) || []);
@@ -539,6 +572,7 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
 
             ctx.close()
         b.close()
+    srv.shutdown()
 
 
 def main():

@@ -63,7 +63,38 @@ Mme Sabrina, esthéticienne diplômée, sur rendez-vous.
 - Prix : 150 000 FCFA
 - Description : L'Expérience (Le Rituel Signature VIP) — Beauté • Détente • Évasion absolue.
 
+## Harmonisation faciale (cabinet de soins privés)
+
+### Facial Balancing
+
+Le facial balancing est la combinaison de ces différentes techniques pour rajeunir votre visage et le rendre plus frais et beau.
+
+- Zone supérieure (Front + cerne) : 500 000 FCFA
+- Milieu du visage (Pommette + nez) : 1 000 000 FCFA
+- Zone inférieure (Lèvre, mâchoire, joue et menton) : 800 000 FCFA
+- Genesis Face (Tout le visage) : 2 200 000 FCFA
+
+### Genesis Hollywood
+
+Le Genesis Hollywood est une technique qui va permettre de relifter votre peau et votre visage, d'affiner votre visage et d'adoucir vos traits, et de traiter tout ce qui est rides dynamiques.
+
+- Frontalis + zone glabellaire (Rides du front et entre les sourcils) : 300 000 FCFA
+- Rhinoplastie (Non chirurgicale) : 600 000 FCFA
+- Affiner le bas du visage : 200 000 FCFA
+- Visage complet : 1 000 000 FCFA
+
+### Genesis Soft
+
+Le Genesis Soft est une technique qui va permettre de modifier le volume et d'améliorer son aspect visuel. La perte de volume est très fréquente dès qu'on commence à prendre de l'âge.
+
+- Creux infraorbitaire : 300 000 FCFA
+- Sillon nasogénien (Ride du sourire) : 600 000 FCFA
+- Restructuration labiale (Lèvres) : 300 000 FCFA
+- Redéfinition de la mâchoire et des joues : de 2 100 000 à 2 400 000 FCFA
+
+Si vous désirez un volume vraiment plus grand, des frais supplémentaires pourraient être appliqués.
+
 ---
 
-Dernière mise à jour : 2026-09-09.
-Source : https://luxuryclub229.com/luxury-skin-clinic
+Dernière mise à jour : 2026-11-26.
+Source : https://luxuryclub229.com/luxury-skin-clinic et https://luxuryclub229.com/harmonisation-faciale

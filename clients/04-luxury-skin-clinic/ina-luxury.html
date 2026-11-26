@@ -727,7 +727,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 .sr-titre{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
 </style>
 <!--S3D-CSS-->
-<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126c">
+<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126d">
 <!--/S3D-CSS-->
 </head>
 <body>
@@ -1502,10 +1502,10 @@ const CROSS_BRANDS=[
     {label:'Soins Capillaires',items:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
     {label:'VIP',items:['Le Soin Complet VIP']},
   ]},
-  {label:'COZY',href:'cozy.html',groups:[
-    {label:'Hygiène intime',items:['Gel Nettoyant Intime']},
-    {label:'SELFCARE',items:['Huile Intime','Crème Mains','Baume Pailleté']},
-    {label:'Produits raffermissants',items:['Maca Cream','Le Boost Fermeté']},
+  {label:'HARMONISATION FACIALE',href:'harmonisation-faciale.html',groups:[
+    {label:'Facial Balancing',items:['Zone supérieure','Milieu du visage','Zone inférieure','Genesis Face']},
+    {label:'Genesis Hollywood',items:['Frontalis + zone glabellaire','Rhinoplastie','Affiner le bas du visage','Visage complet']},
+    {label:'Genesis Soft',items:['Creux infraorbitaire','Sillon nasogénien','Restructuration labiale','Mâchoire et joues']},
   ]},
 ];
 function subCount(f,s){return PRODUCTS.filter(p=>p.f===f&&p.s===s).length;}
@@ -1794,7 +1794,7 @@ function renderGlobalSearch(){
   });
   gridMeta.hidden=false;
   count.innerHTML=`<b>${results.length}</b> résultat${results.length>1?'s':''} pour « ${q} »`+
-    (loading?' <span style="opacity:.6;font-style:italic">(chargement Cozy &amp; Clinic…)</span>':'');
+    (loading?' <span style="opacity:.6;font-style:italic">(chargement de la clinique…)</span>':'');
   grid.innerHTML='';
   if(!results.length){
     grid.innerHTML=`<div class="search-empty"><h3>Aucun produit trouvé</h3>
@@ -1819,7 +1819,7 @@ function renderGlobalSearch(){
   });
   if(loading){
     const l=document.createElement('div');l.className='search-loading';
-    l.textContent='Chargement des catalogues Cozy et Skin Clinic…';
+    l.textContent='Chargement du catalogue Skin Clinic…';
     wrap.appendChild(l);
   }
   grid.appendChild(wrap);
@@ -3075,7 +3075,7 @@ window.LC_INA={produits:PRODUCTS,img:IMG,familles:FAMILIES,sous:SUBCATS,
 /* une famille ouverte par l'adresse (ina-luxury.html#intime-bien-etre : les anciens liens de Cozy y arrivent) */
 (function(){var k=decodeURIComponent((location.hash||'').slice(1));if(k&&FAMILIES.some(function(f){return f.key===k;})){select(k,null,null);setTimeout(function(){var m=document.querySelector('.layout');if(m)m.scrollIntoView();},400);}})();
 </script>
-<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261126c"></script>
+<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261126d"></script>
 <!--/S3D-FIN-->
 </body>
 </html>

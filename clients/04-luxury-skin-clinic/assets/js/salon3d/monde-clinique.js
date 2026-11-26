@@ -425,10 +425,14 @@ export function clinique({ services, lien, quand }) {
         const c = creneau.material, cv = kActif === ST.rdv ? 0.55 + 0.25 * Math.sin(t * 2.4) : 0;
         if (Math.abs(c.opacity - cv) > 0.004 || cv) { c.opacity += (cv - c.opacity) * Math.min(1, dt * 4); vivant = true; }
         // la bougie vacille, les rais respirent
-        if (!calme) {
+        // (on ne redessine en continu que là où quelque chose bouge vraiment : la batterie du téléphone compte)
+        if (!calme && kActif === ST.vip) {
           bougie.intensity = 0.8 + Math.sin(t * 7.3) * 0.08 + Math.sin(t * 13.1) * 0.05;
           flamme.scale.y = 1.8 + Math.sin(t * 9) * 0.15;
-          if (!qualiteBasse) { rai.opacity = 0.28 + Math.sin(t * 0.5) * 0.06; pous.userData.animer(dt); }
+          vivant = true;
+        }
+        if (!calme && !qualiteBasse && kActif <= ST.accueil) {
+          rai.opacity = 0.28 + Math.sin(t * 0.5) * 0.06; pous.userData.animer(dt);
           vivant = true;
         }
         return vivant;

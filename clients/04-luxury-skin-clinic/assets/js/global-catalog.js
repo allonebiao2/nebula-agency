@@ -1,5 +1,5 @@
 /* ===== LUXURY CLUB 229 — Catalogue global =====
-   Recherche cross-marque (INA Luxury + Cozy + Luxury Skin Clinic).
+   Recherche cross-marque (INA Luxury + Luxury Skin Clinic). Cozy a rejoint INA le 26/11 : ses produits y sont.
    Charge automatiquement les catalogues des 2 autres pages via fetch.
    Aucune duplication de données : la vérité reste dans chaque fichier source.
 
@@ -16,7 +16,6 @@
 
   const BRAND_META = {
     ina:    {label:'INA Luxury',     short:'INA',    url:'ina-luxury.html',         color:'#c9a84c', kind:'produit'},
-    cozy:   {label:'Cozy',           short:'COZY',   url:'cozy.html',               color:'#d99aa9', kind:'produit'},
     clinic: {label:'Skin Clinic',    short:'CLINIC', url:'luxury-skin-clinic.html', color:'#7fb6a4', kind:'prestation'}
   };
   LC.BRAND_META = BRAND_META;

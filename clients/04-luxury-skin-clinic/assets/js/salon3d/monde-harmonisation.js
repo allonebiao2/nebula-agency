@@ -260,11 +260,12 @@ export function cabinet({ donnees, prix, lien, quand }) {
       c.voile.userData.act = () => { if (lien.moteur && lien.moteur.station() !== i + 1) lien.moteur.aller(i + 1); };
     });
 
-    let qualiteBasse = false;
+    let qualiteBasse = false, kEntree = 0;
     return {
       stations,
       cliquables: [carte, ...cadres.map((c) => c.voile)],
       surStation(k) {
+        kEntree = k;
         if (k >= 1 && k <= donnees.length) {
           const ti = k - 1;
           choisir(ti, choix.t === ti ? choix.z : 0, false);
@@ -290,7 +291,8 @@ export function cabinet({ donnees, prix, lien, quand }) {
           if (trace > 0.62) oeil.visible = true;
           vivant = true;
         }
-        if (!calme) { groupeProfil.rotation.y = Math.sin(t * 0.35) * 0.22; vivant = vivant || !qualiteBasse; }
+        const devantProfil = kEntree === 0 || kEntree === donnees.length + 1;
+        if (!calme && devantProfil) { groupeProfil.rotation.y = Math.sin(t * 0.35) * 0.22; vivant = vivant || !qualiteBasse; }
         // le voile de chaque cadre
         for (const c of cadres) {
           const m = c.voile.material, vise = c.voileVise || 0;
@@ -301,7 +303,7 @@ export function cabinet({ donnees, prix, lien, quand }) {
             vivant = true;
           }
         }
-        if (!qualiteBasse && !calme) pous.userData.animer(dt);
+        if (!qualiteBasse && !calme && vivant) pous.userData.animer(dt);
         return vivant;
       },
     };
