@@ -360,6 +360,28 @@ button,select,input[type=text],a[class*="-btn"],a[class*="-wa"],a[class*="chip"]
   .marble::before{animation:none;}
 }
 </style>
+<style id="nos-resultats-css">
+/* « Nos résultats » : le comparateur avant / après (26/11) */
+.ba-carte{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;aspect-ratio:4/5;overflow:hidden;background:#111;}
+.ba-carte img{width:100%;height:100%;object-fit:cover;display:block;}
+.ba-carte i{position:absolute;top:10px;font:600 10.5px/1 'Jost',sans-serif;letter-spacing:.16em;text-transform:uppercase;font-style:normal;
+  background:rgba(13,11,8,.82);color:#f3e3b5;padding:6px 8px;border-radius:999px;}
+.ba-carte i:first-of-type{left:10px;} .ba-carte i:last-of-type{right:10px;}
+.ba-carte::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:#c9a84c;}
+.ba{position:relative;width:min(88vw,620px);aspect-ratio:4/5;max-height:76vh;overflow:hidden;border-radius:12px;background:#111;--x:50%;touch-action:pan-y;}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+.ba .ba-avant{clip-path:inset(0 calc(100% - var(--x)) 0 0);}
+.ba .ba-trait{position:absolute;top:0;bottom:0;left:var(--x);width:2px;margin-left:-1px;background:#c9a84c;pointer-events:none;}
+.ba .ba-trait::after{content:"⟷";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;background:#c9a84c;color:#16120a;font:600 18px/1 sans-serif;}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0;}
+.ba .ba-l{position:absolute;bottom:12px;font:600 11px/1 'Jost',sans-serif;letter-spacing:.16em;text-transform:uppercase;
+  background:rgba(13,11,8,.85);color:#f3e3b5;padding:7px 10px;border-radius:999px;pointer-events:none;}
+.ba .ba-l1{left:12px;} .ba .ba-l2{right:12px;}
+.testi-insta{display:inline-flex;align-items:center;gap:10px;margin-top:14px;min-height:46px;padding:0 20px;border-radius:999px;
+  background:#c9a84c;color:#16120a;text-decoration:none;font:600 14px/1 'Jost',sans-serif;}
+.testi-insta:hover{background:#e3cd86;}
+</style>
 </head>
 <body>
 
@@ -451,13 +473,13 @@ button,select,input[type=text],a[class*="-btn"],a[class*="-wa"],a[class*="chip"]
   </section>
 
   <!-- ============ TÉMOIGNAGES PHOTOS — galerie manuelle curée par Sabrina ============ -->
-  <section class="hub-testi" id="temoignages" aria-label="Témoignages clients en photos">
+  <section class="hub-testi" id="temoignages" aria-label="Nos résultats, en photos">
     <header class="testi-head">
-      <div class="testi-eyebrow">Résultats vérifiés</div>
-      <h2 class="testi-title">Témoignages clients</h2>
+      <div class="testi-eyebrow">Nos patientes</div>
+      <h2 class="testi-title">Nos résultats</h2>
       <div class="testi-flourish"><span></span></div>
-      <p class="testi-intro">Photos de résultats, captures de discussions, retours visuels —
-        partagés par nos clientes avec leur accord. Cliquez sur une image pour l'agrandir.</p>
+      <p class="testi-intro">Avant / après et photos de résultats, partagés par nos patientes avec leur accord.
+        Touchez une image pour l'agrandir, puis faites glisser pour comparer.</p>
     </header>
 
     <div class="testi-filters" id="testiFilters" role="tablist" aria-label="Filtrer les témoignages">
@@ -496,7 +518,7 @@ button,select,input[type=text],a[class*="-btn"],a[class*="-wa"],a[class*="chip"]
     </figure>
   </div>
 
-  <section class="hub-reviews" id="avis" aria-label="Avis clients">
+  <section class="hub-reviews" id="avis" aria-label="Avis clients" style="display:none" aria-hidden="true">
     <header class="rev-head">
       <div class="rev-eyebrow">Votre voix compte</div>
       <h2 class="rev-title">Cliquez ici pour laisser vos avis</h2>
@@ -583,12 +605,12 @@ button,select,input[type=text],a[class*="-btn"],a[class*="-wa"],a[class*="chip"]
 </button>
 
 <!-- Bouton flottant : redirige vers la section avis clients -->
-<a href="#avis" id="fabAvis" class="fab-avis" aria-label="Laisser un avis ou lire les avis clients">
+<a href="#temoignages" id="fabAvis" class="fab-avis" aria-label="Voir nos résultats">
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path d="M21 12a9 9 0 0 1-13.5 7.79L3 21l1.21-4.5A9 9 0 1 1 21 12z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   </svg>
-  <span class="fab-avis-label">Avis clients</span>
+  <span class="fab-avis-label">Nos résultats</span>
 </a>
 
 <script>
@@ -1405,10 +1427,9 @@ var ARCH=[
     {n:'Enfant (0-16 ans)',subs:['Gel Lavant','Crème','Crème Lavante']}
   ]},
   {b:'Luxury Skin Clinic',href:'luxury-skin-clinic.html#soins',cats:[
-    {n:'Soins du visage',subs:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
-    {n:'Soins du corps',subs:['Gommage Luxury','Luxury Massage']},
-    {n:'Soins capillaires',subs:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
-    {n:'Expérience VIP',subs:['Le Soin Complet VIP']}
+    {n:'Soins du visage',subs:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel','Cosmelan Peel','Melan 2 Peel','Perfect Derma Peel']},
+    {n:'Soins du corps',subs:['Gommage Luxury']},
+    {n:'Soins capillaires',subs:['Consultation Capillaire Premium','Le Hair Spa','Mésothérapie ANAGEN']}
   ]},
   {b:'Harmonisation faciale',href:'harmonisation-faciale.html',cats:[
     {n:'Facial Balancing',subs:['Zone supérieure','Milieu du visage','Zone inférieure','Genesis Face']},
@@ -1721,7 +1742,7 @@ function bindSubmit(){
         le FAB n'a plus besoin de réapparaître pour le reste de la session. ----- */
 function bindFab(){
   var fab=document.getElementById('fabAvis');
-  var sec=document.getElementById('avis');
+  var sec=document.getElementById('temoignages');
   if(!fab||!sec||!('IntersectionObserver' in window))return;
   var io=new IntersectionObserver(function(entries){
     entries.forEach(function(en){
@@ -1798,15 +1819,17 @@ function renderTesti(){
   var list=filteredTesti();
   testiState.visible=list;
   if(!list.length){
-    grid.innerHTML='<div class="testi-empty">Les premières photos de témoignages seront publiées très prochainement.<br>'+
-      'Envoyez les vôtres à Mme Sabrina via WhatsApp pour les ajouter à cette galerie.</div>';
+    grid.innerHTML='<div class="testi-empty">Les avant / après de nos patientes sont sur notre Instagram.<br>'+
+      '<a class="testi-insta" href="https://www.instagram.com/luxuryclub229/" target="_blank" rel="noopener">Voir nos résultats sur Instagram</a></div>';
     return;
   }
   grid.innerHTML=list.map(function(t,i){
     var badge=TYPE_LABELS[t.type]||'Témoignage';
     var caption=t.caption?'<div class="testi-card-cap">'+escapeHTML(t.caption)+'</div>':'';
     return '<button type="button" class="testi-card" data-idx="'+i+'" aria-label="Voir le témoignage : '+escapeHTML(t.caption||badge)+'">'+
-      '<img src="'+escapeHTML(t.src)+'" alt="'+escapeHTML(t.caption||badge)+'" loading="lazy">'+
+      (t.avant&&t.apres
+        ?'<span class="ba-carte"><img src="'+escapeHTML(t.avant)+'" alt="Avant" loading="lazy"><img src="'+escapeHTML(t.apres)+'" alt="Après" loading="lazy"><i>Avant</i><i>Après</i></span>'
+        :'<img src="'+escapeHTML(t.src)+'" alt="'+escapeHTML(t.caption||badge)+'" loading="lazy">')+
       '<div class="testi-card-meta">'+
         '<span class="testi-card-badge">'+escapeHTML(badge)+'</span>'+
         caption+
@@ -1854,8 +1877,25 @@ function showLightboxImage(){
   var list=testiState.visible;
   if(!list.length)return;
   var t=list[testiState.current];
-  $('testiLbImg').src=t.src;
-  $('testiLbImg').alt=t.caption||'';
+  var img=$('testiLbImg'),ba=document.getElementById('testiBa');
+  if(t.avant&&t.apres){
+    if(!ba){
+      ba=document.createElement('div');ba.className='ba';ba.id='testiBa';
+      ba.innerHTML='<img class="ba-apres" alt="Après"><img class="ba-avant" alt="Avant"><span class="ba-trait"></span>'+
+        '<span class="ba-l ba-l1">Avant</span><span class="ba-l ba-l2">Après</span>'+
+        '<input type="range" min="0" max="100" value="50" aria-label="Faire glisser pour comparer avant et après">';
+      img.parentNode.insertBefore(ba,img);
+      ba.querySelector('input').addEventListener('input',function(e){ba.style.setProperty('--x',e.target.value+'%');});
+    }
+    ba.querySelector('.ba-avant').src=t.avant;ba.querySelector('.ba-apres').src=t.apres;
+    ba.querySelector('input').value=50;ba.style.setProperty('--x','50%');
+    ba.style.display='';img.style.display='none';
+  }else{
+    if(ba)ba.style.display='none';
+    img.style.display='';
+    img.src=t.src;
+    img.alt=t.caption||'';
+  }
   var cap=$('testiLbCap');
   var badge=TYPE_LABELS[t.type]||'';
   cap.innerHTML=(badge?'<small style="display:block;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:6px;">'+escapeHTML(badge)+'</small>':'')+
@@ -1925,5 +1965,9 @@ html body .lc-cat-btn{min-height:44px;bottom:calc((var(--dock-h) - 46px) / 2);
 }
 </style>
 <div class="lc-dock" aria-hidden="true"></div>
+<!--LM-->
+<script>window.LC_MENU={"hub": true, "raccourcis": [{"t": "Nos univers", "h": "#brands"}, {"t": "Mme Sabrina", "h": "#bio"}, {"t": "Nos résultats", "h": "#temoignages"}]};</script>
+<script src="assets/js/menu.js?v=20261126o"></script>
+<!--/LM-->
 </body>
 </html>

@@ -727,7 +727,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 .sr-titre{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
 </style>
 <!--S3D-CSS-->
-<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126d">
+<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126n">
 <!--/S3D-CSS-->
 </head>
 <body>
@@ -1497,10 +1497,9 @@ const state={family:null,subcat:null,routine:null,query:''};
 /* architecture des 2 autres marques (liens sortants) */
 const CROSS_BRANDS=[
   {label:'LUXURY SKIN CLINIC',href:'luxury-skin-clinic.html#soins',groups:[
-    {label:'Soins Visage',items:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
-    {label:'Soins Corps',items:['Gommage Luxury','Luxury Massage']},
-    {label:'Soins Capillaires',items:['Consultation Capillaire Premium','Le Hair Spa','Activateur de Pousse']},
-    {label:'VIP',items:['Le Soin Complet VIP']},
+    {label:'Soins Visage',items:['Consultation — Suivi','Soin Visage Classic','Soin Oxygène','Soin Glass Skin','Luxury Peel','Cosmelan Peel','Melan 2 Peel','Perfect Derma Peel']},
+    {label:'Soins Corps',items:['Gommage Luxury']},
+    {label:'Soins Capillaires',items:['Consultation Capillaire Premium','Le Hair Spa','Mésothérapie ANAGEN']},
   ]},
   {label:'HARMONISATION FACIALE',href:'harmonisation-faciale.html',groups:[
     {label:'Facial Balancing',items:['Zone supérieure','Milieu du visage','Zone inférieure','Genesis Face']},
@@ -3075,7 +3074,11 @@ window.LC_INA={produits:PRODUCTS,img:IMG,familles:FAMILIES,sous:SUBCATS,
 /* une famille ouverte par l'adresse (ina-luxury.html#intime-bien-etre : les anciens liens de Cozy y arrivent) */
 (function(){var k=decodeURIComponent((location.hash||'').slice(1));if(k&&FAMILIES.some(function(f){return f.key===k;})){select(k,null,null);setTimeout(function(){var m=document.querySelector('.layout');if(m)m.scrollIntoView();},400);}})();
 </script>
-<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261126d"></script>
+<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261126n"></script>
 <!--/S3D-FIN-->
+<!--LM-->
+<script>window.LC_MENU={"titreVisite": "La visite de la boutique", "familles": true, "raccourcis": [{"t": "Tous les produits", "h": ".layout"}, {"t": "Mon panier", "clic": "#cartBtn"}, {"t": "Faire ma consultation", "clic": "#consultBtn"}]};</script>
+<script src="assets/js/menu.js?v=20261126o"></script>
+<!--/LM-->
 </body>
 </html>

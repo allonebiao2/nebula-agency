@@ -377,7 +377,10 @@ def recouvrements(page):
       //    qu'elles ont un socle opaque. Les exclure ici, c'est mesurer la
       //    situation reelle et non le nombre d'elements `fixed`.
       const bandes = fixes.filter(f => f.bande);
-      const flottants = fixes.filter(f => !f.bande && !bandes.some(b =>
+      // ⚠️ un tiroir FERME est hors de l'ecran (translateX(-105%)) : il ne recouvre rien (26/11, la sonde accusait
+      //    le menu ferme de cacher son propre titre)
+      const dansEcran = f => f.r.right > 0 && f.r.left < innerWidth && f.r.bottom > 0 && f.r.top < innerHeight;
+      const flottants = fixes.filter(f => dansEcran(f) && !f.bande && !bandes.some(b =>
         f.r.top >= b.r.top - 2 && f.r.bottom <= b.r.bottom + 2));
       const conflits = [];
       const course = document.documentElement.scrollHeight - innerHeight;
@@ -391,6 +394,8 @@ def recouvrements(page):
           if (r.width < 4 || r.height < 4) return;
           const hautDoc = r.top + y0;          // position dans le document
           flottants.forEach(f => {
+            // un instrument ne recouvre pas son propre contenu
+            if (f.el.contains(t)) return;
             // chevauchement horizontal ?
             if (r.right < f.r.left || r.left > f.r.right) return;
             // le texte croise l'instrument quand  f.top < hautDoc - S + r.height  et  f.bottom > hautDoc - S

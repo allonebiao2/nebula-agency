@@ -8,7 +8,10 @@ import { terrazzo, marbre, chene, platre, plaque, degrade, feuille, poussiere, a
 
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fcfa = (n) => (n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, " ") + " F";
-const XV = (k) => 9 + k * 3.6;           // la porte du k-ième soin du visage, le long du couloir
+// les portes des soins du visage, des DEUX côtés du couloir en alternance (8 soins depuis le 26/11) :
+// k pair au mur du fond (z < 0), k impair au mur d'en face (z > 0), une porte tous les 1,8 m
+const XV = (k) => 9 + k * 1.8;
+const MUR = (k) => (k % 2 ? -1 : 1);     // +1 : mur du fond (on le regarde vers -z) ; -1 : mur d'en face
 
 export function clinique({ services, lien, quand }) {
   return async ({ scene, renderer, camera, mobile, calme, outils }) => {
@@ -172,22 +175,23 @@ export function clinique({ services, lien, quand }) {
     const cliquables = [];
     const duree = (s) => ((s.meta || []).find((m) => /h|min|séance|semaine/i.test(m[0])) || [""])[0];
     visage.forEach(({ s, i }, k) => {
-      const x = XV(k);
-      ajoute(new THREE.BoxGeometry(1.24, 2.5, 0.08), mChene, x, 1.25, -2.36, false);
-      const porte = ajoute(new THREE.BoxGeometry(1.04, 2.34, 0.04), mVerre, x, 1.19, -2.3, false);
-      ajoute(new THREE.BoxGeometry(1.1, 0.03, 0.05), new THREE.MeshBasicMaterial({ color: 0xfff2dc }), x, 2.62, -2.33, false);
+      const x = XV(k), m = MUR(k);
+      ajoute(new THREE.BoxGeometry(1.24, 2.5, 0.08), mChene, x, 1.25, -m * 2.36, false);
+      const porte = ajoute(new THREE.BoxGeometry(1.04, 2.34, 0.04), mVerre, x, 1.19, -m * 2.3, false);
+      ajoute(new THREE.BoxGeometry(1.1, 0.03, 0.05), new THREE.MeshBasicMaterial({ color: 0xfff2dc }), x, 2.62, -m * 2.33, false);
       const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.4), new THREE.MeshStandardMaterial({
         map: plaque(anis, { w: 900, h: 514, fond: "#c3a058", lignes: [
           { t: (s.n || "").toUpperCase(), font: "600 58px 'Cormorant Garamond', Georgia, serif", couleur: "#2b1f0b", y: 0.34, espace: "3px" },
           { t: fcfa(s.p), font: "500 64px 'Jost', sans-serif", couleur: "#2b1f0b", y: 0.6 },
           { t: duree(s).toUpperCase(), font: "500 30px 'DM Mono', monospace", couleur: "#4b3812", y: 0.81, espace: "4px" }] }),
         metalness: 0.75, roughness: 0.33 }));
-      pl.position.set(x + 1.15, 1.5, -2.38);
+      pl.position.set(x + m * 1.15, 1.5, -m * 2.38);
+      if (m < 0) pl.rotation.y = Math.PI;
       scene.add(pl);
       pl.userData.act = porte.userData.act = () => quand.voir(i);
       pl.userData.k = porte.userData.k = 2 + k;
       cliquables.push(pl, porte);
-      if (k < visage.length - 1) plante(x + 1.85, -1.95, { haut: 0.9, n: 140 });
+      if (k < visage.length - 2) plante(x + m * 1.85, -m * 1.95, { haut: 0.9, n: 140 });
     });
 
     // ---------- la cabine : la table de soin et la lampe-loupe qui descend ----------
@@ -255,16 +259,20 @@ export function clinique({ services, lien, quand }) {
       try {
         const h = await (await fetch("ina-luxury.html", { credentials: "same-origin" })).text();
         const img = JSON.parse(h.match(/const IMG=(\{[\s\S]*?\n\});/)[1]);
+        // les produits détourés (cliente, 26/11 : « les mettre en fond noir ») ; sans détourage, la photo garde sa carte
+        const det = await fetch("assets/images/ina-luxury/_detoures/detoures.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
         // les meilleures ventes d'abord (best:1), puis les nouveautés, dans l'ordre du catalogue
         const prods = [...h.matchAll(/\{f:'([^']+)',s:'[^']+',n:(['"])((?:(?!\2).)+)\2,p:\d+[^\n]*/g)].map((m) => ({ f: m[1], n: m[3], best: /best:1/.test(m[0]) }));
         const choix = [...prods.filter((p) => p.best), ...prods.filter((p) => !p.best)].filter((p) => img[p.n]).slice(0, 9);
         choix.forEach(async (p, j) => {
-          const t = await charger(img[p.n]);
+          const libre = !!det[p.n];
+          const t = await charger(det[p.n] || img[p.n]);
           if (!t) return;
           const a = t.image.width / t.image.height;
-          const hh = 0.42, w = Math.min(0.62, hh * a);
-          const carte = new THREE.Mesh(new THREE.PlaneGeometry(w, hh), new THREE.MeshBasicMaterial({ map: t, toneMapped: false }));
-          carte.position.set(-0.85 + (j % 3) * 0.85, 0.92 + Math.floor(j / 3) * 0.6 + hh / 2 + 0.02, 0.02);
+          const hh = libre ? 0.46 : 0.42, w = Math.min(libre ? 0.6 : 0.62, hh * a), h2 = w / a;
+          const carte = new THREE.Mesh(new THREE.PlaneGeometry(w, h2), new THREE.MeshBasicMaterial({ map: t, toneMapped: false, transparent: libre, alphaTest: libre ? 0.04 : 0 }));
+          // posé SUR la tablette (le dessus du chêne est à y + 0,04)
+          carte.position.set(-0.85 + (j % 3) * 0.85, 0.9 + Math.floor(j / 3) * 0.6 + 0.04 + h2 / 2, libre ? 0.04 : 0.02);
           carte.userData.act = () => quand.ina(p);
           carte.userData.k = ST.ina;
           etag.add(carte);
@@ -345,51 +353,50 @@ export function clinique({ services, lien, quand }) {
       points: [{ p: [0.95, 1.2, -1.75], label: "Lundi au samedi, 10 h-17 h", act: () => lien.moteur.aller(ST.rdv) },
                { p: [-1.1, 1.25, -1.8], label: "Sur rendez-vous", act: () => lien.moteur.aller(ST.rdv) }] });
     visage.forEach(({ s, i }, k) => {
-      const x = XV(k), gch = k % 2 === 0;
-      st({ id: "visage-" + k, nom: s.n, cote: gch ? "a-gauche" : "a-droite",
+      const x = XV(k), m = MUR(k);
+      st({ id: "visage-" + k, nom: s.n, cote: "a-gauche",
         // la fiche à gauche : on vise à gauche de la porte, elle se pose à droite de l'écran (et l'inverse)
-        cam: gch ? { p: [x - 2.1, 1.66, 1.75], c: [x + 1.7, 1.32, -2.4], via: k === 0 ? [{ p: [3.4, 1.65, 1.6], c: [9, 1.55, -0.6] }] : [] }
-                 : { p: [x + 3.0, 1.66, 1.75], c: [x - 0.7, 1.32, -2.4] },
-        camM: { p: [x + 0.5, 1.55, 2.25], c: [x + 0.5, 0.0, -2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
-        calque: `<div class="s3d-panneau">${etiq(2 + k, "Soins du visage")}<h3>${esc(s.n)}</h3><p>${esc(s.d)}</p>
+        cam: { p: [x - m * 2.1, 1.66, m * 1.75], c: [x + m * 1.7, 1.32, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.65, 1.6], c: [9, 1.55, -0.6] }] : [] },
+        camM: { p: [x + m * 0.5, 1.55, m * 2.25], c: [x + m * 0.5, 0.0, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
+        calque: `<div class="s3d-panneau">${etiq(stations.length, "Soins du visage")}<h3>${esc(s.n)}</h3><p>${esc(s.d)}</p>
           <div class="s3d-prix"><span>Tarif<b>${fcfa(s.p)}</b></span>${duree(s) ? `<span>Durée<b>${esc(duree(s))}</b></span>` : ""}</div>
           <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${i}">Réserver ce soin</button>
           <button type="button" class="s3d-btn" data-voir="${i}">Le protocole</button></div></div>`,
-        points: [{ p: [x + 1.15, 1.78, -2.3], label: "Le protocole", act: () => quand.voir(i) }] });
+        points: [{ p: [x + m * 1.15, 1.78, -m * 2.3], label: "Le protocole", act: () => quand.voir(i) }] });
     });
     const classic = services.findIndex((s) => /classic/i.test(s.n));
     const etapes = classic >= 0 && services[classic].protocol ? services[classic].protocol.items : [];
     st({ id: "cabine", nom: "La cabine", cote: "a-gauche",
-      cam: { p: [CX + 1.9, 2.25, 2.1], c: [CX - 0.1, 0.95, -0.9], via: [{ p: [XV(4) + 2.4, 1.7, 1.7], c: [CX, 1.2, -1] }] },
+      cam: { p: [CX + 1.9, 2.25, 2.1], c: [CX - 0.1, 0.95, -0.9], via: [{ p: [XV(visage.length - 1) + 2.4, 1.7, 1.7], c: [CX, 1.2, -1] }] },
       camM: { p: [CX + 0.9, 3.0, 2.3], c: [CX - 0.1, -0.5, -0.9] },
-      calque: `<div class="s3d-panneau">${etiq(7, "La cabine")}<h3>La lampe passe : votre peau se lit.</h3>
+      calque: `<div class="s3d-panneau">${etiq(stations.length, "La cabine")}<h3>La lampe passe : votre peau se lit.</h3>
         <ol class="s3d-etapes">${etapes.map((e) => `<li>${esc(Array.isArray(e) ? e[0] : e)}</li>`).join("")}</ol>
         ${classic >= 0 ? `<div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${classic}">Réserver le ${esc(services[classic].n)}</button></div>` : ""}</div>` });
     st({ id: "corps", nom: "Soins du corps", cote: "a-gauche",
       cam: { p: [36.4, 1.95, 2.2], c: [35.4, 0.8, -1.2] }, camM: { p: [35.8, 2.3, 2.4], c: [35.6, -0.8, -1.2] },
-      calque: `<div class="s3d-panneau">${etiq(8, "Soins du corps")}<h3>Exfolier, modeler, apaiser.</h3><ul class="s3d-soins">${g("corps").map(ligneSoin).join("")}</ul></div>` });
+      calque: `<div class="s3d-panneau">${etiq(stations.length, "Soins du corps")}<h3>Exfolier, modeler, apaiser.</h3><ul class="s3d-soins">${g("corps").map(ligneSoin).join("")}</ul></div>` });
     st({ id: "cheveux", nom: "Soins capillaires", cote: "a-droite",
       cam: { p: [39.2, 1.95, 2.2], c: [39.9, 0.85, -1.2] }, camM: { p: [39.8, 2.3, 2.4], c: [39.8, -0.8, -1.2] },
-      calque: `<div class="s3d-panneau">${etiq(9, "Soins capillaires")}<h3>Un cheveu fort commence au cuir chevelu.</h3><ul class="s3d-soins">${g("capillaires").map(ligneSoin).join("")}</ul></div>` });
+      calque: `<div class="s3d-panneau">${etiq(stations.length, "Soins capillaires")}<h3>Un cheveu fort commence au cuir chevelu.</h3><ul class="s3d-soins">${g("capillaires").map(ligneSoin).join("")}</ul></div>` });
     const vip = g("complet")[0];
-    st({ id: "vip", nom: "Le salon VIP", cote: "a-gauche",
+    if (vip) st({ id: "vip", nom: "Le salon VIP", cote: "a-gauche",
       cam: { p: [44.6, 1.6, 2.0], c: [43.4, 0.8, -1.0] }, camM: { p: [43.6, 1.9, 2.3], c: [43.4, -0.7, -1.0] },
-      calque: vip ? `<div class="s3d-panneau">${etiq(10, "Le salon VIP")}<h3>${esc(vip.s.n)}</h3><p>${esc(vip.s.d)}</p>
+      calque: vip ? `<div class="s3d-panneau">${etiq(stations.length, "Le salon VIP")}<h3>${esc(vip.s.n)}</h3><p>${esc(vip.s.d)}</p>
         <div class="s3d-prix"><span>Tarif<b>${fcfa(vip.s.p)}</b></span></div>
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${vip.i}">Réserver</button></div></div>` : "" });
     st({ id: "ina", nom: "INA Luxury", cote: "a-gauche",
       cam: { p: [47.6, 1.55, 1.6], c: [47.6, 1.5, -2.4] }, camM: { p: [47, 1.6, 2.4], c: [47, 1.3, -2.4] },
-      calque: `<div class="s3d-panneau">${etiq(11, "INA Luxury")}<h3>Prolonger le soin chez soi.</h3>
+      calque: `<div class="s3d-panneau">${etiq(stations.length, "INA Luxury")}<h3>Prolonger le soin chez soi.</h3>
         <p>Les cosmétiques de la maison, choisis par Mme Sabrina. Touchez un produit pour le voir.</p>
         <div class="s3d-actions"><a class="s3d-btn plein" href="ina-luxury.html">Entrer dans la boutique</a></div></div>` });
     st({ id: "harmonisation", nom: "Cabinet privé", cote: "a-gauche",
       cam: { p: [46.4, 1.65, 0.1], c: [50.4, 1.6, 0] }, camM: { p: [45.6, 1.6, 0], c: [50.4, 0.1, 0] },
-      calque: `<div class="s3d-panneau">${etiq(12, "Cabinet privé")}<h3>Harmonisation faciale</h3>
+      calque: `<div class="s3d-panneau">${etiq(stations.length, "Cabinet privé")}<h3>Harmonisation faciale</h3>
         <p>Facial Balancing, Genesis Hollywood, Genesis Soft : chaque zone du visage et son tarif.</p>
         <div class="s3d-actions"><a class="s3d-btn plein" href="harmonisation-faciale.html">Pousser la porte</a></div></div>` });
     st({ id: "rdv", nom: "Rendez-vous", cote: "a-gauche",
       cam: { p: [47.6, 2.15, 1.6], c: [47.6, 0.8, 3.45] }, camM: { p: [47.6, 2.6, 1.2], c: [47.6, -0.6, 3.45] },
-      calque: `<div class="s3d-panneau">${etiq(13, "Le carnet")}<h3>Votre créneau vous attend.</h3>
+      calque: `<div class="s3d-panneau">${etiq(stations.length, "Le carnet")}<h3>Votre créneau vous attend.</h3>
         <p>Du lundi au samedi, de 10 h à 17 h, 24 h à l'avance. Un acompte de 5 100 F valide la réservation.</p>
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-rdv>Choisir mon créneau</button></div></div>` });
     lien.ST = ST;
@@ -399,7 +406,7 @@ export function clinique({ services, lien, quand }) {
       stations, cliquables,
       surStation(k) {
         kActif = k;
-        if (k >= ST.vip - 1) chargerINA();
+        if (k >= ST.ina - 2) chargerINA();
         vapeur.visible = k === ST.cabine && !calme;
         if (k === ST.cabine && quand.son) quand.son("vapeur");
         if (k === ST.rdv && quand.son) quand.son("page");

@@ -142,6 +142,39 @@ propre expérience 3D immersive et interactive** (une visite de salon, l'exposit
     - ⚠️ **les modules 3D sont mis en cache une heure**, sans `?v=` dans leurs imports : une correction met jusqu'à
       une heure à se voir. Bumper `--version` dans `_salon3d_poser.py` ne rafraîchit que les fichiers de démarrage.
 
+## 3 bis. Le 26/11 au matin : ses retours, et le site mis en MAINTENANCE
+- ⛔ **luxuryclub229.com EN MAINTENANCE** (Mongazi : « je ne veux pas qu'elle voie les modifications là-bas »).
+  - Toutes les adresses répondent 503 (`_maintenance/_worker.js`).
+  - **Verrou** : `_dist.py` refuse la production tant que `MAINTENANCE.md` existe.
+  - L'aperçu : https://apercu.luxury-club-229.pages.dev (`_dist.py --apercu`, puis `--branch apercu`).
+  - Tout est dans `MAINTENANCE.md`.
+- **Le Menu** (ses vocaux : « à côté de l'accueil, l'icône de menu, Menu » ; « catalogue, les gens ne comprennent
+  pas » ; « une petite notification : Retrouvez ici notre menu »), dans `assets/js/menu.js` et `_outils/_menu_poser.py` :
+  - un bouton « ☰ Menu » à côté d'« Accueil » sur les 4 pages ;
+  - le tiroir de la barre du bas renommé « Menu », avec en tête « Sur cette page » (les étapes de la visite 3D en un
+    toucher, les rayons d'INA, les raccourcis) ;
+  - « Catalogue » et « Tout le catalogue » sont devenus « Menu » ;
+  - la bulle « Retrouvez ici notre menu », une fois par page et par visite.
+- **« Nos résultats »** (`_outils/_nos_resultats.py`) :
+  - la galerie photo du hub devient « Nos résultats · Nos patientes » ;
+  - la zone des avis écrits est retirée (elle était vide), et le bouton flottant devient « Nos résultats » ;
+  - un témoignage peut être une PAIRE `{avant, apres}`, avec un comparateur à faire glisser ;
+  - sans photo, la section mène à son Instagram.
+  - ⏳ **SES PHOTOS AVANT / APRÈS** (elle les envoie) : à poser dans `TESTIMONIALS` (index.html), fichiers dans
+    `assets/images/temoignages/`.
+- **Les soins** (`_outils/_soins_2611.py`, ses textes mot pour mot) :
+  - ajoutés : Cosmelan Peel 950 000 F, Melan 2 Peel 999 000 F, Perfect Derma Peel 200 000 F ;
+  - retirés : le Luxury Massage et le Soin Complet VIP ;
+  - renommé : « Soin Activateur de Pousse » devient « Mésothérapie ANAGEN » ;
+  - la FAQ suit (« de 15 000 à 999 000 FCFA ») ; le JSON-LD, `llms.txt` et `tarifs.md` sont régénérés : 12 soins.
+  - 3D : les 8 soins visage se partagent les deux murs du couloir, et l'étape VIP n'existe plus.
+- **Les produits INA sur fond noir** (sa remarque sur l'étagère : « plus esthétique ») :
+  - `_outils/_detourer_ina.py` (rembg/isnet) a détouré les 56 produits, contrôlés sur magenta ; la Crème au Lait
+    de Chèvre est écartée (sa photo coupe le pot) ;
+  - ils sont posés sur les tablettes de la clinique et debout sur les socles de la boutique, toujours de face.
+- QC vert (une largeur à la fois) : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18, hub 15 + 14.
+  - La sonde des recouvrements est corrigée : un tiroir fermé, hors de l'écran, ne recouvre rien.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après

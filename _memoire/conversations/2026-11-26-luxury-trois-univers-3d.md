@@ -2,6 +2,22 @@
 
 Rang 1 de la zone travaux. Détail complet et pièges : `clients/04-luxury-skin-clinic/REFONTE-26-11.md`.
 
+## ⛔ DERNIER ÉTAT (26/11 matin) : le site est EN MAINTENANCE
+- Mongazi : « je ne veux pas qu'elle voie les modifications là-bas, coupe la visibilité, il faut que ça affiche en
+  maintenance ».
+  - luxuryclub229.com répond 503 partout (`_maintenance/_worker.js`, déploiement `15f909bb`).
+  - Verrou dans `_dist.py` (`MAINTENANCE.md`).
+  - Aperçu : https://apercu.luxury-club-229.pages.dev (`bb091e4b`, noindex).
+- Fait ensuite (ses retours) :
+  - le Menu en haut et la bulle « Retrouvez ici notre menu » ;
+  - « Catalogue » renommé « Menu » ;
+  - « Nos résultats » à la place des avis ;
+  - Cosmelan, Melan 2 et Perfect Derma ajoutés ;
+  - Massage et VIP retirés, Mésothérapie ANAGEN ;
+  - produits INA détourés sur fond noir.
+- QC vert sur les 4 pages, aux deux largeurs.
+- ⏳ **Ses photos avant / après** (elle les envoie). ⏳ **La décision de rouvrir le site** (Mongazi).
+
 ## Ce que Mongazi a demandé
 - 25/11 : « commence le travail de Sabrina Luxury, expose ton plan, recherche des vitrines ou catalogues digitaux avec
   du 3D scrolling ou de la 3D immersive et interactive, un salon de beauté, décortique-les et utilise-les comme

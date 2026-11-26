@@ -93,16 +93,22 @@ export function boutique({ ina, lien, quand }) {
       v.charge = true;
       const n = v.prods.length, rayon = n > 8 ? 1.12 : 0.92;
       await Promise.all(v.prods.map(async (p, j) => {
-        const t = await charger(ina.img[p.n]);
+        // détouré (cliente, 26/11 : « les mettre en fond noir ») : le produit seul, debout sur le socle ;
+        // sinon la photo dans son cadre d'or
+        const libre = !!(ina.detoures && ina.detoures[p.n]);
+        const t = await charger(libre ? ina.detoures[p.n] : ina.img[p.n]);
         if (!t) return;
-        const a = t.image.width / t.image.height, h = 0.82, w = Math.min(0.66, h * a);
+        const a = t.image.width / t.image.height, h = libre ? 0.9 : 0.82, w = Math.min(libre ? 0.62 : 0.66, h * a), h2 = libre ? w / a : h;
         const carte = new THREE.Group();
-        const fondB = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.04, h + 0.04), mOr);
-        fondB.position.z = -0.004;
-        const photo = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, toneMapped: false }));
-        carte.add(fondB, photo);
+        if (!libre) {
+          const fondB = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.04, h + 0.04), mOr);
+          fondB.position.z = -0.004;
+          carte.add(fondB);
+        }
+        const photo = new THREE.Mesh(new THREE.PlaneGeometry(w, h2), new THREE.MeshBasicMaterial({ map: t, toneMapped: false, transparent: libre, alphaTest: libre ? 0.04 : 0 }));
+        carte.add(photo);
         const ang = (j / n) * Math.PI * 2;
-        carte.position.set(Math.sin(ang) * rayon, 0.42 + h / 2, Math.cos(ang) * rayon);
+        carte.position.set(Math.sin(ang) * rayon, libre ? h2 / 2 + 0.01 : 0.42 + h / 2, Math.cos(ang) * rayon);
         carte.rotation.y = ang;
         carte.userData.act = () => quand.produit(p);
         carte.userData.k = k + 1;
@@ -137,7 +143,7 @@ export function boutique({ ina, lien, quand }) {
       calque: `<div class="s3d-panneau">${etiq(0, "La boutique")}<h2>INA Luxury</h2>
         <p>L'art du soin, sublimé. ${nTotal} produits en ${nF} vitrines : avancez, touchez un produit pour l'ouvrir.</p>
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-aller="1">Entrer dans la boutique</button>
-        <button type="button" class="s3d-btn" data-catalogue>Tout le catalogue</button></div></div>`,
+        <button type="button" class="s3d-btn" data-catalogue>Menu</button></div></div>`,
     }];
     vitrines.forEach((v, k) => {
       const prixMin = Math.min(...ina.produits.filter((p) => p.f === v.f.key && p.p).map((p) => p.p));
@@ -162,10 +168,11 @@ export function boutique({ ina, lien, quand }) {
         <p>Votre panier part sur WhatsApp. Vous hésitez ? Mme Sabrina vous oriente vers la routine qui convient à votre peau.</p>
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-panier>Mon panier</button>
         <button type="button" class="s3d-btn" data-consultation>Faire ma consultation</button>
-        <button type="button" class="s3d-btn" data-catalogue>Tout le catalogue</button></div></div>`,
+        <button type="button" class="s3d-btn" data-catalogue>Menu</button></div></div>`,
     });
 
     let qualiteBasse = false, kActif = 0, survole = null;
+    const ou = new THREE.Vector3();
     const visee = new THREE.Vector3();
     return {
       stations, cliquables,
@@ -191,11 +198,14 @@ export function boutique({ ina, lien, quand }) {
         spot.castShadow = false;
         scene.remove(pous);
       },
-      anime(t, dt) {
-        if (calme) return false;
-        // les carrousels tournent doucement ; celui qu'on regarde un peu plus vite
+      anime(t, dt, etat) {
         const v = vitrines[kActif - 1];
         if (!v || !v.charge) return false;
+        // chaque produit regarde le visiteur : une découpe plate ne se montre jamais par la tranche
+        const cp = etat.camera.position;
+        v.ronde.children.forEach((c) => { c.getWorldPosition(ou); c.lookAt(cp.x, ou.y, cp.z); });
+        if (calme) return false;
+        // le carrousel regardé tourne doucement
         v.ronde.rotation.y += dt * 0.22;
         if (!qualiteBasse) pous.userData.animer(dt);
         return true;

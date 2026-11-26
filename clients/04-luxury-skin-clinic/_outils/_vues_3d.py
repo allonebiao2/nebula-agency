@@ -22,9 +22,9 @@ from playwright.sync_api import sync_playwright
 
 ICI = Path(__file__).resolve().parent.parent
 VISITES = [
-    ("luxury-skin-clinic.html", "visite", [0, 1, 3, 7, 11, 13]),
+    ("luxury-skin-clinic.html", "visite", [1, 2, 3, 9, 10, 13, 15]),
     ("ina-luxury.html", "boutique", [0, 1, 2, 7]),
-    ("harmonisation-faciale.html", "cabinet", [0, 1, 2, 3]),
+    ("harmonisation-faciale.html", "cabinet", [1]),
 ]
 
 

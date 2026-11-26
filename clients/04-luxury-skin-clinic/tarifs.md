@@ -9,7 +9,7 @@ Mme Sabrina, esthéticienne diplômée, sur rendez-vous.
 - Acompte : 5 100 FCFA, non remboursable, valide le créneau
 - Paiement de l'acompte : Mobile Money au 01 67 97 56 26, puis capture sur WhatsApp
 - Réservation : https://luxuryclub229.com/luxury-skin-clinic#rdv-booking
-- Fourchette : 15 000 à 150 000 FCFA
+- Fourchette : 15 000 à 999 000 FCFA
 
 ## Soins du visage
 
@@ -33,15 +33,23 @@ Mme Sabrina, esthéticienne diplômée, sur rendez-vous.
 - Prix : 120 000 FCFA
 - Description : Peeling professionnel haute performance — Renouvellement cutané • Correction ciblée • Éclat maîtrisé.
 
+### Cosmelan Peel
+- Prix : 950 000 FCFA
+- Description : Correction intensive des hyperpigmentations — Peeling + routine complète maison.
+
+### Melan 2 Peel
+- Prix : 999 000 FCFA
+- Description : Traitement dépigmentant professionnel — Peeling + routine complète maison.
+
+### Perfect Derma Peel
+- Prix : 200 000 FCFA
+- Description : Peeling rénovateur et éclaircissant — Hyperpigmentations • Texture • Éclat.
+
 ## Soins du corps
 
 ### Gommage Luxury
 - Prix : 45 000 FCFA
 - Description : Gommage corps (rituel de régénération cutanée) — Exfoliation avancée • Éclat du corps • Peau ultra douce.
-
-### Luxury Massage
-- Prix : 30 000 FCFA
-- Description : Massage Luxury Skin Technique — Relaxation profonde • Libération des tensions • Expérience sensorielle totale.
 
 ## Soins capillaires
 
@@ -53,15 +61,9 @@ Mme Sabrina, esthéticienne diplômée, sur rendez-vous.
 - Prix : 15 000 FCFA
 - Description : Rituel capillaire & détente profonde — Soin du cuir chevelu • Relaxation intense • Expertise capillaire.
 
-### Soin Activateur de Pousse
+### Mésothérapie ANAGEN
 - Prix : 25 000 FCFA
 - Description : Microstimulation capillaire avancée — Pousse des cheveux • Densité • Réactivation du cuir chevelu.
-
-## L'expérience complète
-
-### Le Soin Complet VIP
-- Prix : 150 000 FCFA
-- Description : L'Expérience (Le Rituel Signature VIP) — Beauté • Détente • Évasion absolue.
 
 ## Harmonisation faciale (cabinet de soins privés)
 

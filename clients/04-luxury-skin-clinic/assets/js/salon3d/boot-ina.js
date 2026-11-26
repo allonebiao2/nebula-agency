@@ -36,7 +36,8 @@ if (racine && I) {
       setTimeout(() => { carte.style.boxShadow = ""; }, 2400);
     }, 120);
   }
-  const catalogue = () => { bruit.laiton(); document.querySelector(".layout")?.scrollIntoView({ behavior: calme ? "auto" : "smooth" }); };
+  // « Menu » ouvre le menu commun (menu.js) ; sans lui, on descend au catalogue de la page
+  const catalogue = () => { bruit.laiton(); if (window.LCMenu) window.LCMenu.ouvrir(); else document.querySelector(".layout")?.scrollIntoView({ behavior: calme ? "auto" : "smooth" }); };
   const panier = () => { bruit.laiton(); document.getElementById("cartBtn")?.click(); };
   const consultation = () => { bruit.laiton(); document.getElementById("consultBtn")?.click(); };
 
@@ -50,9 +51,10 @@ if (racine && I) {
   });
 
   async function charger() {
-    const [{ lancer }, { boutique }] = await Promise.all([import("./moteur.js"), import("./monde-ina.js")]);
+    const [{ lancer }, { boutique }, detoures] = await Promise.all([import("./moteur.js"), import("./monde-ina.js"),
+      fetch("assets/images/ina-luxury/_detoures/detoures.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}))]);
     const monde = boutique({
-      ina: { produits: I.produits, img: I.img, familles: I.familles, sous: I.sous }, lien,
+      ina: { produits: I.produits, img: I.img, familles: I.familles, sous: I.sous, detoures }, lien,
       quand: { produit, catalogue, panier },
     });
     const m = await lancer({ racine, monde, surStation: (k) => { if (k > 0) bruit.or(); } });

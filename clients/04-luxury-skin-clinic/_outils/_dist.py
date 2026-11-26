@@ -24,7 +24,7 @@ RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIST = os.path.join(RACINE, "_dist")
 
 # ce qui ne doit jamais partir en ligne
-EXCLUS_RACINE = {"_dist", "_outils", "_vues", ".wrangler", ".git", ".impeccable",
+EXCLUS_RACINE = {"_dist", "_outils", "_vues", "_maintenance", ".wrangler", ".git", ".impeccable",
                  ".gitignore", "CONTEXT.md",
                  # le devis « vitrine sur tablette » (2026-08-29) et son generateur
                  "_build_devis.py"}
@@ -45,6 +45,12 @@ def note_interne(nom):
 
 
 def main():
+    # ⛔ LE SITE EST EN MAINTENANCE (2026-11-26, Mongazi) : un livrable de production le rouvrirait sans le vouloir.
+    if os.path.exists(os.path.join(RACINE, "MAINTENANCE.md")) and not ({"--apercu", "--rouvrir"} & set(sys.argv)):
+        print("⛔ luxuryclub229.com est EN MAINTENANCE (voir MAINTENANCE.md).\n"
+              "   --apercu  : livrable pour l'aperçu (wrangler ... --branch apercu), le site reste fermé ;\n"
+              "   --rouvrir : seulement si Mongazi a décidé de rouvrir le site.")
+        sys.exit(1)
     if os.path.isdir(DIST):
         shutil.rmtree(DIST)
     os.makedirs(DIST)
