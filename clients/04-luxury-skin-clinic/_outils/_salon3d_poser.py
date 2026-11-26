@@ -49,7 +49,7 @@ PAGES = {
       </div>""") + "\n</section>\n",
         "pont": """<script>
 /* LA PASSERELLE de la visite 3D : la scène appelle les moteurs de cette page, elle ne les refait pas. */
-window.LC_CLINIC={services:SERVICES,book:function(i){startBooking(SERVICES[i]);}};
+window.LC_CLINIC={services:SERVICES,art:ART,artFamille:SVC_ART,book:function(i){startBooking(SERVICES[i]);}};
 </script>""",
         "boot": "boot-clinique.js",
     },

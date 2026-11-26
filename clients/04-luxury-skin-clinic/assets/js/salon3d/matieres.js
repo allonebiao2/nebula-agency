@@ -137,6 +137,47 @@ export function plaque(anis, { w = 1024, h = 512, fond = "#b8954a", reflet = tru
   return tex(c, anis);
 }
 
+// LE CAISSON LUMINEUX d'un soin (26/11, « 10 000 $ ») : la direction « LA LUMIÈRE » appliquée au couloir. Un panneau
+// rétroéclairé, son croquis d'or (le même que sa carte, dans la page), son nom, son prix, sa durée. Il remplace la
+// petite plaque de laiton qu'on ne pouvait pas lire. 768 × 1050 : au plus grand, il occupe 860 px d'un écran 4K.
+export function caisson(anis, { w = 768, h = 1050, croquis = null, sur = "", nom = "", prix = "", duree = "" } = {}) {
+  const [c, g] = toile(w, h);
+  const d = g.createRadialGradient(w * 0.5, h * 0.28, 10, w * 0.5, h * 0.42, h * 0.78);
+  d.addColorStop(0, "#fffdf8"); d.addColorStop(0.55, "#f7efdf"); d.addColorStop(1, "#e8d9bb");
+  g.fillStyle = d; g.fillRect(0, 0, w, h);
+  g.strokeStyle = "rgba(160,122,40,.85)"; g.lineWidth = 3; g.strokeRect(26, 26, w - 52, h - 52);
+  g.strokeStyle = "rgba(160,122,40,.38)"; g.lineWidth = 1.5; g.strokeRect(38, 38, w - 76, h - 76);
+  g.textAlign = "center"; g.textBaseline = "middle";
+  g.font = "500 22px 'DM Mono', monospace"; g.fillStyle = "#7d5f18"; g.letterSpacing = "6px";
+  g.fillText(String(sur).toUpperCase(), w / 2, h * 0.085); g.letterSpacing = "0px";
+  if (croquis) { const cw = w * 0.8, ch = cw * 100 / 208; g.drawImage(croquis, (w - cw) / 2, h * 0.12, cw, ch); }
+  // le nom : la plus grande taille qui tient en deux lignes
+  let taille = 86, lignes = [];
+  for (; taille >= 56; taille -= 6) {
+    g.font = `600 ${taille}px 'Cormorant Garamond', Georgia, serif`;
+    lignes = []; let l = "";
+    for (const mot of String(nom).split(/\s+/)) {
+      const t = l ? l + " " + mot : mot;
+      if (g.measureText(t).width > w * 0.82 && l) { lignes.push(l); l = mot; } else l = t;
+    }
+    if (l) lignes.push(l);
+    if (lignes.length <= 2 && lignes.every((x) => g.measureText(x).width <= w * 0.86)) break;
+  }
+  g.fillStyle = "#2b2112";
+  const pas = taille * 1.08;
+  let y = h * 0.565 - (lignes.length - 1) * pas / 2;
+  for (const l of lignes) { g.fillText(l, w / 2, y); y += pas; }
+  g.strokeStyle = "rgba(160,122,40,.9)"; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(w / 2 - 56, y - pas * 0.32); g.lineTo(w / 2 + 56, y - pas * 0.32); g.stroke();
+  g.font = "500 70px 'Jost', sans-serif"; g.fillStyle = "#7d5f18";
+  g.fillText(prix, w / 2, y + 40);
+  if (duree) {
+    g.font = "500 23px 'DM Mono', monospace"; g.fillStyle = "#5a4718"; g.letterSpacing = "5px";
+    g.fillText(String(duree).toUpperCase(), w / 2, y + 104); g.letterSpacing = "0px";
+  }
+  return tex(c, anis);
+}
+
 // un dégradé radial ou vertical (ciel des baies, cônes de lumière, halos)
 export function degrade(anis, stops, { w = 64, h = 256, radial = false } = {}) {
   const [c, g] = toile(w, h);

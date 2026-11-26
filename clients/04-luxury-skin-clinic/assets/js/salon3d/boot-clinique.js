@@ -63,7 +63,7 @@ if (racine && C) {
   async function charger() {
     const [{ lancer }, { clinique }] = await Promise.all([import("./moteur.js"), import("./monde-clinique.js")]);
     const monde = clinique({
-      services: C.services, lien,
+      services: C.services, art: C.art || {}, artFamille: C.artFamille || {}, lien,
       quand: {
         voir, reserver: creneau,
         ina: (p) => { bruit.laiton(); location.href = "ina-luxury.html?q=" + encodeURIComponent(p.n); },

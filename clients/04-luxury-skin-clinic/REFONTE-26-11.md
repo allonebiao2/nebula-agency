@@ -301,9 +301,23 @@ Méthode : tout photographier d'abord, au téléphone et au PC, chaque étape de
 - Le cabinet : la dernière étape se numérotait « 04 » après « 04 / 04 » ; elle suit maintenant le nombre de techniques.
 - QC vert : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18, hub 14 + 15.
 
-### Vague 2 · les 8 soins du visage (à faire)
-Huit fois le même couloir : un grand panneau de bois vide et une plaque de prix illisible. Chaque soin doit avoir sa
-scène, son nom et son prix lisibles.
+### Vague 2 · les 8 soins du visage (faite)
+Avant : huit fois le même couloir, un grand panneau de bois vide et une plaque de prix illisible.
+- **Un caisson lumineux par soin**, à côté de sa porte (`caisson()` dans `matieres.js`) : rétroéclairé, double filet
+  d'or, SON croquis (le même que sa carte dans la page), son nom, son prix, sa durée. Cadre d'or satiné (le laiton
+  poli reflétait le décor et virait au brun-noir), halo sur le mur.
+- Les croquis et les polices sont chargés AVANT d'être dessinés dans la toile, sinon on obtient une police de secours
+  et un caisson sans dessin. La passerelle `window.LC_CLINIC` transmet `art` et `artFamille` (et
+  `_salon3d_poser.py` aussi).
+- **Trois croquis neufs** : Cosmelan (les taches qui pâlissent), Melan 2 (deux temps, deux gouttes) et Perfect Derma
+  (les couches de la peau, la plus haute qui se renouvelle). Ils retombaient sur le croquis générique « visage », dans
+  la page comme dans la 3D.
+- Caméras : au PC, de biais et proche (le caisson en grand à droite, la fiche à gauche) ; au téléphone, droit devant
+  et visé plus bas (le caisson dans le haut de l'écran, au-dessus de la fiche). Le point « Le protocole » passe sous
+  le caisson (près de la porte, il tombait derrière la fiche).
+- ⚠️ **`node --check` ne voit pas une variable déclarée deux fois dans un module** (`halo`) : la visite ne démarrait
+  plus, sans aucune erreur visible dans le QC. Vérifier avec `node --input-type=module --check < fichier.js`.
+- QC clinique vert : 90 + 90.
 
 ### Vague 3 · la lumière (à faire)
 La 3D est plate et pâle (« décor de jeu simple ») : reflets, profondeur, éclairage.

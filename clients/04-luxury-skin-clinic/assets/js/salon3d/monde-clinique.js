@@ -4,7 +4,7 @@
 // descend, le corps, les cheveux, le salon VIP, l'étagère INA, la porte dorée du cabinet privé, le bureau des rendez-vous.
 // Les soins, leurs prix et leurs durées sont LUS dans SERVICES (la page) : rien n'est recopié ici.
 import { THREE } from "./moteur.js";
-import { terrazzo, marbre, chene, platre, plaque, degrade, feuille, poussiere, ambiance, boiteArrondie, demiLune, graine } from "./matieres.js";
+import { terrazzo, marbre, chene, platre, plaque, caisson, degrade, feuille, poussiere, ambiance, boiteArrondie, demiLune, graine } from "./matieres.js";
 
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fcfa = (n) => (n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, " ") + " F";
@@ -13,7 +13,7 @@ const fcfa = (n) => (n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, "
 const XV = (k) => 9 + k * 1.8;
 const MUR = (k) => (k % 2 ? -1 : 1);     // +1 : mur du fond (on le regarde vers -z) ; -1 : mur d'en face
 
-export function clinique({ services, lien, quand }) {
+export function clinique({ services, art = {}, artFamille = {}, lien, quand }) {
   return async ({ scene, renderer, camera, mobile, calme, outils }) => {
     const { anis, charger } = outils;
     scene.background = new THREE.Color(0xf3eee5);
@@ -174,24 +174,45 @@ export function clinique({ services, lien, quand }) {
     const visage = services.map((s, i) => ({ s, i })).filter((x) => x.s.g === "visage");
     const cliquables = [];
     const duree = (s) => ((s.meta || []).find((m) => /h|min|séance|semaine/i.test(m[0])) || [""])[0];
+    // LES CAISSONS LUMINEUX (26/11, « 10 000 $ ») : huit fois le même panneau de bois et une plaque illisible, c'était le
+    // couloir. Chaque soin a maintenant son caisson rétroéclairé à côté de sa porte : son croquis d'or (le même que sa
+    // carte), son nom, son prix, sa durée, lisibles d'un coup d'œil. Les croquis et les polices sont chargés AVANT
+    // d'être dessinés dans la toile (sinon : le texte dans une police de secours, et un caisson sans dessin).
+    const svgImage = (svg) => new Promise((ok) => {
+      if (!svg) return ok(null);
+      const im = new Image();
+      im.onload = () => ok(im); im.onerror = () => ok(null);
+      im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg
+        .replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" width="832" height="400" ')
+        .replace(/#c9a84c/g, "#a07a28"));
+    });
+    if (document.fonts && document.fonts.load) {
+      await Promise.all(["600 86px 'Cormorant Garamond'", "500 70px 'Jost'", "500 23px 'DM Mono'"]
+        .map((f) => document.fonts.load(f).catch(() => null)));
+    }
+    const croquis = await Promise.all(visage.map(({ s }) => svgImage(art[s.a] || artFamille[s.g] || "")));
+    // un or satiné, pas un métal : le laiton poli reflétait le décor et virait au brun-noir selon l'angle
+    const mCadre = new THREE.MeshStandardMaterial({ color: 0xc9a050, metalness: 0.3, roughness: 0.4 });
+    const haloCaisson = degrade(anis, [[0, "rgba(255,226,170,.5)"], [0.55, "rgba(255,226,170,.12)"], [1, "rgba(255,226,170,0)"]], { w: 128, h: 128, radial: true });
     visage.forEach(({ s, i }, k) => {
-      const x = XV(k), m = MUR(k);
+      const x = XV(k), m = MUR(k), cx = x + m * 1.2;
       ajoute(new THREE.BoxGeometry(1.24, 2.5, 0.08), mChene, x, 1.25, -m * 2.36, false);
       const porte = ajoute(new THREE.BoxGeometry(1.04, 2.34, 0.04), mVerre, x, 1.19, -m * 2.3, false);
       ajoute(new THREE.BoxGeometry(1.1, 0.03, 0.05), new THREE.MeshBasicMaterial({ color: 0xfff2dc }), x, 2.62, -m * 2.33, false);
-      const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.4), new THREE.MeshStandardMaterial({
-        map: plaque(anis, { w: 900, h: 514, fond: "#c3a058", lignes: [
-          { t: (s.n || "").toUpperCase(), font: "600 58px 'Cormorant Garamond', Georgia, serif", couleur: "#2b1f0b", y: 0.34, espace: "3px" },
-          { t: fcfa(s.p), font: "500 64px 'Jost', sans-serif", couleur: "#2b1f0b", y: 0.6 },
-          { t: duree(s).toUpperCase(), font: "500 30px 'DM Mono', monospace", couleur: "#4b3812", y: 0.81, espace: "4px" }] }),
-        metalness: 0.75, roughness: 0.33 }));
-      pl.position.set(x + m * 1.15, 1.5, -m * 2.38);
-      if (m < 0) pl.rotation.y = Math.PI;
-      scene.add(pl);
-      pl.userData.act = porte.userData.act = () => quand.voir(i);
-      pl.userData.k = porte.userData.k = 2 + k;
-      cliquables.push(pl, porte);
-      if (k < visage.length - 2) plante(x + m * 1.85, -m * 1.95, { haut: 0.9, n: 140 });
+      // le cadre de laiton, le caisson, et sa lumière sur le mur
+      ajoute(new THREE.BoxGeometry(0.98, 1.33, 0.05), mCadre, cx, 1.45, -m * 2.35, false);
+      const cais = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 1.23), new THREE.MeshBasicMaterial({ toneMapped: false,
+        map: caisson(anis, { croquis: croquis[k], sur: "Soin du visage · " + String(k + 1).padStart(2, "0"), nom: s.n, prix: fcfa(s.p), duree: duree(s) }) }));
+      cais.position.set(cx, 1.45, -m * 2.318);
+      const lumiere = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 2.3), new THREE.MeshBasicMaterial({ map: haloCaisson, transparent: true,
+        depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+      lumiere.position.set(cx, 1.45, -m * 2.44);
+      if (m < 0) { cais.rotation.y = Math.PI; lumiere.rotation.y = Math.PI; }
+      scene.add(cais, lumiere);
+      cais.userData.act = porte.userData.act = () => quand.voir(i);
+      cais.userData.k = porte.userData.k = 2 + k;
+      cliquables.push(cais, porte);
+      if (k < visage.length - 2) plante(x + m * 2.3, -m * 1.95, { haut: 0.9, n: 140 });
     });
 
     // ---------- la cabine : la table de soin et la lampe-loupe qui descend ----------
@@ -353,16 +374,19 @@ export function clinique({ services, lien, quand }) {
       points: [{ p: [0.95, 1.2, -1.75], label: "Lundi au samedi, 10 h-17 h", act: () => lien.moteur.aller(ST.rdv) },
                { p: [-1.1, 1.25, -1.8], label: "Sur rendez-vous", act: () => lien.moteur.aller(ST.rdv) }] });
     visage.forEach(({ s, i }, k) => {
-      const x = XV(k), m = MUR(k);
+      const x = XV(k), m = MUR(k), cx = x + m * 1.2;
       st({ id: "visage-" + k, nom: s.n, cote: "a-gauche",
         // la fiche à gauche : on vise à gauche de la porte, elle se pose à droite de l'écran (et l'inverse)
-        cam: { p: [x - m * 2.1, 1.66, m * 1.75], c: [x + m * 1.7, 1.32, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.65, 1.6], c: [9, 1.55, -0.6] }] : [] },
-        camM: { p: [x + m * 0.5, 1.55, m * 2.25], c: [x + m * 0.5, 0.0, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
+        // en face du caisson, un peu de biais : il se pose à droite de l'écran, la fiche à gauche ; au téléphone, droit
+        // devant et visé plus bas, il monte dans le haut de l'écran, au-dessus de la fiche
+        cam: { p: [cx - m * 1.1, 1.55, m * 0.4], c: [cx - m * 0.55, 1.42, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.65, 1.6], c: [9, 1.55, -0.6] }] : [] },
+        camM: { p: [x + m * 1.2, 1.5, m * 0.55], c: [x + m * 1.2, 0.55, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
         calque: `<div class="s3d-panneau">${etiq(stations.length, "Soins du visage")}<h3>${esc(s.n)}</h3><p>${esc(s.d)}</p>
           <div class="s3d-prix"><span>Tarif<b>${fcfa(s.p)}</b></span>${duree(s) ? `<span>Durée<b>${esc(duree(s))}</b></span>` : ""}</div>
           <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${i}">Réserver ce soin</button>
           <button type="button" class="s3d-btn" data-voir="${i}">Le protocole</button></div></div>`,
-        points: [{ p: [x + m * 1.15, 1.78, -m * 2.3], label: "Le protocole", act: () => quand.voir(i) }] });
+        // le point, sous le caisson : à côté de la porte il tombait derrière la fiche
+        points: [{ p: [cx, 0.62, -m * 2.3], label: "Le protocole", act: () => quand.voir(i) }] });
     });
     const classic = services.findIndex((s) => /classic/i.test(s.n));
     const etapes = classic >= 0 && services[classic].protocol ? services[classic].protocol.items : [];
