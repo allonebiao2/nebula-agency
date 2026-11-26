@@ -124,8 +124,23 @@ propre expérience 3D immersive et interactive** (une visite de salon, l'exposit
     - Chrome refuse les modules JavaScript en `file://` : le QC sert maintenant les pages en HTTP ;
     - un rendu 3D continu, en logiciel, empêchait le QC de finir : on ne redessine en continu que là où quelque
       chose bouge.
-- [ ] C · Publier : `python _outils/_dist.py` puis `wrangler pages deploy _dist --project-name luxury-club-229 --branch main`
-      (⛔ jamais le dossier entier), QC `python _outils/_qc.py` vert, contraste mesuré sur les pixels.
+- [x] C · **EN LIGNE le 26/11** (déploiement `d9ae0bd1`, 178 fichiers, 10,7 Mo), vérifié sur luxuryclub229.com en
+      LISANT le corps des fichiers, adresses nues comprises.
+  - **QC vert partout, une largeur par passage** (le PC n'en supporte qu'une à la fois) :
+    - clinique : 90 + 90 contrôles ;
+    - INA : 18 + 18 ;
+    - harmonisation : 18 + 18 ;
+    - hub : 15 + 14.
+  - Après le QC, seuls les cadrages des caméras au téléphone et la matière des pages du carnet ont changé ; deux
+    planches en ont été tirées et regardées.
+  - Commandes :
+    - `python _outils/_qc.py --page <page> --largeur 390|1440` ;
+    - `python _outils/_vues_3d.py [--largeur 1440]` : la planche des stations, à REGARDER, dans `_vues/` ;
+    - `python _outils/_syntaxe.py`.
+  - Rappels :
+    - **`_dist.py` n'envoie plus aucune note `.md`**, sauf `tarifs.md` ;
+    - ⚠️ **les modules 3D sont mis en cache une heure**, sans `?v=` dans leurs imports : une correction met jusqu'à
+      une heure à se voir. Bumper `--version` dans `_salon3d_poser.py` ne rafraîchit que les fichiers de démarrage.
 
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par

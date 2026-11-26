@@ -423,7 +423,10 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
     srv = servir()
     url = "http://127.0.0.1:%d/%s" % (srv.server_address[1], os.path.basename(chemin))
     with sync_playwright() as pw:
-        b = pw.chromium.launch(args=["--use-angle=d3d11", "--ignore-gpu-blocklist", "--enable-gpu-rasterization"])
+        # le PC a 8 Go et Chrome en garde souvent 2 : un seul processus de rendu, un tas JavaScript borne
+        b = pw.chromium.launch(args=["--use-angle=d3d11", "--ignore-gpu-blocklist", "--enable-gpu-rasterization",
+                                     "--renderer-process-limit=1", "--js-flags=--max-old-space-size=512",
+                                     "--disable-extensions", "--disable-background-networking"])
         for w in largeurs:
             mobile = w < 700
             ctx = b.new_context(viewport={"width": w, "height": 844 if mobile else 900},
@@ -432,8 +435,18 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
             page = ctx.new_page()
             erreurs, echecs = [], []
             page.on("pageerror", lambda e: erreurs.append(str(e)))
-            page.on("requestfailed", lambda r: echecs.append(r.url.split("/")[-1]))
-            page.goto(url)
+            # on garde la RAISON de chaque echec : Chromium interrompt volontairement (net::ERR_ABORTED) la
+            # premiere requete d'un media pour la reprendre par morceaux ; ce n'est pas une panne (26/11)
+            page.on("requestfailed", lambda r: None
+                    if (r.failure == "net::ERR_ABORTED" and r.url.split("?")[0].lower().endswith((".mp3", ".mp4", ".webm", ".m4a")))
+                    else echecs.append("%s (%s)" % (r.url.split("/")[-1], r.failure)))
+            # sur ce PC charge (8 Go, Chrome ouvert), « load » depasse 30 s : on attend la page construite,
+            # puis on laisse les images finir sans bloquer le controle dessus (26/11)
+            page.goto(url, wait_until="domcontentloaded", timeout=90000)
+            try:
+                page.wait_for_load_state("load", timeout=60000)
+            except Exception:
+                pass
             page.wait_for_timeout(2600)
             try:
                 page.click("#welcome-gate", timeout=1200)
@@ -458,6 +471,11 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
                 att(v["pret"] and not v["sans"], "%d px : la visite 3D se lance" % w)
                 att(v["calques"] > 1 and v["calques"] == v["pastilles"],
                     "%d px : chaque station a son calque (%d stations)" % (w, v["calques"]))
+                # la suite mesure le reste de la page : on rend sa memoire a la carte graphique (la mise en page
+                # ne bouge pas, la scene ne se dessine plus). Sans ca, le PC tuait le controle (26/11).
+                page.evaluate("""() => { const c = document.querySelector('.s3d canvas');
+                    const g = c && (c.getContext('webgl2') || c.getContext('webgl'));
+                    const x = g && g.getExtension('WEBGL_lose_context'); if (x) x.loseContext(); }""")
                 page.evaluate("() => scrollTo({top:0, behavior:'instant'})")
                 page.wait_for_timeout(400)
 
@@ -578,11 +596,12 @@ def controles_navigateur(chemin, largeurs=(390, 1440)):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--page", default="luxury-skin-clinic.html")
+    ap.add_argument("--largeur", type=int, default=0, help="une seule largeur (390 ou 1440) : moins de memoire")
     a = ap.parse_args()
     chemin = os.path.join(RACINE, a.page)
     if a.page == "luxury-skin-clinic.html":
         controles_fichier(chemin)
-    controles_navigateur(chemin)
+    controles_navigateur(chemin, (a.largeur,) if a.largeur else (390, 1440))
 
     print("")
     for m in ROUGES:

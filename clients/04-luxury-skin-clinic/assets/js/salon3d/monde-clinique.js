@@ -297,7 +297,7 @@ export function clinique({ services, lien, quand }) {
     ajoute(boiteArrondie(1.6, 0.05, 0.8, 0.02), mBlanc, 47.6, 0.78, 3.4);
     for (const [x, z] of [[46.9, 3.1], [48.3, 3.1], [46.9, 3.7], [48.3, 3.7]]) ajoute(new THREE.CylinderGeometry(0.02, 0.02, 0.76, 10), mLaiton, x, 0.38, z);
     const page = (texte, x) => {
-      const p = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshStandardMaterial({ roughness: 0.9,
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.56), new THREE.MeshBasicMaterial({ toneMapped: false,
         map: plaque(anis, { w: 600, h: 800, fond: "#fbf8f1", reflet: false, lignes: texte }) }));
       p.rotation.x = -Math.PI / 2; p.rotation.z = Math.PI; p.position.set(x, 0.828, 3.35);
       scene.add(p); return p;
@@ -332,13 +332,13 @@ export function clinique({ services, lien, quand }) {
     const st = (o) => { ST[o.id] = stations.length; stations.push(o); return o; };
 
     st({ id: "entree", nom: "Entrée", cote: "a-gauche",
-      cam: { p: [0, 1.7, 9.2], c: [0, 1.65, -4] }, camM: { p: [0, 1.6, 10.6], c: [0, 1.55, -4] },
+      cam: { p: [0, 1.7, 9.2], c: [0, 1.65, -4] }, camM: { p: [0, 1.6, 10.6], c: [0, -2.7, -4] },
       calque: `<div class="s3d-panneau">${etiq(0, "Luxury Skin Clinic")}<h2>Entrez. Ici, on lit votre peau avant de la soigner.</h2>
         <p>Faites défiler : la visite vous mène des soins à votre rendez-vous.</p>
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-aller="1">Commencer la visite</button>
         <button type="button" class="s3d-btn" data-aller-id="rdv">Prendre rendez-vous</button></div></div>` });
     st({ id: "accueil", nom: "Accueil", cote: "a-gauche",
-      cam: { p: [-1.25, 1.7, 3.7], c: [-1.25, 1.7, -5] }, camM: { p: [0, 1.6, 4.9], c: [0, 0.9, -4.6] },
+      cam: { p: [-1.25, 1.7, 3.7], c: [-1.25, 1.7, -5] }, camM: { p: [0, 1.6, 4.9], c: [0, -0.95, -4.6] },
       calque: `<div class="s3d-panneau">${etiq(1, "L'accueil")}<h3>Mme Sabrina vous reçoit.</h3>
         <p>Esthéticienne diplômée. Chaque soin est un protocole : un diagnostic, des gestes précis, un suivi.</p>
         <div class="s3d-prix"><span>Horaires<b>Lundi au samedi, 10 h-17 h</b></span><span>Réservation<b>Acompte 5 100 F</b></span></div></div>`,
@@ -350,7 +350,7 @@ export function clinique({ services, lien, quand }) {
         // la fiche à gauche : on vise à gauche de la porte, elle se pose à droite de l'écran (et l'inverse)
         cam: gch ? { p: [x - 2.1, 1.66, 1.75], c: [x + 1.7, 1.32, -2.4], via: k === 0 ? [{ p: [3.4, 1.65, 1.6], c: [9, 1.55, -0.6] }] : [] }
                  : { p: [x + 3.0, 1.66, 1.75], c: [x - 0.7, 1.32, -2.4] },
-        camM: { p: [x + 0.5, 1.55, 2.25], c: [x + 0.5, 0.6, -2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
+        camM: { p: [x + 0.5, 1.55, 2.25], c: [x + 0.5, 0.0, -2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
         calque: `<div class="s3d-panneau">${etiq(2 + k, "Soins du visage")}<h3>${esc(s.n)}</h3><p>${esc(s.d)}</p>
           <div class="s3d-prix"><span>Tarif<b>${fcfa(s.p)}</b></span>${duree(s) ? `<span>Durée<b>${esc(duree(s))}</b></span>` : ""}</div>
           <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${i}">Réserver ce soin</button>
@@ -361,19 +361,19 @@ export function clinique({ services, lien, quand }) {
     const etapes = classic >= 0 && services[classic].protocol ? services[classic].protocol.items : [];
     st({ id: "cabine", nom: "La cabine", cote: "a-gauche",
       cam: { p: [CX + 1.9, 2.25, 2.1], c: [CX - 0.1, 0.95, -0.9], via: [{ p: [XV(4) + 2.4, 1.7, 1.7], c: [CX, 1.2, -1] }] },
-      camM: { p: [CX + 0.9, 2.5, 2.3], c: [CX - 0.1, 0.8, -0.9] },
+      camM: { p: [CX + 0.9, 3.0, 2.3], c: [CX - 0.1, -0.5, -0.9] },
       calque: `<div class="s3d-panneau">${etiq(7, "La cabine")}<h3>La lampe passe : votre peau se lit.</h3>
         <ol class="s3d-etapes">${etapes.map((e) => `<li>${esc(Array.isArray(e) ? e[0] : e)}</li>`).join("")}</ol>
         ${classic >= 0 ? `<div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${classic}">Réserver le ${esc(services[classic].n)}</button></div>` : ""}</div>` });
     st({ id: "corps", nom: "Soins du corps", cote: "a-gauche",
-      cam: { p: [36.4, 1.95, 2.2], c: [35.4, 0.8, -1.2] }, camM: { p: [35.8, 2.3, 2.4], c: [35.6, 0.6, -1.2] },
+      cam: { p: [36.4, 1.95, 2.2], c: [35.4, 0.8, -1.2] }, camM: { p: [35.8, 2.3, 2.4], c: [35.6, -0.8, -1.2] },
       calque: `<div class="s3d-panneau">${etiq(8, "Soins du corps")}<h3>Exfolier, modeler, apaiser.</h3><ul class="s3d-soins">${g("corps").map(ligneSoin).join("")}</ul></div>` });
     st({ id: "cheveux", nom: "Soins capillaires", cote: "a-droite",
-      cam: { p: [39.2, 1.95, 2.2], c: [39.9, 0.85, -1.2] }, camM: { p: [39.8, 2.3, 2.4], c: [39.8, 0.6, -1.2] },
+      cam: { p: [39.2, 1.95, 2.2], c: [39.9, 0.85, -1.2] }, camM: { p: [39.8, 2.3, 2.4], c: [39.8, -0.8, -1.2] },
       calque: `<div class="s3d-panneau">${etiq(9, "Soins capillaires")}<h3>Un cheveu fort commence au cuir chevelu.</h3><ul class="s3d-soins">${g("capillaires").map(ligneSoin).join("")}</ul></div>` });
     const vip = g("complet")[0];
     st({ id: "vip", nom: "Le salon VIP", cote: "a-gauche",
-      cam: { p: [44.6, 1.6, 2.0], c: [43.4, 0.8, -1.0] }, camM: { p: [43.6, 1.9, 2.3], c: [43.4, 0.6, -1.0] },
+      cam: { p: [44.6, 1.6, 2.0], c: [43.4, 0.8, -1.0] }, camM: { p: [43.6, 1.9, 2.3], c: [43.4, -0.7, -1.0] },
       calque: vip ? `<div class="s3d-panneau">${etiq(10, "Le salon VIP")}<h3>${esc(vip.s.n)}</h3><p>${esc(vip.s.d)}</p>
         <div class="s3d-prix"><span>Tarif<b>${fcfa(vip.s.p)}</b></span></div>
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${vip.i}">Réserver</button></div></div>` : "" });
@@ -383,12 +383,12 @@ export function clinique({ services, lien, quand }) {
         <p>Les cosmétiques de la maison, choisis par Mme Sabrina. Touchez un produit pour le voir.</p>
         <div class="s3d-actions"><a class="s3d-btn plein" href="ina-luxury.html">Entrer dans la boutique</a></div></div>` });
     st({ id: "harmonisation", nom: "Cabinet privé", cote: "a-gauche",
-      cam: { p: [46.4, 1.65, 0.1], c: [50.4, 1.6, 0] }, camM: { p: [45.6, 1.6, 0], c: [50.4, 1.35, 0] },
+      cam: { p: [46.4, 1.65, 0.1], c: [50.4, 1.6, 0] }, camM: { p: [45.6, 1.6, 0], c: [50.4, 0.1, 0] },
       calque: `<div class="s3d-panneau">${etiq(12, "Cabinet privé")}<h3>Harmonisation faciale</h3>
         <p>Facial Balancing, Genesis Hollywood, Genesis Soft : chaque zone du visage et son tarif.</p>
         <div class="s3d-actions"><a class="s3d-btn plein" href="harmonisation-faciale.html">Pousser la porte</a></div></div>` });
     st({ id: "rdv", nom: "Rendez-vous", cote: "a-gauche",
-      cam: { p: [47.6, 2.15, 1.6], c: [47.6, 0.8, 3.45] }, camM: { p: [47.6, 2.3, 1.7], c: [47.6, 0.55, 3.45] },
+      cam: { p: [47.6, 2.15, 1.6], c: [47.6, 0.8, 3.45] }, camM: { p: [47.6, 2.6, 1.2], c: [47.6, -0.6, 3.45] },
       calque: `<div class="s3d-panneau">${etiq(13, "Le carnet")}<h3>Votre créneau vous attend.</h3>
         <p>Du lundi au samedi, de 10 h à 17 h, 24 h à l'avance. Un acompte de 5 100 F valide la réservation.</p>
         <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-rdv>Choisir mon créneau</button></div></div>` });
