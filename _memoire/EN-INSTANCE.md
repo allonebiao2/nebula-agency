@@ -134,7 +134,7 @@ D'après `CLAUDE.md` et la mémoire de Claude au 2026-11-11 : l'état exact est 
 |---|---|---|
 | **Au Braisé d'Or** | ⛔ **deux numéros WhatsApp** dans le site (`index.html` et `dishes.ts`) à trancher ; photo de l'attiéké ; salle, avis, adresse, logo | `clients/09-au-braise-dor/CONTEXT.md` |
 | **Hillary M. Styl** | ✅ jeu « jupe » et « haut + jupe » en ligne le 2026-11-13 (ses mots ; l'union haut + jupe et le cas de Mira à lui faire confirmer) · les 11 mesures de la robe ovale et le jeu `haut_pantalon` (Hillary) ; prix en dollar de la Robe de ville bleue ; l'adresse (fiche Google) | `clients/10-hillary-m-styl/CONTEXT.md` |
-| **Luxury Club 229** | images de soins (recharger WaveSpeed, `_gen_soins.py`) ; ⛔ devis tablette 420 000 F : envoyé, **Gloria a dit non** (Mongazi, 2026-11-18), ne plus le proposer ; fiche Google, adresse | `clients/04-luxury-skin-clinic/CONTEXT.md` |
+| **Luxury Club 229** | ⛔ **site en maintenance depuis le 26/11 : le rouvrir sur la décision de Mongazi** (`MAINTENANCE.md`) ; d'elle : photos avant / après pour « Nos résultats », nouveaux soins visage, routines INA à revoir (Éclat, Boosters, Acné) ; de Mongazi : le prix du paiement Mobile Money ; images de soins (recharger WaveSpeed, `_gen_soins.py`) ; ⛔ devis tablette 420 000 F : envoyé, **Gloria a dit non** (Mongazi, 2026-11-18), ne plus le proposer ; fiche Google, adresse | `clients/04-luxury-skin-clinic/CONTEXT.md` |
 | **Angy Art** | photos des œuvres seules, adresse, avis, tester le numéro ; trancher l'e-mail masqué et les tranches de budget | `clients/11-angy-art/CONTEXT.md` |
 | **Miss cakes** | confirmer le numéro WhatsApp ; logo, photos, avis | `CLAUDE.md` |
 | **HH Design** | confirmer le numéro ; logo, Instagram, adresse, prix | `CLAUDE.md` |

@@ -273,6 +273,13 @@ par seconde, carte graphique, temps de compilation).
   fichier inchangé répond 304), et le `?v=` du démarrage et de la feuille passe à `20261126u`.
   ⚠️ `_salon3d_poser.py` a pour version par défaut `20261126a` : toujours lui passer `--version`.
 - QC vert sur les 4 pages aux deux largeurs : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18, hub 15 + 14.
+- ⛔ **`assets/docs/gloria-infos.md` partait en ligne** (la fiche de collecte de la cliente, depuis mai), comme le README
+  des témoignages : `_dist.py` n'excluait les `.md` qu'à la racine. Il les exclut maintenant à tout niveau (seul
+  `tarifs.md` part) et le vérifie. ⚠️ Les anciens déploiements de Pages la servent encore par leur adresse à numéro
+  (`<numéro>.luxury-club-229.pages.dev`) : rien de secret dedans (le catalogue et les prix du site), mais les supprimer
+  est une décision de Mongazi.
+- Aperçu publié le 26/11 au soir : `09125167` (https://apercu.luxury-club-229.pages.dev), vérifié en lisant le corps
+  des fichiers servis. La production reste en maintenance (503).
 
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par

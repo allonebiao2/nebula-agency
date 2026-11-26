@@ -64,3 +64,17 @@ Rang 1 de la zone travaux. Détail complet et pièges : `clients/04-luxury-skin-
 - ⏳ **Rien n'est déployé** : la règle est un QC vert d'abord.
 - ⏳ L'assistant qui vient saluer (`invite.js`) n'est pas posé.
 - ⏳ D'elle : les suppressions dans INA, les nouveaux soins visage, le prix du paiement Mobile Money.
+
+## Le soir du 26/11 : la 4K et la fluidité (session de reprise)
+- Deux demandes de Mongazi : « la vitrine en 4K » et « le plus fluide possible ». Le travail était sur le disque,
+  pas validé : repris, contrôlé, validé (commit `dfc551c`). Détail : `REFONTE-26-11.md` § 3 ter.
+- Le moteur : jamais sous 2x, budget 3840 × 2160 ; une carte graphique faible démarre au natif ; 60 i/s visés ; les
+  ombres figées (les couper gelait la 3D en recompilant toutes les matières) ; compilation en parallèle et textures
+  envoyées une par image, donc plus de gel au démarrage ; `window.S3D` dit ce qui est rendu.
+- ⚠️ **L'agrandisseur des produits (Real-ESRGAN) avait été tué en pleine écriture** : un `bonbon-scrub.webp` de
+  0 octet figurait dans la liste que lit le moteur. Il écrit maintenant à côté puis renomme.
+- Les modules 3D s'importent entre eux sans `?v=` : ils passent en `no-cache` dans `_headers` (304 s'ils n'ont pas
+  changé). Le `?v=` du démarrage passe à `20261126u`.
+- `main` fusionné dans la branche (conflit sur la liste des travaux, les deux côtés gardés).
+- La ligne du client 04 dans `CLAUDE.md` est résumée (6 455 → environ 2 000 caractères), l'ancienne est archivée
+  telle quelle à la fin du `CONTEXT.md`.

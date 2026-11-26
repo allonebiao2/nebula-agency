@@ -38,10 +38,13 @@ EXCLUS_PREFIXES = ("devis-", "Devis_")
 #    serait parti en ligne comme `CONTEXT.md` l'avait fait. Règle générale : aucun .md de la racine ne part, sauf
 #    `tarifs.md`, public par choix (il est écrit pour les agents d'IA, cf. _llms.py).
 MD_PUBLICS = {"tarifs.md"}
+# ⛔ ET DANS LES SOUS-DOSSIERS, AUCUN .md (2026-11-26) : `assets/docs/gloria-infos.md`, la fiche de collecte de la
+#    cliente (son numéro, ce qui manquait, « à renseigner »), était servie publiquement depuis mai, comme le README
+#    des témoignages. Seul `tarifs.md` de la racine part.
 
 
-def note_interne(nom):
-    return nom.endswith(".md") and nom not in MD_PUBLICS
+def note_interne(nom, racine=True):
+    return nom.endswith(".md") and not (racine and nom in MD_PUBLICS)
 
 
 def main():
@@ -63,7 +66,7 @@ def main():
         dst = os.path.join(DIST, nom)
         if os.path.isdir(src):
             def ignore(dossier, noms):
-                exclus = [n for n in noms if n.startswith(EXCLUS_PREFIXES)]
+                exclus = [n for n in noms if n.startswith(EXCLUS_PREFIXES) or note_interne(n, racine=False)]
                 if os.path.abspath(dossier) == os.path.abspath(os.path.join(RACINE, "assets")):
                     exclus += [n for n in noms if n in EXCLUS_ASSETS]
                 return exclus
@@ -84,7 +87,7 @@ def main():
             if d in EXCLUS_RACINE or (rel == "assets" and d in EXCLUS_ASSETS):
                 fuites.append(os.path.join(rel, d))
         for n in noms:
-            if n in EXCLUS_RACINE or (rel == "." and note_interne(n)):
+            if n in EXCLUS_RACINE or note_interne(n, racine=(rel == ".")):
                 fuites.append(os.path.join(rel, n))
     if fuites:
         sys.exit("⛔ des fichiers exclus ont suivi : " + ", ".join(fuites))

@@ -12,6 +12,9 @@ plus net qu'un x2 direct). Le moteur ne les demande que sur grand écran ; le t�
     python _outils/_agrandir_detoures.py --planche  # planche avant / après sur magenta, à REGARDER
 """
 import json, sys, time
+
+# la console de Windows (cp1252) ne sait pas écrire « → » : sans cela, le premier produit fini arrêtait tout (26/11)
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 from pathlib import Path
 import numpy as np
 from PIL import Image
