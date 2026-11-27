@@ -108,6 +108,43 @@ export function boutique({ ina, lien, quand }) {
       if (/s[ée]rum|huile|drop|goutte/.test(n)) return 0.5;
       return 0.6;
     };
+    // LE VOLUME (27/11, Mongazi : « plus de profondeur au niveau des produits, avec du volume ») : une photo plate
+    // tournée vers le visiteur restait une découpe. Un flacon, un tube, un pot sont des CYLINDRES : la photo s'enroule
+    // sur un vrai cylindre, et son placement (u = ½ + ½ sin θ) reproduit EXACTEMENT la photo vue de face ; une lumière
+    // venue du haut à gauche est posée dans les couleurs des sommets (rien à recompiler, aucune lampe de plus) : les
+    // bords tournent à l'ombre, un reflet vertical passe comme sur du verre. Un savon, un coffret (des boîtes, déjà
+    // photographiés de trois quarts) gardent leur photo, posée sur une plaque d'épaisseur.
+    function volume(it, w, h) {
+      // les « Beauty Bar » et le Lip Kit (le Savon Noir Papaya est un POT : un cylindre)
+      const boite = /(bar|kit)/i.test(it.p.n);
+      if (boite) {
+        const g = new THREE.Group();
+        const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: it.t, color: 0xeee5d6,
+          toneMapped: false, transparent: true, alphaTest: 0.04 }));
+        const plaque = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: it.t, color: 0x2a2219,
+          toneMapped: false, transparent: true, alphaTest: 0.3 }));
+        plaque.position.set(w * 0.035, -h * 0.012, -Math.min(0.05, w * 0.14));
+        g.add(plaque, face);
+        return g;
+      }
+      const seg = 40, r = w / 2;
+      // la DEMI-face avant seulement (θ de -90° à +90°) : un dos qui reprenait la découpe faisait, vu de biais, un goulot en
+      // double à côté du vrai (le dos d'un flacon n'est jamais visible derrière lui-même)
+      const geo = new THREE.CylinderGeometry(r, r, h, seg, 1, true, -Math.PI / 2, Math.PI);
+      const pos = geo.attributes.position, uv = geo.attributes.uv, n = pos.count;
+      const col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        const sn = pos.getX(i) / r, cs = pos.getZ(i) / r;     // sin θ, cos θ (θ = 0 : face au visiteur)
+        uv.setX(i, 0.5 + 0.5 * sn);
+        let b = (0.6 + 0.4 * Math.max(0, cs)) * (1 + 0.1 * -sn);  // les bords à l'ombre, la gauche un peu plus claire
+        b += 0.16 * Math.exp(-((sn + 0.42) ** 2) / 0.012);           // le reflet vertical, comme sur du verre
+        col[i * 3] = 0.94 * b; col[i * 3 + 1] = 0.9 * b; col[i * 3 + 2] = 0.84 * b;
+      }
+      geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+      return new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: it.t, vertexColors: true, toneMapped: false,
+        alphaTest: 0.45, alphaToCoverage: true }));
+    }
+
     // L'ÉTALAGE (26/11, Mongazi : « relève le niveau ») : fini le cercle de douze produits qui tournaient, se
     // cachaient les uns les autres et passaient par la tranche. Deux gradins, comme dans une vraie boutique : les grands
     // flacons sur la marche du fond, les pots et les petits devant ; chacun à sa taille, espacé, tourné vers le
@@ -140,8 +177,7 @@ export function boutique({ ina, lien, quand }) {
         ordre.forEach((it) => {
           const w = it.w * e, h = (it.w / it.a) * e;
           const carte = new THREE.Group();
-          const photo = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: it.t,
-            color: 0xeee5d6, toneMapped: false, transparent: true, alphaTest: 0.04 }));   // une lumière chaude : les blancs ne brûlent plus
+          const photo = volume(it, w, h);
           photo.position.y = h / 2;
           carte.add(photo);
           carte.position.set(x + w / 2, y + 0.004, z);
@@ -248,7 +284,12 @@ export function boutique({ ina, lien, quand }) {
         // chaque produit regarde le visiteur : une découpe plate ne se montre jamais par la tranche (les ombres, à plat,
         // ne bougent pas)
         const cp = etat.camera.position;
-        v.ronde.children.forEach((c) => { if (c.isGroup) { c.getWorldPosition(ou); c.lookAt(cp.x, ou.y, cp.z); } });
+        // aux deux tiers seulement (27/11) : quand la caméra se déplace, on voit la rondeur des flacons
+        v.ronde.children.forEach((c) => {
+          if (!c.isGroup) return;
+          ou.copy(cp); v.ronde.worldToLocal(ou);
+          c.rotation.y = Math.atan2(ou.x - c.position.x, ou.z - c.position.z) * 0.68;
+        });
         if (calme || qualiteBasse) return false;
         pous.userData.animer(dt);
         return true;

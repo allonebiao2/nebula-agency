@@ -727,8 +727,11 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 .sr-titre{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
 </style>
 <!--S3D-CSS-->
-<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261126y">
+<link rel="stylesheet" href="assets/js/salon3d/salon3d.css?v=20261127b">
 <!--/S3D-CSS-->
+
+
+<!--SONS--><script src="assets/js/sons.js?v=20261127b" defer></script><!--/SONS-->
 </head>
 <body>
 
@@ -2576,17 +2579,18 @@ function glide(f1,f2,dur,vol){
 function chord(freqs,step,vol){
   freqs.forEach(function(f,i){setTimeout(function(){tone(f,.55,'triangle',vol);},i*step);});
 }
-var SFX={
-  brandClick:function(){tone(880,1.3,'sine',.3);tone(1320,1.5,'sine',.15);},
-  hover:function(){tone(660,.1,'sine',.1);},
-  addCart:function(){chord([523.25,659.25,783.99],70,.22);},
-  menuOpen:function(){glide(200,800,.22,.16);},
-  menuClose:function(){glide(800,200,.22,.16);},
-  filter:function(){tone(440,.08,'square',.1);},
-  whatsapp:function(){tone(880,.12,'sine',.2);setTimeout(function(){tone(1108,.18,'sine',.2);},95);},
-  chordOk:function(){chord([523.25,659.25,830.61],120,.28);},
-  tap:function(){tone(540,.07,'sine',.08);}
+var SFX={ /*SONS-REELS*/ /* 27/11 : de vrais enregistrements (assets/js/sons.js), plus des bips synthétisés */
+  brandClick:function(){S('cloche');},
+  hover:function(){S('tinte',.8);},
+  addCart:function(){S('verre');setTimeout(function(){S('cloche',.6);},140);},
+  menuOpen:function(){S('tissu');},
+  menuClose:function(){S('tissu',.7);},
+  filter:function(){S('verre',.6);},
+  whatsapp:function(){S('verre');},
+  chordOk:function(){S('cloche');},
+  tap:function(){S('goutte',.7);}
 };
+function S(n,v){if(window.LCSons)window.LCSons.jouer(n,{vol:v});}
 function play(n){try{if(SFX[n])SFX[n]();}catch(e){}}
 /* --- musique d'ambiance jazz douce, continue, ~5% --- */
 function mNote(){
@@ -3032,11 +3036,11 @@ window.LC_INA={produits:PRODUCTS,img:IMG,familles:FAMILIES,sous:SUBCATS,
 /* une famille ouverte par l'adresse (ina-luxury.html#intime-bien-etre : les anciens liens de Cozy y arrivent) */
 (function(){var k=decodeURIComponent((location.hash||'').slice(1));if(k&&FAMILIES.some(function(f){return f.key===k;})){select(k,null,null);setTimeout(function(){var m=document.querySelector('.layout');if(m)m.scrollIntoView();},400);}})();
 </script>
-<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261126y"></script>
+<script type="module" src="assets/js/salon3d/boot-ina.js?v=20261127b"></script>
 <!--/S3D-FIN-->
 <!--LM-->
 <script>window.LC_MENU={"familles": true, "raccourcis": [{"t": "Tous les produits", "h": ".layout"}, {"t": "Mon panier", "clic": "#cartBtn"}, {"t": "Faire ma consultation", "clic": "#consultBtn"}]};</script>
-<script src="assets/js/menu.js?v=20261126u"></script>
+<script src="assets/js/menu.js?v=20261127c"></script>
 <!--/LM-->
 <!--IV-->
 <script type="application/json" id="invite-cfg">{"nom": "Votre hôtesse", "theme": "sombre", "bas": 68, "texte": "Bonjour 👋 Vous hésitez entre plusieurs produits ? Mme Sabrina peut vous orienter vers la routine qui convient à votre peau.", "oui": "Faire ma consultation", "non": "Je regarde d'abord", "action": {"type": "clic", "sel": "#consultBtn"}, "avatar": "<svg class=\"av\" viewBox=\"0 0 120 120\" role=\"img\" aria-label=\"L'hôtesse de Luxury Club 229, en dessin\" data-e=\"neutre\"> <defs><radialGradient id=\"avlcf\" cx=\"50%\" cy=\"35%\" r=\"75%\"><stop offset=\"0\" stop-color=\"#f6eddc\"/><stop offset=\"1\" stop-color=\"#d8b878\"/><\/radialGradient><\/defs> <rect width=\"120\" height=\"120\" fill=\"url(#avlcf)\"/> <path d=\"M16 120 C18 98 36 88 60 88 C84 88 102 98 104 120Z\" fill=\"#f6f2e8\"/> <path d=\"M34 120 L40 96 Q60 104 80 96 L86 120Z\" fill=\"#7fae9d\"/> <path d=\"M52 74 L52 90 Q60 95 68 90 L68 74Z\" fill=\"#5e3720\"/> <ellipse cx=\"60\" cy=\"60\" rx=\"23\" ry=\"26\" fill=\"#7a4b2e\"/> <ellipse cx=\"37.5\" cy=\"62\" rx=\"3.4\" ry=\"5\" fill=\"#5e3720\"/><ellipse cx=\"82.5\" cy=\"62\" rx=\"3.4\" ry=\"5\" fill=\"#5e3720\"/> <path d=\"M33 52 C28 22 92 22 87 52 C84 40 36 40 33 52Z\" fill=\"#c9a84c\"/><path d=\"M36 30 C48 12 76 12 86 32 C74 24 48 24 36 30Z\" fill=\"#c9a84c\"/> <circle cx=\"84\" cy=\"30\" r=\"9\" fill=\"#c9a84c\"/><path d=\"M80 26 q6 2 8 8\" stroke=\"#0003\" stroke-width=\"2\" fill=\"none\"/> <path d=\"M38 44 q22 -10 44 0\" stroke=\"#fff4\" stroke-width=\"2\" fill=\"none\"/> <path d=\"M47 55 Q52 52.5 57 54.5 M63 54.5 Q68 52.5 73 55\" stroke=\"#1c120c\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\"/> <g class=\"av-yeux\"><ellipse cx=\"52\" cy=\"61\" rx=\"2.4\" ry=\"3\" fill=\"#1c120c\"/><ellipse cx=\"68\" cy=\"61\" rx=\"2.4\" ry=\"3\" fill=\"#1c120c\"/> <circle cx=\"52.8\" cy=\"60\" r=\".8\" fill=\"#fff\"/><circle cx=\"68.8\" cy=\"60\" r=\".8\" fill=\"#fff\"/><\/g> <g fill=\"#e98a7a\" opacity=\".55\"><ellipse cx=\"47\" cy=\"70\" rx=\"4.6\" ry=\"2.5\"/><ellipse cx=\"73\" cy=\"70\" rx=\"4.6\" ry=\"2.5\"/><\/g> <path d=\"M60 63 Q58.4 67.4 61 68\" stroke=\"#5e3720\" stroke-width=\"1.3\" fill=\"none\" stroke-linecap=\"round\"/> <g class=\"av-bouche\"> <path class=\"b-neutre\" d=\"M54 75 Q60 77.5 66 75\" stroke=\"#4a1f12\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\"/> <path class=\"b-sourire\" d=\"M52.5 73.5 Q60 80.5 67.5 73.5\" stroke=\"#4a1f12\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/> <path class=\"b-ravi\" d=\"M52 72.5 Q60 84 68 72.5Z\" fill=\"#4a1f12\"/><path class=\"b-ravi\" d=\"M55 73.4 Q60 75 65 73.4\" stroke=\"#fff\" stroke-width=\"1.6\" fill=\"none\"/> <ellipse class=\"b-parle\" cx=\"60\" cy=\"75.5\" rx=\"4.2\" ry=\"2.6\" fill=\"#4a1f12\"/> <\/g> <\/svg>"}</script>

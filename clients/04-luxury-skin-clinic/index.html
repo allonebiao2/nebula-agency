@@ -382,6 +382,9 @@ button,select,input[type=text],a[class*="-btn"],a[class*="-wa"],a[class*="chip"]
   background:#c9a84c;color:#16120a;text-decoration:none;font:600 14px/1 'Jost',sans-serif;}
 .testi-insta:hover{background:#e3cd86;}
 </style>
+
+
+<!--SONS--><script src="assets/js/sons.js?v=20261127b" defer></script><!--/SONS-->
 </head>
 <body>
 
@@ -1240,17 +1243,18 @@ function glide(f1,f2,dur,vol){
 function chord(freqs,step,vol){
   freqs.forEach(function(f,i){setTimeout(function(){tone(f,.55,'triangle',vol);},i*step);});
 }
-var SFX={
-  brandClick:function(){tone(880,1.3,'sine',.3);tone(1320,1.5,'sine',.15);},
-  hover:function(){tone(660,.1,'sine',.1);},
-  addCart:function(){chord([523.25,659.25,783.99],70,.22);},
-  menuOpen:function(){glide(200,800,.22,.16);},
-  menuClose:function(){glide(800,200,.22,.16);},
-  filter:function(){tone(440,.08,'square',.1);},
-  whatsapp:function(){tone(880,.12,'sine',.2);setTimeout(function(){tone(1108,.18,'sine',.2);},95);},
-  chordOk:function(){chord([523.25,659.25,830.61],120,.28);},
-  tap:function(){tone(540,.07,'sine',.08);}
+var SFX={ /*SONS-REELS*/ /* 27/11 : de vrais enregistrements (assets/js/sons.js), plus des bips synthétisés */
+  brandClick:function(){S('cloche');},
+  hover:function(){S('tinte',.8);},
+  addCart:function(){S('verre');setTimeout(function(){S('cloche',.6);},140);},
+  menuOpen:function(){S('tissu');},
+  menuClose:function(){S('tissu',.7);},
+  filter:function(){S('verre',.6);},
+  whatsapp:function(){S('verre');},
+  chordOk:function(){S('cloche');},
+  tap:function(){S('goutte',.7);}
 };
+function S(n,v){if(window.LCSons)window.LCSons.jouer(n,{vol:v});}
 function play(n){try{if(SFX[n])SFX[n]();}catch(e){}}
 /* --- musique d'ambiance jazz douce, continue, ~5% --- */
 function mNote(){
@@ -1972,7 +1976,7 @@ html body .lc-cat-btn{min-height:44px;bottom:calc((var(--dock-h) - 46px) / 2);
 <div class="lc-dock" aria-hidden="true"></div>
 <!--LM-->
 <script>window.LC_MENU={"hub": true, "raccourcis": [{"t": "Nos univers", "h": "#brands"}, {"t": "Mme Sabrina", "h": "#bio"}, {"t": "Nos résultats", "h": "#temoignages"}]};</script>
-<script src="assets/js/menu.js?v=20261126u"></script>
+<script src="assets/js/menu.js?v=20261127c"></script>
 <!--/LM-->
 <!--MUS-->
 <audio id="lcMusiqueFichier" src="assets/audio/luxury-spa.mp3" preload="none" loop></audio>

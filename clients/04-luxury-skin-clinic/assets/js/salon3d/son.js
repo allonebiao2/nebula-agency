@@ -1,7 +1,7 @@
 // Le son du salon (commun aux trois univers).
 // La musique : une <audio> nue dans la page, chargée sans jouer, lancée au PREMIER CONTACT (règle de la maison,
 // comme Angy Art et NEBULA Agency), fondu à l'entrée, -12 LUFS dans le fichier, joué à 0,66 au téléphone / 0,57 au PC.
-// Les bruitages : synthétisés en Web Audio (aucun fichier), discrets, coupés avec la musique.
+// Les bruitages : de VRAIS enregistrements depuis le 27/11 (assets/js/sons.js, `LCSons`), coupés avec la musique.
 // Le choix « son : non » est gardé pour les trois pages (sessionStorage `lcSon`).
 const mobile = matchMedia("(max-width: 760px)").matches;
 const VOLUME = mobile ? 0.66 : 0.57;
@@ -25,8 +25,9 @@ function audio() {
 function fondu(el, vers, ms) {
   const de = el.volume, t0 = performance.now();
   const pas = (t) => {
-    const k = Math.min(1, (t - t0) / ms);
-    el.volume = de + (vers - de) * k;
+    // l'horodatage de la première image peut PRÉCÉDER t0 : k négatif donnait un volume négatif, et une exception (27/11)
+    const k = Math.min(1, Math.max(0, (t - t0) / ms));
+    el.volume = Math.min(1, Math.max(0, de + (vers - de) * k));
     if (k < 1) requestAnimationFrame(pas);
     else if (vers === 0) el.pause();
   };
@@ -81,87 +82,27 @@ export function installerSon({ bouton = null } = {}) {
 }
 
 // ---------- les bruitages ----------
-function note(f, { type = "sine", duree = 0.6, vol = 0.12, attaque = 0.005, retard = 0, glisse = 0 } = {}) {
-  const c = audio();
-  if (!c || coupe || muetMaison()) return;
-  const t = c.currentTime + retard;
-  const o = c.createOscillator(), g = c.createGain();
-  o.type = type;
-  o.frequency.setValueAtTime(f, t);
-  if (glisse) o.frequency.exponentialRampToValueAtTime(f * glisse, t + duree);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(vol, t + attaque);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
-  o.connect(g).connect(c.destination);
-  o.start(t);
-  o.stop(t + duree + 0.05);
-}
-
-function souffle({ duree = 1.1, vol = 0.05, de = 900, vers = 3200, retard = 0 } = {}) {
-  const c = audio();
-  if (!c || coupe || muetMaison()) return;
-  const t = c.currentTime + retard, n = Math.floor(c.sampleRate * duree);
-  const b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
-  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
-  const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-  s.buffer = b; f.type = "bandpass"; f.Q.value = 0.8;
-  f.frequency.setValueAtTime(de, t); f.frequency.exponentialRampToValueAtTime(vers, t + duree);
-  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.15); g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
-  s.connect(f).connect(g).connect(c.destination);
-  s.start(t);
-}
-
+// 27/11 (Mongazi : « enlève ce bruitage générique bizarre ») : les sons synthétisés (sinusoïdes, souffles de bruit
+// filtré) sont remplacés par de vrais enregistrements, joués par le lecteur commun de la page (`window.LCSons`,
+// assets/js/sons.js). Le « vent » qui suivait la vitesse de la caméra est RETIRÉ : aucun vrai son n'y correspondait.
+const S = (nom, vol) => { if (!coupe && window.LCSons) window.LCSons.jouer(nom, { vol }); };
+let dernierBol = 0, dernierTinte = 0;
 export const bruit = {
-  // la porte de verre qui coulisse
-  porte() { souffle({ duree: 1.3, vol: 0.06, de: 500, vers: 2400 }); note(1568, { type: "sine", duree: 1.4, vol: 0.035, retard: 0.9 }); },
-  // le carillon de l'accueil (trois notes cristallines)
-  carillon() { [1318.5, 1760, 2093].forEach((f, i) => note(f, { duree: 1.6, vol: 0.05, retard: i * 0.11 })); },
-  // un clic de laiton (plaque, bouton)
-  laiton() { note(2400, { type: "triangle", duree: 0.09, vol: 0.06 }); note(3600, { type: "sine", duree: 0.18, vol: 0.025, retard: 0.012 }); },
-  // une note d'or (zone qui s'allume)
-  or() { note(880, { duree: 0.9, vol: 0.06 }); note(1320, { duree: 1.1, vol: 0.035, retard: 0.04 }); },
-  // la vapeur (cabine)
-  vapeur() { souffle({ duree: 1.8, vol: 0.035, de: 1800, vers: 700 }); },
-  // une page qu'on tourne (le carnet de rendez-vous)
-  page() { souffle({ duree: 0.35, vol: 0.05, de: 2200, vers: 5200 }); },
-  // --- l'immersion (Mongazi, 26/11 : « des bruitages au toucher, au mouvement, tout ») ---
-  // une goutte d'eau (le toucher) : une sinusoïde qui tombe vite, puis son écho plus doux
-  goutte() {
-    const h = 900 + Math.random() * 500;
-    note(h, { duree: 0.16, vol: 0.07, glisse: 0.32 });
-    note(h * 1.6, { duree: 0.12, vol: 0.025, glisse: 0.4, retard: 0.07 });
-  },
-  // un bol chantant (l'arrivée sur une étape) : des partiels non harmoniques, longs, qui battent un peu
-  bol() {
-    const f = [196, 207.7, 220][(Math.random() * 3) | 0];
-    [[1, 0.045, 4.2], [2.76, 0.022, 3.2], [5.4, 0.011, 2.2], [1.004, 0.03, 4.0]].forEach(([m, v, d]) => note(f * m, { duree: d, vol: v, attaque: 0.02 }));
-  },
-  // une note de verre (survoler un objet qu'on peut toucher)
-  tinte() { note(2637, { duree: 0.25, vol: 0.022 }); note(3951, { duree: 0.18, vol: 0.01, retard: 0.01 }); },
-  // le menu qui s'ouvre ou se ferme : un souffle bref
-  menu() { souffle({ duree: 0.45, vol: 0.04, de: 700, vers: 2600 }); },
+  porte() { S("porte"); },                 // l'entrée : une harpe en glissando
+  carillon() { S("carillon"); },           // le carillon de l'accueil
+  laiton() { S("verre"); },                // un bouton, une plaque : une note de kalimba
+  or() { S("cloche"); },                   // une zone qui s'allume : une cloche de méditation
+  vapeur() { S("vapeur"); },               // la cabine : de l'eau qu'on verse
+  page() { S("page"); },                   // le carnet de rendez-vous
+  goutte() { S("goutte"); },               // le toucher dans la scène
+  // l'arrivée sur une étape : un bol tibétain, pas plus d'un toutes les 1,5 s (en défilant vite, ils s'empilaient)
+  bol() { const t = performance.now(); if (t - dernierBol < 1500) return; dernierBol = t; S("bol"); },
+  // le survol d'un objet qu'on peut toucher
+  tinte() { const t = performance.now(); if (t - dernierTinte < 180) return; dernierTinte = t; S("tinte"); },
+  menu() { S("tissu"); },                  // le menu qui s'ouvre ou se ferme
 };
 
-// LE SOUFFLE DU MOUVEMENT : un bruit d'air filtré, en boucle, dont le volume et la couleur suivent la vitesse de la
-// caméra (v de 0 à 1). Silencieux à l'arrêt ; coupé avec le son.
-let souffleG = null, souffleF = null;
-export function mouvement(v) {
-  const c = audio();
-  if (!c) return;
-  if (!souffleG) {
-    const n = c.sampleRate * 2, b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
-    let dernier = 0;
-    for (let i = 0; i < n; i++) { dernier = (dernier + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = dernier * 3.5; }  // bruit brun : un souffle, pas un grésillement
-    const s = c.createBufferSource(); s.buffer = b; s.loop = true;
-    souffleF = c.createBiquadFilter(); souffleF.type = "lowpass"; souffleF.frequency.value = 500; souffleF.Q.value = 0.6;
-    souffleG = c.createGain(); souffleG.gain.value = 0;
-    s.connect(souffleF).connect(souffleG).connect(c.destination);
-    s.start();
-  }
-  const muet = coupe || muetMaison();
-  const k = muet ? 0 : Math.min(1, Math.max(0, v));
-  souffleG.gain.setTargetAtTime(k * 0.11, c.currentTime, 0.18);
-  souffleF.frequency.setTargetAtTime(380 + k * 1400, c.currentTime, 0.25);
-}
+// le mouvement de la caméra ne fait plus de bruit (le vent synthétisé est retiré) : la fonction reste pour les appels
+export function mouvement() {}
 // pour les scripts classiques de la page (le menu) : les mêmes bruitages
 window.LCBruit = (nom) => { if (bruit[nom]) bruit[nom](); };

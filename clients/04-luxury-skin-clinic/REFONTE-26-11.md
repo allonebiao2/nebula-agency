@@ -353,6 +353,30 @@ géants qui se chevauchaient, passaient par la tranche en tournant, et des blanc
   montré l'ancien Lip Kit. Les agrandis 2x faits sur les anciens détourages sont supprimés et refaits.
 - QC vert : INA 18 + 18, clinique 90 + 90.
 
+### Vague 5 · les sons, le menu, le volume (27/11, Mongazi : « enlève ce bruitage générique bizarre », « des sons ultra relaxants », « le menu moins généré par IA, beaucoup plus profond », « plus de profondeur au niveau des produits, avec du volume »)
+- **Les sons** : tous les bruitages synthétisés sont retirés (la sirène du menu, le bip carré des filtres, l'accord
+  électronique du panier, le « vent » qui suivait le défilement). Dix vrais enregistrements de spa, trouvés sur
+  Pixabay depuis Chrome (Cloudflare refuse les accès automatiques ; le fichier se télécharge ensuite du CDN), choisis à
+  la MESURE (graves, sans aigus durs, bruit de fond bas) : bol tibétain, goutte d'eau, carillon à vent, harpe en
+  glissando, note de kalimba, cloche de méditation, eau qu'on verse, deux notes douces. Coupés, fondus, mis au même
+  volume (`assets/audio/sfx/`, 240 Ko). Un seul lecteur pour les quatre pages (`assets/js/sons.js`, `LCSons.jouer`),
+  posé par `_outils/_sons_poser.py` (qui remplace aussi les `var SFX` des pages). Le bol ne sonne qu'une fois toutes
+  les 1,5 s (en défilant vite, ils s'empilaient).
+- **Le menu** (`assets/js/menu.js`, réécrit) : le tiroir de texte devient LA CARTE, plein écran. Un grand titre
+  éditorial par univers ; INA : chaque famille en carte avec SES vrais produits détourés en éventail, qui débordent de
+  la carte ; la clinique : une carte de spa (croquis, nom, durée, points de conduite, prix) ; le cabinet : ses flyers
+  inclinés ; les quatre univers (monogrammes dessinés, vrai pot INA, flyer) et WhatsApp ; l'entrée en perspective,
+  bloc après bloc ; le monogramme LC en filigrane, qui remonte moins vite. ⛔ Aucune image générée par IA dans le menu
+  (les « ambiances » de l'accueil le sont : écartées). Le prix ne se coupe plus en deux lignes (espaces insécables).
+- **Le volume des produits** (`monde-ina.js`, `volume()`) : flacons, tubes et pots sont des cylindres où la photo
+  s'enroule (u = ½ + ½ sin θ : vue de face, c'est exactement la photo), une lumière posée dans les couleurs des
+  sommets (bords à l'ombre, reflet vertical comme sur du verre). La DEMI-face avant seulement : un dos qui reprenait la
+  découpe faisait un goulot en double, vu de biais. Les « Beauty Bar » et le Lip Kit (des boîtes photographiées de
+  trois quarts) gardent leur photo sur une plaque d'épaisseur. Les produits ne se tournent plus qu'aux deux tiers vers
+  le visiteur : on voit leur rondeur quand la caméra bouge.
+- Le fondu de la musique pouvait calculer un volume négatif (une exception dans la page) : borné.
+- QC vert sur les 4 pages, aux deux largeurs.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après
