@@ -1,41 +1,57 @@
 # -*- coding: utf-8 -*-
-"""_musique_poser.py · la musique de spa sur les quatre pages (Mongazi, 26/11 : « un son apaisant, relaxant, qui donne
-l'impression d'être dans un spa », choisie sur Pixabay).
+"""_musique_poser.py · l'ambiance sonore des quatre pages : UNE par niveau (27/11).
 
-La piste : « Spa » de leberch (Pixabay, licence Pixabay Content License, piste « Content ID Registered » : sans effet
-sur un site web, mais une vidéo du site publiée sur YouTube ou Facebook pourrait être réclamée).
-Fichier : assets/audio/luxury-spa.mp3 (4:56, -12,3 LUFS, 96 kb/s, fondus d'entrée et de sortie pour la boucle).
-
-  · l'accueil, la clinique et INA avaient une ambiance SYNTHÉTISÉE (LCAudio, bouton #lcMute de la barre du bas) :
-    ses fonctions musicStart / musicStop jouent désormais la piste, en fondu, au volume de la maison (0,66 au
-    téléphone, 0,57 au PC). Le même bouton la commande ; jamais deux musiques à la fois ;
-  · l'harmonisation jouait déjà un fichier (son.js) : la piste remplace l'ancienne.
+Mongazi, 27/11 : « enlève cette musique générique IA pour un son relaxant, le son artificiel basique est toujours
+présent », puis « 4 sons ultra relaxants, un pour chaque niveau, qui se déclenchent comme sur la vitrine de NEBULA ».
+La piste « Spa » du 26/11 (une nappe de synthèse) est retirée. Chaque niveau a désormais son ENREGISTREMENT réel
+(Pixabay, licence Pixabay Content License), mis en boucle sans couture (la fin se fond dans le début) et à -15 LUFS :
+  · l'accueil          ambiance-accueil.mp3    un ruisseau de forêt et ses oiseaux (la bienvenue)
+  · la clinique        ambiance-clinique.mp3   des bols de cristal, une fontaine zen en dessous (la lumière)
+  · la boutique INA    ambiance-boutique.mp3   une fontaine en bois, des bols himalayens (la chaleur)
+  · le cabinet         ambiance-cabinet.mp3    des bols de méditation frappés (la profondeur)
+Le déclenchement est celui de la vitrine NEBULA : au PREMIER GESTE, quel qu'il soit (toucher, clic, touche,
+défilement), en fondu, et on RÉESSAIE à chaque geste tant que le son ne joue pas (un iPhone refuse un premier toucher
+ou un défilement : l'ancien code abandonnait après cet essai raté, et la musique ne venait jamais). Jamais si le
+visiteur l'a coupée.
+  · l'accueil, la clinique et INA : musicStart / musicStop de la maison jouent la piste (bouton #lcMute) ;
+  · le cabinet : `assets/js/salon3d/son.js` lit sa piste (bouton « Son » de la visite).
 Idempotent (marqueurs <!--MUS--> … <!--/MUS-->).
 """
 import re
-import sys
 from pathlib import Path
 
 ICI = Path(__file__).resolve().parent.parent
-PISTE = "assets/audio/luxury-spa.mp3"
+PISTES = {
+    "index.html": "assets/audio/ambiance-accueil.mp3",
+    "luxury-skin-clinic.html": "assets/audio/ambiance-clinique.mp3",
+    "ina-luxury.html": "assets/audio/ambiance-boutique.mp3",
+    "harmonisation-faciale.html": "assets/audio/ambiance-cabinet.mp3",
+}
 
 LECTEUR = """<!--MUS-->
 <audio id="lcMusiqueFichier" src="%s" preload="none" loop></audio>
 <script>
-/* LA MUSIQUE DE SPA (26/11) : la piste remplace l'ambiance synthétisée ; musicStart / musicStop de la maison l'appellent */
+/* L'AMBIANCE DE CE NIVEAU (27/11) : un vrai enregistrement, en boucle ; musicStart / musicStop de la maison l'appellent.
+   Elle part au premier geste comme sur la vitrine NEBULA, et on réessaie à chaque geste tant qu'elle ne joue pas. */
 window.LCMusique=(function(){
   var a=document.getElementById('lcMusiqueFichier');if(!a)return null;
-  var V=matchMedia('(max-width:760px)').matches?.66:.57,f=0,voulu=false;
+  var V=matchMedia('(max-width:760px)').matches?.7:.6,f=0,voulu=false,coupee=false;
+  var EV=['pointerdown','touchend','click','keydown','scroll','touchstart','wheel'];
   function fondu(vers,ms,fin){cancelAnimationFrame(f);var de=a.volume,t0=performance.now();
-    (function pas(t){var k=Math.min(1,Math.max(0,(t-t0)/ms));a.volume=de+(vers-de)*k;if(k<1)f=requestAnimationFrame(pas);else if(fin)fin();})(t0);}
+    (function pas(t){var k=Math.min(1,Math.max(0,(t-t0)/ms));a.volume=Math.min(1,Math.max(0,de+(vers-de)*k));if(k<1)f=requestAnimationFrame(pas);else if(fin)fin();})(t0);}
+  function retirer(){EV.forEach(function(e){removeEventListener(e,essai,true);});}
+  function jouer(){voulu=true;coupee=false;if(a.preload==='none')a.preload='auto';if(!a.paused){retirer();return;}
+    a.volume=0;var p=a.play();
+    if(p&&p.then)p.then(function(){retirer();fondu(V,1800);}).catch(function(){});else{retirer();fondu(V,1800);}}
+  function couper(){voulu=false;coupee=true;fondu(0,600,function(){a.pause();});}
+  function essai(){if(coupee)return;jouer();}
+  EV.forEach(function(e){addEventListener(e,essai,{capture:true,passive:true});});
   document.addEventListener('visibilitychange',function(){if(document.hidden)a.pause();else if(voulu){var p=a.play();if(p&&p.catch)p.catch(function(){});}});
-  return{jouer:function(){voulu=true;if(a.preload==='none')a.preload='auto';a.volume=0;var p=a.play();
-           if(p&&p.then)p.then(function(){fondu(V,1800);}).catch(function(){});},
-         couper:function(){voulu=false;fondu(0,600,function(){a.pause();});}};
+  return{jouer:jouer,couper:couper};
 })();
 </script>
 <!--/MUS-->
-""" % PISTE
+"""
 
 
 def main():
@@ -54,24 +70,26 @@ def main():
             if a not in s:
                 raise SystemExit(nom + " : musicStop introuvable")
             s = s.replace(a, b, 1)
+        lecteur = LECTEUR % PISTES[nom]
         if "<!--MUS-->" in s:
-            s = re.sub(r"<!--MUS-->.*?<!--/MUS-->\n?", lambda m: LECTEUR, s, count=1, flags=re.S)
+            s = re.sub(r"<!--MUS-->.*?<!--/MUS-->\n?", lambda m: lecteur, s, count=1, flags=re.S)
         else:
             i = s.rindex("</body>")
-            s = s[:i] + LECTEUR + s[i:]
+            s = s[:i] + lecteur + s[i:]
         p.write_text(s, encoding="utf-8")
-        print(f"{nom} : la piste de spa remplace l'ambiance synthétisée")
+        print(f"{nom} : {PISTES[nom]}")
     p = ICI / "harmonisation-faciale.html"
     s = p.read_text(encoding="utf-8")
-    s = s.replace('src="assets/audio/luxury-ambiance.mp3"', 'src="%s"' % PISTE)
-    if PISTE not in s:
+    s2 = re.sub(r'(<audio id="s3dMusique" src=")[^"]+(")', r"\g<1>" + PISTES[p.name] + r"\g<2>", s)
+    if PISTES[p.name] not in s2:
         raise SystemExit("harmonisation : lecteur introuvable")
-    p.write_text(s, encoding="utf-8")
-    print("harmonisation-faciale.html : la piste de spa remplace l'ancienne")
-    ancien = ICI / "assets" / "audio" / "luxury-ambiance.mp3"
-    if ancien.exists():
-        ancien.unlink()
-        print("assets/audio/luxury-ambiance.mp3 : retiré (plus aucune page ne le lit)")
+    p.write_text(s2, encoding="utf-8")
+    print(f"{p.name} : {PISTES[p.name]}")
+    for vieux in ("luxury-spa.mp3", "luxury-ambiance.mp3"):
+        f = ICI / "assets" / "audio" / vieux
+        if f.exists():
+            f.unlink()
+            print(f"assets/audio/{vieux} : retiré (plus aucune page ne le lit)")
 
 
 if __name__ == "__main__":

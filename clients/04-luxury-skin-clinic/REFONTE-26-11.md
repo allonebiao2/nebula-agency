@@ -390,6 +390,19 @@ géants qui se chevauchaient, passaient par la tranche en tournant, et des blanc
 - ⏳ Au cabinet, le bouton « Son » passe sous le bandeau, sur le haut du flyer : à revoir.
 - QC vert : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18.
 
+### Vague 7 · une ambiance réelle par niveau, qui part comme sur la vitrine NEBULA (27/11, Mongazi : « enlève cette musique générique IA pour un son relaxant, le son artificiel basique est toujours présent », puis « 4 sons ultra relaxants, un pour chaque niveau, qui se déclenchent comme sur la vitrine de NEBULA »)
+- Vérifié dans le navigateur : les anciennes notes de synthèse (`Audio`, `Ambiance`, `#audio-btn`) ne jouaient plus ;
+  ce qu'on entendait partout, c'était la piste « Spa » du 26/11, une nappe de synthèse. Elle est RETIRÉE.
+- Quatre ENREGISTREMENTS réels (Pixabay), choisis à la mesure (niveau stable, graves, peu d'aigus), mis en boucle sans
+  couture (la fin se fond dans le début) et à -15 LUFS, posés par `_outils/_musique_poser.py` (réécrit) :
+  accueil = ruisseau de forêt et oiseaux · clinique = bols de cristal + fontaine zen · boutique INA = fontaine en bois +
+  bols himalayens · cabinet = bols de méditation frappés.
+- ⛔ **Le démarrage ratait au téléphone** : au premier geste, si c'était un défilement ou un premier toucher (refusés
+  par l'iPhone), le code abandonnait et la musique ne venait jamais. Comme sur la vitrine NEBULA, on réessaie
+  maintenant à chaque geste jusqu'à ce qu'elle joue (pages ET `son.js` du cabinet), jamais si le visiteur l'a coupée.
+  Testé : défilement → muette, toucher → la bonne ambiance sur les quatre pages.
+- QC vert sur les 4 pages, aux deux largeurs.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après

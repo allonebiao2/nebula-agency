@@ -34,12 +34,18 @@ function fondu(el, vers, ms) {
   requestAnimationFrame(pas);
 }
 
+// COMME LA VITRINE NEBULA (27/11) : on réessaie à chaque geste tant que la musique ne joue pas (un iPhone refuse un
+// premier toucher ou un défilement : l'ancien code s'arrêtait après cet essai raté, et la musique ne venait jamais)
+const GESTES = ["pointerdown", "touchend", "click", "touchstart", "keydown", "wheel", "scroll"];
+function retirerGestes() { GESTES.forEach((t) => removeEventListener(t, premier, true)); }
 function jouer() {
   if (!musique || coupe) return;
+  if (!musique.paused) { retirerGestes(); return; }
   musique.volume = 0;
   const p = musique.play();
-  if (p && p.then) p.then(() => fondu(musique, VOLUME, 1800)).catch(() => {});
+  if (p && p.then) p.then(() => { retirerGestes(); fondu(musique, VOLUME, 1800); }).catch(() => {});
 }
+let premier = () => {};
 
 export function installerSon({ bouton = null } = {}) {
   musique = document.getElementById("s3dMusique");
@@ -54,15 +60,13 @@ export function installerSon({ bouton = null } = {}) {
   if (document.readyState === "complete") setTimeout(precharger, 1200);
   else addEventListener("load", () => setTimeout(precharger, 1200), { once: true });
 
-  const premier = () => {
-    if (demarre) return;
+  premier = () => {
     demarre = true;
     audio();
     precharger();
-    jouer();
-    ["pointerdown", "touchstart", "keydown", "wheel", "scroll"].forEach((t) => removeEventListener(t, premier, true));
+    jouer();      // les gestes ne sont retirés qu'une fois la musique PARTIE
   };
-  ["pointerdown", "touchstart", "keydown", "wheel", "scroll"].forEach((t) => addEventListener(t, premier, { capture: true, passive: true }));
+  GESTES.forEach((t) => addEventListener(t, premier, { capture: true, passive: true }));
 
   if (bouton) bouton.addEventListener("click", (e) => {
     e.stopPropagation();

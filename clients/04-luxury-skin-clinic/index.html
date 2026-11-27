@@ -1979,18 +1979,25 @@ html body .lc-cat-btn{min-height:44px;bottom:calc((var(--dock-h) - 46px) / 2);
 <script src="assets/js/menu.js?v=20261127c"></script>
 <!--/LM-->
 <!--MUS-->
-<audio id="lcMusiqueFichier" src="assets/audio/luxury-spa.mp3" preload="none" loop></audio>
+<audio id="lcMusiqueFichier" src="assets/audio/ambiance-accueil.mp3" preload="none" loop></audio>
 <script>
-/* LA MUSIQUE DE SPA (26/11) : la piste remplace l'ambiance synthétisée ; musicStart / musicStop de la maison l'appellent */
+/* L'AMBIANCE DE CE NIVEAU (27/11) : un vrai enregistrement, en boucle ; musicStart / musicStop de la maison l'appellent.
+   Elle part au premier geste comme sur la vitrine NEBULA, et on réessaie à chaque geste tant qu'elle ne joue pas. */
 window.LCMusique=(function(){
   var a=document.getElementById('lcMusiqueFichier');if(!a)return null;
-  var V=matchMedia('(max-width:760px)').matches?.66:.57,f=0,voulu=false;
+  var V=matchMedia('(max-width:760px)').matches?.7:.6,f=0,voulu=false,coupee=false;
+  var EV=['pointerdown','touchend','click','keydown','scroll','touchstart','wheel'];
   function fondu(vers,ms,fin){cancelAnimationFrame(f);var de=a.volume,t0=performance.now();
-    (function pas(t){var k=Math.min(1,Math.max(0,(t-t0)/ms));a.volume=de+(vers-de)*k;if(k<1)f=requestAnimationFrame(pas);else if(fin)fin();})(t0);}
+    (function pas(t){var k=Math.min(1,Math.max(0,(t-t0)/ms));a.volume=Math.min(1,Math.max(0,de+(vers-de)*k));if(k<1)f=requestAnimationFrame(pas);else if(fin)fin();})(t0);}
+  function retirer(){EV.forEach(function(e){removeEventListener(e,essai,true);});}
+  function jouer(){voulu=true;coupee=false;if(a.preload==='none')a.preload='auto';if(!a.paused){retirer();return;}
+    a.volume=0;var p=a.play();
+    if(p&&p.then)p.then(function(){retirer();fondu(V,1800);}).catch(function(){});else{retirer();fondu(V,1800);}}
+  function couper(){voulu=false;coupee=true;fondu(0,600,function(){a.pause();});}
+  function essai(){if(coupee)return;jouer();}
+  EV.forEach(function(e){addEventListener(e,essai,{capture:true,passive:true});});
   document.addEventListener('visibilitychange',function(){if(document.hidden)a.pause();else if(voulu){var p=a.play();if(p&&p.catch)p.catch(function(){});}});
-  return{jouer:function(){voulu=true;if(a.preload==='none')a.preload='auto';a.volume=0;var p=a.play();
-           if(p&&p.then)p.then(function(){fondu(V,1800);}).catch(function(){});},
-         couper:function(){voulu=false;fondu(0,600,function(){a.pause();});}};
+  return{jouer:jouer,couper:couper};
 })();
 </script>
 <!--/MUS-->
