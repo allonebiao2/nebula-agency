@@ -205,7 +205,7 @@ export function clinique({ services, art = {}, artFamille = {}, lien, quand }) {
       // le cadre de laiton, le caisson, et sa lumière sur le mur
       ajoute(new THREE.BoxGeometry(0.98, 1.33, 0.05), mCadre, cx, 1.45, -m * 2.35, false);
       const cais = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 1.23), new THREE.MeshBasicMaterial({ toneMapped: false,
-        map: caisson(anis, { croquis: croquis[k], sur: "Soin du visage · " + String(k + 1).padStart(2, "0"), nom: s.n, prix: fcfa(s.p), duree: duree(s) }) }));
+        map: caisson(anis, { croquis: croquis[k], sur: "Soin du visage · " + String(2 + k).padStart(2, "0"), nom: s.n, prix: fcfa(s.p), duree: duree(s) }) }));
       cais.position.set(cx, 1.45, -m * 2.318);
       const lumiere = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 2.3), new THREE.MeshBasicMaterial({ map: haloCaisson, transparent: true,
         depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
@@ -383,7 +383,8 @@ export function clinique({ services, art = {}, artFamille = {}, lien, quand }) {
         // en face du caisson, un peu de biais : il se pose à droite de l'écran, la fiche à gauche ; au téléphone, droit
         // devant et visé plus bas, il monte dans le haut de l'écran, au-dessus de la fiche
         cam: { p: [cx - m * 1.1, 1.55, m * 0.4], c: [cx - m * 0.55, 1.42, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.65, 1.6], c: [9, 1.55, -0.6] }] : [] },
-        camM: { p: [x + m * 1.2, 1.5, m * 0.55], c: [x + m * 1.2, 0.55, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
+        // (27/11) un peu plus loin et visé plus haut : le caisson descend sous le bandeau des étapes
+        camM: { p: [x + m * 1.2, 1.5, m * 0.3], c: [x + m * 1.2, 0.72, -m * 2.4], via: k === 0 ? [{ p: [3.4, 1.6, 2.2], c: [9, 1.5, -0.6] }] : [] },
         calque: `<div class="s3d-panneau">${etiq(stations.length, "Soins du visage")}<h3>${esc(s.n)}</h3><p>${esc(s.d)}</p>
           <div class="s3d-prix"><span>Tarif<b>${fcfa(s.p)}</b></span>${duree(s) ? `<span>Durée<b>${esc(duree(s))}</b></span>` : ""}</div>
           <div class="s3d-actions"><button type="button" class="s3d-btn plein" data-reserver="${i}">Réserver ce soin</button>

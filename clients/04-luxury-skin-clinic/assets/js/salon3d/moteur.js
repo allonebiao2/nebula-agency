@@ -109,7 +109,7 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
   const nav = racine.querySelector(".s3d-pastilles");
   if (nav) {
     nav.innerHTML = stations.map((st, k) =>
-      `<button type="button" data-k="${k}" aria-label="${(st.nom || "Étape " + (k + 1)).replace(/"/g, "&quot;")}"><i></i><span>${st.nom || ""}</span></button>`).join("");
+      `<button type="button" data-k="${k}" aria-label="${(st.nom || "Étape " + (k + 1)).replace(/"/g, "&quot;")}"><i></i><b>${String(k).padStart(2, "0")}</b><span>${st.nom || ""}</span></button>`).join("");
     nav.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) aller(+b.dataset.k); });
   }
   const pastilles = nav ? [...nav.children] : [];
@@ -311,6 +311,12 @@ export async function lancer({ racine, monde, surStation = null, surMouvement = 
       kActif = k;
       blocs.forEach((b, j) => { b.classList.toggle("on", j === k); b.setAttribute("aria-hidden", j === k ? "false" : "true"); });
       pastilles.forEach((b, j) => b.classList.toggle("on", j === k));
+      // au téléphone, les pastilles sont un BANDEAU qu'on fait glisser (27/11) : l'étape en cours y reste centrée
+      // (on fait défiler le bandeau seul, jamais la page)
+      if (nav && nav.scrollWidth > nav.clientWidth + 4 && pastilles[k]) {
+        const b = pastilles[k];
+        nav.scrollTo({ left: b.offsetLeft - (nav.clientWidth - b.offsetWidth) / 2, behavior: calme ? "auto" : "smooth" });
+      }
       racine.dataset.station = stations[k].id || k;
       ombres = Math.max(ombres, 2);   // une étape neuve : les ombres se refont une fois (un décor chargé entre-temps)
       if (M.surStation) M.surStation(k);

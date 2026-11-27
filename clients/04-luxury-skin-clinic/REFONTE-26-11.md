@@ -377,6 +377,19 @@ géants qui se chevauchaient, passaient par la tranche en tournant, et des blanc
 - Le fondu de la musique pouvait calculer un volume négatif (une exception dans la page) : borné.
 - QC vert sur les 4 pages, aux deux largeurs.
 
+### Vague 6 · toutes les étapes à portée de doigt au téléphone (27/11, Mongazi, capture de son iPhone : « que le client puisse avoir accès à tous les points directement, comme sur PC, sinon il risque de se perdre et perdre du temps »)
+- Au PC, une colonne de pastilles au bord mène à chaque étape ; au téléphone elle recouvrait la fiche et avait été
+  CACHÉE : il fallait tout faire défiler. Ce sont maintenant les mêmes pastilles en **bandeau** en haut de la scène
+  (numéro + nom de l'étape, on le fait glisser, un toucher y mène), l'étape en cours dorée et centrée (le moteur fait
+  défiler le bandeau seul, jamais la page). Sans flou (une scène qui bouge le ferait recalculer à chaque image).
+- **Un seul numéro par étape** : le bandeau, le caisson et la fiche disaient 04, 02 et 03 pour le même soin. Tout prend
+  le numéro de l'étape (00 = l'entrée).
+- La caméra du téléphone recule un peu devant les caissons : le bandeau ne mord plus leur haut.
+- ⛔ **L'hôtesse restait affichée quand on remontait dans la visite** (sa capture : elle couvrait l'étape 12). Elle
+  s'efface dès que la visite remplit de nouveau l'écran.
+- ⏳ Au cabinet, le bouton « Son » passe sous le bandeau, sur le haut du flyer : à revoir.
+- QC vert : clinique 90 + 90, INA 18 + 18, harmonisation 18 + 18.
+
 ## 4. Les règles du site qui restent vraies (voir `CONTEXT.md`)
 Publier par `_dist` · contraste mesuré sur les pixels rendus · aucun visage ni soin inventé dans une image GÉNÉRÉE par
 nous (les flyers sont ses supports à elle : leurs visuels sont les siens, demandés par elle) · `llms.txt` à relancer après
